@@ -33,6 +33,7 @@ public class SensorMessage extends DeconzBaseMessage {
         return "SensorMessage{" + "type='" + type + '\'' + ", config=" + config + ", state=" + state + ", e='" + e
                 + '\'' + ", r='" + r + '\'' + ", t='" + t + '\'' + ", id='" + id + '\'' + ", manufacturername='"
                 + manufacturername + '\'' + ", modelid='" + modelid + '\'' + ", name='" + name + '\'' + ", swversion='"
-                + swversion + '\'' + ", ep='" + ep + '\'' + ", uniqueid='" + uniqueid + '\'' + '}';
+                + swversion + '\'' + ", ep='" + ep + '\'' + ", lastseen='" + lastseen + '\'' + ", uniqueid='" + uniqueid
+                + '\'' + '}';
     }
 }

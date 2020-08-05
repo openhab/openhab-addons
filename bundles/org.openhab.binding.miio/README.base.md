@@ -71,6 +71,10 @@ However, for devices that are unsupported, you may override the value and try to
 
 `Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx" ]` 
 
+or in case of unknown models include the model information e.g.:
+
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s5" ]`
+
 ## Mi IO Devices
 
 !!!devices

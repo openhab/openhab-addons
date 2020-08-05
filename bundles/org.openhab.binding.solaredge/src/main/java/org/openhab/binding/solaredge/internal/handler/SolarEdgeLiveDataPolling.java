@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solaredge.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdateMeterless;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePrivateApi;
 import org.openhab.binding.solaredge.internal.command.LiveDataUpdatePublicApi;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class SolarEdgeLiveDataPolling implements Runnable {
     /**
      * Logger

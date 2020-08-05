@@ -15,7 +15,7 @@ package org.openhab.io.transport.modbus.internal;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.io.transport.modbus.ModbusSlaveIOException;
+import org.openhab.io.transport.modbus.exception.ModbusSlaveIOException;
 
 import net.wimpi.modbus.ModbusIOException;
 

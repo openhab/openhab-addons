@@ -19,7 +19,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.modbus.sunspec.internal.dto.MeterModelBlock;
 import org.openhab.binding.modbus.sunspec.internal.parser.MeterModelParser;
-import org.openhab.io.transport.modbus.ModbusManager;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +42,8 @@ public class MeterHandler extends AbstractSunSpecHandler {
      */
     private final Logger logger = LoggerFactory.getLogger(MeterHandler.class);
 
-    public MeterHandler(Thing thing, ModbusManager managerRef) {
-        super(thing, managerRef);
+    public MeterHandler(Thing thing) {
+        super(thing);
     }
 
     /**

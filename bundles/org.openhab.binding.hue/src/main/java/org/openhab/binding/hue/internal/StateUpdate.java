@@ -218,4 +218,15 @@ public class StateUpdate extends ConfigUpdate {
         commands.add(new Command("status", status));
         return this;
     }
+
+    /**
+     * Recall the given scene.
+     *
+     * @param sceneId Identifier of the scene
+     * @return this object for chaining calls
+     */
+    public StateUpdate setScene(String sceneId) {
+        commands.add(new Command("scene", sceneId));
+        return this;
+    }
 }

@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the /api/ascending-alarm response
+ * The {@link JsonAscendingAlarm} encapsulate the GSON data of the /api/ascending-alarm response
  *
  * @author Michael Geramb - Initial contribution
  */

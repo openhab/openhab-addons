@@ -112,8 +112,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
 
     private @Nullable HueClient hueClient;
 
-    @Nullable
-    ScheduledFuture<?> scheduledFuture;
+    private @Nullable ScheduledFuture<?> scheduledFuture;
 
     public HueLightHandler(Thing hueLight) {
         super(hueLight);
@@ -231,14 +230,13 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             return;
         }
 
+        Integer lastColorTemp;
         StateUpdate lightState = null;
         switch (channel) {
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
-                    if (lightState != null) {
-                        lightState.setTransitionTime(fadeTime);
-                    }
+                    lightState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
@@ -255,9 +253,7 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (lightState != null) {
-                        lightState.setTransitionTime(fadeTime);
-                    }
+                    lightState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                     if (isOsramPar16) {
@@ -269,10 +265,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState.setTransitionTime(fadeTime);
                     }
                 }
-                if (lightState != null && lastSentColorTemp != null) {
+                lastColorTemp = lastSentColorTemp;
+                if (lightState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    lightState.setColorTemperature(lastSentColorTemp);
+                    lightState.setColorTemperature(lastColorTemp);
                     lightState.setTransitionTime(fadeTime);
                 }
                 break;
@@ -284,10 +281,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState = addOsramSpecificCommands(lightState, (OnOffType) command);
                     }
                 }
-                if (lightState != null && lastSentColorTemp != null) {
+                lastColorTemp = lastSentColorTemp;
+                if (lightState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    lightState.setColorTemperature(lastSentColorTemp);
+                    lightState.setColorTemperature(lastColorTemp);
                     lightState.setTransitionTime(fadeTime);
                 }
                 break;
@@ -298,15 +296,11 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
                         lightState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
                         lightState = LightStateConverter.toColorLightState(hsbCommand, light.getState());
-                        if (lightState != null) {
-                            lightState.setTransitionTime(fadeTime);
-                        }
+                        lightState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof PercentType) {
                     lightState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (lightState != null) {
-                        lightState.setTransitionTime(fadeTime);
-                    }
+                    lightState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
                     lightState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
@@ -428,8 +422,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof HueClient) {
-                hueClient = (HueClient) handler;
-                hueClient.registerLightStatusListener(this);
+                HueClient bridgeHandler = (HueClient) handler;
+                hueClient = bridgeHandler;
+                bridgeHandler.registerLightStatusListener(this);
             } else {
                 return null;
             }
@@ -576,8 +571,9 @@ public class HueLightHandler extends BaseThingHandler implements LightStatusList
      * restoration.
      */
     private void cancelScheduledFuture() {
-        if (scheduledFuture != null) {
-            scheduledFuture.cancel(true);
+        ScheduledFuture<?> scheduledJob = scheduledFuture;
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
             scheduledFuture = null;
         }
     }

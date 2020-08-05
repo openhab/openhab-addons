@@ -9,6 +9,7 @@
 	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.ruuvitag/${project.version}</bundle>
 	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
 	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluegiga/${project.version}</bundle>
+	<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.daikinmadoka/${project.version}</bundle>
 </feature>
 <feature name="openhab-binding-mqtt" description="MQTT Binding" version="${project.version}">
 	<feature>openhab-runtime-base</feature>

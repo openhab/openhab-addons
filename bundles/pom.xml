@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.7-SNAPSHOT</version>
+    <version>2.5.8-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -58,11 +58,14 @@
     <module>org.openhab.binding.bluetooth.bluegiga</module>
     <module>org.openhab.binding.bluetooth.bluez</module>
     <module>org.openhab.binding.bluetooth.blukii</module>
+    <module>org.openhab.binding.bluetooth.daikinmadoka</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
+    <module>org.openhab.binding.bticinosmarther</module>
     <module>org.openhab.binding.buienradar</module>
+    <module>org.openhab.binding.caddx</module>
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
@@ -104,11 +107,13 @@
     <module>org.openhab.binding.goecharger</module>
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
+    <module>org.openhab.binding.gree</module>
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.harmonyhub</module>
     <module>org.openhab.binding.hdanywhere</module>
     <module>org.openhab.binding.hdpowerview</module>
     <module>org.openhab.binding.helios</module>
+    <module>org.openhab.binding.heliosventilation</module>
     <module>org.openhab.binding.heos</module>
     <module>org.openhab.binding.homematic</module>
     <module>org.openhab.binding.hpprinter</module>
@@ -178,6 +183,7 @@
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
     <module>org.openhab.binding.oceanic</module>
+    <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
     <module>org.openhab.binding.onebusaway</module>
     <module>org.openhab.binding.onewiregpio</module>
@@ -188,6 +194,7 @@
     <module>org.openhab.binding.openthermgateway</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.binding.oppo</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
@@ -200,6 +207,7 @@
     <module>org.openhab.binding.powermax</module>
     <module>org.openhab.binding.pulseaudio</module>
     <module>org.openhab.binding.pushbullet</module>
+    <module>org.openhab.binding.radiothermostat</module>
     <module>org.openhab.binding.regoheatpump</module>
     <module>org.openhab.binding.rfxcom</module>
     <module>org.openhab.binding.rme</module>

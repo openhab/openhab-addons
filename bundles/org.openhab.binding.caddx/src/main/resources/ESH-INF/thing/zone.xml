@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="caddx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="zone">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Caddx Alarm Zone</label>
+		<description>Represents a physical device such as a door, window, or motion sensor.</description>
+
+		<channels>
+			<!-- Zone partitions -->
+			<channel id="zone_partition1" typeId="zone_partition">
+				<label>Partition 1</label>
+				<description>Partition 1</description>
+			</channel>
+			<channel id="zone_partition2" typeId="zone_partition">
+				<label>Partition 2</label>
+				<description>Partition 2</description>
+			</channel>
+			<channel id="zone_partition3" typeId="zone_partition">
+				<label>Partition 3</label>
+				<description>Partition 3</description>
+			</channel>
+			<channel id="zone_partition4" typeId="zone_partition">
+				<label>Partition 4</label>
+				<description>Partition 4</description>
+			</channel>
+			<channel id="zone_partition5" typeId="zone_partition">
+				<label>Partition 5</label>
+				<description>Partition 5</description>
+			</channel>
+			<channel id="zone_partition6" typeId="zone_partition">
+				<label>Partition 6</label>
+				<description>Partition 6</description>
+			</channel>
+			<channel id="zone_partition7" typeId="zone_partition">
+				<label>Partition 7</label>
+				<description>Partition 7</description>
+			</channel>
+			<channel id="zone_partition8" typeId="zone_partition">
+				<label>Partition 8</label>
+				<description>Partition 8</description>
+			</channel>
+
+			<!-- Name -->
+			<channel id="zone_name" typeId="zone_text">
+				<label>Name</label>
+				<description>Name</description>
+			</channel>
+
+			<!-- Zone types -->
+			<channel id="zone_fire" typeId="zone_type">
+				<label>Fire</label>
+				<description>Fire</description>
+			</channel>
+			<channel id="zone_24hour" typeId="zone_type">
+				<label>24 Hour</label>
+				<description>24 Hour</description>
+			</channel>
+			<channel id="zone_key_switch" typeId="zone_type">
+				<label>Key-switch</label>
+				<description>Key-switch</description>
+			</channel>
+			<channel id="zone_follower" typeId="zone_type">
+				<label>Follower</label>
+				<description>Follower</description>
+			</channel>
+			<channel id="zone_entry_exit_delay_1" typeId="zone_type">
+				<label>Entry / Exit Delay 1</label>
+				<description>Entry / exit delay 1</description>
+			</channel>
+			<channel id="zone_entry_exit_delay_2" typeId="zone_type">
+				<label>Entry / Exit Delay 2</label>
+				<description>Entry / exit delay 2</description>
+			</channel>
+			<channel id="zone_interior" typeId="zone_type">
+				<label>Interior</label>
+				<description>Interior</description>
+			</channel>
+			<channel id="zone_local_only" typeId="zone_type">
+				<label>Local Only</label>
+				<description>Local only</description>
+			</channel>
+
+			<channel id="zone_keypad_sounder" typeId="zone_type">
+				<label>Keypad Sounder</label>
+				<description>Keypad Sounder</description>
+			</channel>
+			<channel id="zone_yelping_siren" typeId="zone_type">
+				<label>Yelping Siren</label>
+				<description>Yelping siren</description>
+			</channel>
+			<channel id="zone_steady_siren" typeId="zone_type">
+				<label>Steady Siren</label>
+				<description>Steady siren</description>
+			</channel>
+			<channel id="zone_chime" typeId="zone_type">
+				<label>Chime</label>
+				<description>Chime</description>
+			</channel>
+			<channel id="zone_bypassable" typeId="zone_type">
+				<label>Bypassable</label>
+				<description>Bypassable</description>
+			</channel>
+			<channel id="zone_group_bypassable" typeId="zone_type">
+				<label>Group Bypassable</label>
+				<description>Group bypassable</description>
+			</channel>
+			<channel id="zone_force_armable" typeId="zone_type">
+				<label>Force Armable</label>
+				<description>Force armable</description>
+			</channel>
+			<channel id="zone_entry_guard" typeId="zone_type">
+				<label>Entry Guard</label>
+				<description>Entry guard</description>
+			</channel>
+
+			<channel id="zone_fast_loop_response" typeId="zone_type">
+				<label>Fast Loop Response</label>
+				<description>Fast loop response</description>
+			</channel>
+			<channel id="zone_double_eol_tamper" typeId="zone_type">
+				<label>Double EOL Tamper</label>
+				<description>Double EOL tamper</description>
+			</channel>
+			<channel id="zone_type_trouble" typeId="zone_type">
+				<label>Trouble</label>
+				<description>Trouble</description>
+			</channel>
+			<channel id="zone_cross_zone" typeId="zone_type">
+				<label>Cross Zone</label>
+				<description>Cross zone</description>
+			</channel>
+			<channel id="zone_dialer_delay" typeId="zone_type">
+				<label>Dialer Delay</label>
+				<description>Dialer delay</description>
+			</channel>
+			<channel id="zone_swinger_shutdown" typeId="zone_type">
+				<label>Swinger Shutdown</label>
+				<description>Swinger shutdown</description>
+			</channel>
+			<channel id="zone_restorable" typeId="zone_type">
+				<label>Restorable</label>
+				<description>Restorable</description>
+			</channel>
+			<channel id="zone_listen_in" typeId="zone_type">
+				<label>Listen in</label>
+				<description>Listen in</description>
+			</channel>
+
+			<!-- Zone conditions -->
+			<channel id="zone_faulted" typeId="zone_status">
+				<label>Faulted</label>
+				<description>Faulted (or delayed trip)</description>
+			</channel>
+			<channel id="zone_tampered" typeId="zone_condition">
+				<label>Tampered</label>
+				<description>Tampered</description>
+			</channel>
+			<channel id="zone_trouble" typeId="zone_condition">
+				<label>Trouble</label>
+				<description>Trouble</description>
+			</channel>
+			<channel id="zone_bypassed" typeId="zone_bypass">
+				<label>Bypassed</label>
+				<description>Bypassed</description>
+			</channel>
+			<channel id="zone_inhibited" typeId="zone_condition">
+				<label>Inhibited (Force Armed)</label>
+				<description>Inhibited (force armed)</description>
+			</channel>
+			<channel id="zone_low_battery" typeId="zone_condition">
+				<label>Low Battery</label>
+				<description>Low Battery</description>
+			</channel>
+			<channel id="zone_loss_of_supervision" typeId="zone_condition">
+				<label>Loss of Supervision</label>
+				<description>Loss of supervision</description>
+			</channel>
+			<channel id="zone_alarm_memory" typeId="zone_condition">
+				<label>Alarm Memory</label>
+				<description>Alarm memory</description>
+			</channel>
+			<channel id="zone_bypass_memory" typeId="zone_condition">
+				<label>Bypass Memory</label>
+				<description>Bypass memory</description>
+			</channel>
+		</channels>
+
+		<representation-property>zoneNumber</representation-property>
+
+		<config-description>
+			<parameter name="zoneNumber" type="integer" required="true" min="1" max="192">
+				<label>Zone Number</label>
+				<description>The Zone Number.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>

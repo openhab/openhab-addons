@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
@@ -37,6 +37,7 @@ import io.swagger.client.model.NAStationModule;
  * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
+@NonNullByDefault
 public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
@@ -51,34 +52,32 @@ public class NAModule3Handler extends NetatmoModuleHandler<NAStationModule> {
 
     @Override
     public void updateMeasurements() {
-        List<@NonNull String> types = Arrays.asList(SUM_RAIN);
+        List<String> types = Arrays.asList(SUM_RAIN);
 
         if (isLinked(CHANNEL_SUM_RAIN_THIS_WEEK)) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types,
-                    Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK), channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_WEEK, types, Arrays.asList(CHANNEL_SUM_RAIN_THIS_WEEK),
+                    channelMeasurements);
         }
 
         if (isLinked(CHANNEL_SUM_RAIN_THIS_MONTH)) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types,
-                    Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH), channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_MONTH, types, Arrays.asList(CHANNEL_SUM_RAIN_THIS_MONTH),
+                    channelMeasurements);
         }
     }
 
     @Override
-    protected State getNAThingProperty(@NonNull String channelId) {
-        if (module != null) {
-            NADashboardData dashboardData = module.getDashboardData();
-            if (dashboardData != null) {
-                switch (channelId) {
-                    case CHANNEL_RAIN:
-                        return toQuantityType(dashboardData.getRain(), API_RAIN_UNIT);
-                    case CHANNEL_SUM_RAIN1:
-                        return toQuantityType(dashboardData.getSumRain1(), API_RAIN_UNIT);
-                    case CHANNEL_SUM_RAIN24:
-                        return toQuantityType(dashboardData.getSumRain24(), API_RAIN_UNIT);
-                    case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
-                }
+    protected State getNAThingProperty(String channelId) {
+        NADashboardData dashboardData = getModule().map(m -> m.getDashboardData()).orElse(null);
+        if (dashboardData != null) {
+            switch (channelId) {
+                case CHANNEL_RAIN:
+                    return toQuantityType(dashboardData.getRain(), API_RAIN_UNIT);
+                case CHANNEL_SUM_RAIN1:
+                    return toQuantityType(dashboardData.getSumRain1(), API_RAIN_UNIT);
+                case CHANNEL_SUM_RAIN24:
+                    return toQuantityType(dashboardData.getSumRain24(), API_RAIN_UNIT);
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
             }
         }
 

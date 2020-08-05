@@ -55,6 +55,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     /** The timeout per attribute field subscription */
     protected final int attributeReceiveTimeout;
     protected final int subscribeTimeout;
+    protected final int deviceTimeout;
     protected HandlerConfiguration config = new HandlerConfiguration();
     protected DelayedBatchProcessing<Object> delayedProcessing;
     private @Nullable ScheduledFuture<?> heartBeatTimer;
@@ -65,15 +66,17 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
      *
      * @param thing The thing of this handler
      * @param channelTypeProvider A channel type provider
+     * @param deviceTimeout Timeout for the entire device subscription. In milliseconds.
      * @param subscribeTimeout Timeout for an entire attribute class subscription and receive. In milliseconds.
      *            Even a slow remote device will publish a full node or property within 100ms.
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      *            One attribute subscription and receiving should not take longer than 50ms.
      */
-    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int subscribeTimeout,
-            int attributeReceiveTimeout) {
-        super(thing, subscribeTimeout);
+    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int deviceTimeout,
+            int subscribeTimeout, int attributeReceiveTimeout) {
+        super(thing, deviceTimeout);
         this.channelTypeProvider = channelTypeProvider;
+        this.deviceTimeout = deviceTimeout;
         this.subscribeTimeout = subscribeTimeout;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(subscribeTimeout, this, scheduler);

@@ -34,4 +34,6 @@ public class BrokerHandlerConfig extends MqttBrokerConnectionConfig {
     public boolean publickeypin = false;
     public String certificate = "";
     public String publickey = "";
+
+    public boolean enableDiscovery = true;
 }

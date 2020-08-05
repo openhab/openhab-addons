@@ -128,7 +128,32 @@ sitemap demo label="Main Menu" {
   // serverV1 & serverNG
   Slider item=Brightness
   Colorpicker item=MyColor
-  Selection item=Effect mappings=['Knight rider'='Knight rider', 'Red mood blobs'='Red mood blobs']
+  Selection item=Effect mappings=[
+    'Cinema brighten lights'='Cinema brighten lights',
+    'Cinema dim lights'='Cinema dim lights',
+    'Knight rider'='Knight rider',
+    'Blue mood blobs'='Blue mood blobs',
+    'Cold mood blobs'='Cold mood blobs',
+    'Full color mood blobs'='Full color mood blobs',
+    'Green mood blobs'='Green mood blobs',
+    'Red mood blobs'='Red mood blobs',
+    'Warm mood blobs'='Warm mood blobs',
+    'Police Lights Single'='Police Lights Single',
+    'Police Lights Solid'='Police Lights Solid',
+    'Rainbow mood'='Rainbow mood',
+    'Rainbow swirl fast'='Rainbow swirl fast',
+    'Rainbow swirl'='Rainbow swirl',
+    'Running dots'='Running dots',
+    'System Shutdown'='System Shutdown',
+    'Snake'='Snake',
+    'Sparks Color'='Sparks Color',
+    'Sparks'='Sparks',
+    'Strobe blue'='Strobe blue',
+    'Strobe Raspbmc'='Strobe Raspbmc',
+    'Strobe white'='Strobe white',
+    'Color traces'='Color traces',
+    'X-Mas'='X-Mas'
+  ]
   Switch item=Clear mappings=[50="Clear"]
   
   // only serverNG

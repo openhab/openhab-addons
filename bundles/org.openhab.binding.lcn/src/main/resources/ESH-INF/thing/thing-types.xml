@@ -40,6 +40,10 @@
 			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
 			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
+		<properties>
+			<property name="serialNumber"/>
+		</properties>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="thing-type:lcn:module"/>
 	</thing-type>
@@ -151,6 +155,14 @@
 		<item-type>Rollershutter</item-type>
 		<label>Roller Shutter</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="invertUpDown" type="boolean">
+				<label>Invert Up/Down</label>
+				<description>According LCN spec., the Up wire is connected to the "normally open" contact/Output 1. Use this
+					parameter to invert that logic.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-group-type id="rollershutterrelays">
@@ -269,6 +281,14 @@
 		<item-type>Contact</item-type>
 		<label>Binary Sensor</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="invertState" type="boolean">
+				<label>Invert State</label>
+				<description>Per default a binary sensor state 0 corresponds to "closed" while 1 corresponds to "open". Use this
+					parameter to invert that logic.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-group-type id="binarysensors">

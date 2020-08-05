@@ -12,11 +12,14 @@
  */
 package org.openhab.io.homekit.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link HomekitException} class defines an exception for handling HomekitException
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class HomekitException extends Exception {
     private static final long serialVersionUID = -8178227920946730286L;
 

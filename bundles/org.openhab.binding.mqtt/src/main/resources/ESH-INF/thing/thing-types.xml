@@ -155,6 +155,12 @@
 					`SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`</description>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>If set to true enables this broker for all discovery services.</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -180,6 +186,12 @@
 			<parameter name="brokerid" type="text" required="true">
 				<label>Broker ID</label>
 				<description>Each system wide configured MQTT broker has a unique broker ID.</description>
+			</parameter>
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>If set to true enables this broker for all discovery services.</description>
+				<advanced>true</advanced>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
