@@ -34,8 +34,6 @@ public class DraytonWiserBindingConstants {
 
     public static final String BINDING_ID = "draytonwiser";
 
-    public static final String ADDRESS = "networkAddress";
-
     public static final String REFRESH_INTERVAL = "refresh";
     public static final int DEFAULT_REFRESH_SECONDS = 60;
 
@@ -63,6 +61,12 @@ public class DraytonWiserBindingConstants {
     public static final ThingTypeUID THING_TYPE_ITRV = new ThingTypeUID(BINDING_ID, "itrv");
     public static final ThingTypeUID THING_TYPE_HOTWATER = new ThingTypeUID(BINDING_ID, "hotwater");
     public static final ThingTypeUID THING_TYPE_SMARTPLUG = new ThingTypeUID(BINDING_ID, "smart-plug");
+
+    // properties
+    public static final String PROP_ADDRESS = "networkAddress";
+    public static final String PROP_SERIAL_NUMBER = "serialNumber";
+    public static final String PROP_NAME = "name";
+    public static final String PROP_ID = "id";
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";

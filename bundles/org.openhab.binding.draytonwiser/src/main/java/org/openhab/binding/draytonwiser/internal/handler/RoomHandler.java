@@ -14,7 +14,6 @@ package org.openhab.binding.draytonwiser.internal.handler;
 
 import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
 
-import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -61,7 +60,7 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         switch (channelId) {
             case CHANNEL_CURRENT_SETPOINT:
                 if (command instanceof QuantityType) {
-                    setSetPoint((QuantityType<Temperature>) command);
+                    setSetPoint((QuantityType<?>) command);
                 }
                 break;
             case CHANNEL_MANUAL_MODE_STATE:
@@ -105,9 +104,9 @@ public class RoomHandler extends DraytonWiserThingHandler<RoomDTO> {
         return new QuantityType<>(getData().getCurrentSetPoint() / 10.0, SIUnits.CELSIUS);
     }
 
-    private void setSetPoint(final QuantityType<Temperature> command) throws DraytonWiserApiException {
+    private void setSetPoint(final QuantityType<?> command) throws DraytonWiserApiException {
         if (getData().getId() != null) {
-            final QuantityType<Temperature> value = command.toUnit(SIUnits.CELSIUS);
+            final QuantityType<?> value = command.toUnit(SIUnits.CELSIUS);
 
             if (value != null) {
                 final int newSetPoint = (int) Math.round(value.doubleValue() * 10);

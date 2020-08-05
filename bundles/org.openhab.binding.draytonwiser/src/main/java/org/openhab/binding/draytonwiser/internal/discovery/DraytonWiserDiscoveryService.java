@@ -93,24 +93,32 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
         if (device != null) {
             logger.debug("Controller discovered, model: {}", device.getModelIdentifier());
-            final Map<String, Object> properties = new HashMap<>();
-
-            DraytonWiserPropertyHelper.setControllerProperties(device, properties);
-            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                    .create(new ThingUID(THING_TYPE_CONTROLLER, bridgeUID, "controller")).withProperties(properties)
-                    .withBridge(bridgeUID).withLabel("Controller").build();
-
-            thingDiscovered(discoveryResult);
+            onThingWithId(THING_TYPE_CONTROLLER, "controller", device, "Controller");
         }
     }
 
     private void onHotWaterAdded(final DraytonWiserDTO domainDTOProxy, final HotWaterDTO hotWater) {
         final Integer hotWaterId = hotWater.getId();
-        final DeviceDTO device = domainDTOProxy.getExtendedDeviceProperties(hotWaterId);
+        final String roomName = getRoomName(domainDTOProxy, hotWaterId);
 
+        onThingWithId(THING_TYPE_HOTWATER, "hotwater" + hotWaterId, null,
+                (roomName.isEmpty() ? "" : (roomName + " - ")) + "Hot Water");
+    }
+
+    private void onThingWithId(final ThingTypeUID deviceType, final String deviceTypeId,
+            @Nullable final DeviceDTO device, final String name) {
+        logger.debug("{} discovered: {}", deviceTypeId, name);
+        final Map<String, Object> properties = new HashMap<>();
+
+        properties.put(PROP_ID, deviceTypeId);
         if (device != null) {
-            onThingWithSerialNumber(THING_TYPE_HOTWATER, "Hot Water", device, getRoomName(domainDTOProxy, hotWaterId));
+            DraytonWiserPropertyHelper.setGeneralDeviceProperties(device, properties);
         }
+        final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                .create(new ThingUID(deviceType, bridgeUID, deviceTypeId)).withBridge(bridgeUID)
+                .withProperties(properties).withRepresentationProperty(PROP_ID).withLabel(name).build();
+
+        thingDiscovered(discoveryResult);
     }
 
     private void onRoomStatAdded(final DraytonWiserDTO domainDTOProxy, final RoomStatDTO roomStat) {
@@ -126,11 +134,12 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
         final Map<String, Object> properties = new HashMap<>();
 
         logger.debug("Room discovered: {}", room.getName());
-        properties.put("name", room.getName());
+        properties.put(PROP_NAME, room.getName());
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
                 .create(new ThingUID(THING_TYPE_ROOM, bridgeUID,
                         room.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
-                .withBridge(bridgeUID).withProperties(properties).withLabel(room.getName()).build();
+                .withBridge(bridgeUID).withProperties(properties).withRepresentationProperty(PROP_NAME)
+                .withLabel(room.getName()).build();
 
         thingDiscovered(discoveryResult);
     }
@@ -165,9 +174,9 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
 
         DraytonWiserPropertyHelper.setPropertiesWithSerialNumber(device, properties);
         final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(deviceType, bridgeUID, serialNumber)).withProperties(properties)
-                .withBridge(bridgeUID).withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceTypeName)
-                .withRepresentationProperty(serialNumber).build();
+                .create(new ThingUID(deviceType, bridgeUID, serialNumber)).withBridge(bridgeUID)
+                .withProperties(properties).withRepresentationProperty(PROP_SERIAL_NUMBER)
+                .withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceTypeName).build();
 
         thingDiscovered(discoveryResult);
     }

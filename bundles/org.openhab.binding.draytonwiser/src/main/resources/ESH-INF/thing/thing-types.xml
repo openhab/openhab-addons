@@ -8,7 +8,8 @@
 	<bridge-type id="heathub">
 		<label>HeatHub</label>
 		<description>A Drayton Wiser HeatHub acting as a bridge to Thermostats and TRVs</description>
-		<representation-property>serialNumber</representation-property>
+
+		<representation-property>networkAddress</representation-property>
 
 		<config-description>
 			<parameter name="networkAddress" type="text" required="true">
@@ -62,6 +63,8 @@
 			<channel id="currentSignalStrength" typeId="system.signal-strength"/>
 			<channel id="currentWiserSignalStrength" typeId="wiserSignalStrength-channel"/>
 		</channels>
+
+		<representation-property>id</representation-property>
 	</thing-type>
 
 	<!-- Hot Water Thing Type -->
@@ -89,6 +92,8 @@
 			</channel>
 			<channel id="hotWaterBoostRemaining" typeId="boostRemaining-channel"/>
 		</channels>
+
+		<representation-property>id</representation-property>
 	</thing-type>
 
 	<!-- Room Thing Type -->
@@ -117,6 +122,8 @@
 			<channel id="windowStateDetection" typeId="windowStateDetection-channel"/>
 			<channel id="windowState" typeId="windowState-channel"/>
 		</channels>
+
+		<representation-property>name</representation-property>
 
 		<config-description>
 			<parameter name="name" type="text" required="true">
@@ -150,6 +157,8 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
@@ -182,6 +191,8 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 		</channels>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">
 				<label>Serial Number</label>
@@ -198,6 +209,7 @@
 
 		<label>Smart Plug</label>
 		<description>Remote controlled Plug Socket</description>
+
 		<channels>
 			<channel id="plugOutputState" typeId="plugOutputState-channel"/>
 			<channel id="plugAwayAction" typeId="plugAwayAction-channel"/>
@@ -207,6 +219,8 @@
 			<channel id="deviceLocked" typeId="deviceLocked-channel"/>
 			<channel id="manualModeState" typeId="manualModeState-channel"/>
 		</channels>
+
+		<representation-property>serialNumber</representation-property>
 
 		<config-description>
 			<parameter name="serialNumber" type="text" required="true">

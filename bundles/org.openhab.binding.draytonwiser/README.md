@@ -7,22 +7,23 @@ The integration happens through the HeatHub, which acts as an IP gateway to the 
 
 The Drayton Wiser binding supports the following things:
 
-* Bridge - The network device in the controller that allows us to interact with the other devices in the system
-* Boiler Controller - The _HeatHub_ attached to the boiler. This also acts as the hub device.
-* Rooms - Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and humidities
-* Room Thermostats - Wireless thermostats which monitor temperature and humidity, and call for heat
-* Smart TRVs - Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat
-* Hot Water - Virtual thing to manage hot water states
-* Smart Plugs - Wireless plug sockets which can be remotely switched
+| Bridge    | Label   | Description                                                                                          |
+|-----------|---------|------------------------------------------------------------------------------------------------------|
+| `heathub` | HeatHub | The network device in the controller that allows us to interact with the other devices in the system |
+
+| Thing               | Label             | Description                                                                               |
+|---------------------|-------------------|-------------------------------------------------------------------------------------------|
+| `boiler-controller` | Boiler Controller | The _HeatHub_ attached to the boiler. This also acts as the hub device                    |
+| `room`              | Room Name         | Virtual groups of _Room Thermostats_ and _TRVs_ that can have temperatures and humidities |
+| `roomstat`          | Thermostat        | Wireless thermostats which monitor temperature and humidity, and call for heat            |
+| `itrv`              | iTRV              | Wireless TRVs that monitor temperature, alter the radiator valve state and call for heat  |
+| `hotwater`          | Hot Water         | Virtual thing to manage hot water states                                                  |
+| `smart-plug`        | Smart Plug        | Wireless plug sockets which can be remotely switched                                      |
 
 ## Discovery
 
 The HeatHub can be discovered automatically via mDNS, however the `secret` cannot be determined automatically.
 Once the `secret` has been configured, all other devices can be discovered by triggering device discovery again.
-
-## Binding Configuration
-
-None required
 
 ## Thing Configuration
 
@@ -110,28 +111,28 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 #### Smart Plug
 
-| Channel             | Item Type    | Description                        |
-|---------------------|--------------|------------------------------------|
-| `currentSignalRSSI` | Number       | Relative Signal Strength Indicator |
-| `currentSignalLQI`  | Number       | Link Quality Indicator             |
-| `zigbeeConnected`   | Switch       | Is the TRV joined to network       |
+| Channel             | Item Type | Description                        |
+|---------------------|-----------|------------------------------------|
+| `currentSignalRSSI` | Number    | Relative Signal Strength Indicator |
+| `currentSignalLQI`  | Number    | Link Quality Indicator             |
+| `zigbeeConnected`   | Switch    | Is the TRV joined to network       |
 
 ### Command Channels
 
 #### Boiler Controller
 
-| Channel         | Item Type    | Description                |
-|-----------------|--------------|----------------------------|
-| `awayModeState` | Switch       | Has away mode been enabled |
-| `ecoModeState`  | Switch       | Has eco mode been enabled  |
+| Channel         | Item Type | Description                |
+|-----------------|-----------|----------------------------|
+| `awayModeState` | Switch    | Has away mode been enabled |
+| `ecoModeState`  | Switch    | Has eco mode been enabled  |
 
 #### Hot Water
 
-| Channel                 | Item Type    | Description                                |
-|-------------------------|--------------|--------------------------------------------|
-| `manualModeState`       | Switch       | Has manual mode been enabled               |
-| `hotWaterSetPoint`      | Switch       | The current hot water setpoint (on or off) |
-| `hotWaterBoostDuration` | Number       | Period in hours to boost the hot water     |
+| Channel                 | Item Type | Description                                |
+|-------------------------|-----------|--------------------------------------------|
+| `manualModeState`       | Switch    | Has manual mode been enabled               |
+| `hotWaterSetPoint`      | Switch    | The current hot water setpoint (on or off) |
+| `hotWaterBoostDuration` | Number    | Period in hours to boost the hot water     |
 
 #### Room
 
@@ -144,24 +145,24 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 
 #### Room Stat
 
-| Channel        | Item Type    | Description                      |
-|----------------|--------------|----------------------------------|
-| `deviceLocked` | Switch       | Is the roomstat interface locked |
+| Channel        | Item Type | Description                      |
+|----------------|-----------|----------------------------------|
+| `deviceLocked` | Switch    | Is the roomstat interface locked |
 
 #### Smart TRV
 
-| Channel        | Item Type    | Description                 |
-|----------------|--------------|-----------------------------|
-| `deviceLocked` | Switch       | Are the TRV controls locked |
+| Channel        | Item Type | Description                 |
+|----------------|-----------|-----------------------------|
+| `deviceLocked` | Switch    | Are the TRV controls locked |
 
 #### Smart Plug
 
-| Channel           | Item Type    | Description                                  |
-|-------------------|--------------|----------------------------------------------|
-| `plugOutputState` | Switch       | The current on/off state of the smart plug   |
-| `plugAwayAction`  | Switch       | Should the plug switch off when in away mode |
-| `manualModeState` | Switch       | Has manual mode been enabled                 |
-| `deviceLocked`    | Switch       | Are the Smart Plug controls locked           |
+| Channel           | Item Type | Description                                  |
+|-------------------|-----------|----------------------------------------------|
+| `plugOutputState` | Switch    | The current on/off state of the smart plug   |
+| `plugAwayAction`  | Switch    | Should the plug switch off when in away mode |
+| `manualModeState` | Switch    | Has manual mode been enabled                 |
+| `deviceLocked`    | Switch    | Are the Smart Plug controls locked           |
 
 #### Known string responses for specific channels:
 
@@ -175,16 +176,15 @@ The `awaySetPoint` defines the temperature in degrees Celsius that will be sent 
 ### .things file
 
 ```
-Bridge draytonwiser:heathub:HeatHub [ networkAddress="192.168.1.X", refresh=60, secret="secret from hub", awaySetPoint=10 ]
-{
-	boiler-controller controller     "Controller"
-	room              livingroom     "Living Room"            [ name="Living Room" ]
-	room              bathroom       "Bathroom"               [ name="Bathroom" ]
-	room              bedroom        "Bedroom"                [ name="Bedroom" ]
-	roomstat          livingroomstat "Living Room Thermostat" [ serialNumber="ABCDEF1234" ]
-	itrv              livingroomtrv  "Living Room - TRV"      [ serialNumber="ABCDEF1235" ]
-	hotwater          hotwater
-    smart-plug        tvplug [ serialNumber="ABCDEF1236" ]
+Bridge draytonwiser:heathub:HeatHub [ networkAddress="192.168.1.X", refresh=60, secret="secret from hub", awaySetPoint=10 ] {
+    boiler-controller controller     "Controller"
+    room              livingroom     "Living Room"            [ name="Living Room" ]
+    room              bathroom       "Bathroom"               [ name="Bathroom" ]
+    room              bedroom        "Bedroom"                [ name="Bedroom" ]
+    roomstat          livingroomstat "Living Room Thermostat" [ serialNumber="ABCDEF1234" ]
+    itrv              livingroomtrv  "Living Room - TRV"      [ serialNumber="ABCDEF1235" ]
+    hotwater          hotwater       "Hot Water"
+    smart-plug        tvplug         "TV"                     [ serialNumber="ABCDEF1236" ]
 }
 ```
 
@@ -235,14 +235,14 @@ Number:Humidity livingroom_humidity  "Humidity [%.0f %%]" <humidity> (GF_Living)
 
 ```
 Text label="Living Room" icon="sofa" {
-				Text item=livingroom_temperature
-				Setpoint item=livingroom_setpoint step=0.5
-				Text item=livingroom_humidity
-				Text item=Heating_GF_Living
-				Text item=livingroom_heatdemand
-				Switch item=ManualMode_GF_Living
-				Text item=BoostMode_GF_Living
-				Switch item=BoostDuration_GF_Living icon="time" mappings=[0="0", 0.5="0.5", 1="1", 2="2", 3="3"]
-				Text item=BoostRemaining_GF_Living icon="time"
-			}
+    Text item=livingroom_temperature
+    Setpoint item=livingroom_setpoint step=0.5
+    Text item=livingroom_humidity
+    Text item=Heating_GF_Living
+    Text item=livingroom_heatdemand
+    Switch item=ManualMode_GF_Living
+    Text item=BoostMode_GF_Living
+    Switch item=BoostDuration_GF_Living icon="time" mappings=[0="0", 0.5="0.5", 1="1", 2="2", 3="3"]
+    Text item=BoostRemaining_GF_Living icon="time"
+}
 ```

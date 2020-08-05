@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.draytonwiser.internal.discovery;
 
+import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.*;
+
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,7 +29,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(DraytonWiserBindingConstants.THING_TYPE_BRIDGE);
+        return Collections.singleton(THING_TYPE_BRIDGE);
     }
 
     @Override
@@ -66,13 +67,12 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
                 final InetAddress[] addresses = service.getInetAddresses();
 
                 if (addresses.length > 0 && addresses[0] != null) {
-                    properties.put(DraytonWiserBindingConstants.ADDRESS, addresses[0].getHostAddress());
-                    properties.put(DraytonWiserBindingConstants.REFRESH_INTERVAL,
-                            DraytonWiserBindingConstants.DEFAULT_REFRESH_SECONDS);
+                    properties.put(PROP_ADDRESS, addresses[0].getHostAddress());
+                    properties.put(REFRESH_INTERVAL, DEFAULT_REFRESH_SECONDS);
                 }
 
                 return DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withRepresentationProperty(uid.getId()).withLabel("Heat Hub - " + service.getName()).build();
+                        .withRepresentationProperty(PROP_ADDRESS).withLabel("Heat Hub - " + service.getName()).build();
             }
         }
         return null;
@@ -83,7 +83,7 @@ public class DraytonWiserMDNSDiscoveryParticipant implements MDNSDiscoveryPartic
         if (service.getType() != null && service.getType().equals(getServiceType())
                 && service.getName().contains("WiserHeat")) {
             logger.trace("Discovered a Drayton Wiser Heat Hub thing with name '{}'", service.getName());
-            return new ThingUID(DraytonWiserBindingConstants.THING_TYPE_BRIDGE, service.getName());
+            return new ThingUID(THING_TYPE_BRIDGE, service.getName());
         }
         return null;
     }

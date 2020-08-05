@@ -78,7 +78,7 @@ public class DraytonWiserDiscoveryServiceTest {
 
     @Parameters(name = "{0}")
     public static List<Object[]> data() {
-        return Arrays.asList(new Object[] { "../test1.json", 10 }, new Object[] { "../test2.json", 22 });
+        return Arrays.asList(new Object[] { "../test1.json", 11 }, new Object[] { "../test2.json", 22 });
     }
 
     @Before

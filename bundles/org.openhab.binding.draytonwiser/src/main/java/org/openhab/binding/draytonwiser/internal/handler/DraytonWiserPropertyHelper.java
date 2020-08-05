@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.draytonwiser.internal.handler;
 
+import static org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants.PROP_SERIAL_NUMBER;
+
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -29,12 +31,8 @@ public final class DraytonWiserPropertyHelper {
         // helper class
     }
 
-    public static void setControllerProperties(final DeviceDTO device, final Map<String, Object> properties) {
-        setGeneralDeviceProperties(device, properties);
-    }
-
     public static void setPropertiesWithSerialNumber(final DeviceDTO device, final Map<String, Object> properties) {
-        properties.put("serialNumber", device.getSerialNumber());
+        properties.put(PROP_SERIAL_NUMBER, device.getSerialNumber());
         setGeneralDeviceProperties(device, properties);
     }
 

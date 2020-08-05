@@ -208,11 +208,10 @@ public class DraytonWiserApi {
         } catch (final TimeoutException e) {
             failCount++;
             if (failCount > 2) {
-                logger.debug("Heathub didn't repond in time: {}", e.getMessage(), e);
+                logger.debug("Heathub didn't repond in time: {}", e.getMessage());
                 throw new DraytonWiserApiException("Heathub didn't repond in time", e);
             }
         } catch (final InterruptedException e) {
-            logger.debug("Interrupted: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
         } catch (final ExecutionException e) {
             logger.debug("Execution Exception: {}", e.getMessage(), e);
