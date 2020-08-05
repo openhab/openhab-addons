@@ -77,7 +77,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.trace("Start initializing!");
+        logger.debug("Start initializing!");
         updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING);
         final IntesisConfiguration config = getConfigAs(IntesisConfiguration.class);
         ipAddress = config.ipAddress;
@@ -92,40 +92,44 @@ public class IntesisHomeHandler extends BaseThingHandler {
                 String contentString = "{\"command\":\"getinfo\",\"data\":\"\"}";
                 String response = api.postRequest(ipAddress, contentString);
                 logger.trace("getInfo response : {}", response);
-                boolean success = IntesisHomeJSonDTO.getSuccess(response);
-                logger.trace("success response : {}", success);
-                if (success) {
-                    JsonElement devInfoNode = IntesisHomeJSonDTO.getData(response).get("info");
-                    info devInfo = gson.fromJson(devInfoNode, info.class);
-                    Map<String, String> properties = new HashMap<>(5);
-                    properties.put(PROPERTY_VENDOR, "Intesis");
-                    properties.put(PROPERTY_MODEL_ID, devInfo.deviceModel);
-                    properties.put(PROPERTY_SERIAL_NUMBER, devInfo.sn);
-                    properties.put(PROPERTY_FIRMWARE_VERSION, devInfo.fwVersion);
-                    properties.put(PROPERTY_MAC_ADDRESS, devInfo.wlanSTAMAC);
-                    updateProperties(properties);
-
-                    contentString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + password
-                            + "\"}}";
-                    response = api.postRequest(ipAddress, contentString);
-                    success = IntesisHomeJSonDTO.getSuccess(response);
+                if (response != null && !response.isEmpty()) {
+                    boolean success = IntesisHomeJSonDTO.getSuccess(response);
+                    logger.trace("success response : {}", success);
                     if (success) {
-                        JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
-                        AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
-                        sessionId = auth.sessionID;
-                        if (!sessionId.isEmpty()) {
-                            logger.trace("sessionID : {}", sessionId);
-                            updateStatus(ThingStatus.ONLINE);
-                        } else {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        JsonElement devInfoNode = IntesisHomeJSonDTO.getData(response).get("info");
+                        info devInfo = gson.fromJson(devInfoNode, info.class);
+                        Map<String, String> properties = new HashMap<>(5);
+                        properties.put(PROPERTY_VENDOR, "Intesis");
+                        properties.put(PROPERTY_MODEL_ID, devInfo.deviceModel);
+                        properties.put(PROPERTY_SERIAL_NUMBER, devInfo.sn);
+                        properties.put(PROPERTY_FIRMWARE_VERSION, devInfo.fwVersion);
+                        properties.put(PROPERTY_MAC_ADDRESS, devInfo.wlanSTAMAC);
+                        updateProperties(properties);
+
+                        contentString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\""
+                                + password + "\"}}";
+                        response = api.postRequest(ipAddress, contentString);
+                        if (response != null && !response.isEmpty()) {
+                            success = IntesisHomeJSonDTO.getSuccess(response);
+                            if (success) {
+                                JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
+                                AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
+                                sessionId = auth.sessionID;
+                                if (!sessionId.isEmpty()) {
+                                    logger.trace("sessionID : {}", sessionId);
+                                    updateStatus(ThingStatus.ONLINE);
+                                } else {
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                                }
+                                refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, refreshInterval,
+                                        TimeUnit.SECONDS);
+                            } else {
+                                updateStatus(ThingStatus.OFFLINE);
+                            }
                         }
-                        refreshJob = scheduler.scheduleWithFixedDelay(this::getAllUidValues, 0, refreshInterval,
-                                TimeUnit.SECONDS);
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE);
                 }
             } catch (Exception e) {
             }
@@ -187,28 +191,33 @@ public class IntesisHomeHandler extends BaseThingHandler {
             String contentString = "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
                     + "\", \"uid\":" + uid + ",\"value\":" + value + "}}";
             String response = api.postRequest(ipAddress, contentString);
-            boolean success = IntesisHomeJSonDTO.getSuccess(response);
-            if (!success) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                String sessionString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\""
-                        + password + "\"}}";
-                response = api.postRequest(ipAddress, sessionString);
-                success = IntesisHomeJSonDTO.getSuccess(response);
-                if (success) {
-                    JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
-                    AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
-                    sessionId = auth.sessionID;
-                    updateStatus(ThingStatus.ONLINE);
-                    response = api.postRequest(ipAddress, contentString);
-                    success = IntesisHomeJSonDTO.getSuccess(response);
-                    if (!success) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (response != null && !response.isEmpty()) {
+                boolean success = IntesisHomeJSonDTO.getSuccess(response);
+                if (!success) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    String sessionString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\""
+                            + password + "\"}}";
+                    response = api.postRequest(ipAddress, sessionString);
+                    if (response != null && !response.isEmpty()) {
+                        success = IntesisHomeJSonDTO.getSuccess(response);
+                        if (success) {
+                            JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
+                            AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
+                            sessionId = auth.sessionID;
+                            updateStatus(ThingStatus.ONLINE);
+                            response = api.postRequest(ipAddress, contentString);
+                            success = IntesisHomeJSonDTO.getSuccess(response);
+                            if (!success) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            }
+                        } else {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
                     }
                 } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.ONLINE);
                 }
-            } else {
-                updateStatus(ThingStatus.ONLINE);
+
             }
         }
     }
@@ -217,21 +226,25 @@ public class IntesisHomeHandler extends BaseThingHandler {
      * Update device status and all channels
      */
     public void getAllUidValues() {
+        logger.debug("Polling IntesisHome device for actuall status");
         if (thing.getStatus() != ThingStatus.ONLINE) {
             String sessionString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + password
                     + "\"}}";
             String response = api.postRequest(ipAddress, sessionString);
-            boolean success = IntesisHomeJSonDTO.getSuccess(response);
-            if (success) {
-                JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
-                AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
-                sessionId = auth.sessionID;
-                updateStatus(ThingStatus.ONLINE);
+            if (response != null && !response.isEmpty()) {
+                boolean success = IntesisHomeJSonDTO.getSuccess(response);
+                if (success) {
+                    JsonElement idNode = IntesisHomeJSonDTO.getData(response).get("id");
+                    AuthenticateData auth = gson.fromJson(idNode, AuthenticateData.class);
+                    sessionId = auth.sessionID;
+                    updateStatus(ThingStatus.ONLINE);
+                }
             }
-        } else {
-            String contentString = "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
-                    + "\", \"uid\":\"all\"}}";
-            String response = api.postRequest(ipAddress, contentString);
+        }
+        String contentString = "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+                + "\", \"uid\":\"all\"}}";
+        String response = api.postRequest(ipAddress, contentString);
+        if (response != null && !response.isEmpty()) {
             boolean success = IntesisHomeJSonDTO.getSuccess(response);
             if (!success) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
