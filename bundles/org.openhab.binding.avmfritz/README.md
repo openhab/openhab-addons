@@ -210,8 +210,11 @@ Bridge avmfritz:fritzbox:1 "FRITZ!Box" [ ipAddress="192.168.x.x", password="xxx"
 demo.items:
 
 ```java
-String CallState "Call State [%s]" { channel="avmfritz:fritzbox:1:call_state" }
-String ApplyTemplate "Apply template" { channel="avmfritz:fritzbox:1:apply_template" }
+String CallState     "Call State [%s]"               { channel="avmfritz:fritzbox:1:call_state" }
+Call   IncomingCall  "Incoming call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:incoming_call" } 
+Call   OutgoingCall  "Outgoing call: [%1$s to %2$s]" { channel="avmfritz:fritzbox:1:outgoing_call" }
+Call   ActiveCall    "Call established [%1$s]"       { channel="avmfritz:fritzbox:1:active_call" }
+String ApplyTemplate "Apply template"                { channel="avmfritz:fritzbox:1:apply_template" }
 
 Switch Outlet1 "Switchable outlet" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:outlet" }
 Number:Temperature Temperature1 "Current measured temperature [%.1f %unit%]" { channel="avmfritz:FRITZ_DECT_200:1:xxxxxxxxxxxx:temperature" }
@@ -245,6 +248,9 @@ sitemap demo label="Main Menu" {
 
     Frame label="FRITZ!Box" {
         Text item=CallState
+        Text item=IncomingCall
+        Text item=OutgoingCall
+        Text item=ActiveCall
         Selection item=ApplyTemplate
     }
 

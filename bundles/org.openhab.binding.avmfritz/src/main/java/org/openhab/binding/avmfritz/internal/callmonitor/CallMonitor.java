@@ -179,16 +179,22 @@ public class CallMonitor {
             } else if (ce.getCallType().equals("RING")) { // first event when call is incoming
                 StringListType state = new StringListType(ce.getInternalNo(), ce.getExternalNo());
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, state);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.NULL);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.NULL);
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
                         AVMFritzBindingConstants.CALL_STATE_RINGING);
             } else if (ce.getCallType().equals("CONNECT")) { // when call is answered/running
                 StringListType state = new StringListType(ce.getExternalNo(), "");
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, state);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.NULL);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, UnDefType.NULL);
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
                         AVMFritzBindingConstants.CALL_STATE_ACTIVE);
             } else if (ce.getCallType().equals("CALL")) { // outgoing call
                 StringListType state = new StringListType(ce.getExternalNo(), ce.getInternalNo());
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING, UnDefType.NULL);
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING, state);
+                handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE, UnDefType.NULL);
                 handler.updateState(AVMFritzBindingConstants.CHANNEL_CALL_STATE,
                         AVMFritzBindingConstants.CALL_STATE_DIALING);
             }

@@ -59,8 +59,6 @@ import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaUpdateTe
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.channel.Channel;
-
 /**
  * Abstract handler for a FRITZ! bridge. Handles polling of values from AHA devices.
  *
@@ -142,23 +140,35 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
 
         if (configValid) {
             updateStatus(ThingStatus.UNKNOWN);
-            initConnections();
+            manageConnections();
         }
     }
 
-    protected synchronized void initConnections() {
+    protected synchronized void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
         if (this.connection == null) {
             this.connection = new FritzAhaWebInterface(config, this, httpClient);
             stopPolling();
             startPolling();
+        } else {
+            if (!getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).findAny().isPresent()) {
+                // no channels are linked anymore
+                stopPolling();
+                this.connection = null;
+            }
         }
     }
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        initConnections();
+        manageConnections();
         super.channelLinked(channelUID);
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        manageConnections();
+        super.channelUnlinked(channelUID);
     }
 
     @Override

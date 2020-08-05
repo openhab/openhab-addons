@@ -60,13 +60,14 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     }
 
     @Override
-    protected void initConnections() {
+    protected void manageConnections() {
         AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
-        if (this.callMonitor == null && (isLinked(AVMFritzBindingConstants.CHANNEL_CALL_ACTIVE)
-                || isLinked(AVMFritzBindingConstants.CHANNEL_CALL_INCOMING)
-                || isLinked(AVMFritzBindingConstants.CHANNEL_CALL_OUTGOING)
-                || isLinked(AVMFritzBindingConstants.CHANNEL_CALL_STATE))) {
+        if (this.callMonitor == null && callChannelsLinked()) {
             this.callMonitor = new CallMonitor(config.ipAddress, this, scheduler);
+        } else if (this.callMonitor != null && !callChannelsLinked()) {
+            CallMonitor cm = this.callMonitor;
+            cm.dispose();
+            this.callMonitor = null;
         }
         if (this.connection == null) {
             if (config.password != null) {
@@ -78,6 +79,12 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "The 'password' parameter must be configured to use the AHA features.");
                 }
+            }
+        } else {
+            if (!getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).findAny().isPresent()) {
+                // no channels are linked anymore
+                stopPolling();
+                this.connection = null;
             }
         }
     }
@@ -91,6 +98,7 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
     public void dispose() {
         if (callMonitor != null) {
             callMonitor.dispose();
+            callMonitor = null;
         }
         super.dispose();
     }
