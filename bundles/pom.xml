@@ -249,6 +249,7 @@
     <module>org.openhab.binding.velbus</module>
     <module>org.openhab.binding.velux</module>
     <module>org.openhab.binding.venstarthermostat</module>
+    <module>org.openhab.binding.verisure</module>
     <module>org.openhab.binding.vigicrues</module>
     <module>org.openhab.binding.vitotronic</module>
     <module>org.openhab.binding.volvooncall</module>
