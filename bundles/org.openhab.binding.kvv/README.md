@@ -14,7 +14,7 @@ Since every station is represented by a KVV-provided id, this id has to be figur
 
 ### Example Call for Station 'Karlsruhe Volkswohnung'
 
-```
+```bash
 # Request
 curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
 
@@ -26,15 +26,15 @@ curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
 
 ### demo.things
 
-```
+```things
 Bridge kvv:kvvbridge:1 {
-	station gottesauerplatz		"Gottesauer Platz/BGV"		[ commonName="Gottesauer Platz/BGV", stationId="de:8212:6", maxTrains="3", updateInterval="10000" ]
+	kvvstation gottesauerplatz		"Gottesauer Platz/BGV"		[ commonName="Gottesauer Platz/BGV", stationId="de:8212:6", maxTrains="3", updateInterval="10" ]
 }
 ```
 
 ### demo.items
 
-```
+```items
 String kvv_gottesauerplatz_train0_name      	{channel="kvv:kvvstation:1:gottesauerplatz:train0-name"}
 String kvv_gottesauerplatz_train0_destination	{channel="kvv:kvvstation:1:gottesauerplatz:train0-destination"}
 String kvv_gottesauerplatz_train0_eta      		{channel="kvv:kvvstation:1:gottesauerplatz:train0-eta"}
