@@ -80,12 +80,6 @@ public class BoxHandler extends AVMFritzBaseBridgeHandler {
                             "The 'password' parameter must be configured to use the AHA features.");
                 }
             }
-        } else {
-            if (!getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).findAny().isPresent()) {
-                // no channels are linked anymore
-                stopPolling();
-                this.connection = null;
-            }
         }
     }
 

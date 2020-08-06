@@ -150,12 +150,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             this.connection = new FritzAhaWebInterface(config, this, httpClient);
             stopPolling();
             startPolling();
-        } else {
-            if (!getThing().getChannels().stream().filter(c -> isLinked(c.getUID())).findAny().isPresent()) {
-                // no channels are linked anymore
-                stopPolling();
-                this.connection = null;
-            }
         }
     }
 
