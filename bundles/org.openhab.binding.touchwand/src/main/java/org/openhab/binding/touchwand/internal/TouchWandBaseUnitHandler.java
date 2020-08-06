@@ -17,10 +17,8 @@ import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -49,19 +47,19 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implements TouchWandUnitUpdateListener {
 
-    public TouchWandBaseUnitHandler(Thing thing) {
-        super(thing);
-    }
+    protected final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
 
     @NonNullByDefault({})
     protected String unitId;
-    protected final Logger logger = LoggerFactory.getLogger(TouchWandBaseUnitHandler.class);
-    private @Nullable ScheduledFuture<?> pollingJob;
 
     @NonNullByDefault({})
     protected TouchWandBridgeHandler bridgeHandler;
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
+
+    public TouchWandBaseUnitHandler(Thing thing) {
+        super(thing);
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -74,20 +72,13 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
-        }
         if (bridgeHandler != null) {
             bridgeHandler.unregisterUpdateListener(this);
         }
     }
 
-    // @SuppressWarnings("null")
     @Override
     public void initialize() {
-        ThingStatus bridgeStatus;
-
         Bridge bridge = getBridge();
         if (bridge == null || !(bridge.getHandler() instanceof TouchWandBridgeHandler)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
@@ -97,21 +88,15 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
         bridgeHandler = (TouchWandBridgeHandler) bridge.getHandler();
 
-        bridgeStatus = bridge.getStatus();
-
-        unitId = getThing().getUID().getId(); // touchwand unit id
+        unitId = getThing().getUID().getId(); // TouchWand unit id
 
         bridgeHandler.registerUpdateListener(this);
 
-        if (!bridgeStatus.equals(ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            return;
-        }
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             boolean thingReachable = false;
             String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
-            thingReachable = !(response == "");
+            thingReachable = !response.isEmpty();
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
@@ -128,7 +113,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
         }
 
         String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
-        if (response == "") {
+        if (!response.isEmpty()) {
             return status;
         }
 
@@ -141,7 +126,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
                 updateStatus(ThingStatus.ONLINE);
             }
         } catch (JsonParseException | IllegalStateException | UnsupportedOperationException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not parse cmdGetUnitById");
             logger.warn("Could not parse cmdGetUnitById response for unit id {}  label {}", unitId,
                     getThing().getLabel());
         }
