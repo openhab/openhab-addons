@@ -10,7 +10,7 @@ This binding integrates the [OpenWeatherMap weather API](https://openweathermap.
 
 ## Supported Things
 
-There are three supported things.
+There are two supported things.
 
 ### OpenWeatherMap Account
 
@@ -20,18 +20,16 @@ If your system language is supported by the OpenWeatherMap API it will be used a
 
 ### Current Weather And Forecast
 
-The second thing `weather-and-forecast` supports the [current weather](https://openweathermap.org/current), [5 day / 3 hour forecast](https://openweathermap.org/forecast5) and optional [16 day / daily forecast](https://openweathermap.org/forecast16) services for a specific location.
+The second thing `weather-and-forecast` supports the current weather, 2 day / 1 hour forecast and 16 day / daily forecast services for a specific location.
+It supports this through the [OneCall API service] (https://openweathermap.org/api/one-call-api) and availability of data is determined by API tier as documented on the [OpenWeatherMap pricing page] (https://openweathermap.org/price)
 It requires coordinates of the location of your interest.
 You can add as many `weather-and-forecast` things for different locations to your setup as you like to observe.
-**Attention**: The daily forecast is only available for [paid accounts](https://openweathermap.org/price).
-The binding tries to request daily forecast data from the OpenWeatherMap API.
-If the request fails, all daily forecast channel groups will be removed from the thing and further request will be omitted.
 
-### Current UV Index And Forceast
+### Current UV Index And Forecast
 
-The third thing `uvindex` supports the [current UV Index](https://openweathermap.org/api/uvi#current) and [forecasted UV Index](https://openweathermap.org/api/uvi#forecast) for a specific location.
-It requires coordinates of the location of your interest.
-You can add as much `uvindex` things for different locations to your setup as you like to observe.
+The UV Index thing is not longer supported.
+
+The UV Index and Forecast are now held within the 'Current Weather And Forecast' thing. Existing UV Index things will continue to function for the time being, but users should convert to the new things/items.
 
 ## Discovery
 
@@ -60,6 +58,8 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 
 ### Current UV Index And Forecast
 
+**As detailed above - this object is no longer supported and will be removed in the future. Please switch to useing the UV information in the Current Weather and Forecast thing.**
+
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
@@ -69,6 +69,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 
 ## Channels
 
+**Please note that with the conversion to the OneCall API - the station channels, providing location, ID and map are no longer available within the API call and thus have been removed.**
 
 ### Current Weather
 
@@ -84,11 +85,16 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | current          | pressure             | Number:Pressure      | Current barometric pressure.                                            |
 | current          | humidity             | Number:Dimensionless | Current atmospheric humidity.                                           |
 | current          | wind-speed           | Number:Speed         | Current wind speed.                                                     |
+| current          | wind-gust            | Number:Speed         | Current wind gust speed.                                                |
 | current          | wind-direction       | Number:Angle         | Current wind direction.                                                 |
 | current          | cloudiness           | Number:Dimensionless | Current cloudiness.                                                     |
 | current          | rain                 | Number:Length        | Rain volume of the last hour.                                           |
 | current          | snow                 | Number:Length        | Snow volume of the last hour.                                           |
 | current          | visibility           | Number:Length        | Current visibility.                                                     |
+| current          | pop                  | Number:Dimensionless | Current probability of precipitation.                                   |
+| current          | uvindex              | Number:Dimensionless | Current UV index.                                                       |
+
+
 
 **Attention**: Rain item is showing "1h" in the case when data are received from weather stations directly.
 The fact is that some METAR stations do not have precipitation indicators or do not measure precipitation conditions due to some other technical reasons.
@@ -100,22 +106,26 @@ The "3h" value will be divided by three to always have an estimated value for on
 
 | Channel Group ID                                       | Channel ID           | Item Type            | Description                                                                |
 |--------------------------------------------------------|----------------------|----------------------|----------------------------------------------------------------------------|
-| forecastHours03, forecastHours06, ... forecastHours120 | time-stamp           | DateTime             | Time of data forecasted.                                                   |
-| forecastHours03, forecastHours06, ... forecastHours120 | condition            | String               | Forecast weather condition.                                                |
-| forecastHours03, forecastHours06, ... forecastHours120 | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                       |
-| forecastHours03, forecastHours06, ... forecastHours120 | icon                 | Image                | Icon representing the forecasted weather condition.                        |
-| forecastHours03, forecastHours06, ... forecastHours120 | icon-id              | String               | Id of the icon representing the forecasted weather condition. **Advanced** |
-| forecastHours03, forecastHours06, ... forecastHours120 | temperature          | Number:Temperature   | Forecasted temperature.                                                    |
-| forecastHours03, forecastHours06, ... forecastHours120 | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                                           |
-| forecastHours03, forecastHours06, ... forecastHours120 | min-temperature      | Number:Temperature   | Minimum forecasted temperature.                                            |
-| forecastHours03, forecastHours06, ... forecastHours120 | max-temperature      | Number:Temperature   | Maximum forecasted temperature.                                            |
-| forecastHours03, forecastHours06, ... forecastHours120 | pressure             | Number:Pressure      | Forecasted barometric pressure.                                            |
-| forecastHours03, forecastHours06, ... forecastHours120 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
-| forecastHours03, forecastHours06, ... forecastHours120 | wind-speed           | Number:Speed         | Forecasted wind speed.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | wind-direction       | Number:Angle         | Forecasted wind direction.                                                 |
-| forecastHours03, forecastHours06, ... forecastHours120 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                     |
-| forecastHours03, forecastHours06, ... forecastHours120 | rain                 | Number:Length        | Expected rain volume.                                                      |
-| forecastHours03, forecastHours06, ... forecastHours120 | snow                 | Number:Length        | Expected snow volume.                                                      |
+| forecastHours01, forecastHours02, ... forecastHours48  | time-stamp           | DateTime             | Time of data forecasted.                                                   |
+| forecastHours01, forecastHours02, ... forecastHours48  | condition            | String               | Forecast weather condition.                                                |
+| forecastHours01, forecastHours02, ... forecastHours48  | condition-id         | String               | Id of the forecasted weather condition. **Advanced**                       |
+| forecastHours01, forecastHours02, ... forecastHours48  | icon                 | Image                | Icon representing the forecasted weather condition.                        |
+| forecastHours01, forecastHours02, ... forecastHours48  | icon-id              | String               | Id of the icon representing the forecasted weather condition. **Advanced** |
+| forecastHours01, forecastHours02, ... forecastHours48  | temperature          | Number:Temperature   | Forecasted temperature.                                                    |
+| forecastHours01, forecastHours02, ... forecastHours48  | apparent-temperature | Number:Temperature   | Forecasted apparent temperature.                                           |
+| forecastHours01, forecastHours02, ... forecastHours48  | min-temperature      | Number:Temperature   | Minimum forecasted temperature.                                            |
+| forecastHours01, forecastHours02, ... forecastHours48  | max-temperature      | Number:Temperature   | Maximum forecasted temperature.                                            |
+| forecastHours01, forecastHours02, ... forecastHours48  | pressure             | Number:Pressure      | Forecasted barometric pressure.                                            |
+| forecastHours01, forecastHours02, ... forecastHours48  | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
+| forecastHours01, forecastHours02, ... forecastHours48  | wind-speed           | Number:Speed         | Forecasted wind speed.                                                     |
+| forecastHours01, forecastHours02, ... forecastHours48  | wind-gust            | Number:Speed         | Forecasted wind gust .                                                     |
+| forecastHours01, forecastHours02, ... forecastHours48  | wind-direction       | Number:Angle         | Forecasted wind direction.                                                 |
+| forecastHours01, forecastHours02, ... forecastHours48  | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                     |
+| forecastHours01, forecastHours02, ... forecastHours48  | rain                 | Number:Length        | Expected rain volume.                                                      |
+| forecastHours01, forecastHours02, ... forecastHours48  | snow                 | Number:Length        | Expected snow volume.                                                      |
+| forecastHours01, forecastHours02, ... forecastHours48  | visibility           | Number:Length        | Expected visibility .                                                      |
+| forecastHours01, forecastHours02, ... forecastHours48  | pop                  | Number:Dimensionless | Expected probability of precipitation.                                     |
+
 
 ### Daily Forecast
 
@@ -132,12 +142,18 @@ The "3h" value will be divided by three to always have an estimated value for on
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | pressure             | Number:Pressure      | Forecasted barometric pressure.                                            |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | humidity             | Number:Dimensionless | Forecasted atmospheric humidity.                                           |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-speed           | Number:Speed         | Forecasted wind speed.                                                     |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-gust            | Number:Speed         | Forecasted wind gust .                                                     |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | wind-direction       | Number:Angle         | Forecasted wind direction.                                                 |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | cloudiness           | Number:Dimensionless | Forecasted cloudiness.                                                     |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | rain                 | Number:Length        | Expected rain volume of a day.                                             |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                             |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | visibility           | Number:Length        | Expected visibility.                                                       |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | pop                  | Number:Dimensionless | Expected probability of precipitation.                                     |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | uvindex              | Number:Dimensionless | Expected Midday UV index.                                     |
 
 ### UV Index
+
+**As detailed above - this object is no longer supported and will be removed in the future. Please switch to using the UV information in the Current Weather and Forecast thing.**
 
 | Channel Group ID                                          | Channel ID | Item Type | Description                          |
 |-----------------------------------------------------------|------------|-----------|--------------------------------------|
@@ -154,7 +170,6 @@ demo.things
 Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="AAA", refreshInterval=30, language="de"] {
     Thing weather-and-forecast local "Local Weather And Forecast" [location="XXX,YYY", forecastHours=0, forecastDays=7]
     Thing weather-and-forecast miami "Weather And Forecast In Miami" [location="25.782403,-80.264563", forecastHours=24, forecastDays=0]
-    Thing uvindex local "Local UV Index" [location="XXX,YYY", forecastDays=7]
 }
 ```
 
@@ -233,11 +248,6 @@ demo.sitemap
 
 ```perl
 sitemap demo label="OpenWeatherMap" {
-    Frame label="Local Weather Station" {
-        Text item=localStationId
-        Text item=localStationName
-        Mapview item=localStationLocation
-    }
     Frame label="Current local weather" {
         Text item=localLastMeasurement
         Text item=localCurrentCondition
@@ -299,13 +309,6 @@ sitemap demo label="OpenWeatherMap" {
         Text item=miamiHourlyForecast06Condition
         Image item=miamiHourlyForecast06ConditionIcon
         Text item=miamiHourlyForecast06Temperature
-        ...
-    }
-    Frame label="UV Index" {
-        Text item=localCurrentUVIndexTimestamp
-        Text item=localCurrentUVIndex
-        Text item=localForecastTomorrowUVIndexTimestamp
-        Text item=localForecastTomorrowUVIndex
         ...
     }
 }

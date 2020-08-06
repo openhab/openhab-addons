@@ -86,7 +86,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
 
         boolean configValid = true;
         int newForecastHours = config.forecastHours;
-        if (newForecastHours < 0 || newForecastHours > 120 || newForecastHours % 3 != 0) {
+        if (newForecastHours < 0 || newForecastHours > 48) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-hours");
             configValid = false;
@@ -105,12 +105,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
             if (forecastHours != newForecastHours) {
                 logger.debug("Rebuilding hourly forecast channel groups.");
                 if (forecastHours > newForecastHours) {
-                    for (int i = newForecastHours + 3; i <= forecastHours; i += 3) {
+                    for (int i = newForecastHours + 1; i <= forecastHours; i++) {
                         toBeRemovedChannels.addAll(removeChannelsOfGroup(
                                 CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i)));
                     }
                 } else {
-                    for (int i = forecastHours + 3; i <= newForecastHours; i += 3) {
+                    for (int i = forecastHours + 1; i <= newForecastHours; i++) {
                         toBeAddedChannels.addAll(createChannelsForGroup(
                                 CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
                                 CHANNEL_GROUP_TYPE_HOURLY_FORECAST));
@@ -175,6 +175,7 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         if (channelGroupId != null) {
             switch (channelGroupId) {
                 case CHANNEL_GROUP_STATION:
+                    break;
                 case CHANNEL_GROUP_CURRENT_WEATHER:
                     updateCurrentChannel(channelUID);
                     break;
@@ -188,14 +189,14 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     int i;
                     Matcher hourlyForecastMatcher = CHANNEL_GROUP_HOURLY_FORECAST_PREFIX_PATTERN
                             .matcher(channelGroupId);
-                    if (hourlyForecastMatcher.find() && (i = Integer.parseInt(hourlyForecastMatcher.group(1))) >= 3
-                            && i <= 120) {
-                        updateHourlyForecastChannel(channelUID, (i / 3) - 1);
+                    if (hourlyForecastMatcher.find() && (i = Integer.parseInt(hourlyForecastMatcher.group(1))) > 0
+                            && i <= 48) {
+                        updateHourlyForecastChannel(channelUID, i);
                         break;
                     }
                     Matcher dailyForecastMatcher = CHANNEL_GROUP_DAILY_FORECAST_PREFIX_PATTERN.matcher(channelGroupId);
                     if (dailyForecastMatcher.find() && (i = Integer.parseInt(dailyForecastMatcher.group(1))) > 1
-                            && i <= 16) {
+                            && i <= 15) {
                         updateDailyForecastChannel(channelUID, i);
                         break;
                     }
@@ -307,8 +308,8 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapJsonOneCallAPIData localWeatherData = oneCallData;
         if (localWeatherData != null && localWeatherData.getHourly() != null
-                && localWeatherData.getHourly().size() > count) {
-            HourlyForecast forecastData = localWeatherData.getHourly().get(count);
+                && localWeatherData.getHourly().size() >= count) {
+            HourlyForecast forecastData = localWeatherData.getHourly().get(count - 1);
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:

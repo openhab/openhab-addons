@@ -30,8 +30,8 @@
 	</channel-group-type>
 
 	<channel-group-type id="hourlyForecast">
-		<label>3 Hour Forecast</label>
-		<description>This is the 5 day / 3 hour weather forecast.</description>
+		<label>1 Hour Forecast</label>
+		<description>This is the 2 day / 1 hour weather forecast.</description>
 		<channels>
 			<channel id="time-stamp" typeId="hourly-forecast-time-stamp"/>
 			<channel id="condition" typeId="forecasted-condition"/>
@@ -45,6 +45,7 @@
 			<channel id="pressure" typeId="forecasted-barometric-pressure"/>
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity"/>
 			<channel id="wind-speed" typeId="forecasted-wind-speed"/>
+			<channel id="gust-speed" typeId="forecasted-gust-speed"/>
 			<channel id="wind-direction" typeId="forecasted-wind-direction"/>
 			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
 			<channel id="rain" typeId="forecasted-rain"/>
@@ -71,6 +72,7 @@
 			<channel id="humidity" typeId="forecasted-atmospheric-humidity"/>
 			<channel id="wind-speed" typeId="forecasted-wind-speed"/>
 			<channel id="wind-direction" typeId="forecasted-wind-direction"/>
+            <channel id="gust-speed" typeId="forecasted-gust-speed"/>
 			<channel id="cloudiness" typeId="forecasted-cloudiness"/>
 			<channel id="rain" typeId="forecasted-rain"/>
 			<channel id="snow" typeId="forecasted-snow"/>
@@ -314,7 +316,7 @@
 
 	<channel-type id="forecasted-uvindex">
 		<item-type>Number</item-type>
-		<label>Forecasted UV Index</label>
+		<label>Forecasted UV Index At Midday</label>
 		<description>Forecasted UV Index.</description>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
