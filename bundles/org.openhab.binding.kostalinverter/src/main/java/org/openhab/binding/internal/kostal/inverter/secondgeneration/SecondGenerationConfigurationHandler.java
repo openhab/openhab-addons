@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
@@ -34,13 +36,13 @@ import com.google.gson.JsonParser;
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  */
-
 @NonNullByDefault
 public class SecondGenerationConfigurationHandler {
 
+    private static Logger logger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
+
     public static void executeConfigurationChanges(HttpClient httpClient, String url, String username, String password,
             String dxsId, String value) throws Exception {
-
         httpClient.start();
         String urlLogin = url + "/api/login.json?";
         String salt = "";
@@ -48,7 +50,6 @@ public class SecondGenerationConfigurationHandler {
 
         String getAuthenticateResponse = httpClient.GET(urlLogin).getContentAsString();
         try {
-
             JsonObject getAuthenticateResponseJsonObject = (JsonObject) new JsonParser()
                     .parse(transformJsonResponse(getAuthenticateResponse));
 
@@ -104,9 +105,8 @@ public class SecondGenerationConfigurationHandler {
 
             JsonObject postJsonObject = (JsonObject) new JsonParser().parse(transformJsonResponse(postResponse));
             sessionId = extractSessionId(postJsonObject);
-
         } catch (JsonIOException e) {
-            e.printStackTrace();
+            logger.debug("Could not read the response.");
         }
 
         httpClient.stop();

@@ -64,6 +64,7 @@ None
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
 Channel Type ID                 Item Type                   Description
+
 -   gridOutputPower             Number:Power                WATT
 -   yieldDay                    Number:Energy               WATT_HOUR
 -   yieldTotal                  Number:Energy               WATT_HOUR

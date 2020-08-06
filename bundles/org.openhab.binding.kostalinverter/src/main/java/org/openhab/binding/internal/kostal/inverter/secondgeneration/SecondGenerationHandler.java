@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,6 @@ import com.google.gson.GsonBuilder;
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  * @author Örjan Backsell - Redesigned regarding Piko1020, Piko New Generation
  */
-
 @NonNullByDefault
 public class SecondGenerationHandler extends BaseThingHandler {
 
@@ -78,13 +77,11 @@ public class SecondGenerationHandler extends BaseThingHandler {
     public SecondGenerationHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
-
     }
 
     @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         config = getConfigAs(SecondGenerationConfiguration.class);
         String url = config.url.toString();
         String username = config.username;
@@ -184,7 +181,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-
         channelConfigs = SecondGenerationChannelConfiguration.getChannelConfiguration();
         channelConfigsExt = SecondGenerationChannelConfiguration.getChannelConfigurationExt();
         channelConfigsExtExt = SecondGenerationChannelConfiguration.getChannelConfigurationExtExt();
@@ -207,7 +203,6 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
     @SuppressWarnings("null")
     private void refresh() throws Exception {
-
         String dxsEntriesCall = config.url.toString() + "/api/dxs.json?dxsEntries=" + channelConfigs.get(0).dxsEntries;
         String dxsEntriesCallExt = config.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigsExt.get(0).dxsEntries;
@@ -262,6 +257,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         // Create and update actual values for each channelPost
         int channelValuesCounter = 0;
+
         for (SecondGenerationChannelConfiguration cConfig : channelConfigs) {
             Channel channel = getThing().getChannel(cConfig.id);
             State state = getState(channelPosts[channelValuesCounter], cConfig.unit);
@@ -303,14 +299,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
     // Helper method to handleCommand method
     public final void preSetExecuteConfigurationChanges(HttpClient httpClient, String url, String username,
             String password, String dxsEntriesConf, String valueConfiguration) {
-
         try {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                     dxsEntriesConf, valueConfiguration);
         } catch (Exception handleCommandException) {
-            logger.debug(
-                    "Unexpected error in KostalConfigurationHandler.configurationHandler, " + dxsEntriesConf + " !",
-                    handleCommandException);
+            logger.debug("Handle command for {} on channel {}: {}: {}: {}: {}: {}", thing.getUID(), httpClient, url,
+                    username, password, dxsEntriesConf, valueConfiguration);
         }
     }
 
