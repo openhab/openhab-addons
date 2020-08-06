@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.internal.actions;
+package org.openhab.binding.avmfritz.actions;
 
 import java.util.Collection;
 import java.util.Collections;

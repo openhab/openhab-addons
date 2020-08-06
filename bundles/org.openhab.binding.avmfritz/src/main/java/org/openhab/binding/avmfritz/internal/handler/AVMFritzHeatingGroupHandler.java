@@ -16,7 +16,7 @@ import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.openhab.binding.avmfritz.internal.actions.AVMFritzHeatingActionsHandler;
+import org.openhab.binding.avmfritz.actions.AVMFritzHeatingActionsHandler;
 
 /**
  * Handler for a FRITZ! heating group. Handles commands, which are sent to one of the channels.
