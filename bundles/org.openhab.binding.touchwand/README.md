@@ -8,7 +8,7 @@ TouchWand products are compatible with most major Z-Wave products, IP controlled
 
 ## Supported Things
 
-This binding supports switches, shutters dimmers and wallcontrollers configured in Touchwand Wanderfull™ Hub Controller.
+This binding supports switches, shutters dimmers and wall controllers configured in Touchwand Wanderfull™ Hub Controller.
 
 ## Control 
 
@@ -24,11 +24,16 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers and 
 ## Binding Configuration
 
 **Touchwand Wanderfull™** Hub Controller need to be added manually by IP address. The controller requires **username** and **password**  
-Optional configuration
 
-* Units status polling refresh time (default - 5 seconds)
-* Discover secondary units (in case the controller is a primary controller) 
-* Http port (default is 80)
+| Parameter | Description| Units| required |
+|----------|--|----|--|
+| username|Touchwand hub username  | string | yes
+| password|Touchwand hub password | string | yes
+|ipAddress|Touchwand hub IP address | dot notated IP address | yes
+|port| Management port (default 80) | integer | no
+|statusrefresh| Unit status refresh interval | seconds | no
+|addSecondaryUnits|If the controller is primary, add secondary controllers units as well|bool|no
+
 
 ## Thing Configuration
 

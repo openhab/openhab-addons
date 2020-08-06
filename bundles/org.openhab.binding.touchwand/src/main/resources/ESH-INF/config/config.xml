@@ -41,8 +41,8 @@
 		<parameter name="addSecondaryUnits" type="boolean">
 			<required>false</required>
 			<default>false</default>
-			<description>If the controller is primary, add secondaries controllers units as well</description>
-			<label>secondary</label>
+			<description>If the controller is primary, add secondary controllers units as well</description>
+			<label>Add Secondary Controllers</label>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
