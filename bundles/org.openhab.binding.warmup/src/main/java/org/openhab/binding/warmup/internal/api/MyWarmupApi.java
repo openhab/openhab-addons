@@ -101,7 +101,7 @@ public class MyWarmupApi {
         } catch (MyWarmupApiException e) {
             failCount++;
             if (failCount > 2) {
-                logger.error("Multiple authentication failures: {}", e.getMessage());
+                logger.warn("Multiple authentication failures: {}", e.getMessage());
                 throw new MyWarmupApiException(e.getMessage());
             }
         }
@@ -192,10 +192,14 @@ public class MyWarmupApi {
             if (response.getStatus() == HttpStatus.OK_200) {
                 return response;
             } else if (response.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+                logger.debug("Authentication failure {} {}", response.getStatus(), response.getContentAsString());
                 authToken = null;
+            } else {
+                logger.debug("Unexpected response {} {}", response.getStatus(), response.getContentAsString());
             }
             throw new MyWarmupApiException("Callout failed");
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("Callout error {}", e.getMessage());
             throw new MyWarmupApiException(e.getMessage());
         }
     }

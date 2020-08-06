@@ -40,16 +40,16 @@ import org.slf4j.LoggerFactory;
 public class RoomHandler extends WarmupThingHandler implements WarmupRefreshListener {
 
     private final Logger logger = LoggerFactory.getLogger(RoomHandler.class);
-    private RoomConfigurationDTO config;
+    private @Nullable RoomConfigurationDTO config;
 
     public RoomHandler(Thing thing) {
         super(thing);
-        config = getConfigAs(RoomConfigurationDTO.class);
     }
 
     @Override
     public void initialize() {
         super.initialize();
+        config = getConfigAs(RoomConfigurationDTO.class);
     }
 
     @Override
@@ -68,9 +68,10 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
      *
      * @param domain Data model representing all devices
      */
+    @SuppressWarnings("null")
     @Override
     public void refresh(@Nullable QueryResponseDTO domain) {
-        if (domain != null) {
+        if (domain != null && config != null) {
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
                     if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()
@@ -98,6 +99,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No data from bridge");
     }
 
+    @SuppressWarnings("null")
     private void setOverride(final QuantityType<?> command) {
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
@@ -108,7 +110,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             final int value = temp.multiply(new BigDecimal(10)).intValue();
 
             try {
-                if (bridgeHandler != null) {
+                if (bridgeHandler != null && config != null && config.overrideDurationMin > 0) {
                     bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
                     refreshFromServer();
                 }

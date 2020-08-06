@@ -49,8 +49,26 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 | currentTemperature | Number:Temperature | Currently reported temperature | true |
 | targetTemperature | Number:Temperature | Target temperature | false |
 | overrideRemaining | Number:Time | Duration remaining of the configured override| true |
-| runMode | String | Current operating mode of the thermostat | true |
-| frostProtectionMode | Switch | Toggles between the "Frost Protection" run mode and the previously configured mode | false |
+| runMode | String | Current operating mode of the thermostat, options listed below | true |
+| frostProtectionMode | Switch | Toggles between the "Frost Protection" run mode and the previously configured "active" run mode (known options are either Fixed or Schedule) | false |
+
+### Run Mode Statuses
+
+These run mode statuses are defined for the API. The descriptions are based on inspection of the device behaviour and are not sourced from documentation.
+
+| api value | ui name | description                  |
+| --------- | -------- | ------------------------------ |
+| not_set | Not Set | Unknown |
+| off | Off | Device turned off |
+| schedule | Schedule | Device target temperature running to a programmed schedule |
+| override | Override | Target temperature overridden for the remaining duration in overrideRemaining |
+| fixed | Fixed | Device target temperature set to a constant fixed value |
+| anti_frost | Frost Protection | Device target temperature set to 7°C |
+| holiday | Holiday | Device target temperature set to a constant fixed value for duration of holiday |
+| fil_pilote | Fil Pilote | Unknown |
+| gradual | Gradual | Unknown |
+| relay | Relay | Unknown |
+| previous | Previous | Unknown |
 
 ## Full Example
 

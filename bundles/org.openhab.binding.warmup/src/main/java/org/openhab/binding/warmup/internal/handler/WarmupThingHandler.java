@@ -12,14 +12,8 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -78,18 +72,6 @@ public class WarmupThingHandler extends BaseThingHandler {
      */
     protected State parseTemperature(@Nullable Integer temperature) {
         return temperature != null ? new QuantityType<>(temperature / 10.0, SIUnits.CELSIUS) : UnDefType.UNDEF;
-    }
-
-    /**
-     *
-     * @param date value returned from the API in local time, formatted as yyyy-MM-dd HH:mm:ss
-     * @param timezone {@link ZoneId} valid timezone from API
-     * @return the DateTime as a {@link DateTimeType}
-     */
-    protected State parseDate(@Nullable String date, @Nullable String timezone) {
-        return date != null && timezone != null ? new DateTimeType(ZonedDateTime
-                .of(LocalDateTime.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), ZoneId.of(timezone)))
-                : UnDefType.UNDEF;
     }
 
     /**
