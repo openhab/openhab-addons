@@ -23,8 +23,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -94,7 +97,7 @@ public class UpnpRendererHandler extends UpnpHandler {
     private volatile @Nullable UpnpEntry nextEntry = null;
     private volatile boolean playerStopped;
     private volatile boolean playing;
-    private volatile boolean isSettingURI;
+    private volatile @Nullable CompletableFuture<Boolean> isSettingURI;
     private volatile int trackDuration = 0;
     private volatile int trackPosition = 0;
     private volatile @Nullable ScheduledFuture<?> trackPositionRefresh;
@@ -246,22 +249,20 @@ public class UpnpRendererHandler extends UpnpHandler {
      * Invoke Play on UPnP AV Transport.
      */
     public void play() {
-        // wait for maximum 1s until the media URI is set before playing
-        for (int i = 0; isSettingURI && (i < 4); i++) {
-            try {
-                Thread.sleep(250);
-            } catch (InterruptedException e) {
-                continue;
-            }
-        }
-        if (!isSettingURI) {
-            Map<String, String> inputs = new HashMap<>();
-            inputs.put("InstanceID", Integer.toString(avTransportId));
-            inputs.put("Speed", "1");
+        CompletableFuture<Boolean> setting = isSettingURI;
+        try {
+            if ((setting == null) || (setting.get(2500, TimeUnit.MILLISECONDS))) {
+                // wait for maximum 2.5s until the media URI is set before playing
+                Map<String, String> inputs = new HashMap<>();
+                inputs.put("InstanceID", Integer.toString(avTransportId));
+                inputs.put("Speed", "1");
 
-            invokeAction("AVTransport", "Play", inputs);
-        } else {
-            logger.debug("Cannot play, media URI not set yet in the renderer");
+                invokeAction("AVTransport", "Play", inputs);
+            } else {
+                logger.debug("Cannot play, cancelled setting URI in the renderer");
+            }
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            logger.debug("Cannot play, media URI not yet set in the renderer");
         }
     }
 
@@ -299,7 +300,12 @@ public class UpnpRendererHandler extends UpnpHandler {
      * @param URIMetaData
      */
     public void setCurrentURI(String URI, String URIMetaData) {
-        isSettingURI = true; // set this so we don't start playing when not finished setting URI
+        CompletableFuture<Boolean> setting = isSettingURI;
+        if (setting != null) {
+            setting.complete(false);
+        }
+        isSettingURI = new CompletableFuture<Boolean>(); // set this so we don't start playing when not finished setting
+                                                         // URI
         Map<String, String> inputs = new HashMap<>();
         try {
             inputs.put("InstanceID", Integer.toString(avTransportId));
@@ -584,10 +590,11 @@ public class UpnpRendererHandler extends UpnpHandler {
                     playing = true;
                     updateState(CONTROL, PlayPauseType.PLAY);
                     scheduleTrackPositionRefresh();
+                } else if ("PAUSED_PLAYBACK".contentEquals(value)) {
+                    updateState(CONTROL, PlayPauseType.PAUSE);
                 }
                 break;
             case "CurrentTrackURI":
-                isSettingURI = false;
                 UpnpEntry current = currentEntry;
                 if (queueIterator.hasNext() && (current != null) && !current.getRes().equals(value)
                         && currentQueue.get(queueIterator.nextIndex()).getRes().equals(value)) {
@@ -603,7 +610,9 @@ public class UpnpRendererHandler extends UpnpHandler {
                         setNextURI(next.getRes(), UpnpXMLParser.compileMetadataString(next));
                     }
                 }
-                isSettingURI = false; // We have received current URI, so can allow play to start
+                if (isSettingURI != null) {
+                    isSettingURI.complete(true); // We have received current URI, so can allow play to start
+                }
                 break;
             case "CurrentTrackMetaData":
                 if (!((value == null) || (value.isEmpty()))) {
