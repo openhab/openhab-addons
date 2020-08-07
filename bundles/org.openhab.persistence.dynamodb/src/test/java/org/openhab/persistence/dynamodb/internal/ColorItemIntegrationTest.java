@@ -17,7 +17,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -48,7 +48,7 @@ public class ColorItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final HSBType STATE2 = color(75, 100, 90);
     private static final HSBType STATE_BETWEEN = color(60, 50, 50);
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         ColorItem item = (ColorItem) ITEMS.get(NAME);
         item.setState(STATE1);

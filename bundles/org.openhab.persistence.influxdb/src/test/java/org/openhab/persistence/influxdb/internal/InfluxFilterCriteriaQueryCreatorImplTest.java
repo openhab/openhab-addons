@@ -22,9 +22,9 @@ import java.time.temporal.ChronoUnit;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.persistence.influxdb.internal.influx1.Influx1FilterCriteriaQueryCreatorImpl;
@@ -44,13 +44,13 @@ public class InfluxFilterCriteriaQueryCreatorImplTest {
     private Influx1FilterCriteriaQueryCreatorImpl instanceV1;
     private Influx2FilterCriteriaQueryCreatorImpl instanceV2;
 
-    @Before
+    @BeforeEach
     public void before() {
         instanceV1 = new Influx1FilterCriteriaQueryCreatorImpl();
         instanceV2 = new Influx2FilterCriteriaQueryCreatorImpl();
     }
 
-    @After
+    @AfterEach
     public void after() {
         instanceV1 = null;
         instanceV2 = null;

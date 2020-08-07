@@ -12,14 +12,14 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.RollershutterItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
@@ -38,7 +38,7 @@ public class RollershutterItemIntegrationTest extends AbstractTwoItemIntegration
     private static final PercentType STATE2 = new PercentType("72.938289428989489389329834898929892439842399483498");
     private static final PercentType STATE_BETWEEN = new PercentType(66); // no such that exists
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         RollershutterItem item = (RollershutterItem) ITEMS.get(NAME);
         item.setState(STATE1);

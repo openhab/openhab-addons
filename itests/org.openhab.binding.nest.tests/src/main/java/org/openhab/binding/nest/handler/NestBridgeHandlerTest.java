@@ -13,15 +13,16 @@
 package org.openhab.binding.nest.handler;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
@@ -45,6 +46,8 @@ public class NestBridgeHandlerTest {
 
     private ThingHandler handler;
 
+    private AutoCloseable mocksCloseable;
+
     private @Mock Bridge bridge;
     private @Mock ThingHandlerCallback callback;
     private @Mock ClientBuilder clientBuilder;
@@ -52,12 +55,16 @@ public class NestBridgeHandlerTest {
     private @Mock SseEventSourceFactory eventSourceFactory;
     private @Mock NestRedirectUrlSupplier redirectUrlSupplier;
 
-    @Before
-    public void setUp() {
-        initMocks(this);
-
+    @BeforeEach
+    public void beforeEach() {
+        mocksCloseable = openMocks(this);
         handler = new NestTestBridgeHandler(bridge, clientBuilder, eventSourceFactory, "http://localhost");
         handler.setCallback(callback);
+    }
+
+    @AfterEach
+    public void afterEach() throws Exception {
+        mocksCloseable.close();
     }
 
     @SuppressWarnings("null")

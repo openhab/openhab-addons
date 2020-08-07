@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -58,7 +58,7 @@ public class BaseIntegrationTest {
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void initService() throws InterruptedException {
         ITEMS.put("dimmer", new DimmerItem("dimmer"));
         ITEMS.put("number", new NumberItem("number"));

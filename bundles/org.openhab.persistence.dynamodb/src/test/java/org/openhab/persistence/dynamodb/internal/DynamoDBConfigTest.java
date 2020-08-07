@@ -12,19 +12,20 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import com.amazonaws.regions.Regions;
 
@@ -47,8 +48,7 @@ public class DynamoDBConfigTest {
         return Collections.unmodifiableMap(config);
     }
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public @TempDir @NonNullByDefault({}) File folder;
 
     @Test
     public void testEmpty() throws Exception {
@@ -82,14 +82,14 @@ public class DynamoDBConfigTest {
 
     @Test
     public void testRegionWithProfilesConfigFile() throws Exception {
-        File credsFile = folder.newFile("creds");
+        Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
         Files.write(
-                credsFile.toPath(), ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
+                credsFile, ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
                         + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
                 StandardOpenOption.TRUNCATE_EXISTING);
 
         DynamoDBConfig fromConfig = DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
-                credsFile.getAbsolutePath(), "profile", "fooprofile"));
+                credsFile.toAbsolutePath().toString(), "profile", "fooprofile"));
         assertEquals(Regions.EU_WEST_1, fromConfig.getRegion());
         assertEquals("openhab-", fromConfig.getTablePrefix());
         assertEquals(true, fromConfig.isCreateTable());
@@ -106,26 +106,26 @@ public class DynamoDBConfigTest {
 
     @Test
     public void testRegionWithInvalidProfilesConfigFile() throws Exception {
-        File credsFile = folder.newFile("creds");
-        Files.write(credsFile.toPath(),
+        Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
+        Files.write(credsFile,
                 ("[fooprofile]\n" + "aws_access_key_idINVALIDKEY=testAccessKey\n"
                         + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
                 StandardOpenOption.TRUNCATE_EXISTING);
 
         assertNull(DynamoDBConfig.fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile",
-                credsFile.getAbsolutePath(), "profile", "fooprofile")));
+                credsFile.toFile().getAbsolutePath(), "profile", "fooprofile")));
     }
 
     @Test
     public void testRegionWithProfilesConfigFileMissingProfile() throws Exception {
-        File credsFile = folder.newFile("creds");
+        Path credsFile = Files.createFile(Paths.get(folder.getPath(), "creds"));
         Files.write(
-                credsFile.toPath(), ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
+                credsFile, ("[fooprofile]\n" + "aws_access_key_id=testAccessKey\n"
                         + "aws_secret_access_key=testSecretKey\n" + "aws_session_token=testSessionToken\n").getBytes(),
                 StandardOpenOption.TRUNCATE_EXISTING);
 
-        assertNull(DynamoDBConfig
-                .fromConfig(mapFrom("region", "eu-west-1", "profilesConfigFile", credsFile.getAbsolutePath())));
+        assertNull(DynamoDBConfig.fromConfig(
+                mapFrom("region", "eu-west-1", "profilesConfigFile", credsFile.toAbsolutePath().toString())));
     }
 
     @Test

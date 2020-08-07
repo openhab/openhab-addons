@@ -69,7 +69,7 @@
     <maven.compiler.compilerVersion>${oh.java.version}</maven.compiler.compilerVersion>
 
     <ohc.version>${project.version}</ohc.version>
-    <bnd.version>4.3.0</bnd.version>
+    <bnd.version>5.1.2</bnd.version>
     <karaf.version>4.2.7</karaf.version>
     <sat.version>0.10.0</sat.version>
     <slf4j.version>1.7.21</slf4j.version>
@@ -368,7 +368,7 @@ Import-Package: \\
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
+          <version>3.0.0-M5</version>
         </plugin>
 
         <plugin>

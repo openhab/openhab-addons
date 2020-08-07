@@ -12,7 +12,7 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.items.ColorItem;
@@ -76,10 +76,9 @@ public class AbstractDynamoDBItemSerializationTest {
         Object actualState = dbItem.getState();
         if (expectedState instanceof BigDecimal) {
             BigDecimal expectedRounded = DynamoDBBigDecimalItem.loseDigits(((BigDecimal) expectedState));
-            assertTrue(
+            assertEquals(0, expectedRounded.compareTo((BigDecimal) actualState),
                     String.format("Expected state %s (%s but with some digits lost) did not match actual state %s",
-                            expectedRounded, expectedState, actualState),
-                    expectedRounded.compareTo((BigDecimal) actualState) == 0);
+                            expectedRounded, expectedState, actualState));
         } else {
             assertEquals(expectedState, actualState);
         }
@@ -107,8 +106,9 @@ public class AbstractDynamoDBItemSerializationTest {
             BigDecimal expectedRounded = DynamoDBBigDecimalItem
                     .loseDigits(((DecimalType) expectedState).toBigDecimal());
             BigDecimal actual = ((DecimalType) historicItem.getState()).toBigDecimal();
-            assertTrue(String.format("Expected state %s (%s but with some digits lost) did not match actual state %s",
-                    expectedRounded, expectedState, actual), expectedRounded.compareTo(actual) == 0);
+            assertEquals(0, expectedRounded.compareTo(actual),
+                    String.format("Expected state %s (%s but with some digits lost) did not match actual state %s",
+                            expectedRounded, expectedState, actual));
         } else {
             assertEquals(expectedState, historicItem.getState());
         }

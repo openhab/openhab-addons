@@ -16,23 +16,20 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.osgi</groupId>
-      <artifactId>osgi.enroute.junit.wrapper</artifactId>
-      <version>4.12.0</version>
-    </dependency>
-    <dependency>
       <groupId>org.openhab.core.bom</groupId>
       <artifactId>org.openhab.core.bom.test</artifactId>
       <version>${ohc.version}</version>
       <type>pom</type>
       <scope>compile</scope>
       <optional>true</optional>
-      <exclusions>
-        <exclusion>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.openhab.core.bom</groupId>
+      <artifactId>org.openhab.core.bom.test-index</artifactId>
+      <version>${ohc.version}</version>
+      <type>pom</type>
+      <scope>compile</scope>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 

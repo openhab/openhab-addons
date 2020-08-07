@@ -6,6 +6,8 @@
 
 -resolve.effective: active
 
+-tester: biz.aQute.tester.junit-platform
+
 # Run all integration tests which are named xyzTest
 Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 
@@ -26,3 +28,7 @@ Export-Package:
     bnd.identity;id='org.apache.servicemix.specs.activation-api-1.1',\
     bnd.identity;id='org.apache.servicemix.specs.jaxb-api-2.2',\
     bnd.identity;id='org.apache.servicemix.bundles.jaxb-impl'
+
+-runrequires.junit: \
+    bnd.identity;id='biz.aQute.tester.junit-platform',\
+    bnd.identity;id='junit-jupiter-engine'

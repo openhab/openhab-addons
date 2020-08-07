@@ -12,7 +12,8 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -20,9 +21,8 @@ import java.util.Iterator;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.FilterCriteria.Operator;
 import org.openhab.core.persistence.FilterCriteria.Ordering;
@@ -85,14 +85,14 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
         assertEquals(expected, actual);
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void checkService() throws InterruptedException {
         String msg = "DynamoDB integration tests will be skipped. Did you specify AWS credentials for testing? "
                 + "See BaseIntegrationTest for more details";
         if (service == null) {
             System.out.println(msg);
         }
-        Assume.assumeTrue(msg, service != null);
+        assumeTrue(service != null, msg);
     }
 
     /**
@@ -280,7 +280,7 @@ public abstract class AbstractTwoItemIntegrationTest extends BaseIntegrationTest
     @Test
     public void testQueryUsingNameAndStartAndEndWithGTOperator() {
         // Skip for subclasses which have null "state between"
-        Assume.assumeTrue(getQueryItemStateBetween() != null);
+        assumeTrue(getQueryItemStateBetween() != null);
 
         FilterCriteria criteria = new FilterCriteria();
         criteria.setOperator(Operator.GT);

@@ -12,7 +12,8 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -23,9 +24,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.persistence.FilterCriteria;
@@ -46,17 +46,18 @@ public class PagingIntegrationTest extends BaseIntegrationTest {
 
     private static @Nullable ZonedDateTime storeStart;
 
-    @BeforeClass
+    @BeforeAll
     public static void checkService() throws InterruptedException {
         String msg = "DynamoDB integration tests will be skipped. Did you specify AWS credentials for testing? "
                 + "See BaseIntegrationTest for more details";
         if (service == null) {
             System.out.println(msg);
         }
-        Assume.assumeTrue(msg, service != null);
+        assumeTrue(service != null, msg);
+
+        populateData();
     }
 
-    @BeforeClass
     public static void populateData() {
         storeStart = ZonedDateTime.now();
 
