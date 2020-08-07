@@ -60,5 +60,4 @@ public class OpenWebNetHandlerFactory extends BaseThingHandlerFactory {
         logger.warn("ThingType {} is not supported by this binding", thing.getThingTypeUID());
         return null;
     }
-
 }

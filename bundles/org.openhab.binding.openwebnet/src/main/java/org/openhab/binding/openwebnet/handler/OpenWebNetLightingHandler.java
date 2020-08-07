@@ -49,11 +49,11 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetLightingHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.LIGHTING_SUPPORTED_THING_TYPES;
+
     private static final int BRIGHTNESS_CHANGE_DELAY_MSEC = 1500; // delay to wait before sending another brightness
     // status request
 
     private long lastBrightnessChangeSentTS = 0; // timestamp when last brightness change was sent to the device
-
     private boolean brightnessLevelRequested = false; // was the brightness level requested ?
     private int latestBrightnessWhat = -1; // latest brightness WHAT value (-1 = unknown)
     private int latestBrightnessWhatBeforeOff = -1; // latest brightness WHAT value before device was set to off
@@ -143,16 +143,14 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
      * Helper method to dim light to a valid OWN value
      */
     private void dimLightTo(int whatInt, Command command) {
-        final String channel = CHANNEL_BRIGHTNESS;
         int newWhatInt = whatInt;
         logger.debug("-DIM- dimLightTo() latestBriWhat={} latestBriBeforeOff={} briLevelRequested={}",
                 latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
         What newWhat;
         if (OnOffType.ON.equals(command) && latestBrightnessWhat <= 0) {
             // ON after OFF/Unknown -> we reset channel to last value before OFF (if exists)
-            if (latestBrightnessWhatBeforeOff > 0) {
+            if (latestBrightnessWhatBeforeOff > 0) { // we know last brightness -> set dimmer to it
                 newWhatInt = latestBrightnessWhatBeforeOff;
-                updateState(channel, new PercentType(Lighting.levelToPercent(newWhatInt)));
             } else { // we do not know last brightness -> set dimmer to 100%
                 newWhatInt = 10;
             }
@@ -169,19 +167,15 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 if (newWhatInt == 0) {
                     latestBrightnessWhatBeforeOff = latestBrightnessWhat;
                 }
-                lastBrightnessChangeSentTS = System.currentTimeMillis();
                 Where w = deviceWhere;
                 if (w != null) {
                     try {
+                        lastBrightnessChangeSentTS = System.currentTimeMillis();
                         send(Lighting.requestDimTo(w.value(), newWhat));
                     } catch (OWNException e) {
                         logger.warn("Exception while sending dimLightTo for command {}: {}", command, e.getMessage());
                     }
                 }
-                if (!(command instanceof PercentType)) {
-                    updateState(channel, new PercentType(Lighting.levelToPercent(newWhatInt)));
-                }
-                latestBrightnessWhat = newWhatInt;
             } else {
                 logger.debug("-DIM- do nothing");
             }
@@ -204,7 +198,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates light state based on a OWN Lighting message received
+     * Updates light state based on a OWN Lighting event message received
      *
      * @param msg the Lighting message received
      */
@@ -219,7 +213,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates on/off state based on a OWN Lighting message received
+     * Updates on/off state based on a OWN Lighting event message received
      *
      * @param msg the Lighting message received
      */
@@ -249,56 +243,49 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
     }
 
     /**
-     * Updates brightness level based on a OWN Lighting message received
+     * Updates brightness level based on a OWN Lighting event message received
      *
      * @param msg the Lighting message received
      */
     private synchronized void updateLightBrightnessState(Lighting msg) {
         final String channel = CHANNEL_BRIGHTNESS;
-        logger.debug("$BRI updateLightBrightnessState() msg={}", msg);
-        logger.debug("$BRI updateLightBr() latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}",
+        logger.debug("  $BRI updateLightBrightnessState() msg={}", msg);
+        logger.debug("  $BRI updateLightBr() latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}",
                 latestBrightnessWhat, latestBrightnessWhatBeforeOff, brightnessLevelRequested);
         long now = System.currentTimeMillis();
         long delta = now - lastBrightnessChangeSentTS;
-        logger.debug("$BRI now={} delta={}", now, delta);
+        logger.debug("  $BRI now={} -> delta={}", now, delta);
         if (msg.isOn() && !brightnessLevelRequested) {
             if (delta >= BRIGHTNESS_CHANGE_DELAY_MSEC) {
                 // we send a light brightness status request ONLY if last brightness change
-                // was sent >BRIGHTNESS_CHANGE_DELAY_MSEC ago
-                logger.debug("$BRI change sent >={}ms ago, sending requestStatus...", BRIGHTNESS_CHANGE_DELAY_MSEC);
-                brightnessLevelRequested = true;
+                // was not just sent (>=BRIGHTNESS_CHANGE_DELAY_MSEC ago)
+                logger.debug("  $BRI change sent >={}ms ago, sending requestStatus...", BRIGHTNESS_CHANGE_DELAY_MSEC);
                 Where w = deviceWhere;
                 if (w != null) {
                     try {
                         send(Lighting.requestStatus(w.value()));
+                        brightnessLevelRequested = true;
                     } catch (OWNException e) {
-                        logger.warn("$BRI exception while requesting light state: {}", e.getMessage());
+                        logger.warn("  $BRI exception while requesting light state: {}", e.getMessage());
                     }
                 }
             } else {
-                logger.debug("$BRI change sent {}<{}ms, NO requestStatus needed", delta, BRIGHTNESS_CHANGE_DELAY_MSEC);
+                logger.debug("  $BRI change sent {}<{}ms, NO requestStatus needed", delta,
+                        BRIGHTNESS_CHANGE_DELAY_MSEC);
             }
         } else {
-            logger.debug("$BRI update from network -> level should be present in WHAT part of the message");
+            logger.debug("  $BRI update from network -> level should be present in WHAT part of the message");
             if (msg.getWhat() != null) {
                 int newLevel = msg.getWhat().value();
-                logger.debug("$BRI current level={} ----> new level={}", latestBrightnessWhat, newLevel);
+                logger.debug("  $BRI current level={} ----> new level={}", latestBrightnessWhat, newLevel);
                 if (latestBrightnessWhat != newLevel) {
-                    if (delta >= BRIGHTNESS_CHANGE_DELAY_MSEC) {
-                        logger.debug("$BRI change sent >={}ms ago, updating state...", BRIGHTNESS_CHANGE_DELAY_MSEC);
-                        updateState(channel, new PercentType(Lighting.levelToPercent(newLevel)));
-                    } else if (msg.isOff()) {
-                        logger.debug("$BRI change just sent, but OFF from network received, updating state...");
-                        updateState(channel, new PercentType(Lighting.levelToPercent(newLevel)));
-                    } else {
-                        logger.debug("$BRI change just sent, NO update needed.");
-                    }
+                    updateState(channel, new PercentType(Lighting.levelToPercent(newLevel)));
                     if (msg.isOff()) {
                         latestBrightnessWhatBeforeOff = latestBrightnessWhat;
                     }
                     latestBrightnessWhat = newLevel;
                 } else {
-                    logger.debug("$BRI no change");
+                    logger.debug("  $BRI no change");
                 }
                 brightnessLevelRequested = false;
             } else { // dimension notification
@@ -311,7 +298,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                         return;
                     }
                     int newLevel = Lighting.percentToWhat(newPercent).value();
-                    logger.debug("$BRI latest level={} ----> new percent={} ----> new level={}", latestBrightnessWhat,
+                    logger.debug("  $BRI latest level={} ----> new percent={} ----> new level={}", latestBrightnessWhat,
                             newPercent, newLevel);
                     updateState(channel, new PercentType(newPercent));
                     if (newPercent == 0) {
@@ -326,7 +313,7 @@ public class OpenWebNetLightingHandler extends OpenWebNetThingHandler {
                 }
             }
         }
-        logger.debug("$BRI latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}", latestBrightnessWhat,
+        logger.debug("  $BRI latestBriWhat={} latestBriBeforeOff={} brightnessLevelRequested={}", latestBrightnessWhat,
                 latestBrightnessWhatBeforeOff, brightnessLevelRequested);
     }
 

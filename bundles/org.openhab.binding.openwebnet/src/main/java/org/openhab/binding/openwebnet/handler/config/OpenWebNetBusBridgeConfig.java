@@ -46,5 +46,4 @@ public class OpenWebNetBusBridgeConfig {
     public Boolean getDiscoveryByActivation() {
         return discoveryByActivation;
     }
-
 }
