@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="kvv"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="kvv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -32,9 +31,9 @@
 	<channel-group-type id="kvv-train">
 		<label>KVV Train</label>
 		<channels>
-			<channel id="name" typeId="kvv-train-name" />
-			<channel id="destination" typeId="kvv-train-destination" />
-			<channel id="eta" typeId="kvv-train-eta" />
+			<channel id="name" typeId="kvv-train-name"/>
+			<channel id="destination" typeId="kvv-train-destination"/>
+			<channel id="eta" typeId="kvv-train-eta"/>
 		</channels>
 	</channel-group-type>
 
