@@ -47,9 +47,9 @@ public class DataTypeTemperature implements ComfoAirDataType {
             logger.trace("\"DataTypeTemperature\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
-            int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-            if (get_reply_data_pos != null && get_reply_data_pos[0] < data.length) {
-                return new QuantityType<>((((double) data[get_reply_data_pos[0]]) / 2) - 20, SIUnits.CELSIUS);
+            int[] readReplyDataPos = commandType.getReadReplyDataPos();
+            if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
+                return new QuantityType<>((((double) data[readReplyDataPos[0]]) / 2) - 20, SIUnits.CELSIUS);
             } else {
                 return UnDefType.NULL;
             }

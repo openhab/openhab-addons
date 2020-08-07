@@ -21,7 +21,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -48,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ComfoAirHandler extends BaseThingHandler {
-    private static final int DEFAULT_REFRESH_INTERVAL = 60;
+    private static final int DEFAULT_REFRESH_INTERVAL_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(ComfoAirHandler.class);
     private final SerialPortManager serialPortManager;
@@ -98,7 +97,7 @@ public class ComfoAirHandler extends BaseThingHandler {
         ComfoAirConfiguration config = getConfigAs(ComfoAirConfiguration.class);
         String serialPort = config.serialPort;
 
-        if (StringUtils.isEmpty(serialPort)) {
+        if (serialPort.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         } else {
@@ -191,7 +190,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     for (Channel channel : channels) {
                         updateChannelState(channel);
                     }
-                }, 0, (config.refreshInterval > 0) ? config.refreshInterval : DEFAULT_REFRESH_INTERVAL,
+                }, 0, (config.refreshInterval > 0) ? config.refreshInterval : DEFAULT_REFRESH_INTERVAL_SEC,
                         TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -209,35 +208,31 @@ public class ComfoAirHandler extends BaseThingHandler {
 
         final ScheduledFuture<?> localPoller = poller;
 
-        if (localPoller != null && !localPoller.isCancelled()) {
+        if (localPoller != null) {
             localPoller.cancel(true);
             poller = null;
         }
 
         final ScheduledFuture<?> localAffectedItemsPoller = affectedItemsPoller;
 
-        if (localAffectedItemsPoller != null && !localAffectedItemsPoller.isCancelled()) {
+        if (localAffectedItemsPoller != null) {
             localAffectedItemsPoller.cancel(true);
             affectedItemsPoller = null;
         }
     }
 
     private void updateChannelState(Channel channel) {
-        try {
-            if (!isLinked(channel.getUID())) {
-                return;
-            }
-            String commandKey = channel.getUID().getId();
+        if (!isLinked(channel.getUID())) {
+            return;
+        }
+        String commandKey = channel.getUID().getId();
 
-            ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
-            if (readCommand != null) {
-                scheduler.submit(() -> {
-                    State state = sendCommand(readCommand, commandKey);
-                    updateState(channel.getUID(), state);
-                });
-            }
-        } catch (IllegalArgumentException e) {
-            logger.warn("Unknown channel {}", channel.getUID().getId());
+        ComfoAirCommand readCommand = ComfoAirCommandType.getReadCommand(commandKey);
+        if (readCommand != null) {
+            scheduler.submit(() -> {
+                State state = sendCommand(readCommand, commandKey);
+                updateState(channel.getUID(), state);
+            });
         }
     }
 

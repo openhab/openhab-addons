@@ -1,12 +1,13 @@
 # ComfoAir Binding
 
-This binding allows to monitor and control Zehnder ComfoAir serial controlled ventilation systems.
-
-## Supported Things
-
-The binding supports ComfoAir ventilation systems supporting control via RS232 serial connection.
+This binding allows to monitor and control Zehnder ComfoAir serial controlled ventilation systems via RS232 serial connection.
 Though the binding is developed based on the protocol description for Zehnder ComfoAir devices it should also work for mostly identical systems from different manufacturers, like StorkAir WHR930, Wernig G90-380 and Paul Santos 370 DC.
 It was also successfully tested on a Wernig G90-160.
+
+### Limitations
+
+* Either the ComfoAir binding or the CCEase Comfocontrol can be active, but not together.
+* You must implement auto mode by yourself with rules, but it is more powerful.
 
 ### Prerequisites
 
@@ -22,10 +23,13 @@ The connection should be made with a 3-wire cable connecting pins: GND, TX, RX o
 sudo usermod -a -G dialout openhab
 ```
 
-### Limitations
+## Supported Things
 
-* Either the ComfoAir binding or the CCEase Comfocontrol can be active, but not together.
-* You must implement auto mode by yourself with rules, but it is more powerful.
+Only a single generic thing type is supported by the binding:
+
+|Thing Type ID |Description                                                          |
+|--------------|---------------------------------------------------------------------|
+|comfoair      |A ComfoAir ventilation system connected via RS232 serial connection. |
 
 ## Discovery
 

@@ -48,30 +48,30 @@ public enum ComfoAirCommandType {
      *
      * @param key
      *            command name
-     * @param data_type
+     * @param dataType
      *            data type (can be: DataTypeBoolean.getInstance(), DataTypeMessage.getInstance(),
      *            DataTypeNumber.getInstance(), DataTypeRPM.getInstance(), DataTypeTemperature.getInstance(),
      *            DataTypeTime.getInstance(), DataTypeVolt.getInstance())
-     * @param possible_values
+     * @param possibleValues
      *            possible values for write command, if it can only take certain values
-     * @param change_command
+     * @param changeCommand
      *            byte number for ComfoAir write command
-     * @param change_data_size
+     * @param changeDataSize
      *            size of bytes list for ComfoAir write command
-     * @param change_data_pos
+     * @param changeDataPos
      *            position in bytes list to change
-     * @param change_affected
+     * @param changeAffected
      *            list of affected commands (can be empty)
      *            is mandatory for read-write command
-     * @param read_command
+     * @param readCommand
      *            request byte number for ComfoAir read command
-     * @param read_reply_command
+     * @param readReplyCommand
      *            reply byte list size for ComfoAir read command (list of values only)
-     * @param read_reply_data_pos
+     * @param readReplyDataPos
      *            list of byte positions in reply bytes list from ComfoAir
-     * @param read_reply_data_bits
-     *            byte value on read_reply_data_pos position to be considered by command (used with
-     *            DataTypeBoolean.class data_type)
+     * @param readReplyDataBits
+     *            byte value on readReplyDataPos position to be considered by command (used with
+     *            DataTypeBoolean.class dataType)
      */
     ACTIVATE(ComfoAirBindingConstants.CG_CONTROL_PREFIX + ComfoAirBindingConstants.CHANNEL_ACTIVATE,
             DataTypeBoolean.getInstance(), new int[] { 0x03 }, Constants.REQUEST_SET_RS232, 1, 0,
@@ -532,118 +532,116 @@ public enum ComfoAirCommandType {
             Constants.REPLY_GET_ANALOGS, new int[] { 0 }, 0x10);
 
     private final String key;
-    private final ComfoAirDataType data_type;
+    private final ComfoAirDataType dataType;
 
     /*
      * Possible values
      */
-    private final int @Nullable [] possible_values;
+    private final int @Nullable [] possibleValues;
 
     /*
      * Cmd code to change properties on the comfoair.
      */
-    private final int change_command;
+    private final int changeCommand;
 
     /*
      * The size of the data block.
      */
-    private final int change_data_size;
+    private final int changeDataSize;
 
     /*
      * The byte inside the data block which holds the crucial value.
      */
-    private final int change_data_pos;
+    private final int changeDataPos;
 
     /*
      * Affected commands which should be refreshed after a successful change
      * command call.
      */
-    private final ComfoAirCommandType @Nullable [] change_affected;
+    private final ComfoAirCommandType @Nullable [] changeAffected;
 
     /*
      * Command for reading properties.
      */
-    private final int read_command;
+    private final int readCommand;
 
     /*
      * ACK Command which identifies the matching response.
      */
-    private final int read_reply_command;
+    private final int readReplyCommand;
 
     /*
      * The byte position inside the response data.
      */
-    private final int @Nullable [] read_reply_data_pos;
+    private final int @Nullable [] readReplyDataPos;
 
     /*
      * Bit mask for boolean response properties to identify a true value.
      */
-    private final int read_reply_data_bits;
+    private final int readReplyDataBits;
 
     /*
      * Constructor for full read/write command
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int @Nullable [] possible_values,
-            int change_command, int change_data_size, int change_data_pos,
-            ComfoAirCommandType @Nullable [] change_affected, int read_command, int read_reply_command,
-            int @Nullable [] read_reply_data_pos, int read_reply_data_bits) {
+    private ComfoAirCommandType(String key, ComfoAirDataType dataType, int @Nullable [] possibleValues,
+            int changeCommand, int changeDataSize, int changeDataPos, ComfoAirCommandType @Nullable [] changeAffected,
+            int readCommand, int readReplyCommand, int @Nullable [] readReplyDataPos, int readReplyDataBits) {
         this.key = key;
-        this.data_type = data_type;
-        this.possible_values = possible_values;
-        this.change_command = change_command;
-        this.change_data_size = change_data_size;
-        this.change_data_pos = change_data_pos;
-        this.change_affected = change_affected;
-        this.read_command = read_command;
-        this.read_reply_command = read_reply_command;
-        this.read_reply_data_pos = read_reply_data_pos;
-        this.read_reply_data_bits = read_reply_data_bits;
+        this.dataType = dataType;
+        this.possibleValues = possibleValues;
+        this.changeCommand = changeCommand;
+        this.changeDataSize = changeDataSize;
+        this.changeDataPos = changeDataPos;
+        this.changeAffected = changeAffected;
+        this.readCommand = readCommand;
+        this.readReplyCommand = readReplyCommand;
+        this.readReplyDataPos = readReplyDataPos;
+        this.readReplyDataBits = readReplyDataBits;
     }
 
     /*
-     * Constructor for read/write command w/o predefined read_reply_data_bits
+     * Constructor for read/write command w/o predefined readReplyDataBits
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int[] possible_values, int change_command,
-            int change_data_size, int change_data_pos, ComfoAirCommandType[] change_affected, int read_command,
-            int read_reply_command, int[] read_reply_data_pos) {
-        this(key, data_type, possible_values, change_command, change_data_size, change_data_pos, change_affected,
-                read_command, read_reply_command, read_reply_data_pos, 0);
+    private ComfoAirCommandType(String key, ComfoAirDataType dataType, int[] possibleValues, int changeCommand,
+            int changeDataSize, int changeDataPos, ComfoAirCommandType[] changeAffected, int readCommand,
+            int readReplyCommand, int[] readReplyDataPos) {
+        this(key, dataType, possibleValues, changeCommand, changeDataSize, changeDataPos, changeAffected, readCommand,
+                readReplyCommand, readReplyDataPos, 0);
     }
 
     /*
-     * Constructor for read/write command w/o predefined read_reply_data_bits & possible_values
+     * Constructor for read/write command w/o predefined readReplyDataBits & possibleValues
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int change_command, int change_data_size,
-            int change_data_pos, ComfoAirCommandType[] change_affected, int read_command, int read_reply_command,
-            int[] read_reply_data_pos) {
-        this(key, data_type, null, change_command, change_data_size, change_data_pos, change_affected, read_command,
-                read_reply_command, read_reply_data_pos, 0);
+    private ComfoAirCommandType(String key, ComfoAirDataType dataType, int changeCommand, int changeDataSize,
+            int changeDataPos, ComfoAirCommandType[] changeAffected, int readCommand, int readReplyCommand,
+            int[] readReplyDataPos) {
+        this(key, dataType, null, changeCommand, changeDataSize, changeDataPos, changeAffected, readCommand,
+                readReplyCommand, readReplyDataPos, 0);
     }
 
     /*
      * Constructor for write-only command (reset)
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int[] possible_values, int change_command,
-            int change_data_size, int change_data_pos, ComfoAirCommandType[] change_affected) {
-        this(key, data_type, possible_values, change_command, change_data_size, change_data_pos, change_affected, 0, 0,
-                null, 0);
+    private ComfoAirCommandType(String key, ComfoAirDataType dataType, int[] possibleValues, int changeCommand,
+            int changeDataSize, int changeDataPos, ComfoAirCommandType[] changeAffected) {
+        this(key, dataType, possibleValues, changeCommand, changeDataSize, changeDataPos, changeAffected, 0, 0, null,
+                0);
     }
 
     /*
      * Constructor for read-only command
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int read_command, int read_reply_command,
-            int[] read_reply_data_pos, int read_reply_data_bits) {
-        this(key, data_type, null, 0, 0, 0, null, read_command, read_reply_command, read_reply_data_pos,
-                read_reply_data_bits);
+    private ComfoAirCommandType(String key, ComfoAirDataType dataType, int readCommand, int readReplyCommand,
+            int[] readReplyDataPos, int readReplyDataBits) {
+        this(key, dataType, null, 0, 0, 0, null, readCommand, readReplyCommand, readReplyDataPos, readReplyDataBits);
     }
 
     /*
-     * Constructor for read-only command w/o read_reply_data_bits
+     * Constructor for read-only command w/o readReplyDataBits
      */
-    private ComfoAirCommandType(String key, ComfoAirDataType data_type, int read_command, int read_reply_command,
-            int[] read_reply_data_pos) {
-        this(key, data_type, null, 0, 0, 0, null, read_command, read_reply_command, read_reply_data_pos, 0);
+    private ComfoAirCommandType(String key, ComfoAirDataType dataType, int readCommand, int readReplyCommand,
+            int[] readReplyDataPos) {
+        this(key, dataType, null, 0, 0, 0, null, readCommand, readReplyCommand, readReplyDataPos, 0);
     }
 
     public static class Constants {
@@ -706,42 +704,42 @@ public enum ComfoAirCommandType {
      * @return data type for this command key
      */
     public ComfoAirDataType getDataType() {
-        return data_type;
+        return dataType;
     }
 
     /**
-     * @return read_command for this command key
+     * @return readCommand for this command key
      */
     public int getReadCommand() {
-        return read_command;
+        return readCommand;
     }
 
     /**
-     * @return read_command for this command key
+     * @return readCommand for this command key
      */
     public int getReadReplyCommand() {
-        return read_reply_command;
+        return readReplyCommand;
     }
 
     /**
      * @return possible byte values
      */
     public int @Nullable [] getPossibleValues() {
-        return possible_values;
+        return possibleValues;
     }
 
     /**
      * @return relevant byte position inside the response byte value array
      */
     public int getChangeDataPos() {
-        return change_data_pos;
+        return changeDataPos;
     }
 
     /**
      * @return generate a byte value sequence for the response stream
      */
     public int[] getChangeDataTemplate() {
-        int[] template = new int[change_data_size];
+        int[] template = new int[changeDataSize];
         for (int i = 0; i < template.length; i++) {
             template[i] = 0x00;
         }
@@ -751,15 +749,15 @@ public enum ComfoAirCommandType {
     /**
      * @return byte position inside the request byte value array
      */
-    public int @Nullable [] getGetReplyDataPos() {
-        return read_reply_data_pos;
+    public int @Nullable [] getReadReplyDataPos() {
+        return readReplyDataPos;
     }
 
     /**
      * @return bit mask for the response byte value
      */
-    public int getGetReplyDataBits() {
-        return read_reply_data_bits;
+    public int getReadReplyDataBits() {
+        return readReplyDataBits;
     }
 
     /**
@@ -807,7 +805,7 @@ public enum ComfoAirCommandType {
 
                     if (data != null) {
                         int dataPosition = commandType.getChangeDataPos();
-                        return new ComfoAirCommand(key, commandType.change_command, null, data, dataPosition, intValue);
+                        return new ComfoAirCommand(key, commandType.changeCommand, null, data, dataPosition, intValue);
                     }
                 }
             }
@@ -833,8 +831,8 @@ public enum ComfoAirCommandType {
         if (commandType != null) {
             uniteCommandsMap(commands, commandType);
 
-            if (commandType.change_affected != null) {
-                for (ComfoAirCommandType affectedCommandType : commandType.change_affected) {
+            if (commandType.changeAffected != null) {
+                for (ComfoAirCommandType affectedCommandType : commandType.changeAffected) {
                     // refresh affected event keys only when they are used
                     if (usedKeys.contains(affectedCommandType.getKey())) {
                         uniteCommandsMap(commands, affectedCommandType);
@@ -871,7 +869,7 @@ public enum ComfoAirCommandType {
     public static List<ComfoAirCommandType> getCommandTypesByReplyCmd(int replyCmd) {
         List<ComfoAirCommandType> commands = new ArrayList<>();
         for (ComfoAirCommandType entry : values()) {
-            if (entry.read_reply_command == replyCmd) {
+            if (entry.readReplyCommand == replyCmd) {
                 commands.add(entry);
             }
         }
@@ -896,8 +894,8 @@ public enum ComfoAirCommandType {
 
     @SuppressWarnings("null")
     private static void uniteCommandsMap(Map<Integer, ComfoAirCommand> commands, ComfoAirCommandType commandType) {
-        if (commandType.read_reply_command != 0) {
-            int replyCmd = commandType.read_reply_command;
+        if (commandType.readReplyCommand != 0) {
+            int replyCmd = commandType.readReplyCommand;
 
             ComfoAirCommand command = commands.get(replyCmd);
 

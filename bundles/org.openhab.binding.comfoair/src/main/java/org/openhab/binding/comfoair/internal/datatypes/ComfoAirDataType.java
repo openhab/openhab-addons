@@ -45,14 +45,14 @@ public interface ComfoAirDataType {
     int @Nullable [] convertFromState(State value, ComfoAirCommandType commandType);
 
     default int calculateNumberValue(int[] data, ComfoAirCommandType commandType) {
-        int[] get_reply_data_pos = commandType.getGetReplyDataPos();
+        int[] readReplyDataPos = commandType.getReadReplyDataPos();
         int value = 0;
-        if (get_reply_data_pos != null) {
+        if (readReplyDataPos != null) {
             int base = 0;
 
-            for (int i = get_reply_data_pos.length - 1; i >= 0; i--) {
-                if (get_reply_data_pos[i] < data.length) {
-                    value += data[get_reply_data_pos[i]] << base;
+            for (int i = readReplyDataPos.length - 1; i >= 0; i--) {
+                if (readReplyDataPos[i] < data.length) {
+                    value += data[readReplyDataPos[i]] << base;
                     base += 8;
                 } else {
                     return -1;
@@ -65,10 +65,10 @@ public interface ComfoAirDataType {
     }
 
     default String calculateStringValue(int[] data, ComfoAirCommandType commandType) {
-        int[] get_reply_data_pos = commandType.getGetReplyDataPos();
+        int[] readReplyDataPos = commandType.getReadReplyDataPos();
         StringBuilder value = new StringBuilder();
-        if (get_reply_data_pos != null) {
-            for (int pos : get_reply_data_pos) {
+        if (readReplyDataPos != null) {
+            for (int pos : readReplyDataPos) {
                 if (pos < data.length) {
                     value.append((char) data[pos]);
                 }

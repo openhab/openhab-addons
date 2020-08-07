@@ -47,9 +47,9 @@ public class DataTypeVolt implements ComfoAirDataType {
             logger.trace("\"DataTypeVolt\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
-            int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-            if (get_reply_data_pos != null && get_reply_data_pos[0] < data.length) {
-                return new QuantityType<>((double) data[get_reply_data_pos[0]] * 10 / 255, SmartHomeUnits.VOLT);
+            int[] readReplyDataPos = commandType.getReadReplyDataPos();
+            if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
+                return new QuantityType<>((double) data[readReplyDataPos[0]] * 10 / 255, SmartHomeUnits.VOLT);
             } else {
                 return UnDefType.NULL;
             }

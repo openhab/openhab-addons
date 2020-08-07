@@ -21,7 +21,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -136,8 +135,22 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                 logger.debug("Failure while creating COMMAND: {}", command);
             }
 
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    logger.debug("Error while closing input stream: {}", e.getMessage());
+                }
+            }
+
+            if (outputStream != null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    logger.debug("Error while closing output stream: {}", e.getMessage());
+                }
+            }
+
             serialPort.close();
         }
     }
@@ -548,9 +561,9 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
         String key = command.getKeys().get(0);
         ComfoAirCommandType commandType = ComfoAirCommandType.getCommandTypeByKey(key);
         if (commandType != null) {
-            int[] get_possible_values = commandType.getPossibleValues();
-            if (get_possible_values != null) {
-                int possibleValue = get_possible_values[0];
+            int[] possibleValues = commandType.getPossibleValues();
+            if (possibleValues != null) {
+                int possibleValue = possibleValues[0];
                 boolean isActive = (preValue & possibleValue) == possibleValue;
                 int newValue;
 

@@ -47,19 +47,19 @@ public class DataTypeBoolean implements ComfoAirDataType {
             logger.trace("\"DataTypeBoolean\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
-            int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-            int get_reply_data_bits = commandType.getGetReplyDataBits();
-            int read_command = commandType.getReadCommand();
+            int[] readReplyDataPos = commandType.getReadReplyDataPos();
+            int readReplyDataBits = commandType.getReadReplyDataBits();
+            int readCommand = commandType.getReadCommand();
             boolean result;
 
-            if (get_reply_data_pos != null && get_reply_data_pos[0] < data.length) {
-                if (get_reply_data_bits == 0) {
-                    result = data[get_reply_data_pos[0]] == 1;
+            if (readReplyDataPos != null && readReplyDataPos[0] < data.length) {
+                if (readReplyDataBits == 0) {
+                    result = data[readReplyDataPos[0]] == 1;
                 } else {
-                    result = (data[get_reply_data_pos[0]] & get_reply_data_bits) == get_reply_data_bits;
+                    result = (data[readReplyDataPos[0]] & readReplyDataBits) == readReplyDataBits;
                 }
                 return OnOffType.from(result);
-            } else if (read_command == 0) {
+            } else if (readCommand == 0) {
                 return OnOffType.OFF; // handle write-only commands (resets)
             } else {
                 return UnDefType.NULL;
@@ -74,11 +74,11 @@ public class DataTypeBoolean implements ComfoAirDataType {
             return null;
         } else {
             DecimalType decimalValue = value.as(DecimalType.class);
-            int[] possible_values = commandType.getPossibleValues();
+            int[] possibleValues = commandType.getPossibleValues();
             int returnValue = 0x01;
 
-            if (possible_values != null) {
-                returnValue = possible_values[0];
+            if (possibleValues != null) {
+                returnValue = possibleValues[0];
             }
 
             if (decimalValue != null) {

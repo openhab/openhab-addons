@@ -46,12 +46,12 @@ public class DataTypeMessage implements ComfoAirDataType {
             logger.trace("\"DataTypeMessage\" class \"convertToState\" method parameter: null");
             return UnDefType.NULL;
         } else {
-            int[] get_reply_data_pos = commandType.getGetReplyDataPos();
-            if (get_reply_data_pos != null) {
-                int errorAlo = data[get_reply_data_pos[0]];
-                int errorE = data[get_reply_data_pos[1]];
-                int errorEA = data[get_reply_data_pos[2]];
-                int errorAhi = data[get_reply_data_pos[3]];
+            int[] readReplyDataPos = commandType.getReadReplyDataPos();
+            if (readReplyDataPos != null) {
+                int errorAlo = data[readReplyDataPos[0]];
+                int errorE = data[readReplyDataPos[1]];
+                int errorEA = data[readReplyDataPos[2]];
+                int errorAhi = data[readReplyDataPos[3]];
 
                 StringBuilder errorCode = new StringBuilder();
 
