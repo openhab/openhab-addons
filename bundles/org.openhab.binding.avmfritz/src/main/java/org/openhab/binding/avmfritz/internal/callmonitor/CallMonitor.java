@@ -104,7 +104,7 @@ public class CallMonitor {
                     reconnectTime = 60000L;
                 } catch (Exception e) {
                     handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Cannot connect to Fritz!Box call monitor - make sure to enable it!");
+                            "Cannot connect to Fritz!Box call monitor - make sure to enable it by dialing '#96*5'!");
                     logger.debug("Error attempting to connect to FritzBox. Retrying in {} seconds",
                             reconnectTime / 1000L, e);
                     try {
