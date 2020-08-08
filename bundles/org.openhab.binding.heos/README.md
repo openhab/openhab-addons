@@ -131,12 +131,12 @@ Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", 
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" , "All" or "Off"           |
-| Favourites        | String        | Plays a favourite. The selection options are retrieved automatically  |
+| Favorites         | String        | Plays a favorite. The selection options are retrieved automatically  |
 | Playlists         | String        | Plays a playlist. The selection options are retrieved automatically   |
 | Queue             | String        | Plays from the queue. The queue items are retrieved automatically     |
 | ClearQueue        | Switch        | Clear the queue when turned ON                                        |
 
-The `Favourites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
+The `Favorites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
 This means the available options will be visible in a Selection, you don't have to specify them manually.
 You can send commands to these channels from rules by sending the name of the selected item (For example: Starting a favorite radio channel from rule).
 
@@ -167,12 +167,12 @@ Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
 | PlayUrl           | String        | Plays a media file located at the URL                                 |
 | Shuffle           | Switch        | Switches shuffle ON or OFF                                            |
 | RepeatMode        | String        | Defines the repeat mode: Inputs are: "One" ; "All" or "Off"           |
-| Favourites        | String        | Plays a favourite. The selection options are retrieved automatically  |
+| Favorites         | String        | Plays a favorite. The selection options are retrieved automatically  |
 | Playlists         | String        | Plays a playlist. The selection options are retrieved automatically   |
 | Queue             | String        | Plays from the queue. The queue items are retrieved automatically     |
 | ClearQueue        | Switch        | Clear the queue when turned ON                                        |
 
-The `Favourites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
+The `Favorites`, `Playlists`, `Queue` selection options are queried automatically from the HEOS system (if you set up any in the HEOS app).
 This means the available options will be visible in a Selection, you don't have to specify them manually.
 You can send commands to these channels from rules by sending the name of the selected item (For example: Starting a favorite radio channel from rule).
 
@@ -263,6 +263,7 @@ Dimmer LivingRoom_Volume "Volume" {channel="heos:player:main:LivingRoom:Volume"}
 String LivingRoom_Title "Title [%s]" {channel="heos:player:main:LivingRoom:Title"}
 String LivingRoom_Interpret "Interpret [%s]" {channel="heos:player:main:LivingRoom:Artist"}
 String LivingRoom_Album "Album [%s]" {channel="heos:player:main:LivingRoom:Album"}
+String LivingRoom_Favorites {channel="heos:player:main:LivingRoom:Favorites"}
 String LivingRoom_Playlists {channel="heos:player:main:LivingRoom:Playlists"}
 ```
 
@@ -276,6 +277,7 @@ String LivingRoom_Playlists {channel="heos:player:main:LivingRoom:Playlists"}
     	Default item=LivingRoom_Title
     	Default item=LivingRoom_Interpret
     	Default item=LivingRoom_Album
+        Selection item=LivingRoom_Favorites     label="Favorite" icon="music"
         Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
     }
 ```
