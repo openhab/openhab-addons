@@ -1,6 +1,7 @@
 # E3DC Binding
 
-<img align="right" src="./doc/E3DC_logo.png" />
+<img align="right" src="./doc/E3DC_logo.png"/
+>
 Integrates the Home Power Plants from E3/DC GmbH into openHAB. See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
 The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
 E3DC devices are integrated into the Modbus Binding. If you want to install an E3DC device via PaperUI perform the following steps
@@ -22,7 +23,7 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 | Name                  | Thing Type ID | Description                                                                                          |
 |-----------------------|---------------|------------------------------------------------------------------------------------------------------|
 | E3DC Home Power Plant | e3dc          | Provides Power values, String Details, Emergency Power Status and general Information of your E3DC Home Power Plant    |
-| E3DC Home Power Plant | e3dc-wallbox  | Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed     |
+| E3DC Wallbox          | e3dc-wallbox  | Provides your Wallbox Settings. Switches like "Sunmode" or "1-Phase Charging" can be changed     |
 
 
 ## Discovery

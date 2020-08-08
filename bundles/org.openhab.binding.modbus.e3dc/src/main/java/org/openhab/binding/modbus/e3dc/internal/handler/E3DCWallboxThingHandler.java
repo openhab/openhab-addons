@@ -63,6 +63,20 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
     private static final String READ_ERROR = "Modbus Read Error";
     private static final String WRITE_ERROR = "Modbus Write Error";
 
+    ChannelUID wbAvailableChannel;
+    ChannelUID wbSunmodeChannel;
+    ChannelUID wbChargingAbortedChannel;
+    ChannelUID wbChargingChannel;
+    ChannelUID wbJackLockedChannel;
+    ChannelUID wbJackPluggedChannel;
+    ChannelUID wbSchukoOnChannel;
+    ChannelUID wbSchukoPluggedChannel;
+    ChannelUID wbSchukoLockedChannel;
+    ChannelUID wbSchukoRelay16Channel;
+    ChannelUID wbRelay16Channel;
+    ChannelUID wbRelay32Channel;
+    ChannelUID wb1phaseChannel;
+
     private final Logger logger = LoggerFactory.getLogger(E3DCWallboxThingHandler.class);
     private final Parser dataParser = new Parser(DataType.DATA);
     private ReadWriteSuccess dataRead = ReadWriteSuccess.NOT_RECEIVED;
@@ -73,6 +87,19 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
 
     public E3DCWallboxThingHandler(Thing thing) {
         super(thing);
+        wbAvailableChannel = new ChannelUID(thing.getUID(), WB_AVAILABLE_CHANNEL);
+        wbSunmodeChannel = new ChannelUID(thing.getUID(), WB_SUNMODE_CHANNEL);
+        wbChargingAbortedChannel = new ChannelUID(thing.getUID(), WB_CHARGING_ABORTED_CHANNEL);
+        wbChargingChannel = new ChannelUID(thing.getUID(), WB_CHARGING_CHANNEL);
+        wbJackLockedChannel = new ChannelUID(thing.getUID(), WB_JACK_LOCKED_CHANNEL);
+        wbJackPluggedChannel = new ChannelUID(thing.getUID(), WB_JACK_PLUGGED_CHANNEL);
+        wbSchukoOnChannel = new ChannelUID(thing.getUID(), WB_SCHUKO_ON_CHANNEL);
+        wbSchukoPluggedChannel = new ChannelUID(thing.getUID(), WB_SCHUKO_PLUGGED_CHANNEL);
+        wbSchukoLockedChannel = new ChannelUID(thing.getUID(), WB_SCHUKO_LOCKED_CHANNEL);
+        wbSchukoRelay16Channel = new ChannelUID(thing.getUID(), WB_SCHUKO_RELAY_16A_CHANNEL);
+        wbRelay16Channel = new ChannelUID(thing.getUID(), WB_RELAY_16A_CHANNEL);
+        wbRelay32Channel = new ChannelUID(thing.getUID(), WB_RELAY_32A_CHANNEL);
+        wb1phaseChannel = new ChannelUID(thing.getUID(), WB_1PHASE_CHANNEL);
     }
 
     @Override
@@ -178,19 +205,19 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
                     synchronized (this) {
                         currentBitSet = block.getBitSet();
                     }
-                    updateState(WB_AVAILABLE_CHANNEL, block.wbAvailable);
-                    updateState(WB_SUNMODE_CHANNEL, block.wbSunmode);
-                    updateState(WB_CHARGING_ABORTED_CHANNEL, block.wbChargingAborted);
-                    updateState(WB_CHARGING_CHANNEL, block.wbCharging);
-                    updateState(WB_JACK_LOCKED_CHANNEL, block.wbJackLocked);
-                    updateState(WB_JACK_PLUGGED_CHANNEL, block.wbJackPlugged);
-                    updateState(WB_SCHUKO_ON_CHANNEL, block.wbSchukoOn);
-                    updateState(WB_SCHUKO_PLUGGED_CHANNEL, block.wbSchukoPlugged);
-                    updateState(WB_SCHUKO_LOCKED_CHANNEL, block.wbSchukoLocked);
-                    updateState(WB_SCHUKO_RELAY_16A_CHANNEL, block.wbSchukoRelay16);
-                    updateState(WB_RELAY_16A_CHANNEL, block.wbRelay16);
-                    updateState(WB_RELAY_32A_CHANNEL, block.wbRelay32);
-                    updateState(WB_1PHASE_CHANNEL, block.wb1phase);
+                    updateState(wbAvailableChannel, block.wbAvailable);
+                    updateState(wbSunmodeChannel, block.wbSunmode);
+                    updateState(wbChargingAbortedChannel, block.wbChargingAborted);
+                    updateState(wbChargingChannel, block.wbCharging);
+                    updateState(wbJackLockedChannel, block.wbJackLocked);
+                    updateState(wbJackPluggedChannel, block.wbJackPlugged);
+                    updateState(wbSchukoOnChannel, block.wbSchukoOn);
+                    updateState(wbSchukoPluggedChannel, block.wbSchukoPlugged);
+                    updateState(wbSchukoLockedChannel, block.wbSchukoLocked);
+                    updateState(wbSchukoRelay16Channel, block.wbSchukoRelay16);
+                    updateState(wbRelay16Channel, block.wbRelay16);
+                    updateState(wbRelay32Channel, block.wbRelay32);
+                    updateState(wb1phaseChannel, block.wb1phase);
                 } else {
                     logger.debug("Unable to get ID {} from WallboxArray", wallboxId);
                 }
