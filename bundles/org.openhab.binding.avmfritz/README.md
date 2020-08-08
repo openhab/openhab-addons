@@ -8,6 +8,7 @@ The binding integrates AVM FRITZ!Boxes with a special focus on the AHA ( [AVM Ho
 
 FRITZ!Boxes (thing type `fritzbox`) are supported as bridges and they offer channels for call monitoring.
 To activate the call monitor interface on a FRITZ!Box, you need to dial once `#96*5*` on a connected telephone.
+(It can be deactivated again by dialing `#96*4*`.)
 
 Additionally, they serve as a bridge for accessing other AHA devices.
 For AHA functionality, the router has to run at least on firmware FRITZ!OS 6.00 and it has to support the "Smart Home" service.
