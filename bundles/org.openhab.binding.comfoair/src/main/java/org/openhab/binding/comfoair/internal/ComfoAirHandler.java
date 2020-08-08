@@ -50,6 +50,7 @@ public class ComfoAirHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_INTERVAL_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(ComfoAirHandler.class);
+    private final ComfoAirConfiguration config = getConfigAs(ComfoAirConfiguration.class);
     private final SerialPortManager serialPortManager;
     private @Nullable ScheduledFuture<?> poller;
     private @Nullable ScheduledFuture<?> affectedItemsPoller;
@@ -94,8 +95,7 @@ public class ComfoAirHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        ComfoAirConfiguration config = getConfigAs(ComfoAirConfiguration.class);
-        String serialPort = config.serialPort;
+        String serialPort = this.config.serialPort;
 
         if (serialPort.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
@@ -105,6 +105,11 @@ public class ComfoAirHandler extends BaseThingHandler {
                     BAUDRATE);
             this.comfoAirConnector = comfoAirConnector;
         }
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.submit(this::connect);
+    }
+
+    private void connect() {
         if (comfoAirConnector != null) {
             comfoAirConnector.open();
             if (comfoAirConnector != null && comfoAirConnector.isConnected()) {
@@ -190,7 +195,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                     for (Channel channel : channels) {
                         updateChannelState(channel);
                     }
-                }, 0, (config.refreshInterval > 0) ? config.refreshInterval : DEFAULT_REFRESH_INTERVAL_SEC,
+                }, 0, (this.config.refreshInterval > 0) ? this.config.refreshInterval : DEFAULT_REFRESH_INTERVAL_SEC,
                         TimeUnit.SECONDS);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);

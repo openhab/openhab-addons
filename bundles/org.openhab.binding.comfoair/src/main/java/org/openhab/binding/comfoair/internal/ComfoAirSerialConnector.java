@@ -19,15 +19,12 @@ import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.TooManyListenersException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
@@ -41,7 +38,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class ComfoAirSerialConnector implements SerialPortEventListener {
+public class ComfoAirSerialConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ComfoAirSerialConnector.class);
 
@@ -84,7 +81,6 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
                         SerialPort.PARITY_NONE);
                 serialPort.enableReceiveThreshold(1);
                 serialPort.enableReceiveTimeout(1000);
-                serialPort.addEventListener(this);
                 serialPort.notifyOnDataAvailable(true);
                 this.serialPort = serialPort;
 
@@ -113,8 +109,6 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
         } catch (IOException e) {
             logger.debug("open(): IO Exception: {}", e.getMessage(), e);
             setConnected(false);
-        } catch (TooManyListenersException e) {
-            logger.debug("open(): Too Many Listeners Exception: {}", e.getMessage(), e);
         }
     }
 
@@ -592,14 +586,5 @@ public class ComfoAirSerialConnector implements SerialPortEventListener {
      */
     public void setConnected(boolean connected) {
         this.connected = connected;
-    }
-
-    @Override
-    public void serialEvent(SerialPortEvent event) {
-        try {
-            logger.trace("RXTX library CPU load workaround, sleep forever");
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
-        }
     }
 }
