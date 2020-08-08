@@ -207,7 +207,6 @@ public class CallMonitor {
             monitorThread.interrupt();
             monitorThread = null;
         }
-
     }
 
     public void startThread() {
