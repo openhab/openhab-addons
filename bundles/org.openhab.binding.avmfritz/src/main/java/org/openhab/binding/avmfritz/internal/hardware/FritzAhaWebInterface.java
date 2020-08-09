@@ -92,19 +92,19 @@ public class FritzAhaWebInterface {
         String localPassword = config.password;
         if (localPassword == null || localPassword.trim().isEmpty()) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Please configure password first");
+                    "Please configure the password.");
             return;
         }
         String loginXml = syncGet(getURL(WEBSERVICE_PATH, addSID("")));
         if (loginXml == null) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond");
+                    "FRITZ!Box does not respond.");
             return;
         }
         Matcher sidmatch = SID_PATTERN.matcher(loginXml);
         if (!sidmatch.find()) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond with SID");
+                    "FRITZ!Box does not respond with SID.");
             return;
         }
         String localSid = sidmatch.group(1);
@@ -112,15 +112,14 @@ public class FritzAhaWebInterface {
         if (accmatch.find()) {
             if ("2".equals(accmatch.group(1))) {
                 sid = localSid;
-                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                        "Resuming FRITZ!Box connection with SID: " + localSid);
+                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 return;
             }
         }
         Matcher challengematch = CHALLENGE_PATTERN.matcher(loginXml);
         if (!challengematch.find()) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond with challenge for authentication");
+                    "FRITZ!Box does not respond with challenge for authentication.");
             return;
         }
         String challenge = challengematch.group(1);
@@ -131,13 +130,13 @@ public class FritzAhaWebInterface {
                         + response));
         if (loginXml == null) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond");
+                    "FRITZ!Box does not respond.");
             return;
         }
         sidmatch = SID_PATTERN.matcher(loginXml);
         if (!sidmatch.find()) {
             handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "FRITZ!Box does not respond with SID");
+                    "FRITZ!Box does not respond with SID.");
             return;
         }
         localSid = sidmatch.group(1);
@@ -145,13 +144,12 @@ public class FritzAhaWebInterface {
         if (accmatch.find()) {
             if ("2".equals(accmatch.group(1))) {
                 sid = localSid;
-                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                        "Established FRITZ!Box connection with SID: " + localSid);
+                handler.setStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
                 return;
             }
         }
         handler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "User "
-                + (localUser == null ? "" : localUser) + " has no access to FRITZ!Box home automation functions");
+                + (localUser == null ? "" : localUser) + " has no access to FRITZ!Box home automation functions.");
         return;
     }
 
