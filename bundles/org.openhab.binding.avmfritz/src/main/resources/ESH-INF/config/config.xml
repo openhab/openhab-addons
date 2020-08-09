@@ -40,7 +40,7 @@
 			<label>Username</label>
 			<description>User name which has HomeAuto permissions on the given FRITZ!Box.</description>
 		</parameter>
-		<parameter name="password" type="text" required="true" groupName="authentication">
+		<parameter name="password" type="text" groupName="authentication">
 			<context>password</context>
 			<label>Password</label>
 			<description>Password to access the FRITZ!Box.</description>
