@@ -121,8 +121,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         if (config.pollInterval <= 0) {
             config.pollInterval = 10;
         }
-        this.scheduledFuture = scheduler.scheduleWithFixedDelay(this::refreshData, config.pollInterval,
-                config.pollInterval, TimeUnit.SECONDS);
+        // we want to trigger the initial refresh 'at once'
+        this.scheduledFuture = scheduler.scheduleWithFixedDelay(this::refreshData, 0, config.pollInterval,
+                TimeUnit.SECONDS);
     }
 
     protected URI buildUri(String path) {
@@ -196,12 +197,19 @@ public class TACmiSchemaHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        final ApiPageEntry e = this.entries.get(channelUID.getId());
         if (command instanceof RefreshType) {
-            // TODO how to debounce this? we could trigger refreshData() but during startup
-            // this issues lots of requests... :-/
+            if (e == null) {
+                // This might be a race condition between the 'initial' poll / fetch not finished yet or the channel
+                // might have been deleted in between. When the initial poll is still in progress, it will send an
+                // update for the channel as soon as we have the data. If the channel got deleted, there is nothing we
+                // can do.
+                return;
+            }
+            // we have our ApiPageEntry which also holds our last known state - just update it.
+            updateState(channelUID, e.getLastState());
             return;
         }
-        final ApiPageEntry e = this.entries.get(channelUID.getId());
         if (e == null) {
             logger.warn("Got command for unknown channel {}: {}", channelUID, command);
             return;
@@ -255,6 +263,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             ContentResponse res = reqUpdate.send();
             if (res.getStatus() == 200) {
                 // update ok, we update the state
+                e.setLastState((State) command);
                 updateState(channelUID, (State) command);
             } else {
                 logger.error("Error sending update for {} = {}: {} {}", channelUID, command, res.getStatus(),

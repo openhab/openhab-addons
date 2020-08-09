@@ -464,10 +464,11 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 channel = channelBuilder.build(); // add configuration property...
             }
             this.configChanged = true;
-            e = new ApiPageEntry(type, channel, address, cx2e);
+            e = new ApiPageEntry(type, channel, address, cx2e, state);
             this.entries.put(shortName, e);
         }
         this.channels.add(e.channel);
+        e.setLastState(state);
         this.taCmiSchemaHandler.updateState(e.channel.getUID(), state);
     }
 

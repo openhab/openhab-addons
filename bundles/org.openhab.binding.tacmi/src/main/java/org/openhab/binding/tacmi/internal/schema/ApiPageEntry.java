@@ -15,6 +15,7 @@ package org.openhab.binding.tacmi.internal.schema;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.types.State;
 
 /**
  * The {@link ApiPageEntry} class contains mapping information for an entry of
@@ -61,11 +62,25 @@ public class ApiPageEntry {
      */
     public final @Nullable ChangerX2Entry changerX2Entry;
 
+    /**
+     * The last known state for this item...
+     */
+    private State lastState;
+
     protected ApiPageEntry(final Type type, final Channel channel, @Nullable final String address,
-            @Nullable ChangerX2Entry changerX2Entry) {
+            @Nullable ChangerX2Entry changerX2Entry, State lastState) {
         this.type = type;
         this.channel = channel;
         this.address = address;
         this.changerX2Entry = changerX2Entry;
+        this.lastState = lastState;
+    }
+
+    public void setLastState(State lastState) {
+        this.lastState = lastState;
+    }
+
+    public State getLastState() {
+        return lastState;
     }
 }
