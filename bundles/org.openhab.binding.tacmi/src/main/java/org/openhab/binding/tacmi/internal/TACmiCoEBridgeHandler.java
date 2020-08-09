@@ -82,14 +82,15 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
 
         @Override
         public void run() {
-            try {
-                final DatagramSocket coeSocket = TACmiCoEBridgeHandler.this.coeSocket;
-                if (coeSocket == null) {
-                    logger.warn("coeSocket is NULL - Reader disabled!");
-                    return;
-                }
-                while (!isInterrupted()) {
-                    final byte[] receiveData = new byte[14];
+            final DatagramSocket coeSocket = TACmiCoEBridgeHandler.this.coeSocket;
+            if (coeSocket == null) {
+                logger.warn("coeSocket is NULL - Reader disabled!");
+                return;
+            }
+            while (!isInterrupted()) {
+                final byte[] receiveData = new byte[14];
+
+                try {
                     final DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
                     try {
                         coeSocket.receive(receivePacket);
@@ -98,44 +99,47 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                         continue;
                     }
 
-                    try {
-                        final byte[] data = receivePacket.getData();
-                        Message message;
-                        if (data[1] > 0 && data[1] < 9) {
-                            message = new AnalogMessage(data);
-                        } else if (data[1] == 0 || data[1] == 9) {
-                            message = new DigitalMessage(data);
-                        } else {
-                            logger.debug("Invalid message received");
-                            continue;
-                        }
-                        logger.debug("{}", message.toString());
-
-                        final InetAddress remoteAddress = receivePacket.getAddress();
-                        final int node = message.canNode;
-                        boolean found = false;
-                        for (final TACmiHandler cmi : registeredCMIs) {
-                            if (cmi.isFor(remoteAddress, node)) {
-                                cmi.handleCoE(message);
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            logger.info("Received CoE-Packet from {} Node {} and we don't have a Thing for!",
-                                    remoteAddress, node);
-                        }
-                    } catch (final Exception t) {
-                        logger.error("Error processing data: {}", t.getMessage(), t);
+                    final byte[] data = receivePacket.getData();
+                    Message message;
+                    if (data[1] > 0 && data[1] < 9) {
+                        message = new AnalogMessage(data);
+                    } else if (data[1] == 0 || data[1] == 9) {
+                        message = new DigitalMessage(data);
+                    } else {
+                        logger.debug("Invalid message received");
+                        continue;
                     }
+                    logger.debug("{}", message.toString());
+
+                    final InetAddress remoteAddress = receivePacket.getAddress();
+                    final int node = message.canNode;
+                    boolean found = false;
+                    for (final TACmiHandler cmi : registeredCMIs) {
+                        if (cmi.isFor(remoteAddress, node)) {
+                            cmi.handleCoE(message);
+                            found = true;
+                        }
+                    }
+                    if (!found) {
+                        logger.info("Received CoE-Packet from {} Node {} and we don't have a Thing for!", remoteAddress,
+                                node);
+                    }
+                } catch (final IOException e) {
+                    if (isInterrupted()) {
+                        return;
+                    }
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Error processing data: " + e.getMessage());
+
+                } catch (RuntimeException e) {
+                    // we catch runtime exceptions here to prevent the receiving thread to stop accidentally if
+                    // something like a IllegalStateException or NumberFormatExceptions are thrown. This indicates a bug
+                    // or a situation / setup I'm not thinking of ;)
+                    if (isInterrupted()) {
+                        return;
+                    }
+                    logger.error("Error processing data: {}", e.getMessage(), e);
                 }
-                logger.debug("ReceiveThread exiting.");
-            } catch (final Exception t) {
-                if (isInterrupted()) {
-                    return;
-                }
-                // logged by framework via updateStatus
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Error processing data: " + t.getMessage());
             }
         }
     }
