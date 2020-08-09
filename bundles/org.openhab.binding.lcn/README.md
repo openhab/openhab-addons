@@ -244,6 +244,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Send Keys                       | Sende Tasten                     | N/A                    | N/A  | N/A                            | Action: "hitKey": Hits a key of a key table in an LCN module. Can be used to execute commands, not supported by this binding. |
 | Dimmer Output Control Multiple  | Mehrere Ausgänge steuern         | output                 | 1-4  | Dimmer, Switch                 | Control multiple outputs simultaneously. See below.                                                                           |
 | Transponder                     | Transponder                      | code#transponder       |      | Trigger                        | Receive transponder messages                                                                                                  |
+| Fingerprint                     | Fingerprint                      | code#fingerprint       |      | Trigger                        | Receive fingerprint code messages                                                                                                  |
 | Remote Control                  | Fernbedienung                    | code#remotecontrolkey  |      | Trigger                        | Receive commands from remote control                                                                                          |
 | Access Control                  | Zutrittskontrolle                | code#remotecontrolcode |      | Trigger                        | Receive serial numbers from remote control                                                                                    |
 | Remote Control Battery Low      | Fernbedienung Batterie schwach   | code#remotecontrolbatterylow | | Trigger                       | Triggered when the sending remote control has a low battery                                                                   |
@@ -282,9 +283,9 @@ The Rollershutter Channels provide the boolean parameter `invertUpDown`, which c
 
 The Binarysensor Channels provide the boolean parameter `invertState`, which can be set to 'true' if the binary sensor connected uses reverse logic for signaling open/closed.
 
-### Transponder
+### Transponder/Fingerprints
 
-LCN transponder readers can be integrated in openHAB e.g. for access control.
+LCN transponder readers or fingerprint readers can be integrated in openHAB e.g. for access control.
 The transponder function must be enabled in the module's I-port properties within *LCN-PRO*.
  
 Example: When the transponder card with the ID "12ABCD" is seen by the reader connected to LCN module "S000M011", the item "M10_Relay7" is switched on:
@@ -293,6 +294,17 @@ Example: When the transponder card with the ID "12ABCD" is seen by the reader co
 rule "My Transponder"
 when
     Channel "lcn:module:b827ebfea4bb:S000M011:code#transponder" triggered "12ABCD"
+then
+    M10_Relay7.sendCommand(ON)
+end
+```
+
+Example: When fingerprint with ID "AFFE12" is seen by reader connected to LCN module "S000M011", the item "M10_Relay7" is switched on:
+
+```
+rule "My Fingerprint"
+when
+    Channel "lcn:module:b827ebfea4bb:S000M011:code#fingerprint" triggered "AFFE12"
 then
     M10_Relay7.sendCommand(ON)
 end
