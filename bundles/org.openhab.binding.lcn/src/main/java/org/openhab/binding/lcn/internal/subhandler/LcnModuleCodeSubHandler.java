@@ -22,10 +22,7 @@ import org.openhab.binding.lcn.internal.LcnBindingConstants;
 import org.openhab.binding.lcn.internal.LcnModuleHandler;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
-import org.openhab.binding.lcn.internal.connection.Connection;
 import org.openhab.binding.lcn.internal.connection.ModInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Handles State changes of transponders and remote controls of an LCN module.
