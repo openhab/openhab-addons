@@ -5,21 +5,8 @@
 Integrates the Home Power Plants from E3/DC GmbH into openHAB. See [E3DC Website](https://www.e3dc.com/) to find more informations about the device.
 The Power Plant handles all your Electrical Energy Resources like Photovoltaic Producers, Battery Storage, Wallbox Power Supply, Household Consumption and even more.  
 E3DC devices are integrated into the Modbus Binding. 
-Perform the following steps in order to integrate your E3DC Device:
 
-1. Create Modbus TCP Bridge with
-
-* IP Address
-* Device ID
-* Port ID
-
-2. Create E3DC Home Power Plant and attach it to the previous installed Modbus TCP Bridge.
-Configuration requires an approriate Data Refresh Intervall with more than 1000 Milliseconds
-
-3. If you have a Wallbox attached to your E3DC add _E3DC Wallbox_ Thing with your previous installed _E3DC Home Power Plant_ as Bridge
-Configuration requires a Wallbox ID between 0 and 7.
-
-See chapter [Configuration](#thing-configuration) how to set them up in PaperUI or check the [full example Things](#things) for manual setup. 
+See chapter [Thing Configuration](#thing-configuration) how to set them up or check the [full example Things](#things) for manual setup. 
 
 
 ## Supported Things
@@ -34,19 +21,24 @@ First you need a Bridge which establishes the basic connection towards your E3DC
 
 ## Discovery
 
-There's no discovery. Modbus registers are available for all devices. Just install the blocks you are interested in.
+There's no discovery. Modbus registers are available for all devices. 
 
 
 ## Thing Configuration
 
 As mentioned earlier in the [Binding Description](#e3dc-binding) the needed Things can be found in the **Modbus Binding** and have to be added manually without Discovery
 
-1. Add a "Modbus TCP Slave". IP-Address, Modbus Port and Device ID are mandatory configuration parameters and have to match your E3DC Settings
-2. Now add an "E3DC Home Power Plant". 
-Bridge is the previously created Modbus TCP Slave. 
+<img align="right" src="./doc/E3DC_Modbus_Settings.png"/>
 
-The Power Plant provides 4 different Channels with all available information of your E3DC device.  
-3. If you have a Wallbox attached add "E3DC Wallbox". Bridge is your attached E3DC Home Power Plant, mandatory configuration parameter is the Wallbox ID
+1. Create _Modbus TCP Bridge_ with matching Settings of your E3DC Device
+
+* IP Address
+* Device ID
+* Port ID
+
+2. Create _E3DC Home Power Plant_ and attach it to the previous installed _Modbus TCP Bridge_. Configuration requires an approriate Data Refresh Interval with more than 1000 Milliseconds
+
+3. If you have a Wallbox attached add _E3DC Wallbox_ Thing with your previous installed _E3DC Home Power Plant_ as Bridge. Configuration requires a Wallbox ID between 0 and 7.
 
 Check the [full example Things](#things) for manual setup.
 
