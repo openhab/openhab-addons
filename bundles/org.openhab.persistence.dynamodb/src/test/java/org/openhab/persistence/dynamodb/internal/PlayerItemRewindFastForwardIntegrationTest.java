@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.PlayerItem;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RewindFastforwardType;
@@ -35,7 +35,7 @@ public class PlayerItemRewindFastForwardIntegrationTest extends AbstractTwoItemI
     private static final RewindFastforwardType STATE2 = RewindFastforwardType.REWIND;
     private static final @Nullable PlayPauseType STATE_BETWEEN = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         PlayerItem item = (PlayerItem) ITEMS.get(NAME);
 

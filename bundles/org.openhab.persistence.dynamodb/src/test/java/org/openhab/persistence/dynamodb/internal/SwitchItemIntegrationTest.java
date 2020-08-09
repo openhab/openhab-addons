@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
@@ -36,7 +36,7 @@ public class SwitchItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     // Omit extended query tests AbstractTwoItemIntegrationTest by setting stateBetween to null.
     private static final @Nullable OnOffType STATE_BETWEEN = null;
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         SwitchItem item = (SwitchItem) ITEMS.get(NAME);
         item.setState(STATE1);

@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.LocationItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
@@ -38,7 +38,7 @@ public class LocationItemIntegrationTest extends AbstractTwoItemIntegrationTest 
     private static final PointType STATE2 = new PointType(new DecimalType(61.0), new DecimalType(30.));
     private static final PointType STATE_BETWEEN = new PointType(new DecimalType(60.5), new DecimalType(30.));
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         LocationItem item = (LocationItem) ITEMS.get(NAME);
         item.setState(STATE1);

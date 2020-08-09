@@ -12,13 +12,13 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.CallItem;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.types.State;
@@ -37,7 +37,7 @@ public class CallItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final StringListType STATE2 = new StringListType("part3", "bar");
     private static final StringListType STATE_BETWEEN = new StringListType("part2", "zzz");
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         CallItem item = (CallItem) ITEMS.get(NAME);
         item.setState(STATE1);

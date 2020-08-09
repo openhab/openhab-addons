@@ -13,10 +13,10 @@
 package org.openhab.persistence.mapdb;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.hamcrest.collection.IsEmptyIterable.emptyIterable;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +24,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.library.items.ColorItem;
 import org.openhab.core.library.items.DimmerItem;
@@ -47,12 +47,12 @@ import org.openhab.persistence.mapdb.internal.MapDbPersistenceService;
 public class MapDbPersistenceServiceOSGiTest extends JavaOSGiTest {
     private MapDbPersistenceService persistenceService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         persistenceService = getService(QueryablePersistenceService.class, MapDbPersistenceService.class);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws IOException {
         // clean up database files ...
         removeDirRecursive("userdata");

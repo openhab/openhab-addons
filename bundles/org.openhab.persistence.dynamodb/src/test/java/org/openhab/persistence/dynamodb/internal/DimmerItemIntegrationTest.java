@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.DimmerItem;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
@@ -34,7 +34,7 @@ public class DimmerItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final PercentType STATE2 = new PercentType(68);
     private static final PercentType STATE_BETWEEN = new PercentType(67);
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         DimmerItem item = (DimmerItem) ITEMS.get(NAME);
 

@@ -23,11 +23,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
@@ -124,7 +124,7 @@ public class GoogleTTSService implements TTSService {
     @Activate
     protected void activate(Map<String, Object> config) {
         // create cache folder
-        File userData = new File(ConfigConstants.getUserDataFolder());
+        File userData = new File(OpenHAB.getUserDataFolder());
         File cacheFolder = new File(new File(userData, CACHE_FOLDER_NAME), SERVICE_PID);
         if (!cacheFolder.exists()) {
             cacheFolder.mkdirs();

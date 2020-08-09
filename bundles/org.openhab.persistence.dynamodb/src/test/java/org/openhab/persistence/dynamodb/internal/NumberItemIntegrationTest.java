@@ -12,14 +12,14 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.State;
@@ -39,7 +39,7 @@ public class NumberItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final DecimalType STATE2 = new DecimalType(600.9123);
     private static final DecimalType STATE_BETWEEN = new DecimalType(500);
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         NumberItem item = (NumberItem) ITEMS.get(NAME);
 

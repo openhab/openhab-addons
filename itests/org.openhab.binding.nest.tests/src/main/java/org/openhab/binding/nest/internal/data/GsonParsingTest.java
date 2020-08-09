@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.nest.internal.data;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.nest.internal.data.NestDataUtil.*;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.unit.SIUnits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,9 +123,9 @@ public class GsonParsingTest {
         assertEquals((Integer) 120, Thermostat.parseTimeToTarget(">120"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void thermostatTimeToTargetUnsupportedValueParsing() {
-        Thermostat.parseTimeToTarget("#5");
+        assertThrows(NumberFormatException.class, () -> Thermostat.parseTimeToTarget("#5"));
     }
 
     @Test

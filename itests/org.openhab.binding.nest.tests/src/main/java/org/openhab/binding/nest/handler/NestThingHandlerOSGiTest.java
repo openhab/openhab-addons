@@ -13,9 +13,9 @@
 package org.openhab.binding.nest.handler;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.nest.internal.rest.NestStreamingRestClient.PUT;
 
@@ -33,9 +33,9 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.openhab.binding.nest.internal.config.NestBridgeConfiguration;
 import org.openhab.binding.nest.internal.handler.NestBaseHandler;
 import org.openhab.binding.nest.test.NestTestApiServlet;
@@ -124,14 +124,14 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
         this.thingClass = thingClass;
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() throws Exception {
         ServletHolder holder = new ServletHolder(servlet);
         server = new NestTestServer(SERVER_HOST, SERVER_PORT, SERVER_TIMEOUT, holder);
         server.startServer();
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws ItemNotFoundException {
         registerService(volatileStorageService);
 
@@ -186,7 +186,7 @@ public abstract class NestThingHandlerOSGiTest extends JavaOSGiTest {
         assertThatAllItemStatesAreNull();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         servlet.reset();
         servlet.closeConnections();

@@ -16,7 +16,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
@@ -34,7 +34,7 @@ public class StringItemIntegrationTest extends AbstractTwoItemIntegrationTest {
     private static final StringType STATE2 = new StringType("c002");
     private static final StringType STATE_BETWEEN = new StringType("b001");
 
-    @BeforeClass
+    @BeforeAll
     public static void storeData() throws InterruptedException {
         StringItem item = (StringItem) ITEMS.get(NAME);
         item.setState(STATE1);

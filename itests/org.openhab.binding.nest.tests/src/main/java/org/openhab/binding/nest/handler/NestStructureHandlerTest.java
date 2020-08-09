@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.nest.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.openhab.binding.nest.internal.NestBindingConstants.*;
 import static org.openhab.binding.nest.internal.data.NestDataUtil.*;
 import static org.openhab.core.library.types.OnOffType.OFF;
@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.nest.internal.config.NestStructureConfiguration;
 import org.openhab.binding.nest.internal.handler.NestStructureHandler;
 import org.openhab.core.config.core.Configuration;

@@ -13,11 +13,7 @@
 package org.openhab.persistence.influxdb.internal;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;
 
 import java.math.BigInteger;
@@ -25,11 +21,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
 import org.openhab.core.items.MetadataRegistry;
@@ -39,18 +36,17 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 /**
  * @author Joan Pujol Espinar - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 @SuppressWarnings("null") // In case of any NPE it will cause test fail that it's the expected result
 @NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
 public class ItemToStorePointCreatorTest {
-    @Mock
-    private InfluxDBConfiguration influxDBConfiguration;
-    @Mock
-    private MetadataRegistry metadataRegistry;
+
+    private @Mock InfluxDBConfiguration influxDBConfiguration;
+    private @Mock MetadataRegistry metadataRegistry;
     private ItemToStorePointCreator instance;
 
-    @Before
+    @BeforeEach
     public void before() {
-        MockitoAnnotations.initMocks(this);
         when(influxDBConfiguration.isAddCategoryTag()).thenReturn(false);
         when(influxDBConfiguration.isAddLabelTag()).thenReturn(false);
         when(influxDBConfiguration.isAddTypeTag()).thenReturn(false);
@@ -59,7 +55,7 @@ public class ItemToStorePointCreatorTest {
         instance = new ItemToStorePointCreator(influxDBConfiguration, metadataRegistry);
     }
 
-    @After
+    @AfterEach
     public void after() {
         instance = null;
         influxDBConfiguration = null;

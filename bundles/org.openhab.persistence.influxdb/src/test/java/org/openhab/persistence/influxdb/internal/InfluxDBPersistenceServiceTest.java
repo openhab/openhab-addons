@@ -20,11 +20,12 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.DefaultLocation;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.MetadataRegistry;
 import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
@@ -32,19 +33,18 @@ import org.openhab.persistence.influxdb.InfluxDBPersistenceService;
 /**
  * @author Joan Pujol Espinar - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 @NonNullByDefault(value = { DefaultLocation.PARAMETER, DefaultLocation.RETURN_TYPE })
 public class InfluxDBPersistenceServiceTest {
     private InfluxDBPersistenceService instance;
-    @Mock
-    private InfluxDBRepository influxDBRepository;
+
+    private @Mock InfluxDBRepository influxDBRepository;
 
     private Map<String, @Nullable Object> validConfig;
     private Map<String, @Nullable Object> invalidConfig;
 
-    @Before
+    @BeforeEach
     public void before() {
-        MockitoAnnotations.initMocks(this);
-
         instance = new InfluxDBPersistenceService(mock(ItemRegistry.class), mock(MetadataRegistry.class)) {
             @Override
             protected InfluxDBRepository createInfluxDBRepository() {
@@ -56,7 +56,7 @@ public class InfluxDBPersistenceServiceTest {
         invalidConfig = ConfigurationTestHelper.createInvalidConfigurationParameters();
     }
 
-    @After
+    @AfterEach
     public void after() {
         validConfig = null;
         invalidConfig = null;
