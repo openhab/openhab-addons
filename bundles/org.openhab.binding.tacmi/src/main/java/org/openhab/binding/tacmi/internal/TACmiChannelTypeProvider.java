@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Provides all ChannelTypes for the schema binding...
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { TACmiChannelTypeProvider.class, ChannelTypeProvider.class }, immediate = true)

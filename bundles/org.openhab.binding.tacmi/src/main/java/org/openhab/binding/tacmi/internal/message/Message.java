@@ -23,12 +23,12 @@ import org.slf4j.LoggerFactory;
  * Base message class handling generic functions.
  *
  * @author Timo Wendt - Initial contribution
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
+ * @author Christian Niessner - Ported to OpenHAB2
  */
 @NonNullByDefault
 public abstract class Message {
 
-    protected final static Logger logger = LoggerFactory.getLogger(Message.class);
+    protected final Logger logger = LoggerFactory.getLogger(Message.class);
 
     /**
      * ByteBuffer that stores the content of the message.
@@ -69,8 +69,6 @@ public abstract class Message {
         setCanNode(canNode);
         setPodNumber(podNumber);
     }
-
-    public abstract void debug(Logger logger);
 
     public abstract MessageType getType();
 

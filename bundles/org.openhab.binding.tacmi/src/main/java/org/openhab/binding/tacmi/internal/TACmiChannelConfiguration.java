@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link TACmiConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 public class TACmiChannelConfiguration {
@@ -36,10 +36,12 @@ public class TACmiChannelConfiguration {
 
     @Override
     public boolean equals(@Nullable Object other) {
-        if (this == other)
+        if (this == other) {
             return true;
-        if (other == null || !other.getClass().equals(TACmiChannelConfiguration.class))
+        }
+        if (other == null || !other.getClass().equals(TACmiChannelConfiguration.class)) {
             return false;
+        }
         TACmiChannelConfiguration o = (TACmiChannelConfiguration) other;
         return this.output == o.output;
     }

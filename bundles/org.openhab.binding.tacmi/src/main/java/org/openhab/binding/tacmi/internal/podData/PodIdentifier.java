@@ -35,11 +35,11 @@ public final class PodIdentifier {
         if (podId < 0)
             throw new ArrayIndexOutOfBoundsException(podId);
         switch (messageType) {
-            case A:
+            case ANALOG:
                 if (podId < 1 || podId > 8)
                     throw new ArrayIndexOutOfBoundsException(podId);
                 break;
-            case D:
+            case DIGITAL:
                 if (podId != 0 && podId != 9)
                     throw new ArrayIndexOutOfBoundsException(podId);
                 break;

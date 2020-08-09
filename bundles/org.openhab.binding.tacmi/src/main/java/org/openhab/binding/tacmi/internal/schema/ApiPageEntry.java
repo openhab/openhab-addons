@@ -20,13 +20,19 @@ import org.eclipse.smarthome.core.thing.Channel;
  * The {@link ApiPageEntry} class contains mapping information for an entry of
  * the API page.
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 public class ApiPageEntry {
 
     static enum Type {
-        ReadOnlySwitch(true), ReadOnlyNumeric(true), NumericForm(false), SwitchButton(false), SwitchForm(false), ReadOnlyState(true), StateForm(false);
+        READ_ONLY_SWITCH(true),
+        READ_ONLY_NUMERIC(true),
+        NUMERIC_FORM(false),
+        SWITCH_BUTTON(false),
+        SWITCH_FORM(false),
+        READ_ONLY_STATE(true),
+        STATE_FORM(false);
 
         public final boolean readOnly;
 
@@ -55,7 +61,8 @@ public class ApiPageEntry {
      */
     public final @Nullable ChangerX2Entry changerX2Entry;
 
-    protected ApiPageEntry(final Type type, final Channel channel, @Nullable final String address, @Nullable ChangerX2Entry changerX2Entry) {
+    protected ApiPageEntry(final Type type, final Channel channel, @Nullable final String address,
+            @Nullable ChangerX2Entry changerX2Entry) {
         this.type = type;
         this.channel = channel;
         this.address = address;

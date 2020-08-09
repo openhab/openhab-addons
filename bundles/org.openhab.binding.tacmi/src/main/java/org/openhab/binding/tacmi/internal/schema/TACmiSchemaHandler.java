@@ -37,7 +37,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.B64Code;
-import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -59,17 +58,12 @@ import org.slf4j.LoggerFactory;
  * The {@link TACmiHandler} is responsible for handling commands, which are sent
  * to one of the channels.
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 public class TACmiSchemaHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TACmiSchemaHandler.class);
-
-    /**
-     * the C.M.I.'s address
-     */
-    // private @Nullable InetAddress cmiAddress;
 
     private final HttpClient httpClient;
     private final TACmiChannelTypeProvider channelTypeProvider;
@@ -99,33 +93,23 @@ public class TACmiSchemaHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
         final TACmiSchemaConfiguration config = getConfigAs(TACmiSchemaConfiguration.class);
 
-        if (StringUtil.isBlank(config.host)) {
+        if (config.host.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No host configured!");
             return;
         }
-        if (StringUtil.isBlank(config.username)) {
+        if (config.username.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No username configured!");
             return;
         }
-        if (StringUtil.isBlank(config.password)) {
+        if (config.password.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password configured!");
             return;
         }
         this.online = false;
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
 
-        // set cmiAddress from configuration
-        // cmiAddress = (String) configuration.get("cmiAddress");
-        /*
-         * try { cmiAddress = InetAddress.getByName(config.host); } catch (final
-         * UnknownHostException e1) {
-         * logger.error("Failed to get IP of C.M.I. from configuration");
-         * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-         * "Failed to get IP of C.M.I. from configuration"); return; }
-         */
         this.authHeader = "Basic "
                 + B64Code.encode(config.username + ":" + config.password, StandardCharsets.ISO_8859_1);
 
@@ -137,7 +121,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         if (config.pollInterval <= 0) {
             config.pollInterval = 10;
         }
-        this.scheduledFuture = scheduler.scheduleAtFixedRate(() -> refreshData(), config.pollInterval,
+        this.scheduledFuture = scheduler.scheduleWithFixedDelay(this::refreshData, config.pollInterval,
                 config.pollInterval, TimeUnit.SECONDS);
     }
 
@@ -146,7 +130,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
     }
 
     private Request prepareRequest(final URI uri) {
-        final Request req = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(30000, TimeUnit.MILLISECONDS);
+        final Request req = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(10000, TimeUnit.MILLISECONDS);
         req.header(HttpHeader.ACCEPT_LANGUAGE, "en"); // we want the on/off states in english
         final String ah = this.authHeader;
         if (ah != null) {
@@ -160,7 +144,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         final ContentResponse response = prepareRequest(uri).send();
 
         String responseString = null;
-        if (StringUtil.isBlank(response.getEncoding())) {
+        String encoding = response.getEncoding();
+        if (encoding == null || encoding.trim().isEmpty()) {
+            // the C.M.I. dosn't sometime return a valid encoding - but it defaults to UTF-8 instead of ISO...
             responseString = new String(response.getContent(), StandardCharsets.UTF_8);
         } else {
             responseString = response.getContentAsString();
@@ -196,11 +182,13 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                 this.online = true;
             }
         } catch (final InterruptedException e) {
-            // plugin shutdown is in progress
+            // binding shutdown is in progress
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
             this.online = false;
-        } catch (final Exception e) {
-            logger.error("Error loading API Scheme: {} ", e.getMessage(), e);
+        } catch (final ParseException | TimeoutException | ExecutionException | RuntimeException e) {
+            // we need the stack trace here to get an idea what happened when this happens to somebody and we try to
+            // troubleshoot this
+            logger.debug("Error loading API Scheme: {} ", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error: " + e.getMessage());
             this.online = false;
         }
@@ -220,12 +208,12 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         }
         final Request reqUpdate;
         switch (e.type) {
-            case SwitchButton:
+            case SWITCH_BUTTON:
                 reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + e.address + "&changetox2="
                         + (command == OnOffType.ON ? "1" : "0")));
                 reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
                 break;
-            case SwitchForm:
+            case SWITCH_FORM:
                 ChangerX2Entry cx2e = e.changerX2Entry;
                 if (cx2e != null) {
                     reqUpdate = prepareRequest(buildUri("INCLUDE/change.cgi?changeadrx2=" + cx2e.address
@@ -236,7 +224,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     return;
                 }
                 break;
-            case StateForm:
+            case STATE_FORM:
                 ChangerX2Entry cx2sf = e.changerX2Entry;
                 if (cx2sf != null) {
                     String val = cx2sf.options.get(((StringType) command).toFullString());
@@ -254,9 +242,9 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                     return;
                 }
                 break;
-            case ReadOnlyNumeric:
-            case ReadOnlyState:
-            case ReadOnlySwitch:
+            case READ_ONLY_NUMERIC:
+            case READ_ONLY_STATE:
+            case READ_ONLY_SWITCH:
                 logger.warn("Got command for ReadOnly channel {}: {}", channelUID, command);
                 return;
             default:
@@ -296,5 +284,4 @@ public class TACmiSchemaHandler extends BaseThingHandler {
         }
         super.dispose();
     }
-
 }

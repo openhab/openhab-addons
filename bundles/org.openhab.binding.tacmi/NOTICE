@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+attoparser
+* License: Apache 2.0
+* Project: https://www.attoparser.org
+* Source:  https://github.com/attoparser/attoparser

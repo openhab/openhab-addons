@@ -12,13 +12,16 @@
  */
 package org.openhab.binding.tacmi.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This enumeration represents the different message types provided by the C.M.I COE protocol.
- * 
+ *
  * @author Timo Wendt - Initial contribution
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
+ * @author Christian Niessner - Ported to OpenHAB2
  */
+@NonNullByDefault
 public enum MessageType {
-    A,
-    D
+    ANALOG,
+    DIGITAL
 }

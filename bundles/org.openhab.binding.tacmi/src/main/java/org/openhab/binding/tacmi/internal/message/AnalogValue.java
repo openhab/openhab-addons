@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Timo Wendt - Initial contribution
  * @author Wolfgang Klimt
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
+ * @author Christian Niessner - Ported to OpenHAB2
  */
 @NonNullByDefault
 public final class AnalogValue {
     public double value;
     public TACmiMeasureType measureType;
 
-    private static Logger logger = LoggerFactory.getLogger(AnalogValue.class);
+    private final Logger logger = LoggerFactory.getLogger(AnalogValue.class);
 
     /**
      * Create new AnalogValue with specified value and type

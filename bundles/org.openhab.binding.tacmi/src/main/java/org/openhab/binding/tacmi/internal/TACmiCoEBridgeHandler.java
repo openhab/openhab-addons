@@ -20,6 +20,8 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * connects it to the framework. All {@link TACmiHandler}s use the
  * {@link TACmiCoEBridgeHandler} to execute the actual commands.
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
@@ -60,7 +62,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable ReceiveThread receiveThread;
 
-    private @Nullable MonitorThread monitor;
+    private @Nullable ScheduledFuture<?> timeoutCheckFuture;
 
     private final Collection<TACmiHandler> registeredCMIs = new HashSet<>();
 
@@ -71,7 +73,6 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     /**
      * Thread which receives all data from the bridge.
      */
-    @NonNullByDefault
     private class ReceiveThread extends Thread {
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
 
@@ -82,10 +83,9 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
         @Override
         public void run() {
             try {
-                @Nullable
                 final DatagramSocket coeSocket = TACmiCoEBridgeHandler.this.coeSocket;
                 if (coeSocket == null) {
-                    logger.error("coeSocket is NULL - Reader disabled!");
+                    logger.warn("coeSocket is NULL - Reader disabled!");
                     return;
                 }
                 while (!isInterrupted()) {
@@ -94,9 +94,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                     try {
                         coeSocket.receive(receivePacket);
                     } catch (final SocketTimeoutException te) {
-                        logger.info("Receive timeout on CoE socket, retrying ...");
-                        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        // "Receive timeout on CoE socket, retrying ...");
+                        logger.trace("Receive timeout on CoE socket, retrying ...");
                         continue;
                     }
 
@@ -104,10 +102,8 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                         final byte[] data = receivePacket.getData();
                         Message message;
                         if (data[1] > 0 && data[1] < 9) {
-                            logger.debug("Processing analog message");
                             message = new AnalogMessage(data);
                         } else if (data[1] == 0 || data[1] == 9) {
-                            logger.debug("Processing digital message");
                             message = new DigitalMessage(data);
                         } else {
                             logger.debug("Invalid message received");
@@ -124,18 +120,20 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                                 found = true;
                             }
                         }
-                        if (!found)
+                        if (!found) {
                             logger.info("Received CoE-Packet from {} Node {} and we don't have a Thing for!",
                                     remoteAddress, node);
+                        }
                     } catch (final Exception t) {
                         logger.error("Error processing data: {}", t.getMessage(), t);
                     }
                 }
                 logger.debug("ReceiveThread exiting.");
             } catch (final Exception t) {
-                if (isInterrupted())
+                if (isInterrupted()) {
                     return;
-                logger.error("Fatal error processing data: {}", t.getMessage(), t);
+                }
+                // logged by framework via updateStatus
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error processing data: " + t.getMessage());
             }
@@ -143,60 +141,37 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Thread which periodically polls status of the bridge.
+     * Periodically check for timeouts on the registered / active CoE channels
      */
-    @NonNullByDefault
-    private class MonitorThread extends Thread {
-
-        MonitorThread() {
-            super("tacmi TA C.M.I. CoE MonitorThread");
-        }
-
-        @Override
-        public void run() {
-            while (!isInterrupted()) {
-                try {
-                    synchronized (this) {
-                        this.wait(1000);
-                    }
-                    for (final TACmiHandler cmi : registeredCMIs) {
-                        cmi.monitor();
-                    }
-                } catch (final InterruptedException e) {
-                    // we got interrupted
-                    break;
-                }
-            }
-            logger.debug("MonitorThread exiting.");
+    private void checkForTimeouts() {
+        for (final TACmiHandler cmi : registeredCMIs) {
+            cmi.checkForTimeout();
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Initializing TA C.M.I. CoE bridge handler");
         try {
             final DatagramSocket coeSocket = new DatagramSocket(coePort);
             coeSocket.setBroadcast(true);
             coeSocket.setSoTimeout(330000); // 300 sec is default resent-time; so we wait 330 secs
             this.coeSocket = coeSocket;
         } catch (final SocketException e) {
-            logger.error("Failed to create UDP-Socket for C.M.I. CoE bridge. Reason: {}", e.getMessage());
+            // logged by framework via updateStatus
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to create UDP-Socket for C.M.I. CoE bridge. Reason: " + e.getMessage());
             return;
         }
 
-        // workaround for issue #92: getHandler() returns NULL after
-        // configuration update. :
-        getThing().setHandler(this);
-
         ReceiveThread reciveThreadNN = new ReceiveThread();
+        reciveThreadNN.setDaemon(true);
         reciveThreadNN.start();
         this.receiveThread = reciveThreadNN;
 
-        MonitorThread monitorNN = new MonitorThread();
-        monitorNN.start();
-        this.monitor = monitorNN;
+        ScheduledFuture<?> timeoutCheckFuture = this.timeoutCheckFuture;
+        if (timeoutCheckFuture == null || timeoutCheckFuture.isCancelled()) {
+            this.timeoutCheckFuture = scheduler.scheduleWithFixedDelay(this::checkForTimeouts, 1, 1, TimeUnit.SECONDS);
+        }
 
         updateStatus(ThingStatus.ONLINE);
     }
@@ -214,10 +189,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("Refresh command received.");
-            /*
-             * for (Device device : devices) device.refreshStatus();
-             */
+            // just forward it to the registered handlers...
             for (final TACmiHandler cmi : registeredCMIs) {
                 cmi.handleCommand(channelUID, command);
             }
@@ -236,23 +208,19 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Handler disposed.");
-        @Nullable
-        MonitorThread monitor = this.monitor;
-        if (monitor != null) {
-            monitor.interrupt();
-            try {
-                monitor.join();
-            } catch (final InterruptedException e) {
-                logger.info("Unexpected interrupt in monitor.join(): {}", e.getMessage(), e);
-            }
-            this.monitor = null;
+        // clean up the timeout check
+        ScheduledFuture<?> timeoutCheckFuture = this.timeoutCheckFuture;
+        if (timeoutCheckFuture != null && !timeoutCheckFuture.isCancelled()) {
+            timeoutCheckFuture.cancel(true);
+            this.timeoutCheckFuture = null;
         }
-        @Nullable
+
+        // clean up the receive thread
         ReceiveThread receiveThread = this.receiveThread;
-        if (receiveThread != null)
+        if (receiveThread != null) {
             receiveThread.interrupt(); // just interrupt it so when the socketException throws it's flagged as
                                        // interrupted.
+        }
 
         @Nullable
         DatagramSocket sock = this.coeSocket;
@@ -263,7 +231,9 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
         if (receiveThread != null) {
             receiveThread.interrupt();
             try {
-                receiveThread.join();
+                // it should join quite quick as we already closed the socket which should have the receiver thread
+                // caused to stop.
+                receiveThread.join(250);
             } catch (final InterruptedException e) {
                 logger.info("Unexpected interrupt in receiveThread.join(): {}", e.getMessage(), e);
             }

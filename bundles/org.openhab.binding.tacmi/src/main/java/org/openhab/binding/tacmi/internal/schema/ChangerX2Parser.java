@@ -15,7 +15,6 @@ package org.openhab.binding.tacmi.internal.schema;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.attoparser.ParseException;
 import org.attoparser.simple.AbstractSimpleMarkupHandler;
 import org.eclipse.jdt.annotation.NonNull;
@@ -28,23 +27,23 @@ import org.slf4j.LoggerFactory;
  * The {@link ApiPageParser} class parses the 'changerx2' page from the CMI and
  * maps it to the results
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ChangerX2Parser.class);
 
     static enum ParserState {
-        Init,
-        Input,
-        InputData,
-        Select,
-        SelectOption,
-        Unknown
+        INIT,
+        INPUT,
+        INPUT_DATA,
+        SELECT,
+        SELECT_OPTION,
+        UNKNOWN
     }
 
     private @Nullable String curOptionId;
-    private @NonNull ParserState parserState = ParserState.Init;
+    private @NonNull ParserState parserState = ParserState.INIT;
     private @Nullable String address;
     private @Nullable String addressFieldName;
     private @Nullable String optionFieldName;
@@ -59,14 +58,14 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
 
     @Override
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col) throws ParseException {
-        this.parserState = ParserState.Init;
+        this.parserState = ParserState.INIT;
         this.options.clear();
     }
 
     @Override
     public void handleDocumentEnd(final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws ParseException {
-        if (this.parserState != ParserState.Init) {
+        if (this.parserState != ParserState.INIT) {
             logger.debug("Parserstate == Init expected, but is {}", this.parserState);
         }
     }
@@ -84,8 +83,8 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
 
         String id = attributes == null ? null : attributes.get("id");
 
-        if (this.parserState == ParserState.Init && "input".equals(elementName) && "changeadr".equals(id)) {
-            this.parserState = ParserState.Input;
+        if (this.parserState == ParserState.INIT && "input".equals(elementName) && "changeadr".equals(id)) {
+            this.parserState = ParserState.INPUT;
             if (attributes == null) {
                 this.address = null;
                 this.addressFieldName = null;
@@ -93,21 +92,21 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                 this.addressFieldName = attributes.get("name");
                 this.address = attributes.get("value");
             }
-        } else if ((this.parserState == ParserState.Init || this.parserState == ParserState.Input)
+        } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "select".equals(elementName)) {
-            this.parserState = ParserState.Select;
+            this.parserState = ParserState.SELECT;
             this.optionFieldName = attributes == null ? null : attributes.get("name");
-        } else if ((this.parserState == ParserState.Init || this.parserState == ParserState.Input)
+        } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "br".equals(elementName)) {
             // ignored
-        } else if ((this.parserState == ParserState.Init || this.parserState == ParserState.Input)
+        } else if ((this.parserState == ParserState.INIT || this.parserState == ParserState.INPUT)
                 && "input".equals(elementName) && "changeto".equals(id)) {
-            this.parserState = ParserState.InputData;
+            this.parserState = ParserState.INPUT_DATA;
             if (attributes != null) {
                 this.optionFieldName = attributes.get("name");
                 String type = attributes.get("type");
                 if ("number".equals(type)) {
-                    this.optionType = OptionType.Number;
+                    this.optionType = OptionType.NUMBER;
                     // we transfer the limits from the input elemnt...
                     this.options.put(ChangerX2Entry.NUMBER_MIN, attributes.get(ChangerX2Entry.NUMBER_MIN));
                     this.options.put(ChangerX2Entry.NUMBER_MAX, attributes.get(ChangerX2Entry.NUMBER_MAX));
@@ -116,9 +115,9 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                     logger.warn("Unhandled input field in {}:{}: {}", line, col, attributes);
                 }
             }
-        } else if (this.parserState == ParserState.Select && "option".equals(elementName)) {
-            this.parserState = ParserState.SelectOption;
-            this.optionType = OptionType.Select;
+        } else if (this.parserState == ParserState.SELECT && "option".equals(elementName)) {
+            this.parserState = ParserState.SELECT_OPTION;
+            this.optionType = OptionType.SELECT;
             this.curOptionValue = new StringBuilder();
             this.curOptionId = attributes == null ? null : attributes.get("value");
         } else {
@@ -129,19 +128,19 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        if (this.parserState == ParserState.Input && "input".equals(elementName)) {
-            this.parserState = ParserState.Init;
-        } else if (this.parserState == ParserState.Select && "select".equals(elementName)) {
-            this.parserState = ParserState.Init;
-        } else if (this.parserState == ParserState.SelectOption && "option".equals(elementName)) {
-            this.parserState = ParserState.Select;
+        if (this.parserState == ParserState.INPUT && "input".equals(elementName)) {
+            this.parserState = ParserState.INIT;
+        } else if (this.parserState == ParserState.SELECT && "select".equals(elementName)) {
+            this.parserState = ParserState.INIT;
+        } else if (this.parserState == ParserState.SELECT_OPTION && "option".equals(elementName)) {
+            this.parserState = ParserState.SELECT;
             StringBuilder sb = this.curOptionValue;
             String value = sb != null && sb.length() > 0 ? sb.toString().trim() : null;
             this.curOptionValue = null;
             String id = this.curOptionId;
             this.curOptionId = null;
             if (value != null) {
-                if (id == null || !StringUtils.isNotBlank(id)) {
+                if (id == null || id.trim().isEmpty()) {
                     logger.info("Got option with empty 'value' in {}:{}: [{}]", line, col, value);
                     return;
                 }
@@ -197,13 +196,13 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             return;
         }
 
-        if (this.parserState == ParserState.SelectOption) {
+        if (this.parserState == ParserState.SELECT_OPTION) {
             // logger.debug("Text {}:{}: {}", line, col, new String(buffer, offset, len));
             StringBuilder sb = this.curOptionValue;
             if (sb != null) {
                 sb.append(buffer, offset, len);
             }
-        } else if (this.parserState == ParserState.Init && len == 1 && buffer[offset] == '\n') {
+        } else if (this.parserState == ParserState.INIT && len == 1 && buffer[offset] == '\n') {
             // single newline - ignore/drop it...
         } else {
             logger.info("Unexpected Text {}:{}: ({}) {} ", line, col, len, new String(buffer, offset, len));
@@ -232,5 +231,4 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
         }
         return new ChangerX2Entry(addressFieldName, address, optionFieldName, optionType, this.options);
     }
-
 }

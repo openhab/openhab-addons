@@ -13,7 +13,6 @@
 package org.openhab.binding.tacmi.internal.message;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
 
 /**
  * This class can be used to decode the digital values received in a messag and
@@ -21,7 +20,7 @@ import org.slf4j.Logger;
  * Input port
  *
  * @author Timo Wendt - Initial contribution
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
+ * @author Christian Niessner - Ported to OpenHAB2
  */
 @NonNullByDefault
 public final class DigitalMessage extends Message {
@@ -37,12 +36,11 @@ public final class DigitalMessage extends Message {
      */
     public DigitalMessage(byte canNode, byte podNr) {
         super(canNode, podNr);
-        logger.debug("DigitalMessage: canNode: {}, podNumber: {}", this.canNode, this.podNumber);
     }
 
     /**
      * Get the state of the specified port number.
-     * 
+     *
      * @param portNumber
      * @return
      */
@@ -52,7 +50,7 @@ public final class DigitalMessage extends Message {
 
     /**
      * Set the state of the specified port number.
-     * 
+     *
      * @param portNumber
      * @param value
      * @return
@@ -60,17 +58,18 @@ public final class DigitalMessage extends Message {
     public boolean setPortState(int portNumber, boolean value) {
         short val = getValue(0);
         int bit = (1 << portNumber);
-        if (value)
+        if (value) {
             val |= bit;
-        else
+        } else {
             val &= ~bit;
+        }
         return setValue(0, val, 0);
     }
 
     /**
      * Read the specified bit from the short value holding the states of all 16
      * ports.
-     * 
+     *
      * @param portBits
      * @param portBit
      * @return
@@ -83,25 +82,23 @@ public final class DigitalMessage extends Message {
     /**
      * Check if message contains a value for the specified port number. portNumber
      * Digital messages are in POD 0 for 1-16 and POD 9 for 17-32
-     * 
+     *
      * @param portNumber - the portNumber in Range 1-32
      * @return
      */
     @Override
     public boolean hasPortnumber(int portNumber) {
-        if (podNumber == 0 && portNumber <= 16)
+        if (podNumber == 0 && portNumber <= 16) {
             return true;
-        if (podNumber == 9 && portNumber >= 17)
+        }
+        if (podNumber == 9 && portNumber >= 17) {
             return true;
+        }
         return false;
     }
 
     @Override
-    public void debug(Logger logger) {
-    }
-
-    @Override
     public MessageType getType() {
-        return MessageType.D;
+        return MessageType.DIGITAL;
     }
 }

@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
  * The {@link TACmiHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.tacmi", service = ThingHandlerFactory.class)
@@ -76,5 +76,4 @@ public class TACmiHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

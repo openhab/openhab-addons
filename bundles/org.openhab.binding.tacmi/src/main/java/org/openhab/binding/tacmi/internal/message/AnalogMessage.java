@@ -13,12 +13,11 @@
 package org.openhab.binding.tacmi.internal.message;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
 
 /**
  * Format of analog messages is as follows:
- *    1        2      3       4       5       6        7      8       9       10     11     12     13      14
- *    0        1      2       3       4       5        6      7       8        9     10     11     12      13
+ * 1 2 3 4 5 6 7 8 9 10 11 12 13 14
+ * 0 1 2 3 4 5 6 7 8 9 10 11 12 13
  * canNode 1|2|3|4 1.lower 1.upper 2.lower 2.upper 3.lower 3.upper 4.lower 4.upper 1.type 2.type 3.type 4.type
  *
  * possible values for type according to the documentation are 1 to 21.
@@ -57,20 +56,13 @@ import org.slf4j.Logger;
  *
  * so we don't rely on the documentation.
  *
- * @author Timo Wendt - Initial contribution
- * @author Wolfgang Klimt - improvements
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
- * @see TACmiMeasureType.java
- */
-
-/**
  * This class can be used to decode the analog values received in a message and
  * also to create a new AnalogMessage used to send analog values to an analog
  * CAN Input port. Creation of new message is not implemented so far.
  *
  * @author Timo Wendt - Initial contribution
  * @author Wolfgang Klimt - improvements
- * @author Christian Niessner (marvkis) - Ported to OpenHAB2
+ * @author Christian Niessner - Ported to OpenHAB2
  */
 @NonNullByDefault
 public final class AnalogMessage extends Message {
@@ -118,11 +110,7 @@ public final class AnalogMessage extends Message {
     }
 
     @Override
-    public void debug(Logger logger) {
-    }
-
-    @Override
     public MessageType getType() {
-        return MessageType.A;
+        return MessageType.ANALOG;
     }
 }

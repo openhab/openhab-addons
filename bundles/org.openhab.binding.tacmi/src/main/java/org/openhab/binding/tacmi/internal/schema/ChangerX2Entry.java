@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link ChangerX2Entry} class contains mapping information for a changerX2 entry of
  * the API page element
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
 public class ChangerX2Entry {
@@ -31,8 +31,8 @@ public class ChangerX2Entry {
     public static final String NUMBER_STEP = "step";
 
     static enum OptionType {
-        Number,
-        Select,
+        NUMBER,
+        SELECT,
     }
 
     /**

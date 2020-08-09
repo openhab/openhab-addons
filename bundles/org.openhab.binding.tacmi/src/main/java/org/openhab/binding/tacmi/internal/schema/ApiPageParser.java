@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.attoparser.ParseException;
 import org.attoparser.simple.AbstractSimpleMarkupHandler;
 import org.eclipse.jdt.annotation.NonNull;
@@ -52,40 +51,40 @@ import org.slf4j.LoggerFactory;
  * The {@link ApiPageParser} class parses the 'API' schema page from the CMI and
  * maps it to our channels
  *
- * @author Christian Niessner (marvkis) - Initial contribution
+ * @author Christian Niessner - Initial contribution
  */
 public class ApiPageParser extends AbstractSimpleMarkupHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiPageParser.class);
 
     static enum ParserState {
-        Init,
-        DataEntry
+        INIT,
+        DATA_ENTRY
     }
 
     static enum FieldType {
-        Unknown,
-        ReadOnly,
-        FormValue,
-        Button,
-        Ignore
+        UNKNOWN,
+        READ_ONLY,
+        FORM_VALUE,
+        BUTTON,
+        IGNORE
     }
 
     static enum ButtonValue {
-        Unknown,
-        On,
-        Off
+        UNKNOWN,
+        ON,
+        OFF
     }
 
-    private @NonNull ParserState parserState = ParserState.Init;
+    private @NonNull ParserState parserState = ParserState.INIT;
     private @NonNull TACmiSchemaHandler taCmiSchemaHandler;
     private @NonNull TACmiChannelTypeProvider channelTypeProvider;
     private boolean configChanged = false;
-    private @NonNull FieldType fieldType = FieldType.Unknown;
+    private @NonNull FieldType fieldType = FieldType.UNKNOWN;
     private @Nullable String id;
     private @Nullable String address;
     private @Nullable StringBuilder value;
-    private @NonNull ButtonValue buttonValue = ButtonValue.Unknown;
+    private @NonNull ButtonValue buttonValue = ButtonValue.UNKNOWN;
     private @NonNull Map<@NonNull String, @Nullable ApiPageEntry> entries;
     private @NonNull Set<@NonNull String> seenNames = new HashSet<>();
     private @NonNull List<@NonNull Channel> channels = new ArrayList<>();
@@ -101,7 +100,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
 
     @Override
     public void handleDocumentStart(final long startTimeNanos, final int line, final int col) throws ParseException {
-        this.parserState = ParserState.Init;
+        this.parserState = ParserState.INIT;
         this.seenNames.clear();
         this.channels.clear();
     }
@@ -109,7 +108,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleDocumentEnd(final long endTimeNanos, final long totalTimeNanos, final int line, final int col)
             throws ParseException {
-        if (this.parserState != ParserState.Init) {
+        if (this.parserState != ParserState.INIT) {
             logger.debug("Parserstate == Init expected, but is {}", this.parserState);
         }
     }
@@ -126,8 +125,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     public void handleOpenElement(final @Nullable String elementName, final @Nullable Map<String, String> attributes,
             final int line, final int col) throws ParseException {
 
-        if (this.parserState == ParserState.Init && "div".equals(elementName)) {
-            this.parserState = ParserState.DataEntry;
+        if (this.parserState == ParserState.INIT && "div".equals(elementName)) {
+            this.parserState = ParserState.DATA_ENTRY;
             String classFlags;
             if (attributes == null) {
                 classFlags = null;
@@ -138,29 +137,29 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 this.address = attributes.get("adresse");
                 classFlags = attributes.get("class");
             }
-            this.fieldType = FieldType.ReadOnly;
+            this.fieldType = FieldType.READ_ONLY;
             this.value = new StringBuilder();
-            this.buttonValue = ButtonValue.Unknown;
+            this.buttonValue = ButtonValue.UNKNOWN;
             if (classFlags != null && StringUtil.isNotBlank(classFlags)) {
                 String[] classFlagList = classFlags.split("[ \n\r]");
                 for (String classFlag : classFlagList) {
                     if ("changex2".equals(classFlag)) {
-                        this.fieldType = FieldType.FormValue;
+                        this.fieldType = FieldType.FORM_VALUE;
                     } else if ("buttonx2".equals(classFlag) || "taster".equals(classFlag)) {
-                        this.fieldType = FieldType.Button;
+                        this.fieldType = FieldType.BUTTON;
                     } else if ("visible0".equals(classFlag)) {
-                        this.buttonValue = ButtonValue.Off;
+                        this.buttonValue = ButtonValue.OFF;
                     } else if ("visible1".equals(classFlag)) {
-                        this.buttonValue = ButtonValue.On;
+                        this.buttonValue = ButtonValue.ON;
                     } else if ("durchsichtig".equals(classFlag)) { // link
-                        this.fieldType = FieldType.Ignore;
+                        this.fieldType = FieldType.IGNORE;
                     } else if ("bord".equals(classFlag)) { // special button style - not of our interest...
                     } else {
                         logger.debug("Unhanndled class in {}:{}:{}: '{}' ", id, line, col, classFlag);
                     }
                 }
             }
-        } else if (this.parserState == ParserState.DataEntry && this.fieldType == FieldType.Button
+        } else if (this.parserState == ParserState.DATA_ENTRY && this.fieldType == FieldType.BUTTON
                 && "span".equals(elementName)) {
             // ignored...
         } else {
@@ -171,15 +170,15 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        if (this.parserState == ParserState.DataEntry && "div".equals(elementName)) {
-            this.parserState = ParserState.Init;
+        if (this.parserState == ParserState.DATA_ENTRY && "div".equals(elementName)) {
+            this.parserState = ParserState.INIT;
             StringBuilder sb = this.value;
             this.value = null;
             if (sb != null) {
                 while (sb.length() > 0 && sb.charAt(0) == ' ') {
                     sb = sb.delete(0, 0);
                 }
-                if (this.fieldType == FieldType.ReadOnly || this.fieldType == FieldType.FormValue) {
+                if (this.fieldType == FieldType.READ_ONLY || this.fieldType == FieldType.FORM_VALUE) {
                     int lids = sb.lastIndexOf(":");
                     int fsp = sb.indexOf(" ");
                     if (fsp < 0 || lids < 0 || fsp > lids) {
@@ -190,7 +189,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                         String value = sb.substring(lids + 1).trim();
                         getApiPageEntry(id, line, col, shortName, description, value);
                     }
-                } else if (this.fieldType == FieldType.Button) {
+                } else if (this.fieldType == FieldType.BUTTON) {
                     String sbt = sb.toString().trim().replaceAll("[\r\n ]+", " ");
                     int fsp = sbt.indexOf(" ");
 
@@ -202,13 +201,13 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                         String description = sbt.substring(fsp + 1).trim();
                         getApiPageEntry(id, line, col, shortName, description, this.buttonValue);
                     }
-                } else if (this.fieldType == FieldType.Ignore) {
+                } else if (this.fieldType == FieldType.IGNORE) {
                     // ignore
                 } else {
                     logger.info("Unhandled setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType, sb);
                 }
             }
-        } else if (this.parserState == ParserState.DataEntry && this.fieldType == FieldType.Button
+        } else if (this.parserState == ParserState.DATA_ENTRY && this.fieldType == FieldType.BUTTON
                 && "span".equals(elementName)) {
             // ignored...
         } else {
@@ -256,13 +255,13 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             return;
         }
 
-        if (this.parserState == ParserState.DataEntry) {
-            // logger.debug("Text {}:{}: {}", line, col, new String(buffer, offset, len));
+        if (this.parserState == ParserState.DATA_ENTRY) {
+            // we append it to our current value
             StringBuilder sb = this.value;
             if (sb != null) {
                 sb.append(buffer, offset, len);
             }
-        } else if (this.parserState == ParserState.Init && len == 1 && buffer[offset] == '\n') {
+        } else if (this.parserState == ParserState.INIT && len == 1 && buffer[offset] == '\n') {
             // single newline - ignore/drop it...
         } else {
             logger.info("Unexpected Text {}:{}: ({}) {} ", line, col, len, new String(buffer, offset, len));
@@ -283,7 +282,6 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
 
     private void getApiPageEntry(@Nullable String id2, int line, int col, String shortName, String description,
             Object value) {
-        // this.taCmiSchemaHandler.thingUpdated(thing);
         if (logger.isDebugEnabled()) {
             logger.debug("Found parameter {}:{}:{} [{}] : {} \"{}\" = {}", id, line, col, this.fieldType, shortName,
                     description, value);
@@ -295,32 +293,32 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         }
 
         if (value instanceof String && ((String) value).contains("can_busy")) {
-            return; // special state to indicate value currently not retrieveable..
+            return; // special state to indicate value currently cannot be retrieved..
         }
         ApiPageEntry.Type type;
         State state;
         String channelType;
         ChannelTypeUID ctuid;
         switch (this.fieldType) {
-            case Button:
-                type = Type.SwitchButton;
-                state = this.buttonValue == ButtonValue.On ? OnOffType.ON : OnOffType.OFF;
+            case BUTTON:
+                type = Type.SWITCH_BUTTON;
+                state = this.buttonValue == ButtonValue.ON ? OnOffType.ON : OnOffType.OFF;
                 ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RW_UID;
                 channelType = "Switch";
                 break;
-            case ReadOnly:
-            case FormValue:
+            case READ_ONLY:
+            case FORM_VALUE:
                 String vs = (String) value;
                 boolean isOn = "ON".equals(vs) || "EIN".equals(vs); // C.M.I. mixes up languages...
                 if (isOn || "OFF".equals(vs) || "AUS".equals(vs)) {
                     channelType = "Switch";
                     state = isOn ? OnOffType.ON : OnOffType.OFF;
-                    if (this.fieldType == FieldType.ReadOnly || this.address == null) {
+                    if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                         ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RO_UID;
-                        type = Type.ReadOnlySwitch;
+                        type = Type.READ_ONLY_SWITCH;
                     } else {
                         ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_SWITCH_RW_UID;
-                        type = Type.SwitchForm;
+                        type = Type.SWITCH_FORM;
                     }
                 } else {
                     try {
@@ -362,36 +360,36 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             } else {
                                 channelType = "Number";
                                 state = new DecimalType(bd);
-                                logger.info("Unhandled UoM for channel {} of type {} for '{}': {}", shortName,
+                                logger.debug("Unhandled UoM for channel {} of type {} for '{}': {}", shortName,
                                         channelType, description, valParts[1]);
                             }
                         } else {
                             channelType = "Number";
                             state = new DecimalType(bd);
                         }
-                        if (this.fieldType == FieldType.ReadOnly || this.address == null) {
+                        if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                             ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_NUMERIC_RO_UID;
-                            type = Type.ReadOnlyNumeric;
+                            type = Type.READ_ONLY_NUMERIC;
                         } else {
                             ctuid = null;
-                            type = Type.NumericForm;
+                            type = Type.NUMERIC_FORM;
                         }
                     } catch (NumberFormatException nfe) {
                         // not a number...
                         channelType = "String";
-                        if (this.fieldType == FieldType.ReadOnly || this.address == null) {
+                        if (this.fieldType == FieldType.READ_ONLY || this.address == null) {
                             ctuid = TACmiBindingConstants.CHANNEL_TYPE_SCHEME_STATE_RO_UID;
-                            type = Type.ReadOnlyState;
+                            type = Type.READ_ONLY_STATE;
                         } else {
                             ctuid = null;
-                            type = Type.StateForm;
+                            type = Type.STATE_FORM;
                         }
                         state = new StringType(vs);
                     }
                 }
                 break;
-            case Unknown:
-            case Ignore:
+            case UNKNOWN:
+            case IGNORE:
                 return;
             default:
                 // should't happen but we have to add default for the compiler...
@@ -403,7 +401,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             Channel channel = this.taCmiSchemaHandler.getThing().getChannel(shortName);
             @Nullable
             ChangerX2Entry cx2e = null;
-            if (this.fieldType == FieldType.FormValue) {
+            if (this.fieldType == FieldType.FORM_VALUE) {
                 try {
                     URI uri = this.taCmiSchemaHandler.buildUri("INCLUDE/changerx2.cgi?sadrx2=" + address);
                     final ChangerX2Parser pp = this.taCmiSchemaHandler.parsePage(uri, new ChangerX2Parser());
@@ -425,22 +423,22 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             .withReadOnly(type.readOnly);
                     String itemType;
                     switch (cx2e.optionType) {
-                        case Number:
+                        case NUMBER:
                             itemType = "Number";
                             String min = cx2e.options.get(ChangerX2Entry.NUMBER_MIN);
-                            if (StringUtils.isNotBlank(min)) {
+                            if (min != null && !min.trim().isEmpty()) {
                                 sdb.withMinimum(new BigDecimal(min));
                             }
                             String max = cx2e.options.get(ChangerX2Entry.NUMBER_MAX);
-                            if (StringUtils.isNotBlank(max)) {
+                            if (max != null && !max.trim().isEmpty()) {
                                 sdb.withMaximum(new BigDecimal(max));
                             }
                             String step = cx2e.options.get(ChangerX2Entry.NUMBER_STEP);
-                            if (StringUtils.isNotBlank(step)) {
+                            if (step != null && !step.trim().isEmpty()) {
                                 sdb.withStep(new BigDecimal(step));
                             }
                             break;
-                        case Select:
+                        case SELECT:
                             itemType = "String";
                             for (Entry<@NonNull String, @Nullable String> entry : cx2e.options.entrySet()) {
                                 String val = entry.getValue();
@@ -480,5 +478,4 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     protected @NonNull List<@NonNull Channel> getChannels() {
         return channels;
     }
-
 }
