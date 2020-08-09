@@ -47,11 +47,20 @@ public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
 
     @Override
     public void handleStatusMessage(Matcher matcher) { 
-        String code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), 16),
+        String code;
+
+        if(matcher.pattern() == FINGERPRINT_PATTERN) {
+            code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), 16),
                 Integer.parseInt(matcher.group("byte1"), 16), Integer.parseInt(matcher.group("byte2"), 16));
-        
-        if (matcher.pattern() == TRANSPONDER_PATTERN || matcher.pattern() == FINGERPRINT_PATTERN) {
+        } else {
+            code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0")),
+                    Integer.parseInt(matcher.group("byte1")), Integer.parseInt(matcher.group("byte2")));
+        }
+
+        if (matcher.pattern() == TRANSPONDER_PATTERN) {
             handler.triggerChannel(LcnChannelGroup.CODE, "transponder", code);
+        } else if (matcher.pattern() == FINGERPRINT_PATTERN) {
+            handler.triggerChannel(LcnChannelGroup.CODE, "fingerprint", code);
         } else if (matcher.pattern() == REMOTE_CONTROL_PATTERN) {
             int keyNumber = Integer.parseInt(matcher.group("key"));
             String keyLayer;

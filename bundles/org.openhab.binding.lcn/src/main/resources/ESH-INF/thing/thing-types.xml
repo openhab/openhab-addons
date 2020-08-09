@@ -622,6 +622,7 @@
 		<label>Transponder &amp; Remote Control</label>
 		<channels>
 			<channel typeId="transponders" id="transponder"/>
+			<channel typeId="fingerprints" id="fingerprint"/>
 			<channel typeId="remotecontrolkeys" id="remotecontrolkey"/>
 			<channel typeId="remotecontrolcodes" id="remotecontrolcode"/>
 			<channel typeId="remotecontrolsbatterylow" id="remotecontrolbatterylow"/>
@@ -631,6 +632,12 @@
 	<channel-type id="transponders" advanced="true">
 		<kind>trigger</kind>
 		<label>Transponder Codes</label>
+		<event/>
+	</channel-type>
+	
+	<channel-type id="fingerprints" advanced="true">
+		<kind>trigger</kind>
+		<label>Fingerprint Codes</label>
 		<event/>
 	</channel-type>
 
