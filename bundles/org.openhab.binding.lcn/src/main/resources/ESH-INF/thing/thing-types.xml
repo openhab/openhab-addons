@@ -634,7 +634,7 @@
 		<label>Transponder Codes</label>
 		<event/>
 	</channel-type>
-	
+
 	<channel-type id="fingerprints" advanced="true">
 		<kind>trigger</kind>
 		<label>Fingerprint Codes</label>

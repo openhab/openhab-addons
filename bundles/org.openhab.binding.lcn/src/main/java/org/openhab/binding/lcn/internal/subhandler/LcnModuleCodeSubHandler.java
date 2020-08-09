@@ -31,8 +31,10 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
  */
 @NonNullByDefault
 public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
-    private static final Pattern TRANSPONDER_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "\\.ZT(?<byte0>\\d{3})(?<byte1>\\d{3})(?<byte2>\\d{3})");
-    private static final Pattern FINGERPRINT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX + "\\.ZF(?<byte0>[0-9A-Fa-f]{2})(?<byte1>[0-9A-Fa-f]{2})(?<byte2>[0-9A-Fa-f]{2})");
+    private static final Pattern TRANSPONDER_PATTERN = Pattern
+            .compile(LcnBindingConstants.ADDRESS_REGEX + "\\.ZT(?<byte0>\\d{3})(?<byte1>\\d{3})(?<byte2>\\d{3})");
+    private static final Pattern FINGERPRINT_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX
+            + "\\.ZF(?<byte0>[0-9A-Fa-f]{2})(?<byte1>[0-9A-Fa-f]{2})(?<byte2>[0-9A-Fa-f]{2})");
     private static final Pattern REMOTE_CONTROL_PATTERN = Pattern.compile(LcnBindingConstants.ADDRESS_REGEX
             + "\\.ZI(?<byte0>\\d{3})(?<byte1>\\d{3})(?<byte2>\\d{3})(?<key>\\d{3})(?<action>\\d{3})");
 
@@ -46,12 +48,12 @@ public class LcnModuleCodeSubHandler extends AbstractLcnModuleSubHandler {
     }
 
     @Override
-    public void handleStatusMessage(Matcher matcher) { 
+    public void handleStatusMessage(Matcher matcher) {
         String code;
 
-        if(matcher.pattern() == FINGERPRINT_PATTERN) {
+        if (matcher.pattern() == FINGERPRINT_PATTERN) {
             code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0"), 16),
-                Integer.parseInt(matcher.group("byte1"), 16), Integer.parseInt(matcher.group("byte2"), 16));
+                    Integer.parseInt(matcher.group("byte1"), 16), Integer.parseInt(matcher.group("byte2"), 16));
         } else {
             code = String.format("%02X%02X%02X", Integer.parseInt(matcher.group("byte0")),
                     Integer.parseInt(matcher.group("byte1")), Integer.parseInt(matcher.group("byte2")));
