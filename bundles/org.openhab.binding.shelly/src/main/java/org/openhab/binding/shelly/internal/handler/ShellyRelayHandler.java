@@ -391,7 +391,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     }
 
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
                     updated |= updateInputs(groupName, status, i);
 

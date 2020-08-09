@@ -113,6 +113,7 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
+			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -125,6 +126,7 @@
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl" />
 			<channel-group id="meter" typeId="meter" />
+			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -199,6 +201,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel" />
 			<channel-group id="meter" typeId="meter" />
+			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -212,6 +215,7 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel" />
 			<channel-group id="meter" typeId="meter" />
+			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -225,6 +229,7 @@
 			<channel-group id="status1" typeId="ix3Channel" />
 			<channel-group id="status2" typeId="ix3Channel" />
 			<channel-group id="status3" typeId="ix3Channel" />
+			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -283,7 +288,6 @@
 			<channel id="rollerpos" typeId="rollerPosition" />
 			<channel id="state" typeId="rollerState" />
 			<channel id="stopReason" typeId="rollerStop" />
-			<channel id="lastDirection" typeId="rollerDirection" />
 			<channel id="input1" typeId="inputState1" />
 			<channel id="input2" typeId="inputState2" />
 			<channel id="event" typeId="eventTrigger" />

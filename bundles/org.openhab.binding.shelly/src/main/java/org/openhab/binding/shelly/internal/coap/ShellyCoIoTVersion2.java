@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCoIoTInterface {
     private final Logger logger = LoggerFactory.getLogger(ShellyCoIoTVersion2.class);
-    private int lastCfgCount = -1;
 
     public ShellyCoIoTVersion2(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
@@ -105,7 +104,6 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 updatePower(profile, updates, rIndex, sen, s, sensorUpdates);
                 break;
             case "1102": // roler_0: S, roller, open/close/stop -> roller state
-                logger.debug("{}: CoAP update roller.lastDirection with {}", thingName, s.valueStr);
                 updateChannel(updates, CHANNEL_GROUP_ROL_CONTROL, CHANNEL_ROL_CONTROL_STATE, getStringType(s.valueStr));
                 break;
             case "1103": // roller_0: S, rollerPos, 0-100, unknown -1
@@ -164,7 +162,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "3108": // S, dwIsOpened, 0/1, -1 ++
                 if (value == -1) {
-                    logger.debug("{}: Sensor errpr reported, check device, battery, installation", thingName);
+                    logger.debug("{}: Sensor error reported, check device, battery, installation", thingName);
                 }
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
@@ -251,7 +249,10 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 }
                 break;
             case "9103": // EVC, cfgChanged, U16
-                thingHandler.requestUpdates(1, true); // refresh config
+                if (lastCfgCount != s.value) {
+                    thingHandler.requestUpdates(1, true); // refresh config
+                    lastCfgCount = (int) s.value;
+                }
                 break;
 
             default:

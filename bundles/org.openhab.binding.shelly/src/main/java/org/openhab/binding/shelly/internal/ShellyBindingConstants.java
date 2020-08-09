@@ -198,7 +198,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_ROL_CONTROL_TIMER = "timer";
     public static final String CHANNEL_ROL_CONTROL_STATE = "state";
     public static final String CHANNEL_ROL_CONTROL_STOPR = "stopReason";
-    public static final String CHANNEL_ROL_CONTROL_DIR = "lastDirection";
 
     // Dimmer
     public static final String CHANNEL_GROUP_DIMMER_CONTROL = CHANNEL_GROUP_RELAY_CONTROL;
@@ -208,8 +207,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_METER_CURRENTWATTS = "currentWatts";
     public static final String CHANNEL_METER_LASTMIN = "lastPower";
     public static final String CHANNEL_METER_LASTMIN1 = CHANNEL_METER_LASTMIN + "1";
-    public static final String CHANNEL_METER_LASTMIN2 = CHANNEL_METER_LASTMIN + "2";
-    public static final String CHANNEL_METER_LASTMIN3 = CHANNEL_METER_LASTMIN + "3";
     public static final String CHANNEL_METER_TOTALKWH = "totalKWH";
     public static final String CHANNEL_EMETER_TOTALRET = "returnedKWH";
     public static final String CHANNEL_EMETER_REACTWATTS = "reactiveWatts";
@@ -250,7 +247,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_GROUP_BATTERY = "battery";
     public static final String CHANNEL_SENSOR_BAT_LEVEL = "batteryLevel";
     public static final String CHANNEL_SENSOR_BAT_LOW = "lowBattery";
-    public static final String CHANNEL_SENSOR_BAT_VOLT = "voltage";
 
     public static final String CHANNEL_GROUP_LIGHT_CONTROL = "control";
     public static final String CHANNEL_LIGHT_COLOR_MODE = "mode";

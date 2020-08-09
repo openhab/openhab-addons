@@ -54,6 +54,7 @@ public class ShellyChannelDefinitionsDTO {
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
+    private static final String CHGR_LED = CHANNEL_GROUP_LED_CONTROL;
 
     public static final String ITEM_TYPE_NUMBER = "Number";
     public static final String ITEM_TYPE_STRING = "String";
@@ -99,8 +100,6 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEM_TYPE_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEM_TYPE_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEM_TYPE_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN2, "lastPower2", ITEM_TYPE_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN3, "lastPower3", ITEM_TYPE_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
 
                 // EMeter
@@ -141,11 +140,14 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3, "sensorExtTemp", ITEM_TYPE_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY, "sensorExtHum", ITEM_TYPE_PERCENT))
 
+                // LED Control
+                .add(new ShellyChannel(m, CHGR_LED, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_LED, CHANNEL_LED_POWER_DISABLE, "ledPowerDisable", ITEM_TYPE_SWITCH))
+
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level",
                         ITEM_TYPE_PERCENT))
-                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_VOLT, "batVoltage", ITEM_TYPE_VOLT));
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEM_TYPE_SWITCH));
     }
 
     public static ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -190,6 +192,13 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPTIME);
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
+
+        if (profile.settings.ledPowerDisable != null) {
+            addChannel(thing, add, true, CHGR_LED, CHANNEL_LED_POWER_DISABLE);
+        }
+        if (profile.settings.ledStatusDisable != null) {
+            addChannel(thing, add, true, CHGR_LED, CHANNEL_LED_STATUS_DISABLE);
+        }
         return add;
     }
 
@@ -229,8 +238,6 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
         if (meter.counters != null) {
             addChannel(thing, newChannels, meter.counters[0] != null, group, CHANNEL_METER_LASTMIN1);
-            addChannel(thing, newChannels, meter.counters[1] != null, group, CHANNEL_METER_LASTMIN2);
-            addChannel(thing, newChannels, meter.counters[2] != null, group, CHANNEL_METER_LASTMIN3);
         }
         addChannel(thing, newChannels, meter.timestamp != null, group, CHANNEL_LAST_UPDATE);
         return newChannels;
@@ -290,7 +297,6 @@ public class ShellyChannelDefinitionsDTO {
         if (sdata.bat != null) {
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
-            addChannel(thing, newChannels, sdata.bat.voltage != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT);
         }
 
         addChannel(thing, newChannels, true, profile.getControlGroup(0), CHANNEL_LAST_UPDATE);

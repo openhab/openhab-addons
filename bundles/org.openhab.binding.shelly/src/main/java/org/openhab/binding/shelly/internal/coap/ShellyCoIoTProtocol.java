@@ -23,9 +23,9 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrBlk;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
@@ -49,8 +49,11 @@ public class ShellyCoIoTProtocol {
     protected final Map<String, CoIotDescrBlk> blkMap;
     protected final Map<String, CoIotDescrSen> sensorMap;
 
-    protected int inputState = -1;
-    protected String inputType = "";
+    // Due to the fact that the device reports only the current/last status, but no real events, we need to distinguish
+    // between a real update or just a repeated status on periodic updates
+    protected int lastCfgCount = -1;
+    protected int[] lastEventCount = { -1, -1, -1, -1, -1, -1, -1, -1 }; // 4Pro has 4 relays, so 8 should be fine
+    protected String[] inputEvent = { "", "", "", "", "", "", "", "" };
 
     public ShellyCoIoTProtocol(String thingName, ShellyBaseHandler thingHandler, Map<String, CoIotDescrBlk> blkMap,
             Map<String, CoIotDescrSen> sensorMap) {
@@ -174,34 +177,27 @@ public class ShellyCoIoTProtocol {
         int idx = getSensorNumber(sen.desc, sen.id) - 1;
         String iGroup = profile.getInputGroup(idx);
         String iChannel = profile.getInputChannel(idx);
-        inputState = (int) s.value;
-        updateChannel(updates, iGroup, iChannel, inputState == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateChannel(updates, iGroup, iChannel, s.value == 0 ? OnOffType.OFF : OnOffType.ON);
     }
 
     protected void handleInputEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
         int idx = getSensorNumber(sen.desc, sen.id) - 1;
         String group = profile.getInputGroup(idx);
-        if (!type.isEmpty()) {
+        logger.debug("{}: handleInputEvent, sen={}/{}, type={}, count={}, idx={},group={}", thingName, sen.type,
+                sen.desc, type, count, idx, group);
+        if (count == -1) {
             // event type
-            inputType = getString(type);
-            if (profile.inButtonMode(idx)) {
-                String channel = profile.getInputChannel(idx);
-                State lastState = thingHandler.getChannelValue(group, channel);
-                State st = thingHandler.getChannelValue(group, CHANNEL_STATUS_EVENTTYPE);
-                String lastEvent = st.equals(UnDefType.NULL) ? st.toString() : "";
-                if (profile.isButton) {
-                    thingHandler.triggerButton(group, type);
-                } else if ((inputState == -1) || lastState.equals(UnDefType.NULL)
-                        || ((OnOffType) lastState != (inputState == 0 ? OnOffType.OFF : OnOffType.ON))
-                        || lastEvent.isEmpty() || !lastEvent.equals(type)) {
-                    thingHandler.triggerButton(group, type);
-                }
-            }
-
-            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, getStringType(type));
+            logger.debug("{}: CoAP Update on inputEvent={}", thingName, type);
+            updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, new StringType(type));
+            inputEvent[idx] = type;
         } else {
             // event count
+            logger.debug("{}: CoAP Update on inputEventCount={}", thingName, count);
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
+            if (profile.isButton || (profile.inButtonMode(idx) && (count != lastEventCount[idx]))) {
+                lastEventCount[idx] = count;
+                thingHandler.triggerButton(group, inputEvent[idx]);
+            }
         }
     }
 
@@ -218,7 +214,7 @@ public class ShellyCoIoTProtocol {
      * @param s New sensor value
      * @param allUpdatesList of updates. This is required, because we need to update both values at the same time
      */
-    protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, Integer id, CoIotDescrSen sen,
+    protected void updatePower(ShellyDeviceProfile profile, Map<String, State> updates, int id, CoIotDescrSen sen,
             CoIotSensor s, List<CoIotSensor> allUpdates) {
         String group = "";
         String channel = CHANNEL_BRIGHTNESS;
@@ -233,7 +229,7 @@ public class ShellyCoIoTProtocol {
                 group = CHANNEL_GROUP_RELAY_CONTROL;
             } else if (profile.isRGBW2) {
                 group = CHANNEL_GROUP_LIGHT_CHANNEL + id;
-                checkL = String.valueOf(id.intValue() - 1); // id is 1-based, L is 0-based
+                checkL = String.valueOf(id - 1); // id is 1-based, L is 0-based
                 logger.trace("{}: updatePower() for L={}", thingName, checkL);
             }
 
@@ -290,7 +286,10 @@ public class ShellyCoIoTProtocol {
                 idx++; // iterate from input1..2..n
             }
             if (sen.id.equalsIgnoreCase(sensorId) && blkMap.containsKey(sen.links)) {
-                return getIdFromBlk(sen);
+                int id = getIdFromBlk(sen);
+                if (id != -1) {
+                    return id;
+                }
             }
             if (sen.id.equalsIgnoreCase(sensorId)) {
                 return idx;

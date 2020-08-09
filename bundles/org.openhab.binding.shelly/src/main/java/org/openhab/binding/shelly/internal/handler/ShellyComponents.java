@@ -126,10 +126,6 @@ public class ShellyComponents {
                             if (meter.counters != null) {
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                                         toQuantityType(getDouble(meter.counters[0]), DIGITS_WATT, SmartHomeUnits.WATT));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN2,
-                                        toQuantityType(getDouble(meter.counters[1]), DIGITS_WATT, SmartHomeUnits.WATT));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
-                                        toQuantityType(getDouble(meter.counters[2]), DIGITS_WATT, SmartHomeUnits.WATT));
                             }
                             thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
                                     getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
@@ -184,8 +180,6 @@ public class ShellyComponents {
                 double currentWatts = 0.0;
                 double totalWatts = 0.0;
                 double lastMin1 = 0.0;
-                double lastMin2 = 0.0;
-                double lastMin3 = 0.0;
                 long timestamp = 0l;
                 String groupName = CHANNEL_GROUP_METER;
                 for (ShellySettingsMeter meter : status.meters) {
@@ -194,8 +188,6 @@ public class ShellyComponents {
                         totalWatts += getDouble(meter.total);
                         if (meter.counters != null) {
                             lastMin1 += getDouble(meter.counters[0]);
-                            lastMin2 += getDouble(meter.counters[1]);
-                            lastMin3 += getDouble(meter.counters[2]);
                         }
                         if (getLong(meter.timestamp) > timestamp) {
                             timestamp = getLong(meter.timestamp); // newest one
@@ -210,10 +202,6 @@ public class ShellyComponents {
 
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                         toQuantityType(getDouble(lastMin1), DIGITS_WATT, SmartHomeUnits.WATT));
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN2,
-                        toQuantityType(getDouble(lastMin2), DIGITS_WATT, SmartHomeUnits.WATT));
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
-                        toQuantityType(getDouble(lastMin3), DIGITS_WATT, SmartHomeUnits.WATT));
 
                 // convert totalWatts into kw/h
                 totalWatts = totalWatts / (60.0 * 10000.0);
@@ -346,8 +334,6 @@ public class ShellyComponents {
                 thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                         toQuantityType(getDouble(sdata.bat.value), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT,
-                        toQuantityType(getDouble(sdata.bat.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getDouble(sdata.bat.value) < thingHandler.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                 updated |= changed;

@@ -122,34 +122,30 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                 break;
             case "s" /* CatchAll */:
                 switch (sen.desc.toLowerCase()) {
-                    case "overtemp": // +
+                    case "overtemp":
                         if (s.value == 1) {
                             thingHandler.postEvent(ALARM_TYPE_OVERTEMP, true);
                         }
                         break;
-                    case "energy counter 0 [w-min]": // +
+                    case "energy counter 0 [w-min]":
                         updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN1,
                                 toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                         break;
-                    case "energy counter 1 [w-min]": // +
-                        updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN2,
-                                toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
-                        break;
+                    case "energy counter 1 [w-min]":
                     case "energy counter 2 [w-min]":
-                        updateChannel(updates, rGroup, CHANNEL_METER_LASTMIN3,
-                                toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+                        // we don't use them
                         break;
                     case "energy counter total [w-h]": // 3EM reports W/h
-                    case "energy counter total [w-min]": // +
+                    case "energy counter total [w-min]":
                         Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
                         updateChannel(updates, rGroup, CHANNEL_METER_TOTALKWH,
                                 toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                         break;
-                    case "voltage": // +
+                    case "voltage":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_VOLTAGE,
                                 toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
                         break;
-                    case "current": // +
+                    case "current":
                         updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
                                 toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.AMPERE));
                         break;
@@ -165,7 +161,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                                 toQuantityType(pos, SmartHomeUnits.PERCENT));
                         break;
                     case "input event": // Shelly Button 1
-                        handleInputEvent(sen, getString(s.valueStr), 0, updates);
+                        handleInputEvent(sen, getString(s.valueStr), -1, updates);
                         break;
                     case "input event counter": // Shelly Button 1/ix3
                         handleInputEvent(sen, "", getInteger((int) s.value), updates);

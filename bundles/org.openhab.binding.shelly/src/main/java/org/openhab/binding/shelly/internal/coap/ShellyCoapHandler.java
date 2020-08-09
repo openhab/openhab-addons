@@ -80,8 +80,10 @@ public class ShellyCoapHandler implements ShellyCoapListener {
     private boolean discovering = false;
 
     private int lastSerial = -1;
+    private String lastPayload = "";
     private Map<String, CoIotDescrBlk> blkMap = new LinkedHashMap<>();
     private Map<String, CoIotDescrSen> sensorMap = new LinkedHashMap<>();
+    private final ShellyDeviceProfile profile;
 
     public ShellyCoapHandler(ShellyBaseHandler thingHandler, ShellyCoapServer coapServer) {
         this.thingHandler = thingHandler;
@@ -92,6 +94,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         gsonBuilder.registerTypeAdapter(CoIotDevDescription.class, new CoIotDevDescrTypeAdapter());
         gsonBuilder.registerTypeAdapter(CoIotGenericSensorList.class, new CoIotSensorTypeAdapter());
         gson = gsonBuilder.create();
+        profile = thingHandler.getProfile();
     }
 
     /**
@@ -109,7 +112,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         try {
             this.thingName = thingName;
             this.config = config;
-            lastSerial = -1;
+            resetSerial();
             reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
 
             if (!isStarted()) {
@@ -150,7 +153,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         String devId = "";
         String uri = "";
         // int validity = 0;
-        int serial = 0;
+        int serial = -1;
         try {
             if (logger.isDebugEnabled()) {
                 logger.debug("{}: CoIoT Message from {} (MID={}): {}", thingName,
@@ -204,9 +207,11 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
                 // If we received a CoAP message successful the thing must be online
                 thingHandler.setThingOnline();
-                if (serial == lastSerial) {
-                    // As per specification the serial changes when any sensor data has changed. The App
-                    // should ignore any updates with the same serial.
+
+                // The device changes the serial on every update, receiving a message with the same serial is a
+                // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
+                if ((serial == lastSerial) && payload.equals(lastPayload)
+                        && (!profile.hasBattery || ((serial & 0xFF) != 0))) {
                     logger.trace("{}: Serial {} was already processed, ignore update", thingName, serial);
                     return;
                 }
@@ -345,9 +350,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             logger.debug("{}: Sensor list has invalid format! Payload: {}", devId, payload);
             return;
         }
-        List<CoIotSensor> sensorUpdates = list.generic;
 
-        ShellyDeviceProfile profile = thingHandler.getProfile();
+        List<CoIotSensor> sensorUpdates = list.generic;
         Map<String, State> updates = new TreeMap<String, State>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         thingHandler.restartWatchdog(); // every CoAP message restarts the watchdog
@@ -392,7 +396,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 updated += thingHandler.updateChannel(u.getKey(), u.getValue(), false) ? 1 : 0;
             }
             if (updated > 0) {
-                logger.debug("{}: {} channels updated from CoIoT status", thingName, updated);
+                logger.debug("{}: {} channels updated from CoIoT status, serial={}", thingName, updated, serial);
                 if (profile.isSensor || profile.isRoller) {
                     // CoAP is currently lacking the lastUpdate info, so we use host timestamp
                     thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
@@ -410,6 +414,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
 
         // Remember serial, new packets with same serial will be ignored
         lastSerial = serial;
+        lastPayload = payload;
     }
 
     private boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
@@ -494,6 +499,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      */
     private void resetSerial() {
         lastSerial = -1;
+        lastPayload = "";
     }
 
     public int getVersion() {

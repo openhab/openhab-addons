@@ -196,6 +196,7 @@ Every device has a channel group `device` with the following channels:
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
+|          |heartBeat        |DateTime  |yes      |Timestamp of the last successful device communication                            |
 |          |updateAvailable    |Switch  |yes      |ON: A firmware update is available (use Shelly App to perform update)            |
 
 Availability of  channels is depending on the device type.
@@ -212,9 +213,14 @@ When an alarm condition is detected the channel alarm gets triggered and provide
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
+|ROLLER_OPEN |Roller reached open position                                                                                     |
+|ROLLER_CLOSE|Roller reached close position                                                                                    |
+|ROLLER_STOP |Roller reached stop position                                                                                     |
+|TEMP_UNDER  |Below "temperature under" treshold                                                                               |
+|TEMP_OVER   |Above "temperature over" treshold                                                                                |
 |RESTARTED   |The device has been restarted. This could be an indicator for a firmware problem.                                |
 |WEAK_SIGNAL |An alarm is triggered when RSSI is < -80, which indicates an unstable connection.                                |
-|OVER_TEMP   |The device is overheating, check installation and housing.                                                      |
+|OVER_TEMP   |The device is overheating, check installation and housing.                                                       |
 |OVER_LOAD   |An over load condition has been detected, e.g. from the roller motor.                                            |
 |OVER_POWER  |Maximum allowed power was exceeded. The relay was turned off.                                                    |
 |LOAD_ERROR  |Device reported a load problem, so far Dimmer only.                                                              |
@@ -225,7 +231,7 @@ When an alarm condition is detected the channel alarm gets triggered and provide
 |------------|-----------------------------------------------------------------------------------------------------------------|
 |POWERON     |Device was powered on.                                                                                           |
 |PERIODIC    |Periodic wakeup.                                                                                                 |
-|BUTTON      |Button was pressed, e.g. to wake up the device.                                                                   |
+|BUTTON      |Button was pressed, e.g. to wake up the device.                                                                  |
 |SENSOR      |Wake-up due to updated sensor data.                                                                              |
 |ALARM       |Alarm condition was detected, check status, could be OPENED for the DW, flood alarm, smoke alarm                 |
 |BATTERY     |Device reported an update to the battery status.                                                                 |
@@ -357,15 +363,15 @@ The thing id is derived from the service name, so that's the reason why the thin
 |roller    |control      |Rollershutter|r/w  |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close)  |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                            |
 |          |rollerpos    |Number   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stops, see Notes |
-|          |lastDirection|String   |yes      |Last direction: open or close                                                         |
+|          |state        |String   |yes      |Roller state: open/close/stop                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
-|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP                 |
+|          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                         |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                         |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                         |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                     |
 
 The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
 
@@ -391,7 +397,7 @@ For this the binding aggregates the power consumption of both relays and include
 |roller    |control      |Rollershutter |r/w |can be open (0%), stop, or close (100%); could also handle ON (open) and OFF (close) |
 |          |rollerpos    |Dimmer   |r/w      |Roller position: 100%=open...0%=closed; gets updated when the roller stopped         |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                           |
-|          |lastDirection|String   |yes      |Last direction: open or close                                                        |
+|          |state        |String   |yes      |Roller state: open/close/stop                                                        |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                 |
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
 |meter     |             |         |         |See group meter1 for Shelly 2                                                        |

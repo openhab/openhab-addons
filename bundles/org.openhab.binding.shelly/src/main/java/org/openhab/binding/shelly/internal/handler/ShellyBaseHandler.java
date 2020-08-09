@@ -98,7 +98,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     private @Nullable ScheduledFuture<?> statusJob;
     public int scheduledUpdates = 0;
-    private int refreshCount = UPDATE_SETTINGS_INTERVAL_SECONDS / UPDATE_STATUS_INTERVAL_SECONDS;
     private int skipCount = UPDATE_SKIP_COUNT;
     private int skipUpdate = 0;
     private boolean refreshSettings = false;
@@ -208,6 +207,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         profile.initFromThingType(thingType);
         api.setConfig(thingName, config);
         cache.setThingName(thingName);
+        cache.clear();
 
         logger.debug("{}: Start initializing thing {}, type {}, ip address {}, CoIoT: {}", thingName,
                 getThing().getLabel(), thingType, config.deviceIp, config.eventsCoIoT);
@@ -494,17 +494,16 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         // Check various device indicators like overheating
         if ((status.uptime < lastUptime) && (profile.isInitialized()) && !profile.hasBattery) {
             alarm = ALARM_TYPE_RESTARTED;
+            cache.clear();
             force = true;
-        }
-        lastUptime = getLong(status.uptime);
-
-        if (getBool(status.overtemperature)) {
+        } else if (getBool(status.overtemperature)) {
             alarm = ALARM_TYPE_OVERTEMP;
         } else if (getBool(status.overload)) {
             alarm = ALARM_TYPE_OVERLOAD;
         } else if (getBool(status.loaderror)) {
             alarm = ALARM_TYPE_LOADERR;
         }
+        lastUptime = getLong(status.uptime);
 
         if (!alarm.isEmpty()) {
             postEvent(alarm, force);
@@ -874,11 +873,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     getInteger(status.input) == 0 ? OnOffType.OFF : OnOffType.ON);
         }
         if (status.inputs != null) {
-            int idx = 1;
+            int idx = 0;
             for (ShellyInputState input : status.inputs) {
                 String group = profile.getControlGroup(idx);
                 updated |= updateChannel(group, CHANNEL_INPUT, getOnOff(input.input));
                 if (input.event != null) {
+                    logger.debug("{}: REST update on inputEvent={}, count={}", thingName, getStringType(input.event),
+                            getDecimal(input.eventCount));
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTTYPE, getStringType(input.event));
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(input.eventCount));
                 }
@@ -888,14 +889,18 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         return updated;
     }
 
-    public void triggerButton(String iGroup, String value) {
+    public void triggerButton(String group, String value) {
         String trigger = mapButtonEvent(value);
         logger.debug("{}: Update button state with {}/{}", thingName, value, trigger);
         if (!trigger.isEmpty()) {
-            triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, trigger);
-            updateChannel(iGroup, CHANNEL_LAST_UPDATE, getTimestamp());
+            triggerChannel(group, CHANNEL_BUTTON_TRIGGER, trigger);
+            updateChannel(group, CHANNEL_LAST_UPDATE, getTimestamp());
+            if (!profile.hasBattery) {
+                // refresh status of the input channel
+                requestUpdates(1, false);
+            }
 
-            if (profile.isButton) {
+            /* if (profile.isButton) */ {
                 // Button1 doesn't send a RELEASED, to make it consistent the binding simulates a RELEASED
                 ScheduledFuture<?> job = this.asyncButtonRelease;
                 if ((job != null) && !job.isCancelled()) {
@@ -903,8 +908,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 }
                 asyncButtonRelease = scheduler.schedule(() -> {
                     logger.debug("{}: Simulating Button RELEASED", thingName);
-                    triggerChannel(iGroup, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);
-                }, 1500, TimeUnit.MILLISECONDS);
+                    triggerChannel(group, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);
+                }, 1000, TimeUnit.MILLISECONDS);
             }
         }
     }
