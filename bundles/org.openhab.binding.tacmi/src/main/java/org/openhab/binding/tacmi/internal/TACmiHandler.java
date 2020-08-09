@@ -139,7 +139,7 @@ public class TACmiHandler extends BaseThingHandler {
         // this automatically restores persisted states...
         this.stateCacheUtils = new StateCacheUtils(
                 new File(STATE_CACHE_BASE + getThing().getUID().getAsString().replace(':', '_') + ".json"),
-                this.podDatas.values());
+                this.podDatas.values(), config.persistInterval);
 
         final Bridge br = getBridge();
         final TACmiCoEBridgeHandler bridge = br == null ? null : (TACmiCoEBridgeHandler) br.getHandler();
@@ -283,7 +283,7 @@ public class TACmiHandler extends BaseThingHandler {
         @Nullable
         final StateCacheUtils scu = this.stateCacheUtils;
         if (scu != null) {
-            scu.persistStates(podDatas.values());
+            scu.persistStates(podDatas.values(), true);
         }
         super.dispose();
     }
@@ -358,7 +358,7 @@ public class TACmiHandler extends BaseThingHandler {
         }
         final StateCacheUtils scu = this.stateCacheUtils;
         if (scu != null) {
-            scu.persistStates(podDatas.values());
+            scu.persistStates(podDatas.values(), false);
         }
     }
 }

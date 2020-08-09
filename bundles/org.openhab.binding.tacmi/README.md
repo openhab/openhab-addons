@@ -110,10 +110,22 @@ The _TA C.M.I. CoE Connection_ has to be manually configured.
 
 This thing reflects a connection to a node behind a specific C.M.I.. This node could be every CAN-Capable device from TA which allows to define an CAN-Input.
 
-| Parameter Label         | Parameter ID | Description                                                                                                   | Accepted values        |
-|-------------------------|--------------|---------------------------------------------------------------------------------------------------------------|------------------------|
-| C.M.I. IP Address       | host         | Host name or IP address of the C.M.I                                                                          | host name or ip        |
-| Node                    | node         | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
+| Parameter Label         | Parameter ID    | Description                                                                                                   | Accepted values        |
+|-------------------------|-----------------|---------------------------------------------------------------------------------------------------------------|------------------------|
+| C.M.I. IP Address       | host            | Host name or IP address of the C.M.I                                                                          | host name or ip        |
+| Node                    | node            | The CoE / CAN Node number openHAB should represent                                                            | 1-64                   |
+| Persistence Interval    | persistInterval | Mode (-1: during shutdown only; 0: disabled) and interval (in s) for persisting thing states                  | -1 - 3600; 0: disabled (default); -1: during binding shutdown only; >0: interval in seconds |
+
+A few words to the Persistence Interval:
+You have to enable / set it properly when send values from OH -> TA C.M.I. and the value are ciritical for the TA's programming.
+As you might already have taken notice when studing the TA's manual, there are always a multpile CoE-values updated withinin a single CoE-message.
+This is a design decision made bei TA.
+But this also means for CoE-Messages from OH to TA C.M.I. we have to send multiple values at once.
+But due to OH's design there is no default restore of previous values out of the box.
+This binding implements a own persistance mechanism to save the last known values to have them available after startup of the binding, so we could provide consistent values to TA.
+But as most installations are running on Flash-Cards with limitied write cycles, this feature is disabled by default and you have to enable it when needed.
+When it is disabled, the binding will send out updates when _output thing cahnnels_ are updated, but 'zero out' all other output channels where the binding dosn't have a valid value yet.
+Beside the persistence service, you also have the option to use _CoE Value Validation_ on the TA side to detect invalid values or just to use only every 4th analog and 16th digital channel if this is enough for you.
 
 The thing has no channels by default - they have to be added manually matching the configured inputs / outputs for the related CAN Node. Digital and Analog channels are supported. Please read TA's documentation related to the CAN-protocol - multiple analog (4) and digital (16) channels are combined so please be aware of this design limitation.
 

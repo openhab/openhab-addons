@@ -32,4 +32,9 @@ public class TACmiConfiguration {
      * CoE / CAN node ID we are representing
      */
     public int node;
+
+    /**
+     * this identifies the persistence mode / interval
+     */
+    public int persistInterval = 0;
 }

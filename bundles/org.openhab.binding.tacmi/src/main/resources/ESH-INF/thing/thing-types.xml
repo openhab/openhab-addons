@@ -7,7 +7,7 @@
 	<!-- Sample Thing Type -->
 	<thing-type id="cmi" extensible="coe-digital-in,coe-digital-out,coe-analog-in,coe-analog-out">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="coe-bridge"/>
+			<bridge-type-ref id="coe-bridge" />
 		</supported-bridge-type-refs>
 
 		<label>TA C.M.I. CoE Connection</label>
@@ -23,6 +23,12 @@
 				<label>Node</label>
 				<description>The CoE / CAN Node number openHAB should represent</description>
 			</parameter>
+			<parameter name="persistInterval" type="integer" min="-1" max="3600" required="false">
+				<label>Persistence Interval</label>
+				<description>Mode (-1: during shutdown only; 0: disabled) and interval (in s) for persisting thing states</description>
+				<default>0</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -32,7 +38,7 @@
 		<item-type>Switch</item-type>
 		<label>Digital Input (C.M.I. -> OH)</label>
 		<description>A digital channel sent from C.M.I. to openHAB</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -56,7 +62,7 @@
 		<item-type>Number</item-type>
 		<label>Analog Input Channel (C.M.I. -> OH)</label>
 		<description>A Analog Channel received from the C.M.I.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 		<config-description>
 			<parameter name="output" type="integer" min="1" max="32" required="true">
 				<label>Output</label>
@@ -142,7 +148,7 @@
 		<item-type>Switch</item-type>
 		<label>Switch State (Read-Only)</label>
 		<description>An On/Off state read from C.M.I.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="schema-switch-rw">
 		<item-type>Switch</item-type>
@@ -153,12 +159,12 @@
 		<item-type>Number</item-type>
 		<label>Value</label>
 		<description>A numeric value read from C.M.I.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 	<channel-type id="schema-state-ro">
 		<item-type>String</item-type>
 		<label>Value</label>
 		<description>A state value read from C.M.I.</description>
-		<state readOnly="true"/>
+		<state readOnly="true" />
 	</channel-type>
 </thing:thing-descriptions>

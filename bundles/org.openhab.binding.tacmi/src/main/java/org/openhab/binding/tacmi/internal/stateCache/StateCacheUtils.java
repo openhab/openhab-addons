@@ -15,6 +15,7 @@ package org.openhab.binding.tacmi.internal.stateCache;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -43,9 +44,12 @@ public class StateCacheUtils {
     // pretty print
     final Gson gson = new GsonBuilder().setPrettyPrinting().create();
     final File stateCacheFile;
+    private final int persistInterval;
+    private long lastPersistTS;
 
-    public StateCacheUtils(final File file, final Collection<@Nullable PodData> podDatas) {
+    public StateCacheUtils(final File file, final Collection<@Nullable PodData> podDatas, int persistInterval) {
         this.stateCacheFile = file;
+        this.persistInterval = persistInterval;
         if (this.stateCacheFile.exists()) {
             FileReader fr = null;
             try {
@@ -87,26 +91,40 @@ public class StateCacheUtils {
             } catch (final Exception t) {
                 logger.warn("Restore of state file {} failed: {}", this.stateCacheFile, t.getMessage(), t);
             } finally {
-                if (fr != null)
+                if (fr != null) {
                     try {
                         fr.close();
                     } catch (final Exception t) {
                         // ignore...
                     }
+                }
             }
 
         }
     }
 
-    public void persistStates(final Collection<@Nullable PodData> data) {
+    public void persistStates(final Collection<@Nullable PodData> data, boolean isShutdown) {
         try {
-            boolean dirty = false;
-            for (final PodData pd : data) {
-                if (pd != null && pd.message != null && pd.dirty)
-                    dirty = true;
-            }
-            if (!dirty)
+            if (this.persistInterval == 0 || (this.persistInterval == -1 && !isShutdown)) {
                 return;
+            }
+
+            long currentTS = System.currentTimeMillis();
+
+            if (!isShutdown && (currentTS - this.lastPersistTS) / 1000 < this.persistInterval) {
+                // persist interval hasn't passed yet...
+                return;
+            }
+            // we persist on shutdown...
+            boolean dirty = isShutdown ? true : false;
+            for (final PodData pd : data) {
+                if (pd != null && pd.message != null && pd.dirty) {
+                    dirty = true;
+                }
+            }
+            if (!dirty) {
+                return;
+            }
 
             // we have to persist - transfer state to json structure...
             final StateCache sc = new StateCache();
@@ -135,13 +153,15 @@ public class StateCacheUtils {
 
             final String json = gson.toJson(sc);
 
-            if (!this.stateCacheFile.getParentFile().exists())
+            if (!this.stateCacheFile.getParentFile().exists()) {
                 this.stateCacheFile.getParentFile().mkdirs();
+            }
 
             final FileWriter fw = new FileWriter(this.stateCacheFile);
             fw.write(json);
             fw.close();
-        } catch (final Exception t) {
+            this.lastPersistTS = currentTS;
+        } catch (final IOException t) {
             logger.warn("Persistance of state file {} failed: {}", this.stateCacheFile, t.getMessage(), t);
         }
     }
