@@ -59,21 +59,21 @@ public class PowerBlock implements Data {
          * Positive value - Battery is charging = Power consumer
          * Negative value - Battery is discharging = Power supplier
          */
-        pvPowerSupply = new QuantityType<Power>(pvPowerSupplyL, SmartHomeUnits.WATT);
+        pvPowerSupply = QuantityType.valueOf(pvPowerSupplyL, SmartHomeUnits.WATT);
         long batteryPower = DataConverter.getInt32Swap(wrap);
         if (batteryPower > 0) {
             // Battery is charging so Power is consumed by Battery
-            batteryPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
-            batteryPowerConsumption = new QuantityType<Power>(batteryPower, SmartHomeUnits.WATT);
+            batteryPowerSupply = QuantityType.valueOf(0, SmartHomeUnits.WATT);
+            batteryPowerConsumption = QuantityType.valueOf(batteryPower, SmartHomeUnits.WATT);
         } else {
             // Battery is discharging so Power is provided by Battery
-            batteryPowerSupply = new QuantityType<Power>(batteryPower * -1, SmartHomeUnits.WATT);
-            batteryPowerConsumption = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+            batteryPowerSupply = QuantityType.valueOf(batteryPower * -1, SmartHomeUnits.WATT);
+            batteryPowerConsumption = QuantityType.valueOf(0, SmartHomeUnits.WATT);
         }
 
         // int32_swap value = 4 byte
         long householdPowerConsumptionL = DataConverter.getInt32Swap(wrap);
-        householdPowerConsumption = new QuantityType<Power>(householdPowerConsumptionL, SmartHomeUnits.WATT);
+        householdPowerConsumption = QuantityType.valueOf(householdPowerConsumptionL, SmartHomeUnits.WATT);
 
         /*
          * int32_swap value don't provide negative values!
@@ -83,28 +83,28 @@ public class PowerBlock implements Data {
         long gridPower = DataConverter.getInt32Swap(wrap);
         if (gridPower > 0) {
             // Power is provided by Grid
-            gridPowerSupply = new QuantityType<Power>(gridPower, SmartHomeUnits.WATT);
-            gridPowerConsumpition = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+            gridPowerSupply = QuantityType.valueOf(gridPower, SmartHomeUnits.WATT);
+            gridPowerConsumpition = QuantityType.valueOf(0, SmartHomeUnits.WATT);
         } else {
             // Power is consumed by Grid
-            gridPowerConsumpition = new QuantityType<Power>(gridPower * -1, SmartHomeUnits.WATT);
-            gridPowerSupply = new QuantityType<Power>(0, SmartHomeUnits.WATT);
+            gridPowerConsumpition = QuantityType.valueOf(gridPower * -1, SmartHomeUnits.WATT);
+            gridPowerSupply = QuantityType.valueOf(0, SmartHomeUnits.WATT);
         }
 
         // int32_swap value = 4 byte
-        externalPowerSupply = new QuantityType<Power>(DataConverter.getInt32Swap(wrap), SmartHomeUnits.WATT);
+        externalPowerSupply = QuantityType.valueOf(DataConverter.getInt32Swap(wrap), SmartHomeUnits.WATT);
 
         // int32_swap value = 4 byte
-        wallboxPowerConsumption = new QuantityType<Power>(DataConverter.getInt32Swap(wrap), SmartHomeUnits.WATT);
+        wallboxPowerConsumption = QuantityType.valueOf(DataConverter.getInt32Swap(wrap), SmartHomeUnits.WATT);
 
         // int32_swap value = 4 byte
-        wallboxPVPowerConsumption = new QuantityType<Power>(DataConverter.getInt32Swap(wrap), SmartHomeUnits.WATT);
+        wallboxPVPowerConsumption = QuantityType.valueOf(DataConverter.getInt32Swap(wrap), SmartHomeUnits.WATT);
 
         // unit8 + uint8 - one register with split value for Autarky & Self Consumption
-        autarky = new QuantityType<Dimensionless>(wrap.get(), SmartHomeUnits.PERCENT);
-        selfConsumption = new QuantityType<Dimensionless>(wrap.get(), SmartHomeUnits.PERCENT);
+        autarky = QuantityType.valueOf(wrap.get(), SmartHomeUnits.PERCENT);
+        selfConsumption = QuantityType.valueOf(wrap.get(), SmartHomeUnits.PERCENT);
 
         // uint16 for Battery State of Charge
-        batterySOC = new QuantityType<Dimensionless>(wrap.getShort(), SmartHomeUnits.PERCENT);
+        batterySOC = QuantityType.valueOf(wrap.getShort(), SmartHomeUnits.PERCENT);
     }
 }

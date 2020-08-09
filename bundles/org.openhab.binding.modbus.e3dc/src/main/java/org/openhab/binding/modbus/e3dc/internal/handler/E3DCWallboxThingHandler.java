@@ -122,10 +122,6 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
     }
 
     @Override
-    public void dispose() {
-    }
-
-    @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof OnOffType) {
             int writeValue = 0;

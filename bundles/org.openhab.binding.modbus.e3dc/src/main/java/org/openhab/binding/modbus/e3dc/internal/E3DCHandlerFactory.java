@@ -35,12 +35,8 @@ import org.osgi.service.component.annotations.Component;
 public class E3DCHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        if (thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC)
-                || thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_WALLBOX)) {
-            return true;
-        } else {
-            return false;
-        }
+        return (thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC)
+                || thingTypeUID.equals(E3DCBindingConstants.THING_TYPE_E3DC_WALLBOX));
     }
 
     @Override

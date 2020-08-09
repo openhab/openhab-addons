@@ -34,15 +34,11 @@ public class DataConverter {
      * @return
      */
     public static int getUInt16Value(ByteBuffer wrap) {
-        return ((wrap.get() & 0xff) << 8) | wrap.get() & 0xff;
+        return Short.toUnsignedInt(wrap.getShort());
     }
 
     public static long getLongValue(ByteBuffer wrap) {
-        long value = 0;
-        for (int i = 0; i < 4; i++) {
-            value = (value << 8) + (wrap.get() & 0xff);
-        }
-        return value;
+        return Integer.toUnsignedLong(wrap.getInt());
     }
 
     /**

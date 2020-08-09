@@ -17,6 +17,7 @@ import java.nio.ByteBuffer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 
 /**
@@ -45,10 +46,9 @@ public class InfoBlock implements Data {
         ByteBuffer wrapper = ByteBuffer.wrap(bArray);
 
         // first uint16 = 2 bytes - decode magic byte
-        StringBuilder magicByte = new StringBuilder();
-        magicByte.append(String.format("%02X", wrapper.get()));
-        magicByte.append(String.format("%02X", wrapper.get()));
-        this.modbusId = new StringType(magicByte.toString());
+        byte[] magicBytes = new byte[2];
+        wrapper.get(magicBytes);
+        this.modbusId = new StringType(HexUtils.bytesToHex(magicBytes));
         // first uint16 = 2 bytes - decode magic byte
 
         // unit8 (Modbus Major Version) + uint8 Modbus minor Version

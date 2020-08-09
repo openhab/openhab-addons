@@ -50,10 +50,10 @@ public class DataBlockTest {
         Optional<Data> dataOpt = mc.parse(DataType.POWER);
         assertTrue(dataOpt.isPresent());
         PowerBlock b = (PowerBlock) dataOpt.get();
-        assertEquals("PV Supply", "242 W", b.pvPowerSupply.toString());
-        assertEquals("Grid Supply", "14 W", b.gridPowerSupply.toString());
-        assertEquals("Grid Consumption", "0 W", b.gridPowerConsumpition.toString());
-        assertEquals("Battery Supply", "303 W", b.batteryPowerSupply.toString());
+        assertEquals("PV Supply", "242.0 W", b.pvPowerSupply.toString());
+        assertEquals("Grid Supply", "14.0 W", b.gridPowerSupply.toString());
+        assertEquals("Grid Consumption", "0.0 W", b.gridPowerConsumpition.toString());
+        assertEquals("Battery Supply", "303.0 W", b.batteryPowerSupply.toString());
     }
 
     @Test

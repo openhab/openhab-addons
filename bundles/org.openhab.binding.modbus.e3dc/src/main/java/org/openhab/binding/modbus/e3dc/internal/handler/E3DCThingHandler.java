@@ -224,7 +224,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
-            logger.debug("No bridge handler available -- aborting init for {}", label);
             return null;
         }
         try {
@@ -233,7 +232,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
         } catch (EndpointNotInitializedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Slave Endpoint not initialized"));
-            logger.debug("Slave Endpoint not initialized");
             return null;
         }
         if (comms == null) {
@@ -241,7 +239,6 @@ public class E3DCThingHandler extends BaseBridgeHandler {
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
-            logger.debug("Bridge not initialized fully (no endpoint) -- aborting init for {}", this);
             return null;
         } else {
             return comms;
