@@ -15,9 +15,9 @@ package org.openhab.binding.lametrictime.internal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.syphr.lametrictime.api.local.model.Application;
-import org.syphr.lametrictime.api.local.model.Widget;
-import org.syphr.lametrictime.api.model.CoreApps;
+import org.openhab.binding.lametrictime.api.local.model.Application;
+import org.openhab.binding.lametrictime.api.local.model.Widget;
+import org.openhab.binding.lametrictime.api.model.CoreApps;
 
 import com.google.gson.JsonPrimitive;
 

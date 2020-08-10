@@ -160,10 +160,11 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
             logger.debug(
                     "No token discovered for device {}. For options how to get the token, check the binding readme.",
                     id);
-            dr = dr.withRepresentationProperty(id).withLabel(label);
+            dr = dr.withRepresentationProperty(PROPERTY_DID).withLabel(label);
         } else {
             logger.debug("Discovered token for device {}: {}", id, token);
-            dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(id).withLabel(label + " with token");
+            dr = dr.withProperty(PROPERTY_TOKEN, token).withRepresentationProperty(PROPERTY_DID)
+                    .withLabel(label + " with token");
         }
         if (!country.isEmpty() && isOnline) {
             dr = dr.withProperty(PROPERTY_CLOUDSERVER, country);
@@ -238,9 +239,10 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
      */
     private synchronized void stopReceiverThreat() {
         if (socketReceiveThread != null) {
-            closeSocket();
+            socketReceiveThread.interrupt();
             socketReceiveThread = null;
         }
+        closeSocket();
     }
 
     /**
@@ -265,7 +267,7 @@ public class MiIoDiscovery extends AbstractDiscoveryService {
         private void receiveData(DatagramSocket socket) {
             DatagramPacket receivePacket = new DatagramPacket(new byte[BUFFER_LENGTH], BUFFER_LENGTH);
             try {
-                while (true) {
+                while (!interrupted()) {
                     logger.trace("Thread {} waiting for data on port {}", this, socket.getLocalPort());
                     socket.receive(receivePacket);
                     String hostAddress = receivePacket.getAddress().getHostAddress();

@@ -161,6 +161,7 @@ public class SomfyTahomaBindingConstants {
 
     // Blind
     public static final String ORIENTATION = "orientation";
+    public static final String CLOSURE_AND_ORIENTATION = "closure_orientation";
 
     // Action group
     public static final String EXECUTE_ACTION = "execute_action";
@@ -268,6 +269,7 @@ public class SomfyTahomaBindingConstants {
     // Commands
     public static final String COMMAND_MY = "my";
     public static final String COMMAND_SET_CLOSURE = "setClosure";
+    public static final String COMMAND_SET_CLOSURE_ORIENTATION = "setClosureAndOrientation";
     public static final String COMMAND_SET_DEPLOYMENT = "setDeployment";
     public static final String COMMAND_SET_ORIENTATION = "setOrientation";
     public static final String COMMAND_SET_CLOSURESPEED = "setClosureAndLinearSpeed";

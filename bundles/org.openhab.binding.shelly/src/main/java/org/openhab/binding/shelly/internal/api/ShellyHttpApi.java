@@ -480,13 +480,13 @@ public class ShellyHttpApi {
                 }
                 return apiResult.response; // successful
             } catch (ShellyApiException e) {
-                retries--;
                 if ((!e.isTimeout() && !apiResult.isHttpServerError()) || profile.hasBattery || (retries == 0)) {
                     // Sensor in sleep mode or API exception for non-battery device or retry counter expired
                     throw e; // non-timeout exception
                 }
 
                 timeout = true;
+                retries--;
                 timeoutErrors++; // count the retries
                 logger.debug("{}: API Timeout, retry #{} ({})", thingName, timeoutErrors, e.toString());
             }

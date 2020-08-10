@@ -51,7 +51,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
     private static final int INITIAL_PING_DELAY = 5;
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXThingHandler.class);
 
-    private @Nullable IndividualAddress address;
+    protected @Nullable IndividualAddress address;
     private @Nullable Future<?> descriptionJob;
     private boolean filledDescription = false;
     private final Random random = new Random();

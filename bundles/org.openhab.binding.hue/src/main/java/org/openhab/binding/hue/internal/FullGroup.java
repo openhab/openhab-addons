@@ -31,9 +31,20 @@ public class FullGroup extends Group {
 
     private State action;
     private List<String> lights;
-    private State state; // Will not be set by hue API
+    private State groupState; // Will not be set by hue API
 
     FullGroup() {
+        super();
+    }
+
+    /**
+     * Test constructor
+     */
+    FullGroup(String id, String name, String type, State action, List<String> lights, State state) {
+        super(id, name, type);
+        this.action = action;
+        this.lights = lights;
+        this.groupState = state;
     }
 
     /**
@@ -51,7 +62,7 @@ public class FullGroup extends Group {
      *
      * @return lights in the group
      */
-    public List<String> getLights() {
+    public List<String> getLightIds() {
         return lights;
     }
 
@@ -61,6 +72,10 @@ public class FullGroup extends Group {
      * @return current state
      */
     public State getState() {
-        return state;
+        return groupState;
+    }
+
+    public void setState(State state) {
+        this.groupState = state;
     }
 }

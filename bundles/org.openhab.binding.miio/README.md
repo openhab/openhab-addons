@@ -71,6 +71,10 @@ However, for devices that are unsupported, you may override the value and try to
 
 `Thing miio:basic:light "My Light" [ host="192.168.x.x", token="put here your token", deviceId="0326xxxx" ]` 
 
+or in case of unknown models include the model information e.g.:
+
+`Thing miio:vacuum:s50 "vacuum" @ "livingroom" [ host="192.168.15.20", token="xxxxxxx", deviceId=“0470DDAA”, model="roborock.vacuum.s5" ]`
+
 ## Mi IO Devices
 
 | Device                       | ThingType        | Device Model           | Supported | Remark     |
@@ -109,6 +113,7 @@ However, for devices that are unsupported, you may override the value and try to
 | XIAOMI MIJIA WIDETECH WDH318EFW1 Dehumidifier | miio:unsupported | nwt.derh.wdh318efw1    | No        |            |
 | Mi Air Purifier mb1          | miio:basic       | [zhimi.airpurifier.mb1](#zhimi-airpurifier-mb1) | Yes       |            |
 | Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc1](#zhimi-airpurifier-mc1) | Yes       |            |
+| Mi Air Purifier 2S           | miio:basic       | [zhimi.airpurifier.mc2](#zhimi-airpurifier-mc2) | Yes       |            |
 | Mi Air Purifier virtual      | miio:unsupported | zhimi.airpurifier.virtual | No        |            |
 | Mi Air Purifier vtl m1       | miio:unsupported | zhimi.airpurifier.vtl_m1 | No        |            |
 | Mi Remote v2                 | miio:unsupported | chuangmi.ir.v2         | No        |            |
@@ -124,6 +129,7 @@ However, for devices that are unsupported, you may override the value and try to
 | Mi Smart Pedestal Fan        | miio:basic       | [zhimi.fan.v3](#zhimi-fan-v3) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
+| Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
 | Viomi Internet refrigerator iLive | miio:unsupported | viomi.fridge.v3        | No        |            |
 | Mi Smart Home Gateway v1     | miio:unsupported | lumi.gateway.v1        | No        |            |
 | Mi Smart Home Gateway v2     | miio:unsupported | lumi.gateway.v2        | No        |            |
@@ -135,6 +141,7 @@ However, for devices that are unsupported, you may override the value and try to
 | Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.ceiling](#philips-light-ceiling) | Yes       |            |
 | Xiaomi Philips LED Ceiling Lamp | miio:basic       | [philips.light.zyceiling](#philips-light-zyceiling) | Yes       |            |
 | Xiaomi Philips Bulb          | miio:basic       | [philips.light.bulb](#philips-light-bulb) | Yes       |            |
+| Xiaomi Philips Wi-Fi Bulb E27 White | miio:basic       | [philips.light.hbulb](#philips-light-hbulb) | Yes       |            |
 | PHILIPS Zhirui Smart LED Bulb E14 Candle Lamp | miio:basic       | [philips.light.candle](#philips-light-candle) | Yes       |            |
 | Xiaomi Philips Downlight     | miio:basic       | [philips.light.downlight](#philips-light-downlight) | Yes       |            |
 | Xiaomi Philips ZhiRui bedside lamp | miio:basic       | [philips.light.moonlight](#philips-light-moonlight) | Yes       |            |
@@ -817,6 +824,27 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | purifyvolume     | Number  | Purivied Volume                     |
 | childlock        | Switch  | Child Lock                          |
 
+### Mi Air Purifier 2S (<a name="zhimi-airpurifier-mc2">zhimi.airpurifier.mc2</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| mode             | String  | Mode                                |
+| humidity         | Number  | Humidity                            |
+| aqi              | Number  | Air Quality Index                   |
+| averageaqi       | Number  | Average Air Quality Index           |
+| led              | Switch  | LED Status                          |
+| buzzer           | Switch  | Buzzer Status                       |
+| filtermaxlife    | Number  | Filter Max Life                     |
+| filterhours      | Number  | Filter Hours used                   |
+| usedhours        | Number  | Run Time                            |
+| motorspeed       | Number  | Motor Speed                         |
+| filterlife       | Number  | Filter  Life                        |
+| favoritelevel    | Number  | Favorite Level                      |
+| temperature      | Number  | Temperature                         |
+| purifyvolume     | Number  | Purivied Volume                     |
+| childlock        | Switch  | Child Lock                          |
+
 ### Mi Smart Fan (<a name="zhimi-fan-v1">zhimi.fan.v1</a>) Channels
 
 | Channel          | Type    | Description                         |
@@ -919,6 +947,23 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | acPower          | Switch  | AC Power                            |
 | move             | String  | Move Direction                      |
 
+### Xiaomi Mi Smart Pedestal Fan (<a name="zhimi-fan-za4">zhimi.fan.za4</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| angleEnable      | Switch  | Rotation                            |
+| usedhours        | Number  | Run Time                            |
+| angle            | Number  | Angle                               |
+| poweroffTime     | Number  | Timer                               |
+| buzzer           | Number  | Buzzer                              |
+| led_b            | Number  | LED                                 |
+| child_lock       | Switch  | Child Lock                          |
+| speedLevel       | Number  | Speed Level                         |
+| speed            | Number  | Speed                               |
+| naturalLevel     | Number  | Natural Level                       |
+| move             | String  | Move Direction                      |
+
 ### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
 | Channel          | Type    | Description                         |
@@ -972,6 +1017,18 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | toggle           | Switch  | Toggle                              |
 
 ### Xiaomi Philips Bulb (<a name="philips-light-bulb">philips.light.bulb</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| brightness       | Dimmer  | Brightness                          |
+| cct              | Dimmer  | Correlated Color Temperature        |
+| scene            | Number  | Scene                               |
+| dv               | Number  | DV                                  |
+| switchscene      | Switch  | Switch Scene                        |
+| delayoff         | Switch  | Delay Off                           |
+
+### Xiaomi Philips Wi-Fi Bulb E27 White (<a name="philips-light-hbulb">philips.light.hbulb</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
@@ -2312,6 +2369,30 @@ Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpu
 Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
 ```
 
+### Mi Air Purifier 2S (zhimi.airpurifier.mc2) item file lines
+
+note: Autogenerated example. Replace the id (airpurifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_airpurifier "Mi Air Purifier 2S" <status>
+Switch power "Power" (G_airpurifier) {channel="miio:basic:airpurifier:power"}
+String mode "Mode" (G_airpurifier) {channel="miio:basic:airpurifier:mode"}
+Number humidity "Humidity" (G_airpurifier) {channel="miio:basic:airpurifier:humidity"}
+Number aqi "Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:aqi"}
+Number averageaqi "Average Air Quality Index" (G_airpurifier) {channel="miio:basic:airpurifier:averageaqi"}
+Switch led "LED Status" (G_airpurifier) {channel="miio:basic:airpurifier:led"}
+Switch buzzer "Buzzer Status" (G_airpurifier) {channel="miio:basic:airpurifier:buzzer"}
+Number filtermaxlife "Filter Max Life" (G_airpurifier) {channel="miio:basic:airpurifier:filtermaxlife"}
+Number filterhours "Filter Hours used" (G_airpurifier) {channel="miio:basic:airpurifier:filterhours"}
+Number usedhours "Run Time" (G_airpurifier) {channel="miio:basic:airpurifier:usedhours"}
+Number motorspeed "Motor Speed" (G_airpurifier) {channel="miio:basic:airpurifier:motorspeed"}
+Number filterlife "Filter  Life" (G_airpurifier) {channel="miio:basic:airpurifier:filterlife"}
+Number favoritelevel "Favorite Level" (G_airpurifier) {channel="miio:basic:airpurifier:favoritelevel"}
+Number temperature "Temperature" (G_airpurifier) {channel="miio:basic:airpurifier:temperature"}
+Number purifyvolume "Purivied Volume" (G_airpurifier) {channel="miio:basic:airpurifier:purifyvolume"}
+Switch childlock "Child Lock" (G_airpurifier) {channel="miio:basic:airpurifier:childlock"}
+```
+
 ### Mi Smart Fan (zhimi.fan.v1) item file lines
 
 note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -2429,6 +2510,26 @@ Switch acPower "AC Power" (G_fan) {channel="miio:basic:fan:acPower"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
+### Xiaomi Mi Smart Pedestal Fan (zhimi.fan.za4) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mi Smart Pedestal Fan" <status>
+Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch angleEnable "Rotation" (G_fan) {channel="miio:basic:fan:angleEnable"}
+Number usedhours "Run Time" (G_fan) {channel="miio:basic:fan:usedhours"}
+Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number poweroffTime "Timer" (G_fan) {channel="miio:basic:fan:poweroffTime"}
+Number buzzer "Buzzer" (G_fan) {channel="miio:basic:fan:buzzer"}
+Number led_b "LED" (G_fan) {channel="miio:basic:fan:led_b"}
+Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
+Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
+Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
+String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+```
+
 ### Mi Humdifier (zhimi.humidifier.v1) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -2499,6 +2600,21 @@ note: Autogenerated example. Replace the id (light) in the channel with your own
 
 ```java
 Group G_light "Xiaomi Philips Bulb" <status>
+Switch power "Power" (G_light) {channel="miio:basic:light:power"}
+Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
+Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}
+Number scene "Scene" (G_light) {channel="miio:basic:light:scene"}
+Number dv "DV" (G_light) {channel="miio:basic:light:dv"}
+Switch switchscene "Switch Scene" (G_light) {channel="miio:basic:light:switchscene"}
+Switch delayoff "Delay Off" (G_light) {channel="miio:basic:light:delayoff"}
+```
+
+### Xiaomi Philips Wi-Fi Bulb E27 White (philips.light.hbulb) item file lines
+
+note: Autogenerated example. Replace the id (light) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_light "Xiaomi Philips Wi-Fi Bulb E27 White" <status>
 Switch power "Power" (G_light) {channel="miio:basic:light:power"}
 Dimmer brightness "Brightness" (G_light) {channel="miio:basic:light:brightness"}
 Dimmer cct "Correlated Color Temperature" (G_light) {channel="miio:basic:light:cct"}

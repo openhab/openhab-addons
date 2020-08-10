@@ -15,8 +15,14 @@ package org.openhab.binding.hue.internal.handler;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,18 +30,21 @@ import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.StateOption;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.hue.internal.FullGroup;
-import org.openhab.binding.hue.internal.HueBridge;
+import org.openhab.binding.hue.internal.Scene;
 import org.openhab.binding.hue.internal.State;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.StateUpdate;
@@ -53,6 +62,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_GROUP);
 
     private final Logger logger = LoggerFactory.getLogger(HueGroupHandler.class);
+    private final HueStateDescriptionOptionProvider stateDescriptionOptionProvider;
 
     private @NonNullByDefault({}) String groupId;
 
@@ -63,8 +73,14 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
 
     private @Nullable HueClient hueClient;
 
-    public HueGroupHandler(Thing thing) {
+    private @Nullable ScheduledFuture<?> scheduledFuture;
+    private @Nullable FullGroup lastFullGroup;
+
+    private List<String> consoleScenesList = new ArrayList<>();
+
+    public HueGroupHandler(Thing thing, HueStateDescriptionOptionProvider stateDescriptionOptionProvider) {
         super(thing);
+        this.stateDescriptionOptionProvider = stateDescriptionOptionProvider;
     }
 
     @Override
@@ -72,6 +88,12 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         logger.debug("Initializing hue group handler.");
         Bridge bridge = getBridge();
         initializeThing((bridge == null) ? null : bridge.getStatus());
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        logger.debug("bridgeStatusChanged {}", bridgeStatusInfo);
+        initializeThing(bridgeStatusInfo.getStatus());
     }
 
     private void initializeThing(@Nullable ThingStatus bridgeStatus) {
@@ -92,7 +114,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
                 }
             } else {
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -103,6 +125,7 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     @Override
     public void dispose() {
         logger.debug("Hue group handler disposes. Unregistering listener.");
+        cancelScheduledFuture();
         if (groupId != null) {
             HueClient bridgeHandler = getHueClient();
             if (bridgeHandler != null) {
@@ -121,8 +144,9 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof HueBridgeHandler) {
-                hueClient = (HueClient) handler;
-                hueClient.registerGroupStatusListener(this);
+                HueClient bridgeHandler = (HueClient) handler;
+                hueClient = bridgeHandler;
+                bridgeHandler.registerGroupStatusListener(this);
             } else {
                 return null;
             }
@@ -150,96 +174,121 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
             return;
         }
 
-        StateUpdate groupState = null;
+        Integer lastColorTemp;
+        StateUpdate newState = null;
         switch (channel) {
             case CHANNEL_COLOR:
                 if (command instanceof HSBType) {
                     HSBType hsbCommand = (HSBType) command;
                     if (hsbCommand.getBrightness().intValue() == 0) {
-                        groupState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
+                        newState = LightStateConverter.toOnOffLightState(OnOffType.OFF);
                     } else {
-                        groupState = LightStateConverter.toColorLightState(hsbCommand, group.getState());
-                        if (groupState != null) {
-                            groupState.setTransitionTime(fadeTime);
-                        }
+                        newState = LightStateConverter.toColorLightState(hsbCommand, group.getState());
+                        newState.setOn(true);
+                        newState.setTransitionTime(fadeTime);
                     }
                 } else if (command instanceof PercentType) {
-                    groupState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    newState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    groupState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
+                    newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE:
                 if (command instanceof PercentType) {
-                    groupState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    newState = LightStateConverter.toColorTemperatureLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    groupState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, group);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
+                    newState = convertColorTempChangeToStateUpdate((IncreaseDecreaseType) command, group);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
                 if (command instanceof PercentType) {
-                    groupState = LightStateConverter.toBrightnessLightState((PercentType) command);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
-                    }
+                    newState = LightStateConverter.toBrightnessLightState((PercentType) command);
+                    newState.setTransitionTime(fadeTime);
                 } else if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    groupState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
-                    if (groupState != null) {
-                        groupState.setTransitionTime(fadeTime);
+                    newState = convertBrightnessChangeToStateUpdate((IncreaseDecreaseType) command, group);
+                    if (newState != null) {
+                        newState.setTransitionTime(fadeTime);
                     }
                 }
-                if (groupState != null && lastSentColorTemp != null) {
+                lastColorTemp = lastSentColorTemp;
+                if (newState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    groupState.setColorTemperature(lastSentColorTemp);
-                    groupState.setTransitionTime(fadeTime);
+                    newState.setColorTemperature(lastColorTemp);
+                    newState.setTransitionTime(fadeTime);
                 }
                 break;
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
-                    groupState = LightStateConverter.toOnOffLightState((OnOffType) command);
+                    newState = LightStateConverter.toOnOffLightState((OnOffType) command);
                 }
-                if (groupState != null && lastSentColorTemp != null) {
+                lastColorTemp = lastSentColorTemp;
+                if (newState != null && lastColorTemp != null) {
                     // make sure that the light also has the latest color temp
                     // this might not have been yet set in the light, if it was off
-                    groupState.setColorTemperature(lastSentColorTemp);
-                    groupState.setTransitionTime(fadeTime);
+                    newState.setColorTemperature(lastColorTemp);
+                    newState.setTransitionTime(fadeTime);
+                }
+                break;
+            case CHANNEL_ALERT:
+                if (command instanceof StringType) {
+                    newState = LightStateConverter.toAlertState((StringType) command);
+                    if (newState == null) {
+                        // Unsupported StringType is passed. Log a warning
+                        // message and return.
+                        logger.warn("Unsupported String command: {}. Supported commands are: {}, {}, {} ", command,
+                                LightStateConverter.ALERT_MODE_NONE, LightStateConverter.ALERT_MODE_SELECT,
+                                LightStateConverter.ALERT_MODE_LONG_SELECT);
+                        return;
+                    } else {
+                        scheduleAlertStateRestore(command);
+                    }
+                }
+                break;
+            case CHANNEL_SCENE:
+                if (command instanceof StringType) {
+                    newState = new StateUpdate().setScene(command.toString());
                 }
                 break;
             default:
                 break;
         }
-        if (groupState != null) {
-            // Cache values which we have sent
-            Integer tmpBrightness = groupState.getBrightness();
-            if (tmpBrightness != null) {
-                lastSentBrightness = tmpBrightness;
-            }
-            Integer tmpColorTemp = groupState.getColorTemperature();
-            if (tmpColorTemp != null) {
-                lastSentColorTemp = tmpColorTemp;
-            }
-            bridgeHandler.updateGroupState(group, groupState);
+        if (newState != null) {
+            cacheNewState(newState);
+            bridgeHandler.updateGroupState(group, newState, fadeTime);
         } else {
             logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+        }
+    }
+
+    /**
+     * Caches the new state that is sent to the bridge. This is necessary in case the lights are off when the values are
+     * sent. In this case, the values are not yet set in the lights.
+     *
+     * @param newState the state to be cached
+     */
+    private void cacheNewState(StateUpdate newState) {
+        Integer tmpBrightness = newState.getBrightness();
+        if (tmpBrightness != null) {
+            lastSentBrightness = tmpBrightness;
+        }
+        Integer tmpColorTemp = newState.getColorTemperature();
+        if (tmpColorTemp != null) {
+            lastSentColorTemp = tmpColorTemp;
         }
     }
 
@@ -262,25 +311,23 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
     }
 
     private @Nullable StateUpdate convertBrightnessChangeToStateUpdate(IncreaseDecreaseType command, FullGroup group) {
-        StateUpdate stateUpdate = null;
-        Integer currentBrightness = getCurrentBrightness(group.getState());
-        if (currentBrightness != null) {
-            int newBrightness = LightStateConverter.toAdjustedBrightness(command, currentBrightness);
-            stateUpdate = createBrightnessStateUpdate(currentBrightness, newBrightness);
+        Integer currentBrightness = getCurrentBrightness(group);
+        if (currentBrightness == null) {
+            return null;
         }
-        return stateUpdate;
+        int newBrightness = LightStateConverter.toAdjustedBrightness(command, currentBrightness);
+        return createBrightnessStateUpdate(currentBrightness, newBrightness);
     }
 
-    private @Nullable Integer getCurrentBrightness(@Nullable State groupState) {
-        Integer brightness = lastSentBrightness;
-        if (brightness == null && groupState != null) {
-            if (!groupState.isOn()) {
-                brightness = 0;
-            } else {
-                brightness = groupState.getBrightness();
-            }
+    private @Nullable Integer getCurrentBrightness(FullGroup group) {
+        if (lastSentBrightness != null) {
+            return lastSentBrightness;
         }
-        return brightness;
+        State currentState = group.getState();
+        if (currentState == null) {
+            return null;
+        }
+        return currentState.isOn() ? currentState.getBrightness() : 0;
     }
 
     private StateUpdate createBrightnessStateUpdate(int currentBrightness, int newBrightness) {
@@ -302,26 +349,30 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         if (handler != null) {
             FullGroup group = handler.getGroupById(groupId);
             if (group != null) {
-                onGroupStateChanged(null, group);
+                onGroupStateChanged(group);
             }
         }
     }
 
     @Override
-    public void onGroupStateChanged(@Nullable HueBridge bridge, FullGroup group) {
+    public boolean onGroupStateChanged(FullGroup group) {
         logger.trace("onGroupStateChanged() was called for group {}", group.getId());
 
-        if (!group.getId().equals(groupId)) {
-            logger.trace("Received state change for another handler's group ({}). Will be ignored.", group.getId());
-            return;
+        State state = group.getState();
+
+        final FullGroup lastState = lastFullGroup;
+        if (lastState == null || !Objects.equals(lastState.getState(), state)) {
+            lastFullGroup = group;
+        } else {
+            return true;
         }
+
+        logger.trace("New state for group {}", groupId);
 
         lastSentColorTemp = null;
         lastSentBrightness = null;
 
         updateStatus(ThingStatus.ONLINE);
-
-        State state = group.getState();
 
         logger.debug("onGroupStateChanged Group {}: on {} bri {} hue {} sat {} temp {} mode {} XY {}", group.getName(),
                 state.isOn(), state.getBrightness(), state.getHue(), state.getSaturation(), state.getColorTemperature(),
@@ -348,26 +399,120 @@ public class HueGroupHandler extends BaseThingHandler implements GroupStatusList
         updateState(CHANNEL_BRIGHTNESS, brightnessPercentType);
 
         updateState(CHANNEL_SWITCH, state.isOn() ? OnOffType.ON : OnOffType.OFF);
+
+        return true;
     }
 
     @Override
-    public void onGroupAdded(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            onGroupStateChanged(bridge, group);
-        }
+    public void onGroupAdded(FullGroup group) {
+        onGroupStateChanged(group);
     }
 
     @Override
-    public void onGroupRemoved(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
-        }
+    public void onGroupRemoved() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.group-removed");
     }
 
     @Override
-    public void onGroupGone(@Nullable HueBridge bridge, FullGroup group) {
-        if (group.getId().equals(groupId)) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
+    public void onGroupGone() {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.group-removed");
+    }
+
+    /**
+     * Sets the state options for applicable scenes.
+     */
+    @Override
+    public void onScenesUpdated(List<Scene> updatedScenes) {
+        List<StateOption> stateOptions = Collections.emptyList();
+        consoleScenesList = new ArrayList<>();
+        HueClient handler = getHueClient();
+        if (handler != null) {
+            FullGroup group = handler.getGroupById(groupId);
+            if (group != null) {
+                stateOptions = updatedScenes.stream().filter(scene -> scene.isApplicableTo(group))
+                        .map(Scene::toStateOption).collect(Collectors.toList());
+                consoleScenesList = updatedScenes
+                        .stream().filter(scene -> scene.isApplicableTo(group)).map(scene -> "Id is \"" + scene.getId()
+                                + "\" for scene \"" + scene.toStateOption().getLabel() + "\"")
+                        .collect(Collectors.toList());
+            }
         }
+        stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),
+                stateOptions);
+    }
+
+    /**
+     * Schedules restoration of the alert item state to {@link LightStateConverter#ALERT_MODE_NONE} after a given time.
+     * <br>
+     * Based on the initial command:
+     * <ul>
+     * <li>For {@link LightStateConverter#ALERT_MODE_SELECT} restoration will be triggered after <strong>2
+     * seconds</strong>.
+     * <li>For {@link LightStateConverter#ALERT_MODE_LONG_SELECT} restoration will be triggered after <strong>15
+     * seconds</strong>.
+     * </ul>
+     * This method also cancels any previously scheduled restoration.
+     *
+     * @param command The {@link Command} sent to the item
+     */
+    private void scheduleAlertStateRestore(Command command) {
+        cancelScheduledFuture();
+        int delay = getAlertDuration(command);
+
+        if (delay > 0) {
+            scheduledFuture = scheduler.schedule(() -> {
+                updateState(CHANNEL_ALERT, new StringType(LightStateConverter.ALERT_MODE_NONE));
+            }, delay, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    /**
+     * This method will cancel previously scheduled alert item state
+     * restoration.
+     */
+    private void cancelScheduledFuture() {
+        ScheduledFuture<?> scheduledJob = scheduledFuture;
+        if (scheduledJob != null) {
+            scheduledJob.cancel(true);
+            scheduledFuture = null;
+        }
+    }
+
+    /**
+     * This method returns the time in <strong>milliseconds</strong> after
+     * which, the state of the alert item has to be restored to {@link LightStateConverter#ALERT_MODE_NONE}.
+     *
+     * @param command The initial command sent to the alert item.
+     * @return Based on the initial command will return:
+     *         <ul>
+     *         <li><strong>2000</strong> for {@link LightStateConverter#ALERT_MODE_SELECT}.
+     *         <li><strong>15000</strong> for {@link LightStateConverter#ALERT_MODE_LONG_SELECT}.
+     *         <li><strong>-1</strong> for any command different from the previous two.
+     *         </ul>
+     */
+    private int getAlertDuration(Command command) {
+        int delay;
+        switch (command.toString()) {
+            case LightStateConverter.ALERT_MODE_LONG_SELECT:
+                delay = 15000;
+                break;
+            case LightStateConverter.ALERT_MODE_SELECT:
+                delay = 2000;
+                break;
+            default:
+                delay = -1;
+                break;
+        }
+
+        return delay;
+    }
+
+    public List<String> listScenesForConsole() {
+        return consoleScenesList;
+    }
+
+    @Override
+    public String getGroupId() {
+        return groupId;
     }
 }

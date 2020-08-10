@@ -328,14 +328,14 @@
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="inputState1">
+	<channel-type id="inputState1" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Input #1</label>
 		<description>Input/Button state</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>
-	<channel-type id="inputState2">
+	<channel-type id="inputState2" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Input #2</label>
 		<description>Input/Button state</description>

@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Interface for callbacks in asynchronous requests.
  *
  * @author Robert Bausdorf - Initial contribution
  */
+@NonNullByDefault
 public interface FritzAhaCallback {
     /**
      * Runs callback code after response completion.

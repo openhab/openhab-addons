@@ -103,8 +103,12 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
         isConfigured = true;
     }
 
+    /**
+     * refreshes this sensor - note that the update interval check is not performed as its and i/o device
+     */
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+        logger.trace("refresh of sensor {} started", sensorId);
         if (isConfigured) {
             State state;
 

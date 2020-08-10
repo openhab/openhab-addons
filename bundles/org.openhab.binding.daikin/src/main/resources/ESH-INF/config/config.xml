@@ -8,13 +8,24 @@
 		<parameter name="host" type="text" required="true">
 			<label>Host</label>
 			<description>The Host address of the Daikin AC unit.</description>
-			<context>network_address</context>
+			<context>network-address</context>
 		</parameter>
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="secure" type="boolean" required="false">
+			<label>Secure/HTTPS</label>
+			<description>Whether to access using https (default:false).</description>
+		</parameter>
+		<parameter name="uuid" type="text" required="false">
+			<label>UUID</label>
+			<description>A unique UUID for authentication if required.</description>
+		</parameter>
+		<parameter name="key" type="text" required="false">
+			<label>Key</label>
+			<description>The key obtained from the Daikin adapter.</description>
+		</parameter>
+		<parameter name="refresh" type="integer" required="false" unit="s">
 			<label>Refresh Interval</label>
-			<description>The number of seconds between fetches of the AC unit state.</description>
+			<description>Time between fetches of the AC unit state.</description>
 			<default>60</default>
 		</parameter>
 	</config-description>
-
 </config-description:config-descriptions>

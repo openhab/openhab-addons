@@ -69,7 +69,7 @@ public class X10 {
      * @return clear text house code, i.e letter A-P
      */
     public static String houseToString(byte c) {
-        String s = houseCodeToString.get(new Integer(c & 0xff));
+        String s = houseCodeToString.get(c & 0xff);
         return (s == null) ? "X" : s;
     }
 
@@ -80,7 +80,7 @@ public class X10 {
      * @return decoded integer, i.e. number 0-16
      */
     public static int unitToInt(byte c) {
-        Integer i = unitCodeToInt.get(new Integer(c & 0xff));
+        Integer i = unitCodeToInt.get(c & 0xff);
         return (i == null) ? -1 : i;
     }
 

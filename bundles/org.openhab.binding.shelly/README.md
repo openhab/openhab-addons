@@ -17,10 +17,11 @@ This Binding integrated Shelly devices.
 | shellyplug         | Shelly Plug                                            | SHPLG2-1  |
 | shellyplugs        | Shelly Plug-S                                          | SHPLG-S   |
 | shellyem           | Shelly EM with integrated Power Meters                 | SHEM      |
-| shellyem3          | Shelly EM3 with 3 integrated Power Meter               | SHEM-3    |
+| shellyem3          | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
 | shellyrgbw2        | Shelly RGB Controller                                  | SHRGBW2   |
 | shellybulb         | Shelly Bulb in Color or White Mode                     | SHBLB-1   |
 | shellybulbduo      | Shelly Duo (White Mode)                                | SHBDUO-1  |
+| shellyvintage      | Shelly Vintage (White Mode)                            | SHVIN-1   |
 | shellyht           | Shelly Sensor (temp+humidity)                          | SHHT-1    |
 | shellyflood        | Shelly Flood Sensor                                    | SHWT-1    |
 | shellysmoke        | Shelly Smoke Sensor                                    |           |
@@ -98,6 +99,14 @@ The binding has the following configuration options:
 |----------------|------------------------------------------------------------------|---------|------------------------------------------------|
 | defaultUserId  |Default user id for HTTP authentication when not set in the Thing |    no   |admin                                           |
 | defaultPassword|Default password for HTTP authentication when not set in the Thing|    no   |admin                                           |
+| autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ü is enabled           |    no   |true                                            |
+
+The binding defaults to CoIoT events when firmware 1.6 or newer is detected.
+This provides near-realtime updates when status values have changed.
+This mode also overrules event settings in the thing configuration.
+Disabling this feature allows granular control, which event types will be used.
+This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
+In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
 
 ## Thing Configuration
 
@@ -122,7 +131,7 @@ The binding has the following configuration options:
 - channels `input` and `input1`/`input2` get only updated with firmware 1.5.6+.
 - channel button: Short push and long push events require firmware version 1.5.6+.
 - Use the channel `rollerpos` only if you need the inverted roller position, otherwise use the `control` channel with item type `Number`
-- The different devices have different types of power meters, i.e. different sets of channels.
+- The different devices have different types of power meters, which are mapped in different sets of channels.
 
 Every device has a channel group `device` with the following channels:
 
@@ -136,8 +145,10 @@ Every device has a channel group `device` with the following channels:
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
+|          |updateAvailable    |Switch  |yes      |ON: A firmwareupdate is available (use Shelly App to perform update)             |
 
-The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and EM3.
+The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
+
 
 ### Events / Alarms
 
@@ -227,7 +238,7 @@ end
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
 
-### Shelly EM3 (thing-type: shellyem3)
+### Shelly 3EM (thing-type: shellyem3)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                                       |
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
@@ -406,8 +417,7 @@ The Dimmer should be calibrated using the Shelly App.
 
 |Group     |Channel      |Type     |read-only|Description                                                            |
 |----------|-------------|---------|---------|-----------------------------------------------------------------------|
-|control   |power        |Switch   |r/w      |Switch light ON/OFF                                                    |
-|          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
+|control   |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
 |white     |             |         |         |Color settings: only valid in WHITE mode                               |
@@ -420,6 +430,23 @@ The Dimmer should be calibrated using the Shelly App.
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
  
+#### Shelly Vintage (thing-type: shellyvintage)
+
+|Group     |Channel      |Type     |read-only|Description                                                            |
+|----------|-------------|---------|---------|-----------------------------------------------------------------------|
+|control   |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF; in sec            |
+|          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON: in sec            |
+|          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
+|white     |             |         |         |Color settings: only valid in WHITE mode                               |
+|          |brightness   |Dimmer   |         |Brightness: 0..100% or 0..100                                          |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
+|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
+|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
+|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
+|          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
+|          |timestamp    |String   |yes      |Timestamp of the last measurement                                                |
+ 
+
  ## Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)
 
 |Group     |Channel      |Type     |read-only|Desciption                                                             |
@@ -429,16 +456,17 @@ The Dimmer should be calibrated using the Shelly App.
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
-|light     |color        |Color    |r/w      |Color picker (HSBType)                                                 |
-|          |fullColor    |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           | 
+|color     |             |         |         |Color settings: only valid in COLOR mode                               |
+|          |hsb          |HSB      |r/w      |Represents the color picker (HSBType), control r/g/b, bight not white  |
+|          |full         |String   |r/w      |Set Red / Green / Blue / Yellow / White mode and switch mode           |
 |          |             |         |r/w      |Valid settings: "red", "green", "blue", "yellow", "white" or "r,g,b,w" | 
 |          |red          |Dimmer   |r/w      |Red brightness: 0..100% or 0..255 (control only the red channel)       |
 |          |green        |Dimmer   |r/w      |Green brightness: 0..100% or 0..255 (control only the red channel)     |
 |          |blue         |Dimmer   |r/w      |Blue brightness: 0..100% or 0..255 (control only the red channel)      |
 |          |white        |Dimmer   |r/w      |White brightness: 0..100% or 0..255 (control only the red channel)     |
 |          |gain         |Dimmer   |r/w      |Gain setting: 0..100%     or 0..100                                    |
-|          |effect       |Number   |r/w      |Select a special effect                                                | 
-|          |             |         |         |  0=No effect, 1=Meteor Shows, 2=Gradual Change, 3=Flash               |
+|          |effect       |Number   |r/w      |Puts the light into effect mode: 0..3)                                 |
+|          |             |         |         |  0=No effect, 1=Meteor Shower, 2=Gradual Change, 3=Flash              |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                     |
 
 ### Shelly RGBW2 in White Mode (thing-type: shellyrgbw2-white)
@@ -474,6 +502,7 @@ The binding emulates this by using the system time on every update.
 
 In white mode each RGBW2 channel is defined as DimmableLight.
 This means that the brightness channel has 2 functions
+
 - Sending ON/OFF (OnOffType) to power on/off the channel
 - Sending a Number to set the brightness (percentage 0..100)
 

@@ -29,6 +29,7 @@ public class SatelBridgeConfig {
     private int refresh;
     private @Nullable String userCode;
     private @Nullable String encoding;
+    private boolean extCommands;
 
     /**
      * @return value of timeout in milliseconds
@@ -58,5 +59,12 @@ public class SatelBridgeConfig {
     public Charset getEncoding() {
         final String encoding = this.encoding;
         return encoding == null ? Charset.defaultCharset() : Charset.forName(encoding);
+    }
+
+    /**
+     * @return <code>true</code> if the module supports extended commands
+     */
+    public boolean hasExtCommandsSupport() {
+        return extCommands;
     }
 }

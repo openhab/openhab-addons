@@ -12,26 +12,30 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.items.GroupItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.library.items.ContactItem;
+import org.eclipse.smarthome.core.library.items.StringItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps either a SwitchItem or a ContactItem, interpretting the open / closed states accordingly.
+ * Wraps either a SwitchItem or a ContactItem, interpreting the open / closed states accordingly.
  *
  * @author Tim Harper - Initial contribution
  *
  */
+@NonNullByDefault
 public class BooleanItemReader {
     private final Item item;
     private final OnOffType trueOnOffValue;
     private final OpenClosedType trueOpenClosedValue;
-
     private final Logger logger = LoggerFactory.getLogger(BooleanItemReader.class);
 
     /**
@@ -44,20 +48,37 @@ public class BooleanItemReader {
         this.item = item;
         this.trueOnOffValue = trueOnOffValue;
         this.trueOpenClosedValue = trueOpenClosedValue;
-        if (!(item instanceof SwitchItem) && !(item instanceof ContactItem)) {
-            logger.warn("Item {} is a {} instead of the expected SwitchItem or ContactItem", item.getName(),
+        if (!(item instanceof SwitchItem) && !(item instanceof ContactItem) && !(item instanceof StringItem)) {
+            logger.warn("Item {} is a {} instead of the expected SwitchItem, ContactItem or StringItem", item.getName(),
                     item.getClass().getName());
         }
     }
 
-    Boolean getValue() {
-        State state = item.getState();
+    boolean getValue() {
+        final State state = item.getState();
         if (state instanceof OnOffType) {
             return state.equals(trueOnOffValue);
         } else if (state instanceof OpenClosedType) {
             return state.equals(trueOpenClosedValue);
+        } else if (state instanceof StringType) {
+            return state.toString().equalsIgnoreCase("Open") || state.toString().equalsIgnoreCase("Opened");
         } else {
-            return null;
+            logger.debug("Unexpected item state,  returning false. Item {}, State {}", item.getName(), state);
+            return false;
+        }
+    }
+
+    private OnOffType getOffValue(OnOffType onValue) {
+        return onValue == OnOffType.ON ? OnOffType.OFF : OnOffType.ON;
+    }
+
+    void setValue(Boolean value) {
+        if (item instanceof SwitchItem) {
+            ((SwitchItem) item).send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
+        } else if (item instanceof GroupItem) {
+            ((GroupItem) item).send(value ? trueOnOffValue : getOffValue(trueOnOffValue));
+        } else {
+            logger.debug("Cannot set value {} for item {}. Only Switch and Group items are supported.", value, item);
         }
     }
 }

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.jsons;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -20,7 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link JsonActivity} encapsulate the GSON data of the push command for push activity
+ * The {@link JsonActivities} encapsulate the GSON data of the push command for push activity
  *
  * @author Michael Geramb - Initial contribution
  */
@@ -58,14 +57,16 @@ public class JsonActivities {
             public @Nullable String firstStreamId;
         }
 
-        public Description ParseDescription() {
+        public Description parseDescription() {
             String description = this.description;
-            if (StringUtils.isEmpty(description) || !description.startsWith("{") || !description.endsWith("}")) {
+            if (description == null || description.isEmpty() || !description.startsWith("{")
+                    || !description.endsWith("}")) {
                 return new Description();
             }
             Gson gson = new Gson();
             try {
-                return gson.fromJson(description, Description.class);
+                Description description1 = gson.fromJson(description, Description.class);
+                return description1 != null ? description1 : new Description();
             } catch (JsonSyntaxException e) {
                 return new Description();
             }

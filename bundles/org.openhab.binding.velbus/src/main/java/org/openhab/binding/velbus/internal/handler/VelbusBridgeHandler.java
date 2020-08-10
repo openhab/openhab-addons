@@ -27,14 +27,17 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.velbus.internal.VelbusPacketInputStream;
 import org.openhab.binding.velbus.internal.VelbusPacketListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.NRSerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
 
 /**
  * {@link VelbusBridgeHandler} is the handler for a Velbus Serial-interface and connects it to
@@ -47,16 +50,18 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     private Logger logger = LoggerFactory.getLogger(VelbusBridgeHandler.class);
 
     private static final int BAUD = 9600;
-    private NRSerialPort serialPort;
+    private SerialPort serialPort;
+    private final SerialPortManager serialPortManager;
     private OutputStream outputStream;
     private VelbusPacketInputStream inputStream;
     private long lastPacketTimeMillis;
 
     private VelbusPacketListener defaultPacketListener;
-    private Map<Byte, VelbusPacketListener> packetListeners = new HashMap<>();
+    private final Map<Byte, VelbusPacketListener> packetListeners = new HashMap<>();
 
-    public VelbusBridgeHandler(Bridge velbusBridge) {
+    public VelbusBridgeHandler(Bridge velbusBridge, SerialPortManager serialPortManager) {
         super(velbusBridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -69,31 +74,38 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
         logger.debug("Initializing velbus bridge handler.");
 
         String port = (String) getConfig().get(PORT);
-        if (port != null) {
-            serialPort = new NRSerialPort(port, BAUD);
-            if (serialPort.connect()) {
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Bridge online on serial port {}", port);
-
-                outputStream = serialPort.getOutputStream();
-                inputStream = new VelbusPacketInputStream(serialPort.getInputStream());
-
-                try {
-                    serialPort.addEventListener(this);
-                    serialPort.notifyOnDataAvailable(true);
-                } catch (TooManyListenersException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Failed to register event listener on serial port " + port);
-                    logger.debug("Failed to register event listener on serial port {}", port);
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Failed to connect to serial port " + port);
-                logger.debug("Failed to connect to serial port {}", port);
-            }
-        } else {
+        if (port == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");
-            logger.debug("Serial port name not configured");
+            return;
+        }
+
+        SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(port);
+        if (serialPortIdentifier == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port not found: " + port);
+            return;
+        }
+
+        try {
+            serialPort = serialPortIdentifier.open(VelbusBridgeHandler.class.getCanonicalName(), 2000);
+            serialPort.setSerialPortParams(BAUD, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+
+            inputStream = new VelbusPacketInputStream(serialPort.getInputStream());
+            outputStream = serialPort.getOutputStream();
+
+            serialPort.addEventListener(this);
+            serialPort.notifyOnDataAvailable(true);
+
+            updateStatus(ThingStatus.ONLINE);
+        } catch (IOException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error: " + e.getMessage());
+        } catch (PortInUseException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port already used: " + port);
+        } catch (TooManyListenersException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Failed to register event listener on serial port: " + port);
+        } catch (UnsupportedCommOperationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unsupported operation on port '" + port + "': " + e.getMessage());
         }
     }
 
@@ -141,7 +153,8 @@ public class VelbusBridgeHandler extends BaseBridgeHandler implements SerialPort
     @Override
     public void dispose() {
         if (serialPort != null) {
-            serialPort.disconnect();
+            serialPort.removeEventListener();
+            serialPort.close();
             serialPort = null;
         }
     }

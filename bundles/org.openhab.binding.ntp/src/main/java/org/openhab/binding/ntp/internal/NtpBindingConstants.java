@@ -15,6 +15,7 @@ package org.openhab.binding.ntp.internal;
 import java.util.Collections;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -24,10 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Marcel Verpaalen - Initial contribution
  *
  */
+@NonNullByDefault
 public class NtpBindingConstants {
-
-    private NtpBindingConstants() {
-    }
 
     public static final String BINDING_ID = "ntp";
 

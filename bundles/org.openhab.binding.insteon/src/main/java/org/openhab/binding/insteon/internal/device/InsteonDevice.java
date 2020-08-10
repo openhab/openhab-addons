@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceType.FeatureGroup;
+import org.openhab.binding.insteon.internal.device.GroupMessageStateMachine.GroupMessage;
 import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
@@ -59,19 +61,19 @@ public class InsteonDevice {
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
 
     private InsteonAddress address = new InsteonAddress();
-    private ArrayList<String> ports = new ArrayList<>();
     private long pollInterval = -1L; // in milliseconds
     private @Nullable Driver driver = null;
     private HashMap<String, @Nullable DeviceFeature> features = new HashMap<>();
     private @Nullable String productKey = null;
-    private Long lastTimePolled = 0L;
-    private Long lastMsgReceived = 0L;
+    private volatile long lastTimePolled = 0L;
+    private volatile long lastMsgReceived = 0L;
     private boolean isModem = false;
     private PriorityQueue<@Nullable QEntry> mrequestQueue = new PriorityQueue<>();
     private @Nullable DeviceFeature featureQueried = null;
     private long lastQueryTime = 0L;
     private boolean hasModemDBEntry = false;
     private DeviceStatus status = DeviceStatus.INITIALIZED;
+    private Map<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
 
     /**
      * Constructor
@@ -104,10 +106,6 @@ public class InsteonDevice {
 
     public @Nullable Driver getDriver() {
         return driver;
-    }
-
-    public boolean hasValidPorts() {
-        return (!ports.isEmpty());
     }
 
     public long getPollInterval() {
@@ -144,13 +142,6 @@ public class InsteonDevice {
 
     public long getPollOverDueTime() {
         return (lastTimePolled - lastMsgReceived);
-    }
-
-    public String getPort() throws IOException {
-        if (ports.isEmpty()) {
-            throw new IOException("no ports configured for instrument " + getAddress());
-        }
-        return (ports.iterator().next());
     }
 
     public boolean hasAnyListeners() {
@@ -205,20 +196,6 @@ public class InsteonDevice {
     public @Nullable DeviceFeature getFeatureQueried() {
         synchronized (mrequestQueue) {
             return (featureQueried);
-        }
-    };
-
-    /**
-     * Add a port. Currently only a single port is being used.
-     *
-     * @param p the port to add
-     */
-    public void addPort(@Nullable String p) {
-        if (p == null) {
-            return;
-        }
-        if (!ports.contains(p)) {
-            ports.add(p);
         }
     }
 
@@ -292,9 +269,7 @@ public class InsteonDevice {
         RequestQueueManager.instance().addQueue(this, now + delay);
 
         if (!l.isEmpty()) {
-            synchronized (lastTimePolled) {
-                lastTimePolled = now;
-            }
+            lastTimePolled = now;
         }
     }
 
@@ -302,20 +277,17 @@ public class InsteonDevice {
      * Handle incoming message for this device by forwarding
      * it to all features that this device supports
      *
-     * @param fromPort port from which the message come in
      * @param msg the incoming message
      */
-    public void handleMessage(String fromPort, Msg msg) {
-        synchronized (lastMsgReceived) {
-            lastMsgReceived = System.currentTimeMillis();
-        }
+    public void handleMessage(Msg msg) {
+        lastMsgReceived = System.currentTimeMillis();
         synchronized (features) {
             // first update all features that are
             // not status features
             for (DeviceFeature f : features.values()) {
                 if (!f.isStatusFeature()) {
                     logger.debug("----- applying message to feature: {}", f.getName());
-                    if (f.handleMessage(msg, fromPort)) {
+                    if (f.handleMessage(msg)) {
                         // handled a reply to a query,
                         // mark it as processed
                         logger.trace("handled reply of direct: {}", f);
@@ -328,7 +300,7 @@ public class InsteonDevice {
             // e.g. when the device was last updated
             for (DeviceFeature f : features.values()) {
                 if (f.isStatusFeature()) {
-                    f.handleMessage(msg, fromPort);
+                    f.handleMessage(msg);
                 }
             }
         }
@@ -528,7 +500,7 @@ public class InsteonDevice {
     }
 
     private void writeMessage(Msg m) throws IOException {
-        driver.writeMessage(getPort(), m);
+        driver.writeMessage(m);
     }
 
     private void instantiateFeatures(@Nullable DeviceType dt) {
@@ -571,6 +543,33 @@ public class InsteonDevice {
         synchronized (features) {
             features.put(name, f);
         }
+    }
+
+    /**
+     * Get the state of the state machine that suppresses duplicates for group messages.
+     * The state machine is advance the first time it is called for a message,
+     * otherwise return the current state.
+     *
+     * @param group the insteon group of the broadcast message
+     * @param a the type of group message came in (action etc)
+     * @param cmd1 cmd1 from the message received
+     * @return true if this is message is NOT a duplicate
+     */
+    public boolean getGroupState(int group, GroupMessage a, byte cmd1) {
+        GroupMessageStateMachine m = groupState.get(group);
+        if (m == null) {
+            m = new GroupMessageStateMachine();
+            groupState.put(group, m);
+            logger.trace("{} created group {} state", address, group);
+        } else {
+            if (lastMsgReceived <= m.getLastUpdated()) {
+                logger.trace("{} using previous group {} state for {}", address, group, a);
+                return m.getPublish();
+            }
+        }
+
+        logger.trace("{} updating group {} state to {}", address, group, a);
+        return (m.action(a, address, group, cmd1));
     }
 
     @Override

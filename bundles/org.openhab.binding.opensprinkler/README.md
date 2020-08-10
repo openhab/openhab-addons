@@ -22,7 +22,7 @@ Discovery needs to be run manually as this is a brute force method of finding de
 OpenSprinkler using the HTTP interface
 
 ```
-Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, pasword="opendoor", refresh=60] {
+Bridge opensprinkler:http:http [hostname="127.0.0.1", port=80, password="opendoor", refresh=60] {
     Thing station 01 [stationIndex=1]
 }
 ```
@@ -96,8 +96,8 @@ Switch Station04 (stations) { channel="opensprinkler:station:http:04:stationStat
 Switch Station05 (stations) { channel="opensprinkler:station:http:05:stationState" }
 Switch Station06 (stations) { channel="opensprinkler:station:http:06:stationState" }
 
-Switch RainSensor { channel="opensprinkler:station:http:device:rainsensor" }
-Number:ElectricCurrent CurrentDraw {channel="opensprinkler:station:http:device:currentDraw"}
+Switch RainSensor { channel="opensprinkler:device:http:device:rainsensor" }
+Number:ElectricCurrent CurrentDraw {channel="opensprinkler:device:http:device:currentDraw"}
 ```
 
 demo.sitemap:

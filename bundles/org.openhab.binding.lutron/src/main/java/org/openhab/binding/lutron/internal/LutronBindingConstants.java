@@ -50,6 +50,7 @@ public class LutronBindingConstants {
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
     public static final ThingTypeUID THING_TYPE_PALLADIOMKEYPAD = new ThingTypeUID(BINDING_ID, "palladiomkeypad");
     public static final ThingTypeUID THING_TYPE_WCI = new ThingTypeUID(BINDING_ID, "wci");
+    public static final ThingTypeUID THING_TYPE_SYSVAR = new ThingTypeUID(BINDING_ID, "sysvar");
 
     // List of all Channel ids
     public static final String CHANNEL_LIGHTLEVEL = "lightlevel";
@@ -65,6 +66,7 @@ public class LutronBindingConstants {
     public static final String CHANNEL_STEP = "step";
     public static final String CHANNEL_BLINDLIFTLEVEL = "blindliftlevel";
     public static final String CHANNEL_BLINDTILTLEVEL = "blindtiltlevel";
+    public static final String CHANNEL_VARSTATE = "varstate";
 
     // Bridge config properties (used by discovery service)
     public static final String HOST = "ipAddress";
@@ -80,9 +82,9 @@ public class LutronBindingConstants {
     public static final String INTEGRATION_ID = "integrationId";
 
     // CCO config properties
-    public static final String OUTPUT_TYPE = "outputType";
-    public static final String OUTPUT_TYPE_PULSED = "Pulsed";
-    public static final String OUTPUT_TYPE_MAINTAINED = "Maintained";
+    public static final String CCO_TYPE = "outputType";
+    public static final String CCO_TYPE_PULSED = "Pulsed";
+    public static final String CCO_TYPE_MAINTAINED = "Maintained";
     public static final String DEFAULT_PULSE = "pulseLength";
 
     // GreenMode config properties

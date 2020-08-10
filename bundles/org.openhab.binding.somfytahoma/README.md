@@ -60,59 +60,63 @@ Please see the example below.
 
 ## Channels
 
-| Thing                                                                         |        Channel        | Note                                                                                                             |
-|-------------------------------------------------------------------------------|:---------------------:|------------------------------------------------------------------------------------------------------------------|
-| bridge                                                                        |           N.A           | bridge does not expose any channel                                                                               |
-| gateway                                                                       |          status         | status of your Tahoma gateway                                                                                    |
-| gate                                                                          |       gate_command      | used for controlling your gate (open, close, stop, pedestrian)                                                   |
-| gate                                                                          |        gate_state       | get state of your gate                                                                                           |
-| roller shutter, screen, venetian blind, garage door, awning, pergola, curtain |         control         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                     |
-| window                                                                        |         control         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                        |
-| silent roller shutter                                                         |      silent_control     | similar to control channel but in silent mode                                                                    |
-| venetian blind, adjustable slats roller shutter                               |       orientation       | percentual orientation of the blind's slats, it can have value 0-100). For IO Homecontrol devices only (non RTS) |
-| adjustable slats roller shutter                                               |          rocker         | used for setting the rocker position of the roller shutter, the only position allowing the slats control         |
-| action group                                                                  |      execute_action     | switch which reacts to ON command and triggers the predefined Tahoma action                                      |
-| onoff, light                                                                  |          switch         | reacts to standard ON/OFF commands                                                                               |
-| smoke sensor, occupancy sensor, contact sensor & water sensor                 |         contact         | normal value is CLOSE, changes to OPEN when detection triggered                                                  |
-| smoke sensor, occupancy sensor, contact sensor & water sensor                 |      sensor_defect      | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                              |
-| smoke sensor                                                                  |      radio_battery      | maintenance radio part battery state (low, normal)                                                               |
-| smoke sensor                                                                  |      sensor_battery     | maintenance sensor part battery state (absence, low, normal)                                                     |
-| smoke sensor                                                                  |       short_check       | triggering the smoke sensor's short check                                                                        |
-| smoke sensor                                                                  |        long_check       | triggering the smoke sensor's long check                                                                         |
-| light sensor                                                                  |        luminance        | light luminance value in luxes                                                                                   |
-| electricity sensor                                                            |    energy_consumption   | energy consumption value in watts                                                                                |
-| humidity sensor                                                               |         humidity        | current relative humidity                                                                                        |
-| dock                                                                          |      battery_status     | indicates running on battery (yes/no)                                                                            |
-| dock                                                                          |      battery_level      | remaining battery percentage                                                                                     |
-| dock                                                                          |       siren_status      | used for controlling and getting siren state (on, off, cyclic)                                                   |
-| dock                                                                          |        short_beep       | testing of dock's siren - short beep                                                                             |
-| dock                                                                          |        long_beep        | testing of dock's siren - long beep                                                                              |
-| siren                                                                         |         battery         | battery level full/low/normal/verylow                                                                            |
-| siren                                                                         |          onoff          | controlling siren status ON/OFF                                                                                  |
-| siren                                                                         |     memorized_volume    | setting memorized volume (normal/highest)                                                                        |
-| pod                                                                           |      cyclic_button      | pod cyclic button state                                                                                          |
-| pod                                                                           |      battery_status     | pod battery status state                                                                                         |
-| pod                                                                           |  lighting_led_pod_mode  | lighting LED pod mod state                                                                                       |
-| interior alarm                                                                |      alarm_command      | used for sending commands to Somfy alarm device                                                                  |
-| interior alarm                                                                |    intrusion_control    | used for alarm external intrusion controlling                                                                    |
-| interior alarm, myfox alarm                                                   |       alarm_state       | state of the Somfy alarm                                                                                         |
-| interior alarm                                                                |    target_alarm_state   | target state of the Somfy alarm                                                                                  |
-| interior alarm, myfox alarm                                                   |     intrusion_state     | intrusion state of the Somfy alarm                                                                               |
-| external alarm                                                                |    active_zones_state   | state of external alarm active zones                                                                             |
-| door lock                                                                     |           lock          | switch representing unlocked/locked state                                                                        |
-| door lock                                                                     |           open          | switch representing open/close state                                                                             |
-| on/off heating system                                                         |   target_heating_level  | target heating level (off, eco, comfort, frostprotection)                                                        |
-| heating system                                                                |   current_temperature   | current temperature of the heating system                                                                        |
-| heating system                                                                |      current_state      | current state of the heating system                                                                              |
-| heating system, thermostat                                                    |    target_temperature   | target temperature of the heating system                                                                         |
-| heating system, thermostat                                                    |      battery_level      | battery level of the heating system                                                                              |
-| thermostat                                                                    |       heating_mode      | standard heating mode of the thermostat (away, freeze, manual, ...)                                              |
-| thermostat                                                                    | derogation_heating_mode | derogation heating mode of the thermostat (away, freeze, manual, ...)                                            |
-| thermostat                                                                    |  derogation_activation  | derogation activation state (inactive, active)                                                                   |
-| temperature sensor                                                            |       temperature       | temperature reported by the sensor                                                                               |
-| myfox camera, myfox alarm                                                     |       cloud_status      | cloud connection status                                                                                          |
-| myfox camera                                                                  |          shutter        | controlling of the camera shutter                                                                                |
-| myfox alarm                                                                   |   myfox_alarm_command   | used for sending commands to Somfy Myfox alarm device                                                            |
+| Thing                                                                         |        Channel        | Note                                                                                                                          |
+|-------------------------------------------------------------------------------|:---------------------:|-------------------------------------------------------------------------------------------------------------------------------|
+| bridge                                                                        |           N.A           | bridge does not expose any channel                                                                                          |
+| gateway                                                                       |          status         | status of your Tahoma gateway                                                                                               |
+| gate                                                                          |       gate_command      | used for controlling your gate (open, close, stop, pedestrian)                                                              |
+| gate                                                                          |        gate_state       | get state of your gate                                                                                                      |
+| roller shutter, screen, venetian blind, garage door, awning, pergola, curtain |         control         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/MY/STOP + closure 0-100                                |
+| window                                                                        |         control         | device controller which reacts to commands UP/DOWN/ON/OFF/OPEN/CLOSE/STOP + closure 0-100                                   |
+| silent roller shutter                                                         |      silent_control     | similar to control channel but in silent mode                                                                               |
+| venetian blind, adjustable slats roller shutter                               |       orientation       | percentual orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS)             |
+| venetian blind, adjustable slats roller shutter                               |   closure_orientation   | percentual closure and orientation of the blind's slats, it can have value 0-100. For IO Homecontrol devices only (non RTS) |
+| adjustable slats roller shutter                                               |          rocker         | used for setting the rocker position of the roller shutter, the only position allowing the slats control                    |
+| action group                                                                  |      execute_action     | switch which reacts to ON command and triggers the predefined Tahoma action                                                 |
+| onoff, light                                                                  |          switch         | reacts to standard ON/OFF commands                                                                                          |
+| smoke sensor, occupancy sensor, contact sensor & water sensor                 |         contact         | normal value is CLOSE, changes to OPEN when detection triggered                                                             |
+| smoke sensor, occupancy sensor, contact sensor & water sensor                 |      sensor_defect      | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                                         |
+| smoke sensor                                                                  |      radio_battery      | maintenance radio part battery state (low, normal)                                                                          |
+| smoke sensor                                                                  |      sensor_battery     | maintenance sensor part battery state (absence, low, normal)                                                                |
+| smoke sensor                                                                  |       short_check       | triggering the smoke sensor's short check                                                                                   |
+| smoke sensor                                                                  |        long_check       | triggering the smoke sensor's long check                                                                                    |
+| light sensor                                                                  |        luminance        | light luminance value in luxes                                                                                              |
+| electricity sensor                                                            |    energy_consumption   | energy consumption value in watts                                                                                           |
+| humidity sensor                                                               |         humidity        | current relative humidity                                                                                                   |
+| dock                                                                          |      battery_status     | indicates running on battery (yes/no)                                                                                       |
+| dock                                                                          |      battery_level      | remaining battery percentage                                                                                                |
+| dock                                                                          |       siren_status      | used for controlling and getting siren state (on, off, cyclic)                                                              |
+| dock                                                                          |        short_beep       | testing of dock's siren - short beep                                                                                        |
+| dock                                                                          |        long_beep        | testing of dock's siren - long beep                                                                                         |
+| siren                                                                         |         battery         | battery level full/low/normal/verylow                                                                                       |
+| siren                                                                         |          onoff          | controlling siren status ON/OFF                                                                                             |
+| siren                                                                         |     memorized_volume    | setting memorized volume (normal/highest)                                                                                   |
+| pod                                                                           |      cyclic_button      | pod cyclic button state                                                                                                     |
+| pod                                                                           |      battery_status     | pod battery status state                                                                                                    |
+| pod                                                                           |  lighting_led_pod_mode  | lighting LED pod mod state                                                                                                  |
+| interior alarm                                                                |      alarm_command      | used for sending commands to Somfy alarm device                                                                             |
+| interior alarm                                                                |    intrusion_control    | used for alarm external intrusion controlling                                                                               |
+| interior alarm, myfox alarm                                                   |       alarm_state       | state of the Somfy alarm                                                                                                    |
+| interior alarm                                                                |    target_alarm_state   | target state of the Somfy alarm                                                                                             |
+| interior alarm, myfox alarm                                                   |     intrusion_state     | intrusion state of the Somfy alarm                                                                                          |
+| external alarm                                                                |    active_zones_state   | state of external alarm active zones                                                                                        |
+| door lock                                                                     |           lock          | switch representing unlocked/locked state                                                                                   |
+| door lock                                                                     |           open          | switch representing open/close state                                                                                        |
+| on/off heating system                                                         |   target_heating_level  | target heating level (off, eco, comfort, frostprotection)                                                                   |
+| heating system                                                                |   current_temperature   | current temperature of the heating system                                                                                   |
+| heating system                                                                |      current_state      | current state of the heating system                                                                                         |
+| heating system, thermostat                                                    |    target_temperature   | target temperature of the heating system                                                                                    |
+| heating system, thermostat                                                    |      battery_level      | battery level of the heating system                                                                                         |
+| thermostat                                                                    |       heating_mode      | standard heating mode of the thermostat (away, freeze, manual, ...)                                                         |
+| thermostat                                                                    | derogation_heating_mode | derogation heating mode of the thermostat (away, freeze, manual, ...)                                                       |
+| thermostat                                                                    |  derogation_activation  | derogation activation state (inactive, active)                                                                              |
+| temperature sensor                                                            |       temperature       | temperature reported by the sensor                                                                                          |
+| myfox camera, myfox alarm                                                     |       cloud_status      | cloud connection status                                                                                                     |
+| myfox camera                                                                  |          shutter        | controlling of the camera shutter                                                                                           |
+| myfox alarm                                                                   |   myfox_alarm_command   | used for sending commands to Somfy Myfox alarm device                                                                       |
+
+
+### Remarks
 
 All things which have a RSSI (relative received signal) state, expose a channel "rssi".
 
@@ -124,11 +128,13 @@ When a roller shutter-like thing receives STOP command, there are two possible b
 If you want to set the MY position of a roller shutter and you don't care the possible movement, try sending the MOVE command (OH2 does not know MY, so it stands for "move to MY position")
 
 ```
-sendCommand(ROLLERSHUTTER_THING, MOVE)
+CONTROL_CHANNEL.sendCommand(MOVE)
 ```
-or
+
+Blinds and adjustable slats roller shutters can control their closure and orientation by sending a comma separated string consisting of closure (0-100) and orientation (0-100) to the "closure_orientaion" channel.
+
 ```
-ROLLERSHUTTER_THING.sendCommand(MOVE)
+CLOSURE_ORIENTATION_CHANNEL.sendCommand("50,50")
 ```
 
 ## Full Example

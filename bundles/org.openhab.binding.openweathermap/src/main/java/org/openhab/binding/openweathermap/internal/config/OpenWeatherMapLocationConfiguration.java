@@ -23,14 +23,5 @@ import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMa
  */
 @NonNullByDefault
 public class OpenWeatherMapLocationConfiguration {
-
-    private @NonNullByDefault({}) String location;
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
+    public @NonNullByDefault({}) String location;
 }

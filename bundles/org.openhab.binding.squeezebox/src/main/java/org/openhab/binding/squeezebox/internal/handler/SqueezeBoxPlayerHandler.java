@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * @author Patrik Gfeller - Timeout for TTS messages increased from 30 to 90s.
  * @author Mark Hilbush - Get favorites from server and play favorite
  * @author Mark Hilbush - Convert sound notification volume from channel to config parameter
+ * @author Mark Hilbush - Add like/unlike functionality
  */
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
@@ -84,7 +85,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     /**
      * Keeps current track time
      */
-    ScheduledFuture<?> timeCounterJob;
+    private ScheduledFuture<?> timeCounterJob;
 
     /**
      * Local reference to our bridge
@@ -120,6 +121,9 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private static final ExpiringCacheMap<String, RawType> IMAGE_CACHE = new ExpiringCacheMap<>(
             TimeUnit.MINUTES.toMillis(15)); // 15min
 
+    private String likeCommand;
+    private String unlikeCommand;
+
     /**
      * Creates SqueezeBox Player Handler
      *
@@ -138,7 +142,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         mac = getConfig().as(SqueezeBoxPlayerConfig.class).mac;
         timeCounter();
         updateBridgeStatus();
-        logger.debug("player thing {} initialized.", getThing().getUID());
+        logger.debug("player thing {} initialized with mac {}", getThing().getUID(), mac);
     }
 
     @Override
@@ -147,12 +151,17 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     private void updateBridgeStatus() {
-        ThingStatus bridgeStatus = getBridge().getStatus();
-        if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-            squeezeBoxServerHandler = (SqueezeBoxServerHandler) getBridge().getHandler();
-        } else if (bridgeStatus == ThingStatus.OFFLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        Thing bridge = getBridge();
+        if (bridge != null) {
+            squeezeBoxServerHandler = (SqueezeBoxServerHandler) bridge.getHandler();
+            ThingStatus bridgeStatus = bridge.getStatus();
+            if (bridgeStatus == ThingStatus.ONLINE && getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+            } else if (bridgeStatus == ThingStatus.OFFLINE) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge not found");
         }
     }
 
@@ -167,20 +176,22 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
         if (squeezeBoxServerHandler != null) {
             squeezeBoxServerHandler.removePlayerCache(mac);
         }
-        logger.debug("player thing {} disposed.", getThing().getUID());
+        logger.debug("player thing {} disposed for mac {}", getThing().getUID(), mac);
         super.dispose();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (squeezeBoxServerHandler == null) {
-            logger.info("player thing {} has no server configured, ignoring command: {}", getThing().getUID(), command);
+            logger.debug("Player {} has no server configured, ignoring command: {}", getThing().getUID(), command);
             return;
         }
-        String mac = getConfigAs(SqueezeBoxPlayerConfig.class).mac;
-
-        // Some of the code below is not designed to handle REFRESH
+        // Some of the code below is not designed to handle REFRESH, only reply to channels where cached values exist
         if (command == RefreshType.REFRESH) {
+            String channelID = channelUID.getId();
+            if (stateMap.containsKey(channelID)) {
+                updateState(channelID, stateMap.get(channelID));
+            }
             return;
         }
 
@@ -288,6 +299,13 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 break;
             case CHANNEL_FAVORITES_PLAY:
                 squeezeBoxServerHandler.playFavorite(mac, command.toString());
+                break;
+            case CHANNEL_RATE:
+                if (command.equals(OnOffType.ON)) {
+                    squeezeBoxServerHandler.rate(mac, likeCommand);
+                } else if (command.equals(OnOffType.OFF)) {
+                    squeezeBoxServerHandler.rate(mac, unlikeCommand);
+                }
                 break;
             default:
                 break;
@@ -490,8 +508,17 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     }
 
     @Override
+    public void buttonsChangeEvent(String mac, String likeCommand, String unlikeCommand) {
+        if (isMe(mac)) {
+            this.likeCommand = likeCommand;
+            this.unlikeCommand = unlikeCommand;
+            logger.trace("Player {} got a button change event: like='{}' unlike='{}'", mac, likeCommand, unlikeCommand);
+        }
+    }
+
+    @Override
     public void updateFavoritesListEvent(List<Favorite> favorites) {
-        logger.debug("Player {} updating favorites list", mac);
+        logger.trace("Player {} updating favorites list with {} favorites", mac, favorites.size());
         List<StateOption> options = new ArrayList<>();
         for (Favorite favorite : favorites) {
             options.add(new StateOption(favorite.shortId, favorite.name));

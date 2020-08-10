@@ -40,6 +40,7 @@
 		<config-description>
 			<parameter name="serialPort" type="text" required="true">
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<label>Serial Port</label>
 				<description>The serial port to use for connecting to the serial interface of the alarm system e.g. COM1 for Windows
 					and /dev/ttyS0 or /dev/ttyUSB0 for Linux.</description>

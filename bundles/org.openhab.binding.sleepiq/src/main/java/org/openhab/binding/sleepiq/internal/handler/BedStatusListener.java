@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.sleepiq.internal.handler;
 
-import org.syphr.sleepiq.api.SleepIQ;
-import org.syphr.sleepiq.api.model.BedStatus;
+import org.openhab.binding.sleepiq.api.SleepIQ;
+import org.openhab.binding.sleepiq.api.model.BedStatus;
 
 /**
  * The {@link BedStatusListener} is notified when a chamber is updated.

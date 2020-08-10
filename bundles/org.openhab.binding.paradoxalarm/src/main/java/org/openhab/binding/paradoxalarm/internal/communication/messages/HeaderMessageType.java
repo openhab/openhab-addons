@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication.messages;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * From Jean's excel:
  * 0x03: IP Request
@@ -21,6 +23,7 @@ package org.openhab.binding.paradoxalarm.internal.communication.messages;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
+@NonNullByDefault
 public enum HeaderMessageType {
     IP_REQUEST((byte) 0x03),
     IP_RESPONSE((byte) 0x01),

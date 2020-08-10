@@ -147,11 +147,8 @@ public class MiIoAsyncCommunication {
                     fullCommand.toString());
             concurrentLinkedQueue.add(sendCmd);
             if (logger.isDebugEnabled()) {
-                String tokenText = Utils.getHex(token); // Obfuscate part of the token to allow sharing of the logfiles
-                tokenText = ((tokenText.length() < 8) ? tokenText : tokenText.substring(0, 8))
-                        .concat((tokenText.length() > 24) ? tokenText.substring(8, 24).replaceAll(".", "X")
-                                : tokenText.substring(8).replaceAll(".", "X"))
-                        .concat(tokenText.substring(24));
+                // Obfuscate part of the token to allow sharing of the logfiles
+                String tokenText = Utils.obfuscateToken(Utils.getHex(token));
                 logger.debug("Command added to Queue {} -> {} (Device: {} token: {} Queue: {})", fullCommand.toString(),
                         ip, Utils.getHex(deviceId), tokenText, concurrentLinkedQueue.size());
             }
@@ -204,8 +201,8 @@ public class MiIoAsyncCommunication {
         if (senderThread == null || !senderThread.isAlive()) {
             senderThread = new MessageSenderThread();
             senderThread.start();
+            this.senderThread = senderThread;
         }
-        this.senderThread = senderThread;
     }
 
     /**
@@ -247,6 +244,7 @@ public class MiIoAsyncCommunication {
                     logger.warn("Error while polling/sending message", e);
                 }
             }
+            closeSocket();
             logger.debug("Finished Mi IO MessageSenderThread");
         }
     }
@@ -378,6 +376,8 @@ public class MiIoAsyncCommunication {
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket();
             socket.setSoTimeout(timeout);
+            logger.debug("Opening socket on port: {} ", socket.getLocalPort());
+            this.socket = socket;
             return socket;
         } else {
             return socket;
@@ -386,13 +386,23 @@ public class MiIoAsyncCommunication {
 
     public void close() {
         try {
-            final DatagramSocket socket = this.socket;
-            if (socket != null) {
-                socket.close();
-            }
             final MessageSenderThread senderThread = this.senderThread;
             if (senderThread != null) {
                 senderThread.interrupt();
+            }
+        } catch (SecurityException e) {
+            logger.debug("Error while closing: {} ", e.getMessage());
+        }
+        closeSocket();
+    }
+
+    public void closeSocket() {
+        try {
+            final DatagramSocket socket = this.socket;
+            if (socket != null) {
+                logger.debug("Closing socket for port: {} ", socket.getLocalPort());
+                socket.close();
+                this.socket = null;
             }
         } catch (SecurityException e) {
             logger.debug("Error while closing: {} ", e.getMessage());

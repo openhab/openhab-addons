@@ -99,6 +99,7 @@
 
 		<config-description>
 			<parameter name="userCode" type="text" required="false">
+				<context>password</context>
 				<label>User Code</label>
 				<description>The User Code.</description>
 				<default>1234</default>

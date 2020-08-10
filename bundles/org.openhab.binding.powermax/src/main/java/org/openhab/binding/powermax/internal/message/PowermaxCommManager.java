@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.util.HexUtils;
@@ -58,10 +57,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     private static final int DEFAULT_BAUD_RATE = 9600;
     private static final int WAITING_DELAY_FOR_RESPONSE = 750;
     private static final long DELAY_BETWEEN_SETUP_DOWNLOADS = TimeUnit.SECONDS.toMillis(45);
-    private static final String COMM_MANAGER_THREAD_POOL_NAME = "powermax-comm";
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(COMM_MANAGER_THREAD_POOL_NAME);
+    private final ScheduledExecutorService scheduler;
 
     /** The object to store the current settings of the Powermax alarm system */
     private PowermaxPanelSettings panelSettings;
@@ -100,16 +97,19 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time
      * @param serialPortManager the serial port manager
+     * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String sPort, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime, SerialPortManager serialPortManager) {
+            boolean autoSyncTime, SerialPortManager serialPortManager, String threadName) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
         this.panelSettings = new PowermaxPanelSettings(panelType);
-        String serialPort = StringUtils.isNotBlank(sPort) ? sPort : null;
+        this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
+        String serialPort = (sPort != null && !sPort.trim().isEmpty()) ? sPort.trim() : null;
         if (serialPort != null) {
-            connector = new PowermaxSerialConnector(serialPortManager, serialPort, DEFAULT_BAUD_RATE);
+            connector = new PowermaxSerialConnector(serialPortManager, serialPort, DEFAULT_BAUD_RATE,
+                    threadName + "-reader");
         } else {
             connector = null;
         }
@@ -124,17 +124,19 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time
      * @param serialPortManager
+     * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime) {
+            boolean autoSyncTime, String threadName) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
         this.panelSettings = new PowermaxPanelSettings(panelType);
-        String ipAddress = StringUtils.isNotBlank(ip) ? ip : null;
+        this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
+        String ipAddress = (ip != null && !ip.trim().isEmpty()) ? ip.trim() : null;
         int tcpPort = (port > 0) ? port : DEFAULT_TCP_PORT;
         if (ipAddress != null) {
-            connector = new PowermaxTcpConnector(ipAddress, tcpPort, TCP_CONNECTION_TIMEOUT);
+            connector = new PowermaxTcpConnector(ipAddress, tcpPort, TCP_CONNECTION_TIMEOUT, threadName + "-reader");
         } else {
             connector = null;
         }
@@ -343,7 +345,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                 dynPart[1] = (byte) Integer.parseInt(pinCode.substring(0, 2), 16);
                 dynPart[2] = (byte) Integer.parseInt(pinCode.substring(2, 4), 16);
 
-                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.ARM, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.ARM, dynPart), false, 0, true);
             } catch (NumberFormatException e) {
                 logger.debug("Powermax alarm binding: requested arm mode {} rejected due to invalid PIN code",
                         armMode.getShortName());
@@ -423,7 +425,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                 dynPart[i++] = (byte) ((val >> 16) & 0x000000FF);
                 dynPart[i++] = (byte) ((val >> 24) & 0x000000FF);
 
-                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASS, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASS, dynPart), false, 0, true);
                 if (done) {
                     done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.BYPASSTAT), false, 0);
                 }
@@ -495,7 +497,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
                 dynPart[0] = (byte) Integer.parseInt(pinCode.substring(0, 2), 16);
                 dynPart[1] = (byte) Integer.parseInt(pinCode.substring(2, 4), 16);
 
-                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.EVENTLOG, dynPart), false, 0);
+                done = sendMessage(new PowermaxBaseMessage(PowermaxSendType.EVENTLOG, dynPart), false, 0, true);
             } catch (NumberFormatException e) {
                 logger.debug("Powermax alarm binding: requested event log rejected due to invalid PIN code");
             }
@@ -591,16 +593,22 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
         return sendMessage(new PowermaxBaseMessage(msgType), false, waitTime);
     }
 
+    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime) {
+        return sendMessage(msg, immediate, waitTime, false);
+    }
+
     /**
      * Send a message or delay the sending if time frame for receiving response is not ended
      *
      * @param msg the message to be sent
      * @param immediate true if the message has to be send without considering timing
      * @param waitTime the delay in seconds to wait
+     * @param doNotLog true if the message contains data that must not be logged
      *
      * @return true if the message was sent or the sending is delayed; false in other cases
      */
-    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime) {
+    private synchronized boolean sendMessage(PowermaxBaseMessage msg, boolean immediate, int waitTime,
+            boolean doNotLog) {
         if ((waitTime > 0) && (msg != null)) {
             logger.debug("sendMessage(): delay ({} s) sending message (type {})", waitTime, msg.getSendType());
             // Don't queue the message
@@ -650,7 +658,7 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
 
         if (logger.isDebugEnabled()) {
             logger.debug("sendMessage(): sending {} message {}", msgToSend.getSendType(),
-                    HexUtils.bytesToHex(msgToSend.getRawData()));
+                    doNotLog ? "***" : HexUtils.bytesToHex(msgToSend.getRawData()));
         }
         boolean done = sendMessage(msgToSend.getRawData());
         if (done) {

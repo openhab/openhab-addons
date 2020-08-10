@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -99,9 +98,13 @@ public class DarkSkyConnection {
         }
 
         DarkSkyAPIConfiguration config = handler.getDarkSkyAPIConfig();
+        String apikey = config.apikey;
+        if (apikey == null || (apikey = apikey.trim()).isEmpty()) {
+            throw new DarkSkyConfigurationException("@text/offline.conf-error-missing-apikey");
+        }
 
-        String url = String.format(Locale.ROOT, WEATHER_URL, StringUtils.trimToEmpty(config.apikey),
-                location.getLatitude().doubleValue(), location.getLongitude().doubleValue());
+        String url = String.format(Locale.ROOT, WEATHER_URL, apikey, location.getLatitude().doubleValue(),
+                location.getLongitude().doubleValue());
 
         return gson.fromJson(getResponseFromCache(buildURL(url, getRequestParams(config))),
                 DarkSkyJsonWeatherData.class);
@@ -114,7 +117,7 @@ public class DarkSkyConnection {
      * @return the weather icon as {@link RawType}
      */
     public static @Nullable RawType getWeatherIcon(String iconId) {
-        if (StringUtils.isEmpty(iconId)) {
+        if (iconId.isEmpty()) {
             throw new IllegalArgumentException("Cannot download weather icon as icon id is null.");
         }
 
@@ -146,8 +149,8 @@ public class DarkSkyConnection {
 
         params.put(PARAM_UNITS, "si");
 
-        String language = StringUtils.trimToEmpty(config.language);
-        if (!language.isEmpty()) {
+        String language = config.language;
+        if (language != null && !(language = language.trim()).isEmpty()) {
             params.put(PARAM_LANG, language.toLowerCase());
         }
         return params;
@@ -155,7 +158,7 @@ public class DarkSkyConnection {
 
     private String buildURL(String url, Map<String, String> requestParams) {
         return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
-                .collect(joining("&", url + "?", StringUtils.EMPTY));
+                .collect(joining("&", url + "?", ""));
     }
 
     private String encodeParam(String value) {
@@ -163,7 +166,7 @@ public class DarkSkyConnection {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             logger.debug("UnsupportedEncodingException occurred during execution: {}", e.getLocalizedMessage(), e);
-            return StringUtils.EMPTY;
+            return "";
         }
     }
 

@@ -125,4 +125,13 @@ public class MqttBrokerHandlerFactory extends BaseThingHandlerFactory implements
             handlers.forEach(broker -> broker.unregisterDiscoveryListener(listener, topic));
         });
     }
+
+    @Override
+    public void publish(String topic, byte[] payload) {
+        handlers.forEach(handler -> {
+            handler.getConnectionAsync().thenAccept(connection -> {
+                connection.publish(topic, payload);
+            });
+        });
+    }
 }

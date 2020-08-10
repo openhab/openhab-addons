@@ -14,14 +14,19 @@ package org.openhab.binding.nibeheatpump.internal;
 
 import static org.openhab.binding.nibeheatpump.internal.NibeHeatPumpBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.nibeheatpump.internal.handler.NibeHeatPumpHandler;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link NibeHeatPumpHandlerFactory} is responsible for creating things and
@@ -29,8 +34,16 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Pauli Anttila - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nibeheatpump")
 public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
+
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public NibeHeatPumpHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -38,11 +51,11 @@ public class NibeHeatPumpHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            return new NibeHeatPumpHandler(thing, parsePumpModel(thing));
+            return new NibeHeatPumpHandler(thing, parsePumpModel(thing), serialPortManager);
         }
 
         return null;

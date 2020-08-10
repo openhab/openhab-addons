@@ -64,7 +64,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                 List<StateOption> options = new ArrayList<>();
                 for (ChannelInfo channel : channels) {
                     String name = channel.getName() == null ? "" : channel.getName();
-                    options.add(new StateOption(channel.getChannelNumber(), channel.getChannelNumber() + " - " + name));
+                    options.add(new StateOption(channel.getId(), channel.getChannelNumber() + " - " + name));
                 }
                 handler.setOptions(channelId, options);
             }
@@ -91,8 +91,8 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
             logger.warn("No channel list cached for this device {}, ignoring command.",
                     handler.getThing().getUID().toString());
         } else {
-            Optional<ChannelInfo> channelInfo = channels.stream().filter(c -> c.getChannelNumber().equals(value))
-                    .findFirst();
+            Optional<ChannelInfo> channelInfo = channels.stream()
+                    .filter(c -> c.getId().equals(value) || c.getChannelNumber().equals(value)).findFirst();
             if (channelInfo.isPresent()) {
                 handler.getSocket().setChannel(channelInfo.get(), objResponseListener);
             } else {
@@ -119,8 +119,20 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
                 if (channelInfo == null) {
                     return;
                 }
-                handler.postUpdate(channelId, new StringType(channelInfo.getChannelNumber()));
+                handler.postUpdate(channelId, new StringType(channelInfo.getId()));
             }
         };
+    }
+
+    public List<String> reportChannels(ThingUID thingUID) {
+        List<String> report = new ArrayList<>();
+        List<ChannelInfo> channels = channelListCache.get(thingUID);
+        if (channels != null) {
+            for (ChannelInfo channel : channels) {
+                String name = channel.getName() == null ? "" : channel.getName();
+                report.add(channel.getId() + " : " + channel.getChannelNumber() + " - " + name);
+            }
+        }
+        return report;
     }
 }

@@ -57,6 +57,7 @@
 			<parameter name="serialPort" type="text" required="true">
 				<label>Serial Or USB Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>The name of the serial port used to connect to the Alarm Decoder device</description>
 			</parameter>
 			<parameter name="bitrate" type="integer">
@@ -75,15 +76,15 @@
 	<!-- Zone Thing Type -->
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm Zone</label>
 		<description>Alarm Decoder REL or EXP zone</description>
 
 		<channels>
-			<channel id="contact" typeId="contact-channel" />
+			<channel id="contact" typeId="contact-channel"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -101,8 +102,8 @@
 	<!-- RF Zone Thing Type -->
 	<thing-type id="rfzone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm RF Zone</label>
@@ -139,11 +140,33 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Keypad Thing Type -->
-	<thing-type id="keypad">
+	<!-- Virtual Zone Thing Type -->
+	<thing-type id="vzone">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge" />
 			<bridge-type-ref id="serialbridge" />
+		</supported-bridge-type-refs>
+
+		<label>Virtual Zone</label>
+		<description>Alarm Decoder virtual zone</description>
+
+		<channels>
+			<channel id="command" typeId="contact-command-channel" />
+			<channel id="state" typeId="switch-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="integer" required="true">
+				<label>Virtual Zone Number</label>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Keypad Thing Type -->
+	<thing-type id="keypad">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Alarm Keypad</label>
@@ -216,9 +239,10 @@
 		</channels>
 
 		<config-description>
-			<parameter name="addressMask" type="text" required="true">
+			<parameter name="addressMask" type="text">
 				<label>Address Mask</label>
-				<description>Keypad address mask</description>
+				<description>Receive and send messages from a specific keypad (0=any)</description>
+				<default>0</default>
 			</parameter>
 			<parameter name="sendCommands" type="boolean">
 				<label>Send Commands</label>
@@ -244,8 +268,8 @@
 	<!-- LRR Thing Type -->
 	<thing-type id="lrr">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Long Range Radio</label>
@@ -286,7 +310,7 @@
 		<item-type>Contact</item-type>
 		<label>Contact State</label>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Indicator Channel Type -->
@@ -294,7 +318,15 @@
 		<item-type>Switch</item-type>
 		<label>Indicator State</label>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
+	</channel-type>
+
+	<!-- Switch Channel Type -->
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Switch State</label>
+		<category>Switch</category>
+		<state readOnly="false" />
 	</channel-type>
 
 	<!-- Number Channel Type -->
@@ -302,14 +334,14 @@
 		<item-type>Number</item-type>
 		<label>Number</label>
 		<category>Number</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Text channel type -->
 	<channel-type id="text-channel">
 		<item-type>String</item-type>
 		<label>Text Channel</label>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- Command channel type -->
@@ -322,5 +354,17 @@
 	<channel-type id="int-command-channel" advanced="true">
 		<item-type>Number</item-type>
 		<label>Integer Command Channel</label>
+	</channel-type>
+
+	<!-- Contact command channel type -->
+	<channel-type id="contact-command-channel">
+		<item-type>String</item-type>
+		<label>Contact Command</label>
+		<command>
+			<options>
+				<option value="OPEN">Open</option>
+				<option value="CLOSED">Closed</option>
+			</options>
+		</command>
 	</channel-type>
 </thing:thing-descriptions>

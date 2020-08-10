@@ -12,6 +12,7 @@
 		<bundle dependency="true">mvn:de.odysseus.juel/juel-api/2.2.7</bundle>
 		<bundle dependency="true">mvn:de.odysseus.juel/juel-impl/2.2.7</bundle>
 		<bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.4</bundle>
+		<bundle dependency="true">mvn:org.javassist/javassist/3.22.0-GA</bundle>
 		<bundle dependency="true">mvn:org.openhab.osgiify/com.hubspot.jinjava.jinjava/2.5.0</bundle>
 		<bundle start-level="75">mvn:org.openhab.addons.bundles/org.openhab.transform.jinja/${project.version}</bundle>
 	</feature>

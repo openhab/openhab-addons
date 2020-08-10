@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -30,7 +29,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.LightLevelConfigUpdate;
 import org.openhab.binding.hue.internal.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
@@ -67,7 +65,7 @@ public class LightLevelHandler extends HueSensorHandler {
     }
 
     @Override
-    protected void doSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor, Configuration config) {
+    protected void doSensorStateChanged(FullSensor sensor, Configuration config) {
         Object lightLevel = sensor.getState().get(STATE_LIGHT_LEVEL);
         if (lightLevel != null) {
             BigDecimal value = new BigDecimal(String.valueOf(lightLevel));

@@ -30,6 +30,15 @@ public class Group {
         this.type = "LightGroup";
     }
 
+    /**
+     * Test constructor
+     */
+    Group(String id, String name, String type) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+    }
+
     void setName(String name) {
         this.name = name;
     }

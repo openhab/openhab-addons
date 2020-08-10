@@ -19,12 +19,6 @@
 				<description>Device poll interval in seconds.</description>
 			</parameter>
 
-			<parameter name="modemDbRetryTimeoutSeconds" type="integer" min="30" max="600">
-				<label>Modem DB Retry Timeout</label>
-				<description>Modem DB retry timeout in seconds.</description>
-			</parameter>
-
-
 			<parameter name="additionalDevices" type="text">
 				<label>Additional Devices</label>
 				<description>Optional file with additional device types.</description>
@@ -87,11 +81,12 @@
 					<option value="F00.00.21">2441V Insteon Thermostat Adaptor for Venstar - F00.00.21</option>
 					<option value="F00.00.22">2982-222 Insteon Smoke Bridge - F00.00.22</option>
 					<option value="F00.00.23">2487S KeypadLinc On/Off 8-Button - F00.00.23</option>
+					<option value="F00.00.24">Motion Sensor II - F00.00.24</option>
 					<option value="0x00001A">2450 IO Link - 0x00001A</option>
 					<option value="0x000037">2486D KeypadLinc Dimmer - 0x000037</option>
 					<option value="0x000039">2663-222 On/Off Outlet - 0x000039</option>
 					<option value="0x000041">2484DWH8 KeypadLinc Countdown Timer - 0x000041</option>
-					<option value="0x000045">2413U PowerLinc 2413U USB modem - 0x000045</option>
+					<option value="0x000045">PLM or hub - 0x000045</option>
 					<option value="0x000049">2843-222 Wireless Open/Close Sensor - 0x000049</option>
 					<option value="0x00004A">2842-222 Motion Sensor - 0x00004A</option>
 					<option value="0x000051">2486DWH8 KeypadLinc Dimmer - 0x000051</option>
@@ -118,6 +113,11 @@
 	<channel-type id="batteryLevel">
 		<item-type>Number</item-type>
 		<label>Battery Level</label>
+	</channel-type>
+
+	<channel-type id="batteryPercent">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Percent</label>
 	</channel-type>
 
 	<channel-type id="batteryWatermarkLevel">
@@ -321,7 +321,7 @@
 	</channel-type>
 
 	<channel-type id="kWh">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Kilowatt Hour</label>
 	</channel-type>
 
@@ -465,9 +465,19 @@
 		<label>System Mode</label>
 	</channel-type>
 
+	<channel-type id="tamperSwitch">
+		<item-type>Contact</item-type>
+		<label>Tamper Switch</label>
+	</channel-type>
+
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
+	</channel-type>
+
+	<channel-type id="temperatureLevel">
+		<item-type>Number</item-type>
+		<label>Temperature Level</label>
 	</channel-type>
 
 	<channel-type id="topOutlet">
@@ -481,7 +491,7 @@
 	</channel-type>
 
 	<channel-type id="watts">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Watts</label>
 	</channel-type>
 

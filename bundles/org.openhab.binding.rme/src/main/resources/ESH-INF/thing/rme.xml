@@ -39,6 +39,7 @@
 			<parameter name="port" type="text">
 				<label>Serial Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial Port the RME Rain Manager is connected to</description>
 				<required>true</required>
 			</parameter>

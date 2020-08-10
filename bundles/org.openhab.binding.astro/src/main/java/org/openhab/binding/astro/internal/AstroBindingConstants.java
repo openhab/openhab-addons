@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Made non-Instantiable
  */
+@NonNullByDefault
 public final class AstroBindingConstants {
 
     /** Constructor */

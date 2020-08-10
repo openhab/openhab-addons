@@ -14,6 +14,8 @@ package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link Vehicles} is responsible for storing
  * informations returned by vehicule rest answer
@@ -21,18 +23,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class Vehicles {
+public class Vehicles extends VocAnswer {
     public @NonNullByDefault({}) String vehicleId;
+    @SerializedName("attributes")
+    public @NonNullByDefault({}) String attributesURL;
+    @SerializedName("status")
+    public @NonNullByDefault({}) String statusURL;
 
     /*
      * Currently unused in the binding, maybe interesting in the future
-     * 
-     * @SerializedName("attributes")
-     * private String attributesURL;
-     * 
-     * @SerializedName("status")
-     * private String statusURL;
-     * 
+     *
+     *
      * private String[] vehicleAccountRelations;
      */
 }

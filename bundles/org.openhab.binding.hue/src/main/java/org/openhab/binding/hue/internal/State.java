@@ -33,7 +33,7 @@ public class State {
     String colormode;
     private boolean reachable;
 
-    State() {
+    public State() {
     }
 
     /**

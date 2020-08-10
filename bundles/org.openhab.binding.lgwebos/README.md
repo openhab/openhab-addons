@@ -57,14 +57,14 @@ Thing lgwebos:WebOSTV:tv1 [host="192.168.2.119", key="6ef1dff6c7c936c8dc5056fc85
 | power           | Switch    | Current power setting. TV can only be powered off, not on, via the TV's API. Turning on is implemented via Wake On Lan, for which the MAC address must be set in the thing configuration. | RW         |
 | mute            | Switch    | Current mute setting.                                                                                                                                                                                                   | RW         |
 | volume          | Dimmer    | Current volume setting. Setting and reporting absolute percent values only works when using internal speakers. When connected to an external amp, the volume should be controlled using increase and decrease commands. | RW         |
-| channel         | String    | Current channel. Use only the channel number as command to update the channel.                                                                                                                                          | RW         |
+| channel         | String    | Current channel. Use the channel number or channel id as command to update the channel.                                                                                                                                 | RW         |
 | toast           | String    | Displays a short message on the TV screen. See also rules section.                                                                                                                                                      | W          |
 | mediaPlayer     | Player    | Media control player                                                                                                                                                                                                    | W          |
 | mediaStop       | Switch    | Media control stop                                                                                                                                                                                                      | W          |
 | appLauncher     | String    | Application ID of currently running application. This also allows to start applications on the TV by sending a specific Application ID to this channel.                                                                 | RW         |
 | rcButton        | String    | Simulates pressing of a button on the TV's remote control. See below for a list of button names.                                                                                                                        | W          |
 
-The list of available application IDs for your TV is logged when the binding is started.
+The available application IDs for your TV can be listed using a console command (see below).
 You have to use one of these IDs as command for the appLauncher channel.
 Here are examples of values that could be available for your TV: airplay, amazon, com.apple.appletv, com.webos.app.browser, com.webos.app.externalinput.av1, com.webos.app.externalinput.av2, com.webos.app.externalinput.component, com.webos.app.hdmi1, com.webos.app.hdmi2, com.webos.app.hdmi3, com.webos.app.hdmi4, com.webos.app.homeconnect, com.webos.app.igallery, com.webos.app.livetv, com.webos.app.music, com.webos.app.photovideo, com.webos.app.recordings, com.webos.app.screensaver, googleplaymovieswebos, netflix, youtube.leanback.v4.
 
@@ -94,6 +94,22 @@ This list has been compiled mostly through trial and error. Your mileage may var
 
 
 A sample HABPanel remote control widget can be found [in this github repository.](https://github.com/bbrodt/openhab2-misc)
+
+## Console Commands
+
+The binding provides a few commands you can use in the console.
+Enter the command `lgwebos` to get the usage.
+
+```
+openhab> lgwebos
+Usage: smarthome:lgwebos <thingUID> applications - list applications
+Usage: smarthome:lgwebos <thingUID> channels - list channels
+Usage: smarthome:lgwebos <thingUID> accesskey - show the access key
+```
+
+The command `applications` reports in the console the list of all applications with their id and name.
+The command `channels` reports in the console the list of all channels with their id, number and name.
+The command `accesskey` reports in the console the access key used to connect to your TV.
 
 ## Example
 
@@ -238,24 +254,6 @@ Example:
 actions.launchBrowser("https://www.openhab.org")
 ```
 
-### List<Application> getApplications()
-
-Returns a list of Applications supported by this TV.
-
-Application Properties:
-
-| Name    | Description                                                          |
-|---------|----------------------------------------------------------------------|
-| id      | The Application ID, which serves as parameter appId in other methods.|
-| name    | Human readable name                                                  |
-
-Example:
-
-```
-val apps = actions.getApplications
-apps.forEach[a| logInfo("action",a.toString)]
-```
-
 ### launchApplication(appId)
 
 Opens the application with given Application ID.
@@ -284,7 +282,7 @@ Parameters:
 
 | Name    | Description                                                                   |
 |---------|-------------------------------------------------------------------------------|
-| appId   | The Application ID. getApplications provides available apps and their appIds. |
+| appId   | The Application ID. Console command lgwebos <thingUID> applications provides available apps and their appIds. |
 | params  | The parameters to hand over to the application in JSON format                 |
 
 Examples:

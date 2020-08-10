@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bluetooth"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="brc1h">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="dbusbluez" />
+		</supported-bridge-type-refs>
+
+		<label>Daikin BRC1H Thermostat</label>
+		<description>A Daikin Madoka BRC1H Thermostat (BLE)</description>
+
+		<channels>
+			<channel id="rssi" typeId="rssi" />
+			<channel id="onOffStatus" typeId="brc1h_onOffStatus" />
+			<channel id="indoorTemperature" typeId="brc1h_indoorTemperature" />
+			<channel id="outdoorTemperature" typeId="brc1h_outdoorTemperature" />
+			<channel id="remoteCtrlVersion" typeId="brc1h_remoteCtrlVersion" />
+			<channel id="commCtrlVersion" typeId="brc1h_commCtrlVersion" />
+			<channel id="operationMode" typeId="brc1h_operationMode" />
+			<channel id="setpoint" typeId="brc1h_setpoint" />
+			<channel id="fanSpeed" typeId="brc1h_fanSpeed" />
+			<channel id="homekitCurrentHeatingCoolingMode" typeId="brc1h_homekitCurrentHeatingCoolingMode" />
+			<channel id="homekitTargetHeatingCoolingMode" typeId="brc1h_homekitTargetHeatingCoolingMode" />
+			<channel id="homebridgeMode" typeId="brc1h_homebridgeMode" />
+		</channels>
+
+		<config-description>
+			<parameter name="address" type="text" required="true">
+				<label>Address</label>
+				<description>Bluetooth address in XX:XX:XX:XX:XX:XX format</description>
+			</parameter>
+
+			<parameter name="refreshInterval" type="integer" min="1" max="86400" unit="s">
+				<label>Refresh Interval</label>
+				<advanced>true</advanced>
+				<description>Refresh interval for battery and light sensor data (in seconds). This could impact battery lifetime</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="commandTimeout" type="integer" unit="ms">
+				<label>Command Timeout</label>
+				<advanced>true</advanced>
+				<description>The amount of time, in milliseconds, a command should take before it times out.</description>
+				<default>1000</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="brc1h_onOffStatus">
+		<item-type>Switch</item-type>
+		<label>Unit Power Status</label>
+	</channel-type>
+
+	<channel-type id="brc1h_indoorTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature</label>
+	</channel-type>
+
+	<channel-type id="brc1h_outdoorTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature</label>
+	</channel-type>
+
+	<channel-type id="brc1h_remoteCtrlVersion">
+		<item-type>String</item-type>
+		<label>Remote Controller Version</label>
+	</channel-type>
+
+	<channel-type id="brc1h_commCtrlVersion">
+		<item-type>String</item-type>
+		<label>Communication Controller Version</label>
+	</channel-type>
+
+	<channel-type id="brc1h_operationMode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<command>
+			<options>
+				<option value="FAN">Fan</option>
+				<option value="DRY">Dry</option>
+				<option value="AUTO">Auto</option>
+				<option value="COOL">Cool</option>
+				<option value="HEAT">Heat</option>
+				<option value="VENTILATION">Ventilation</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="brc1h_setpoint">
+		<item-type>Number:Temperature</item-type>
+		<label>Setpoint</label>
+	</channel-type>
+
+	<channel-type id="brc1h_fanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan Speed</label>
+	</channel-type>
+
+	<channel-type id="brc1h_homekitCurrentHeatingCoolingMode">
+		<item-type>String</item-type>
+		<label>HomeKit CurrentMode</label>
+		<description>Readonly value. Off, Heating, Cooling, Auto</description>
+	</channel-type>
+
+	<channel-type id="brc1h_homekitTargetHeatingCoolingMode">
+		<item-type>String</item-type>
+		<label>HomeKit Target Mode</label>
+		<command>
+			<options>
+				<option value="Off">Off</option>
+				<option value="CoolOn">Cool</option>
+				<option value="HeatOn">Heat</option>
+				<option value="Auto">Auto</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="brc1h_homebridgeMode">
+		<item-type>Number</item-type>
+		<label>Mode from Homebridge</label>
+		<command>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Heating</option>
+				<option value="2">Cooling</option>
+				<option value="3">Auto</option>
+			</options>
+		</command>
+	</channel-type>
+
+</thing:thing-descriptions>

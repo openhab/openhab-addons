@@ -28,11 +28,17 @@
 			<channel id="Shuffle" typeId="shuffleMode"/>
 			<channel id="RepeatMode" typeId="repeatMode"/>
 			<channel id="Playlists" typeId="playlists"/>
+			<channel id="Favorites" typeId="favorites"/>
+			<channel id="Queue" typeId="queue"/>
+			<channel id="ClearQueue" typeId="clearQueue"/>
 		</channels>
+		<properties>
+			<property name="vendor">Denon</property>
+		</properties>
 		<config-description>
 			<parameter name="members" type="text" readOnly="false">
 				<label>The Group Member Player IDs</label>
-				<description>Shows the single player IDs of the members of this group</description>
+				<description>Shows the player IDs of the members of this group</description>
 				<required>true</required>
 			</parameter>
 		</config-description>

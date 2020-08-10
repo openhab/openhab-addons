@@ -38,16 +38,12 @@ import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.sunspec.internal.SunSpecConfiguration;
 import org.openhab.binding.modbus.sunspec.internal.dto.ModelBlock;
-import org.openhab.io.transport.modbus.BasicModbusReadRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicPollTaskImpl;
-import org.openhab.io.transport.modbus.BitArray;
-import org.openhab.io.transport.modbus.ModbusManager;
-import org.openhab.io.transport.modbus.ModbusReadCallback;
+import org.openhab.io.transport.modbus.AsyncModbusFailure;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.PollTask;
-import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,9 +81,9 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     private volatile @Nullable PollTask pollTask = null;
 
     /**
-     * This is the slave endpoint we're connecting to
+     * Communication interface to the slave endpoint we're connecting to
      */
-    protected volatile @Nullable ModbusSlaveEndpoint endpoint = null;
+    protected volatile @Nullable ModbusCommunicationInterface comms = null;
 
     /**
      * This is the slave id, we store this once initialization is complete
@@ -95,19 +91,13 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
     private volatile int slaveId;
 
     /**
-     * Reference to the modbus manager
-     */
-    protected final ModbusManager managerRef;
-
-    /**
      * Instances of this handler should get a reference to the modbus manager
      *
      * @param thing the thing to handle
      * @param managerRef the modbus manager
      */
-    public AbstractSunSpecHandler(Thing thing, ModbusManager managerRef) {
+    public AbstractSunSpecHandler(Thing thing) {
         super(thing);
-        this.managerRef = managerRef;
     }
 
     /**
@@ -142,7 +132,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         connectEndpoint();
 
-        if (endpoint == null || config == null) {
+        if (comms == null || config == null) {
             logger.debug("Invalid endpoint/config/manager ref for sunspec handler");
             return;
         }
@@ -281,7 +271,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Get a reference to the modbus endpoint
      */
     private void connectEndpoint() {
-        if (endpoint != null) {
+        if (comms != null) {
             return;
         }
 
@@ -297,13 +287,12 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
 
         try {
             slaveId = slaveEndpointThingHandler.getSlaveId();
-
-            endpoint = slaveEndpointThingHandler.asSlaveEndpoint();
+            comms = slaveEndpointThingHandler.getCommunicationInterface();
         } catch (EndpointNotInitializedException e) {
             // this will be handled below as endpoint remains null
         }
 
-        if (endpoint == null) {
+        if (comms == null) {
             @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
@@ -317,7 +306,8 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * Remove the endpoint if exists
      */
     private void unregisterEndpoint() {
-        endpoint = null;
+        // Comms will be close()'d by endpoint thing handler
+        comms = null;
     }
 
     /**
@@ -330,52 +320,25 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             throw new IllegalStateException("pollTask should be unregistered before registering a new one!");
         }
         @Nullable
-        ModbusSlaveEndpoint myendpoint = endpoint;
+        ModbusCommunicationInterface mycomms = comms;
         @Nullable
         SunSpecConfiguration myconfig = config;
-        if (myconfig == null || myendpoint == null) {
+        if (myconfig == null || mycomms == null) {
             throw new IllegalStateException("registerPollTask called without proper configuration");
         }
 
         logger.debug("Setting up regular polling");
 
-        BasicModbusReadRequestBlueprint request = new BasicModbusReadRequestBlueprint(getSlaveId(),
+        ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
                 ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS, mainBlock.address, mainBlock.length, myconfig.maxTries);
 
-        pollTask = new BasicPollTaskImpl(myendpoint, request, new ModbusReadCallback() {
-
-            @Override
-            public void onRegisters(@Nullable ModbusReadRequestBlueprint request,
-                    @Nullable ModbusRegisterArray registers) {
-                if (registers == null) {
-                    logger.debug("Received empty register array on poll");
-                    return;
-                }
-
-                handlePolledData(registers);
-
-                if (getThing().getStatus() != ThingStatus.ONLINE) {
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            }
-
-            @Override
-            public void onError(@Nullable ModbusReadRequestBlueprint request, @Nullable Exception error) {
-                handleError(error);
-            }
-
-            @Override
-            public void onBits(@Nullable ModbusReadRequestBlueprint request, @Nullable BitArray bits) {
-                // don't care, we don't expect this result
-            }
-        });
-
         long refreshMillis = myconfig.getRefreshMillis();
-        @Nullable
-        PollTask task = pollTask;
-        if (task != null) {
-            managerRef.registerRegularPoll(task, refreshMillis, 1000);
-        }
+        pollTask = mycomms.registerRegularPoll(request, refreshMillis, 1000, result -> {
+            result.getRegisters().ifPresent(this::handlePolledData);
+            if (getThing().getStatus() != ThingStatus.ONLINE) {
+                updateStatus(ThingStatus.ONLINE);
+            }
+        }, this::handleError);
     }
 
     /**
@@ -408,25 +371,24 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
             return;
         }
         logger.debug("Unregistering polling from ModbusManager");
-        managerRef.unregisterRegularPoll(task);
-
+        @Nullable
+        ModbusCommunicationInterface mycomms = comms;
+        if (mycomms != null) {
+            mycomms.unregisterRegularPoll(task);
+        }
         pollTask = null;
     }
 
     /**
      * Handle errors received during communication
      */
-    protected void handleError(@Nullable Exception error) {
+    protected void handleError(AsyncModbusFailure<ModbusReadRequestBlueprint> failure) {
         // Ignore all incoming data and errors if configuration is not correct
         if (hasConfigurationError() || getThing().getStatus() == ThingStatus.OFFLINE) {
             return;
         }
-        String msg = "";
-        String cls = "";
-        if (error != null) {
-            cls = error.getClass().getName();
-            msg = error.getMessage();
-        }
+        String msg = failure.getCause().getMessage();
+        String cls = failure.getCause().getClass().getName();
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 String.format("Error with read: %s: %s", cls, msg));
     }
@@ -497,7 +459,7 @@ public abstract class AbstractSunSpecHandler extends BaseThingHandler {
      * @return the scaled value as a DecimalType
      */
     protected State getScaled(Number value, Short scaleFactor, Unit<?> unit) {
-        if (scaleFactor == 1) {
+        if (scaleFactor == 0) {
             return new QuantityType<>(value.longValue(), unit);
         }
         return new QuantityType<>(BigDecimal.valueOf(value.longValue(), scaleFactor * -1), unit);

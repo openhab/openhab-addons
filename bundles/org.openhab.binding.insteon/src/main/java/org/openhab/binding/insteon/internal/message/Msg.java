@@ -536,7 +536,7 @@ public class Msg {
      * @return the length of the header to expect
      */
     public static int getHeaderLength(byte cmd) {
-        Integer len = HEADER_MAP.get(new Integer(cmd));
+        Integer len = HEADER_MAP.get((int) cmd);
         if (len == null) {
             return (-1); // not found
         }
@@ -603,7 +603,7 @@ public class Msg {
     private static void buildHeaderMap() {
         for (Msg m : MSG_MAP.values()) {
             if (m.getDirection() == Direction.FROM_MODEM) {
-                HEADER_MAP.put(new Integer(m.getCommandNumber()), m.getHeaderLength());
+                HEADER_MAP.put((int) m.getCommandNumber(), m.getHeaderLength());
             }
         }
     }
@@ -611,7 +611,7 @@ public class Msg {
     private static void buildLengthMap() {
         for (Msg m : MSG_MAP.values()) {
             if (m.getDirection() == Direction.FROM_MODEM) {
-                Integer key = new Integer(cmdToKey(m.getCommandNumber(), m.isExtended()));
+                int key = cmdToKey(m.getCommandNumber(), m.isExtended());
                 REPLY_MAP.put(key, m);
             }
         }

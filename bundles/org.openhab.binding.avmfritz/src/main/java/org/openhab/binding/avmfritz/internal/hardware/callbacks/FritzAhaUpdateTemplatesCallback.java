@@ -19,7 +19,8 @@ import java.io.StringReader;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.openhab.binding.avmfritz.internal.ahamodel.templates.TemplateListModel;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class FritzAhaUpdateTemplatesCallback extends FritzAhaReauthCallback {
 
     private final Logger logger = LoggerFactory.getLogger(FritzAhaUpdateTemplatesCallback.class);

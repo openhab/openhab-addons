@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -36,6 +38,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Dennis Dollinger - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.tankerkoenig")
+@NonNullByDefault
 public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .concat(BRIDGE_THING_TYPES_UIDS.stream(), TankerkoenigBindingConstants.SUPPORTED_THING_TYPES_UIDS.stream())
@@ -47,7 +50,7 @@ public class TankerkoenigHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(BRIDGE_THING_TYPE)) {
             WebserviceHandler handler = new WebserviceHandler((Bridge) thing);

@@ -54,6 +54,11 @@ For more security, the following optional parameters can be altered:
 * __certificate__: The certificate hash. If **certificatepin** is set this hash is used to verify the connection. Clear to allow a new certificate pinning on the next connection attempt. If empty will be filled automatically by the next successful connection. An example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.
 * __publickey__: The public key hash. If **publickeypin** is set this hash is used to verify the connection. Clear to allow a new public key pinning on the next connection attempt. If empty will be filled automatically by the next successful connection. An example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.
 
+By default discovery services (like homie or homeassistant) are enabled on a broker.
+This behaviour can be controlled with a configuration parameter.
+
+* __enableDiscovery__:If set to true, enables discovery on this broker, if set to false, disables discovery services on this broker.
+
 ## Supported Channels
 
 You can extend your broker connection bridges with a channel:
@@ -65,3 +70,7 @@ Configuration parameters are:
 * __stateTopic__: This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".
 * __payload__: An optional condition on the value of the MQTT topic that must match before this channel is triggered.
 
+## Legacy MQTT1-Binding
+
+This binding is not supposed to run in parallel to the old mqtt1-binding.
+Please uninstall the old binding before installing this binding.

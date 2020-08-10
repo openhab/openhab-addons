@@ -12,93 +12,108 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.library.items.SwitchItem;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.LockableLockMechanism;
-import io.github.hapjava.accessories.properties.LockMechanismState;
+import io.github.hapjava.accessories.LockMechanismAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.lock.LockCurrentStateEnum;
+import io.github.hapjava.characteristics.impl.lock.LockTargetStateEnum;
+import io.github.hapjava.services.impl.LockMechanismService;
 
 /**
  * Implements the support of Lock accessories, mapping them to OpenHAB Switch type
  *
- * @author blafois - Support for additional accessory type.
+ * @author blafois - Initial contribution.
  *
  */
-public class HomekitLockImpl extends AbstractHomekitAccessoryImpl<SwitchItem> implements LockableLockMechanism {
+public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
 
-    public HomekitLockImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry, HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, SwitchItem.class);
+    public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        getServices().add(new LockMechanismService(this));
     }
 
     @Override
-    public CompletableFuture<LockMechanismState> getCurrentMechanismState() {
-        OnOffType state = getItem().getStateAs(OnOffType.class);
-
-        if (state == OnOffType.OFF) {
-            return CompletableFuture.completedFuture(LockMechanismState.SECURED);
-        } else if (state == OnOffType.ON) {
-            return CompletableFuture.completedFuture(LockMechanismState.UNSECURED);
+    public CompletableFuture<LockCurrentStateEnum> getLockCurrentState() {
+        final Optional<GenericItem> item = getItem(HomekitCharacteristicType.LOCK_CURRENT_STATE, GenericItem.class);
+        LockCurrentStateEnum lockState = LockCurrentStateEnum.UNKNOWN;
+        if (item.isPresent()) {
+            final State state = item.get().getState();
+            if (state instanceof DecimalType) {
+                lockState = LockCurrentStateEnum.fromCode(((DecimalType) state).intValue());
+            } else if (state instanceof OnOffType) {
+                lockState = state == OnOffType.ON ? LockCurrentStateEnum.SECURED : LockCurrentStateEnum.UNSECURED;
+            }
         }
-
-        return CompletableFuture.completedFuture(LockMechanismState.UNKNOWN);
+        return CompletableFuture.completedFuture(lockState);
     }
 
     @Override
-    public void subscribeCurrentMechanismState(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
-    }
-
-    @Override
-    public void unsubscribeCurrentMechanismState() {
-        getUpdater().unsubscribe(getItem());
-    }
-
-    @Override
-    public void setTargetMechanismState(LockMechanismState state) throws Exception {
-        switch (state) {
-            case SECURED:
-                // Close the door
-                if (getItem() instanceof SwitchItem) {
-                    ((SwitchItem) getItem()).send(OnOffType.OFF);
-                }
-                break;
-            case UNSECURED:
-                // Open the door
-                if (getItem() instanceof SwitchItem) {
-                    ((SwitchItem) getItem()).send(OnOffType.ON);
-                }
-                break;
-            default:
-                break;
+    public CompletableFuture<LockTargetStateEnum> getLockTargetState() {
+        final @Nullable OnOffType state = getStateAs(HomekitCharacteristicType.LOCK_TARGET_STATE, OnOffType.class);
+        if (state != null) {
+            return CompletableFuture.completedFuture(
+                    state == OnOffType.ON ? LockTargetStateEnum.SECURED : LockTargetStateEnum.UNSECURED);
         }
+        return CompletableFuture.completedFuture(LockTargetStateEnum.UNSECURED);
+        // Apple HAP specification has only SECURED and UNSECURED values for lock target state.
+        // unknown does not supported for target state.
     }
 
     @Override
-    public CompletableFuture<LockMechanismState> getTargetMechanismState() {
-        OnOffType state = getItem().getStateAs(OnOffType.class);
-
-        if (state == OnOffType.OFF) {
-            return CompletableFuture.completedFuture(LockMechanismState.SECURED);
-        } else if (state == OnOffType.ON) {
-            return CompletableFuture.completedFuture(LockMechanismState.UNSECURED);
-        }
-
-        return CompletableFuture.completedFuture(LockMechanismState.UNKNOWN);
+    public CompletableFuture<Void> setLockTargetState(LockTargetStateEnum state) {
+        getItem(HomekitCharacteristicType.LOCK_TARGET_STATE, SwitchItem.class).ifPresent(item -> {
+            switch (state) {
+                case SECURED:
+                    // Close the door
+                    if (item instanceof SwitchItem) {
+                        item.send(OnOffType.ON);
+                    }
+                    break;
+                case UNSECURED:
+                    // Open the door
+                    if (item instanceof SwitchItem) {
+                        item.send(OnOffType.OFF);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
-    public void subscribeTargetMechanismState(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+    public void subscribeLockCurrentState(HomekitCharacteristicChangeCallback callback) {
+        subscribe(HomekitCharacteristicType.LOCK_CURRENT_STATE, callback);
     }
 
     @Override
-    public void unsubscribeTargetMechanismState() {
-        getUpdater().unsubscribe(getItem());
+    public void unsubscribeLockCurrentState() {
+        unsubscribe(HomekitCharacteristicType.LOCK_CURRENT_STATE);
+    }
+
+    @Override
+    public void subscribeLockTargetState(HomekitCharacteristicChangeCallback callback) {
+        subscribe(HomekitCharacteristicType.LOCK_TARGET_STATE, callback);
+    }
+
+    @Override
+    public void unsubscribeLockTargetState() {
+        unsubscribe(HomekitCharacteristicType.LOCK_TARGET_STATE);
     }
 }

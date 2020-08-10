@@ -53,14 +53,23 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="jrmTimeChannels">
-		<label>JRM Time Channels</label>
+	<channel-group-type id="jrmTimeChannels" advanced="true">
+		<label>JRM time Channels</label>
 		<description>Time for shutter channels in seconds with an accuracy of 1/10 seconds.</description>
 		<channels>
 			<channel id="00" typeId="jrmTime-channel"/>
 			<channel id="01" typeId="jrmTime-channel"/>
 			<channel id="02" typeId="jrmTime-channel"/>
 			<channel id="03" typeId="jrmTime-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="dimChannels">
+		<label>DIM Channels</label>
+		<description>Outgoing dimmer channels.</description>
+		<channels>
+			<channel id="00" typeId="dim-channel"/>
+			<channel id="01" typeId="dim-channel"/>
 		</channels>
 	</channel-group-type>
 
@@ -88,6 +97,13 @@
 		<item-type>Number</item-type>
 		<label>JRM-time Channel</label>
 		<description>The Time in seconds for an JRM channel.</description>
+		<state min="1" max="65535"/>
+	</channel-type>
+
+	<channel-type id="dim-channel">
+		<item-type>Dimmer</item-type>
+		<label>DIM Channel</label>
+		<description>Channel for a DIM module.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

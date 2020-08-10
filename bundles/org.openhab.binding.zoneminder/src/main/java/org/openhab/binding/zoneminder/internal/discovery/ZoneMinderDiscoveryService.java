@@ -112,7 +112,7 @@ public class ZoneMinderDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean monitorThingExists(ThingUID newThingUID) {
-        return serverHandler.getThingByUID(newThingUID) != null ? true : false;
+        return serverHandler.getThing().getThing(newThingUID) != null ? true : false;
     }
 
     /**

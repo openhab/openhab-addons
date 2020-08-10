@@ -75,7 +75,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private final Map<Integer, Integer> cache = Collections.synchronizedMap(new HashMap<>());
 
-    SimulatorConnector() {
+    public SimulatorConnector() {
         logger.debug("Nibe heatpump Test message listener created");
     }
 
