@@ -309,6 +309,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         } else if ("devices.added".equals(method)) {
             deviceList.forEach(this::addDevice);
+        } else if ("devices.changed".contentEquals(method)) {
+            deviceList.forEach(this::removeDevice);
+            deviceList.forEach(this::addDevice);
         }
 
         deviceList.forEach(this::updateState);
