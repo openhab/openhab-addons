@@ -577,10 +577,10 @@
 	</channel-type>
 
 	<channel-type id="lightIntensity">
-		<item-type>Number:Intensity</item-type>
+		<item-type>Number:Illuminance</item-type>
 		<label>Light Intensity</label>
 		<description>Light intensity in Lux</description>
-		<state readOnly="true" pattern="%d lux"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="temperature">
