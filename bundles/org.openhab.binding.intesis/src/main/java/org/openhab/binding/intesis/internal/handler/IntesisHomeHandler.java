@@ -244,6 +244,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         String contentString = "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
                 + "\", \"uid\":\"all\"}}";
         String response = api.postRequest(ipAddress, contentString);
+        logger.debug("Thing {} received response {}", this.getThing().getUID(), response);
         if (response != null && !response.isEmpty()) {
             boolean success = IntesisHomeJSonDTO.getSuccess(response);
             if (!success) {

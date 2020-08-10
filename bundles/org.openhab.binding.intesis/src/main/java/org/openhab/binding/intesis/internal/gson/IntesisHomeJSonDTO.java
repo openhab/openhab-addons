@@ -96,7 +96,7 @@ public class IntesisHomeJSonDTO {
         JsonParser parser = new JsonParser();
         JsonElement rootNode = parser.parse(response);
         JsonObject details = rootNode.getAsJsonObject();
-        boolean success = details.get("success") != null;
+        boolean success = details.get("success").getAsBoolean();
         return success;
     }
 }
