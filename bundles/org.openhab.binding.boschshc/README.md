@@ -53,7 +53,7 @@ Example:
 
 ## Thing Configuration
 
-You define your Bosch devices by adding them either to the a `.things` file in your `$OPENHAB_CONF/things` folder like this:
+You define your Bosch devices by adding them either to a `.things` file in your `$OPENHAB_CONF/things` folder like this:
 
 ```
 Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
