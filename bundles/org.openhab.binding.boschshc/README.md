@@ -20,20 +20,40 @@ Binding for the Bosch Smart Home Controller:
 
 ## Discovery
 
-Not yet implemented. Configuration via configuration files or Paper UI.
+Not yet implemented. Configuration via configuration files or Paper UI (see below).
 
 ## Binding Configuration
 
-You need to provide at least the ipAddress and the system password of your Bosch Smart Home Controller
-and a path to a JKS keystore file location.
-At this location a keystore file with a self signed certificate is created and stored if not present at the first setup.
-This certificate is used for pairing between the Bridge and the Bosch SHC. 
+You need to provide at least the IP address and the system password of your Bosch Smart Home Controller. The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI.
 
-*Press the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
+A keystore file with a self signed certificate is created automatically. This certificate is used for pairing between the Bridge and the Bosch SHC. 
+
+*Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
         
+## Getting the device IDs
+
+Bosch IDs for found devices are displayed in the openHAB log on bootup (`OPENHAB_FOLDER/userdata/logs/openhab.log`)
+
+Example:
+```
+2020-08-11 12:42:49.490 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Heizung id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
+2020-08-11 12:42:49.495 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-RoomClimateControl- id=roomClimateControl_hz_1
+2020-08-11 12:42:49.497 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-VentilationService- id=ventilationService
+2020-08-11 12:42:49.498 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Großes Fenster id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
+2020-08-11 12:42:49.501 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-IntrusionDetectionSystem- id=intrusionDetectionSystem
+2020-08-11 12:42:49.502 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Rollladen id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
+2020-08-11 12:42:49.502 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Heizung id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
+2020-08-11 12:42:49.503 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Heizung Haus id=hdm:ICom:819410185:HC1
+2020-08-11 12:42:49.503 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=-RoomClimateControl- id=roomClimateControl_hz_6
+2020-08-11 12:42:49.504 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=PhilipsHueBridgeManager id=hdm:PhilipsHueBridge:PhilipsHueBridgeManager
+2020-08-11 12:42:49.505 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Rollladen id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
+2020-08-11 12:42:49.506 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Rollladen id=hdm:HomeMaticIP:3014F711A000XXXXXXXXXXXX
+2020-08-11 12:42:49.507 [INFO ] [chshc.internal.BoschSHCBridgeHandler] - Found device: name=Central Heating id=hdm:ICom:819410185
+```
+
 ## Thing Configuration
 
-Bosch IDs for devices are displayed in the OpenHab log on bootup.
+You define your Bosch devices by adding them either to the a `.things` file in your `$OPENHAB_CONF/things` folder like this:
 
 ```
 Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
@@ -53,7 +73,13 @@ Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
 }
 ```
 
+Or by adding them via Paper UI -> Configuration -> Things -> "+" -> Bosch Smart Home Binding.
+
+For more details see https://www.openhab.org/docs/configuration/things.html.
+
 ## Item Configuration
+
+You define the items which should be linked to your Bosch devices via a `.items` file in your `$OPENHAB_CONF/items` folder like this:
 
 ```
 Switch Bosch_Bathroom    "Bath Room"    { channel="boschshc:in-wall-switch:1:bathroom:power-switch" }
@@ -65,19 +91,6 @@ Switch Bosch_Living_Room "Living Room"  { channel="boschshc:in-wall-switch:1:liv
 Switch Bosch_Lelit       "Lelit"        { channel="boschshc:in-wall-switch:1:coffeemachine:power-switch" }
 ```
 
-## Channels
+Or by adding them via Paper UI -> Configuration -> Items -> "+".
 
-| channel      | type   | description                                   |
-|--------------|--------|-----------------------------------------------|
-| power-switch | Switch | This is the control channel for ON/OFF events |
-| power-meter  | Switch | This is the control channel for ON/OFF events |
-
-Surely this can be auto-generated from thing-types.xml
-
-## Full Example
-
-TODO
-
-## Any custom content here!
-
-TODO
+For more details see https://www.openhab.org/docs/configuration/items.html.
