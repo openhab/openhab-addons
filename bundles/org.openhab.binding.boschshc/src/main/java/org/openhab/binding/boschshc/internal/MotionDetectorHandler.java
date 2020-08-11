@@ -37,7 +37,6 @@ public class MotionDetectorHandler extends BoschSHCHandler {
 
     public MotionDetectorHandler(Thing thing) {
         super(thing);
-        logger.warn("Creating motion detector thing: {}", thing.getLabel());
     }
 
     @Override
@@ -48,7 +47,7 @@ public class MotionDetectorHandler extends BoschSHCHandler {
 
         if (bridge != null && config != null) {
 
-            logger.info("Handle command for: {} - {}", config.id, command);
+            logger.debug("Handle command for: {} - {}", config.id, command);
             BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
             if (bridgeHandler != null) {

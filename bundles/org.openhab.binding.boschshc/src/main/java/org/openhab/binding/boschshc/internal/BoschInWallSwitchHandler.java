@@ -44,7 +44,6 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
     public BoschInWallSwitchHandler(Thing thing) {
         super(thing);
-        logger.warn("Creating in-wall: {}", thing.getLabel());
     }
 
     @Override
@@ -55,7 +54,7 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
         if (bridge != null && config != null) {
 
-            logger.info("Handle command for: {} - {}", config.id, command);
+            logger.debug("Handle command for: {} - {}", config.id, command);
             BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
             if (bridgeHandler != null) {

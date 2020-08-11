@@ -43,7 +43,6 @@ public class WindowContactHandler extends BoschSHCHandler {
 
     public WindowContactHandler(Thing thing) {
         super(thing);
-        logger.warn("Creating window contact handler: {}", thing.getLabel());
     }
 
     @Override
@@ -54,7 +53,7 @@ public class WindowContactHandler extends BoschSHCHandler {
 
         if (bridge != null && config != null) {
 
-            logger.info("Handle command for: {} - {}", config.id, command);
+            logger.debug("Handle command for: {} - {}", config.id, command);
             BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
             if (bridgeHandler != null) {

@@ -100,7 +100,7 @@ public class BoschHttpClient extends HttpClient {
         ContentResponse contentResponse;
         try {
             String publicCert = getCertFromSslContextFactory();
-            logger.info("Pairing this Client '{}' with SHC {} using Cert {}", BoschSslUtil.getBoschSHCId(), ipAddress,
+            logger.debug("Pairing this Client '{}' with SHC {} using Cert {}", BoschSslUtil.getBoschSHCId(), ipAddress,
                     publicCert);
 
             // JSON Rest content
@@ -124,7 +124,7 @@ public class BoschHttpClient extends HttpClient {
                 logger.info("Pairing successful.");
                 return true;
             } else {
-                logger.info("Pairing failed with responce status {}.", contentResponse.getStatus());
+                logger.info("Pairing failed with response status {}.", contentResponse.getStatus());
                 return false;
             }
 

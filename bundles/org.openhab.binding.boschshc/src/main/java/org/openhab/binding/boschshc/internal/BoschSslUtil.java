@@ -100,7 +100,7 @@ public class BoschSslUtil {
                 // Either use a different secret instead of the system password (e.g. OpenHAB UUID?)
                 // or recreate a new keystore with the different system password again (needs pairing)
                 keyStore.load(new FileInputStream(file), keystorePassword.toCharArray());
-                logger.info("Using existing keystore {}", keystorePath);
+                logger.debug("Using existing keystore {}", keystorePath);
                 return keyStore;
             }
         } catch (OperatorCreationException | GeneralSecurityException | IOException e) {

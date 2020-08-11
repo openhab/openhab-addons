@@ -44,7 +44,6 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
 
     public BoschTwinguardHandler(Thing thing) {
         super(thing);
-        logger.warn("Creating Twinguard: {}", thing.getLabel());
     }
 
     @Override
@@ -54,8 +53,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
         Bridge bridge = this.getBridge();
 
         if (bridge != null && config != null) {
-
-            logger.info("Handle command for: {} - {}", config.id, command);
+            logger.debug("Handle command for: {} - {}", config.id, command);
             BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
             if (bridgeHandler != null) {
@@ -89,14 +87,14 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
 
     @Override
     public void processUpdate(String id, @NonNull JsonElement state) {
-        logger.warn("Twinguard: received update: {} {}", id, state);
+        logger.debug("Twinguard: received update: {} {}", id, state);
 
         Gson gson = new Gson();
 
         try {
             TwinguardState parsed = gson.fromJson(state, TwinguardState.class);
 
-            logger.warn("Parsed switch state of {}: {}", this.getBoschID(), parsed);
+            logger.debug("Parsed switch state of {}: {}", this.getBoschID(), parsed);
             updateAirQualityState(parsed);
 
         } catch (JsonSyntaxException e) {
