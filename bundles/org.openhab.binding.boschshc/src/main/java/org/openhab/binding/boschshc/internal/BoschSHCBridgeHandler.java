@@ -40,8 +40,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
+import org.openhab.binding.boschshc.internal.services.JsonRestExceptionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -474,24 +476,26 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public <T extends @NonNull Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass) {
         ContentResponse contentResponse;
         try {
-
-            String url = "https://" + config.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/"
-                    + stateName + "/state";
+            String url = this.createServiceUrl(stateName, deviceId);
+            Request request = this.createRequest(httpClient, url, GET).header("Accept", "application/json");
 
             logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
 
-            // GET request
-            // ----------------------------------------------------------------------------------
-
-            // TODO: Gateway ID is hard-coded!
-            contentResponse = httpClient.newRequest(url).header("Content-Type", "application/json")
-                    .header("Accept", "application/json").header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
+            contentResponse = request.send();
 
             String content = contentResponse.getContentAsString();
             logger.debug("refreshState: Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
-            // TODO Perhaps we should have only one single gson builder per thing?
             Gson gson = new GsonBuilder().create();
+
+            int statusCode = contentResponse.getStatus();
+            if (statusCode != 200) {
+                JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+                throw new Error(MessageFormatter.arrayFormat(
+                        "State request for service {} of device {} failed with status code {} and error code {}",
+                        new Object[] { stateName, deviceId, errorResponse.statusCode, errorResponse.errorCode })
+                        .getMessage());
+            }
 
             T state = gson.fromJson(content, stateClass);
             return state;
@@ -577,10 +581,17 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 + "/state";
     }
 
-    private Request createRequest(BoschHttpClient httpClient, String url, HttpMethod method, Object content) {
+    private Request createRequest(BoschHttpClient httpClient, String url, HttpMethod method) {
+        return this.createRequest(httpClient, url, method, null);
+    }
+
+    private Request createRequest(BoschHttpClient httpClient, String url, HttpMethod method, @Nullable Object content) {
         Gson gson = new Gson();
-        String body = gson.toJson(content);
-        return httpClient.newRequest(url).method(method).header("Content-Type", "application/json")
-                .content(new StringContentProvider(body));
+        Request request = httpClient.newRequest(url).method(method).header("Content-Type", "application/json");
+        if (content != null) {
+            String body = gson.toJson(content);
+            request = request.content(new StringContentProvider(body));
+        }
+        return request;
     }
 }
