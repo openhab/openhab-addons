@@ -76,7 +76,6 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
 
     public BoschSHCHandler(Thing thing) {
         super(thing);
-        logger.warn("Creating thing: {}", thing.getLabel());
     }
 
     public @Nullable String getBoschID() {
@@ -98,9 +97,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      */
     @Override
     public void initialize() {
-
         this.config = getConfigAs(BoschSHCConfiguration.class);
-        logger.warn("Initializing thing: {}", this.getBoschID());
 
         // Mark immediately as online - if the bridge is online, the thing is too.
         updateStatus(ThingStatus.ONLINE);

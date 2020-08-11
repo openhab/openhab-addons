@@ -60,7 +60,7 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.warn("Thing createHandler for thing: {} - {}", thing.getLabel(), thingTypeUID);
+        logger.debug("Thing createHandler for thing: {} - {}", thing.getLabel(), thingTypeUID);
 
         // XXX Make the names in here consistent - remove the stupid Bosch prefixes.
 

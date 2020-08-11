@@ -86,7 +86,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     logger.warn("Failed to start Bosch SHC Bridge: {}", e);
                 }
 
-                logger.warn("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05",
+                logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05",
                         config.ipAddress, this.httpClient);
 
                 // check access and pair if necessary
@@ -127,7 +127,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("Handle command on bridge: {}", config.ipAddress);
+        logger.debug("Handle command on bridge: {}", config.ipAddress);
     }
 
     /**
@@ -154,13 +154,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 if (devices != null) {
                     for (Device d : devices) {
-                        // TODO keeping these as warn for the time being, until we have a better means
-                        // of listing
-                        // devices with their Bosch ID
-                        logger.warn("Found device: name={} id={}", d.name, d.id);
+                        // Write found devices into openhab.log until we have implemented auto discovery
+                        logger.info("Found device: name={} id={}", d.name, d.id);
                         if (d.deviceSerivceIDs != null) {
                             for (String s : d.deviceSerivceIDs) {
-                                logger.warn(".... service: " + s);
+                                logger.info(".... service: " + s);
                             }
                         }
                     }
@@ -184,7 +182,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Method is synchronous.
      */
     private void subscribe() {
-        logger.info("Sending subscribe request to Bosch");
+        logger.debug("Sending subscribe request to Bosch");
 
         String[] params = { "com/bosch/sh/remote/*", null }; // TODO Not sure about the tailing null, copied
                                                              // from NodeJs
@@ -196,7 +194,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // XXX Maybe we should use a different httpClient here, to avoid a race with
         // concurrent use from other
         // functions.
-        logger.info("Subscribe: Sending content: {} - using httpClient {}", str_content, this.httpClient);
+        logger.debug("Subscribe: Sending content: {} - using httpClient {}", str_content, this.httpClient);
 
         class SubscribeListener extends BufferingResponseListener {
             private BoschSHCBridgeHandler bridgeHandler;
@@ -224,11 +222,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 byte[] responseContent = getContent();
                 String content = new String(responseContent);
 
-                logger.info("Subscribe: response complete: {} - return code: {}", content,
+                logger.debug("Subscribe: response complete: {} - return code: {}", content,
                         result.getResponse().getStatus());
 
                 SubscribeResult subscribeResult = gson.fromJson(content, SubscribeResult.class);
-                logger.info("Subscribe: Got subscription ID: {} {}", subscribeResult.getResult(),
+                logger.debug("Subscribe: Got subscription ID: {} {}", subscribeResult.getResult(),
                         subscribeResult.getJsonrpc());
 
                 bridgeHandler.subscriptionId = subscribeResult.getResult();
@@ -261,7 +259,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         String subscriptionId = this.subscriptionId;
         if (subscriptionId == null) {
 
-            logger.info("longPoll: Subscription outdated, requesting .. ");
+            logger.debug("longPoll: Subscription outdated, requesting .. ");
             this.subscribe();
             return;
         }
@@ -309,7 +307,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                                 if (update != null && update.state != null) {
 
-                                    logger.info("Got update for {}", update.deviceId);
+                                    logger.debug("Got update for {}", update.deviceId);
 
                                     Bridge bridge = bridgeHandler.getThing();
                                     boolean handled = false;
@@ -328,7 +326,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                                             if (deviceId != null && update.deviceId.equals(deviceId)) {
 
-                                                logger.info("Found child: {} - calling processUpdate with {}", handler,
+                                                logger.debug("Found child: {} - calling processUpdate with {}", handler,
                                                         update.state);
                                                 handler.processUpdate(update.id, update.state);
                                             }
@@ -341,7 +339,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                                     }
 
                                     if (!handled) {
-                                        logger.info("Could not find a thing for device ID: {}", update.deviceId);
+                                        logger.debug("Could not find a thing for device ID: {}", update.deviceId);
                                     }
                                 }
                             }
@@ -413,7 +411,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         .send();
 
                 String content = contentResponse.getContentAsString();
-                logger.info("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+                logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
                 Gson gson = new GsonBuilder().create();
                 Type collectionType = new TypeToken<ArrayList<Room>>() {
@@ -423,7 +421,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 if (rooms != null) {
                     for (Room r : rooms) {
-                        logger.warn("Found room: {}", r.name);
+                        logger.info("Found room: {}", r.name);
                     }
                 }
 
@@ -473,7 +471,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             String url = "https://" + config.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/"
                     + stateName + "/state";
 
-            logger.warn("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
+            logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
 
             // GET request
             // ----------------------------------------------------------------------------------
@@ -483,7 +481,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     .header("Accept", "application/json").header("Gateway-ID", "64-DA-A0-02-14-9B").method(GET).send();
 
             String content = contentResponse.getContentAsString();
-            logger.warn("refreshState: Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
+            logger.debug("refreshState: Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
             // TODO Perhaps we should have only one single gson builder per thing?
             Gson gson = new GsonBuilder().create();
@@ -534,7 +532,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
 
                 String boschID = handler.getBoschID();
-                logger.info("Sending update request to Bosch device {}: update: {}", boschID, command);
+                logger.debug("Sending update request to Bosch device {}: update: {}", boschID, command);
 
                 // PUT request
                 // ----------------------------------------------------------------------------------
@@ -559,7 +557,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         .content(new StringContentProvider(str_content)).send();
 
                 String content = contentResponse.getContentAsString();
-                logger.info("Response complete: [{}] - return code: {}", content, contentResponse.getStatus());
+                logger.debug("Response complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 logger.warn("HTTP request failed: {}", e);
