@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.iammeter.internal;
 
+import javax.measure.Unit;
+
 /**
  * The {@link IammeterWEM3080Channel} Enum defines common constants, which are
  * used across the whole binding.
@@ -28,10 +30,12 @@ public enum IammeterWEM3080Channel {
 
     private final String id;
     private final int index;
+    private final Unit<?> unit;
 
     IammeterWEM3080Channel(String id, int index) {
         this.id = id;
         this.index = index;
+        this.unit = null;
     }
 
     public String getId() {
@@ -40,5 +44,9 @@ public enum IammeterWEM3080Channel {
 
     public int getIndex() {
         return index;
+    }
+
+    public Unit<?> getUnit() {
+        return unit;
     }
 }

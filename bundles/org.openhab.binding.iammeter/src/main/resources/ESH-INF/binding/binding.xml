@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Iammeter Binding</name>
-	<description>This is the binding for Iammeter.</description>
-	<author>yang bo</author>
+	<description>The Iammeter binding pull your Iammeter power meter data from LAN.</description>
+	<author>Yang Bo</author>
 
 </binding:binding>

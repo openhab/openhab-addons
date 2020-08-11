@@ -15,14 +15,16 @@ package org.openhab.binding.iammeter.internal;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -49,13 +51,17 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author yang bo - Initial contribution
  */
+
 @NonNullByDefault
 public class IammeterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IammeterHandler.class);
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private IammeterConfiguration config;
 
     public IammeterHandler(Thing thing) {
         super(thing);
+        config = getConfiguration();
     }
 
     private final int timeout = 5000;
@@ -63,10 +69,10 @@ public class IammeterHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try{
+            try {
                 refresh();
-            } catch (Exception ex) {
-                logger.warn("refresh error {}" , ex.getMessage());
+            } catch (IOException | JsonSyntaxException ex) {
+                logger.warn("refresh error {}", ex.getMessage());
             }
         }
     }
@@ -75,33 +81,28 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        IammeterConfiguration config = getConfiguration();
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    refresh();
-                } catch (Exception ex) {
-                    logger.warn("refresh error {}" , ex.getMessage());
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        IammeterConfiguration config = this.config;
+        config = getConfiguration();
+        if (refreshJob == null || refreshJob.isCancelled()) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        refresh();
+                    } catch (IOException | JsonSyntaxException ex) {
+                        logger.warn("refresh error {}", ex.getMessage());
+                    }
                 }
-            }
-        };
-        scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
-
-        updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            try{
-                refresh();
-            } catch (Exception ex) {
-                logger.warn("refresh error {}" , ex.getMessage());
-            }
-        });
+            };
+            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
+            updateStatus(ThingStatus.UNKNOWN);
+        }
     }
 
-    private void refresh() throws Exception {
+    private void refresh() throws IOException, JsonSyntaxException {
+        IammeterConfiguration config = this.config;
         try {
-            IammeterConfiguration config = getConfiguration();
             logger.trace("Starting refresh handler");
             String httpMethod = "GET";
             String url = "http://admin:admin@" + config.host + ":" + config.port + "/monitorjson";
@@ -121,7 +122,7 @@ public class IammeterHandler extends BaseThingHandler {
                 }
                 for (IammeterWEM3080Channel channelConfig : IammeterWEM3080Channel.values()) {
                     Channel channel = getThing().getChannel(channelConfig.getId());
-                    if (channel != null){
+                    if (channel != null) {
                         channelProfix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
                                 + channel.getUID().getThingUID().getId();
                         State state = getDecimal(
@@ -133,7 +134,7 @@ public class IammeterHandler extends BaseThingHandler {
                 keyWord = "Datas";
                 for (IammeterWEM3080TChannel channelConfig : IammeterWEM3080TChannel.values()) {
                     Channel channel = getThing().getChannel(channelConfig.getId());
-                    if (channel != null){
+                    if (channel != null) {
                         State state = getDecimal(iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getRow())
                                 .getAsJsonArray().get(channelConfig.getCol()).toString());
                         updateState(channel.getUID(), state);
@@ -145,15 +146,14 @@ public class IammeterHandler extends BaseThingHandler {
                     thingStructureChanged(channelProfix);
                 }
             }
+            stream.close();
             updateStatus(ThingStatus.ONLINE);
-        // Very rudimentary Exception differentiation
+            // Very rudimentary Exception differentiation
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Communication error with the device: " + e.getMessage());
         } catch (JsonSyntaxException je) {
             logger.warn("Invalid JSON when refreshing source {}: {}", getThing().getUID(), je.getMessage());
-        } catch (Exception e) {
-            logger.warn("Error refreshing source {}: {}", getThing().getUID(), e.getMessage(), e);
         }
     }
 
@@ -185,7 +185,7 @@ public class IammeterHandler extends BaseThingHandler {
 
     private State getDecimal(String value) {
         try {
-            return new DecimalType(new BigDecimal(value));
+            return QuantityType.valueOf(Float.parseFloat(value), SmartHomeUnits.VOLT);
         } catch (NumberFormatException e) {
             return UnDefType.UNDEF;
         }
@@ -193,11 +193,16 @@ public class IammeterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
+        if (refreshJob != null && !refreshJob.isCancelled()) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
         super.dispose();
     }
-    
+
+    @NonNullByDefault
     public IammeterConfiguration getConfiguration() {
         return this.getConfigAs(IammeterConfiguration.class);
     }
-
 }

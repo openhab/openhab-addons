@@ -12,14 +12,17 @@
  */
 package org.openhab.binding.iammeter.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link IammeterConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author yang bo - Initial contribution
+ * @author Yang Bo - Initial contribution
  */
 
+@NonNullByDefault
 public class IammeterConfiguration {
-    public String host;
-    public int port;
-    public int refreshInterval;
+    public String host = "127.0.0.1";
+    public int port = 80;
+    public int refreshInterval = 30;
 }
