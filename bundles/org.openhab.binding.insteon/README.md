@@ -510,7 +510,7 @@ Please see the Insteon I/O Linc documentation for further details.
 Before you attempt to configure the keypads, please familiarize yourself with the concept of an Insteon group.
 
 The Insteon keypad devices typically control one main load and have a number of buttons that will send out group broadcast messages to trigger a scene.
-If you just want to use the main load switch within openhab just link modem and device with the set buttons as usual, no complicated linking is necessary.
+If you just want to use the main load switch within openHAB just link modem and device with the set buttons as usual, no complicated linking is necessary.
 But if you want to get the buttons to work, read on.
 
 Each button will send out a message for a different, predefined group.

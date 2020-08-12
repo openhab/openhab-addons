@@ -20,7 +20,7 @@ The controller thing is the bridge for the individually attached panels/canvas a
 With the controller thing you can control channels which affect all panels, e.g. selecting effects or setting the brightness.
 
 The lightpanel (singular) thing controls one of the individual panels/canvas that are connected to each other. Each individual panel has therefore its own id assigned to it.
-You can set the **color** for each panel or turn it on (white) or off (black) and in the case of a nanoleaf canvas you can even detect single and double **touch events** related to an individual panel which opens a whole new world of controlling any other device within your openhab environment. 
+You can set the **color** for each panel or turn it on (white) or off (black) and in the case of a nanoleaf canvas you can even detect single and double **touch events** related to an individual panel which opens a whole new world of controlling any other device within your openHAB environment. 
 
 Note: In case of major changes of a binding (like adding more features to a thing) it becomes necessary to delete your things due to the things not being compatible anymore. Don't worry too much though as they will be easily redetected and nothing really is lost. Just make sure that you delete them and rediscover as described below.
 
@@ -53,7 +53,7 @@ Troubleshooting: In seldom cases (in particular together with updating the bindi
 
 - remove the panels (maybe twice by force removing it)
 - remove the controller (maybe twice by force removing it)
-- stop and then start openhab
+- stop and then start openHAB
 - Rediscover like described above
 
 **Knowing which panel has which id**
@@ -61,7 +61,7 @@ Troubleshooting: In seldom cases (in particular together with updating the bindi
 Unfortunately it is not easy to find out which panel gets which id while this is pretty important if you have lots of them and you want to assign rules to it. 
 Don't worry: the binding comes with some helpful support in the background the canvas type (this is only provided for the canvas device because triangles can have weird layouts that are hard to express in a log output)
 
-- fire up your browser and open the openhab server on port 9001 which shows the logs.
+- fire up your browser and open the openHAB server on port 9001 which shows the logs.
 - Set up a switch item with the channel panelLayout on the controller (see NanoRetrieveLayout below) and set the switch to true
 - look out for something like "Panel layout and ids" in the logs. Below that you will see a panel layout similar to
 

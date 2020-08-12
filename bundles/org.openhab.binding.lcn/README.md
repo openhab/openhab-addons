@@ -248,7 +248,7 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Remote Control                  | Fernbedienung                    | code#remotecontrolkey  |      | Trigger                        | Receive commands from remote control                                                                                          |
 | Access Control                  | Zutrittskontrolle                | code#remotecontrolcode |      | Trigger                        | Receive serial numbers from remote control                                                                                    |
 | Remote Control Battery Low      | Fernbedienung Batterie schwach   | code#remotecontrolbatterylow | | Trigger                       | Triggered when the sending remote control has a low battery                                                                   |
-| Status Message                  | Statusmeldungen                  | -                      | -    | -                              | Automatically done by OpenHAB Binding                                                                                         |
+| Status Message                  | Statusmeldungen                  | -                      | -    | -                              | Automatically done by openHAB Binding                                                                                         |
 | Audio Beep                      | Audio Piepen                     | -                      | -    | -                              | Not implemented                                                                                                               |
 | Audio LCN-MRS                   | Audio LCN-MRS                    | -                      | -    | -                              | Not implemented                                                                                                               |
 | Count/Compute                   | Zählen/Rechnen                   | -                      | -    | -                              | Not implemented                                                                                                               |
@@ -383,7 +383,7 @@ Actions are special commands that can be sent to LCN modules or LCN groups.
 ### Hit Key
 
 This *Action* virtually hits a key of a key table in an LCN module.
-Simply spoken, OpenHab acts as a push button switch connected to an LCN module.
+Simply spoken, openHAB acts as a push button switch connected to an LCN module.
 
 This *Action* can be used to execute commands which are not natively supported by this binding.
 The function can be programmed via the software *LCN-PRO* onto a key in a module's key table.

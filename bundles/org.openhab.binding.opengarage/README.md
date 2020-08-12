@@ -1,6 +1,6 @@
 # OpenGarage Binding
 
-The OpenGarage binding allows you to control an OpenGarage controller (https://opensprinkler.com/product/opengarage/) using OpenHAB
+The OpenGarage binding allows you to control an OpenGarage controller (https://opensprinkler.com/product/opengarage/) using openHAB
 
 
 ## Supported Things
