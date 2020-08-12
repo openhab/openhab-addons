@@ -1,7 +1,7 @@
 # NeoHub Binding
 
 This is a binding for integrating [Heatmiser](https://www.heatmiser.com) room and underfloor heating control products.
-The NeoHub (bridge) binding allows you to connect openHab via TCP/IP to Heatmiser's NeoHub and integrate your Heatmiser smart thermostats, smart plugs, and accessories.
+The NeoHub (bridge) binding allows you to connect openHAB via TCP/IP to Heatmiser's NeoHub and integrate your Heatmiser smart thermostats, smart plugs, and accessories.
 
 ![NeoHub](doc/neohub-2.jpg)
 
@@ -103,12 +103,12 @@ The following Channels, and their associated channel types are shown below.
 The Heatmiser devices are connected to the NeoHub by means of an RF (radio frequency) mesh network.
 Occasionally it is possible that a device might drop out of the mesh.
 This is usually a temporary issue (e.g. interference), and the device usually reconnects itself automatically.
-If a device drops out of the mesh, you can select whether OpenHAB shall either a) change the Channel value to `UNDEF`, or b) hold the value that it had prior to the drop out.
+If a device drops out of the mesh, you can select whether openHAB shall either a) change the Channel value to `UNDEF`, or b) hold the value that it had prior to the drop out.
 The choice of a) or b) is determined by an optional Channel configuration parameter `holdOnlineState` as follows.
 
 | Parameter       | Type   | Description                                                                                         |
 |-----------------|--------|-----------------------------------------------------------------------------------------------------|
-| holdOnlineState | Switch | If the respective device drops out of the RF mesh, the behaviour is as follows:<br> - Off: OpenHAB  changes the Channel's state to `UNDEF`<br> - On: OpenHAB holds the Channel's state unchanged<br>The default setting is Off |
+| holdOnlineState | Switch | If the respective device drops out of the RF mesh, the behaviour is as follows:<br> - Off: openHAB  changes the Channel's state to `UNDEF`<br> - On: openHAB holds the Channel's state unchanged<br>The default setting is Off |
 
 The purpose of `holdOnlineState` is so you can choose to overlook value fluctuations if drop outs occur e.g. to "hold" the values in a temperature graph display.
 

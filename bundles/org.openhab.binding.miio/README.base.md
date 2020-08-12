@@ -87,7 +87,7 @@ The binding allows to try/test if your new device is working with database files
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openhab forum, or the openhab GitHub repository for the modelId of similar devices.
+Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
 
 # Advanced: adding local database files to support new devices
 
@@ -95,7 +95,7 @@ Things using the basic handler (miio:basic things) are driven by json 'database'
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
-For format, please check the current database files in Openhab github.
+For format, please check the current database files in openHAB GitHub.
 
 ## Channels
 
