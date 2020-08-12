@@ -175,7 +175,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
     }
 ```
 ## Acknowledgements
-This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective github repositories for their development that helped in creating this binding:
+This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective GitHub repositories for their development that helped in creating this binding:
 
 João Paulo Barraca - https://github.com/ParadoxAlarmInterface/pai
 

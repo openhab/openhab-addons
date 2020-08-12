@@ -239,7 +239,7 @@ The binding allows to try/test if your new device is working with database files
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
+Look at the openhab forum, or the openhab GitHub repository for the modelId of similar devices.
 
 # Advanced: adding local database files to support new devices
 

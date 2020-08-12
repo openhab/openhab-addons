@@ -11,7 +11,7 @@
 		<label>Basic Xiaomi MiHome Device</label>
 		<description>This device is not supported by the binding but you can still add it to your OpenHAB configuration. All
 			messages from the device are available as channels providing values to String Items. Please open an issue on the
-			openhab-addons2 github page to get this device added to the binding in the future. Meanwhile you can parse the
+			openhab-addons2 GitHub page to get this device added to the binding in the future. Meanwhile you can parse the
 			messages with rules and/or JSONPATH transformations.</description>
 		<channels>
 			<channel id="reportMessage" typeId="rawMessage">
