@@ -43,7 +43,7 @@
 				<default>80</default>
 			</parameter>
 			<parameter name="refreshInterval" type="text" required="false">
-				<label>Refresh interval in seconds.</label>
+				<label>Refresh interval in seconds</label>
 				<default>60</default>
 			</parameter>
 		</config-description>
@@ -69,19 +69,19 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy_a">
-		<item-type>Number:kWh</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>ImportEnergy A</label>
 		<description>importenergy for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid_a">
-		<item-type>Number:kWh</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Exportgrid A</label>
 		<description>exportgrid for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="frequency_a">
-		<item-type>Number:Hz</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Frequency A</label>
 		<description>frequency for phase A</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
@@ -111,19 +111,19 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy_b">
-		<item-type>Number:kWh</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>ImportEnergy B</label>
 		<description>importenergy for phase B</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid_b">
-		<item-type>Number:kWh</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Exportgrid B</label>
 		<description>exportgrid for phase B</description>
 		<state pattern="%.2f %unit%"></state>
 	</channel-type>
 	<channel-type id="frequency_b">
-		<item-type>Number:Hz</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Frequency B</label>
 		<description>frequency for phase B</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
@@ -153,19 +153,19 @@
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="importenergy_c">
-		<item-type>Number:kWh</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>ImportEnergy C</label>
 		<description>importenergy for phase C</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="exportgrid_c">
-		<item-type>Number:kWh</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Exportgrid C</label>
 		<description>exportgrid for phase C</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="frequency_c">
-		<item-type>Number:Hz</item-type>
+		<item-type>Number:Frequency</item-type>
 		<label>Frequency C</label>
 		<description>frequency for phase C</description>
 		<state pattern="%.2f %unit%" readOnly="true"></state>

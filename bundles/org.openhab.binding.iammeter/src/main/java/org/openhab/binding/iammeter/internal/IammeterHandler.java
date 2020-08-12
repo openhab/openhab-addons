@@ -21,10 +21,11 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -49,7 +50,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link IammeterHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
- * @author yang bo - Initial contribution
+ * @author Yang Bo - Initial contribution
  */
 
 @NonNullByDefault
@@ -58,22 +59,18 @@ public class IammeterHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(IammeterHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
     private IammeterConfiguration config;
+    private static final int TIMEOUT_MS = 5000;
 
     public IammeterHandler(Thing thing) {
         super(thing);
         config = getConfiguration();
     }
 
-    private final int timeout = 5000;
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            try {
-                refresh();
-            } catch (IOException | JsonSyntaxException ex) {
-                logger.warn("refresh error {}", ex.getMessage());
-            }
+            refresh();
         }
     }
 
@@ -82,39 +79,27 @@ public class IammeterHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         ScheduledFuture<?> refreshJob = this.refreshJob;
-        IammeterConfiguration config = this.config;
         config = getConfiguration();
-        if (refreshJob == null || refreshJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        refresh();
-                    } catch (IOException | JsonSyntaxException ex) {
-                        logger.warn("refresh error {}", ex.getMessage());
-                    }
-                }
-            };
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, config.refreshInterval, TimeUnit.SECONDS);
+        if (refreshJob == null) {
+            refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
             updateStatus(ThingStatus.UNKNOWN);
         }
     }
 
-    private void refresh() throws IOException, JsonSyntaxException {
+    private void refresh() {
         IammeterConfiguration config = this.config;
         try {
-            logger.trace("Starting refresh handler");
             String httpMethod = "GET";
             String url = "http://admin:admin@" + config.host + ":" + config.port + "/monitorjson";
             String content = "";
             InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
 
-            String response = HttpUtil.executeUrl(httpMethod, url, stream, null, timeout);
+            String response = HttpUtil.executeUrl(httpMethod, url, stream, null, TIMEOUT_MS);
             JsonElement iammeterDataElement = new JsonParser().parse(response);
             JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
             String keyWord = "Data";
             boolean bRemoveChannels = false;
-            String channelProfix = "";
+            String channelPrefix = "";
             if (iammeterData.has("data") || (iammeterData.has("Data") && iammeterData.has("SN"))) {
                 bRemoveChannels = true;
                 if (iammeterData.has("data")) {
@@ -123,10 +108,10 @@ public class IammeterHandler extends BaseThingHandler {
                 for (IammeterWEM3080Channel channelConfig : IammeterWEM3080Channel.values()) {
                     Channel channel = getThing().getChannel(channelConfig.getId());
                     if (channel != null) {
-                        channelProfix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
+                        channelPrefix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
                                 + channel.getUID().getThingUID().getId();
                         State state = getDecimal(
-                                iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString());
+                                iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString(), channelConfig.getUnit());
                         updateState(channel.getUID(), state);
                     }
                 }
@@ -136,14 +121,14 @@ public class IammeterHandler extends BaseThingHandler {
                     Channel channel = getThing().getChannel(channelConfig.getId());
                     if (channel != null) {
                         State state = getDecimal(iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getRow())
-                                .getAsJsonArray().get(channelConfig.getCol()).toString());
+                                .getAsJsonArray().get(channelConfig.getCol()).toString(), channelConfig.getUnit());
                         updateState(channel.getUID(), state);
                     }
                 }
             }
             if (bRemoveChannels) {
                 if (!bExtraChannelRemoved) {
-                    thingStructureChanged(channelProfix);
+                    thingStructureChanged(channelPrefix);
                 }
             }
             stream.close();
@@ -157,24 +142,24 @@ public class IammeterHandler extends BaseThingHandler {
         }
     }
 
-    protected void thingStructureChanged(String channelProfix) {
+    protected void thingStructureChanged(String channelPrefix) {
         List<ChannelUID> noUsedItems = new ArrayList<>();
-        noUsedItems.add(new ChannelUID(channelProfix + ":frequency_a"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":pf_a"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":voltage_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":current_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":power_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":importenergy_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":exportgrid_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":frequency_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":pf_b"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":voltage_c"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":current_c"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":power_c"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":importenergy_c"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":exportgrid_c"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":frequency_c"));
-        noUsedItems.add(new ChannelUID(channelProfix + ":pf_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":frequency_a"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":pf_a"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":voltage_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":current_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":power_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":importenergy_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":exportgrid_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":frequency_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":pf_b"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":voltage_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":current_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":power_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":importenergy_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":exportgrid_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":frequency_c"));
+        noUsedItems.add(new ChannelUID(channelPrefix + ":pf_c"));
         ThingBuilder thingBuilder = editThing();
         for (ChannelUID chl : noUsedItems) {
             thingBuilder.withoutChannel(chl);
@@ -183,9 +168,9 @@ public class IammeterHandler extends BaseThingHandler {
         bExtraChannelRemoved = true;
     }
 
-    private State getDecimal(String value) {
+    private State getDecimal(String value, Unit<?> unit) {
         try {
-            return QuantityType.valueOf(Float.parseFloat(value), SmartHomeUnits.VOLT);
+            return QuantityType.valueOf(Float.parseFloat(value), unit);
         } catch (NumberFormatException e) {
             return UnDefType.UNDEF;
         }
@@ -201,7 +186,7 @@ public class IammeterHandler extends BaseThingHandler {
         super.dispose();
     }
 
-    @NonNullByDefault
+
     public IammeterConfiguration getConfiguration() {
         return this.getConfigAs(IammeterConfiguration.class);
     }

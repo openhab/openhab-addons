@@ -11,31 +11,31 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.iammeter.internal;
-
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import javax.measure.Unit;
 
 /**
  * The {@link IammeterWEM3080Channel} Enum defines common constants, which are
  * used across the whole binding.
  *
- * @author yang bo - Initial contribution
+ * @author Yang Bo - Initial contribution
  */
 public enum IammeterWEM3080Channel {
 
-    CHANNEL_VOLTAGE("voltage_a", 0),
-    CHANNEL_CURRENT("current_a", 1),
-    CHANNEL_POWER("power_a", 2),
-    CHANNEL_IMPORTENERGY("importenergy_a", 3),
-    CHANNEL_EXPORTGRID("exportgrid_a", 4);
+    CHANNEL_VOLTAGE("voltage_a", 0, SmartHomeUnits.VOLT),
+    CHANNEL_CURRENT("current_a", 1, SmartHomeUnits.AMPERE),
+    CHANNEL_POWER("power_a", 2, SmartHomeUnits.WATT),
+    CHANNEL_IMPORTENERGY("importenergy_a", 3, SmartHomeUnits.KILOWATT_HOUR),
+    CHANNEL_EXPORTGRID("exportgrid_a", 4, SmartHomeUnits.KILOWATT_HOUR);
 
     private final String id;
     private final int index;
     private final Unit<?> unit;
 
-    IammeterWEM3080Channel(String id, int index) {
+    IammeterWEM3080Channel(String id, int index, Unit<?> unit) {
         this.id = id;
         this.index = index;
-        this.unit = null;
+        this.unit = unit;
     }
 
     public String getId() {
