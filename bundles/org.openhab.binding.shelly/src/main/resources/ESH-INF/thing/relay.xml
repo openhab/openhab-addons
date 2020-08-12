@@ -113,7 +113,6 @@
 			<channel-group id="meter2" typeId="meter">
 				<label>Power Meter 2</label>
 			</channel-group>
-			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -126,7 +125,6 @@
 		<channel-groups>
 			<channel-group id="roller" typeId="rollerControl" />
 			<channel-group id="meter" typeId="meter" />
-			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -187,7 +185,6 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannelPlug" />
 			<channel-group id="meter" typeId="meter" />
-			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -201,7 +198,6 @@
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel" />
 			<channel-group id="meter" typeId="meter" />
-			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -210,12 +206,11 @@
 
 	<thing-type id="shellydimmer2">
 		<label>Shelly Dimmer 2 (SHDM-2)</label>
-		<description>Shelly Dimmer with 2 Switches</description>
+		<description>Shelly Dimmer 2</description>
 		<category>DimmableLight</category>
 		<channel-groups>
 			<channel-group id="relay" typeId="dimmerChannel" />
 			<channel-group id="meter" typeId="meter" />
-			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -229,7 +224,6 @@
 			<channel-group id="status1" typeId="ix3Channel" />
 			<channel-group id="status2" typeId="ix3Channel" />
 			<channel-group id="status3" typeId="ix3Channel" />
-			<channel-group id="led" typeId="ledControl" />
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
@@ -296,14 +290,6 @@
 	<channel-group-type id="meter">
 		<label>Power Meter</label>
 		<description>Power consumption for the relay</description>
-	</channel-group-type>
-	<channel-group-type id="ledControl">
-		<label>LED Control</label>
-		<description>Control the LEDs</description>
-		<channels>
-			<channel id="statusLed" typeId="ledStatusDisable" />
-			<channel id="powerLed" typeId="ledPowerDisable" />
-		</channels>
 	</channel-group-type>
 	<channel-group-type id="externalSensors">
 		<label>External Sensors</label>

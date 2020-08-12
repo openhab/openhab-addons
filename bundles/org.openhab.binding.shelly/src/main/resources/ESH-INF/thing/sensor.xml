@@ -39,7 +39,7 @@
 			<channel-group id="device" typeId="deviceStatus" />
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:basic" />
 	</thing-type>
 
 	<thing-type id="shellyflood">

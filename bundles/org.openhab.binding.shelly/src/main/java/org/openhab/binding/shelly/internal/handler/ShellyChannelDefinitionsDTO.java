@@ -54,7 +54,6 @@ public class ShellyChannelDefinitionsDTO {
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
-    private static final String CHGR_LED = CHANNEL_GROUP_LED_CONTROL;
 
     public static final String ITEM_TYPE_NUMBER = "Number";
     public static final String ITEM_TYPE_STRING = "String";
@@ -85,6 +84,8 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEM_TYPE_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEM_TYPE_POWER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE, "ledPowerDisable", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SELFTTEST, "selfTest", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPTIME, "uptime", ITEM_TYPE_NUMBER))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEM_TYPE_DATETIME))
@@ -140,10 +141,6 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3, "sensorExtTemp", ITEM_TYPE_TEMP))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY, "sensorExtHum", ITEM_TYPE_PERCENT))
 
-                // LED Control
-                .add(new ShellyChannel(m, CHGR_LED, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_LED, CHANNEL_LED_POWER_DISABLE, "ledPowerDisable", ITEM_TYPE_SWITCH))
-
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level",
                         ITEM_TYPE_PERCENT))
@@ -194,10 +191,10 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
 
         if (profile.settings.ledPowerDisable != null) {
-            addChannel(thing, add, true, CHGR_LED, CHANNEL_LED_POWER_DISABLE);
+            addChannel(thing, add, true, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
         }
         if (profile.settings.ledStatusDisable != null) {
-            addChannel(thing, add, true, CHGR_LED, CHANNEL_LED_STATUS_DISABLE);
+            addChannel(thing, add, true, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi status LED
         }
         return add;
     }

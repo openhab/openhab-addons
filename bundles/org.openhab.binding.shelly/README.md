@@ -111,7 +111,7 @@ Once the device wakes up, the thing will perform initialization and the state wi
 
 The first time a device is discovered and initialized successfully, the binding will be able to perform auto-initialization when OH is restarted.  Waking up the device triggers the event URL and/or CoIoT packet, which is processed by the binding and triggers initialization. Once a device is initialized, it is no longer necessary to manually wake it up after an openHAB restart unless you change the battery. In this case press the button and run the discovery again.
 
-### Device watchdog
+### Device Watchdog
 
 The binding supervises availability of the device once it becomes ONLINE by sending periodic status requests to the device. The watchdog is restarted when the device is responding properly.
 
@@ -133,7 +133,7 @@ You could also create a rule to catch those status changes or device alarms (see
 
 ## Trouble Shooting
 
-### Network settings
+### Network Settings
 
 Shelly devices do only support IPv4. 
 This implies that the openHAB host system has IPv4 bound to the network interface.
@@ -144,7 +144,9 @@ The binding enables CoIoT protocol by default if the device is running firmware 
 CoIoT is based on CoAP and uses a UDP based signaling using IP Multicast (224.0.1.187, port 5683).
 Again if the device is not on the same local IP subnet you need special router/switch configurations to utilized CoAP via IP Multicast.
 Otherwise disable the Auto-CoIoT feature in the binding config (not the thing config), disable CoIoT events in the thing configuration and enable sensors events (http callback).
-Nevertheless in this setup the binding can communicate the device, but you are loosing the benefits of CoIoT. 
+Nevertheless in this setup the binding can communicate the device, but you are loosing the benefits of CoIoT.
+
+Refer to openHAB's general documentation when running openHAB in a docker container. Enabling UPnP discovery has additional setup requirements.  
 
 ### Re-discover when IP address has changed
  
@@ -175,8 +177,6 @@ In this case channel linkage gets lost and you need to re-link the channels/item
 |eventsCoIoT       |true: Listen for CoIoT/COAP events                            |    no   |true for battery devices, false for others        |
 
 
-## Channels
-
 ### General Notes
 
 - channels `input` and `input1`/`input2` get only updated with firmware 1.5.6+.
@@ -196,28 +196,79 @@ Every device has a channel group `device` with the following channels:
 |          |accumulatedWatts   |Number  |yes      |Accumulated power in W of the device (including all meters)                      |
 |          |accumulatedTotal   |Number  |yes      |Accumulated total power in kw/h of the device (including all meters)             |
 |          |accumulatedReturned|Number  |yes      |Accumulated returned power in kw/h of the device (including all meters)          |
-|          |heartBeat        |DateTime  |yes      |Timestamp of the last successful device communication                            |
+|          |heartBeat          |DateTime|yes      |Timestamp of the last successful device communication                            |
 |          |updateAvailable    |Switch  |yes      |ON: A firmware update is available (use Shelly App to perform update)            |
+|          |statusLed          |Switch  |r/w      |ON: Status LED is disabled, OFF: LED enabled                                     |
+|          |powerLed           |Switch  |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
 
 Availability of  channels is depending on the device type.
-The binding detects many of those channels on-the-fly (during thing initialization) and adjusts the thing channel structure.
+The binding detects many of those channels on-the-fly (when Thing changes to ONLINE state) and adjusts the Thing's channel structure.
 The device must be discovered and ONLINE to successfully complete this process.
 The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
+The LED channels are available for the Plug-S with firmware 1.6x and for various other devices with firmware 1.8 or newer. The binding detects them automatically.
 
-### Events / Alarms
+## Events
+
+### Action URLs vs. CoIoT
+
+Depending on the firmware release the Shelly devices supports 2 different mechanims to report sensor updates or events.
+
+1. Action URLs
+
+Usually the binding polls the device to update the status and maps the returned values to the various channels.
+In addition the binding can register so-called Action URLs. Those a events triggered by the device to report special events.
+You need to disable autoCoIoT in the binding configuration to make specific selections for the Action events.
+
+The following event types could be registered when enabled in the thing configuration:
+
+|Event Type        |Description                                                                                                    |
+|------------------|---------------------------------------------------------------------------------------------------------------|
+|eventsButton      |This event is triggered when the device is in button mode. The device reports the ON/OFF status oh the button. |
+|eventsSwitch      |This event reports the status of the relay output. This could change by the button or API calls.               |
+|eventsPush        |The device reports the short/longpush events when in  button mode momentary, momentary_on_release or detached. |
+|eventsSensorReport|Sensor devices (like H&T) provide sensor updates when this action URL is enabled.                              |
+
+Important: The binding defaults to CoIoT when firmware 1.6 or newer is detected.
+This has significant experience improvements and also prevents interfering with other applications, because the device only supports one set of Action URLs.
+
+2. CoIoT / CoAP
+
+Starting with version 1.6 the devices reports most status values via the CoIoT protocol.
+CoIoT provides near-realtime updates and better event support.
+Firmware 1.7 adds additional status values, also supported by the binding.
+Version 1.8 introduces CoIoT version 2, which fixes various issues with version 1 and provides almost all relevant status updates.
+
+If there is no specific reason you should enable CoIoT. See Network Settings for more information.
+
+Enable the autoCoIoT option in the binding configuration or eventsCoIoT is the thing configuration to activate CoIoT.
+
+### Button events
+
+Various devices signal an event when the physical button is pressed.
+This could be a switch connected to the SW input of the relay or the Button 1.
+
+The following trigger types are sent:
+
+|Event Type        |Description                                                                                                    |
+|------------------|---------------------------------------------------------------------------------------------------------------|
+|SHORT_PRESSED     |The button was pressed once for a short time                                                                   |
+|DOUBLE_PRESSED    |The button was pressed twice with short delay                                                                  |
+|PRESSED           |The button was pressed three times with short delay                                                            |
+|LONG_PRESSED      |The button was pressed for a longer timetime                                                                   |
+ 
+ Check the channel definitions for the various devices. 
+
+### Alarms
 
 The binding provides health monitoring functions for the device.
 When an alarm condition is detected the channel alarm gets triggered and provides one of the following alarm types:
+
+A new alarm will be triggered on a new condition or every 5 minutes if the condition persists.
 
 ### Non-battery powered devices
 
 |Event Type|Description|
 |------------|-----------------------------------------------------------------------------------------------------------------|
-|ROLLER_OPEN |Roller reached open position                                                                                     |
-|ROLLER_CLOSE|Roller reached close position                                                                                    |
-|ROLLER_STOP |Roller reached stop position                                                                                     |
-|TEMP_UNDER  |Below "temperature under" treshold                                                                               |
-|TEMP_OVER   |Above "temperature over" treshold                                                                                |
 |RESTARTED   |The device has been restarted. This could be an indicator for a firmware problem.                                |
 |WEAK_SIGNAL |An alarm is triggered when RSSI is < -80, which indicates an unstable connection.                                |
 |OVER_TEMP   |The device is overheating, check installation and housing.                                                       |
@@ -235,9 +286,9 @@ When an alarm condition is detected the channel alarm gets triggered and provide
 |SENSOR      |Wake-up due to updated sensor data.                                                                              |
 |ALARM       |Alarm condition was detected, check status, could be OPENED for the DW, flood alarm, smoke alarm                 |
 |BATTERY     |Device reported an update to the battery status.                                                                 |
+|TEMP_UNDER  |Below "temperature under" treshold                                                                               |
+|TEMP_OVER   |Above "temperature over" treshold                                                                                |
 
-
-A new alarm will be triggered on a new condition or every 5 minutes if the condition persists.
 
 ```
 rule "Shelly Alarm"
@@ -247,6 +298,10 @@ then
     logInfo("Shelly", "n alarm condition was detected:" + receivedEvent.toString())
 end
 ```
+
+## Channels
+
+Depending on the device type and firmware release channels might be not available or  
 
 ### Shelly 1 (thing-type: shelly1)
 
@@ -425,8 +480,6 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |             |         |         |See group relay1 for Shelly 2                                                    |
 |meter     |             |         |         |See group meter1 for Shelly 2                                                    |
-|led       |statusLed    |Switch   |r/w      |ON: Status LED is disabled, OFF: LED enabled                                     |
-|          |powerLed     |Switch   |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
 
 ### Shelly Dimmer (thing-type: shellydimmer)
 
@@ -648,7 +701,7 @@ You can define 2 items (1 Switch, 1 Number) mapping to the same channel, see exa
 |status    |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Number of button events                                                |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels             |
-|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)   |
+|          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED, DOUBLE_PRESSED...            |
 |          |lastUpdate   |DateTime |yes      |Timestamp of the last update (any value changed)                       |
 |battery   |batteryLevel |Number   |yes      |Battery Level in %                                                     |
 |          |voltage      |Number   |yes      |Voltage of the battery                                                 |

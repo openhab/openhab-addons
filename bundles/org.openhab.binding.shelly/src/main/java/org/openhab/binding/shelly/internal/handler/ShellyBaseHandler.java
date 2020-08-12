@@ -35,7 +35,6 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -311,6 +310,15 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     logger.debug("{}: Send key {}", thingName, command);
                     api.sendIRKey(command.toString());
                     update = true;
+                    break;
+
+                case CHANNEL_LED_STATUS_DISABLE:
+                    logger.debug("{}: Set STATUS LED disabled to {}", thingName, command);
+                    api.setLedStatus(SHELLY_LED_STATUS_DISABLE, command == OnOffType.ON);
+                    break;
+                case CHANNEL_LED_POWER_DISABLE:
+                    logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
+                    api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
                     break;
 
                 default:
@@ -639,12 +647,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                         updateChannel(group, CHANNEL_SENSOR_VIBRATION, OnOffType.ON);
                         break;
 
-                    case SHELLY_EVENT_ALARM_MILD:
-                    case SHELLY_EVENT_ALARM_HEAVY: // DW 1.7+
-                    case SHELLY_EVENT_ALARM_OFF: // DW 1.7+
+                    case SHELLY_EVENT_ALARM_MILD: // Shelly Gas
+                    case SHELLY_EVENT_ALARM_HEAVY:
+                    case SHELLY_EVENT_ALARM_OFF:
                         channel = CHANNEL_SENSOR_ALARM_STATE;
                         payload = event.toUpperCase();
                         break;
+
                     default:
                         // trigger will be provided by input/output channel or sensor channels
                 }
@@ -891,27 +900,33 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public void triggerButton(String group, String value) {
         String trigger = mapButtonEvent(value);
-        logger.debug("{}: Update button state with {}/{}", thingName, value, trigger);
-        if (!trigger.isEmpty()) {
-            triggerChannel(group, CHANNEL_BUTTON_TRIGGER, trigger);
-            updateChannel(group, CHANNEL_LAST_UPDATE, getTimestamp());
-            if (!profile.hasBattery) {
-                // refresh status of the input channel
-                requestUpdates(1, false);
-            }
-
-            /* if (profile.isButton) */ {
-                // Button1 doesn't send a RELEASED, to make it consistent the binding simulates a RELEASED
-                ScheduledFuture<?> job = this.asyncButtonRelease;
-                if ((job != null) && !job.isCancelled()) {
-                    job.cancel(true);
-                }
-                asyncButtonRelease = scheduler.schedule(() -> {
-                    logger.debug("{}: Simulating Button RELEASED", thingName);
-                    triggerChannel(group, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);
-                }, 1000, TimeUnit.MILLISECONDS);
-            }
+        if (trigger.isEmpty()) {
+            return;
         }
+
+        logger.debug("{}: Update button state with {}/{}", thingName, value, trigger);
+        triggerChannel(group, CHANNEL_BUTTON_TRIGGER, trigger);
+        updateChannel(group, CHANNEL_LAST_UPDATE, getTimestamp());
+        if (!profile.hasBattery) {
+            // refresh status of the input channel
+            requestUpdates(1, false);
+        }
+
+        /*
+         * if (profile.isButton)/ {
+         * // Button1 doesn't send a RELEASED, to make it consistent the binding simulates a RELEASED
+         * ScheduledFuture<?> job = this.asyncButtonRelease;
+         * if ((job != null) && !job.isCancelled()) {
+         * job.cancel(true);
+         * }
+         * asyncButtonRelease = scheduler.schedule(() -> {
+         * logger.debug("{}: Simulating Button RELEASED", thingName);
+         * triggerChannel(group, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);
+         * }, 1000, TimeUnit.MILLISECONDS);
+         * }
+         * }
+         */
+
     }
 
     public void publishState(String channelId, State value) {

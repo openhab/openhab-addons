@@ -129,15 +129,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setTimer(rIndex, SHELLY_TIMER_AUTOOFF, ((DecimalType) command).doubleValue());
                 break;
-
-            case CHANNEL_LED_STATUS_DISABLE:
-                logger.debug("{}: Set STATUS LED disabled to {}", thingName, command);
-                api.setLedStatus(SHELLY_LED_STATUS_DISABLE, command == OnOffType.ON);
-                break;
-            case CHANNEL_LED_POWER_DISABLE:
-                logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
-                api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
-                break;
         }
         return true;
     }

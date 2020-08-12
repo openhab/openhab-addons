@@ -194,7 +194,7 @@ public class ShellyCoIoTProtocol {
             // event count
             logger.debug("{}: CoAP Update on inputEventCount={}", thingName, count);
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
-            if (profile.isButton || (profile.inButtonMode(idx) && (count != lastEventCount[idx]))) {
+            if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1)) || (count != lastEventCount[idx]))) {
                 lastEventCount[idx] = count;
                 thingHandler.triggerButton(group, inputEvent[idx]);
             }

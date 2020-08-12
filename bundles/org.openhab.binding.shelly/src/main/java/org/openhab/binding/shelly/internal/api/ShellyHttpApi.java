@@ -99,7 +99,7 @@ public class ShellyHttpApi {
      */
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
         String json = request(SHELLY_URL_SETTINGS);
-        if (json.contains("\"type\":\"SHDM-1\"") || json.contains("\"type\":\"SHDM-2\"")) {
+        if (json.contains("\"type\":\"SHDM-")) {
             logger.trace("{}: Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]", thingName);
             json = fixDimmerJson(json);
         }

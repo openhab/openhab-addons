@@ -125,7 +125,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "2202": // Input_1: EV, inputEvent
             case "2302": // Input_2: EV, inputEvent
             case "2402": // Input_3: EV, inputEvent
-                handleInputEvent(sen, getString(s.valueStr), 0, updates);
+                handleInputEvent(sen, getString(s.valueStr), -1, updates);
                 break;
             case "2103": // EVC, inputEventCnt, U16
             case "2203": // EVC, inputEventCnt, U16

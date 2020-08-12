@@ -1052,12 +1052,13 @@ public class ShellyApiJsonDTO {
                 return CommonTriggerEvents.DOUBLE_PRESSED;
             case SHELLY_BTNEVENT_3SHORTPUSH:
             case SHELLY_EVENT_TRIPLE_SHORTPUSH:
-            default:
                 return CommonTriggerEvents.PRESSED;
             case "2":
             case SHELLY_BTNEVENT_LONGPUSH:
             case SHELLY_EVENT_LONGPUSH:
                 return CommonTriggerEvents.LONG_PRESSED;
+            default:
+                return "";
         }
     }
 }
