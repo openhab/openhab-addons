@@ -95,19 +95,14 @@ public class InternalScene {
      */
     public void activateScene() {
         logger.debug("activate scene: {}", this.getSceneName());
-        if (!active) {
-            this.active = true;
-            deviceHasChanged = false;
-            informListener();
-            if (this.devices != null) {
-                for (Device device : this.devices) {
-                    device.callInternalScene(this);
-                }
+        this.active = true;
+        deviceHasChanged = false;
+        informListener();
+        if (this.devices != null) {
+            for (Device device : this.devices) {
+                device.callInternalScene(this);
             }
-        } else {
-            logger.debug("skipping activation, scene already active: {}", this.getSceneName());
         }
-
     }
 
     /**
