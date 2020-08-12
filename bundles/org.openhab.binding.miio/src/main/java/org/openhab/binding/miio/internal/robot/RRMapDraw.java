@@ -101,6 +101,10 @@ public class RRMapDraw {
         return rmfp.getImgHeight();
     }
 
+    public RRMapFileParser getMapParseDetails() {
+        return this.rmfp;
+    }
+
     /**
      * load Gzipped RR inputstream
      *

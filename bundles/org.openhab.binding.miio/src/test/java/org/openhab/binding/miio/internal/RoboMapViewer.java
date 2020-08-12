@@ -43,6 +43,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Ignore;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
+import org.openhab.binding.miio.internal.robot.RRMapFileParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +56,7 @@ import org.slf4j.LoggerFactory;
 public class RoboMapViewer extends JFrame {
 
     private static final String TITLE = "Offline Xiaomi Robot Radar Map Viewer";
+    private static final float MM = 50.0f;
     private final JFrame parent;
     private final RRDrawPanel rrDrawPanel = new RRDrawPanel();
     private final JTextArea textArea = new JTextArea();
@@ -63,6 +65,9 @@ public class RoboMapViewer extends JFrame {
 
     private float scale = 1.0f;
     private @Nullable File file;
+    private @Nullable RRMapDraw rrMap;
+    private double offsetX = 24500f;
+    private double offsetY = 24500f;
 
     private final Logger logger = LoggerFactory.getLogger(RoboMapViewer.class);
     private static final long serialVersionUID = 2623447051590306992L;
@@ -125,10 +130,26 @@ public class RoboMapViewer extends JFrame {
             public void mousePressed(@Nullable MouseEvent e) {
                 if (e != null) {
                     logger.info("Click @ {}", e.getPoint());
-                    double xLoc = (rrDrawPanel.getWidth() - e.getPoint().getX()) / scale;
-                    double yLoc = (rrDrawPanel.getHeight() - e.getPoint().getY()) / scale;
-                    textArea.append(String.format("Click @ point (%.1f,%.1f) => Coordinates: [X=%.1f, Y=%.1f]\r\n",
-                            e.getPoint().getX(), e.getPoint().getY(), xLoc, yLoc));
+                    final RRMapDraw rrMap = RoboMapViewer.this.rrMap;
+                    if (rrMap != null) {
+                        final RRMapFileParser mapDetails = rrMap.getMapParseDetails();
+
+                        double xLoc = (rrMap.getWidth() * scale - e.getPoint().getX()) / scale;
+                        double yLoc = (rrMap.getHeight() * scale - e.getPoint().getY()) / scale;
+                        textArea.append(String.format("Click @ coordinates:\t[X=%.1f, Y=%.1f]\t(point %.1f,%.1f)\r\n",
+                                xLoc, yLoc, e.getPoint().getX(), e.getPoint().getY()));
+
+                        double xPos = offsetX + (mapDetails.getRoboX() - xLoc) * MM;
+                        double yPos = offsetY + (yLoc - mapDetails.getRoboY()) * MM;
+                        textArea.append(String.format(
+                                "Robo GoTo coordinates:\t[X=%.1f, Y=%.1f]\t(Command: app_goto_target[ %.0f,%.0f ]  using offset X=%.0f, Y=%.0f, robo @ [X=%.0f, Y=%.0f] => deltas: X=%.0f, Y=%.0f)\r\n",
+                                xPos, yPos, xPos, yPos, offsetX, offsetY, mapDetails.getRoboX(), mapDetails.getRoboY(),
+                                xPos - offsetX, yPos - offsetY));
+                    } else {
+                        textArea.append(String.format("Click @ point:\t(%.1f,%.1f)\r\n", e.getPoint().getX(),
+                                e.getPoint().getY()));
+
+                    }
                 }
             }
 
@@ -275,7 +296,8 @@ public class RoboMapViewer extends JFrame {
     private void loadfile(File file) {
         try {
             logger.info("Loading " + file.getPath());
-            RRMapDraw rrMap = RRMapDraw.loadImage(file);
+            final RRMapDraw rrMap = RRMapDraw.loadImage(file);
+            this.rrMap = rrMap;
             textArea.setText(rrMap.toString());
             parent.setTitle(TITLE + " " + file.getName());
             rrDrawPanel.setImage(rrMap.getImage(scale));
