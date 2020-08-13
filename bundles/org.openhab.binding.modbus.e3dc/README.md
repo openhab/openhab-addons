@@ -47,8 +47,8 @@ Check the [full example Things](#things) for manual setup.
 | Parameter       | Type    | Description                                                             |           
 |-----------------|---------|-------------------------------------------------------------------------|
 | host            | text    | IP Address of your device                                               |
-| port            | integer | Modbus Port of your E3DC device Modbus Settings.. Default is 502 |
-| deviceid        | integer | Modbus Port of your E3DC device Modbus Settings. Default is 1           |
+| port            | integer | TCP Port of your E3DC device Modbus Settings.. Default is 502 |
+| deviceid        | integer | Modbus ID of your E3DC device Modbus Settings. Default is 1           |
 
 ### E3DC Home Power Plant 
 
@@ -96,9 +96,9 @@ The E3DC device offers quite an amount of channels. For clustering 4 Channel Gro
 | External Power Supply         | power             | external-power-supply        |  Number:Power          | Power produced by an external device which is attached to your E3DC device    |
 | Wallbox Power Consumption     | power             | wallbox-power-consumption    |  Number:Power          | Power consumption of attached Wallboxes    |
 | Wallbox PV Power Consumption  | power             | wallbox-pv-power-consumption |  Number:Power          | Photovoltaic Power consumption (PV plus Battery) of attached Wallboxes    |
-| Autarky                       | power             | autarky-channel              |  Number:Dimensionless  | Your current Autarky Level    |
-| Self Consumption              | power             | self-consumption             |  Number:Dimensionless  | Your current Photovoltaic Self Consumption Level    |
-| Battery State Of Charge       | power             | battery-soc                  |  Number:Dimensionless  | Charge Level of your attached Battery    |
+| Autarky                       | power             | autarky-channel              |  Number:Dimensionless  | Your current Autarky Level in Percent   |
+| Self Consumption              | power             | self-consumption             |  Number:Dimensionless  | Your current Photovoltaic Self Consumption Level in Percent  |
+| Battery State Of Charge       | power             | battery-soc                  |  Number:Dimensionless  | Charge Level of your attached Battery in Percent       |
 
 
 ### Channel Group _String Details Block_

@@ -31,12 +31,18 @@ public class DataConverter {
      * Get unit16 value from 2 bytes
      *
      * @param wrap
-     * @return
+     * @return int
      */
     public static int getUInt16Value(ByteBuffer wrap) {
         return Short.toUnsignedInt(wrap.getShort());
     }
 
+    /**
+     * Get unit32 value from 4 bytes
+     *
+     * @param wrap
+     * @return long
+     */
     public static long getLongValue(ByteBuffer wrap) {
         return Integer.toUnsignedLong(wrap.getInt());
     }
@@ -45,12 +51,10 @@ public class DataConverter {
      * Get double value from 2 bytes with correction factor
      *
      * @param wrap
-     * @return
+     * @return double
      */
     public static double getUDoubleValue(ByteBuffer wrap, double factor) {
-        Integer d = getUInt16Value(wrap);
-        double df = d.doubleValue() * factor;
-        return round(df, 2);
+        return round(getUInt16Value(wrap) * factor, 2);
     }
 
     /**

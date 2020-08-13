@@ -105,20 +105,18 @@ public class E3DCWallboxThingHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
-            config = getConfigAs(E3DCWallboxConfiguration.class);
-            Bridge bridge = getBridge();
-            if (bridge != null) {
-                ThingHandler handler = bridge.getHandler();
-                if (handler != null) {
-                    bridgeHandler = ((E3DCThingHandler) handler);
-                } else {
-                    logger.warn("Thing Handler null");
-                }
+        config = getConfigAs(E3DCWallboxConfiguration.class);
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            ThingHandler handler = bridge.getHandler();
+            if (handler != null) {
+                bridgeHandler = ((E3DCThingHandler) handler);
             } else {
-                logger.warn("Bridge null");
+                logger.warn("Thing Handler null");
             }
-        });
+        } else {
+            logger.warn("Bridge null");
+        }
     }
 
     @Override
