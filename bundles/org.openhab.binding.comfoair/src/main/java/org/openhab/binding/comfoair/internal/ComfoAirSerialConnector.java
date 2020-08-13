@@ -69,8 +69,10 @@ public class ComfoAirSerialConnector {
 
     /**
      * Open serial port.
+     *
+     * @throws PortInUseException, UnsupportedCommOperationException, IOException
      */
-    public void open() {
+    public void open() throws PortInUseException, UnsupportedCommOperationException, IOException {
         logger.debug("open(): Opening ComfoAir connection");
 
         try {
@@ -100,15 +102,9 @@ public class ComfoAirSerialConnector {
                 logger.debug("open(): No such Port: {}", serialPortName);
                 setConnected(false);
             }
-        } catch (PortInUseException e) {
-            logger.debug("open(): Port in Use Exception: {}", e.getMessage(), e);
+        } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
             setConnected(false);
-        } catch (UnsupportedCommOperationException e) {
-            logger.debug("open(): Unsupported Comm Operation Exception: {}", e.getMessage(), e);
-            setConnected(false);
-        } catch (IOException e) {
-            logger.debug("open(): IO Exception: {}", e.getMessage(), e);
-            setConnected(false);
+            throw e;
         }
     }
 

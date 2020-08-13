@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.comfoair.internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +35,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,7 +101,7 @@ public class ComfoAirHandler extends BaseThingHandler {
         String serialPort = this.config.serialPort;
 
         if (serialPort.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port is not configured.");
             return;
         } else {
             ComfoAirSerialConnector comfoAirConnector = new ComfoAirSerialConnector(serialPortManager, serialPort,
@@ -111,94 +114,98 @@ public class ComfoAirHandler extends BaseThingHandler {
 
     private void connect() {
         if (comfoAirConnector != null) {
-            comfoAirConnector.open();
-            if (comfoAirConnector != null && comfoAirConnector.isConnected()) {
-                updateStatus(ThingStatus.ONLINE);
-                pullDeviceProperties();
-                Map<String, String> properties = thing.getProperties();
+            try {
+                comfoAirConnector.open();
+                if (comfoAirConnector != null && comfoAirConnector.isConnected()) {
+                    updateStatus(ThingStatus.ONLINE);
+                    pullDeviceProperties();
+                    Map<String, String> properties = thing.getProperties();
 
-                List<Channel> toBeRemovedChannels = new ArrayList<>();
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    toBeRemovedChannels.addAll(getThing()
-                            .getChannelsOfGroup(ComfoAirBindingConstants.CG_PREHEATER_PREFIX.replaceAll("#$", "")));
-                    Channel stateChannel = getThing().getChannel(
-                            ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_FROST_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    List<Channel> toBeRemovedChannels = new ArrayList<>();
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_PREHEATER)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        toBeRemovedChannels.addAll(getThing()
+                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_PREHEATER_PREFIX.replaceAll("#$", "")));
+                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
+                                + ComfoAirBindingConstants.CHANNEL_FROST_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_BYPASS)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    toBeRemovedChannels.addAll(getThing()
-                            .getChannelsOfGroup(ComfoAirBindingConstants.CG_BYPASS_PREFIX.replaceAll("#$", "")));
-                    Channel stateChannel = getThing().getChannel(
-                            ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_BYPASS_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_BYPASS)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        toBeRemovedChannels.addAll(getThing()
+                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_BYPASS_PREFIX.replaceAll("#$", "")));
+                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
+                                + ComfoAirBindingConstants.CHANNEL_BYPASS_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_CHIMNEY)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    Channel stateChannel = getThing().getChannel(
-                            ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_CHIMNEY_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_CHIMNEY)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
+                                + ComfoAirBindingConstants.CHANNEL_CHIMNEY_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_COOKERHOOD)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    toBeRemovedChannels.addAll(getThing()
-                            .getChannelsOfGroup(ComfoAirBindingConstants.CG_COOKERHOOD_PREFIX.replaceAll("#$", "")));
-                    Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                            + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_COOKERHOOD)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        toBeRemovedChannels.addAll(getThing().getChannelsOfGroup(
+                                ComfoAirBindingConstants.CG_COOKERHOOD_PREFIX.replaceAll("#$", "")));
+                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
+                                + ComfoAirBindingConstants.CHANNEL_COOKERHOOD_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_HEATER)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    toBeRemovedChannels.addAll(getThing()
-                            .getChannelsOfGroup(ComfoAirBindingConstants.CG_HEATER_PREFIX.replaceAll("#$", "")));
-                    Channel stateChannel = getThing().getChannel(
-                            ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_HEATER_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_HEATER)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        toBeRemovedChannels.addAll(getThing()
+                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_HEATER_PREFIX.replaceAll("#$", "")));
+                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
+                                + ComfoAirBindingConstants.CHANNEL_HEATER_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    toBeRemovedChannels.addAll(getThing()
-                            .getChannelsOfGroup(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX.replaceAll("#$", "")));
-                    Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
-                            + ComfoAirBindingConstants.CHANNEL_ENTHALPY_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_ENTHALPY)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        toBeRemovedChannels.addAll(getThing()
+                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_ENTHALPY_PREFIX.replaceAll("#$", "")));
+                        Channel stateChannel = getThing().getChannel(ComfoAirBindingConstants.CG_MENUP9_PREFIX
+                                + ComfoAirBindingConstants.CHANNEL_ENTHALPY_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_EWT)
-                        .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
-                    toBeRemovedChannels.addAll(
-                            getThing().getChannelsOfGroup(ComfoAirBindingConstants.CG_EWT_PREFIX.replaceAll("#$", "")));
-                    Channel stateChannel = getThing().getChannel(
-                            ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE);
-                    if (stateChannel != null) {
-                        toBeRemovedChannels.add(stateChannel);
+                    if (properties.get(ComfoAirBindingConstants.PROPERTY_OPTION_EWT)
+                            .equals(ComfoAirBindingConstants.COMMON_OPTION_STATES[0])) {
+                        toBeRemovedChannels.addAll(getThing()
+                                .getChannelsOfGroup(ComfoAirBindingConstants.CG_EWT_PREFIX.replaceAll("#$", "")));
+                        Channel stateChannel = getThing().getChannel(
+                                ComfoAirBindingConstants.CG_MENUP9_PREFIX + ComfoAirBindingConstants.CHANNEL_EWT_STATE);
+                        if (stateChannel != null) {
+                            toBeRemovedChannels.add(stateChannel);
+                        }
                     }
-                }
-                ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
-                updateThing(builder.build());
+                    ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
+                    updateThing(builder.build());
 
-                List<Channel> channels = this.thing.getChannels();
+                    List<Channel> channels = this.thing.getChannels();
 
-                poller = scheduler.scheduleWithFixedDelay(() -> {
-                    for (Channel channel : channels) {
-                        updateChannelState(channel);
-                    }
-                }, 0, (this.config.refreshInterval > 0) ? this.config.refreshInterval : DEFAULT_REFRESH_INTERVAL_SEC,
-                        TimeUnit.SECONDS);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    poller = scheduler.scheduleWithFixedDelay(() -> {
+                        for (Channel channel : channels) {
+                            updateChannelState(channel);
+                        }
+                    }, 0, (this.config.refreshInterval > 0) ? this.config.refreshInterval
+                            : DEFAULT_REFRESH_INTERVAL_SEC, TimeUnit.SECONDS);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
+            } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
