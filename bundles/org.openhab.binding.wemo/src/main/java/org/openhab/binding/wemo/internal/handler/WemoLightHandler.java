@@ -274,7 +274,7 @@ public class WemoLightHandler extends AbstractWemoHandler implements UpnpIOParti
                         if (capability.equals("10008")) {
                             OnOffType binaryState = null;
                             // value was like  int:0 when capability == 10008
-			    binaryState = value.startsWith("0") ? OnOffType.OFF : OnOffType.ON;
+                            binaryState = value.startsWith("0") ? OnOffType.OFF : OnOffType.ON;
                             updateState(CHANNEL_STATE, binaryState);
                         }
                     }
