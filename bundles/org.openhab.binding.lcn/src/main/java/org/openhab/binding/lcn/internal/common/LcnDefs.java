@@ -31,6 +31,10 @@ public final class LcnDefs {
     public static final int THRESHOLD_REGISTER_COUNT = 4;
     /** Number of key tables of an LCN module. */
     public static final int KEY_TABLE_COUNT = 4;
+    /** Number of key tables of an LCN module before firmware 0C030C0. */
+    public static final int KEY_TABLE_COUNT_UNTIL_0C030C0 = 3;
+    /** Number of keys per table of an LCN module */
+    public static final int KEY_COUNT = 8;
     /** Number of thresholds before LCN module firmware version 2013 */
     public static final int THRESHOLD_COUNT_BEFORE_2013 = 5;
     /**
@@ -114,10 +118,10 @@ public final class LcnDefs {
 
     /** Command types used when sending LCN keys. */
     public enum SendKeyCommand {
+        DONTSEND,
         HIT,
         MAKE,
-        BREAK,
-        DONTSEND
+        BREAK
     }
 
     /** Key-lock modifiers used in LCN commands. */

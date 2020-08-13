@@ -244,10 +244,11 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Send Keys                       | Sende Tasten                     | N/A                    | N/A  | N/A                            | Action: "hitKey": Hits a key of a key table in an LCN module. Can be used to execute commands, not supported by this binding. |
 | Dimmer Output Control Multiple  | Mehrere Ausgänge steuern         | output                 | 1-4  | Dimmer, Switch                 | Control multiple outputs simultaneously. See below.                                                                           |
 | Transponder                     | Transponder                      | code#transponder       |      | Trigger                        | Receive transponder messages                                                                                                  |
-| Fingerprint                     | Fingerprint                      | code#fingerprint       |      | Trigger                        | Receive fingerprint code messages                                                                                                  |
+| Fingerprint                     | Fingerprint                      | code#fingerprint       |      | Trigger                        | Receive fingerprint code messages                                                                                             |
 | Remote Control                  | Fernbedienung                    | code#remotecontrolkey  |      | Trigger                        | Receive commands from remote control                                                                                          |
 | Access Control                  | Zutrittskontrolle                | code#remotecontrolcode |      | Trigger                        | Receive serial numbers from remote control                                                                                    |
 | Remote Control Battery Low      | Fernbedienung Batterie schwach   | code#remotecontrolbatterylow | | Trigger                       | Triggered when the sending remote control has a low battery                                                                   |
+| Host Command (Send Keys)        | Kommando an Host (Sende Tasten)  | hostcommand#sendKeys   | -    | Trigger                        | Receive *send keys* command from LCN module                                                                                   |
 | Status Message                  | Statusmeldungen                  | -                      | -    | -                              | Automatically done by openHAB Binding                                                                                         |
 | Audio Beep                      | Audio Piepen                     | -                      | -    | -                              | Not implemented                                                                                                               |
 | Audio LCN-MRS                   | Audio LCN-MRS                    | -                      | -    | -                              | Not implemented                                                                                                               |
@@ -309,6 +310,35 @@ then
     M10_Relay7.sendCommand(ON)
 end
 ```
+
+### Command from an LCN Module to openHAB
+
+LCN modules can send commands to openHAB, e.g. by pressing a physical LCN key.
+The command must be programmed into the LCN module by the programming software LCN-PRO.
+Only the *send keys* command (German: "Sende Tasten") is supported.
+
+Program a command to a key of an LCN module via LCN-PRO.
+When LCN-PRO asks you for the target address, don't select any module, but manually enter the PCK host ID, configured within PCHK (default: 4).
+Select the *send keys* command and "A-C (former command)", as PCHK 3.2.2 only supports the old command.
+Then, select any key(s) you want to send to openHAB. These can be freely chosen, as they are only evaluated by openHAB.
+
+![Screenshot, showing the send keys command](doc/host_command_send_keys.png)
+
+The following rule can be used to trigger any action:
+
+```
+rule "Module 12 sent A1 Hit"
+when
+    Channel "lcn:module:b827ebfea4bb:S000M012:hostcommand#sendKeys" triggered "A1:HIT"
+then
+    M10_Relay7.sendCommand(ON)
+end
+```
+
+`A1` is the key of the *send keys* command, programmed by LCN-PRO.
+After the colon, the LCN "hit type" follows: HIT, MAKE or BREAK (German: kurz, lang, los)
+
+If multiple keys or key tables are programmed in a single "send keys" command, multiple triggers will be executed.
 
 ### Remote Control
 

@@ -39,6 +39,7 @@
 			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
 			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
 			<channel-group typeId="codes" id="code"/>
+			<channel-group typeId="hostcommands" id="hostcommand"/>
 		</channel-groups>
 		<properties>
 			<property name="serialNumber"/>
@@ -656,6 +657,19 @@
 	<channel-type id="remotecontrolsbatterylow" advanced="true">
 		<kind>trigger</kind>
 		<label>Remote Control Low Battery</label>
+		<event/>
+	</channel-type>
+
+	<channel-group-type id="hostcommands">
+		<label>Host Command (to openHAB)</label>
+		<channels>
+			<channel typeId="sendKeys" id="sendKeys"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="sendKeys" advanced="true">
+		<kind>trigger</kind>
+		<label>Send Keys</label>
 		<event/>
 	</channel-type>
 </thing:thing-descriptions>
