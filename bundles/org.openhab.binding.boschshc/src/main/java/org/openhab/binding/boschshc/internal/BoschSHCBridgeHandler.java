@@ -484,7 +484,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             contentResponse = request.send();
 
             String content = contentResponse.getContentAsString();
-            logger.debug("refreshState: Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
+            logger.debug("refreshState: Request complete: [{}] - return code: {}", content,
+                    contentResponse.getStatus());
 
             Gson gson = new GsonBuilder().create();
 
