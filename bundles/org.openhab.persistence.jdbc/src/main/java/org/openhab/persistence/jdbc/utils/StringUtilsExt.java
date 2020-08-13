@@ -260,9 +260,9 @@ public class StringUtilsExt {
         builder.append("FilterCriteria [itemName=");
         builder.append(filter.getItemName());
         builder.append(", beginDate=");
-        builder.append(filter.getBeginDate());
+        builder.append(filter.getBeginDateZoned());
         builder.append(", endDate=");
-        builder.append(filter.getEndDate());
+        builder.append(filter.getEndDateZoned());
         builder.append(", pageNumber=");
         builder.append(filter.getPageNumber());
         builder.append(", pageSize=");

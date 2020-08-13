@@ -100,8 +100,8 @@ public class DynamoDBQueryUtils {
     }
 
     private static @Nullable Condition constructTimeCondition(FilterCriteria filter) {
-        boolean hasBegin = filter.getBeginDate() != null;
-        boolean hasEnd = filter.getEndDate() != null;
+        boolean hasBegin = filter.getBeginDateZoned() != null;
+        boolean hasEnd = filter.getEndDateZoned() != null;
 
         final Condition timeCondition;
         if (!hasBegin && !hasEnd) {
