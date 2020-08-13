@@ -32,9 +32,9 @@ import org.openhab.binding.mpd.internal.protocol.MPDStatus;
 @NonNullByDefault
 public interface MPDEventListener extends EventListener {
 
-    void updateSong(MPDSong song);
+    void updateMPDSong(MPDSong song);
 
-    void updateStatus(MPDStatus status);
+    void updateMPDStatus(MPDStatus status);
 
     void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
 }

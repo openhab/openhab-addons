@@ -32,8 +32,9 @@ public class MPDConnection implements MPDResponseListener {
 
     private final Logger logger = LoggerFactory.getLogger(MPDConnection.class);
 
+    private final MPDEventListener listener;
+
     private @Nullable MPDConnectionThread connectionThread = null;
-    private MPDEventListener listener;
 
     /**
      * Constructor
@@ -52,11 +53,14 @@ public class MPDConnection implements MPDResponseListener {
      * @param address the IP address of the music player daemon
      * @param port the TCP port to be used
      * @param password the password to connect to the music player daemon
+     * @param threadName the name of the thread
      */
-    public void start(String address, Integer port, String password) {
+    public void start(String address, Integer port, String password, String threadName) {
         if (connectionThread == null) {
-            connectionThread = new MPDConnectionThread(this, address, port, password);
+            final MPDConnectionThread connectionThread = new MPDConnectionThread(this, address, port, password);
+            connectionThread.setName(threadName);
             connectionThread.start();
+            this.connectionThread = connectionThread;
         }
     }
 
@@ -70,7 +74,7 @@ public class MPDConnection implements MPDResponseListener {
             connectionThread.interrupt();
             try {
                 connectionThread.join(DISPOSE_TIMEOUT_MS);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignore) {
             }
             this.connectionThread = null;
         }
@@ -177,7 +181,7 @@ public class MPDConnection implements MPDResponseListener {
 
     private void handleResponseCurrentSong(MPDResponse response) {
         MPDSong song = new MPDSong(response);
-        listener.updateSong(song);
+        listener.updateMPDSong(song);
     }
 
     private void handleResponseIdle(MPDResponse response) {
@@ -210,6 +214,6 @@ public class MPDConnection implements MPDResponseListener {
 
     private void handleResponseStatus(MPDResponse response) {
         MPDStatus song = new MPDStatus(response);
-        listener.updateStatus(song);
+        listener.updateMPDStatus(song);
     }
 }

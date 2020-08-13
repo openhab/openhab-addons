@@ -89,7 +89,8 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
         updateProperty(MPDBindingConstants.UNIQUE_ID, uniquePropVal);
 
         updateStatus(ThingStatus.UNKNOWN);
-        connection.start(config.getIpAddress(), config.getPort(), config.getPassword());
+        connection.start(config.getIpAddress(), config.getPort(), config.getPassword(),
+                "OH-binding-" + getThing().getUID().getAsString());
     }
 
     @Override
@@ -251,7 +252,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
     }
 
     @Override
-    public void updateStatus(MPDStatus status) {
+    public void updateMPDStatus(MPDStatus status) {
         volume = status.getVolume();
         updateChannel(CHANNEL_VOLUME, new PercentType(status.getVolume()));
 
@@ -275,7 +276,7 @@ public class MPDHandler extends BaseThingHandler implements MPDEventListener {
     }
 
     @Override
-    public void updateSong(MPDSong song) {
+    public void updateMPDSong(MPDSong song) {
         updateChannel(CHANNEL_CURRENT_ALBUM, new StringType(song.getAlbum()));
         updateChannel(CHANNEL_CURRENT_ARTIST, new StringType(song.getArtist()));
         updateChannel(CHANNEL_CURRENT_NAME, new StringType(song.getName()));

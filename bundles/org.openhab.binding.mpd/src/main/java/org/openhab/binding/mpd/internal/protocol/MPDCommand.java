@@ -28,8 +28,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class MPDCommand {
 
-    private String command;
-    private List<String> parameters = new ArrayList<>();
+    private final String command;
+    private final List<String> parameters = new ArrayList<>();
 
     /**
      * Create an MPD command without parameters

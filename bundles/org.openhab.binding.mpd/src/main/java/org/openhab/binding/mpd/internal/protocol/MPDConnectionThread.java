@@ -13,10 +13,10 @@
 package org.openhab.binding.mpd.internal.protocol;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,17 +51,13 @@ public class MPDConnectionThread extends Thread {
     private @Nullable Socket socket = null;
     private @Nullable InputStreamReader inputStreamReader = null;
     private @Nullable BufferedReader reader = null;
-    private @Nullable DataOutputStream writer = null;
 
     private final List<MPDCommand> pendingCommands = new ArrayList<>();
     private AtomicBoolean isInIdle = new AtomicBoolean(false);
     private AtomicBoolean disposed = new AtomicBoolean(false);
 
     public MPDConnectionThread(MPDResponseListener listener, String address, Integer port, String password) {
-        super(MPDConnectionThread.class.getSimpleName() + " " + address + ":" + port);
-
         this.listener = listener;
-
         this.address = address;
         this.port = port;
         this.password = password;
@@ -83,6 +79,9 @@ public class MPDConnectionThread extends Thread {
                     updateThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
                     processPendingCommands();
+                } catch (UnknownHostException e) {
+                    updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Unknown host " + address);
                 } catch (IOException e) {
                     updateThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 } catch (MPDException e) {
@@ -96,7 +95,7 @@ public class MPDConnectionThread extends Thread {
                     sleep(RECONNECTION_TIMEOUT_SEC * 1000);
                 }
             }
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignore) {
         }
     }
 
@@ -109,7 +108,7 @@ public class MPDConnectionThread extends Thread {
         if (socket != null) {
             try {
                 socket.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
             this.socket = null;
         }
@@ -147,19 +146,19 @@ public class MPDConnectionThread extends Thread {
             try {
                 sendCommand(new MPDCommand("noidle"));
             } catch (IOException e) {
-                logger.debug("sendCommand(noidle) failed");
+                logger.debug("sendCommand(noidle) failed", e);
             }
         }
     }
 
-    private void establishConnection() throws IOException, MPDException {
+    private void establishConnection() throws UnknownHostException, IOException, MPDException {
         openSocket();
 
         MPDCommand currentCommand = new MPDCommand("connect");
         MPDResponse response = readResponse(currentCommand);
 
         if (!response.isOk()) {
-            throw new MPDException("could not connect");
+            throw new MPDException("Failed to connect to " + this.address + ":" + this.port);
         }
 
         if (!password.isEmpty()) {
@@ -167,18 +166,25 @@ public class MPDConnectionThread extends Thread {
             sendCommand(currentCommand);
             response = readResponse(currentCommand);
             if (!response.isOk()) {
-                throw new MPDException("could not authenticate");
+                throw new MPDException("Could not authenticate, please validate your password");
             }
         }
     }
 
-    private void openSocket() throws IOException {
+    private void openSocket() throws UnknownHostException, IOException, MPDException {
         logger.debug("opening connection to {} port {}", address, port);
+
+        if (address.isEmpty()) {
+            throw new MPDException("Missing parameter ipAddress");
+        }
+        if (port < 1 || port > 65335) {
+            throw new MPDException("Invalid parameter port");
+        }
+
         Socket socket = new Socket(address, port);
 
         inputStreamReader = new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8);
         reader = new BufferedReader(inputStreamReader);
-        writer = new DataOutputStream(socket.getOutputStream());
 
         this.socket = socket;
     }
@@ -195,7 +201,7 @@ public class MPDConnectionThread extends Thread {
                 }
 
                 sendCommand(currentCommand);
-                if (currentCommand.getCommand().equals("idle")) {
+                if ("idle".equals(currentCommand.getCommand())) {
                     isInIdle.set(true);
                 }
             }
@@ -214,7 +220,7 @@ public class MPDConnectionThread extends Thread {
         if (reader != null) {
             try {
                 reader.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
             this.reader = null;
         }
@@ -223,40 +229,32 @@ public class MPDConnectionThread extends Thread {
         if (inputStreamReader != null) {
             try {
                 inputStreamReader.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
             this.inputStreamReader = null;
-        }
-
-        DataOutputStream writer = this.writer;
-        if (writer != null) {
-            try {
-                writer.close();
-            } catch (IOException e) {
-            }
-            this.writer = null;
         }
 
         Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
-            } catch (IOException e) {
+            } catch (IOException ignore) {
             }
             this.socket = null;
         }
     }
 
     private void sendCommand(MPDCommand command) throws IOException {
-        logger.trace("send command '{}'", command.asLine());
-        final DataOutputStream writer = this.writer;
-        if (writer != null) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("send command '{}'", command.asLine());
+        }
+        final Socket socket = this.socket;
+        if (socket != null) {
             String line = command.asLine();
-            byte[] bytes = line.getBytes(StandardCharsets.UTF_8);
-            writer.write(bytes);
-            writer.write('\n');
+            socket.getOutputStream().write(line.getBytes(StandardCharsets.UTF_8));
+            socket.getOutputStream().write('\n');
         } else {
-            throw new IOException("writer is null");
+            throw new IOException("Connection closed unexpectedly.");
         }
     }
 
@@ -283,12 +281,12 @@ public class MPDConnectionThread extends Thread {
                     }
                 } else {
                     isInIdle.set(false);
-                    throw new IOException("Receive failed.");
+                    throw new IOException("Communication failed unexpectedly.");
                 }
             }
         } else {
             isInIdle.set(false);
-            throw new IOException("Reader is null.");
+            throw new IOException("Connection closed unexpectedly.");
         }
 
         isInIdle.set(false);
