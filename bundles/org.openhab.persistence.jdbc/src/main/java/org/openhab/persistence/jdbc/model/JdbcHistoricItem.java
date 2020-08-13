@@ -12,7 +12,7 @@
  */
 package org.openhab.persistence.jdbc.model;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
@@ -26,9 +26,9 @@ public class JdbcHistoricItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final Date timestamp;
+    private final ZonedDateTime timestamp;
 
-    public JdbcHistoricItem(String name, State state, Date timestamp) {
+    public JdbcHistoricItem(String name, State state, ZonedDateTime timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;
@@ -45,7 +45,7 @@ public class JdbcHistoricItem implements HistoricItem {
     }
 
     @Override
-    public Date getTimestamp() {
+    public ZonedDateTime getTimestamp() {
         return timestamp;
     }
 

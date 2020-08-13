@@ -12,10 +12,10 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -265,7 +265,7 @@ public class DynamoDBPersistenceService extends AbstractBufferedPersistenceServi
     }
 
     @Override
-    public DynamoDBItem<?> persistenceItemFromState(String name, State state, Date time) {
+    public DynamoDBItem<?> persistenceItemFromState(String name, State state, ZonedDateTime time) {
         return AbstractDynamoDBItem.fromState(name, state, time);
     }
 

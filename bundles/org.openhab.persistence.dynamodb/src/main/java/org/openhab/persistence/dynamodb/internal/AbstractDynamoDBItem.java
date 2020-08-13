@@ -18,7 +18,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,15 +95,15 @@ public abstract class AbstractDynamoDBItem<T> implements DynamoDBItem<T> {
 
     protected String name;
     protected T state;
-    protected Date time;
+    protected ZonedDateTime time;
 
-    public AbstractDynamoDBItem(String name, T state, Date time) {
+    public AbstractDynamoDBItem(String name, T state, ZonedDateTime time) {
         this.name = name;
         this.state = state;
         this.time = time;
     }
 
-    public static DynamoDBItem<?> fromState(String name, State state, Date time) {
+    public static DynamoDBItem<?> fromState(String name, State state, ZonedDateTime time) {
         if (state instanceof DecimalType && !(state instanceof HSBType)) {
             // also covers PercentType which is inherited from DecimalType
             return new DynamoDBBigDecimalItem(name, ((DecimalType) state).toBigDecimal(), time);

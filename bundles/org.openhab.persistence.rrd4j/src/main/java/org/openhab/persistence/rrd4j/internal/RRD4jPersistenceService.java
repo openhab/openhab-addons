@@ -14,9 +14,11 @@ package org.openhab.persistence.rrd4j.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,8 +34,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.common.NamedThreadFactory;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
@@ -213,7 +215,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                             double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                             if (!Double.isNaN(lastValue)) {
                                 HistoricItem rrd4jItem = new RRD4jItem(itemName, mapToState(lastValue, itemName),
-                                        new Date(db.getLastArchiveUpdateTime() * 1000));
+                                        ZonedDateTime.ofInstant(
+                                                Instant.ofEpochMilli(db.getLastArchiveUpdateTime() * 1000),
+                                                ZoneId.systemDefault()));
                                 return Collections.singletonList(rrd4jItem);
                             } else {
                                 return Collections.emptyList();
@@ -236,7 +240,8 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                 long step = result.getRowCount() > 1 ? result.getStep() : 0;
                 for (double value : result.getValues(DATASOURCE_STATE)) {
                     if (!Double.isNaN(value) && (((ts >= start) && (ts <= end)) || (start == end))) {
-                        RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, itemName), new Date(ts * 1000));
+                        RRD4jItem rrd4jItem = new RRD4jItem(itemName, mapToState(value, itemName),
+                                ZonedDateTime.ofInstant(Instant.ofEpochMilli(ts * 1000), ZoneId.systemDefault()));
                         items.add(rrd4jItem);
                     }
                     ts += step;
@@ -344,7 +349,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
     }
 
     private static String getUserPersistenceDataFolder() {
-        return ConfigConstants.getUserDataFolder() + File.separator + "persistence";
+        return OpenHAB.getUserDataFolder() + File.separator + "persistence";
     }
 
     /**

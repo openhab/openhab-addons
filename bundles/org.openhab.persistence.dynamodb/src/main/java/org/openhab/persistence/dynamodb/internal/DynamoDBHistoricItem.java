@@ -13,7 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import java.text.DateFormat;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
@@ -28,9 +28,9 @@ import org.openhab.core.types.State;
 public class DynamoDBHistoricItem implements HistoricItem {
     private final String name;
     private final State state;
-    private final Date timestamp;
+    private final ZonedDateTime timestamp;
 
-    public DynamoDBHistoricItem(String name, State state, Date timestamp) {
+    public DynamoDBHistoricItem(String name, State state, ZonedDateTime timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;
@@ -42,7 +42,7 @@ public class DynamoDBHistoricItem implements HistoricItem {
     }
 
     @Override
-    public Date getTimestamp() {
+    public ZonedDateTime getTimestamp() {
         return timestamp;
     }
 

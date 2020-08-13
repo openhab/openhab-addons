@@ -19,7 +19,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -494,13 +493,11 @@ public class JdbcBaseDAO {
         }
     }
 
-    protected Date objectAsDate(Object v) {
+    protected ZonedDateTime objectAsDate(Object v) {
         if (v instanceof java.lang.String) {
-            // toInstant is Java8 only: return Date.from(Timestamp.valueOf(v.toString()).toInstant());
-            return new Date(Timestamp.valueOf(v.toString()).getTime());
+            return ZonedDateTime.ofInstant(Timestamp.valueOf(v.toString()).toInstant(), ZoneId.systemDefault());
         }
-        // toInstant is Java8 only: return Date.from(((Timestamp) v).toInstant());
-        return new Date(((Timestamp) v).getTime());
+        return ZonedDateTime.ofInstant(((Timestamp) v).toInstant(), ZoneId.systemDefault());
     }
 
     protected Long objectAsLong(Object v) {

@@ -13,6 +13,8 @@
 package org.openhab.persistence.mapdb.internal;
 
 import java.text.DateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,8 +56,8 @@ public class MapDbItem implements HistoricItem, PersistenceItemInfo {
     }
 
     @Override
-    public Date getTimestamp() {
-        return timestamp;
+    public ZonedDateTime getTimestamp() {
+        return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault());
     }
 
     public void setTimestamp(Date timestamp) {

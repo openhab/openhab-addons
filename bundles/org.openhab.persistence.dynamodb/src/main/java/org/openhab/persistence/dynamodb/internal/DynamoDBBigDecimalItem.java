@@ -14,7 +14,7 @@ package org.openhab.persistence.dynamodb.internal;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
@@ -42,7 +42,7 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
         this(null, null, null);
     }
 
-    public DynamoDBBigDecimalItem(String name, BigDecimal state, Date time) {
+    public DynamoDBBigDecimalItem(String name, BigDecimal state, ZonedDateTime time) {
         super(name, state, time);
     }
 
@@ -62,7 +62,7 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
 
     @Override
     @DynamoDBRangeKey(attributeName = ATTRIBUTE_NAME_TIMEUTC)
-    public Date getTime() {
+    public ZonedDateTime getTime() {
         return time;
     }
 
@@ -77,7 +77,7 @@ public class DynamoDBBigDecimalItem extends AbstractDynamoDBItem<BigDecimal> {
     }
 
     @Override
-    public void setTime(Date time) {
+    public void setTime(ZonedDateTime time) {
         this.time = time;
     }
 
