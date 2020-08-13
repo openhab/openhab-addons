@@ -12,7 +12,7 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.HistoricItem;
@@ -46,13 +46,13 @@ public interface DynamoDBItem<T> {
 
     T getState();
 
-    Date getTime();
+    ZonedDateTime getTime();
 
     void setName(String name);
 
     void setState(T state);
 
-    void setTime(Date time);
+    void setTime(ZonedDateTime time);
 
     void accept(DynamoDBItemVisitor visitor);
 }

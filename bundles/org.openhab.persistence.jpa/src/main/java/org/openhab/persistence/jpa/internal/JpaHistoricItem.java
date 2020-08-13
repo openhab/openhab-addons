@@ -17,7 +17,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.openhab.core.items.Item;
@@ -50,9 +49,9 @@ public class JpaHistoricItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final Date timestamp;
+    private final ZonedDateTime timestamp;
 
-    public JpaHistoricItem(String name, State state, Date timestamp) {
+    public JpaHistoricItem(String name, State state, ZonedDateTime timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;
@@ -64,7 +63,7 @@ public class JpaHistoricItem implements HistoricItem {
     }
 
     @Override
-    public Date getTimestamp() {
+    public ZonedDateTime getTimestamp() {
         return timestamp;
     }
 

@@ -279,11 +279,11 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
             Object value = convertValue(filter.getState());
             query.put(FIELD_VALUE, new BasicDBObject(op, value));
         }
-        if (filter.getBeginDate() != null) {
-            query.put(FIELD_TIMESTAMP, new BasicDBObject("$gte", filter.getBeginDate()));
+        if (filter.getBeginDateZoned() != null) {
+            query.put(FIELD_TIMESTAMP, new BasicDBObject("$gte", filter.getBeginDateZoned()));
         }
-        if (filter.getEndDate() != null) {
-            query.put(FIELD_TIMESTAMP, new BasicDBObject("$lte", filter.getEndDate()));
+        if (filter.getBeginDateZoned() != null) {
+            query.put(FIELD_TIMESTAMP, new BasicDBObject("$lte", filter.getBeginDateZoned()));
         }
 
         Integer sortDir = (filter.getOrdering() == Ordering.ASCENDING) ? 1 : -1;
@@ -311,7 +311,8 @@ public class MongoDBPersistenceService implements QueryablePersistenceService {
                 state = new StringType(obj.getString(FIELD_VALUE));
             }
 
-            items.add(new MongoDBItem(name, state, obj.getDate(FIELD_TIMESTAMP)));
+            items.add(new MongoDBItem(name, state,
+                    ZonedDateTime.ofInstant(obj.getDate(FIELD_TIMESTAMP).toInstant(), ZoneId.systemDefault())));
         }
 
         return items;

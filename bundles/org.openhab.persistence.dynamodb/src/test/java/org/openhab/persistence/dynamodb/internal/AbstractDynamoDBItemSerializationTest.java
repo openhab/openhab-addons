@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -57,7 +56,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class AbstractDynamoDBItemSerializationTest {
 
-    private final Date date = new Date(400);
+    private final ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochSecond(400), ZoneId.systemDefault());
 
     /**
      * Generic function testing serialization of item state to internal format in DB. In other words, conversion of

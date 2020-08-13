@@ -12,7 +12,7 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
@@ -31,7 +31,7 @@ public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
         this(null, null, null);
     }
 
-    public DynamoDBStringItem(String name, String state, Date time) {
+    public DynamoDBStringItem(String name, String state, ZonedDateTime time) {
         super(name, state, time);
     }
 
@@ -49,7 +49,7 @@ public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
 
     @Override
     @DynamoDBRangeKey(attributeName = ATTRIBUTE_NAME_TIMEUTC)
-    public Date getTime() {
+    public ZonedDateTime getTime() {
         return time;
     }
 
@@ -69,7 +69,7 @@ public class DynamoDBStringItem extends AbstractDynamoDBItem<String> {
     }
 
     @Override
-    public void setTime(Date time) {
+    public void setTime(ZonedDateTime time) {
         this.time = time;
     }
 }

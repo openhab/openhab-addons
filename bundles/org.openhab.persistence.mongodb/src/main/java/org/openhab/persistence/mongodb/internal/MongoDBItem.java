@@ -13,7 +13,7 @@
 package org.openhab.persistence.mongodb.internal;
 
 import java.text.DateFormat;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
@@ -29,9 +29,9 @@ public class MongoDBItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final Date timestamp;
+    private final ZonedDateTime timestamp;
 
-    public MongoDBItem(String name, State state, Date timestamp) {
+    public MongoDBItem(String name, State state, ZonedDateTime timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;
@@ -48,7 +48,7 @@ public class MongoDBItem implements HistoricItem {
     }
 
     @Override
-    public Date getTimestamp() {
+    public ZonedDateTime getTimestamp() {
         return timestamp;
     }
 

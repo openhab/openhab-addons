@@ -13,7 +13,7 @@
 package org.openhab.persistence.rrd4j.internal;
 
 import java.text.DateFormat;
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
@@ -28,9 +28,9 @@ public class RRD4jItem implements HistoricItem {
 
     private final String name;
     private final State state;
-    private final Date timestamp;
+    private final ZonedDateTime timestamp;
 
-    public RRD4jItem(String name, State state, Date timestamp) {
+    public RRD4jItem(String name, State state, ZonedDateTime timestamp) {
         this.name = name;
         this.state = state;
         this.timestamp = timestamp;
@@ -47,7 +47,7 @@ public class RRD4jItem implements HistoricItem {
     }
 
     @Override
-    public Date getTimestamp() {
+    public ZonedDateTime getTimestamp() {
         return timestamp;
     }
 

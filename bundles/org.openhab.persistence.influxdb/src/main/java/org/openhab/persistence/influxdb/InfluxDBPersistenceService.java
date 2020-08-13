@@ -12,8 +12,9 @@
  */
 package org.openhab.persistence.influxdb;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -234,7 +235,8 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
 
     private HistoricItem mapRow2HistoricItem(InfluxRow row) {
         State state = InfluxDBStateConvertUtils.objectToState(row.getValue(), row.getItemName(), itemRegistry);
-        return new InfluxDBHistoricItem(row.getItemName(), state, Date.from(row.getTime()));
+        return new InfluxDBHistoricItem(row.getItemName(), state,
+                ZonedDateTime.ofInstant(row.getTime(), ZoneId.systemDefault()));
     }
 
     @Override

@@ -12,8 +12,8 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
-import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -68,7 +68,7 @@ public class DynamoDBQueryUtils {
         if (filter.getOperator() != null && filter.getState() != null) {
             // Convert filter's state to DynamoDBItem in order get suitable string representation for the state
             final DynamoDBItem<?> filterState = AbstractDynamoDBItem.fromState(filter.getItemName(), filter.getState(),
-                    new Date());
+                    ZonedDateTime.now());
             queryExpression.setFilterExpression(String.format("%s %s :opstate", DynamoDBItem.ATTRIBUTE_NAME_ITEMSTATE,
                     operatorAsString(filter.getOperator())));
 

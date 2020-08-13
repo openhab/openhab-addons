@@ -12,8 +12,8 @@
  */
 package org.openhab.persistence.jpa.internal;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -140,7 +140,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         }
         pItem.setName(name);
         pItem.setRealName(item.getName());
-        pItem.setTimestamp(new Date());
+        pItem.setTimestamp(LocalDateTime.now());
 
         EntityManager em = getEntityManagerFactory().createEntityManager();
         try {

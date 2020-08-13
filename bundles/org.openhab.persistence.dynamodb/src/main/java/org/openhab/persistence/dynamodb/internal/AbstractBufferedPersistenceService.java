@@ -12,7 +12,9 @@
  */
 package org.openhab.persistence.dynamodb.internal;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -52,7 +54,7 @@ public abstract class AbstractBufferedPersistenceService<T> implements Persisten
         writeImmediately = bufferSize == 0;
     }
 
-    protected abstract T persistenceItemFromState(String name, State state, Date time);
+    protected abstract T persistenceItemFromState(String name, State state, ZonedDateTime time);
 
     protected abstract boolean isReadyToStore();
 
@@ -77,7 +79,7 @@ public abstract class AbstractBufferedPersistenceService<T> implements Persisten
         if (buffer == null) {
             throw new IllegalStateException("Buffer not initialized with resetWithBufferSize. Bug?");
         }
-        Date time = new Date(storeStart);
+        ZonedDateTime time = ZonedDateTime.ofInstant(Instant.ofEpochMilli(storeStart), ZoneId.systemDefault());
         String realName = item.getName();
         String name = (alias != null) ? alias : realName;
         State state = item.getState();
