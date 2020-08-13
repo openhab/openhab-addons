@@ -314,19 +314,27 @@
 	</channel-type>
 
 	<channel-type id="filter_reset">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Filter Reset</label>
 		<description>Reset filter uptime</description>
 		<category>Switch</category>
-		<state readOnly="false"/>
+		<command>
+			<options>
+				<option value="1">Reset</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="error_reset">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Error Reset</label>
 		<description>Reset errors</description>
 		<category>Switch</category>
-		<state readOnly="false"/>
+		<command>
+			<options>
+				<option value="1">Reset</option>
+			</options>
+		</command>
 	</channel-type>
 
 	<channel-type id="fan_out_0" advanced="true">
