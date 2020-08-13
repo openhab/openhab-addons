@@ -91,16 +91,17 @@ public class LcnModuleHandler extends BaseThingHandler {
         super(thing);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void initialize() {
         LcnModuleConfiguration localConfig = getConfigAs(LcnModuleConfiguration.class);
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
         try {
-
             // Determine serial number of manually added modules
+            String serialNumberProperty = getThing().getProperties().get(SERIAL_NUMBER);
             if (getThing().getThingTypeUID().equals(LcnBindingConstants.THING_TYPE_MODULE)
-                    && getThing().getProperties().get(SERIAL_NUMBER).isEmpty()) {
+                    && (serialNumberProperty == null || serialNumberProperty.isEmpty())) {
                 PckGatewayHandler localBridgeHandler = getPckGatewayHandler();
                 localBridgeHandler.registerPckListener(data -> {
                     Matcher matcher;
