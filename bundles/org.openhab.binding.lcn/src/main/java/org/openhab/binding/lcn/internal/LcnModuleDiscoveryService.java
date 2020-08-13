@@ -65,7 +65,6 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
             .compile("=M(?<segId>\\d{3})(?<modId>\\d{3}).N(?<part>[1-2]{1})(?<name>.*)");
     private static final String SEGMENT_ID = "segmentId";
     private static final String MODULE_ID = "moduleId";
-    private static final String SERIAL_NUMBER = "serialNumber";
     private static final int MODULE_NAME_PART_COUNT = 2;
     private static final int DISCOVERY_TIMEOUT_SEC = 90;
     private static final int ACK_TIMEOUT_MS = 1000;
@@ -161,10 +160,11 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                             Map<String, Object> properties = new HashMap<>(3);
                             properties.put(SEGMENT_ID, addr.getSegmentId());
                             properties.put(MODULE_ID, addr.getModuleId());
-                            properties.put(SERIAL_NUMBER, serialNumber);
+                            properties.put(LcnBindingConstants.SERIAL_NUMBER_PROPERTY, serialNumber);
 
                             DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                    .withProperties(properties).withRepresentationProperty(SERIAL_NUMBER)
+                                    .withProperties(properties)
+                                    .withRepresentationProperty(LcnBindingConstants.SERIAL_NUMBER_PROPERTY)
                                     .withBridge(bridgeUid);
 
                             discoveryResultBuilders.put(addr, discoveryResult);

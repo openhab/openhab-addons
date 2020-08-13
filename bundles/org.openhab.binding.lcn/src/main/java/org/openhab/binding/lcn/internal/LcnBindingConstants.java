@@ -25,6 +25,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class LcnBindingConstants {
     /** The scope name of this binding */
     public static final String BINDING_ID = "lcn";
+    /** Name of the module's serial number property */
+    public static final String SERIAL_NUMBER_PROPERTY = "serialNumber";
     /**
      * Firmware version of the measurement processing since 2013. It has more variables and thresholds and event-based
      * variable updates.
