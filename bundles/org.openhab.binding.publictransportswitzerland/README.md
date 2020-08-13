@@ -10,7 +10,7 @@ For example, here is a station board in HABPanel. (Download [here](https://githu
 
 ### Stationboard
 
-Upcoming departures for a single station.
+Upcoming departures for a single station. This is what you would usually see displayed at the train station.
 
 #### Configuration 
 
