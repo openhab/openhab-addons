@@ -1,0 +1,43 @@
+variables:
+  MAVEN_SERVER_ID: ""
+  SNAPSHOT_REPOSITORY_URL: ""
+  SNAPSHOT_REPOSITORY_NAME: ""
+  MAVEN_REPO_USER: ""
+  MAVEN_REPO_PASS: ""
+  CENTRAL_PROXY_MIRROR_OF: ""
+  CENTRAL_PROXY_URL: ""
+  OPENHAB_PROXY_MIRROR_OF: ""
+  OPENHAB_PROXY_URL: ""
+
+image: maven:3.6.3-jdk-11
+
+# Cache downloaded dependencies and plugins between builds.
+# To keep cache across branches add 'key: "$CI_JOB_NAME"'
+cache:
+  paths:
+    - .m2/repository
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - 'mvn -s .gitlab/settings.xml $MAVEN_CLI_OPTS $MAVEN_OPTS_EXTRA package -DnoOhSnapRepo'
+
+deploy:
+  stage: deploy
+  script:
+    - if [ ! -f .gitlab/settings.xml ];
+      then echo "The .gitlab/settings.xml file is missing.";
+      fi
+    - mvn $MAVEN_CLI_OPTS $MAVEN_OPTS_EXTRA -s .gitlab/settings.xml
+      package org.apache.maven.plugins:maven-deploy-plugin:3.0.0-M1:deploy
+      -Dsnapshot.repository-id=${MAVEN_SERVER_ID}
+      -Dsnapshot.repository-url=${SNAPSHOT_REPOSITORY_URL}
+      -Dsnapshot.repository-name="${SNAPSHOT_REPOSITORY_NAME}"
+      -DaltSnapshotDeploymentRepository="${MAVEN_SERVER_ID}::${SNAPSHOT_REPOSITORY_URL}"
+      -Dmaven.test.skip.exec=true -DskipChecks -DnoOhSnapRepo
+  only:
+    - master

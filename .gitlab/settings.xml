@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd"
+  xmlns="http://maven.apache.org/SETTINGS/1.1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <servers>
+    <server>
+      <id>${env.MAVEN_SERVER_ID}</id>
+      <username>${env.MAVEN_REPO_USER}</username>
+      <password>${env.MAVEN_REPO_PASS}</password>
+    </server>
+    <server>
+      <id>${env.MAVEN_SERVER_ID}-central</id>
+      <username>${env.MAVEN_REPO_USER}</username>
+      <password>${env.MAVEN_REPO_PASS}</password>
+    </server>
+    <server>
+      <id>${env.MAVEN_SERVER_ID}-openhab</id>
+      <username>${env.MAVEN_REPO_USER}</username>
+      <password>${env.MAVEN_REPO_PASS}</password>
+    </server>
+  </servers>
+
+  <mirrors>
+    <mirror>
+      <id>${env.MAVEN_SERVER_ID}-central</id>
+      <mirrorOf>${env.CENTRAL_PROXY_MIRROR_OF}</mirrorOf>
+      <url>${env.CENTRAL_PROXY_URL}</url>
+    </mirror>
+    <mirror>
+      <id>${env.MAVEN_SERVER_ID}-openhab</id>
+      <mirrorOf>${env.OPENHAB_PROXY_MIRROR_OF}</mirrorOf>
+      <url>${env.OPENHAB_PROXY_URL}</url>
+    </mirror>
+  </mirrors>
+
+  <profiles>
+    <profile>
+      <id>deploy</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+
+      <repositories>
+        <repository>
+          <id>${env.MAVEN_SERVER_ID}</id>
+          <url>${env.SNAPSHOT_REPOSITORY_URL}</url>
+          <name>${env.SNAPSHOT_REPOSITORY_NAME}</name>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+
+</settings>
