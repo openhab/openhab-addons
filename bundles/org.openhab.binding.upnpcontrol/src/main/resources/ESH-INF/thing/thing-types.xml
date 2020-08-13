@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="upnpcontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing Types -->
+	<thing-type id="upnprenderer">
+		<label>UPnPRenderer</label>
+		<description>UPnP AV Renderer</description>
+		<channels>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="control" typeId="system.media-control"/>
+			<channel id="stop" typeId="stop"/>
+			<channel id="title" typeId="system.media-title"/>
+			<channel id="album" typeId="album"/>
+			<channel id="albumart" typeId="albumart"/>
+			<channel id="creator" typeId="creator"/>
+			<channel id="artist" typeId="system.media-artist"/>
+			<channel id="publisher" typeId="publisher"/>
+			<channel id="genre" typeId="genre"/>
+			<channel id="tracknumber" typeId="tracknumber"/>
+			<channel id="trackduration" typeId="trackduration"/>
+			<channel id="trackposition" typeId="trackposition"/>
+		</channels>
+		<config-description>
+			<parameter name="udn" type="text" required="true">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the UPnP Renderer</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+	<thing-type id="upnpserver">
+		<label>UPnPServer</label>
+		<description>UPnP AV Server</description>
+		<channels>
+			<channel id="upnprenderer" typeId="upnprenderer"/>
+			<channel id="currentid" typeId="currentid"/>
+			<channel id="browse" typeId="browse"/>
+			<channel id="search" typeId="search"/>
+		</channels>
+		<config-description>
+			<parameter name="udn" type="text" required="true">
+				<label>Unique Device Name</label>
+				<description>The UDN identifies the UPnP Media Server</description>
+			</parameter>
+			<parameter name="filter" type="boolean" required="false">
+				<label>Filter Content</label>
+				<description>Only list content which is playable on the selected renderer</description>
+				<default>false</default>
+				<advanced>false</advanced>
+			</parameter>
+			<parameter name="sortcriteria" type="text" required="false">
+				<label>Sort Criteria</label>
+				<description>Sort criteria for the titles in the selection list and when sending for playing to a renderer. The
+					criteria are defined in UPnP sort criteria format. Examples: +dc:title, -dc:creator, +upnp:album. Supported sort
+					criteria will depend on the media server</description>
+				<default>+dc:title</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="stop">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop the player</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="album">
+		<item-type>String</item-type>
+		<label>Album</label>
+		<description>Now playing album</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="albumart">
+		<item-type>Image</item-type>
+		<label>Album Art</label>
+		<description>Now playing album art</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="creator">
+		<item-type>String</item-type>
+		<label>Creator</label>
+		<description>Now playing creator</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="publisher">
+		<item-type>String</item-type>
+		<label>Publisher</label>
+		<description>Now playing publisher</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="genre">
+		<item-type>String</item-type>
+		<label>Genre</label>
+		<description>Now playing genre</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="tracknumber">
+		<item-type>Number</item-type>
+		<label>Track Number</label>
+		<description>Now playing track number</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="trackduration">
+		<item-type>Number:Time</item-type>
+		<label>Track Duration</label>
+		<description>Now playing track duration</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="trackposition">
+		<item-type>Number:Time</item-type>
+		<label>Track Position</label>
+		<description>Now playing track position</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="upnprenderer">
+		<item-type>String</item-type>
+		<label>Renderer</label>
+		<description>Select AV renderer</description>
+	</channel-type>
+	<channel-type id="currentid">
+		<item-type>String</item-type>
+		<label>Current Media Id</label>
+		<description>Current id of media entry or container</description>
+	</channel-type>
+	<channel-type id="browse">
+		<item-type>String</item-type>
+		<label>Browse Selection</label>
+		<description>Browse selection for playing</description>
+	</channel-type>
+	<channel-type id="search">
+		<item-type>String</item-type>
+		<label>Search Criteria</label>
+		<description>Search criteria for searching the directory. Search criteria are defined in UPnP search criteria format.
+			Examples: dc:title contains "song", dc:creator contains "SpringSteen", unp:class = "object.item.audioItem",
+			upnp:album contains "Born in"</description>
+	</channel-type>
+</thing:thing-descriptions>
