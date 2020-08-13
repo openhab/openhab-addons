@@ -150,7 +150,7 @@ public class LcnModuleHandler extends BaseThingHandler {
      */
     @SuppressWarnings("null")
     protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
-        String serialNumber = getThing().getProperties().get(LcnBindingConstants.SERIAL_NUMBER_PROPERTY);
+        String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
         if (serialNumber == null || serialNumber.isEmpty()) {
             LcnAddrMod localModuleAddress = moduleAddress;
             if (localModuleAddress != null) {
@@ -329,7 +329,7 @@ public class LcnModuleHandler extends BaseThingHandler {
      * @param serialNumber the new serial number
      */
     public void updateSerialNumberProperty(String serialNumber) {
-        updateProperty(LcnBindingConstants.SERIAL_NUMBER_PROPERTY, serialNumber);
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
     }
 
     /**

@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -160,11 +161,10 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
                             Map<String, Object> properties = new HashMap<>(3);
                             properties.put(SEGMENT_ID, addr.getSegmentId());
                             properties.put(MODULE_ID, addr.getModuleId());
-                            properties.put(LcnBindingConstants.SERIAL_NUMBER_PROPERTY, serialNumber);
+                            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
 
                             DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                    .withProperties(properties)
-                                    .withRepresentationProperty(LcnBindingConstants.SERIAL_NUMBER_PROPERTY)
+                                    .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                                     .withBridge(bridgeUid);
 
                             discoveryResultBuilders.put(addr, discoveryResult);
