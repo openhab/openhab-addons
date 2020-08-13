@@ -93,7 +93,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
         this.configuration = configuration;
 
-        @Nullable String configurationError = findConfigurationError(configuration);
+        String configurationError = findConfigurationError(configuration);
         if (configurationError != null) {
             stopChannelUpdate();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
@@ -115,17 +115,19 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
         this.configuration = configuration;
 
-        @Nullable String configurationError = findConfigurationError(configuration);
+        ScheduledFuture<?> updateJob = updateChannelsJob;
+
+        String configurationError = findConfigurationError(configuration);
         if (configurationError != null) {
             stopChannelUpdate();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configurationError);
-        } else if (updateChannelsJob == null || updateChannelsJob.isCancelled()) {
+        } else if (updateJob == null || updateJob.isCancelled()) {
             startChannelUpdate();
         }
     }
 
     private @Nullable String findConfigurationError(PublicTransportSwitzerlandStationboardConfiguration configuration) {
-        @Nullable String station = configuration.station;
+        String station = configuration.station;
         if (station == null || station.isEmpty()) {
             return "The station is not set";
         }
@@ -138,19 +140,21 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void stopChannelUpdate() {
-        if (updateChannelsJob != null) {
-            updateChannelsJob.cancel(true);
+        ScheduledFuture<?> updateJob = updateChannelsJob;
+
+        if (updateJob != null) {
+            updateJob.cancel(true);
         }
     }
 
     public @Nullable JsonElement updateData() {
-        @Nullable PublicTransportSwitzerlandStationboardConfiguration config = configuration;
+        PublicTransportSwitzerlandStationboardConfiguration config = configuration;
         if (config == null) {
             logger.warn("Unable to access configuration");
             return null;
         }
 
-        @Nullable String station = config.station;
+        String station = config.station;
         if (station == null) {
             logger.warn("Station is null");
             return null;
@@ -175,14 +179,14 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void updateChannels() {
-        @Nullable ExpiringCache<@Nullable JsonElement> expiringCache = cache;
+        ExpiringCache<@Nullable JsonElement> expiringCache = cache;
 
         if (expiringCache == null) {
             logger.warn("Cache is null");
             return;
         }
 
-        @Nullable JsonElement jsonObject = expiringCache.getValue();
+        JsonElement jsonObject = expiringCache.getValue();
 
         if (jsonObject == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -218,10 +222,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
             JsonObject stopObject = stopElement.getAsJsonObject();
 
-            @Nullable JsonElement categoryElement = departureObject.get("category");
-            @Nullable JsonElement numberElement = departureObject.get("number");
-            @Nullable JsonElement destinationElement = departureObject.get("to");
-            @Nullable JsonElement departureTimeElement = stopObject.get("departureTimestamp");
+            JsonElement categoryElement = departureObject.get("category");
+            JsonElement numberElement = departureObject.get("number");
+            JsonElement destinationElement = departureObject.get("to");
+            JsonElement departureTimeElement = stopObject.get("departureTimestamp");
 
             if (categoryElement == null || numberElement == null || destinationElement == null || departureTimeElement == null) {
                 logger.warn("Skipping stationboard item." +
@@ -237,8 +241,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
 
             String identifier = createIdentifier(category, number);
 
-            @Nullable String delay = getStringValueOrNull(departureObject.get("delay"));
-            @Nullable String track = getStringValueOrNull(stopObject.get("platform"));
+            String delay = getStringValueOrNull(departureObject.get("delay"));
+            String track = getStringValueOrNull(stopObject.get("platform"));
 
             updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(identifier, departureTime, destination, track, delay)));
             tsvRows.add(String.join("\t", identifier, departureTimeElement.toString(), destination, track, delay));
