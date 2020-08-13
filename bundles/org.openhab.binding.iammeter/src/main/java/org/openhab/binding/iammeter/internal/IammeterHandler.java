@@ -66,7 +66,6 @@ public class IammeterHandler extends BaseThingHandler {
         config = getConfiguration();
     }
 
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -111,7 +110,8 @@ public class IammeterHandler extends BaseThingHandler {
                         channelPrefix = IammeterBindingConstants.THING_TYPE_POWERMETER + ":"
                                 + channel.getUID().getThingUID().getId();
                         State state = getDecimal(
-                                iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString(), channelConfig.getUnit());
+                                iammeterData.get(keyWord).getAsJsonArray().get(channelConfig.getIndex()).toString(),
+                                channelConfig.getUnit());
                         updateState(channel.getUID(), state);
                     }
                 }
@@ -185,7 +185,6 @@ public class IammeterHandler extends BaseThingHandler {
         }
         super.dispose();
     }
-
 
     public IammeterConfiguration getConfiguration() {
         return this.getConfigAs(IammeterConfiguration.class);

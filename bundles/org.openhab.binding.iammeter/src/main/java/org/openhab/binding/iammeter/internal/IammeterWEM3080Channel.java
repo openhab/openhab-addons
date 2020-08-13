@@ -11,8 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.iammeter.internal;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+
 import javax.measure.Unit;
+
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
 /**
  * The {@link IammeterWEM3080Channel} Enum defines common constants, which are
