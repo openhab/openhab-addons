@@ -130,6 +130,7 @@ or in case of unknown models include the model information e.g.:
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
+| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.1c](#dmaker-fan-1c) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p5](#dmaker-fan-p5) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p8](#dmaker-fan-p8) | Yes       |            |
 | Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
@@ -165,6 +166,11 @@ or in case of unknown models include the model information e.g.:
 | Mi Toothbrush                | miio:unsupported | soocare.toothbrush.x3  | No        |            |
 | Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |            |
 | Mi Xiaowa Vacuum c1          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
+| Roborock Vacuum S6 pure      | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-a08) | Yes       |            |
+| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes       |            |
+| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes       |            |
+| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes       |            |
+| Roborock Vacuum S6 pure      | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-p5) | Yes       |            |
 | Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |            |
 | Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |            |
 | Mi Robot Vacuum S4           | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-s4) | Yes       |            |
@@ -186,7 +192,8 @@ or in case of unknown models include the model information e.g.:
 | Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:unsupported | viomi.vacuum.v6        | No        |            |
-| Xiaomi Mijia vacuum STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
+| Xiaomi Mijia vacuum mop STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
+| Xiaomi Mijia vacuum mop STYJ02YM | miio:unsupported | viomi.vacuum.v8        | No        |            |
 | Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
@@ -967,6 +974,23 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | speed            | Number  | Speed                               |
 | naturalLevel     | Number  | Natural Level                       |
 | move             | String  | Move Direction                      |
+
+### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-1c">dmaker.fan.1c</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| On               | Switch  | Fan-Switch Status                   |
+| FanLevel         | Number  | Fan-Fan Level                       |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
+| Mode             | Number  | Fan-Mode                            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
+| Alarm            | Switch  | Fan-Alarm                           |
+| Brightness       | Switch  | Fan-Brightness                      |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
 
 ### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p5">dmaker.fan.p5</a>) Channels
 
@@ -2603,6 +2627,26 @@ Number speedLevel "Speed Level" (G_fan) {channel="miio:basic:fan:speedLevel"}
 Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
 Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLevel"}
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
+```
+
+### Xiaomi Mijia Smart Tower Fan (dmaker.fan.1c) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
+String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
+Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
 ```
 
 ### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p5) item file lines
