@@ -24,6 +24,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.InvalidPathException;
@@ -121,6 +123,19 @@ public class RoboMapViewer extends JFrame {
         statusbar.add(BorderLayout.EAST, statusbarR);
         c.add(statusbar, "Last");
 
+        rrDrawPanel.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(@Nullable MouseWheelEvent event) {
+                if (event != null) {
+                    if (event.getWheelRotation() < 0) {
+                        zoomIn();
+                    } else {
+                        zoomOut();
+                    }
+                }
+            }
+        });
+
         rrDrawPanel.addMouseMotionListener(new MouseMotionListener() {
 
             @Override
@@ -160,7 +175,7 @@ public class RoboMapViewer extends JFrame {
                     } else {
                         final MapPoint pointLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
                         textArea.append(String.format(
-                                "GoTo coordinates:\t[X=%.0f, Y=%.0f]\\ttGoto command:  app_goto_target[ %.0f,%.0f ]\r\n",
+                                "GoTo coordinates:\t[X=%.0f, Y=%.0f]\t\tGoto command:  app_goto_target[ %.0f,%.0f ]\r\n",
                                 pointLocation.getX(), pointLocation.getY(), pointLocation.getX(),
                                 pointLocation.getY()));
                     }
@@ -192,21 +207,13 @@ public class RoboMapViewer extends JFrame {
         scalePButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(@Nullable ActionEvent ae) {
-                scale = scale + 0.5f;
-                final File f = file;
-                if (f != null) {
-                    loadfile(f);
-                }
+                zoomIn();
             }
         });
         scaleMButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(@Nullable ActionEvent ae) {
-                scale = scale < 1.5 ? 1 : scale - 0.5f;
-                final File f = file;
-                if (f != null) {
-                    loadfile(f);
-                }
+                zoomOut();
             }
         });
 
@@ -360,6 +367,22 @@ public class RoboMapViewer extends JFrame {
         } catch (Exception e) {
             textArea.append("Error while loading: " + e.getMessage());
             logger.info("Error while loading {}", e);
+        }
+    }
+
+    private void zoomIn() {
+        scale = scale + 0.5f;
+        final File f = file;
+        if (f != null) {
+            loadfile(f);
+        }
+    }
+
+    private void zoomOut() {
+        scale = scale < 1.5 ? 1 : scale - 0.5f;
+        final File f = file;
+        if (f != null) {
+            loadfile(f);
         }
     }
 }

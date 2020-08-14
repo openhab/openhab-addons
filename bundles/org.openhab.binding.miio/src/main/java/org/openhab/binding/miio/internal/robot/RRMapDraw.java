@@ -280,7 +280,7 @@ public class RRMapDraw {
         radius = 3 * scale;
         g2d.setColor(COLOR_ROBO);
         final float roboX = toXCoord(rmfp.getRoboX()) * scale;
-        final float roboY = toXCoord(rmfp.getRoboY()) * scale;
+        final float roboY = toYCoord(rmfp.getRoboY()) * scale;
         drawCircle(g2d, roboX, roboY, radius);
         if (scale > 1.5) {
             drawCenteredImg(g2d, scale / 15, "robo.png", roboX, roboY);
