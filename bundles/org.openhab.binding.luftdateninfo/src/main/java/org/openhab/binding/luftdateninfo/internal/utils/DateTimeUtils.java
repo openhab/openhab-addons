@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DateTimeUtils {
-    public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("YYYY-MM-dd hh:mm:ss");
+    public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("YYYY-MM-dd HH:mm:ss");
     private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
 
     public static synchronized @Nullable DateTime toDate(String dateTime) {
