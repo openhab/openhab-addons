@@ -243,7 +243,7 @@ public class FeedHandler extends BaseThingHandler {
 
     private void setChannelToState(ChannelUID channel, State state) {
         if (state != null) {
-            updateState(channel.getId(), state);
+            updateState(channel, state);
         } else {
             logger.debug("Cannot update channel with ID {}; state not defined!", channel.getId());
         }
