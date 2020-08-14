@@ -24,7 +24,7 @@ Not yet implemented. Configuration via configuration files or Paper UI (see belo
 
 ## Binding Configuration
 
-You need to provide at least the IP address and the system password of your Bosch Smart Home Controller. The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI.
+You need to provide the IP address and the system password of your Bosch Smart Home Controller. The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI. The system password is set by you during your initial registration steps in the _Bosch Smart Home App_. 
 
 A keystore file with a self signed certificate is created automatically. This certificate is used for pairing between the Bridge and the Bosch SHC. 
 
