@@ -1,5 +1,7 @@
 # Nuvo Grand Concerto & Essentia G Binding
 
+![Nuvo logo](doc/nuvo_logo.png)
+
 This binding can be used to control the Nuvo Grand Concerto or Essentia G whole house multi-zone amplifier.
 Up to 20 keypad zones can be controlled when zone expansion modules are used (if not all zones on the amp are used they can be excluded via configuration).
 
@@ -8,7 +10,7 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without a serial connector on server side, you can use a serial to USB adapter.
+For users without a serial connector on the server side, you can use a serial to USB adapter.
 
 You don't need to have your Grand Concerto or Essentia G whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
