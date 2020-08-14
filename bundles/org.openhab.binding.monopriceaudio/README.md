@@ -1,6 +1,6 @@
-# MonopriceAudio Binding
+# Monoprice Whole House Audio Binding
 
-This binding can be used to control the Monoprice MPR-SG6Z or Dayton Audio DAX66 whole house multi-zone amplifier.
+This binding can be used to control the Monoprice MPR-SG6Z (10761) or Dayton Audio DAX66 whole house multi-zone amplifier.
 All controller functions available through the serial port interface can be controlled by the binding.
 Up to 18 zones can be controlled when 3 amplifiers are connected together (if not all zones on the amp are used they can be excluded via configuration).
 Activating the 'Page All Zones' feature can only be done through the +12v trigger input on the back of the amplifier.
@@ -10,7 +10,7 @@ The binding supports two different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without serial connector on server side, you can add a serial to USB adapter.
+For users without serial connector on the server side, you can add a serial to USB adapter.
 
 You don't need to have your Monoprice whole house amplifier device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).
