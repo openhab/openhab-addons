@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.luftdateninfo.internal.handler;
 
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.joda.time.DateTime;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorData;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
@@ -97,19 +97,19 @@ public class HTTPHandler {
             // declare first item as latest
             SensorData latestData = valueArray[0];
             String latestTimeStr = latestData.getTimeStamp();
-            Date latestTime = DateTimeUtils.toDate(latestTimeStr);
+            DateTime latestTime = DateTimeUtils.toDate(latestTimeStr);
             if (latestTime == null) {
                 logDateConversionError(response, latestData);
             }
             for (int i = 1; i < valueArray.length; i++) {
                 SensorData iterData = valueArray[i];
                 String iterTimeStr = iterData.getTimeStamp();
-                Date iterTime = DateTimeUtils.toDate(iterTimeStr);
+                DateTime iterTime = DateTimeUtils.toDate(iterTimeStr);
                 if (iterTime == null) {
                     logDateConversionError(response, latestData);
                 }
                 if (iterTime != null && latestTime != null) {
-                    if (latestTime.before(iterTime)) {
+                    if (latestTime.isBefore(iterTime)) {
                         // found item is newer - take it as latest
                         latestTime = iterTime;
                         latestData = iterData;

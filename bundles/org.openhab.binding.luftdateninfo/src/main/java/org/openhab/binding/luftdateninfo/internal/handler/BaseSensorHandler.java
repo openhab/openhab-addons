@@ -161,7 +161,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             // no valid HTTP result - report COM error in UI
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getMessage() + " / " + DateTimeUtils.SDF.format(DateTime.now()));
+                    e.getMessage() + " / " + DateTimeUtils.DTF.print(DateTime.now()));
         }
     }
 

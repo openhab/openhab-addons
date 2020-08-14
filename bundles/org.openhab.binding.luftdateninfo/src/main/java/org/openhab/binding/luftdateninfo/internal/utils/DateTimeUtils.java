@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.luftdateninfo.internal.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,13 +27,13 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DateTimeUtils {
-    public static final SimpleDateFormat SDF = new SimpleDateFormat("YYYY-mm-dd hh:mm:ss");
+    public static final DateTimeFormatter DTF = DateTimeFormat.forPattern("YYYY-MM-dd hh:mm:ss");
     private static final Logger LOGGER = LoggerFactory.getLogger(DateTimeUtils.class);
 
-    public static synchronized @Nullable Date toDate(String dateTime) {
+    public static synchronized @Nullable DateTime toDate(String dateTime) {
         try {
-            return SDF.parse(dateTime);
-        } catch (ParseException | NumberFormatException e) {
+            return DTF.parseDateTime(dateTime);
+        } catch (NumberFormatException e) {
             LOGGER.debug("Uanble to parse date {}", dateTime);
             return null;
         }
