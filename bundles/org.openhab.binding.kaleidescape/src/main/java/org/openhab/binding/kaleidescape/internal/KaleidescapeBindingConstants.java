@@ -33,7 +33,6 @@ public class KaleidescapeBindingConstants {
     public static final ThingTypeUID THING_TYPE_PLAYER_ZONE = new ThingTypeUID(BINDING_ID, "player");
 
     public static final int DEFAULT_API_PORT = 10000;
-    public static final short DISCOVERY_SUBNET_MASK = 24;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
     public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE_MS = 500;
