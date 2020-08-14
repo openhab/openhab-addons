@@ -159,7 +159,8 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             updateStatus = updateChannels(response);
             statusUpdate(updateStatus);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            // no valid HTTP result - report COM error in UI
+            // no valid HTTP result - report COM error in UI and start schedule for recovery
+            startSchedule();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     e.getMessage() + " / " + DateTimeUtils.DTF.print(DateTime.now()));
         }
