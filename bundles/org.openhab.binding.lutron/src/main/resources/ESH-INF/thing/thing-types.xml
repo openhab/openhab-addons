@@ -91,7 +91,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="onToLast" type="boolean">
-				<label>Turn on to last level</label>
+				<label>Turn On To Last Level</label>
 				<description>
 					If set to true, dimmer will go to the last non-zero level set when an ON command is received.
 					If the last level cannot be determined, the value of onLevel will be used instead.
