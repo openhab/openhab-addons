@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.luftdateninfo.internal.handler;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,7 +26,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.joda.time.DateTime;
 import org.openhab.binding.luftdateninfo.internal.LuftdatenInfoConfiguration;
+import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +49,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected @Nullable ScheduledFuture<?> refreshJob;
 
     protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
+    protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
 
     public enum ConfigStatus {
         OK,
@@ -96,38 +101,12 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         config = getConfigAs(LuftdatenInfoConfiguration.class);
         configStatus = checkConfig(config);
         if (configStatus == ConfigStatus.OK) {
+            // start getting values
             update();
-            if (updateStatus == UpdateStatus.OK) {
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Start refresh job at interval {} min.", REFRESH_INTERVAL_MIN);
-                startSchedule();
-            } else {
-                switch (updateStatus) {
-                    case CONNECTION_ERROR:
-                        // start job even if first update isn't valid
-                        startSchedule();
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Update failed due to Connection error. Trying to recover in next refresh");
-                        break;
-                    case VALUE_EMPTY:
-                        // start job even if first update isn't valid
-                        startSchedule();
-                        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
-                                "No values delivered by Sensor. Trying to recover in next refresh");
-                        break;
-                    case VALUE_ERROR:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
-                        break;
-                    default:
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Error during update - please check your config data");
-                        break;
-                }
-            }
         } else {
-            logger.warn("Configuration not valid. Sensor ID as a number is mandatory!");
-            updateStatus(ThingStatus.OFFLINE);
+            // config error, no further actions triggered - Thing Status visible in UI
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Configuration not valid. Sensor ID as a number is mandatory!");
         }
         lifecycleStatus = LifecycleStatus.RUNNING;
     }
@@ -175,8 +154,52 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     protected void update() {
-        String response = HTTPHandler.getHandler().getResponse(config.sensorid);
-        updateStatus = updateChannels(response);
+        try {
+            String response = HTTPHandler.getHandler().getResponse(config.sensorid);
+            updateStatus = updateChannels(response);
+            statusUpdate(updateStatus);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            // no valid HTTP result - report COM error in UI
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    e.getMessage() + " / " + DateTimeUtils.SDF.format(DateTime.now()));
+        }
+    }
+
+    protected void statusUpdate(UpdateStatus updateStatus) {
+        if (updateStatus == UpdateStatus.OK) {
+            updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+            logger.debug("Start refresh job at interval {} min.", REFRESH_INTERVAL_MIN);
+            startSchedule();
+        } else {
+            switch (updateStatus) {
+                case CONNECTION_ERROR:
+                    // start job even if first update isn't valid
+                    startSchedule();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Update failed due to Connection error. Trying to recover in next refresh");
+                    break;
+                case VALUE_EMPTY:
+                    // start job even if first update isn't valid
+                    startSchedule();
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                            "No values delivered by Sensor. Trying to recover in next refresh");
+                    break;
+                case VALUE_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
+                    break;
+                default:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Error during update - please check your config data");
+                    break;
+            }
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        myThingStatus = status;
+        super.updateStatus(status, statusDetail, description);
     }
 
     protected abstract UpdateStatus updateChannels(@Nullable String json);

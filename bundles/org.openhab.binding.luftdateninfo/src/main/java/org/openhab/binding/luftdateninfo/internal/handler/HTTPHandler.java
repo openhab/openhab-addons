@@ -65,28 +65,23 @@ public class HTTPHandler {
         return HTTP_HANDLER;
     }
 
-    public @Nullable String getResponse(int sensorId) {
+    public @Nullable String getResponse(int sensorId)
+            throws InterruptedException, TimeoutException, ExecutionException {
         HttpClient localClient = commonHttpClient;
         if (localClient == null) {
             logger.warn("HTTP Client not initialized");
             return null;
         } else {
             String url = sensorUrl + sensorId + "/";
-            try {
-                ContentResponse contentResponse = localClient.newRequest(url).timeout(10, TimeUnit.SECONDS).send();
-                int httpStatus = contentResponse.getStatus();
-                String content = contentResponse.getContentAsString();
-                logger.debug("Sensor response: {}", httpStatus);
-                switch (httpStatus) {
-                    case 200:
-                        return content;
-                    default:
-                        logger.debug("Sensor response: {}", httpStatus);
-                        return null;
-                }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Exception when calling {}. Response: {}", url, e.getMessage());
-                return null;
+            ContentResponse contentResponse = localClient.newRequest(url).timeout(10, TimeUnit.SECONDS).send();
+            int httpStatus = contentResponse.getStatus();
+            String content = contentResponse.getContentAsString();
+            switch (httpStatus) {
+                case 200:
+                    return content;
+                default:
+                    logger.debug("Sensor response: {}", httpStatus);
+                    return null;
             }
         }
     }
