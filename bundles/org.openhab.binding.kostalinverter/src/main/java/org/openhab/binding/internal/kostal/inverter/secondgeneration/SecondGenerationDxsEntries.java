@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SecondGenerationDxsEntries} class defines methods, which are
  * used in the second generation part of the binding.
  *
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  */
+@NonNullByDefault
 public class SecondGenerationDxsEntries {
-    private String dxsId;
-    private String value;
+    private String dxsId = "";
+    private String value = "";
 
     public String getId() {
         return dxsId;

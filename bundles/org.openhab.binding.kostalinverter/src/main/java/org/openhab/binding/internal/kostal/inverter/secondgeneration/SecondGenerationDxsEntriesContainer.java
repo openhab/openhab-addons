@@ -14,6 +14,9 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link SecondGenerationDxsEntriesContainer} class defines an Container, which is
  * used in the second generation part of the binding.
@@ -21,6 +24,7 @@ import java.util.List;
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  */
 
+@NonNullByDefault
 public class SecondGenerationDxsEntriesContainer {
-    public List<SecondGenerationDxsEntries> dxsEntries;
+    public @Nullable List<SecondGenerationDxsEntries> dxsEntries;
 }

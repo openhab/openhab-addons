@@ -57,18 +57,13 @@ import com.google.gson.GsonBuilder;
  * @author Christoph Weitkamp - Incorporated new QuantityType (Units of Measurement)
  * @author Örjan Backsell - Redesigned regarding Piko1020, Piko New Generation
  */
+
 @NonNullByDefault
 public class SecondGenerationHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SecondGenerationHandler.class);
 
-    private HttpClient httpClient;
-
-    private @Nullable SecondGenerationConfiguration config;
-
-    @SuppressWarnings("unused")
-    @Nullable
-    private SecondGenerationBindingConstants configurationConfig;
+    private final HttpClient httpClient;
 
     private List<SecondGenerationChannelConfiguration> channelConfigs = new ArrayList<>();
     private List<SecondGenerationChannelConfiguration> channelConfigsExt = new ArrayList<>();
@@ -79,15 +74,8 @@ public class SecondGenerationHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        config = getConfigAs(SecondGenerationConfiguration.class);
-        String url = config.url.toString();
-        String username = config.username;
-        String password = config.password;
-        String valueConfiguration = "";
-        String dxsEntriesConf = "";
 
         if (command instanceof RefreshType) {
             logger.debug("Handle command for {} on channel {}: {}", thing.getUID(), channelUID, command);
@@ -96,6 +84,15 @@ public class SecondGenerationHandler extends BaseThingHandler {
         if (command == RefreshType.REFRESH) {
             return;
         }
+
+        final @Nullable SecondGenerationConfiguration handleCommandConfig;
+        handleCommandConfig = getConfigAs(SecondGenerationConfiguration.class);
+
+        String url = handleCommandConfig.url.toString();
+        String username = handleCommandConfig.username;
+        String password = handleCommandConfig.password;
+        String valueConfiguration = "";
+        String dxsEntriesConf = "";
 
         switch (channelUID.getId()) {
             case SecondGenerationBindingConstants.CHANNEL_CHARGETIMEEND:
@@ -189,22 +186,25 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         scheduler.scheduleWithFixedDelay(() -> {
             try {
-                refresh();
                 updateStatus(ThingStatus.ONLINE);
-            } catch (Exception scheduleWithFixedDelayException) {
+                refresh();
+            } catch (RuntimeException scheduleWithFixedDelayException) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         scheduleWithFixedDelayException.getClass().getName() + ":"
                                 + scheduleWithFixedDelayException.getMessage());
-                logger.debug("Error refreshing source = {}", getThing().getUID(), scheduleWithFixedDelayException);
+                logger.debug("Error refreshing source = {}", getThing().getUID(),
+                        scheduleWithFixedDelayException.getMessage());
             }
         }, 0, SecondGenerationConfiguration.REFRESHINTERVAL, TimeUnit.SECONDS);
-
     }
 
     @SuppressWarnings("null")
-    private void refresh() throws Exception {
-        String dxsEntriesCall = config.url.toString() + "/api/dxs.json?dxsEntries=" + channelConfigs.get(0).dxsEntries;
-        String dxsEntriesCallExt = config.url.toString() + "/api/dxs.json?dxsEntries="
+    private void refresh() {
+        final @Nullable SecondGenerationConfiguration refreshConfig;
+        refreshConfig = getConfigAs(SecondGenerationConfiguration.class);
+        String dxsEntriesCall = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
+                + channelConfigs.get(0).dxsEntries;
+        String dxsEntriesCallExt = refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigsExt.get(0).dxsEntries;
 
         for (int i = 1; i < channelConfigs.size(); i++) {
@@ -214,7 +214,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
 
         String jsonDxsEntriesResponse = callURL(dxsEntriesCall);
         String jsonDxsEntriesResponseExt = callURL(dxsEntriesCallExt);
-        String jsonDxsEntriesResponseExtExt = callURL(config.url.toString() + "/api/dxs.json?dxsEntries="
+        String jsonDxsEntriesResponseExtExt = callURL(refreshConfig.url.toString() + "/api/dxs.json?dxsEntries="
                 + channelConfigsExt.get(0).dxsEntries + "&dxsEntries=" + channelConfigsExt.get(1).dxsEntries
                 + "&dxsEntries=" + channelConfigsExt.get(2).dxsEntries);
 
@@ -303,13 +303,12 @@ public class SecondGenerationHandler extends BaseThingHandler {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                     dxsEntriesConf, valueConfiguration);
         } catch (Exception handleCommandException) {
-            logger.debug("Handle command for {} on channel {}: {}: {}: {}: {}: {}", thing.getUID(), httpClient, url,
-                    username, password, dxsEntriesConf, valueConfiguration);
+            logger.debug("Handle command for {} on channel {}: {}: {}: {}", thing.getUID(), httpClient, url,
+                    dxsEntriesConf, valueConfiguration, handleCommandException.getMessage());
         }
     }
 
-    @SuppressWarnings("null")
-    public static String callURL(String myURL) {
+    public final String callURL(String myURL) {
         StringBuilder sb = new StringBuilder();
         URLConnection urlConn = null;
         InputStreamReader in = null;
@@ -323,35 +322,31 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 try {
                     in = new InputStreamReader(urlConn.getInputStream(), Charset.defaultCharset());
                     BufferedReader bufferedReader = new BufferedReader(in);
-                    if (bufferedReader != null) {
-                        int cp;
-                        while ((cp = bufferedReader.read()) != -1) {
-                            sb.append((char) cp);
-                        }
-                        bufferedReader.close();
+                    int cp;
+                    while ((cp = bufferedReader.read()) != -1) {
+                        sb.append((char) cp);
                     }
+                    bufferedReader.close();
+                    in.close();
                 } catch (IOException getInputStreamReaderException) {
-                    throw new RuntimeException("Exception while calling URL:" + myURL, getInputStreamReaderException);
+                    logger.debug("Could not open connection urlConn", urlConn,
+                            getInputStreamReaderException.getMessage());
                 }
             }
-
-            in.close();
         } catch (IOException callURLException) {
-            throw new RuntimeException("Exception while calling URL:" + myURL, callURLException);
-
+            logger.debug("InputStream urlConn is empty");
         }
         return sb.toString();
     }
 
-    @SuppressWarnings({ "null", "unused" })
-    private State getState(String value, Unit<?> unit) {
+    private State getState(String value, @Nullable Unit<?> unit) {
         if (unit == null) {
             return new StringType(value);
         } else {
             try {
                 return new QuantityType<>(new BigDecimal(value), unit);
             } catch (NumberFormatException getStateException) {
-                logger.debug("Error parsing value '{}'", value, getStateException);
+                logger.debug("Error parsing value '{}'", value, getStateException.getMessage());
                 return UnDefType.UNDEF;
             }
         }

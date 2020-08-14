@@ -13,6 +13,8 @@
 
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SecondGenerationConfiguration} class contains fields mapping thing configuration parameters,
  * used in the second generation part of the binding.
@@ -20,13 +22,14 @@ package org.openhab.binding.internal.kostal.inverter.secondgeneration;
  * @author Örjan Backsell - Initial contribution Piko1020, Piko New Generation
  *
  */
+@NonNullByDefault
 public class SecondGenerationConfiguration {
 
     public static final long REFRESHINTERVAL = 60;
 
-    public Object url;
-    public String username;
-    public String password;
-    public String dxsIdConf;
-    public String valueConf;
+    public Object url = "";
+    public String username = "";
+    public String password = "";
+    public String dxsIdConf = "";
+    public String valueConf = "";
 }

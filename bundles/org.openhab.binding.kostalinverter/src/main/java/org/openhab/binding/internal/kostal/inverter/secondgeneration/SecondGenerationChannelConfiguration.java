@@ -18,7 +18,6 @@ import java.util.List;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
@@ -34,11 +33,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 
 @NonNullByDefault
 public class SecondGenerationChannelConfiguration {
-
-    @SuppressWarnings("unused")
-    @Nullable
-    private SecondGenerationBindingConstants configurationConfig;
-
     public String id;
     public String tag;
     public int num;
@@ -60,8 +54,9 @@ public class SecondGenerationChannelConfiguration {
                 SecondGenerationBindingConstants.CHANNEL_GRIDOUTPUTPOWER, "td", 4, SmartHomeUnits.WATT, "67109120"));
         channelConfiguration.add(new SecondGenerationChannelConfiguration(
                 SecondGenerationBindingConstants.CHANNEL_YIELD_DAY, "td", 7, SmartHomeUnits.WATT_HOUR, "251658754"));
-        channelConfiguration.add(new SecondGenerationChannelConfiguration(
-                SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL, "td", 10, SmartHomeUnits.WATT_HOUR, "251658753"));
+        channelConfiguration
+                .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_YIELD_TOTAL,
+                        "td", 10, SmartHomeUnits.KILOWATT_HOUR, "251658753"));
         channelConfiguration
                 .add(new SecondGenerationChannelConfiguration(SecondGenerationBindingConstants.CHANNEL_OPERATING_STATUS,
                         "td", 13, SmartHomeUnits.PERCENT, "16780032"));

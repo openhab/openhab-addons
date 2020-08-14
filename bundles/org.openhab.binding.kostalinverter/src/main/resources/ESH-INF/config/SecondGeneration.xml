@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 	<config-description uri="thing-type:kostalpiko1020_config">
-		<parameter name="url" type="text">
-			<label>Url</label>
+		<parameter name="url" type="text" required="true">
+			<label> Inverter Url</label>
 			<description>URL to inverter.</description>
-			<required>true</required>
+			<context>url</context>
 		</parameter>
-		<parameter name="username" type="text">
+		<parameter name="username" type="text" required="false">
 			<label>Username</label>
 			<description>The username for the inverter.</description>
-			<required>false</required>
 		</parameter>
-		<parameter name="password" type="text">
+		<parameter name="password" type="text" required="false">
 			<label>Password</label>
 			<description>The password for the inverter.</description>
-			<required>false</required>
+			<context>password</context>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" unit="s">
+		<parameter name="refreshInterval" type="integer" min="1" unit="s" required="false">
 			<label>Refresh Interval</label>
 			<description>Refresh Interval in seconds.</description>
-			<required>false</required>
+			<default>60</default>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

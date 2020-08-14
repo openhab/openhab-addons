@@ -63,71 +63,71 @@ None
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
-Channel Type ID                 Item Type                   Description
+| Channel Type ID           | Item Type                 | Description
 
--   gridOutputPower             Number:Power                WATT
--   yieldDay                    Number:Energy               WATT_HOUR
--   yieldTotal                  Number:Energy               WATT_HOUR
--   operatingStatus             Number:Dimensionless        
--   gridVoltageL1               Number:ElectricPotential    VOLT
--   gridCurrentL1               Number:ElectricCurrent      AMPERE
--   gridPowerL1                 Number:Power                WATT
--   gridVoltageL2               Number:ElectricPotential    VOLT
--   gridCurrentL2               Number:ElectricCurrent      AMPERE
--   gridPowerL2                 Number:Power                WATT
--   gridVoltageL3               Number:ElectricPotential    VOLT
--   gridCurrentL3               Number:ElectricCurrent      AMPERE
--   gridPowerL3                 Number:Power                WATT
--   dcPowerPV                   Number:Power                WATT
--   dc1Voltage                  Number:ElectricPotential    VOLT
--   dc1Current                  Number:ElectricCurrent      AMPERE
--   dc1Power                    Number:Power                WATT
--   dc2Voltage                  Number:ElectricPotential    VOLT
--   dc2Current                  Number:ElectricCurrent      AMPERE
--   dc2Power                    Number:Power                WATT
--   dc3Voltage                  Number:ElectricPotential    VOLT
--   dc3Current                  Number:ElectricCurrent      AMPERE
--   dc3Power                    Number:Power                WATT
+| gridOutputPower           | Number:Power              | WATT
+| yieldDay                  | Number:Energy             | WATT_HOUR
+| yieldTotal                | Number:Energy             | WATT_HOUR
+| operatingStatus           | Number:Dimensionless        
+| gridVoltageL1             | Number:ElectricPotential  | VOLT
+| gridCurrentL1             | Number:ElectricCurrent    | AMPERE
+| gridPowerL1               | Number:Power              | WATT
+| gridVoltageL2             | Number:ElectricPotential  | VOLT
+| gridCurrentL2             | Number:ElectricCurrent    | AMPERE
+| gridPowerL2               | Number:Power              | WATT
+| gridVoltageL3             | Number:ElectricPotential  | VOLT
+| gridCurrentL3             | Number:ElectricCurrent    | AMPERE
+| gridPowerL3               | Number:Power              | WATT
+| dcPowerPV                 | Number:Power              | WATT
+| dc1Voltage                | Number:ElectricPotential  | VOLT
+| dc1Current                | Number:ElectricCurrent    | AMPERE
+| dc1Power                  | Number:Power              | WATT
+| dc2Voltage                | Number:ElectricPotential  | VOLT
+| dc2Current                | Number:ElectricCurrent    | AMPERE
+| dc2Power                  | Number:Power              | WATT
+| dc3Voltage                | Number:ElectricPotential  | VOLT
+| dc3Current                | Number:ElectricCurrent    | AMPERE
+| dc3Power                  | Number:Power              | WATT
 
--   aktHomeConsumptionSolar     Number:Power                WATT
--   aktHomeConsumptionBat       Number:Power                WATT
--   aktHomeConsumptionGrid      Number:Power                WATT_HOUR
--   phaseSelHomeConsumpL1       Number:Power                WATT
--   phaseSelHomeConsumpL2       Number:Power                WATT
--   phaseSelHomeConsumpL3       Number:Power                WATT
--   gridFreq                    Number:Frequency            HERTZ
--   gridCosPhi                  Number:Angle                DEGREE_ANGLE
--   homeConsumptionDay          Number:Energy               WATT_HOUR
--   ownConsumptionDay           Number:Energy               WATT_HOUR
--   ownConsRateDay              Number:Dimensionless        PERCENT
--   autonomyDegreeDay           Number:Dimensionless        PERCENT
--   homeConsumptionTotal        Number:Energy               WATT_HOUR
--   ownConsumptionTotal         Number:Energy               WATT_HOUR
--   totalOperatingTime          Number:Time                 HOUR
--   current                     Number:ElectricCurrent      AMPERE
--   currentDir                  Number:ElectricCurrent      AMPERE
--   chargeCycles                Number:Dimensionless        
--   batteryTemperature          Number:Temperature          CELCIUS
--   loginterval                 Number:Time                 MINUTE
--   s0InPulseCnt                Number:Dimensionless        
--   ownConsRateTotal            Number:Dimensionless        PERCENT
--   autonomyDegreeTotal         Number:Dimensionless        PERCENT
--   batteryVoltage              Number:ElectricPotential    VOLT
--   batStateOfCharge            Number:Dimensionless        PERCENT
+| aktHomeConsumptionSolar   | Number:Power              | WATT
+| aktHomeConsumptionBat     | Number:Power              | WATT
+| aktHomeConsumptionGrid    | Number:Power              | WATT_HOUR
+| phaseSelHomeConsumpL1     | Number:Power              | WATT
+| phaseSelHomeConsumpL2     | Number:Power              | WATT
+| phaseSelHomeConsumpL3     | Number:Power              | WATT
+| gridFreq                  | Number:Frequency          | HERTZ
+| gridCosPhi                | Number:Angle              | DEGREE_ANGLE
+| homeConsumptionDay        | Number:Energy             | WATT_HOUR
+| ownConsumptionDay         | Number:Energy             | WATT_HOUR
+| ownConsRateDay            | Number:Dimensionless      | PERCENT
+| autonomyDegreeDay         | Number:Dimensionless      | PERCENT
+| homeConsumptionTotal      | Number:Energy             | WATT_HOUR
+| ownConsumptionTotal       | Number:Energy             | WATT_HOUR
+| totalOperatingTime        | Number:Time               | HOUR
+| current                   | Number:ElectricCurrent    | AMPERE
+| currentDir                | Number:ElectricCurrent    | AMPERE
+| chargeCycles              | Number:Dimensionless        
+| batteryTemperature        | Number:Temperature        | CELCIUS
+| loginterval               | Number:Time               | MINUTE
+| s0InPulseCnt              | Number:Dimensionless        
+| ownConsRateTotal          | Number:Dimensionless      | PERCENT
+| autonomyDegreeTotal       | Number:Dimensionless      | PERCENT
+| batteryVoltage            | Number:ElectricPotential  | VOLT
+| batStateOfCharge          | Number:Dimensionless      | PERCENT
 
 The following Channels are changeable
 
--  batteryType                  String          Battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV
--  batteryUsageConsumption      String          Value = 100
--  batteryUsageStrategy         String          Value = 1 = Automatic, Value = 2 = Automatic economical             
--  smartBatteryControl          Switch          Value = False / True
--  smartBatteryControlText      String          Value = False / True
--  batterChargeTimeFrom         Number:Time     Battery charge time, Value = 00:00
--  batteryChargeTimeTo          Number:Time     Battery charge time, Value = 23:59
--  maxDepthOfDischarge          String          Max.depth of discharge (SoC), Value = 10
--  shadowManagement             Number          Shadow management, Value = 0 = None, Value = 1 = Shadow management + String 1 activated, Value = 2 = Shadow  management + String 2 activated, Value = 3 = Shadow management + String 1 and 2 activated
--  externalModuleControl        String          External module control, Value = 0 = True
--  inverterName                 String          Value = 'Name of inverter'
+| batteryType               | String          | Battery type, Value = 1 = None, Value = 2 = PIKO Battery Li, Value = 3 = BYD B-Box HV
+| batteryUsageConsumption   | String          | Value = 100
+| batteryUsageStrategy      | String          | Value = 1 = Automatic, Value = 2 = Automatic economical             
+| smartBatteryControl       | Switch          | Value = False / True
+| smartBatteryControlText   | String          | Value = False / True
+| batterChargeTimeFrom      | Number:Time     | Battery charge time, Value = 00:00
+| batteryChargeTimeTo       | Number:Time     | Battery charge time, Value = 23:59
+| maxDepthOfDischarge       | String          | Max.depth of discharge (SoC), Value = 10
+| shadowManagement          | Number          | Shadow management, Value = 0 = None, Value = 1 = Shadow management + String 1 activated, Value = 2 = Shadow  management + String 2 activated, Value = 3 = Shadow management + String 1 and 2 activated
+| externalModuleControl     | String          | External module control, Value = 0 = True
+| inverterName              | String          | Value = 'Name of inverter'
 
 
 ### Third generation devices (PIKO IQ / PLENTICORE plus)

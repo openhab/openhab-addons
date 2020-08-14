@@ -13,6 +13,7 @@
 
 package org.openhab.binding.internal.kostal.inverter.secondgeneration;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Base64;
 
@@ -39,14 +40,13 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 public class SecondGenerationConfigurationHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
-
     public static void executeConfigurationChanges(HttpClient httpClient, String url, String username, String password,
             String dxsId, String value) throws Exception {
-        httpClient.start();
         String urlLogin = url + "/api/login.json?";
         String salt = "";
         String sessionId = "";
+
+        Logger logger = LoggerFactory.getLogger(SecondGenerationConfigurationHandler.class);
 
         String getAuthenticateResponse = httpClient.GET(urlLogin).getContentAsString();
         try {
@@ -62,7 +62,7 @@ public class SecondGenerationConfigurationHandler {
             String saltedPassword = new StringBuilder(password).append(salt).toString();
             MessageDigest mDigest = MessageDigest.getInstance("SHA1");
 
-            byte[] mDigestedPassword = mDigest.digest(saltedPassword.getBytes());
+            byte[] mDigestedPassword = mDigest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
             StringBuilder loginPostStringBuilder = new StringBuilder();
             for (int i = 0; i < mDigestedPassword.length; i++) {
                 loginPostStringBuilder.append(Integer.toString((mDigestedPassword[i] & 0xff) + 0x100, 16).substring(1));
@@ -106,10 +106,8 @@ public class SecondGenerationConfigurationHandler {
             JsonObject postJsonObject = (JsonObject) new JsonParser().parse(transformJsonResponse(postResponse));
             sessionId = extractSessionId(postJsonObject);
         } catch (JsonIOException e) {
-            logger.debug("Could not read the response.");
+            logger.debug("Could not read the response: {}", e.getMessage());
         }
-
-        httpClient.stop();
     }
 
     static String transformJsonResponse(String jsonResponse) {
