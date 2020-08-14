@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link FeedHandlerConfiguration} class contains fields mapping thing configuration parameters.
  *
- * @author Jeremy Stucki
+ * @author Jeremy Stucki - Initial contribution
  */
 @NonNullByDefault
 public class FeedHandlerConfiguration {
