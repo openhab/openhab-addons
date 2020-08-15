@@ -52,7 +52,6 @@ public class ComfoAirSerialConnector {
 
     private boolean isSuspended = true;
 
-    private boolean connected = false;
     private final String serialPortName;
     private final int baudRate;
     private final SerialPortManager serialPortManager;
@@ -72,7 +71,7 @@ public class ComfoAirSerialConnector {
      *
      * @throws PortInUseException, UnsupportedCommOperationException, IOException
      */
-    public void open() throws PortInUseException, UnsupportedCommOperationException, IOException {
+    public void open() throws ComfoAirSerialException {
         logger.debug("open(): Opening ComfoAir connection");
 
         try {
@@ -97,14 +96,11 @@ public class ComfoAirSerialConnector {
                 } else {
                     logger.debug("Failure while creating COMMAND: {}", command);
                 }
-                setConnected(true);
             } else {
-                logger.debug("open(): No such Port: {}", serialPortName);
-                setConnected(false);
+                throw new ComfoAirSerialException("No such Port: " + serialPortName);
             }
         } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
-            setConnected(false);
-            throw e;
+            throw new ComfoAirSerialException(e);
         }
     }
 
@@ -566,21 +562,5 @@ public class ComfoAirSerialConnector {
             }
         }
         return 0;
-    }
-
-    /**
-     * @return true if connected or false if not
-     */
-    public boolean isConnected() {
-        return connected;
-    }
-
-    /**
-     * Set the connection state
-     *
-     * @param connected true if connected or false if not
-     */
-    public void setConnected(boolean connected) {
-        this.connected = connected;
     }
 }

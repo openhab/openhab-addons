@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.comfoair.internal;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -35,9 +34,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.comfoair.internal.datatypes.ComfoAirDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +113,7 @@ public class ComfoAirHandler extends BaseThingHandler {
         if (comfoAirConnector != null) {
             try {
                 comfoAirConnector.open();
-                if (comfoAirConnector != null && comfoAirConnector.isConnected()) {
+                if (comfoAirConnector != null) {
                     updateStatus(ThingStatus.ONLINE);
                     pullDeviceProperties();
                     Map<String, String> properties = thing.getProperties();
@@ -204,7 +201,7 @@ public class ComfoAirHandler extends BaseThingHandler {
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-            } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
+            } catch (ComfoAirSerialException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         } else {
