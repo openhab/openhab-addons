@@ -50,6 +50,11 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
         super(thingName, thingHandler, blkMap, sensorMap);
     }
 
+    @Override
+    public int getVersion() {
+        return ShellyCoapJSonDTO.COIOT_VERSION_1;
+    }
+
     /**
      * Process CoIoT status update message. If a status update is received, but the device description has not been
      * received yet a GET is send to query device description.

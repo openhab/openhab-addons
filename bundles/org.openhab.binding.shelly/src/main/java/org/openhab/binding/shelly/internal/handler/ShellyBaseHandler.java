@@ -183,9 +183,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         super.handleConfigurationUpdate(configurationParameters);
         logger.debug("{}: Thing config updated, re-initialize", thingName);
         coap.stop();
-        initializeThingConfig();
         requestUpdates(1, true);// force re-initialization
-        startUpdateJob();
     }
 
     /**
@@ -199,8 +197,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      */
     private boolean initializeThing() throws ShellyApiException {
         // Get the thing global settings and initialize device capabilities
-        cache.clear(); // clear any cached channels
-        refreshSettings = false;
+        stopping = false;
 
         // Init from thing type to have a basic profile, gets updated when device info is received from API
         profile.initFromThingType(thingType);
@@ -265,21 +262,20 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             config.eventsSwitch = false;
             config.eventsButton = false;
             config.eventsPush = false;
+            config.eventsRoller = false;
             config.eventsSensorReport = false;
             api.setConfig(thingName, config);
         }
-        if (config.eventsCoIoT) {
-            logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
-            coap.start(thingName, config);
-        }
-
-        // register event urls
-        api.setActionURLs();
 
         // All initialization done, so keep the profile and set Thing to ONLINE
         profile = tmpPrf;
         fillDeviceStatus(status, false);
         postEvent(ALARM_TYPE_NONE, false);
+        api.setActionURLs(); // register event urls
+        if (config.eventsCoIoT) {
+            logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
+            coap.start(thingName, config);
+        }
 
         logger.debug("{}: Thing successfully initialized.", thingName);
         setThingOnline(); // if API call was successful the thing must be online
@@ -459,7 +455,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             logger.info("{}: Thing goes OFFLINE: {}", thingName, messages.get(messageKey));
             updateStatus(ThingStatus.OFFLINE, detail, "@text/" + messageKey);
             watchdog.reset();
-            cache.disable();
             channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
     }

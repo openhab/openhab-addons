@@ -51,6 +51,11 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         super(thingName, thingHandler, blkMap, sensorMap);
     }
 
+    @Override
+    public int getVersion() {
+        return ShellyCoapJSonDTO.COIOT_VERSION_2;
+    }
+
     /**
      * Process CoIoT status update message. If a status update is received, but the device description has not been
      * received yet a GET is send to query device description.
@@ -249,10 +254,10 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                 }
                 break;
             case "9103": // EVC, cfgChanged, U16
-                if (lastCfgCount != s.value) {
+                if ((lastCfgCount != -1) && (lastCfgCount != s.value)) {
                     thingHandler.requestUpdates(1, true); // refresh config
-                    lastCfgCount = (int) s.value;
                 }
+                lastCfgCount = (int) s.value;
                 break;
 
             default:

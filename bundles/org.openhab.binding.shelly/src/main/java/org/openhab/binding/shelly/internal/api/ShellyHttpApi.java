@@ -413,7 +413,7 @@ public class ShellyHttpApi {
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
         if (config.localIp.isEmpty()) {
-            logger.warn("{}: Local IP address was not detected, can't build Callback URL", thingName);
+            throw new ShellyApiException(thingName + ": Local IP address was not detected, can't build Callback URL");
         }
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {

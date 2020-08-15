@@ -113,15 +113,14 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             this.thingName = thingName;
             this.config = config;
             resetSerial();
-            reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
 
             if (!isStarted()) {
                 logger.debug("{}: Starting CoAP Listener", thingName);
-                reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
 
                 coapServer.start(config.localIp, this);
                 statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
                         .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
+                discover();
             }
         } catch (UnknownHostException e) {
             ShellyApiException ea = new ShellyApiException(e);
@@ -212,7 +211,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
                 if ((serial == lastSerial) && payload.equals(lastPayload)
                         && (!profile.hasBattery || ((serial & 0xFF) != 0))) {
-                    logger.trace("{}: Serial {} was already processed, ignore update", thingName, serial);
+                    logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
                     return;
                 }
 
@@ -256,8 +255,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         logger.debug("{}: CoIoT Device Description for {}: {}", thingName, devId, payload);
 
         try {
-            // Save to thing properties
-            thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
+            boolean valid = true;
 
             // Decode Json
             CoIotDevDescription descr = gson.fromJson(payload, CoIotDevDescription.class);
@@ -279,14 +277,27 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     sen.type = blk.type;
                     sen.range = blk.range;
                     sen.links = blk.links;
-                    addSensor(sen);
+                    valid &= addSensor(sen);
                 }
             }
+
+            // Save to thing properties
+            thingHandler.updateProperties(PROPERTY_COAP_DESCR, payload);
+
             logger.debug("{}: Adding {} sensor definitions", thingName, descr.sen.size());
             if (descr.sen != null) {
                 for (int i = 0; i < descr.sen.size(); i++) {
-                    addSensor(descr.sen.get(i));
+                    valid &= addSensor(descr.sen.get(i));
                 }
+            }
+
+            if (!valid) {
+                logger.debug(
+                        "{}: Incompatible device description detected for CoIoT version {} (id length mismatch), discarding!",
+                        thingName, coiot.getVersion());
+                thingHandler.updateProperties(PROPERTY_COAP_DESCR, "");
+                discover();
+                return;
             }
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
@@ -300,9 +311,19 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      *
      * @param sen CoIotDescrSen of the sensor
      */
-    private synchronized void addSensor(CoIotDescrSen sen) {
+    private synchronized boolean addSensor(CoIotDescrSen sen) {
         logger.debug("{}:    id {}: {}, Type={}, Range={}, Links={}", thingName, sen.id, sen.desc, sen.type, sen.range,
                 sen.links);
+        // CoIoT version 2 changes from 3 digit IDs to 4 digit IDs
+        // We need to make sure that the persisted device description matches,
+        // otherwise the stored one is discarded and a new discovery is triggered
+        // This happens on firmware up/downgrades (version 1.8 brings CoIoT v2 with 4 digit IDs)
+        int vers = coiot.getVersion();
+        if (((vers == COIOT_VERSION_1) && (sen.id.length() > 3))
+                || ((vers >= COIOT_VERSION_2) && (sen.id.length() < 4))) {
+            return false;
+        }
+
         try {
             CoIotDescrSen fixed = coiot.fixDescription(sen, blkMap);
             if (!sensorMap.containsKey(fixed.id)) {
@@ -313,6 +334,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         } catch (RuntimeException e) { // depending on firmware release the CoAP device description is buggy
             logger.debug("{}: Unable to decode sensor definition -> skip", thingName, e);
         }
+
+        return true;
     }
 
     /**
@@ -330,7 +353,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         if (blkMap.isEmpty()) {
             // send discovery packet
             resetSerial();
-            reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
+            discover();
 
             // try to uses description from last initialization
             String savedDescr = thingHandler.getProperty(PROPERTY_COAP_DESCR);
@@ -340,8 +363,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
 
             // simulate received device description to create element table
-            handleDeviceDescription(devId, savedDescr);
             logger.debug("{}: Device description for {} restored: {}", thingName, devId, savedDescr);
+            handleDeviceDescription(devId, savedDescr);
         }
 
         // Parse Json,
@@ -354,7 +377,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         List<CoIotSensor> sensorUpdates = list.generic;
         Map<String, State> updates = new TreeMap<String, State>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
-        thingHandler.restartWatchdog(); // every CoAP message restarts the watchdog
         for (int i = 0; i < sensorUpdates.size(); i++) {
             try {
                 CoIotSensor s = sensorUpdates.get(i);
@@ -417,9 +439,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         lastPayload = payload;
     }
 
-    private boolean updateChannel(Map<String, State> updates, String group, String channel, State value) {
-        updates.put(mkChannelId(group, channel), value);
-        return true;
+    private void discover() {
+        reqDescription = sendRequest(reqDescription, config.deviceIp, COLOIT_URI_DEVDESC, Type.CON);
     }
 
     /**
@@ -524,6 +545,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 reqStatus.cancel();
             }
         }
+        resetSerial();
+        coiotBound = false;
     }
 
     public void dispose() {

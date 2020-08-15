@@ -28,6 +28,8 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
  */
 @NonNullByDefault
 public interface ShellyCoIoTInterface {
+    public int getVersion();
+
     public CoIotDescrSen fixDescription(CoIotDescrSen sen, Map<String, CoIotDescrBlk> blkMap);
 
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
