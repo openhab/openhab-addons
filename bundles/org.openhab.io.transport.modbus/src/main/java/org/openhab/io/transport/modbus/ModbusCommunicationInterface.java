@@ -94,4 +94,16 @@ public interface ModbusCommunicationInterface extends AutoCloseable {
      */
     public Future<?> submitOneTimeWrite(ModbusWriteRequestBlueprint request, ModbusWriteCallback resultCallback,
             ModbusFailureCallback<ModbusWriteRequestBlueprint> failureCallback);
+
+    /**
+     * Close this communication interface and try to free all resources associated with it
+     *
+     * Upon close, all polling tasks registered by this instance are unregistered. In addition, connections are closed
+     * eagerly if this was the last connection interface pointing to the endpoint.
+     *
+     * After close, the communication interface cannot be used to communicate with the device.
+     *
+     */
+    @Override
+    public void close() throws Exception;
 }
