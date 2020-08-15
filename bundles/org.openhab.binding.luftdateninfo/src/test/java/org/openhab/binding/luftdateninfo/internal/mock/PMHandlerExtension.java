@@ -35,7 +35,7 @@ public class PMHandlerExtension extends PMHandler {
     }
 
     public UpdateStatus getUpdateStatus() {
-        return updateStatus;
+        return lastUpdateStatus;
     }
 
     public @Nullable State getPM25Cache() {

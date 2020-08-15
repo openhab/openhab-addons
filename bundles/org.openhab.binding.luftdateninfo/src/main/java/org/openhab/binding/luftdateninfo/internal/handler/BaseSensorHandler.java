@@ -51,6 +51,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
 
     protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
     protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
+    protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
 
     private int successCounter = 0;
     private int failCounter = 0;
@@ -158,16 +159,16 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     protected void dataUpdate() {
-        UpdateStatus updateStatus = UpdateStatus.UNKNOWN;
         String details = null;
         try {
             String response = HTTPHandler.getHandler().getResponse(config.sensorid);
-            updateStatus = updateChannels(response);
+            lastUpdateStatus = updateChannels(response);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             // no valid HTTP result - report COM error in UI and start schedule for recovery
             details = e.getMessage() + " / " + DateTimeUtils.DTF.print(DateTime.now());
+            lastUpdateStatus = UpdateStatus.CONNECTION_EXCEPTION;
         }
-        statusUpdate(updateStatus, details);
+        statusUpdate(lastUpdateStatus, details);
     }
 
     protected void statusUpdate(UpdateStatus updateStatus, @Nullable String details) {
@@ -208,8 +209,8 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             }
         }
         if ((successCounter + failCounter) % 12 == 0) {
-            logger.info("Call Success Rate {}"
-                    + NumberUtils.round(successCounter / NumberUtils.convert(successCounter + failCounter), 1));
+            logger.info("Call Success Rate {}",
+                    NumberUtils.round(successCounter / NumberUtils.convert(successCounter + failCounter), 1));
         }
     }
 

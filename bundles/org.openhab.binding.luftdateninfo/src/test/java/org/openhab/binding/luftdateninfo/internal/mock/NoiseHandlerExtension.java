@@ -35,7 +35,7 @@ public class NoiseHandlerExtension extends NoiseHandler {
     }
 
     public UpdateStatus getUpdateStatus() {
-        return updateStatus;
+        return lastUpdateStatus;
     }
 
     public @Nullable State getNoiseEQCache() {

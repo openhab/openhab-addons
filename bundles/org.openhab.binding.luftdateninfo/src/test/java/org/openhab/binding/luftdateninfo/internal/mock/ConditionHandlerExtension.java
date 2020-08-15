@@ -35,7 +35,7 @@ public class ConditionHandlerExtension extends ConditionHandler {
     }
 
     public UpdateStatus getUpdateStatus() {
-        return updateStatus;
+        return lastUpdateStatus;
     }
 
     public @Nullable State getTemperature() {

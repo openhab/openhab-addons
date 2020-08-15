@@ -1,7 +1,8 @@
 # LuftdatenInfo Binding
 
-<img style="float: right;" src="doc/logo-rund.png">
-Binding for the Sensor Community <a href=https://luftdaten.info/>luftdaten.info</a>. The community provides instructions to build sensors on your own and they can be integrated into the database.
+<img align="right" src="./doc/logo-rund.png"/>
+
+Binding for the Sensor Community [luftdaten.info](https://luftdaten.info/). The community provides instructions to build sensors on your own and they can be integrated into the database.
 With this binding you can integrate your sensor, a sensor nearby or even any sensors you want into openHAB.
 
 ## Supported Things
@@ -54,11 +55,11 @@ Perform the following steps to get the appropriate Sensor ID
 
 ### Noise Sensor 
 
-| Channel ID           | Item Type            | Description                              |
-|----------------------|----------------------|------------------------------------------|
-| noise-eq             | Number:Dimensionless | Average noise in dbA  |
-| noise-min            | Number:Dimensionless | Minimum noise covered in the last 2.5 minutes in dbA |
-| noise-main           | Number:Dimensionless | Maximum noise covered in the last 2.5 minutes in dbA  |
+| Channel ID           | Item Type            | Description                                          |
+|----------------------|----------------------|------------------------------------------------------|
+| noise-eq             | Number:Dimensionless | Average noise in db                                  |
+| noise-min            | Number:Dimensionless | Minimum noise covered in the last 2.5 minutes in db  |
+| noise-main           | Number:Dimensionless | Maximum noise covered in the last 2.5 minutes in db  |
 
 
 ## Full Example
@@ -67,7 +68,7 @@ Perform the following steps to get the appropriate Sensor ID
 
 luftdaten.things
 
-```perl
+```
 Thing luftdateninfo:particulate:pm_sensor   "PM Sensor"         [ sensorid=28842]
 Thing luftdateninfo:conditions:cond_sensor  "Condition Sensor"  [ sensorid=28843]
 Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid=39745]
@@ -77,37 +78,35 @@ Thing luftdateninfo:noise:noise_sensor      "Noise Sensor"      [ sensorid=39745
 
 luftdaten.items
 
-```perl
+```
+Number:Density PM_25                "PM2.5"                 { channel="luftdateninfo:particulate:pm_sensor:pm25" } 
+Number:Density PM_100               "PM10"                  { channel="luftdateninfo:particulate:pm_sensor:pm100" } 
 
-Number PM_25          "PM2.5 [%.0f ug/m3]"                { channel="luftdateninfo:particulate:pm_sensor:pm25"  } 
-Number PM_100         "PM10 [%.0f ug/m3]"                 { channel="luftdateninfo:particulate:pm_sensor:pm100"  } 
+Number:Temperature TEMPERATURE      "Temperature"           { channel="luftdateninfo:conditions:cond_sensor:temperature" } 
+Number:Dimensionless HUMIDITY       "Humidity"              { channel="luftdateninfo:conditions:cond_sensor:humidity" } 
+Number:Pressure PRESSURE            "Atmospheric Pressure"  { channel="luftdateninfo:conditions:cond_sensor:pressure" } 
+Number:Pressure PRESSURE_SEA        "Pressure sea level"    { channel="luftdateninfo:conditions:cond_sensor:pressure-sea" } 
 
-Number TEMPERATURE    "Temperature [%.0f °]"              { channel="luftdateninfo:conditions:cond_sensor:temperature"  } 
-Number HUMIDITY       "Humidity [%.0f %%]"                { channel="luftdateninfo:conditions:cond_sensor:humidity"  } 
-Number PRESSURE       "Atmospheric Pressure [%.0f hpa]"   { channel="luftdateninfo:conditions:cond_sensor:pressure"  } 
-Number PRESSURE_SEA   "Pressure sea level [%.0f hpa]"     { channel="luftdateninfo:conditions:cond_sensor:pressure-sea"  } 
-
-Number NOISE_EQ       "Noise EQ [%.0f dbA]"               { channel="luftdateninfo:noise:noise_sensor:noise-eq"  } 
-Number NOISE_MIN      "Noise min [%.0f dbA]"              { channel="luftdateninfo:noise:noise_sensor:noise-min"  } 
-Number NOISE_MAX      "Noise max [%.0f dbA]"              { channel="luftdateninfo:noise:noise_sensor:noise-max"  } 
+Number:Dimensionless NOISE_EQ       "Noise EQ"              { channel="luftdateninfo:noise:noise_sensor:noise-eq" } 
+Number:Dimensionless NOISE_MIN      "Noise min"             { channel="luftdateninfo:noise:noise_sensor:noise-min" } 
+Number:Dimensionless NOISE_MAX      "Noise max"             { channel="luftdateninfo:noise:noise_sensor:noise-max" } 
 ```
 
 ### Sitemap
 
 LuftdatenInfo.sitemap
 
-```perl
-sitemap LuftdatenInfo label="LuftdatenInfo" {
-		Text item=PM_25           label="Particulate Matter 2.5 [%s ug/m3]" 	
-		Text item=PM_100          label="Particulate Matter 10 [%s ug/m3]" 	
-
-		Text item=TEMPERATURE     label="Temperature [%s °C]" 	
-		Text item=HUMIDITY        label="Humidity [%s %%]" 	
-		Text item=PRESSURE        label="Atmospheric Pressure [%s hpa]" 	
-		Text item=PRESSURE_SEA    label="Atmospheric Pressure sea [%s hpa]" 	
-
-		Text item=NOISE_EQ        label="Noise avg [%s dbA]" 	
-		Text item=NOISE_MIN       label="Noise min [%s dbA]" 	
-		Text item=NOISE_MAX       label="Noise max [%s dbA]" 	
-}
 ```
+sitemap LuftdatenInfo label="LuftdatenInfo" {
+        Text item=PM_25                     label="Particulate Matter 2.5 [%.1f %unit%]"    
+        Text item=PM_100                    label="Particulate Matter 10 [%.1f %unit%]"     
+
+        Text item=TEMPERATURE               label="Temperature [%d %unit%]"     
+        Text item=HUMIDITY                  label="Humidity [%d %unit%]"    
+        Text item=PRESSURE                  label="Atmospheric Pressure [%d %unit%]"    
+        Text item=PRESSURE_SEA              label="Atmospheric Pressure sea [%d %unit%]"    
+
+        Text item=NOISE_EQ                  label="Noise avg [%.1f %unit%]"     
+        Text item=NOISE_MIN                 label="Noise min [%.1f %unit%]"     
+        Text item=NOISE_MAX                 label="Noise max [%.1f %unit%]"     
+}```

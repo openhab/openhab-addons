@@ -14,6 +14,7 @@ package org.openhab.binding.luftdateninfo.internal.util;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
@@ -23,6 +24,7 @@ import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class DateTimeTest {
 
     @Test
