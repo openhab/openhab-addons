@@ -754,7 +754,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     void handleWebsocketCommand(JsonPushCommand pushCommand) {
         String command = pushCommand.command;
         if (command != null) {
-            @Nullable
             ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
             switch (command) {
                 case "PUSH_ACTIVITY":
@@ -783,7 +782,6 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     if (payload != null && payload.startsWith("{") && payload.endsWith("}")) {
                         JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
                                 JsonCommandPayloadPushDevice.class);
-                        @Nullable
                         DopplerId dopplerId = devicePayload.dopplerId;
                         if (dopplerId != null) {
                             handlePushDeviceCommand(dopplerId, command, payload);

@@ -828,7 +828,6 @@ public class Connection {
         if (response != null) {
             org.openhab.binding.amazonechocontrol.internal.jsons.JsonExchangeTokenResponse.Tokens tokens = response.tokens;
             if (tokens != null) {
-                @Nullable
                 Map<String, Cookie[]> cookiesMap = tokens.cookies;
                 if (cookiesMap != null) {
                     for (String domain : cookiesMap.keySet()) {
@@ -1616,7 +1615,7 @@ public class Connection {
                 String text = executionNodeObject.text;
                 if (text != null && !text.isEmpty()) {
                     text = text.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
-                    delay += text.length() * 100;
+                    delay += text.length() * 150;
                 }
 
                 makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
