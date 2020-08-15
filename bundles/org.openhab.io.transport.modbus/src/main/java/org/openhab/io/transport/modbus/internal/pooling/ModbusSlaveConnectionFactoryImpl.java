@@ -83,6 +83,13 @@ public class ModbusSlaveConnectionFactoryImpl
 
             ModbusSlaveConnection connection = getObject();
 
+            if ( endpoint == null ) {
+                if  (connection != null ) {
+                    connection.resetConnection();
+                }
+                return true;
+            }
+
             @Nullable
             EndpointPoolConfiguration configuration = endpointPoolConfigs.get(endpoint);
             long reconnectAfterMillis = configuration == null ? 0 : configuration.getReconnectAfterMillis();
