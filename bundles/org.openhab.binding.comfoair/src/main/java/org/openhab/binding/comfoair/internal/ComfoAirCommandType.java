@@ -824,7 +824,6 @@ public enum ComfoAirCommandType {
      *         ComfoAirCommand named by key
      */
     public static Collection<ComfoAirCommand> getAffectedReadCommands(String key, Set<String> usedKeys) {
-
         Map<Integer, ComfoAirCommand> commands = new HashMap<>();
 
         ComfoAirCommandType commandType = getCommandTypeByKey(key);
@@ -849,7 +848,6 @@ public enum ComfoAirCommandType {
      * @return all ComfoAirCommand's identified by keys
      */
     public static Collection<ComfoAirCommand> getReadCommandsByEventTypes(List<String> keys) {
-
         Map<Integer, ComfoAirCommand> commands = new HashMap<>();
         for (ComfoAirCommandType entry : values()) {
             if (keys.contains(entry.key)) {

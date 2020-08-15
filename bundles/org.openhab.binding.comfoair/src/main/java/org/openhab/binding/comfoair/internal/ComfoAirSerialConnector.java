@@ -42,13 +42,13 @@ public class ComfoAirSerialConnector {
 
     private final Logger logger = LoggerFactory.getLogger(ComfoAirSerialConnector.class);
 
-    private static byte CTRL = (byte) 0x07;
-    private static byte[] START = { CTRL, (byte) 0xf0 };
-    private static byte[] END = { CTRL, (byte) 0x0f };
-    private static byte[] ACK = { CTRL, (byte) 0xf3 };
+    private static final byte CTRL = (byte) 0x07;
+    private static final byte[] START = { CTRL, (byte) 0xf0 };
+    private static final byte[] END = { CTRL, (byte) 0x0f };
+    private static final byte[] ACK = { CTRL, (byte) 0xf3 };
 
-    private static int RS232_ENABLED_VALUE = 0x03;
-    private static int RS232_DISABLED_VALUE = 0x00;
+    private static final int RS232_ENABLED_VALUE = 0x03;
+    private static final int RS232_DISABLED_VALUE = 0x00;
 
     private boolean isSuspended = true;
 
@@ -233,7 +233,6 @@ public class ComfoAirSerialConnector {
                                 && responseBlock[responseBlock.length - 2] == END[0]
                                 && responseBlock[responseBlock.length - 1] == END[1]
                                 && (responseBlock[5] & 0xff) == command.getReplyCmd()) {
-
                             if (logger.isTraceEnabled()) {
                                 logger.trace("receive RAW DATA: {}", dumpData(responseBlock));
                             }
@@ -245,18 +244,17 @@ public class ComfoAirSerialConnector {
                             // the cleanedBlock size should equal dataSize + 2 cmd
                             // bytes and + 1 checksum byte
                             if (dataSize + 3 == cleanedBlock.length - 1) {
-
                                 byte checksum = cleanedBlock[dataSize + 3];
                                 int[] replyData = new int[dataSize];
                                 for (int i = 0; i < dataSize; i++) {
                                     replyData[i] = cleanedBlock[i + 3] & 0xff;
                                 }
 
-                                byte[] _block = Arrays.copyOf(cleanedBlock, 3 + dataSize);
+                                byte[] block = Arrays.copyOf(cleanedBlock, 3 + dataSize);
 
                                 // validate calculated checksum against submitted
                                 // checksum
-                                if (calculateChecksum(_block) == checksum) {
+                                if (calculateChecksum(block) == checksum) {
                                     if (logger.isTraceEnabled()) {
                                         logger.trace("receive CMD: {} DATA: {}",
                                                 String.format("%02x", command.getReplyCmd()), dumpData(replyData));
@@ -277,13 +275,12 @@ public class ComfoAirSerialConnector {
                             }
                         }
                     }
-                } catch (IOException ioe) {
-                    if (ioe instanceof InterruptedIOException) {
-                        Thread.currentThread().interrupt();
-                        logger.warn("Transmission was interrupted: {}", ioe.getMessage());
-                        throw new RuntimeException(ioe);
-                    }
-                    logger.debug("IO error: {}", ioe.getMessage());
+                } catch (InterruptedIOException e) {
+                    Thread.currentThread().interrupt();
+                    logger.warn("Transmission was interrupted: {}", e.getMessage());
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    logger.debug("IO error: {}", e.getMessage());
                 }
 
                 try {

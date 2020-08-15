@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeTime implements ComfoAirDataType {
-    private static DataTypeTime SINGLETON_INSTANCE = new DataTypeTime();
+    private static final DataTypeTime SINGLETON_INSTANCE = new DataTypeTime();
 
     private DataTypeTime() {
     }

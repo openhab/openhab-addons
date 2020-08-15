@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeVolt implements ComfoAirDataType {
-    private static DataTypeVolt SINGLETON_INSTANCE = new DataTypeVolt();
+    private static final DataTypeVolt SINGLETON_INSTANCE = new DataTypeVolt();
 
     private DataTypeVolt() {
     }

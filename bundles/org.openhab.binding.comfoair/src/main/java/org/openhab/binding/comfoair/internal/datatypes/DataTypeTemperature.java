@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeTemperature implements ComfoAirDataType {
-    private static DataTypeTemperature SINGLETON_INSTANCE = new DataTypeTemperature();
+    private static final DataTypeTemperature SINGLETON_INSTANCE = new DataTypeTemperature();
 
     private DataTypeTemperature() {
     }

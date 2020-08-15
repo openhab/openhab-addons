@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeMessage implements ComfoAirDataType {
-    private static DataTypeMessage SINGLETON_INSTANCE = new DataTypeMessage();
+    private static final DataTypeMessage SINGLETON_INSTANCE = new DataTypeMessage();
 
     private DataTypeMessage() {
     }

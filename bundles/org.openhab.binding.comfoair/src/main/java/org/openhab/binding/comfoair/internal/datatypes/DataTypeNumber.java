@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeNumber implements ComfoAirDataType {
-    private static DataTypeNumber SINGLETON_INSTANCE = new DataTypeNumber();
+    private static final DataTypeNumber SINGLETON_INSTANCE = new DataTypeNumber();
 
     private DataTypeNumber() {
     }

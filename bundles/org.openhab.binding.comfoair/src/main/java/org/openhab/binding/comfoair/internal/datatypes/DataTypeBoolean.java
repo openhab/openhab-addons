@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataTypeBoolean implements ComfoAirDataType {
-    private static DataTypeBoolean SINGLETON_INSTANCE = new DataTypeBoolean();
+    private static final DataTypeBoolean SINGLETON_INSTANCE = new DataTypeBoolean();
 
     private DataTypeBoolean() {
     }
