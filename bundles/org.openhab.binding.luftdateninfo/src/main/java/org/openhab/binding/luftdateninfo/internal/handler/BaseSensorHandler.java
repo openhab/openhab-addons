@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.joda.time.DateTime;
 import org.openhab.binding.luftdateninfo.internal.LuftdatenInfoConfiguration;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
-import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,9 +51,6 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
     protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
     protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
-
-    private int successCounter = 0;
-    private int failCounter = 0;
 
     public enum ConfigStatus {
         OK,
@@ -175,9 +171,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         if (updateStatus == UpdateStatus.OK) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             startSchedule();
-            successCounter++;
         } else {
-            failCounter++;
             switch (updateStatus) {
                 case CONNECTION_ERROR:
                     // start job even first update delivers no data - recovery is possible
@@ -207,10 +201,6 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
                             "Error during update - please check your config data");
                     break;
             }
-        }
-        if ((successCounter + failCounter) % 12 == 0) {
-            logger.info("Call Success Rate {}",
-                    NumberUtils.round(successCounter / NumberUtils.convert(successCounter + failCounter), 1));
         }
     }
 

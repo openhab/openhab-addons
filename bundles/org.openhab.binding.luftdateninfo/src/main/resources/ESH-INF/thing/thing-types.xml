@@ -60,13 +60,11 @@
 
 	<channel-type id="pm25-channel">
 		<item-type>Number:Density</item-type>
-		<label>PM 2.5</label>
-		<description>Particulate Matter 2.5</description>
+		<label>Particulate Matter category 2.5</label>
 	</channel-type>
 	<channel-type id="pm100-channel">
 		<item-type>Number:Density</item-type>
-		<label>PM 10.0</label>
-		<description>Particulate Matter 10.0</description>
+		<label>Particulate Matter category 10.0</label>
 	</channel-type>
 	<channel-type id="temp-channel">
 		<item-type>Number:Temperature</item-type>
@@ -90,17 +88,17 @@
 	</channel-type>
 	<channel-type id="noise-eq-channel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Noise EQ</label>
+		<label>Average Noise</label>
 		<description>Average noise level from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="noise-min-channel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Min Noise</label>
+		<label>Minimum Noise</label>
 		<description>Minimum noise level (last 2.5 minutes) from the selected Sensor ID</description>
 	</channel-type>
 	<channel-type id="noise-max-channel">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Max Noise</label>
+		<label>Maximum Noise</label>
 		<description>Maximum noise level (last 2.5 minutes) from the selected Sensor ID</description>
 	</channel-type>
 </thing:thing-descriptions>

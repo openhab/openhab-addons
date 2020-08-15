@@ -82,14 +82,14 @@ luftdaten.items
 Number:Density PM_25                "PM2.5"                 { channel="luftdateninfo:particulate:pm_sensor:pm25" } 
 Number:Density PM_100               "PM10"                  { channel="luftdateninfo:particulate:pm_sensor:pm100" } 
 
-Number:Temperature TEMPERATURE      "Temperature"           { channel="luftdateninfo:conditions:cond_sensor:temperature" } 
-Number:Dimensionless HUMIDITY       "Humidity"              { channel="luftdateninfo:conditions:cond_sensor:humidity" } 
-Number:Pressure PRESSURE            "Atmospheric Pressure"  { channel="luftdateninfo:conditions:cond_sensor:pressure" } 
-Number:Pressure PRESSURE_SEA        "Pressure sea level"    { channel="luftdateninfo:conditions:cond_sensor:pressure-sea" } 
+Number:Temperature LDI_Temperature  "Temperature"           { channel="luftdateninfo:conditions:cond_sensor:temperature" } 
+Number:Dimensionless LDI_Humidity   "Humidity"              { channel="luftdateninfo:conditions:cond_sensor:humidity" } 
+Number:Pressure LDI_Pressure        "Atmospheric Pressure"  { channel="luftdateninfo:conditions:cond_sensor:pressure" } 
+Number:Pressure LDI_PressureSea     "Pressure sea level"    { channel="luftdateninfo:conditions:cond_sensor:pressure-sea" } 
 
-Number:Dimensionless NOISE_EQ       "Noise EQ"              { channel="luftdateninfo:noise:noise_sensor:noise-eq" } 
-Number:Dimensionless NOISE_MIN      "Noise min"             { channel="luftdateninfo:noise:noise_sensor:noise-min" } 
-Number:Dimensionless NOISE_MAX      "Noise max"             { channel="luftdateninfo:noise:noise_sensor:noise-max" } 
+Number:Dimensionless LDI_NoiseEQ    "Noise EQ"              { channel="luftdateninfo:noise:noise_sensor:noise-eq" } 
+Number:Dimensionless LDI_NoiseMin   "Noise min"             { channel="luftdateninfo:noise:noise_sensor:noise-min" } 
+Number:Dimensionless LDI_NoiseMax   "Noise max"             { channel="luftdateninfo:noise:noise_sensor:noise-max" } 
 ```
 
 ### Sitemap
@@ -101,12 +101,13 @@ sitemap LuftdatenInfo label="LuftdatenInfo" {
         Text item=PM_25                     label="Particulate Matter 2.5 [%.1f %unit%]"    
         Text item=PM_100                    label="Particulate Matter 10 [%.1f %unit%]"     
 
-        Text item=TEMPERATURE               label="Temperature [%d %unit%]"     
-        Text item=HUMIDITY                  label="Humidity [%d %unit%]"    
-        Text item=PRESSURE                  label="Atmospheric Pressure [%d %unit%]"    
-        Text item=PRESSURE_SEA              label="Atmospheric Pressure sea [%d %unit%]"    
-
-        Text item=NOISE_EQ                  label="Noise avg [%.1f %unit%]"     
-        Text item=NOISE_MIN                 label="Noise min [%.1f %unit%]"     
-        Text item=NOISE_MAX                 label="Noise max [%.1f %unit%]"     
-}```
+        Text item=LDI_Temperature           label="Temperature [%d %unit%]"     
+        Text item=LDI_Humidity              label="Humidity [%d %unit%]"    
+        Text item=LDI_Pressure              label="Atmospheric Pressure [%d %unit%]"    
+        Text item=LDI_PressureSea           label="Atmospheric Pressure sea [%d %unit%]"    
+                                            
+        Text item=LDI_NoiseEQ               label="Noise avg [%.1f %unit%]"     
+        Text item=LDI_NoiseMin              label="Noise min [%.1f %unit%]"     
+        Text item=LDI_NoiseMax              label="Noise max [%.1f %unit%]"     
+}
+```
