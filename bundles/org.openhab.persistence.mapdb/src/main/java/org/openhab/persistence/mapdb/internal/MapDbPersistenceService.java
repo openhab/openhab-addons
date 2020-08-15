@@ -28,8 +28,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
 import org.openhab.core.persistence.HistoricItem;
@@ -61,7 +61,7 @@ public class MapDbPersistenceService implements QueryablePersistenceService {
 
     private static final String SERVICE_ID = "mapdb";
     private static final String SERVICE_LABEL = "MapDB";
-    private static final String DB_FOLDER_NAME = ConfigConstants.getUserDataFolder() + File.separator + "persistence"
+    private static final String DB_FOLDER_NAME = OpenHAB.getUserDataFolder() + File.separator + "persistence"
             + File.separator + "mapdb";
     private static final String DB_FILE_NAME = "storage.mapdb";
 
