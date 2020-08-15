@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.joda.time.DateTime;
 import org.openhab.binding.luftdateninfo.internal.LuftdatenInfoConfiguration;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
+import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +52,9 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
     protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
 
+    private int successCounter = 0;
+    private int failCounter = 0;
+
     public enum ConfigStatus {
         OK,
         IS_NULL,
@@ -59,11 +63,10 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         UNKNOWN
     };
 
-    protected UpdateStatus updateStatus = UpdateStatus.UNKNOWN;
-
     public enum UpdateStatus {
         OK,
         CONNECTION_ERROR,
+        CONNECTION_EXCEPTION,
         VALUE_ERROR,
         VALUE_EMPTY,
         UNKNOWN
@@ -102,7 +105,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         configStatus = checkConfig(config);
         if (configStatus == ConfigStatus.OK) {
             // start getting values
-            update();
+            dataUpdate();
         } else {
             // config error, no further actions triggered - Thing Status visible in UI
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -115,10 +118,11 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob != null) {
             if (localRefreshJob.isCancelled()) {
-                refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, REFRESH_INTERVAL_MIN, TimeUnit.MINUTES);
+                refreshJob = scheduler.scheduleWithFixedDelay(this::dataUpdate, 5, REFRESH_INTERVAL_MIN,
+                        TimeUnit.MINUTES);
             } // else - scheduler is already running!
         } else {
-            refreshJob = scheduler.scheduleWithFixedDelay(this::update, 5, REFRESH_INTERVAL_MIN, TimeUnit.MINUTES);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::dataUpdate, 5, REFRESH_INTERVAL_MIN, TimeUnit.MINUTES);
         }
     }
 
@@ -153,47 +157,59 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
         return lifecycleStatus;
     }
 
-    protected void update() {
+    protected void dataUpdate() {
+        UpdateStatus updateStatus = UpdateStatus.UNKNOWN;
+        String details = null;
         try {
             String response = HTTPHandler.getHandler().getResponse(config.sensorid);
             updateStatus = updateChannels(response);
-            statusUpdate(updateStatus);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             // no valid HTTP result - report COM error in UI and start schedule for recovery
-            startSchedule();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    e.getMessage() + " / " + DateTimeUtils.DTF.print(DateTime.now()));
+            details = e.getMessage() + " / " + DateTimeUtils.DTF.print(DateTime.now());
         }
+        statusUpdate(updateStatus, details);
     }
 
-    protected void statusUpdate(UpdateStatus updateStatus) {
+    protected void statusUpdate(UpdateStatus updateStatus, @Nullable String details) {
         if (updateStatus == UpdateStatus.OK) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-            logger.debug("Start refresh job at interval {} min.", REFRESH_INTERVAL_MIN);
             startSchedule();
+            successCounter++;
         } else {
+            failCounter++;
             switch (updateStatus) {
                 case CONNECTION_ERROR:
-                    // start job even if first update isn't valid
+                    // start job even first update delivers no data - recovery is possible
                     startSchedule();
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Update failed due to Connection error. Trying to recover in next refresh");
                     break;
+                case CONNECTION_EXCEPTION:
+                    // start job even first update delivers a Connection Exception - recovery is possible
+                    startSchedule();
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, details);
+                    break;
                 case VALUE_EMPTY:
-                    // start job even if first update isn't valid
+                    // start job even if first update delivers no values - recovery possible
                     startSchedule();
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                             "No values delivered by Sensor. Trying to recover in next refresh");
                     break;
                 case VALUE_ERROR:
+                    // final status - values from sensor are wrong and manual check is needed
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Sensor values doesn't match - please check if Sensor ID is delivering the correct Thing channel values");
                     break;
                 default:
+                    // final status - Configuration is wrong
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Error during update - please check your config data");
                     break;
             }
+        }
+        if ((successCounter + failCounter) % 12 == 0) {
+            logger.info("Call Success Rate {}"
+                    + NumberUtils.round(successCounter / NumberUtils.convert(successCounter + failCounter), 1));
         }
     }
 
