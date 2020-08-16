@@ -9,10 +9,7 @@
 package org.openhab.binding.resol.handler;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
@@ -60,24 +57,18 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(ResolBridgeHandler.class);
 
-    private LocaleProvider localeProvider;
     private Language lang;
     private Locale locale;
 
     private String ipAddress;
     private String password;
-    private int port;
     private int refreshInterval = 900; /* 15 mins for refreshing the available things should be enough */
-    private Socket socket;
-    private PrintStream out;
-    private InputStream inStream;
     private boolean isConnected = false;
     private String unconnectedReason = "";
 
     public ResolBridgeHandler(Bridge bridge, LocaleProvider localeProvider) {
         super(bridge);
         spec = Specification.getDefaultSpecification();
-        this.localeProvider = localeProvider;
         if (localeProvider != null) {
             locale = localeProvider.getLocale();
             lang = SpecificationFile.getLanguageForLocale(locale);
@@ -457,7 +448,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         updateStatus();
         ResolConfiguration configuration = getConfigAs(ResolConfiguration.class);
         ipAddress = configuration.ipAddress;
-        port = configuration.port;
         refreshInterval = configuration.refreshInterval;
         password = configuration.password;
         startAutomaticRefresh();

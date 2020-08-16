@@ -16,7 +16,6 @@ import static org.openhab.binding.resol.internal.ResolBindingConstants.SUPPORTED
 
 import java.util.Hashtable;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.resol", service = ThingHandlerFactory.class)
 public class ResolHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNull Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
+    private Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
 
     private @Nullable LocaleProvider localeProvider;
 
@@ -86,7 +85,7 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("Try to register VBUS Discovery service on BundleID: {} Service: {}",
                 bundleContext.getBundle().getBundleId(), DiscoveryService.class.getName());
 
-        Hashtable<String, String> prop = new Hashtable<String, String>();
+        Hashtable<@Nullable String, @Nullable String> prop = new Hashtable<@Nullable String, @Nullable String>();
 
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, prop);
         discoveryService.activate();

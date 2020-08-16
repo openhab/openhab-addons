@@ -15,9 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
-import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.StateDescription;
@@ -40,15 +39,18 @@ public class ResolChannelTypeProvider implements ChannelTypeProvider {
 
         Unit[] units = spec.getUnits();
         for (Unit u : units) {
-            ChannelTypeUID channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, u.getUnitCodeText()); // TODO:
-                                                                                                                       // precision
-            int precision = 1; // TODO pfv.getPacketFieldSpec().getPrecision();
+            ChannelTypeUID channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, u.getUnitCodeText());
+
+            // maybe we could use pfv.getPacketFieldSpec().getPrecision() here
+            int precision = 1;
             if (u.getUnitId() >= 0) {
-                ChannelType c = new ChannelType(channelTypeUID, false, "Number", u.getUnitFamily().toString(),
-                        u.getUnitFamily().toString(), null, null, new StateDescription(null, null, null,
-                                "%." + precision + "f " + u.getUnitTextText().replace("%", "%%"), true, null),
-                        null);
-                channelTypes.put(channelTypeUID, c);
+
+                ChannelType ctype = ChannelTypeBuilder.state(channelTypeUID, u.getUnitFamily().toString(), "Number")
+                        .withStateDescription(new StateDescription(null, null, null,
+                                "%." + precision + "f " + u.getUnitTextText().replace("%", "%%"), true, null))
+                        .build();
+
+                channelTypes.put(channelTypeUID, ctype);
             }
         }
     }
@@ -65,13 +67,6 @@ public class ResolChannelTypeProvider implements ChannelTypeProvider {
         } else {
             return null;
         }
-    }
-
-    @Override
-    public @Nullable ChannelGroupType getChannelGroupType(@NonNull ChannelGroupTypeUID channelGroupTypeUID,
-            @Nullable Locale locale) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

@@ -12,7 +12,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ResolThingHandler extends BaseThingHandler {
 
-    private final @NonNull Logger logger = LoggerFactory.getLogger(ResolThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ResolThingHandler.class);
 
     @Nullable
     ResolBridgeHandler bridgeHandler;
@@ -129,44 +128,35 @@ public class ResolThingHandler extends BaseThingHandler {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.trace("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
-            return;
-        }
-        if (value == null) {
+        } else if (value == null) {
             logger.trace("Not setting channel '{}:{}' to null", getThing().getUID().getId(), channelId);
-            return;
-        }
-        if (!channel.getAcceptedItemType().equals("String")) {
+        } else if (!"String".contentEquals(channel.getAcceptedItemType())) {
             logger.trace("Channel '{}:{}' expected to have a String type for parameters '{}'",
                     getThing().getUID().getId(), channelId, value.toString());
-            return;
+        } else {
+            logger.trace("Set {}:{}:{} = {}", getThing().getUID().getId(), channelId, channel.getAcceptedItemType(),
+                    value);
+            this.updateState(channelId, new StringType(value));
         }
-
-        logger.trace("Set {}:{}:{} = {}", getThing().getUID().getId(), channelId, channel.getAcceptedItemType(), value);
-        this.updateState(channelId, new StringType(value));
     }
 
     public void setChannelValue(String channelId, Date value) {
         Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.trace("Channel '{}:{}' not implemented", getThing().getUID().getId(), channelId);
-            return;
-        }
-        if (value == null) {
-            logger.trace("Not setting channel '{}:{}' to null", getThing().getUID().getId(), channelId);
-            return;
-        }
-        if (!channel.getAcceptedItemType().equals("DateTime")) {
+        } else if (!"DateTime".equals(channel.getAcceptedItemType())) {
             logger.trace("Channel '{}:{}' expected to have a DateTime type for parameters '{}'",
                     getThing().getUID().getId(), channelId, value.toString());
-            return;
+        } else {
+            SimpleDateFormat s = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
+            s.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String str = s.format(value);
+
+            logger.trace("Set {}:{}:{} = {}", getThing().getUID().getId(), channelId, channel.getAcceptedItemType(),
+                    str);
+
+            this.updateState(channelId, new DateTimeType(str));
         }
-        SimpleDateFormat s = new SimpleDateFormat(DateTimeType.DATE_PATTERN_WITH_TZ_AND_MS_GENERAL);
-        s.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String str = s.format(value);
-
-        logger.trace("Set {}:{}:{} = {}", getThing().getUID().getId(), channelId, channel.getAcceptedItemType(), str);
-
-        this.updateState(channelId, new DateTimeType(str));
     }
 
     public void setChannelValue(String channelId, double value) {

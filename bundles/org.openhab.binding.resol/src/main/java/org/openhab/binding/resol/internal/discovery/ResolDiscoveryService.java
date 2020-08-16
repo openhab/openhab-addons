@@ -48,8 +48,8 @@ public class ResolDiscoveryService extends AbstractDiscoveryService {
         }
 
         if (thingUID != null) {
-            logger.trace("Adding new Discovery thingType: {} bridgeType: {}", thingUID.getThingTypeId(),
-                    bridgeUID.getThingTypeId());
+            logger.trace("Adding new Discovery thingType: {} bridgeType: {}", thingUID.getAsString(),
+                    bridgeUID.getAsString());
 
             Map<String, Object> properties = new HashMap<>(1);
             properties.put("type", type);
