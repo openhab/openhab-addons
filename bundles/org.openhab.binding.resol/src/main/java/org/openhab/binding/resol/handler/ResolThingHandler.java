@@ -57,7 +57,6 @@ public class ResolThingHandler extends BaseThingHandler {
         bridgeHandler = getBridgeHandler();
         logger.debug("Thing Handler for {} started", getThing().getUID().getId());
         registerResolThingListener(bridgeHandler);
-
     }
 
     @Override
@@ -90,7 +89,6 @@ public class ResolThingHandler extends BaseThingHandler {
         } else {
             return getBridgeHandler(bridge);
         }
-
     }
 
     private synchronized @Nullable ResolBridgeHandler getBridgeHandler(Bridge bridge) {
@@ -120,7 +118,6 @@ public class ResolThingHandler extends BaseThingHandler {
         } else {
             logger.debug("Can't unregister {} at bridge bridgeHandler is null.", this.getThing().getUID());
         }
-
     }
     // TODO: add special handling of unit percent as PercentType
 
@@ -175,5 +172,4 @@ public class ResolThingHandler extends BaseThingHandler {
                     channel.getAcceptedItemType(), channelId);
         }
     }
-
 }

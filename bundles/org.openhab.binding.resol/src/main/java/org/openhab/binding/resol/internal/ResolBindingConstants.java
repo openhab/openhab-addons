@@ -49,5 +49,4 @@ public class ResolBindingConstants {
 
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_UID_BRIDGE).collect(Collectors.toSet()));
-
 }

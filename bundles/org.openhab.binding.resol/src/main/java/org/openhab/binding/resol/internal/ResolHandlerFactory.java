@@ -90,5 +90,4 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, prop);
         discoveryService.activate();
     }
-
 }

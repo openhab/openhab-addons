@@ -61,13 +61,11 @@ public class ResolDiscoveryService extends AbstractDiscoveryService {
         } else {
             logger.debug("Discovered Thing is unsupported: type '{}'", type);
         }
-
     }
 
     public void addResolThing(String thingType, String thingID, String name) {
 
         addThing(resolBridgeHandler.getThing().getUID(), thingType, thingID, name);
-
     }
 
     public void activate() {
@@ -83,5 +81,4 @@ public class ResolDiscoveryService extends AbstractDiscoveryService {
     protected void startScan() {
         // Scan will be done by bridge
     }
-
 }

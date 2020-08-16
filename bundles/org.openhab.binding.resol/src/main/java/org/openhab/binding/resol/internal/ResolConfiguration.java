@@ -24,5 +24,4 @@ public class ResolConfiguration {
     public Integer port;
     public String adapterSerial;
     public Integer refreshInterval;
-
 }

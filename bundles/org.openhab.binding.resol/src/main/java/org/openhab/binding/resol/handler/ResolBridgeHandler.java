@@ -83,7 +83,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
         updateThingHandlersStatus(status);
-
     }
 
     public void updateStatus() {
@@ -92,7 +91,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, unconnectedReason);
         }
-
     }
 
     // Managing Thing Discovery Service
@@ -155,7 +153,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 thingHandler.updateStatus(ThingStatus.OFFLINE);
             }
         }
-
     }
 
     private void updateThingHandlerStatus(@NonNull ResolThingHandler thingHandler, @NonNull ThingStatus status) {
@@ -383,7 +380,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                                 }
                             }
                         }
-
                     });
 
                     // Establish the connection
@@ -408,7 +404,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 updateStatus();
             }
         }
-
     };
 
     /* check if the given value is a special one like 888.8 or 999.9 for shortcut or open load on a sensor wire */
@@ -470,5 +465,4 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         }
         updateStatus(ThingStatus.OFFLINE); // Set all State to offline
     }
-
 }

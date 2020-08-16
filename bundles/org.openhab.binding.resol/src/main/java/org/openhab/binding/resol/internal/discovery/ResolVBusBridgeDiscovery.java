@@ -81,7 +81,6 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
                 logger.debug("No VBusLAN adapter found!");
             }
         }
-
     };
 
     private void addAdapter(String remoteIP, TcpDataSource dsWithInfo) {
@@ -95,5 +94,4 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
         thingDiscovered(
                 DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(dsWithInfo.getName()).build());
     }
-
 }

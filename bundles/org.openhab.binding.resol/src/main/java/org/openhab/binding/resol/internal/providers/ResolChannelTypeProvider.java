@@ -68,5 +68,4 @@ public class ResolChannelTypeProvider implements ChannelTypeProvider {
             return null;
         }
     }
-
 }

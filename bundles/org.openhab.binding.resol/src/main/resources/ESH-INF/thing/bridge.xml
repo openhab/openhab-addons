@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="vbuslan">
 		<label>Bridge VBusLAN adapter</label>
-		<description>This bridge represents the Resol VBus-LAN adapter 
+		<description>This bridge represents the Resol VBus-LAN adapter
 		</description>
 
 		<config-description>
@@ -14,23 +14,21 @@
 				<label>IP Address</label>
 				<description>The IP address of the of the VBus-LAN adapter.</description>
 			</parameter>
-			<parameter name="port" type="integer" required="false" min="1024"
-				max="49151">
+			<parameter name="port" type="integer" required="false" min="1024" max="49151">
 				<context>network-address</context>
 				<label>VBus-LAN adapter live data port</label>
 				<description>Port for live data on the LAN gateway</description>
 				<default>3000</default>
 			</parameter>
-            <parameter name="adapterSerial" type="text" required="true">
-                <label>AdapterSerial</label>
-                <description>The serial number of the adapter.</description>
-            </parameter>
-            <parameter name="password" type="text" required="true">
-                <label>Password</label>
-                <description>The password for the VBusLAN connection.</description>
-            </parameter>
-			<parameter name="refreshInterval" type="integer" required="false" min="5"
-				max="600">
+			<parameter name="adapterSerial" type="text" required="true">
+				<label>AdapterSerial</label>
+				<description>The serial number of the adapter.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>The password for the VBusLAN connection.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="5" max="600">
 				<context>refresh</context>
 				<label>Refresh Interval</label>
 				<description>Refreshtime in seconds for discovering devices, not relevant for data updates.</description>
