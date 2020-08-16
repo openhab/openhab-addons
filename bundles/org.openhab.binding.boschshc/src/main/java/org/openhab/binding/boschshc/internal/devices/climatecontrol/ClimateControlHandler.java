@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices.climatecontrol;
 
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE;
-import static org.openhab.binding.boschshc.internal.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_SETPOINT_TEMPERATURE;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_TEMPERATURE;
 
 import java.util.Arrays;
 
@@ -22,7 +22,7 @@ import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.boschshc.internal.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
