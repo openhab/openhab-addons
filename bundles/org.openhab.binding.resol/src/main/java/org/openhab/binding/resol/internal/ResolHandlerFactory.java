@@ -85,7 +85,7 @@ public class ResolHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("Try to register VBUS Discovery service on BundleID: {} Service: {}",
                 bundleContext.getBundle().getBundleId(), DiscoveryService.class.getName());
 
-        Hashtable<@Nullable String, @Nullable String> prop = new Hashtable<@Nullable String, @Nullable String>();
+        Hashtable<String, String> prop = new Hashtable<String, String>();
 
         bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, prop);
         discoveryService.activate();

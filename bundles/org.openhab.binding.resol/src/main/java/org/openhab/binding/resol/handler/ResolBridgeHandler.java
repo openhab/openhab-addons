@@ -23,6 +23,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -57,6 +58,7 @@ import de.resol.vbus.TcpDataSourceProvider;
  *
  * @author Raphael Mack - Initial contribution
  */
+@NonNullByDefault
 public class ResolBridgeHandler extends BaseBridgeHandler {
 
     private Logger logger = LoggerFactory.getLogger(ResolBridgeHandler.class);
@@ -66,7 +68,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     private String ipAddress;
     private String password;
-    private int refreshInterval = 900; /* 15 mins for refreshing the available things should be enough */
+    private int refreshInterval;
     private boolean isConnected = false;
     private String unconnectedReason = "";
 
