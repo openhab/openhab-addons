@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.luftdateninfo.internal.handler;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +27,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.joda.time.DateTime;
 import org.openhab.binding.luftdateninfo.internal.LuftdatenInfoConfiguration;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
 import org.slf4j.Logger;
@@ -161,7 +161,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
             lastUpdateStatus = updateChannels(response);
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             // no valid HTTP result - report COM error in UI and start schedule for recovery
-            details = e.getMessage() + " / " + DateTimeUtils.DTF.print(DateTime.now());
+            details = e.getMessage() + " / " + LocalDateTime.now().format(DateTimeUtils.DTF);
             lastUpdateStatus = UpdateStatus.CONNECTION_EXCEPTION;
         }
         statusUpdate(lastUpdateStatus, details);

@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.luftdateninfo.internal.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.joda.time.DateTime;
 import org.junit.Test;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
 
@@ -29,13 +31,17 @@ public class DateTimeTest {
 
     @Test
     public void testJSonTime() {
-        String jsonDateString = "2020-08-14 14:51:08";
-        DateTime dt = DateTimeUtils.DTF.parseDateTime(jsonDateString);
-        assertEquals("Day ", 14, dt.getDayOfMonth());
-        assertEquals("Month ", 8, dt.getMonthOfYear());
-        assertEquals("Year ", 2020, dt.getYear());
+        String jsonDateString = "2020-08-14 14:53:21";
+        try {
+            LocalDateTime dt = LocalDateTime.from(DateTimeUtils.DTF.parse(jsonDateString));
+            assertEquals("Day ", 14, dt.getDayOfMonth());
+            assertEquals("Month ", 8, dt.getMonthValue());
+            assertEquals("Year ", 2020, dt.getYear());
 
-        String s = DateTimeUtils.DTF.print(dt);
-        assertEquals("String ", jsonDateString, s);
+            String s = dt.format(DateTimeUtils.DTF);
+            assertEquals("String ", jsonDateString, s);
+        } catch (DateTimeParseException e) {
+            assertFalse(true);
+        }
     }
 }
