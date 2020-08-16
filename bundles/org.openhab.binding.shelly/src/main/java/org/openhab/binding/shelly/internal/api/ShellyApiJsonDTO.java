@@ -437,11 +437,9 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyInputState {
-        @SerializedName("input")
         public Integer input;
 
         // Shelly Button
-        @SerializedName("event")
         public String event;
         @SerializedName("event_cnt")
         public Integer eventCount;

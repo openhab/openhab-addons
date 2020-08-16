@@ -3,11 +3,16 @@
 
 This Binding integrates [Alterco Shelly devices](https://shelly.cloud).
 
-Alterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API. The binding is officially acknowledged by Alterco and openHAB is listed as a reference. Alterco directly supports this project.
+Alterco provides a rich set of smart home devices. All of them are WiFi enabled (2,4GHz, IPv4 only) and provide a documented API. 
+The binding is officially acknowledged by Alterco and openHAB is listed as a reference.
+Alterco directly supports this project.
 
-The binding controls the devices independent from the Alterco Shelly Cloud (in fact it can be disabled). The binding co-exists with Shelly App for Smartphones, Shelly Web App, Shelly Cloud, mqqt and other 3rd party Apps.
+The binding controls the devices independently from the Alterco Shelly Cloud (in fact it can be disabled).
+The binding co-exists with Shelly App for Smartphones, Shelly Web App, Shelly Cloud, mqqt and other 3rd party Apps.
 
-The binding focus on reporting the device status and device control. Initial setup and device configuration has to be performed using the Shelly Apps. The binding gets in sync with the next status refresh.
+The binding focuses on reporting the device status and device control.
+Initial setup and device configuration has to be performed using the Shelly Apps.
+The binding gets in sync with the next status refresh.
 
 ## Supported Devices
 
@@ -51,9 +56,11 @@ The binding has the following configuration options:
 | defaultPassword|Default password for HTTP authentication when not set in the Thing|    no   |admin                                           |
 | autoCoIoT      |Auto-enable CoIoT events when firmware 1.6+ is enabled.           |    no   |true                                            |
 
-The binding defaults to CoIoT events when firmware 1.6 or newer is detected. CoIoT provides near-realtime updates on device status changes. This mode also overrules event settings in the thing configuration. 
+The binding defaults to CoIoT events when firmware 1.6 or newer is detected. CoIoT provides near-realtime updates on device status changes.
+This mode also overrules event settings in the thing configuration. 
 
-Disabling this feature allows granular control, which event types will be used. This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN). In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
+Disabling this feature allows granular control, which event types will be used. This is also required when the Shelly devices are not located on the same IP subnet (e.g. using a VPN).
+In this case autoCoIoT should be disabled, CoIoT events will not work, because the underlying CoAP protocol is based on Multicast IP, which usually doesn't passes a VPN or routed network.
 
 ## Discovery
 
@@ -76,16 +83,20 @@ The Web UI of the Shelly device displays the current firmware version under Sett
 |1.7.x  |Add additional status update values, fixes various issues                                         |
 |1.8.0  |Brings CoIoT version 2, which fixes a lot issues and gaps of version 1.                           |
 
-The current firmware version is reported in the Thing Properties. A dedicated channel (device#updateAvailable) indicates the availability of a newer firmware. Use the device's Web UI or the Shelly App to perform the update.
+The current firmware version is reported in the Thing Properties.
+A dedicated channel (device#updateAvailable) indicates the availability of a newer firmware. Use the device's Web UI or the Shelly App to perform the update.
 
-Once you have updated the device **you should delete and re-discover** the openHAB Thing. Battery powered devices need to wake up by pressing the button. This makes sure that the Thing is correctly initialized and all supported channels are created. openHAB will kill the item linkage. At a minimum you should restart the binding on the openHAB console if you don't want to re-discover the things.
+Once you have updated the device **you should delete and re-discover** the openHAB Thing.
+Battery powered devices need to wake up by pressing the button.
+This makes sure that the Thing is correctly initialized and all supported channels are created. openHAB will kill the item linkage.
+At a minimum you should restart the binding on the openHAB console if you don't want to re-discover the things.
 
 ### Password Protected Devices
 
 The Shelly devices can be configured to require authorization through a user id and password.
 In this case you need to set these values in the Thing configuration after approving the Inbox entry.
 
-If you have multiple devices protected by the same credentials it's recommended to set the default user id and password in the binding configuration (PaperUI:Configuration:Binding:Shelly) BEFORE running the discovery.
+If you have multiple devices protected by the same credentials it's recommended to set the default user id and password in the binding configuration BEFORE running the discovery.
 In this case the binding could directly access the device to retrieve the required information using those credentials.
 Otherwise a thing of type shellyprotected is created in the Inbox and you could set the credentials while adding the thing. In this case the credentials are persisted as part of the thing configuration. 
 
@@ -110,7 +121,7 @@ The binding sets the following thing status depending on the device status:
 | INITIALIZING | This is the default status while initializing the thing. Once the initialization is triggered the thing switches to Status UNKNOWN. |
 | UNKNOWN      | Indicates that the status is currently unknown, which must not show a problem. Usually the thing stays in this status when the device is in sleep mode. Once the device is reachable and was initialized the thing switches to status ONLINE.|
 | ONLINE       | ONLINE indicates that the device can be accessed and is responding properly. Battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The thing switches to status OFFLINE when some type of communication error occurs. | 
-| OFFLINE      | Communication with the device failed. Check the thing status in PaperUI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the thing. You could also post to the community thread if the problem stays. |
+| OFFLINE      | Communication with the device failed. Check the thing status in the UI and openHAB's log for an indication of the error. Try restarting OH or deleting and re-discovering the thing. You could also post to the community thread if the problem stays. |
 
 `Battery powered devices:` 
 If the device is in sleep mode and can't be reached by the binding, the thing will change into UNKNOWN state.
@@ -208,7 +219,7 @@ Every device has a channel group `device` with the following channels:
 |          |statusLed          |Switch  |r/w      |ON: Status LED is disabled, OFF: LED enabled                                     |
 |          |powerLed           |Switch  |r/w      |ON: Power LED is disabled, OFF: LED enabled                                      |
 
-Availability of  channels is depending on the device type.
+Availability of channels is depending on the device type.
 The binding detects many of those channels on-the-fly (when Thing changes to ONLINE state) and adjusts the Thing's channel structure.
 The device must be discovered and ONLINE to successfully complete this process.
 The accumulated channels are only available for devices with more than 1 meter. accumulatedReturned only for the EM and 3EM.
@@ -296,8 +307,8 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 |SENSOR      |Wake-up due to updated sensor data.                                                                              |
 |ALARM       |Alarm condition was detected, check status, could be OPENED for the DW, flood alarm, smoke alarm                 |
 |BATTERY     |Device reported an update to the battery status.                                                                 |
-|TEMP_UNDER  |Below "temperature under" treshold                                                                               |
-|TEMP_OVER   |Above "temperature over" treshold                                                                                |
+|TEMP_UNDER  |Below "temperature under" threshold                                                                              |
+|TEMP_OVER   |Above "temperature over" threshold                                                                               |
 
 
 ```
@@ -336,7 +347,7 @@ Depending on the device type and firmware release channels might be not availabl
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
 |          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
 |          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
@@ -354,13 +365,13 @@ Depending on the device type and firmware release channels might be not availabl
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
 |          |reactiveWatts|Number   |yes      |Instantaneous reactive power, Watts                                              |
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 3EM (thing-type: shellyem3)
 
@@ -379,7 +390,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
 |          |powerFactor  |Number   |yes      |Power Factor                                                                     |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter2    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -387,7 +398,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
 |          |powerFactor  |Number   |yes      |Power Factor                                                                     |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 |meter3    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -395,7 +406,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |voltage      |Number   |yes      |RMS voltage, Volts                                                               |
 |          |current      |Number   |yes      |Current in A                                                                     |
 |          |powerFactor  |Number   |yes      |Power Factor                                                                     |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 
 ### Shelly 2 - relay mode thing-type: shelly2-relay)
@@ -416,10 +427,8 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
-|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly 2 - roller mode thing-type: shelly2-roller)
 
@@ -432,11 +441,9 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
-|          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                         |
-|          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                         |
-|          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                         |
+|          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                      |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                     |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                     |
 
 The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
 
@@ -509,7 +516,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 ### Shelly Dimmer2 (thing-type: shellydimmer2)
 
@@ -529,7 +536,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
 
 The Dimmer should be calibrated using the Shelly App.
 
@@ -584,7 +591,7 @@ The Dimmer should be calibrated using the Shelly App.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
  
 #### Shelly Vintage (thing-type: shellyvintage)
 
@@ -600,7 +607,7 @@ The Dimmer should be calibrated using the Shelly App.
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
 |          |lastPower3   |Number   |yes      |Energy consumption in Watts for a round minute, 3 minutes ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
-|          |lastUpdate   |String   |yes      |Timestamp of the last measurement                                                |
+|          |lastUpdate   |DateTime |yes      |Timestamp of the last measurement                                                |
  
 
  ## Shelly RGBW2 in Color Mode (thing-type: shellyrgbw2-color)

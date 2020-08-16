@@ -207,8 +207,6 @@ public class ShellyChannelDefinitionsDTO {
     public static Map<String, Channel> createRelayChannels(final Thing thing, final ShellyStatusRelay relays) {
         Map<String, Channel> add = new LinkedHashMap<>();
 
-        // TODO: Add the relay channels and remove them from the xml definition
-
         // Shelly 1/1PM Addon
         if (relays.extTemperature != null) {
             addChannel(thing, add, relays.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
@@ -225,7 +223,6 @@ public class ShellyChannelDefinitionsDTO {
     public static Map<String, Channel> createRollerChannels(Thing thing, final ShellyControlRoller roller) {
         Map<String, Channel> add = new LinkedHashMap<>();
         addChannel(thing, add, roller.state != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE);
-        // TODO: Add the other channels and remove them from the xml definition
         return add;
     }
 

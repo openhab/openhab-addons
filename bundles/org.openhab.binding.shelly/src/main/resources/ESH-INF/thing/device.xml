@@ -38,7 +38,7 @@
 	<channel-type id="sensorWakeup" advanced="true">
 		<item-type>String</item-type>
 		<label>Wakeup Reason</label>
-		<description>Last reason, which woke up the device: battery, button, periodic, poweron, sensor, alarm</description>
+		<description>Last reason, which woke up the device</description>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="button">Button</option>
@@ -74,7 +74,7 @@
 	</channel-type>
 	<channel-type id="heartBeat" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Last Heat Beat</label>
+		<label>Last Heartbeat</label>
 		<description>Last time we received a signal from the device (API result or sensor report), This indicates that device
 			communication works on the network layer (WiFi + IP).</description>
 		<state readOnly="true">

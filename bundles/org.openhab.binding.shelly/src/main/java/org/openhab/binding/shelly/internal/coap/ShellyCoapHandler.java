@@ -243,7 +243,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                 reqStatus = sendRequest(reqStatus, config.deviceIp, COLOIT_URI_DEVSTATUS, Type.NON);
                 discovering = true;
             }
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
             logger.debug("{}: Unable to process CoIoT Message for payload={}", thingName, payload, e);
             resetSerial();
         }

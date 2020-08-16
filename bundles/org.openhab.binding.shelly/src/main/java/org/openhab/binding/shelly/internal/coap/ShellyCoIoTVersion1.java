@@ -93,7 +93,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
                         break;
                     case "temperature f": // Device Temp -> ignore (we use C only)
                         break;
-                    case "temperature c": // Device Temü in C ++
+                    case "temperature c": // Device Temp in C
                         // Device temperature
                         updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                                 toQuantityType(value, DIGITS_NONE, SIUnits.CELSIUS));

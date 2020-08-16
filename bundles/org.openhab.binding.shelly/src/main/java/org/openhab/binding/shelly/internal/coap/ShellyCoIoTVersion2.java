@@ -242,7 +242,6 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                         value == 1 ? OnOffType.ON : OnOffType.OFF);
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown
-                // TODO merge with REST
                 if ((s.valueArray != null) && (s.valueArray.size() > 0)) {
                     reason = getString((String) s.valueArray.get(0));
                     boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP,

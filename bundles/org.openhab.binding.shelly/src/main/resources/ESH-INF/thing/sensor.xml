@@ -307,7 +307,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="sensorPPM">
-		<item-type>Number</item-type>
+		<item-type>Number:Density</item-type>
 		<label>Concentration</label>
 		<description>Gas concentration in ppm</description>
 		<state readOnly="true" pattern="%d %unit%">
@@ -315,7 +315,7 @@
 	</channel-type>
 	<channel-type id="sensorValve">
 		<item-type>String</item-type>
-		<label>Vavle</label>
+		<label>Valve</label>
 		<description>Current valve status: closed/opened/not_connected/failure/closing/opening/checking</description>
 		<state readOnly="true">
 			<options>

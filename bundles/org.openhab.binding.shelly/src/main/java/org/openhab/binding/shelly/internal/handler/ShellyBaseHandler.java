@@ -905,21 +905,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             // refresh status of the input channel
             requestUpdates(1, false);
         }
-
-        /*
-         * if (profile.isButton)/ {
-         * // Button1 doesn't send a RELEASED, to make it consistent the binding simulates a RELEASED
-         * ScheduledFuture<?> job = this.asyncButtonRelease;
-         * if ((job != null) && !job.isCancelled()) {
-         * job.cancel(true);
-         * }
-         * asyncButtonRelease = scheduler.schedule(() -> {
-         * logger.debug("{}: Simulating Button RELEASED", thingName);
-         * triggerChannel(group, CHANNEL_BUTTON_TRIGGER, CommonTriggerEvents.RELEASED);
-         * }, 1000, TimeUnit.MILLISECONDS);
-         * }
-         * }
-         */
     }
 
     public void publishState(String channelId, State value) {
@@ -1134,7 +1119,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             logger.debug("{}: Shelly statusJob stopped", thingName);
         }
         job = asyncButtonRelease;
-        if ((job != null) && !job.isCancelled()) {
+        if (job != null) {
             job.cancel(true);
             asyncButtonRelease = null;
         }
