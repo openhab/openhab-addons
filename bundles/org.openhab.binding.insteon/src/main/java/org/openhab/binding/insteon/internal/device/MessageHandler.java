@@ -168,6 +168,20 @@ public abstract class MessageHandler {
         return def;
     }
 
+    protected boolean getBooleanDeviceConfig(String key, boolean def) {
+        Object o = feature.getDevice().getDeviceConfigMap().get(key);
+        if (o != null) {
+            if (o instanceof Boolean) {
+                return (Boolean) o;
+            } else {
+                logger.warn("{} {}: The value for the '{}' key is not boolean in the device configuration parameter.",
+                        nm(), feature.getDevice().getAddress(), key);
+            }
+        }
+
+        return def;
+    }
+
     /**
      * Test if message refers to the button configured for given feature
      *
@@ -1017,7 +1031,9 @@ public abstract class MessageHandler {
         public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
             if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
-                sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+                if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
+                    sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+                }
             } else {
                 sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
             }
@@ -1034,7 +1050,9 @@ public abstract class MessageHandler {
         public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
             if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
-                sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+                if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
+                    sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+                }
             } else {
                 sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
             }
