@@ -118,6 +118,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         try {
             String mode = "";
             String model = "unknown";
+            String deviceName = "";
             ThingUID thingUID = null;
             ShellyDeviceProfile profile = null;
             Map<String, Object> properties = new TreeMap<>();
@@ -149,12 +150,13 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
                 profile = api.getDeviceProfile(thingType);
                 logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
+                deviceName = getString(profile.settings.name);
                 model = getString(profile.settings.device.type);
                 mode = profile.mode;
 
                 properties = ShellyBaseHandler.fillDeviceProperties(profile);
-                logger.trace("{}: thingType={}, deviceType={}, mode={}", name, thingType, profile.deviceType,
-                        mode.isEmpty() ? "<standard>" : mode);
+                logger.trace("{}: thingType={}, deviceType={}, mode={}, symbolic name={}", name, thingType,
+                        profile.deviceType, mode.isEmpty() ? "<standard>" : mode, deviceName);
 
                 // get thing type from device name
                 thingUID = ShellyThingCreator.getThingUID(name, model, mode, false);
@@ -177,12 +179,15 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 addProperty(properties, CONFIG_DEVICEIP, address);
                 addProperty(properties, PROPERTY_MODEL_ID, model);
                 addProperty(properties, PROPERTY_SERVICE_NAME, name);
+                addProperty(properties, PROPERTY_DEV_NAME, deviceName);
                 addProperty(properties, PROPERTY_DEV_TYPE, thingType);
                 addProperty(properties, PROPERTY_DEV_MODE, mode);
 
-                logger.debug("{}: Adding Shelly thing, UID={}", name, thingUID.getAsString());
-                return DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                        .withLabel(name + " - " + address).withRepresentationProperty(name).build();
+                logger.debug("{}: Adding Shelly {}, UID={}", name, deviceName, thingUID.getAsString());
+                String thingLabel = deviceName.isEmpty() ? name + " - " + address
+                        : deviceName + "(" + name + "@" + address + ")";
+                return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
+                        .withRepresentationProperty(name).build();
             }
         } catch (IOException | RuntimeException e) {
             // maybe some format description was buggy

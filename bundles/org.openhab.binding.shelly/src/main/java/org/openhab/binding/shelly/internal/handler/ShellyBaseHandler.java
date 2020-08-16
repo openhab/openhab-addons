@@ -54,7 +54,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.api.ShellyHttpApi;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapHandler;
-import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
@@ -371,13 +370,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 // map status to channels
                 updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
-                if (!channelsCreated || !cache.isEnabled() || (coap.getVersion() < ShellyCoapJSonDTO.COIOT_VERSION_2)) {
-                    updated |= updateMeters(this, status);
-                    updated |= updateSensors(this, status);
-                    updated |= updateInputs(status);
-                } else {
-                    logger.debug("Skipping Meter/Sensor/Input updates, because device is running CoIoT version 2");
-                }
+                // if (!channelsCreated || !cache.isEnabled() || (coap.getVersion() <
+                // ShellyCoapJSonDTO.COIOT_VERSION_2)) {
+                updated |= updateMeters(this, status);
+                updated |= updateSensors(this, status);
+                updated |= updateInputs(status);
+                // } else {
+                // logger.debug("Skipping Meter/Sensor/Input updates, because device is running CoIoT version 2");
+                // }
 
                 // All channels must be created after the first cycle
                 channelsCreated = true;

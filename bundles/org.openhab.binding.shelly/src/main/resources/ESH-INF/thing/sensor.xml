@@ -200,10 +200,12 @@
 		<description>Event Type</description>
 		<state pattern="%s" readOnly="true">
 			<options>
-				<option value="S">Shortpush</option>
-				<option value="SS">Double-Shortpush</option>
-				<option value="SSS">Triple-Shortpush</option>
-				<option value="L">Longpush</option>
+				<option value="S">Short push</option>
+				<option value="SS">Double-Short push</option>
+				<option value="SSS">Triple-Short push</option>
+				<option value="L">Long push</option>
+				<option value="SL">Short-Long push</option>
+				<option value="LS">Long-Short push</option>
 			</options>
 		</state>
 	</channel-type>

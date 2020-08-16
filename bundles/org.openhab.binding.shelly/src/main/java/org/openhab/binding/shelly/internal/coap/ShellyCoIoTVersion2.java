@@ -138,39 +138,39 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "2403": // EVC, inputEventCnt, U16
                 handleInputEvent(sen, "", getInteger((int) s.value), updates);
                 break;
-            case "3101": // Sensor_0: T, extTemp, C, -55/125; unknown 999
-            case "3201": // Sensor_1: T, extTemp, C, -55/125; unknown 999
-            case "3301": // Sensor_2: T, extTemp, C, -55/125; unknown 999
+            case "3101": // sensor_0: T, extTemp, C, -55/125; unknown 999
+            case "3201": // sensor_1: T, extTemp, C, -55/125; unknown 999
+            case "3301": // sensor_2: T, extTemp, C, -55/125; unknown 999
                 int idx = getExtTempId(sen.id);
                 if (idx >= 0) {
-                    updateChannel(updates, CHANNEL_GROUP_SENSOR,
-                            profile.numTempSensors <= 1 ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + sen.links,
+                    // H&T, Fllod, DW only have 1 channel, 1/1PM with Addon have up to to 3 sensors
+                    String channel = profile.isSensor ? CHANNEL_SENSOR_TEMP : CHANNEL_SENSOR_TEMP + idx;
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, channel,
                             toQuantityType(value, DIGITS_TEMP, SIUnits.CELSIUS));
                 } else {
                     logger.debug("{}: Unable to get extSensorId {} from {}/{}", thingName, sen.id, sen.type, sen.desc);
                 }
                 break;
-            case "3104": // T, deviceTemp, Celsius -40/300
-                if (value == 999) {
-                    logger.debug("{}: Reported temperature for external sensor is invalid, check sensor cabling!",
-                            thingName);
-                }
+            case "3104": // T, deviceTemp, Celsius -40/300; 999=unknown
                 updateChannel(updates, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                         toQuantityType(value, DIGITS_NONE, SIUnits.CELSIUS));
                 break;
-            case "3102": // T, extTemp, F, -67/257, unknown 999
+            case "3102": // sensor_0: T, extTemp, F, -67/257, unknown 999
+            case "3202": // sensor_1: T, extTemp, F, -67/257, unknown 999
+            case "3302": // sensor_2: T, extTemp, F, -67/257, unknown 999
             case "3105": // T, deviceTemp, Fahrenheit -40/572
                 // skip, we use only C
                 break;
-            case "3107": // C, ceoncentration, U16
+            case "3107": // C, Gas concentration, U16
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, getDecimal(s.value));
                 break;
-            case "3108": // S, dwIsOpened, 0/1, -1 ++
-                if (value == -1) {
-                    logger.debug("{}: Sensor error reported, check device, battery, installation", thingName);
+            case "3108": // DW: S, dwIsOpened, 0/1, -1=unknown
+                if (value != -1) {
+                    updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
+                            value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                } else {
+                    logger.debug("{}: Sensor error reported, check device, battery and installation", thingName);
                 }
-                updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
-                        value != 0 ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
                 break;
             case "3113": // S, sensorOp, warmup/normal/fault
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE, getStringType(s.valueStr));
@@ -238,7 +238,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "6108": // A, gas, none/mild/heavy/test or unknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE, getStringType(s.valueStr));
                 break;
-            case "6110": // A, vibration, 0/1, -1 ++
+            case "6110": // A, vibration, 0/1, -1=unknown
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VIBRATION,
                         value == 1 ? OnOffType.ON : OnOffType.OFF);
                 break;

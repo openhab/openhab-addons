@@ -158,6 +158,7 @@ public class ShellyBindingConstants {
     public static final String CONFIG_UPDATE_INTERVAL = "updateInterval";
 
     public static final String PROPERTY_SERVICE_NAME = "serviceName";
+    public static final String PROPERTY_DEV_NAME = "deviceName";
     public static final String PROPERTY_DEV_TYPE = "deviceType";
     public static final String PROPERTY_DEV_MODE = "deviceMode";
     public static final String PROPERTY_HWREV = "deviceHwRev";

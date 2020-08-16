@@ -333,7 +333,7 @@ public class ShellyCoIoTProtocol {
         for (Map.Entry<String, CoIotDescrSen> se : sensorMap.entrySet()) {
             CoIotDescrSen sen = se.getValue();
             if (sen.desc.equalsIgnoreCase("external_temperature") || sen.desc.equalsIgnoreCase("external temperature c")
-                    || sen.desc.equalsIgnoreCase("extTemp")) {
+                    || (sen.desc.equalsIgnoreCase("extTemp") && !sen.unit.equalsIgnoreCase(SHELLY_TEMP_FAHRENHEIT))) {
                 idx++; // iterate from temperature1..2..n
             }
             if (sen.id.equalsIgnoreCase(sensorId)) {

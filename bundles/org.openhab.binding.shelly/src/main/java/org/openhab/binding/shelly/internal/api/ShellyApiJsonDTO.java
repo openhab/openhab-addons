@@ -67,6 +67,8 @@ public class ShellyApiJsonDTO {
     // Button
     public static final String SHELLY_EVENT_DOUBLE_SHORTPUSH = "double_shortpush";
     public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
+    public static final String SHELLY_EVENT_SHORT_LONGTPUSH = "shortpush_longpush";
+    public static final String SHELLY_EVENT_LONG_SHORTPUSH = "longpush_shortpush";
 
     // Dimmer
     public static final String SHELLY_EVENT_BTN1_ON = "btn1_on";
@@ -214,6 +216,8 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_BTNEVENT_2SHORTPUSH = "SS";
     public static final String SHELLY_BTNEVENT_3SHORTPUSH = "SSS";
     public static final String SHELLY_BTNEVENT_LONGPUSH = "L";
+    public static final String SHELLY_BTNEVENT_SHORTLONGPUSH = "SL";
+    public static final String SHELLY_BTNEVENT_LONGSHORTPUSH = "LS";
 
     public static final String SHELLY_TEMP_CELSIUS = "C";
     public static final String SHELLY_TEMP_FAHRENHEIT = "F";
@@ -1052,11 +1056,17 @@ public class ShellyApiJsonDTO {
                 return CommonTriggerEvents.DOUBLE_PRESSED;
             case SHELLY_BTNEVENT_3SHORTPUSH:
             case SHELLY_EVENT_TRIPLE_SHORTPUSH:
-                return CommonTriggerEvents.PRESSED;
+                return "TRIPLE_PRESSED";
             case "2":
             case SHELLY_BTNEVENT_LONGPUSH:
             case SHELLY_EVENT_LONGPUSH:
                 return CommonTriggerEvents.LONG_PRESSED;
+            case SHELLY_BTNEVENT_SHORTLONGPUSH:
+            case SHELLY_EVENT_SHORT_LONGTPUSH:
+                return "SHORT_LONG_PRESSED";
+            case SHELLY_BTNEVENT_LONGSHORTPUSH:
+            case SHELLY_EVENT_LONG_SHORTPUSH:
+                return "LONG_SHORT_PRESSED";
             default:
                 return "";
         }

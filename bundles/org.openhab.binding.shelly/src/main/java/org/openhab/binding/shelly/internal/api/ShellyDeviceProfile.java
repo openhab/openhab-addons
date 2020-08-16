@@ -71,7 +71,6 @@ public class ShellyDeviceProfile {
     public boolean isRoller = false; // true for Shelly2 in roller mode
     public boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
     public boolean isPlugS = false; // true if it is a Shelly Plug S
-    public int numTempSensors = 0; // number of external temp sensors
     public int numHumSensors = 0; // number of external humidity sensors
 
     public int numMeters = 0;
@@ -147,16 +146,6 @@ public class ShellyDeviceProfile {
             numMeters = inColor ? 1 : getInteger(settings.device.numOutputs);
         }
         isRoller = mode.equalsIgnoreCase(SHELLY_MODE_ROLLER);
-
-        /*
-         * if (settings.extTemperature != null) {
-         * numTempSensors = settings.extTemperature.sensor3 != null ? 3
-         * : settings.extTemperature.sensor2 != null ? 2 : settings.extTemperature.sensor1 != null ? 1 : 0;
-         * }
-         * if (settings.extTemperature != null) {
-         * numHumSensors = settings.extHumidity.sensor1 != null ? 1 : 0;
-         * }
-         */
 
         if (settings.sleepMode != null) {
             // Sensor, usally 12h

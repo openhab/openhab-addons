@@ -256,14 +256,17 @@ This could be a switch connected to the SW input of the relay or the Button 1.
 
 The following trigger types are sent:
 
-|Event Type        |Description                                                                                                    |
-|------------------|---------------------------------------------------------------------------------------------------------------|
-|SHORT_PRESSED     |The button was pressed once for a short time                                                                   |
-|DOUBLE_PRESSED    |The button was pressed twice with short delay                                                                  |
-|PRESSED           |The button was pressed three times with short delay                                                            |
-|LONG_PRESSED      |The button was pressed for a longer timetime                                                                   |
+|Event Type         |Description                                                                                                    |
+|-------------------|---------------------------------------------------------------------------------------------------------------|
+|SHORT_PRESSED      |The button was pressed once for a short time                                                                   |
+|DOUBLE_PRESSED     |The button was pressed twice with short delay                                                                  |
+|TRIPLE_PRESSED     |The button was pressed three times with short delay                                                            |
+|LONG_PRESSED       |The button was pressed for a longer time                                                                       |
+|SHORT_LONG_PRESSED |A short followed by a long button push                                                                         |
+|LONG_SHORT_PRESSED |A long followed by a short button push                                                                         |
  
- Check the channel definitions for the various devices. 
+Check the channel definitions for the various devices to see if the device supports those events.
+You could use the Shelly App to set the timing for those events. 
 
 ### Alarms
 
@@ -537,7 +540,7 @@ The Dimmer should be calibrated using the Shelly App.
 |status    |input1       |Switch   |yes      |State of Input 1                                                       |
 |          |input2       |Switch   |yes      |State of Input 2                                                       |
 |          |input3       |Switch   |yes      |State of Input 3                                                       |
-|          |button       |Trigger  |yes      |Event trigger: SHORT_PRESSED, DOUBLE_PRESSED, PRESSED or LONG_PRESSED  |
+|          |button       |Trigger  |yes      |Event trigger: SHORT_PRESSED, DOUBLE_PRESSED, TRIPLE_PRESSED, LONG_PRESSED, SHORT_LONG_PRESSED or LONG_SHORT_PRESSED  |
 |          |lastEvent    |String   |yes      |S/SS/SSS for 1/2/3x Shortpush or L for Longpush                        |
 |          |eventCount   |Number   |yes      |Number of button events                                                |
 
@@ -647,7 +650,7 @@ The Dimmer should be calibrated using the Shelly App.
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |ON: An auto-on/off timer is active                                     |
-|meter     |currentWatts |Number   |yes      |Current power consumption in Watts (all channels)                                   |
+|meter     |currentWatts |Number   |yes      |Current power consumption in Watts (all channels)                      |
 
 Please note that the settings of channel group color are only valid in color mode and vice versa for white mode.
 The current firmware doesn't support the timestamp report for the meters. 

@@ -175,19 +175,27 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             break;
                         case COIOT_OPTION_GLOBAL_DEVID:
                             devId = opt.getStringValue();
-                            String version = StringUtils.substringAfterLast(devId, "#");
+                            String sVersion = StringUtils.substringAfterLast(devId, "#");
+                            int iVersion = Integer.parseInt(sVersion);
+                            if (coiotBound && (coiotVers != iVersion)) {
+                                logger.debug(
+                                        "{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
+                                        thingName, coiotVers, iVersion);
+                                discover();
+                                coiotBound = false;
+                            }
                             if (!coiotBound) {
-                                thingHandler.updateProperties(PROPERTY_COAP_VERSION, version);
-                                coiotVers = Integer.parseInt(version);
-                                logger.debug("{}: CoIoT Version {} detected", thingName, coiotVers);
-                                if (coiotVers == COIOT_VERSION_1) {
+                                thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
+                                logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
+                                if (iVersion == COIOT_VERSION_1) {
                                     coiot = new ShellyCoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
-                                } else if (coiotVers == COIOT_VERSION_2) {
+                                } else if (iVersion == COIOT_VERSION_2) {
                                     coiot = new ShellyCoIoTVersion2(thingName, thingHandler, blkMap, sensorMap);
                                 } else {
-                                    logger.warn("{}: Unsupported CoAP version detected: {}", thingName, version);
+                                    logger.warn("{}: Unsupported CoAP version detected: {}", thingName, sVersion);
                                     return;
                                 }
+                                coiotVers = iVersion;
                                 coiotBound = true;
                             }
                             break;
@@ -377,11 +385,13 @@ public class ShellyCoapHandler implements ShellyCoapListener {
         List<CoIotSensor> sensorUpdates = list.generic;
         Map<String, State> updates = new TreeMap<String, State>();
         logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
+        int failed = 0;
         for (int i = 0; i < sensorUpdates.size(); i++) {
             try {
                 CoIotSensor s = sensorUpdates.get(i);
                 if (!sensorMap.containsKey(s.id)) {
-                    logger.debug("{}: Invalid index in sensor description: {}", thingName, i);
+                    logger.debug("{}: Invalid id in sensor description: {}, index {}", thingName, s.id, i);
+                    failed++;
                     continue;
                 }
                 CoIotDescrSen sen = sensorMap.get(s.id);
@@ -431,6 +441,12 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             if ((!thingHandler.autoCoIoT && (thingHandler.scheduledUpdates <= 1))
                     || (thingHandler.autoCoIoT && !profile.isLight && !profile.hasBattery)) {
                 thingHandler.requestUpdates(1, false);
+            }
+        } else {
+            if (failed == sensorUpdates.size()) {
+                logger.debug("{}: Device description problem detected, re-discover", thingName);
+                coiotBound = false;
+                discover();
             }
         }
 
