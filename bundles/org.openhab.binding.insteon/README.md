@@ -57,6 +57,7 @@ The Insteon device is configured with the following required parameters:
 |----------|-------------|
 |address|Insteon or X10 address of the device. Insteon device addresses are in the format 'xx.xx.xx', and can be found on the device. X10 device address are in the format 'x.y' and are typically configured on the device.|
 |productKey|Insteon binding product key that is used to identy the device. Every Insteon device type is uniquely identified by its Insteon product key, typically a six digit hex number. For some of the older device types (in particular the SwitchLinc switches and dimmers), Insteon does not give a product key, so an arbitrary fake one of the format Fxx.xx.xx (or Xxx.xx.xx for X10 devices) is assigned by the binding.|
+|deviceConfig|Optional JSON object with device specific configuration. The JSON object will contain one or more key/value pairs. The key is a parameter for the device and the type of the value will vary.|
 
 The following is a list of the product keys and associated devices.
 These have been tested and should work out of the box:
@@ -409,8 +410,6 @@ Then create entries in the .items file like this:
 ```
 
 This will give you a contact, the battery level, and the light level.
-Note that battery and light level are only updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
-
 The motion sensor II includes three additional channels:
 
 **Items**
@@ -419,6 +418,24 @@ The motion sensor II includes three additional channels:
     Number  motionSensorBatteryPercent     "motion sensor battery percent"                     { channel="insteon:device:home:AABBCC:batteryPercent" }
     Contact motionSensorTamperSwitch       "motion sensor tamper switch [MAP(contact.map):%s]" { channel="insteon:device:home:AABBCC:tamperSwitch"}
     Number  motionSensorTemperatureLevel   "motion sensor temperature level"                   { channel="insteon:device:home:AABBCC:temperatureLevel" }
+```
+
+The battery, light level and temperature level are updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
+This is accomplished by querying the device for the data.
+The motion sensor II will also periodically send data if the alternate heartbeat is enabled on the device.
+
+If the alternate heartbeat is enabled, the device can be configured to not query the device and rely on the data from the alternate heartbeat.
+Disabling the querying of the device should provide more accurate battery data since it appears to fluctuate with queries of the device.
+This can be configured with the device configuration parameter of the device.
+The key in the JSON object is `heartbeatOnly` and the value is a boolean:
+
+**Things**
+
+```
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
+  Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.24", deviceConfig="{'heartbeatOnly': true}"]
+}
+
 ```
 
 The temperature can be calculated in Fahrenheit using the following formulas:
@@ -724,7 +741,7 @@ Further note that X10 devices are addressed with `houseCode.unitCode`, e.g. `A.2
 
 The binding can command the modem to send broadcasts to a given Insteon group.
 Since it is a broadcast message, the corresponding item does *not* take the address of any device, but of the modem itself.
-The format is broadcastOnOff#X where X is the group that you want to be able to broadcast messages to:
+The format is `broadcastOnOff#X` where X is the group that you want to be able to broadcast messages to:
 
 **Things**
 
@@ -745,6 +762,18 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 ```
 
 Flipping this switch to "ON" will cause the modem to send a broadcast message with group=2, and all devices that are configured to respond to it should react.
+
+Channels can also be configured using the device configuration parameter of the device.
+The key in the JSON object is `broadcastGroups` and the value is an array of integers:
+
+**Things**
+
+```
+Bridge insteon:network:home [port="/dev/ttyUSB0"] {
+  Thing device AABBCC             [address="AA.BB.CC", productKey="0x000045", deviceConfig="{'broadcastGroups': [2]}"]
+}
+
+```
 
 ## Channel "related" Property
 
@@ -773,7 +802,7 @@ A typical example would be a switch configured to broadcast to a group, and one 
 
 ```
 Bridge insteon:network:home [port="/dev/ttyUSB0"] {
-  Thing device AABBCC             [address="A.BB.CC", productKey="0x000045"] {
+  Thing device AABBCC [address="AA.BB.CC", productKey="0x000045"] {
     Channels:
       Type switch : broadcastOnOff#3 [related="AA.BB.DD"]
   }
