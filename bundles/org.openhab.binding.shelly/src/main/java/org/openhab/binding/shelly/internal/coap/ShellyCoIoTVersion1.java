@@ -68,7 +68,6 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
     @Override
     public boolean handleStatusUpdate(List<CoIotSensor> sensorUpdates, CoIotDescrSen sen, CoIotSensor s,
             Map<String, State> updates) {
-
         // first check the base implementation
         if (super.handleStatusUpdate(sensorUpdates, sen, s, updates)) {
             // process by the base class

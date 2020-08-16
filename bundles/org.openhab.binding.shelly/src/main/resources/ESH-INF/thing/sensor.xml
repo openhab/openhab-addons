@@ -9,12 +9,12 @@
 		<description>Shelly H&amp;T Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="htSensor" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="htSensor"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<thing-type id="shellysmoke">
@@ -22,12 +22,12 @@
 		<description>Shelly Smoke Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="smokeSensor" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="smokeSensor"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<thing-type id="shellygas">
@@ -35,23 +35,23 @@
 		<description>Shelly Gas Sensor</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="gasSensor" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="gasSensor"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:basic" />
+		<config-description-ref uri="thing-type:shelly:basic"/>
 	</thing-type>
 
 	<thing-type id="shellyflood">
 		<label>Shelly Flood (SHWT-1)</label>
 		<description>Shelly Flood Sensor (battery powered)</description>
 		<channel-groups>
-			<channel-group id="sensors" typeId="floodSensor" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="floodSensor"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<thing-type id="shellydw">
@@ -59,12 +59,12 @@
 		<description>Shelly Door/Window Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="doorWinSensors" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="doorWinSensors"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<thing-type id="shellydw2">
@@ -72,25 +72,25 @@
 		<description>Shelly Door/Window 2 Sensor (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="sensors" typeId="doorWinSensors" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="sensors" typeId="doorWinSensors"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<thing-type id="shellysense">
 		<label>Shelly Sense (SHSEN-1)</label>
 		<description>Shelly Sense Remote IR Controller</description>
 		<channel-groups>
-			<channel-group id="control" typeId="senseControl" />
-			<channel-group id="sensors" typeId="senseSensors" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="control" typeId="senseControl"/>
+			<channel-group id="sensors" typeId="senseSensors"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<thing-type id="shellybutton1">
@@ -98,12 +98,12 @@
 		<description>Shelly Button 1 (battery powered)</description>
 
 		<channel-groups>
-			<channel-group id="status" typeId="buttonState" />
-			<channel-group id="battery" typeId="batteryStatus" />
-			<channel-group id="device" typeId="deviceStatus" />
+			<channel-group id="status" typeId="buttonState"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:shelly:battery" />
+		<config-description-ref uri="thing-type:shelly:battery"/>
 	</thing-type>
 
 	<channel-group-type id="htSensor">
@@ -140,17 +140,17 @@
 		<label>Sense Control</label>
 		<description>Sense Settings</description>
 		<channels>
-			<channel id="key" typeId="senseKey" />
+			<channel id="key" typeId="senseKey"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="buttonState">
 		<label>Button State</label>
 		<description>Status of the Button</description>
 		<channels>
-			<channel id="input" typeId="inputState" />
-			<channel id="button" typeId="system.button" />
-			<channel id="lastEvent" typeId="lastEvent" />
-			<channel id="eventCount" typeId="eventCount" />
+			<channel id="input" typeId="inputState"/>
+			<channel id="button" typeId="system.button"/>
+			<channel id="lastEvent" typeId="lastEvent"/>
+			<channel id="eventCount" typeId="eventCount"/>
 		</channels>
 	</channel-group-type>
 
@@ -257,7 +257,7 @@
 		<tags>
 			<tag>CurrentHumidity</tag>
 		</tags>
-		<state readOnly="true" min="0" max="100" pattern="%f %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%f %unit%"/>
 	</channel-type>
 	<channel-type id="sensorFlood">
 		<item-type>Switch</item-type>

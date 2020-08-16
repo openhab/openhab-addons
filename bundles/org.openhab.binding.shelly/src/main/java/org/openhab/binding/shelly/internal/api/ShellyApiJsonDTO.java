@@ -609,7 +609,7 @@ public class ShellyApiJsonDTO {
         public String mac;
         public Boolean discoverable; // FW 1.6+
         @SerializedName("cfg_changed_cnt")
-        public Integer cfg_changed_count; // FW 1.8
+        public Integer cfgChangedCount; // FW 1.8
 
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsRoller> rollers;

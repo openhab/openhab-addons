@@ -37,7 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
 
 /**
- * The {@link ShellyChannelDefinitionsDTO} defines channel information for dynamically created channels. Those will be
+ * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
  * added on the first thing status update
  *
  * @author Markus Michels - Initial contribution
@@ -45,7 +45,7 @@ import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
 @NonNullByDefault
 public class ShellyChannelDefinitionsDTO {
 
-    private static final ChannelMap channelDefinitions = new ChannelMap();
+    private static final ChannelMap CHANNEL_DEFINITIONS = new ChannelMap();
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
@@ -76,7 +76,7 @@ public class ShellyChannelDefinitionsDTO {
 
     public ShellyChannelDefinitionsDTO(ShellyTranslationProvider m) {
         // Device: Internal Temp
-        channelDefinitions
+        CHANNEL_DEFINITIONS
                 // Device
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEM_TYPE_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEM_TYPE_STRING))
@@ -160,7 +160,7 @@ public class ShellyChannelDefinitionsDTO {
             group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
         String channelId = group + "#" + channel;
-        return channelDefinitions.get(channelId);
+        return CHANNEL_DEFINITIONS.get(channelId);
     }
 
     /**

@@ -66,7 +66,7 @@ public class ShellyHttpApi {
 
     private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
     private final HttpClient httpClient;
-    private ShellyThingConfiguration config = new ShellyThingConfiguration();;
+    private ShellyThingConfiguration config = new ShellyThingConfiguration();
     private String thingName;
     private final Gson gson = new Gson();
     private int timeoutErrors = 0;

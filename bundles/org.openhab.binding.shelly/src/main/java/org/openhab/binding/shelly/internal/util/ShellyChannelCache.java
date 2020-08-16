@@ -56,7 +56,7 @@ public class ShellyChannelCache {
         enabled = true;
     }
 
-    synchronized public void disable() {
+    public synchronized void disable() {
         clear();
         enabled = false;
     }

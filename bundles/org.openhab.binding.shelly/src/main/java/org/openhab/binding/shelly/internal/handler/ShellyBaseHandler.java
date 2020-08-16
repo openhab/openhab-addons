@@ -407,7 +407,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 }
             } else if (res.isHttpAccessUnauthorized()) {
                 status = "offline.conf-error-access-denied";
-            } else if (e.IsJSONException()) {
+            } else if (e.isJSONException()) {
                 status = "offline.status-error-unexpected-api-result";
                 logger.debug("{}: Unable to parse API response: {}; json={}", thingName, res.getUrl(), res.response, e);
             } else {
@@ -459,7 +459,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         }
     }
 
-    synchronized public void restartWatchdog() {
+    public synchronized void restartWatchdog() {
         updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_HEARTBEAT, getTimestamp());
         watchdog.reset();
         watchdog.start();
@@ -670,7 +670,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             return true;
         }
         return false;
-
     }
 
     /**
@@ -921,7 +920,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
          * }
          * }
          */
-
     }
 
     public void publishState(String channelId, State value) {
