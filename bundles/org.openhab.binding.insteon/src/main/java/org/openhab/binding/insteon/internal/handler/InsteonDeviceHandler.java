@@ -358,15 +358,9 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        InsteonDevice device = getInsteonBinding().getDevice(new InsteonAddress(config.getAddress()));
-        if (device == null) {
-            logger.warn("{} Unable to find the Insteon device {}", channelUID.getAsString(), config.getAddress());
-            return;
-        }
-
         Map<String, @Nullable String> params = new HashMap<>();
-        String channelId = channelUID.getId();
-        Channel channel = getThing().getChannel(channelId);
+        Channel channel = getThing().getChannel(channelUID.getId());
+
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
         for (String key : channelProperties.keySet()) {
             Object value = channelProperties.get(key);
@@ -376,41 +370,12 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 String s = ((BigDecimal) value).toPlainString();
                 params.put(key, s);
             } else {
-                logger.warn("{} The value for key '{}' must be an integer or string in the channel parameters",
-                        channelUID.getAsString(), key);
+                logger.warn("not a string or big decimal value key '{}' value '{}' {}", key, value,
+                        value.getClass().getName());
             }
         }
 
-        Object o = device.getDeviceConfigMap().get(channelId);
-        if (o != null) {
-            if (o instanceof Map<?, ?>) {
-                @SuppressWarnings("unchecked")
-                Map<String, @Nullable Object> channelConfigMap = (Map<String, @Nullable Object>) o;
-                for (String key : channelConfigMap.keySet()) {
-                    if (!params.containsKey(key)) {
-                        Object value = channelConfigMap.get(key);
-                        if (value instanceof String) {
-                            params.put(key, (String) value);
-                        } else if (value instanceof Double && (Double) value % 1 == 0) {
-                            params.put(key, Integer.toString(((Double) value).intValue()));
-                        } else {
-                            logger.warn(
-                                    "{} The value for key '{}' must be an integer or string in the device configuration parameter",
-                                    channelUID.getAsString(), key);
-                        }
-                    } else {
-                        logger.warn(
-                                "{} The key '{}' is defined in the channel parameters, ignoring in the device configuration parameter",
-                                channelUID.getAsString(), key);
-                    }
-                }
-            } else {
-                logger.warn("{} The value for the key '{}' is not a JSON object in the device configuration parameter",
-                        channelUID.getThingUID().getAsString(), channelId);
-            }
-        }
-
-        String feature = channelId.toLowerCase();
+        String feature = channelUID.getId().toLowerCase();
         String productKey = config.getProductKey();
         if (productKey.equals(HIDDEN_DOOR_SENSOR_PRODUCT_KEY)) {
             if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)) {

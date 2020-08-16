@@ -57,7 +57,7 @@ The Insteon device is configured with the following required parameters:
 |----------|-------------|
 |address|Insteon or X10 address of the device. Insteon device addresses are in the format 'xx.xx.xx', and can be found on the device. X10 device address are in the format 'x.y' and are typically configured on the device.|
 |productKey|Insteon binding product key that is used to identy the device. Every Insteon device type is uniquely identified by its Insteon product key, typically a six digit hex number. For some of the older device types (in particular the SwitchLinc switches and dimmers), Insteon does not give a product key, so an arbitrary fake one of the format Fxx.xx.xx (or Xxx.xx.xx for X10 devices) is assigned by the binding.|
-|deviceConfig|Optional JSON object with device specific configuration. The JSON object will contain one or more key/value pairs.<br>If the key matches one of the channels associated with the device, the value must be an JSON object of key/value pairs. These key/value pairs will be assigned as parameters to the channel. The values must be either strings or integers.<br>Otherwise, the key is a parameter for the device and the type of the value will vary.|
+|deviceConfig|Optional JSON object with device specific configuration. The JSON object will contain one or more key/value pairs. The key is a parameter for the device and the type of the value will vary.|
 
 The following is a list of the product keys and associated devices.
 These have been tested and should work out of the box:
@@ -338,15 +338,6 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 }
 ```
 
-Or
-
-```
-Bridge insteon:network:home [port="/dev/ttyUSB0"] {
-  Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11", deviceConfig="{'dimmer': {'dimmermax': 70}}"]
-  Thing device AABBCD [address="AA.BB.CD", productKey="F00.00.15", deviceConfig="{'dimmer': {'dimmermax': 60}}"]
-}
-```
-
 **Items**
 
 ```
@@ -593,14 +584,6 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 }
 ```
 
-Or
-
-```
-Bridge insteon:network:home [port="/dev/ttyUSB0"] {
-  Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.15", deviceConfig="{'keypadButtonA': {'group': '0xf3'}, 'keypadButtonB': {'group': '0xf4'}, 'keypadButtonC': {'group': '0xf5'}, 'keypadButtonD': {'group': '0xf6'}}"]
-}
-```
-
 The value after group must either be a number or string.
 The hexadecimal value 0xf3 can either converted to a numeric value 243 or the string value "0xf3".
 
@@ -813,15 +796,6 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
 }
 ```
 
-Or
-
-```
-Bridge insteon:network:home [port="/dev/ttyUSB0"] {
-  Thing device AABBCC [address="AA.BB.CC", productKey="F00.00.11", deviceConfig="{'dimmer': {'related': 'AA.BB.DD'}}"]
-  Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11", deviceConfig="{'dimmer': {'related': 'AA.BB.CC'}}"]
-}
-```
-
 Another scenario is a group broadcast message, the binding doesn't know which devices have responded to the message since its a broadcast message.
 In this scenario, the "related" keyword can be used to have the binding poll one or more related device when group message are sent.
 A typical example would be a switch configured to broadcast to a group, and one or more devices configured to respond to the message:
@@ -832,15 +806,6 @@ Bridge insteon:network:home [port="/dev/ttyUSB0"] {
     Channels:
       Type switch : broadcastOnOff#3 [related="AA.BB.DD"]
   }
-  Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"]
-}
-```
-
-Or
-
-```
-Bridge insteon:network:home [port="/dev/ttyUSB0"] {
-  Thing device AABBCC [address="AA.BB.CC", productKey="0x000045", deviceConfig="{'broadcastGroups': [3], 'broadcastOnOff#3': {'related': 'AA.BB.DD'}}"]
   Thing device AABBDD [address="AA.BB.DD", productKey="F00.00.11"]
 }
 ```
