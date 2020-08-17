@@ -28,10 +28,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class BimmerConstants {
 
-    public final static String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
-    public final static String SERVER_CHINA = "b2vapi.bmwgroup.cn:859";
-    public final static String SERVER_ROW = "b2vapi.bmwgroup.com";
-    public final static Map<String, String> SERVER_MAP = new HashMap<String, String>() {
+    public static final String SERVER_NORTH_AMERICA = "b2vapi.bmwgroup.us";
+    public static final String SERVER_CHINA = "b2vapi.bmwgroup.cn:859";
+    public static final String SERVER_ROW = "b2vapi.bmwgroup.com";
+    public static final Map<String, String> SERVER_MAP = new HashMap<String, String>() {
         {
             put("NORTH_AMERICA", SERVER_NORTH_AMERICA);
             put("CHINA", SERVER_CHINA);
@@ -39,9 +39,9 @@ public class BimmerConstants {
         }
     };
 
-    public final static String AUTHORIZATION_VALUE = "Basic blF2NkNxdHhKdVhXUDc0eGYzQ0p3VUVQOjF6REh4NnVuNGNEanliTEVOTjNreWZ1bVgya0VZaWdXUGNRcGR2RFJwSUJrN3JPSg==";
-    public final static String CREDENTIAL_VALUES = "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
-    public final static String CLIENT_ID_VALUE = "dbf0a542-ebd1-4ff0-a9a7-55172fbfce35";
-    public final static String REDIRECT_URI_VALUE = "https://www.bmw-connecteddrive.com/app/static/external-dispatch.html";
-    public final static String SCOPE_VALUES = "authenticate_user vehicle_data remote_services";
+    public static final String AUTHORIZATION_VALUE = "Basic blF2NkNxdHhKdVhXUDc0eGYzQ0p3VUVQOjF6REh4NnVuNGNEanliTEVOTjNreWZ1bVgya0VZaWdXUGNRcGR2RFJwSUJrN3JPSg==";
+    public static final String CREDENTIAL_VALUES = "nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ";
+    public static final String CLIENT_ID_VALUE = "dbf0a542-ebd1-4ff0-a9a7-55172fbfce35";
+    public static final String REDIRECT_URI_VALUE = "https://www.bmw-connecteddrive.com/app/static/external-dispatch.html";
+    public static final String SCOPE_VALUES = "authenticate_user vehicle_data remote_services";
 }
