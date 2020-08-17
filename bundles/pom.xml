@@ -60,6 +60,7 @@
     <module>org.openhab.binding.bluetooth.blukii</module>
     <module>org.openhab.binding.bluetooth.daikinmadoka</module>
     <module>org.openhab.binding.bluetooth.ruuvitag</module>
+    <module>org.openhab.binding.bmwconnecteddrive</module>
     <module>org.openhab.binding.boschindego</module>
     <module>org.openhab.binding.bosesoundtouch</module>
     <module>org.openhab.binding.bsblan</module>
