@@ -21,19 +21,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HTTPConstants {
-    public final static String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
-    public final static String CONTENT_TYPE_JSON = "application/json";
-    public final static String KEEP_ALIVE = "Keep-Alive";
-    public final static String CLIENT_ID = "client_id";
-    public final static String RESPONSE_TYPE = "response_type";
-    public final static String TOKEN = "token";
-    public final static String REDIRECT_URI = "redirect_uri";
-    public final static String SCOPE = "scope";
-    public final static String CREDENTIALS = "Credentials";
-    public final static String USERNAME = "username";
-    public final static String PASSWORD = "password";
+    public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
+    public static final String CONTENT_TYPE_JSON = "application/json";
+    public static final String KEEP_ALIVE = "Keep-Alive";
+    public static final String CLIENT_ID = "client_id";
+    public static final String RESPONSE_TYPE = "response_type";
+    public static final String TOKEN = "token";
+    public static final String REDIRECT_URI = "redirect_uri";
+    public static final String SCOPE = "scope";
+    public static final String CREDENTIALS = "Credentials";
+    public static final String USERNAME = "username";
+    public static final String PASSWORD = "password";
 
-    public final static String ACCESS_TOKEN = "access_token";
-    public final static String TOKEN_TYPE = "token_type";
-    public final static String EXPIRES_IN = "expires_in";
+    public static final String ACCESS_TOKEN = "access_token";
+    public static final String TOKEN_TYPE = "token_type";
+    public static final String EXPIRES_IN = "expires_in";
 }
