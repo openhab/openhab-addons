@@ -48,24 +48,23 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 public class TouchWandWebSockets {
+
+    private static final int CONNECT_TIMEOUT_SEC = 10;
+    private static final int WEBSOCKET_RECONNECT_INTERVAL_SEC = CONNECT_TIMEOUT_SEC * 2;
+    private static final int WEBSOCKET_IDLE_TIMEOUT_MS = CONNECT_TIMEOUT_SEC * 10 * 1000;
+    private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
+    private static final String WS_ENDPOINT_TOUCHWAND = "/async";
 
     private WebSocketClient client;
     private String controllerAddress;
     private TouchWandSocket touchWandSocket;
     private boolean isShutDown = false;
-
-    private final Logger logger = LoggerFactory.getLogger(TouchWandWebSockets.class);
     private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
-    @Nullable
-    private ScheduledFuture<?> socketReconnect;
-
-    private static final String WS_ENDPOINT_TOUCHWAND = "/async";
+    private @Nullable ScheduledFuture<?> socketReconnect;
     private @Nullable URI uri;
-    private static final int CONNECT_TIMEOUT = 10000; // 10 seconds
-    private static final int WEBSOCKET_RECONNECT_INTERVAL = CONNECT_TIMEOUT * 2;
-    private static final int WEBSOCKET_IDLE_TIMEOUT = CONNECT_TIMEOUT * 10;
+
     ScheduledExecutorService scheduler;
 
     public TouchWandWebSockets(String ipAddress, ScheduledExecutorService scheduler) {
@@ -84,7 +83,7 @@ public class TouchWandWebSockets {
             return;
         }
 
-        client.setConnectTimeout(CONNECT_TIMEOUT);
+        client.setConnectTimeout(CONNECT_TIMEOUT_MS);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
@@ -118,8 +117,7 @@ public class TouchWandWebSockets {
         listeners.remove(listener);
     }
 
-    @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT)
-    @NonNullByDefault
+    @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT_MS)
     public class TouchWandSocket {
 
         @SuppressWarnings("unused")
@@ -195,8 +193,8 @@ public class TouchWandWebSockets {
         @SuppressWarnings("null")
         private void asyncWeb() {
             if (socketReconnect == null || socketReconnect.isDone()) {
-                socketReconnect = scheduler.schedule(TouchWandWebSockets.this::connect, WEBSOCKET_RECONNECT_INTERVAL,
-                        TimeUnit.MILLISECONDS);
+                socketReconnect = scheduler.schedule(TouchWandWebSockets.this::connect,
+                        WEBSOCKET_RECONNECT_INTERVAL_SEC, TimeUnit.SECONDS);
             }
         }
     }

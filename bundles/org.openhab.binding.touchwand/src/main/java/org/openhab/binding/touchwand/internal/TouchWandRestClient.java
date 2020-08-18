@@ -96,12 +96,11 @@ public class TouchWandRestClient {
         return isConnected;
     }
 
-    @SuppressWarnings("null")
     private final boolean cmdLogin(String user, String pass, String ipAddr) {
         String command = buildUrl(CMD_LOGIN) + "user=" + user + "&" + "psw=" + pass;
         String response = sendCommand(command, METHOD_GET, "");
 
-        return response != null && !response.equals("Unauthorized");
+        return !response.equals("Unauthorized");
     }
 
     public String cmdListUnits() {

@@ -46,20 +46,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWandUnitStatusUpdateListener {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private final Logger logger = LoggerFactory.getLogger(TouchWandBridgeHandler.class);
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = Collections
             .synchronizedMap(new HashMap<>());
 
-    private Configuration config;
-    private String host;
-    private String port;
-    private int statusRefreshRate;
+    private int statusRefreshRateSec;
     private boolean addSecondaryUnits;
     private BundleContext bundleContext;
-    private TouchWandWebSockets touchWandWebSockets;
+    private @Nullable TouchWandWebSockets touchWandWebSockets;
     private Map<String, TouchWandUnitUpdateListener> unitUpdateListeners = new ConcurrentHashMap<>();
 
     public TouchWandRestClient touchWandClient;
@@ -73,12 +70,16 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
 
     @Override
     public void initialize() {
+        String host;
+        String port;
+        Configuration config;
+
         updateStatus(ThingStatus.UNKNOWN);
         config = getThing().getConfiguration();
 
         host = config.get(HOST).toString();
         port = config.get(PORT).toString();
-        statusRefreshRate = Integer.parseInt((config.get(STATUS_REFRESH_TIME).toString()));
+        statusRefreshRateSec = Integer.parseInt((config.get(STATUS_REFRESH_TIME).toString()));
         addSecondaryUnits = Boolean.valueOf(config.get(ADD_SECONDARY_UNITS).toString());
 
         scheduler.execute(() -> {
@@ -107,7 +108,7 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     }
 
     public int getStatusRefreshTime() {
-        return statusRefreshRate;
+        return statusRefreshRateSec;
     }
 
     private synchronized void registerItemDiscoveryService(TouchWandBridgeHandler bridgeHandler) {
@@ -117,7 +118,6 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
         ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(this.getThing().getUID());

@@ -40,7 +40,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 
 @Component(configurationPid = "binding.touchwand", service = ThingHandlerFactory.class)
-@NonNullByDefault({})
+@NonNullByDefault
 public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
@@ -48,7 +48,7 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
                     TouchWandBaseUnitHandler.SUPPORTED_THING_TYPES.stream())
             .flatMap(i -> i).collect(Collectors.toSet()));
 
-    private HttpClient httpClient;
+    private @NonNullByDefault({}) HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

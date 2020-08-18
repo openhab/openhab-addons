@@ -33,12 +33,12 @@ import org.openhab.binding.touchwand.internal.dto.TouchWandUnitDataWallControlle
 @NonNullByDefault
 public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
 
-    private long timeSinceLastEvent;
+    private long timeSinceLastEventMs;
     private static final int ADJUSTENT_EVENT_FILTER_TIME_MILLISEC = 2000; // 2 seconds
 
     public TouchWandWallControllerHandler(Thing thing) {
         super(thing);
-        timeSinceLastEvent = Instant.now().toEpochMilli();
+        timeSinceLastEventMs = Instant.now().toEpochMilli();
     }
 
     @Override
@@ -48,11 +48,11 @@ public class TouchWandWallControllerHandler extends TouchWandBaseUnitHandler {
     @Override
     void updateTouchWandUnitState(TouchWandUnitData unitData) {
         int status = ((TouchWandUnitDataWallController) unitData).getCurrStatus();
-        long timeDiff = Instant.now().toEpochMilli() - timeSinceLastEvent;
+        long timeDiff = Instant.now().toEpochMilli() - timeSinceLastEventMs;
         if ((timeDiff) > ADJUSTENT_EVENT_FILTER_TIME_MILLISEC) {
             String action = status <= 100 ? "SHORT" : "LONG";
             triggerChannel(CHANNEL_WALLCONTROLLER_ACTION, action);
         }
-        timeSinceLastEvent = Instant.now().toEpochMilli();
+        timeSinceLastEventMs = Instant.now().toEpochMilli();
     }
 }
