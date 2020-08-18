@@ -134,6 +134,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_CLASS_RELAY = "relay"; // Relay: relay mode
     public static final String SHELLY_CLASS_ROLLER = "roller"; // Relay: roller mode
     public static final String SHELLY_CLASS_LIGHT = "light"; // Bulb: color mode
+    public static final String SHELLY_CLASS_EMETER = "emeter"; // EM/EM3: emeter
 
     public static final String SHELLY_API_ON = "on";
     public static final String SHELLY_API_OFF = "off";

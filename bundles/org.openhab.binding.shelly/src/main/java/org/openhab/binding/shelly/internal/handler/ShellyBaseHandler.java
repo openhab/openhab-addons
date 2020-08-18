@@ -354,10 +354,14 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (thingStatus == ThingStatus.UNKNOWN)) {
-                    logger.debug("{}: Status update triggered thing initialization", thingName);
-                    initializeThing(); // may fire an exception if initialization failed
+                    if (getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.DISABLED) {
+                        logger.debug("{}: Status update triggered thing initialization", thingName);
+                        initializeThing(); // may fire an exception if initialization failed
+                    } else {
+                        logger.debug("{}: Thing is disabled, skip initialization", thingName);
+                        return;
+                    }
                 }
-
                 // Get profile, if refreshSettings == true reload settings from device
                 profile = getProfile(refreshSettings);
 

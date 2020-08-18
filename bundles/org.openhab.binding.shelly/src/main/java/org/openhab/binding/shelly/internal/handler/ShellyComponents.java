@@ -119,9 +119,10 @@ public class ShellyComponents {
 
                             // convert Watt/Min to kw/h
                             if (meter.total != null) {
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                        getDouble(meter.total) / 60 / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
-                                accumulatedTotal += getDouble(meter.total);
+                                double kwh = getDouble(meter.total) / 60 / 1000;
+                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
+                                        toQuantityType(kwh, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                accumulatedTotal += kwh;
                             }
                             if (meter.counters != null) {
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,

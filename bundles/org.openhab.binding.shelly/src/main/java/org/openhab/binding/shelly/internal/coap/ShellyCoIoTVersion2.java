@@ -81,7 +81,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
         String rGroup = getProfile().numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
                 : CHANNEL_GROUP_RELAY_CONTROL + rIndex;
         String mGroup = profile.numMeters == 1 ? CHANNEL_GROUP_METER
-                : CHANNEL_GROUP_METER + (profile.isEMeter ? sen.links : rIndex);
+                : CHANNEL_GROUP_METER + (profile.isEMeter ? getIdFromBlk(sen) : rIndex);
 
         boolean processed = true;
         double value = getDouble(s.value);
@@ -160,6 +160,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "3105": // T, deviceTemp, Fahrenheit -40/572
                 // skip, we use only C
                 break;
+
             case "3107": // C, Gas concentration, U16
                 updateChannel(updates, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, getDecimal(s.value));
                 break;
@@ -185,9 +186,11 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "4201": // relay_1: P, power, W
             case "4301": // relay_2: P, power, W
             case "4401": // relay_3: P, power, W
+            case "4105": // emeter_0: P, power, W
+            case "4205": // emeter_1: P, power, W
+            case "4305": // emeter_2: P, power, W
             case "4102": // roller_0: P, rollerPower, W, 0-2300, unknown -1
             case "4202": // roller_1: P, rollerPower, W, 0-2300, unknown -1
-                // 3EM uses 1-based meter IDs, other 0-based
                 updateChannel(updates, mGroup, CHANNEL_METER_CURRENTWATTS,
                         toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
                 updateChannel(updates, mGroup, CHANNEL_LAST_UPDATE, getTimestamp());
@@ -199,8 +202,39 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "4403": // relay_3: E, energy, Wmin, U32
             case "4104": // roller_0: E, rollerEnergy, Wmin, U32, -1
             case "4204": // roller_0: E, rollerEnergy, Wmin, U32, -1
-                updateChannel(updates, mGroup, CHANNEL_METER_LASTMIN1,
-                        toQuantityType(s.value, DIGITS_WATT, SmartHomeUnits.WATT));
+            case "4106": // emeter_0: E, energy, Wh, U32
+            case "4206": // emeter_1: E, energy, Wh, U32
+            case "4306": // emeter_2: E, energy, Wh, U32
+                Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
+                updateChannel(updates, mGroup, CHANNEL_METER_TOTALKWH,
+                        toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                break;
+
+            case "4107": // emeter_0: E, energyReturned, Wh, U32, -1
+            case "4207": // emeter_1: E, energyReturned, Wh, U32, -1
+            case "4307": // emeter_2: E, energyReturned, Wh, U32, -1
+                updateChannel(updates, mGroup, CHANNEL_EMETER_TOTALRET,
+                        toQuantityType(getDouble(s.value) / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                break;
+
+            case "4108": // emeter_0: V, voltage, 0-265V, U32, -1
+            case "4208": // emeter_1: V, voltage, 0-265V, U32, -1
+            case "4308": // emeter_2: V, voltage, 0-265V, U32, -1
+                updateChannel(updates, mGroup, CHANNEL_EMETER_VOLTAGE,
+                        toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.VOLT));
+                break;
+
+            case "4109": // emeter_0: A, current, 0/120A, -1
+            case "4209": // emeter_1: A, current, 0/120A, -1
+            case "4309": // emeter_2: A, current, 0/120A, -1
+                updateChannel(updates, rGroup, CHANNEL_EMETER_CURRENT,
+                        toQuantityType(getDouble(s.value), DIGITS_VOLT, SmartHomeUnits.AMPERE));
+                break;
+
+            case "4110": // emeter_0: S, powerFactor, 0/1, -1
+            case "4210": // emeter_1: S, powerFactor, 0/1, -1
+            case "4310": // emeter_2: S, powerFactor, 0/1, -1
+                updateChannel(updates, rGroup, CHANNEL_EMETER_PFACTOR, getDecimal(s.value));
                 break;
 
             case "6101": // A, overtemp, 0/1

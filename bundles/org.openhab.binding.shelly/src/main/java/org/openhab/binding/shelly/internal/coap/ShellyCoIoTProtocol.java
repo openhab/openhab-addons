@@ -304,7 +304,8 @@ public class ShellyCoIoTProtocol {
         if (blkMap.containsKey(sen.links)) {
             CoIotDescrBlk blk = blkMap.get(sen.links);
             String desc = blk.desc.toLowerCase();
-            if (desc.startsWith(SHELLY_CLASS_RELAY) || desc.startsWith(SHELLY_CLASS_ROLLER)) {
+            if (desc.startsWith(SHELLY_CLASS_RELAY) || desc.startsWith(SHELLY_CLASS_ROLLER)
+                    || desc.startsWith(SHELLY_CLASS_EMETER)) {
                 if (desc.contains("_")) { // CoAP v2
                     idx = Integer.parseInt(StringUtils.substringAfter(desc, "_"));
                 } else { // CoAP v1
@@ -313,6 +314,9 @@ public class ShellyCoIoTProtocol {
                     }
                     if (desc.substring(0, 6).equalsIgnoreCase(SHELLY_CLASS_ROLLER)) {
                         idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_ROLLER));
+                    }
+                    if (desc.substring(0, SHELLY_CLASS_EMETER.length()).equalsIgnoreCase(SHELLY_CLASS_EMETER)) {
+                        idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_EMETER));
                     }
                 }
                 idx = idx + 1; // make it 1-based (sen.L is 0-based)
