@@ -197,7 +197,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
         @Override
         public String toString() {
-            return result == null ? String.format("PollResult(result=%s)", result)
+            return failure == null ? String.format("PollResult(result=%s)", result)
                     : String.format("PollResult(failure=%s)", failure);
         }
     }
