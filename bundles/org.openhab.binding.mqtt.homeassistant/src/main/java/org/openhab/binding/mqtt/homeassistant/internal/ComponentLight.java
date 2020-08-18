@@ -100,7 +100,8 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
     public ComponentLight(CFactory.ComponentConfiguration builder) {
         super(builder, ChannelConfiguration.class);
         this.channelStateUpdateListener = builder.getUpdateListener();
-        ColorValue value = new ColorValue(true, channelConfiguration.payload_on, channelConfiguration.payload_off, 100);
+        ColorValue value = new ColorValue("rgb", channelConfiguration.payload_on, channelConfiguration.payload_off,
+                100);
 
         // Create three MQTT subscriptions and use this class object as update listener
         switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name, this)//

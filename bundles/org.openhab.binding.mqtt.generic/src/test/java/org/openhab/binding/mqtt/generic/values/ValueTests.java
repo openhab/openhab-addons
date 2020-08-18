@@ -56,7 +56,7 @@ public class ValueTests {
     }
 
     public void colorUpdate() {
-        ColorValue v = new ColorValue(true, "fancyON", "fancyOFF", 77);
+        ColorValue v = new ColorValue("rgb", "fancyON", "fancyOFF", 77);
         v.update(p(v, "255, 255, 255"));
 
         v.update(p(v, "OFF"));
@@ -72,7 +72,7 @@ public class ValueTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void illegalColorUpdate() {
-        ColorValue v = new ColorValue(true, null, null, 10);
+        ColorValue v = new ColorValue("rgb", null, null, 10);
         v.update(p(v, "255,255,abc"));
     }
 

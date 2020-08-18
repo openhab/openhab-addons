@@ -176,7 +176,15 @@ public class Property implements AttributeChanged {
                 value = new OnOffValue("true", "false");
                 break;
             case color_:
-                value = new ColorValue(attributes.format.contains("rgb"), null, null, 100);
+                if (attributes.format.equals("hsv")) {
+                    value = new ColorValue("hsb", null, null, 100);
+                } else if (attributes.format.equals("rgb")) {
+                    value = new ColorValue("rgb", null, null, 100);
+                } else {
+                    logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
+                            attributes.format);
+                    value = new TextValue();
+                }
                 break;
             case enum_:
                 String enumValues[] = attributes.format.split(",");

@@ -11,6 +11,17 @@
 				received value is assigned to an item.</description>
 			<advanced>true</advanced>
 		</parameter-group>
+		
+        <parameter name="colorMode" type="text">
+            <label>Color Mode</label>
+            <description>Defines the color representation format of the payload. "HSB" by default.</description>
+            <options>
+                <option value="hsb">HSB (Hue, Saturation, Brightness)</option>
+                <option value="rgb">RGB (Red, Green, Blue)</option>
+                <option value="xyY">CIE xyY</option>
+            </options>
+            <default>hsb</default>
+        </parameter>
 
 		<parameter name="stateTopic" type="text">
 			<label>MQTT State Topic</label>
