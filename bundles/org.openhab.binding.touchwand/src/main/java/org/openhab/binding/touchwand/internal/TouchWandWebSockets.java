@@ -83,7 +83,7 @@ public class TouchWandWebSockets {
             return;
         }
 
-        client.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        client.setConnectTimeout(CONNECT_TIMEOUT_SEC);
         ClientUpgradeRequest request = new ClientUpgradeRequest();
         request.setSubProtocols("relay_protocol");
 
