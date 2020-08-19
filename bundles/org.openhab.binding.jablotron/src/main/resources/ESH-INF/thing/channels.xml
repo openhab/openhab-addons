@@ -153,4 +153,12 @@
 		<description>The current temperature reported by the sensor</description>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
+
+	<!-- thermostat -->
+	<channel-type id="thermostat">
+		<item-type>Number:Temperature</item-type>
+		<label>Thermostat Temperature</label>
+		<description>The current temperature reported by the thermostat</description>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
 </thing:thing-descriptions>

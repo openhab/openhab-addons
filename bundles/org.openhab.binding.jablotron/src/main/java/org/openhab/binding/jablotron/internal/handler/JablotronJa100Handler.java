@@ -78,6 +78,14 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         updateThing(thingBuilder.build());
     }
 
+    private void createThermostatChannel(String name, String label) {
+        ChannelTypeUID temperature = new ChannelTypeUID("jablotron", "thermostat");
+        ThingBuilder thingBuilder = editThing();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature").withLabel(label).withType(temperature).build();
+        thingBuilder.withChannel(channel);
+        updateThing(thingBuilder.build());
+    }
+
     private void createPGMChannel(String name, String label) {
         ThingBuilder thingBuilder = editThing();
         Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label).build();
@@ -102,7 +110,10 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
             processSection(segment);
         } else if (segmentId.startsWith("THERMOMETER_")) {
             processThermometer(segment);
-        } else {
+        } else if (segmentId.startsWith("THERMOSTAT_")) {
+            processThermostat(segment);
+        }
+        else {
             logger.debug("Unknown segment received: {} with state: {}", segment.getSegmentId(), segment.getSegmentState());
         }
     }
@@ -136,7 +147,21 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
             logger.debug("Creating a new temperature channel: {}", segmentId);
             createTempChannel(segmentId, segment.getSegmentName());
         }
-        channel = getThing().getChannel(segmentId);
+        updateTemperatureChannel(channel, segment);
+    }
+
+    private void processThermostat(JablotronServiceDetailSegment segment) {
+        String segmentId = segment.getSegmentId();
+        Channel channel = getThing().getChannel(segmentId);
+        if (channel == null) {
+            logger.debug("Creating a new thermostat channel: {}", segmentId);
+            createThermostatChannel(segmentId, segment.getSegmentName());
+        }
+        updateTemperatureChannel(channel, segment);
+    }
+
+    private void updateTemperatureChannel(Channel channel, JablotronServiceDetailSegment segment) {
+        String segmentId = segment.getSegmentId();
         if (channel != null) {
             List<JablotronServiceDetailSegmentInfo> infos = segment.getSegmentInfos();
             if (infos.size() > 0) {
