@@ -72,7 +72,7 @@ import com.google.gson.JsonObject;
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final float MAP_SCALE = 2.0f;
-    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHss");
+    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final String MAP_PATH = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID
             + File.separator;
     private final ChannelUID mapChannelUid;

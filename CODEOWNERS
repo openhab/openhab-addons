@@ -46,6 +46,7 @@
 /bundles/org.openhab.binding.dlinksmarthome/ @MikeJMajor
 /bundles/org.openhab.binding.dmx/ @J-N-K
 /bundles/org.openhab.binding.doorbird/ @mhilbush
+/bundles/org.openhab.binding.draytonwiser/ @andrew-schofield
 /bundles/org.openhab.binding.dscalarm/ @RSStephens
 /bundles/org.openhab.binding.dsmr/ @Hilbrand
 /bundles/org.openhab.binding.ecobee/ @mhilbush
@@ -215,6 +216,7 @@
 /bundles/org.openhab.binding.tplinksmarthome/ @Hilbrand
 /bundles/org.openhab.binding.tradfri/ @cweitkamp @kaikreuzer
 /bundles/org.openhab.binding.unifi/ @mgbowman
+/bundles/org.openhab.binding.upnpcontrol/ @mherwege
 /bundles/org.openhab.binding.urtsi/ @OLibutzki
 /bundles/org.openhab.binding.valloxmv/ @bjoernbrings
 /bundles/org.openhab.binding.vektiva/ @octa22

@@ -12,6 +12,10 @@
 
   <name>openHAB Add-ons :: Bundles :: LaMetric Time Binding</name>
 
+  <properties>
+    <bnd.importpackage>!javax.activation</bnd.importpackage>
+  </properties>
+
   <build>
     <plugins>
       <plugin>

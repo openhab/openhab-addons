@@ -1,4 +1,6 @@
-# Oppo UDP-203/205, BDP-103/105, BDP-93/95 & BDP-83 Blu-ray player Binding
+# Oppo Blu-ray player Binding
+
+![Oppo logo](doc/oppo.png)
 
 This binding can be used to control the Oppo UDP-203/205 or BDP-83/93/95/103/105 Blu-ray player.
 Almost all features of the various models of this player line are supported by the binding.
@@ -12,7 +14,7 @@ The binding supports three different kinds of connections:
 * serial connection,
 * serial over IP connection
 
-For users without a serial connector on server side, you can use a serial to USB adapter.
+For users without a serial connector on the server side, you can use a serial to USB adapter.
 
 You don't need to have your player device directly connected to your openHAB server.
 You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) to make the serial connection available on LAN (serial over IP).

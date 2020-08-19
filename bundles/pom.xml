@@ -79,6 +79,7 @@
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.doorbird</module>
+    <module>org.openhab.binding.draytonwiser</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdpollenflug</module>
@@ -249,6 +250,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.vektiva</module>

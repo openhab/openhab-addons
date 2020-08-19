@@ -61,7 +61,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 With the possibility to control your lights you could do:
 
 - a scene-based configuration of your rooms
-- connect single bulbs to functions of openhab
+- connect single bulbs to functions of openHAB
 - simulate your presence at home
 - automatically turn on your lights at the evening
 - integrate your smart bulbs with rules 
@@ -161,10 +161,10 @@ It will be configured at runtime by using the save channel to store the current 
 | bluetooth             | Switch      | R/W         | echo, echoshow, echospot      | Connect/Disconnect to the last used bluetooth device (works after a bluetooth connection was established after the openHAB start) 
 | bluetoothDeviceName   | String      | R           | echo, echoshow, echospot      | User friendly name of the connected bluetooth device
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
-| radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openhab start)
+| radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openHAB start)
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
 | amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
-| amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
+| amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openHAB start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the Amazon software)
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
 | playAlarmSound        | String      | W           | echo, echoshow, echospot      | Write Only! Plays an Alarm sound

@@ -34,7 +34,13 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
     private JD2XX serialPort;
     private JD2XXOutputStream out;
 
+    private final String readerThreadName;
     private Thread readerThread;
+
+    public RFXComJD2XXConnector(String readerThreadName) {
+        super();
+        this.readerThreadName = readerThreadName;
+    }
 
     @Override
     public void connect(RFXComBridgeConfiguration device) throws IOException {
@@ -57,7 +63,7 @@ public class RFXComJD2XXConnector extends RFXComBaseConnector {
             in.reset();
         }
 
-        readerThread = new RFXComStreamReader(this);
+        readerThread = new RFXComStreamReader(this, readerThreadName);
         readerThread.start();
     }
 
