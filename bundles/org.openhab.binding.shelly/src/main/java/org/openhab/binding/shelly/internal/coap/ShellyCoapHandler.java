@@ -105,27 +105,22 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      * @thows ShellyApiException
      */
     public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
-        if (isStarted()) {
-            logger.trace("{}: CoAP Listener was already started", thingName);
-            return;
-        }
         try {
             this.thingName = thingName;
             this.config = config;
-            resetSerial();
-
-            if (!isStarted()) {
-                logger.debug("{}: Starting CoAP Listener", thingName);
-
-                coapServer.start(config.localIp, this);
-                statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
-                        .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
-                discover();
+            if (isStarted()) {
+                logger.trace("{}: CoAP Listener was already started", thingName);
+                stop();
             }
+
+            logger.debug("{}: Starting CoAP Listener", thingName);
+            coapServer.start(config.localIp, this);
+            statusClient = new CoapClient(completeUrl(config.deviceIp, COLOIT_URI_DEVSTATUS))
+                    .setTimeout((long) SHELLY_API_TIMEOUT_MS).useNONs().setEndpoint(coapServer.getEndpoint());
+            discover();
         } catch (UnknownHostException e) {
-            ShellyApiException ea = new ShellyApiException(e);
             logger.debug("{}: CoAP Exception", thingName, e);
-            throw ea;
+            throw new ShellyApiException("Unknown Host: " + config.deviceIp, e);
         }
     }
 
@@ -181,7 +176,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 logger.debug(
                                         "{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
                                         thingName, coiotVers, iVersion);
-                                discover();
                                 coiotBound = false;
                             }
                             if (!coiotBound) {

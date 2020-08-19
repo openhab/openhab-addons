@@ -187,12 +187,10 @@ public class ShellyCoIoTProtocol {
                 sen.desc, type, count, idx, group);
         if (count == -1) {
             // event type
-            logger.debug("{}: CoAP Update on inputEvent={}", thingName, type);
             updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, new StringType(type));
             inputEvent[idx] = type;
         } else {
             // event count
-            logger.debug("{}: CoAP Update on inputEventCount={}", thingName, count);
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
             if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1)) || (count != lastEventCount[idx]))) {
                 lastEventCount[idx] = count;

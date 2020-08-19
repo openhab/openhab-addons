@@ -195,10 +195,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
      * @throws ShellyApiException e.g. http returned non-ok response, check e.getMessage() for details.
      */
     private boolean initializeThing() throws ShellyApiException {
-        // Get the thing global settings and initialize device capabilities
-        stopping = false;
-
         // Init from thing type to have a basic profile, gets updated when device info is received from API
+        stopping = false;
         profile.initFromThingType(thingType);
         api.setConfig(thingName, config);
         cache.setThingName(thingName);
@@ -354,13 +352,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
                         || (thingStatus == ThingStatus.UNKNOWN)) {
-                    if (getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.DISABLED) {
-                        logger.debug("{}: Status update triggered thing initialization", thingName);
-                        initializeThing(); // may fire an exception if initialization failed
-                    } else {
+                    if (getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.DISABLED) {
                         logger.debug("{}: Thing is disabled, skip initialization", thingName);
                         return;
                     }
+                    logger.debug("{}: Status update triggered thing initialization", thingName);
+                    initializeThing(); // may fire an exception if initialization failed
                 }
                 // Get profile, if refreshSettings == true reload settings from device
                 profile = getProfile(refreshSettings);
@@ -393,7 +390,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                     fillDeviceStatus(status, updated);
                 }
             }
-        } catch (ShellyApiException e) {
+        } catch (
+
+        ShellyApiException e) {
             // http call failed: go offline except for battery devices, which might be in
             // sleep mode. Once the next update is successful the device goes back online
             String status = "";
@@ -501,8 +500,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         // Check various device indicators like overheating
         if ((status.uptime < lastUptime) && (profile.isInitialized()) && !profile.hasBattery) {
             alarm = ALARM_TYPE_RESTARTED;
-            cache.clear();
             force = true;
+            // Force re-initialization on next status update
+            if (!profile.hasBattery) {
+                updateStatus(ThingStatus.UNKNOWN);
+                requestUpdates(1, true);
+            }
         } else if (getBool(status.overtemperature)) {
             alarm = ALARM_TYPE_OVERTEMP;
         } else if (getBool(status.overload)) {
@@ -885,8 +888,6 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 String group = profile.getControlGroup(idx);
                 updated |= updateChannel(group, CHANNEL_INPUT, getOnOff(input.input));
                 if (input.event != null) {
-                    logger.debug("{}: REST update on inputEvent={}, count={}", thingName, getStringType(input.event),
-                            getDecimal(input.eventCount));
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTTYPE, getStringType(input.event));
                     updated |= updateChannel(group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(input.eventCount));
                 }
