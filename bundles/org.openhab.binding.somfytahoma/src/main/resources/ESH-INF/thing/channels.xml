@@ -338,4 +338,11 @@
 		<label>Set Closure And Orientation</label>
 		<description>A channel for setting closure and orientation of the blind</description>
 	</channel-type>
+
+	<channel-type id="light_intensity">
+		<item-type>Dimmer</item-type>
+		<label>Light Intensity</label>
+		<description>The intensity of the light</description>
+		<state max="100" min="0" step="1" pattern="%d %%"/>
+	</channel-type>
 </thing:thing-descriptions>

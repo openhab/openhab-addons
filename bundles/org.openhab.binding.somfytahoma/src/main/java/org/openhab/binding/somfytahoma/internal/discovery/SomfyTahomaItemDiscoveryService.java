@@ -142,6 +142,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService {
         logger.debug("url: {}", device.getDeviceURL());
         switch (device.getUiClass()) {
             case CLASS_AWNING:
+                // widget: PositionableHorizontalAwning
                 deviceDiscovered(device, THING_TYPE_AWNING);
                 break;
             case CLASS_CONTACT_SENSOR:
@@ -163,9 +164,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService {
                 deviceDiscovered(device, THING_TYPE_GARAGEDOOR);
                 break;
             case CLASS_LIGHT:
-                // widget: TimedOnOffLight
-                // widget: StatefulOnOffLight
-                deviceDiscovered(device, THING_TYPE_LIGHT);
+                if ("DimmerLight".equals(device.getWidget())) {
+                    // widget: DimmerLight
+                    deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT);
+                } else {
+                    // widget: TimedOnOffLight
+                    // widget: StatefulOnOffLight
+                    deviceDiscovered(device, THING_TYPE_LIGHT);
+                }
                 break;
             case CLASS_LIGHT_SENSOR:
                 deviceDiscovered(device, THING_TYPE_LIGHTSENSOR);
