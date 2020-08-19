@@ -18,7 +18,7 @@
             <options>
                 <option value="hsb">HSB (Hue, Saturation, Brightness)</option>
                 <option value="rgb">RGB (Red, Green, Blue)</option>
-                <option value="xyY">CIE xyY</option>
+                <option value="xyY">CIE xyY (x, y, Brightness)</option>
             </options>
             <default>hsb</default>
         </parameter>
