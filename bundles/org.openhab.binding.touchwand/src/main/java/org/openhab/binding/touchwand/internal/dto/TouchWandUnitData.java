@@ -25,7 +25,7 @@ public abstract class TouchWandUnitData {
 
     @SerializedName("id")
     @Expose
-    private int id;
+    private Integer id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -81,7 +81,7 @@ public abstract class TouchWandUnitData {
     @Expose
     private Object roomId;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
