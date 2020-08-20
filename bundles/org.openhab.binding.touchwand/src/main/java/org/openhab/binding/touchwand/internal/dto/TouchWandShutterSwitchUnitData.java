@@ -28,14 +28,14 @@ public class TouchWandShutterSwitchUnitData extends TouchWandUnitData {
 
     @SerializedName("currStatus")
     @Expose
-    private Integer currStatus = 0;
+    private int currStatus = 0;
 
     @Override
-    public Integer getCurrStatus() {
+    public int getCurrStatus() {
         return currStatus;
     }
 
-    public void setCurrStatus(Integer currStatus) {
+    public void setCurrStatus(int currStatus) {
         this.currStatus = currStatus;
     }
 }

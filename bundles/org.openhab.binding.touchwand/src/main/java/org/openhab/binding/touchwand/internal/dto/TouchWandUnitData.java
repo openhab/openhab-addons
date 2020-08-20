@@ -25,7 +25,7 @@ public abstract class TouchWandUnitData {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private int id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -34,10 +34,10 @@ public abstract class TouchWandUnitData {
     private String type;
     @SerializedName("nodeId")
     @Expose
-    private Integer nodeId;
+    private int nodeId;
     @SerializedName("epId")
     @Expose
-    private Integer epId;
+    private int epId;
     @SerializedName("icon")
     @Expose
     private Object icon;
@@ -81,11 +81,11 @@ public abstract class TouchWandUnitData {
     @Expose
     private Object roomId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -105,19 +105,19 @@ public abstract class TouchWandUnitData {
         this.type = type;
     }
 
-    public Integer getNodeId() {
+    public int getNodeId() {
         return nodeId;
     }
 
-    public void setNodeId(Integer nodeId) {
+    public void setNodeId(int nodeId) {
         this.nodeId = nodeId;
     }
 
-    public Integer getEpId() {
+    public int getEpId() {
         return epId;
     }
 
-    public void setEpId(Integer epId) {
+    public void setEpId(int epId) {
         this.epId = epId;
     }
 

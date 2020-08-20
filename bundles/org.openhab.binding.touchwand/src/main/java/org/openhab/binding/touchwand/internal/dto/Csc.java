@@ -25,35 +25,35 @@ public class Csc {
 
     @SerializedName("sceneNo")
     @Expose
-    private Integer sceneNo;
+    private int sceneNo;
     @SerializedName("ts")
     @Expose
-    private Integer ts;
+    private int ts;
     @SerializedName("keyAttr")
     @Expose
-    private Integer keyAttr;
+    private int keyAttr;
 
-    public Integer getSceneNo() {
+    public int getSceneNo() {
         return sceneNo;
     }
 
-    public void setSceneNo(Integer sceneNo) {
+    public void setSceneNo(int sceneNo) {
         this.sceneNo = sceneNo;
     }
 
-    public Integer getTs() {
+    public int getTs() {
         return ts;
     }
 
-    public void setTs(Integer ts) {
+    public void setTs(int ts) {
         this.ts = ts;
     }
 
-    public Integer getKeyAttr() {
+    public int getKeyAttr() {
         return keyAttr;
     }
 
-    public void setKeyAttr(Integer keyAttr) {
+    public void setKeyAttr(int keyAttr) {
         this.keyAttr = keyAttr;
     }
 
