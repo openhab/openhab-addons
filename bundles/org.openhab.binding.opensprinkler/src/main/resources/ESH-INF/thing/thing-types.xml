@@ -74,6 +74,7 @@
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
+			<channel id="waterlevel" typeId="waterlevel"></channel>
 		</channels>
 	</thing-type>
 
@@ -82,6 +83,14 @@
 		<label>Rain</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
 		<category>Sensor</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="waterlevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Water Level</label>
+		<description>The current water level in percent</description>
 		<state readOnly="true"/>
 	</channel-type>
 
