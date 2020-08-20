@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -47,29 +48,23 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Roie Geron - Initial contribution
  */
-@NonNullByDefault({})
+@NonNullByDefault
 public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int SEARCH_TIME = 10;
-    private static final int SCAN_INTERVAL = 60;
-    private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY = 5;
+    private static final int SEARCH_TIME_SEC = 10;
+    private static final int SCAN_INTERVAL_SEC = 60;
+    private static final int LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC = 5;
     private static final String[] CONNECTIVITY_OPTIONS = { "zwave", "knx" };
-
-    private ScheduledFuture<?> scanningJob;
-
-    private final TouchWandUnitScan scanningRunnable;
-
+    private final TouchWandBridgeHandler touchWandBridgeHandler;
     private final Logger logger = LoggerFactory.getLogger(TouchWandUnitDiscoveryService.class);
 
+    private @Nullable ScheduledFuture<?> scanningJob;
     private List<TouchWandUnitStatusUpdateListener> listeners = new ArrayList<>();
 
-    private final TouchWandBridgeHandler touchWandBridgeHandler;
-
     public TouchWandUnitDiscoveryService(TouchWandBridgeHandler touchWandBridgeHandler) {
-        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, true);
+        super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME_SEC, true);
         this.touchWandBridgeHandler = touchWandBridgeHandler;
         removeOlderResults(getTimestampOfLastScan(), touchWandBridgeHandler.getThing().getUID());
-        this.scanningRunnable = new TouchWandUnitScan();
         this.activate();
     }
 
@@ -87,7 +82,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
         logger.debug("Starting TouchWand discovery on bridge {}", touchWandBridgeHandler.getThing().getUID());
         String response = touchWandBridgeHandler.touchWandClient.cmdListUnits();
-        if (response == "") {
+        if (response.isEmpty()) {
             return;
         }
 
@@ -153,8 +148,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected synchronized void stopScan() {
-        super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
+        super.stopScan();
     }
 
     public void activate() {
@@ -164,15 +159,15 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void deactivate() {
-        removeOlderResults(new Date().getTime(), touchWandBridgeHandler.getThing().getUID());
+        removeOlderResults(System.currentTimeMillis(), touchWandBridgeHandler.getThing().getUID());
         super.deactivate();
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         if (scanningJob == null || scanningJob.isCancelled()) {
-            scanningJob = scheduler.scheduleWithFixedDelay(scanningRunnable, LINK_DISCOVERY_SERVICE_INITIAL_DELAY,
-                    SCAN_INTERVAL, TimeUnit.SECONDS);
+            scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC,
+                    SCAN_INTERVAL_SEC, TimeUnit.SECONDS);
         }
     }
 
@@ -196,17 +191,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         listeners.remove(listener);
     }
 
-    @NonNullByDefault
-    public class TouchWandUnitScan implements Runnable {
-        @Override
-        public void run() {
-            startScan();
-        }
-    }
-
     @Override
     public int getScanTimeout() {
-        return SEARCH_TIME;
+        return SEARCH_TIME_SEC;
     }
 
     private void addDeviceDiscoveryResult(TouchWandUnitData unit, ThingTypeUID typeUID) {
@@ -221,7 +208,7 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
                 .withLabel(unit.getName())
                 .withBridge(bridgeUID)
                 .withProperties(properties)
-                .withRepresentationProperty(unit.getId().toString())
+                .withRepresentationProperty("id")
                 .build()
         );
         // @formatter:on
