@@ -37,14 +37,10 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void touchWandUnitHandleCommand(Command command) {
-        switch (command.toString()) {
-            case "OFF":
-            case "ON":
-                bridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
-                break;
-            default:
-                bridgeHandler.touchWandClient.cmdDimmerPosition(unitId, command.toString());
-                break;
+        if (command instanceof OnOffType) {
+            bridgeHandler.touchWandClient.cmdSwitchOnOff(unitId, (OnOffType) command);
+        } else {
+            bridgeHandler.touchWandClient.cmdDimmerPosition(unitId, command.toString());
         }
     }
 

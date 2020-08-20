@@ -73,7 +73,8 @@ public class TouchWandRestClient {
 
     private static final String CONTENT_TYPE_APPLICATION_JSON = MimeTypes.Type.APPLICATION_JSON.asString();
 
-    private static final int REQUEST_TIMEOUT_SEC = 10000; // 10 seconds
+    private static final int REQUEST_TIMEOUT_SEC = 10;
+
     private Map<String, String> commandmap = new HashMap<String, String>();
 
     private HttpClient httpClient;
@@ -178,7 +179,7 @@ public class TouchWandRestClient {
         }
 
         request = httpClient.newRequest(url.toString()).timeout(REQUEST_TIMEOUT_SEC, TimeUnit.SECONDS).method(method);
-        if (method.equals(METHOD_POST) && (content != "")) {
+        if (method.equals(METHOD_POST) && (!content.isEmpty())) {
             ContentProvider contentProvider = new StringContentProvider(CONTENT_TYPE_APPLICATION_JSON, content,
                     StandardCharsets.UTF_8);
             request = request.content(contentProvider);

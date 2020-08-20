@@ -20,10 +20,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -43,25 +45,25 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault({})
 public class TouchWandControllerDiscoveryService extends AbstractDiscoveryService {
 
-    private static final int SEARCH_TIME = 2;
+    private static final int SEARCH_TIME_SEC = 2;
     private static final int TOUCHWAND_BCAST_PORT = 35000;
-    private Thread socketReceiveThread = null;
-    private DatagramSocket listenSocket = null;
-
     private final Logger logger = LoggerFactory.getLogger(TouchWandControllerDiscoveryService.class);
 
-    public TouchWandControllerDiscoveryService() {
-        super(TouchWandBridgeHandler.SUPPORTED_THING_TYPES, SEARCH_TIME, true);
-        removeOlderResults(getTimestampOfLastScan());
-    }
+    private @Nullable Thread socketReceiveThread = null;
+    private @Nullable DatagramSocket listenSocket;
 
-    @Override
-    protected void startScan() {
+    public TouchWandControllerDiscoveryService() {
+        super(TouchWandBridgeHandler.SUPPORTED_THING_TYPES, SEARCH_TIME_SEC, true);
+        removeOlderResults(getTimestampOfLastScan());
         try {
             listenSocket = new DatagramSocket(TOUCHWAND_BCAST_PORT);
         } catch (SocketException e) {
             logger.warn("SocketException {}", e.getMessage());
         }
+    }
+
+    @Override
+    protected void startScan() {
         runReceiveThread(listenSocket);
     }
 
@@ -72,7 +74,6 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     public void deactivate() {
-        super.deactivate();
         if (socketReceiveThread != null) {
             socketReceiveThread.interrupt();
             socketReceiveThread = null;
@@ -80,6 +81,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
         if (listenSocket != null) {
             listenSocket.close();
         }
+        super.deactivate();
     }
 
     private void addDeviceDiscoveryResult(String label, String ip) {
@@ -94,7 +96,7 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
                 .withThingType(THING_TYPE_BRIDGE)
                 .withLabel(label)
                 .withProperties(properties)
-                .withRepresentationProperty(ip)
+                .withRepresentationProperty("ipAddress")
                 .build()
         );
         // @formatter:on
@@ -102,11 +104,10 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
     protected void runReceiveThread(DatagramSocket socket) {
         socketReceiveThread = new ReceiverThread(socket);
-        socketReceiveThread.start();
         socketReceiveThread.setName(TouchWandBindingConstants.BINDING_ID);
+        socketReceiveThread.start();
     }
 
-    @NonNullByDefault
     private class ReceiverThread extends Thread {
 
         private static final int BUFFER_LENGTH = 256;
@@ -124,10 +125,10 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
         private void receiveData(DatagramPacket datagram) {
             try {
-                while (true) {
+                while (!isInterrupted()) {
                     mySocket.receive(datagram);
                     InetAddress address = datagram.getAddress();
-                    String sentence = new String(dgram.getData(), 0, dgram.getLength(), "US-ASCII");
+                    String sentence = new String(dgram.getData(), 0, dgram.getLength(), StandardCharsets.US_ASCII);
                     addDeviceDiscoveryResult(sentence, address.getHostAddress().toString());
                     logger.debug("Received Datagram from {}:{} on Port {} message {}", address.getHostAddress(),
                             dgram.getPort(), mySocket.getLocalPort(), sentence);
