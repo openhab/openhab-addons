@@ -182,9 +182,9 @@ public class TouchWandWebSockets {
             }
         }
 
-        @SuppressWarnings("null")
         private void asyncWeb() {
-            if (socketReconnect == null || socketReconnect.isDone()) {
+            ScheduledFuture<?> mySocketReconnect = socketReconnect;
+            if (mySocketReconnect == null || mySocketReconnect.isDone()) {
                 socketReconnect = scheduler.schedule(TouchWandWebSockets.this::connect,
                         WEBSOCKET_RECONNECT_INTERVAL_SEC, TimeUnit.SECONDS);
             }
