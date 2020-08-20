@@ -245,9 +245,7 @@ public class MPDConnectionThread extends Thread {
     }
 
     private void sendCommand(MPDCommand command) throws IOException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("send command '{}'", command.asLine());
-        }
+        logger.trace("send command '{}'", command);
         final Socket socket = this.socket;
         if (socket != null) {
             String line = command.asLine();
@@ -271,7 +269,7 @@ public class MPDConnectionThread extends Thread {
 
                 if (line != null) {
                     if (line.startsWith("ACK")) {
-                        logger.warn("command '{}' failed with '{}'", command.asLine(), line);
+                        logger.warn("command '{}' failed with '{}'", command, line);
                         response.setFailed();
                         done = true;
                     } else if (line.startsWith("OK")) {

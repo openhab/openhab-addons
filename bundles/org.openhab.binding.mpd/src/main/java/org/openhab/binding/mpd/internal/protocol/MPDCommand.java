@@ -88,4 +88,23 @@ public class MPDCommand {
 
         return builder.toString();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(command);
+
+        for (String param : parameters) {
+
+            builder.append(" ");
+            builder.append("\"");
+            if ("password".equals(command)) {
+                builder.append(param.replaceAll(".", "."));
+            } else {
+                builder.append(param.replaceAll("\"", "\\\\\"").replaceAll("'", "\\\\'"));
+            }
+            builder.append("\"");
+        }
+
+        return builder.toString();
+    }
 }
