@@ -8,7 +8,7 @@
 	<config-description uri="bridge-type:touchwand:bridge">
 		<parameter name="username" type="text">
 			<label>Username</label>
-			<description>Username for TouchWand Wanderfull Hub </description>
+			<description>Username for TouchWand Wanderfull Hub</description>
 			<required>true</required>
 		</parameter>
 		<parameter name="password" type="text">
@@ -24,7 +24,6 @@
 			<required>true</required>
 		</parameter>
 		<parameter name="port" type="integer" min="80" max="65535">
-			<context>network-address</context>
 			<label>Port</label>
 			<description>Port of the TouchWand Wanderfull Hub communication channel</description>
 			<required>true</required>
