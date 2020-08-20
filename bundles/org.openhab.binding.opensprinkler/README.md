@@ -61,13 +61,13 @@ When using the `nextDuration` channel, it is advised to setup persistence (e.g. 
 
 The following is supported by the `device` thing, but only when connected using the http interface.
 
-| Channel Type ID | Item Type              |    | Description                                                               |
-|-----------------|------------------------|----|---------------------------------------------------------------------------|
-| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.     |
-| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors |
-|                 |                        |    | for this metric, the channel will not be available.                       |
-| waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level. The water level calculated    |
-|                 |                        |    | based on the weather and influences the duration of the water programs.   |
+| Channel Type ID | Item Type              |    | Description                                                                        |
+|-----------------|------------------------|----|------------------------------------------------------------------------------------|
+| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
+| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors          |
+|                 |                        |    | for this metric, the channel will not be available.                                |
+| waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
+|                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
 
 ## Example
 

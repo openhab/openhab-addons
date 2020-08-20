@@ -58,7 +58,7 @@ public class OpenSprinklerDeviceHandler extends OpenSprinklerBaseHandler {
                     break;
                 case SENSOR_WATERLEVEL:
                     updateState(channel, QuantityType.valueOf(getApi().waterLevel(), PERCENT));
-                    break;                
+                    break;
                 case SENSOR_CURRENT_DRAW:
                     updateState(channel,
                             new QuantityType<ElectricCurrent>(getApi().currentDraw(), MILLI(SmartHomeUnits.AMPERE)));

@@ -64,10 +64,10 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
      * Constructor for the OpenSprinkler API class to create a connection to the
      * OpenSprinkler device for control and obtaining status info.
      *
-     * @param hostname      Hostname or IP address as a String of the OpenSprinkler
-     *                      device.
-     * @param port          The port number the OpenSprinkler API is listening on.
-     * @param password      Admin password for the OpenSprinkler device.
+     * @param hostname Hostname or IP address as a String of the OpenSprinkler
+     *            device.
+     * @param port The port number the OpenSprinkler API is listening on.
+     * @param password Admin password for the OpenSprinkler device.
      * @param basicUsername only needed if basic auth is required
      * @param basicPassword only needed if basic auth is required
      * @throws Exception
@@ -312,9 +312,9 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
          * Given a URL and a set parameters, send a HTTP GET request to the URL location
          * created by the URL and parameters.
          *
-         * @param url           The URL to send a GET request to.
+         * @param url The URL to send a GET request to.
          * @param urlParameters List of parameters to use in the URL for the GET
-         *                      request. Null if no parameters.
+         *            request. Null if no parameters.
          * @return String contents of the response for the GET request.
          * @throws Exception
          */
@@ -356,9 +356,9 @@ class OpenSprinklerHttpApiV100 implements OpenSprinklerApi {
          * Given a URL and a set parameters, send a HTTP POST request to the URL
          * location created by the URL and parameters.
          *
-         * @param url           The URL to send a POST request to.
+         * @param url The URL to send a POST request to.
          * @param urlParameters List of parameters to use in the URL for the POST
-         *                      request. Null if no parameters.
+         *            request. Null if no parameters.
          * @return String contents of the response for the POST request.
          * @throws Exception
          */
