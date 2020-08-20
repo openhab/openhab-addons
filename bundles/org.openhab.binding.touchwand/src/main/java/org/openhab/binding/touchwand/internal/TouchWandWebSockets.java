@@ -120,9 +120,6 @@ public class TouchWandWebSockets {
     @WebSocket(maxIdleTime = WEBSOCKET_IDLE_TIMEOUT_MS)
     public class TouchWandSocket {
 
-        @SuppressWarnings("unused")
-        private @Nullable Session session;
-
         public TouchWandSocket() {
         }
 
@@ -132,15 +129,12 @@ public class TouchWandWebSockets {
             if (!isShutDown) {
                 logger.debug("weSocket Closed - reconnecting");
                 asyncWeb();
-            } else {
-                this.session = null;
             }
         }
 
         @OnWebSocketConnect
         public void onConnect(Session session) {
             logger.debug("TouchWandWebSockets connected to {}", session.getRemoteAddress().toString());
-            this.session = session;
             try {
                 session.getRemote().sendString("{\"myopenhab\": \"myopenhab\"}");
             } catch (IOException e) {
@@ -185,8 +179,6 @@ public class TouchWandWebSockets {
             if (!isShutDown) {
                 logger.debug("WebSocket onError - reconnecting");
                 asyncWeb();
-            } else {
-                this.session = null;
             }
         }
 
