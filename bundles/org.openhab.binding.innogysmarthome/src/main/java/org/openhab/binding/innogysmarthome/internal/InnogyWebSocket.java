@@ -52,7 +52,7 @@ public class InnogyWebSocket {
     /**
      * Constructs the {@link InnogyWebSocket}.
      *
-     * @param bridgeHandler the responsible {@link InnogyBridgeHandler}
+     * @param eventListener the responsible {@link InnogyBridgeHandler}
      * @param webSocketURI the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */
@@ -128,7 +128,8 @@ public class InnogyWebSocket {
     public void onClose(int statusCode, String reason) {
         if (statusCode == StatusCode.NORMAL) {
             logger.info("Connection to innogy Webservice was closed normally.");
-        } else {
+        } else if (!closing) {
+            //An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
             logger.info("Connection to innogy Webservice was closed abnormally (code: {}). Reason: {}", statusCode,
                     reason);
             eventListener.connectionClosed();
