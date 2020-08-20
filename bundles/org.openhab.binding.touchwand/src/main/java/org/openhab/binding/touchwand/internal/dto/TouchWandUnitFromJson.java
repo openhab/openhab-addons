@@ -31,30 +31,30 @@ public class TouchWandUnitFromJson {
     public TouchWandUnitFromJson() {
     }
 
-    public static TouchWandUnitData parseResponse(JsonObject JsonUnit) {
+    public static TouchWandUnitData parseResponse(JsonObject jsonUnit) {
         Gson gson = new Gson();
         TouchWandUnitData touchWandUnit;
-        String type = JsonUnit.get("type").getAsString();
+        String type = jsonUnit.get("type").getAsString();
         if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
             return null;
         }
 
-        if (!JsonUnit.has("currStatus") || (JsonUnit.get("currStatus") == null)) {
+        if (!jsonUnit.has("currStatus") || (jsonUnit.get("currStatus") == null)) {
             return null;
         }
 
         switch (type) {
             case TYPE_WALLCONTROLLER:
-                touchWandUnit = gson.fromJson(JsonUnit, TouchWandUnitDataWallController.class);
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandUnitDataWallController.class);
                 break;
             case TYPE_SWITCH:
-                touchWandUnit = gson.fromJson(JsonUnit, TouchWandShutterSwitchUnitData.class);
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandShutterSwitchUnitData.class);
                 break;
             case TYPE_DIMMER:
-                touchWandUnit = gson.fromJson(JsonUnit, TouchWandShutterSwitchUnitData.class);
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandShutterSwitchUnitData.class);
                 break;
             case TYPE_SHUTTER:
-                touchWandUnit = gson.fromJson(JsonUnit, TouchWandShutterSwitchUnitData.class);
+                touchWandUnit = gson.fromJson(jsonUnit, TouchWandShutterSwitchUnitData.class);
                 break;
             default:
                 return null;
