@@ -189,7 +189,7 @@ public class MPDConnectionThread extends Thread {
         this.socket = socket;
     }
 
-    private void processPendingCommands() throws IOException {
+    private void processPendingCommands() throws IOException, MPDException {
         MPDCommand currentCommand;
 
         while (!disposed.get()) {
@@ -256,7 +256,7 @@ public class MPDConnectionThread extends Thread {
         }
     }
 
-    private MPDResponse readResponse(MPDCommand command) throws IOException {
+    private MPDResponse readResponse(MPDCommand command) throws IOException, MPDException {
         logger.trace("read response for command '{}'", command.getCommand());
         MPDResponse response = new MPDResponse(command.getCommand());
         boolean done = false;
@@ -268,7 +268,12 @@ public class MPDConnectionThread extends Thread {
                 logger.trace("received line '{}'", line);
 
                 if (line != null) {
-                    if (line.startsWith("ACK")) {
+                    if (line.startsWith("ACK [4")) {
+                        logger.warn("command '{}' failed with permission error '{}'", command, line);
+                        isInIdle.set(false);
+                        throw new MPDException(
+                                "Please validate your password and/or your permissions on the Music Player Daemon.");
+                    } else if (line.startsWith("ACK")) {
                         logger.warn("command '{}' failed with '{}'", command, line);
                         response.setFailed();
                         done = true;
