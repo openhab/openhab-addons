@@ -26,12 +26,14 @@ import org.openhab.binding.amazonechocontrol.internal.jsons.JsonDevices.Device;
 import com.google.gson.Gson;
 
 /**
- * The {@link ChannelHandlerSendMessage} is responsible for the announcement channel
+ * The {@link ChannelHandlerSendMessage} is responsible for the announcement
+ * channel
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
 public class ChannelHandlerSendMessage extends ChannelHandler {
+
     private static final String CHANNEL_NAME = "sendMessage";
     private @Nullable AccountJson accountJson;
     private int lastMessageId = 1000;
