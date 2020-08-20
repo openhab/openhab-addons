@@ -175,10 +175,10 @@ public class MPDConnectionThread extends Thread {
         logger.debug("opening connection to {} port {}", address, port);
 
         if (address.isEmpty()) {
-            throw new MPDException("Missing parameter ipAddress");
+            throw new MPDException("The parameter 'ipAddress' is missing.");
         }
         if (port < 1 || port > 65335) {
-            throw new MPDException("Invalid parameter port");
+            throw new MPDException("The parameter 'port' has an invalid value.");
         }
 
         Socket socket = new Socket(address, port);
