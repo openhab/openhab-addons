@@ -18,18 +18,20 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.storage.Storage;
@@ -54,7 +56,6 @@ import org.openhab.binding.amazonechocontrol.internal.WebSocketConnection;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandler;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.ChannelHandlerSendMessage;
 import org.openhab.binding.amazonechocontrol.internal.channelhandler.IAmazonThingHandler;
-import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonActivities.Activity.SourceDeviceId;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonAscendingAlarm.AscendingAlarmModel;
 import org.openhab.binding.amazonechocontrol.internal.jsons.JsonBluetoothStates;
@@ -194,6 +195,15 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             }
         } catch (IOException | URISyntaxException e) {
             logger.info("handleCommand fails", e);
+        }
+    }
+
+    @Override
+    public void startAnnouncment(Device device, String speak, String bodyText, @Nullable String title,
+            @Nullable Integer volume) throws IOException, URISyntaxException {
+        EchoHandler echoHandler = findEchoHandlerBySerialNumber(device.serialNumber);
+        if (echoHandler != null) {
+            echoHandler.startAnnouncment(device, speak, bodyText, title, volume);
         }
     }
 
@@ -552,21 +562,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     DeviceNotificationState deviceNotificationState = null;
                     AscendingAlarmModel ascendingAlarmModel = null;
                     if (device != null) {
-                        if (ascendingAlarmModels != null) {
-                            for (AscendingAlarmModel current : ascendingAlarmModels) {
-                                if (StringUtils.equals(current.deviceSerialNumber, device.serialNumber)) {
-                                    ascendingAlarmModel = current;
-                                    break;
-                                }
+                        final String serialNumber = device.serialNumber;
+                        if (serialNumber != null) {
+                            if (ascendingAlarmModels != null) {
+                                ascendingAlarmModel = Arrays.stream(ascendingAlarmModels).filter(Objects::nonNull)
+                                        .filter(current -> serialNumber.equals(current.deviceSerialNumber)).findFirst()
+                                        .orElse(null);
                             }
-                        }
-
-                        if (deviceNotificationStates != null) {
-                            for (DeviceNotificationState current : deviceNotificationStates) {
-                                if (StringUtils.equals(current.deviceSerialNumber, device.serialNumber)) {
-                                    deviceNotificationState = current;
-                                    break;
-                                }
+                            if (deviceNotificationStates != null) {
+                                deviceNotificationState = Arrays.stream(deviceNotificationStates)
+                                        .filter(Objects::nonNull)
+                                        .filter(current -> serialNumber.equals(current.deviceSerialNumber)).findFirst()
+                                        .orElse(null);
                             }
                         }
                     }
@@ -591,7 +598,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
 
     public @Nullable Device findDeviceJson(@Nullable String serialNumber) {
         Device result = null;
-        if (StringUtils.isNotEmpty(serialNumber)) {
+        if (serialNumber != null && !serialNumber.isEmpty()) {
             Map<String, Device> jsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
             result = jsonSerialNumberDeviceMapping.get(serialNumber);
         }
@@ -599,20 +606,19 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     }
 
     public @Nullable Device findDeviceJsonBySerialOrName(@Nullable String serialOrName) {
-        if (StringUtils.isNotEmpty(serialOrName)) {
-            Map<String, Device> currentJsonSerialNumberDeviceMapping = this.jsonSerialNumberDeviceMapping;
-            for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (StringUtils.equalsIgnoreCase(device.serialNumber, serialOrName)) {
-                    return device;
-                }
-            }
-            for (Device device : currentJsonSerialNumberDeviceMapping.values()) {
-                if (StringUtils.equalsIgnoreCase(device.accountName, serialOrName)) {
-                    return device;
-                }
-            }
+        if (serialOrName == null || serialOrName.isEmpty()) {
+            return null;
         }
-        return null;
+
+        Optional<Device> device = this.jsonSerialNumberDeviceMapping.values().stream().filter(
+                d -> serialOrName.equalsIgnoreCase(d.serialNumber) || serialOrName.equalsIgnoreCase(d.accountName))
+                .findFirst();
+
+        if (device.isPresent()) {
+            return device.get();
+        } else {
+            return null;
+        }
     }
 
     public List<Device> updateDeviceList() {
@@ -748,15 +754,18 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
     void handleWebsocketCommand(JsonPushCommand pushCommand) {
         String command = pushCommand.command;
         if (command != null) {
+            ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
             switch (command) {
                 case "PUSH_ACTIVITY":
                     handlePushActivity(pushCommand.payload);
-                    return;
+                    if (refreshDataDelayed != null) {
+                        refreshDataDelayed.cancel(false);
+                    }
+                    this.refreshAfterCommandJob = scheduler.schedule(this::refreshAfterCommand, 700,
+                            TimeUnit.MILLISECONDS);
+                    break;
                 case "PUSH_DOPPLER_CONNECTION_CHANGE":
                 case "PUSH_BLUETOOTH_STATE_CHANGE":
-                    // refresh data 200ms after last command
-                    @Nullable
-                    ScheduledFuture<?> refreshDataDelayed = this.refreshAfterCommandJob;
                     if (refreshDataDelayed != null) {
                         refreshDataDelayed.cancel(false);
                     }
@@ -770,11 +779,9 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                     break;
                 default:
                     String payload = pushCommand.payload;
-                    if (payload != null && StringUtils.isNotEmpty(payload) && payload.startsWith("{")
-                            && payload.endsWith("}")) {
+                    if (payload != null && payload.startsWith("{") && payload.endsWith("}")) {
                         JsonCommandPayloadPushDevice devicePayload = gson.fromJson(payload,
                                 JsonCommandPayloadPushDevice.class);
-                        @Nullable
                         DopplerId dopplerId = devicePayload.dopplerId;
                         if (dopplerId != null) {
                             handlePushDeviceCommand(dopplerId, command, payload);
@@ -804,31 +811,19 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (connection == null || !connection.getIsLoggedIn()) {
             return;
         }
-        Activity[] activities = connection.getActivities(10, pushActivity.timestamp);
-        Activity currentActivity = null;
-        String search = key.registeredUserId + "#" + key.entryId;
-        for (Activity activity : activities) {
-            if (StringUtils.equals(activity.id, search)) {
-                currentActivity = activity;
-                break;
-            }
-        }
-        if (currentActivity == null) {
-            return;
-        }
 
-        @Nullable
-        SourceDeviceId @Nullable [] sourceDeviceIds = currentActivity.sourceDeviceIds;
-        if (sourceDeviceIds != null) {
-            for (SourceDeviceId sourceDeviceId : sourceDeviceIds) {
-                if (sourceDeviceId != null) {
-                    EchoHandler echoHandler = findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber);
-                    if (echoHandler != null) {
-                        echoHandler.handlePushActivity(currentActivity);
+        String search = key.registeredUserId + "#" + key.entryId;
+        Arrays.stream(connection.getActivities(10, pushActivity.timestamp))
+                .filter(activity -> activity != null && search.equals(activity.id)).findFirst()
+                .ifPresent(currentActivity -> {
+                    SourceDeviceId[] sourceDeviceIds = currentActivity.sourceDeviceIds;
+                    if (sourceDeviceIds != null) {
+                        Arrays.stream(sourceDeviceIds).filter(Objects::nonNull)
+                                .map(sourceDeviceId -> findEchoHandlerBySerialNumber(sourceDeviceId.serialNumber))
+                                .filter(Objects::nonNull)
+                                .forEach(echoHandler -> echoHandler.handlePushActivity(currentActivity));
                     }
-                }
-            }
-        }
+                });
     }
 
     void refreshAfterCommand() {

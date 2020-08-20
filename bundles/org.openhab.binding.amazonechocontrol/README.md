@@ -219,6 +219,9 @@ Sample for the Thing echo1 only. But it will work in the same way for the other 
 Take a look in the channel description above to know, which channels are supported by your thing type.
 
 ```
+// Account
+String Echo_Living_Room_SendMessage            "SendMessage"                           {channel="amazonechocontrol:account:account1:sendMessage"}
+
 Group Alexa_Living_Room <player>
 
 // Player control
