@@ -31,6 +31,7 @@ home automation systems.
 - electricity sensors (get energy consumption)
 - door locks (LOCK/UNLOCK, OPEN/CLOSE commands)
 - heating systems (control temperature, set heating level)
+- exterior heating systems (set heating level)
 - alarms (both interior/external)
 - pods
 - docks (battery info, siren control)
@@ -109,6 +110,7 @@ Please see the example below.
 | heating system                                                                |      current_state      | current state of the heating system                                                                                         |
 | heating system, thermostat                                                    |    target_temperature   | target temperature of the heating system                                                                                    |
 | heating system, thermostat                                                    |      battery_level      | battery level of the heating system                                                                                         |
+| exterior heating system                                                       |      heating_level      | heating level of the exterior heating system                                                                               |
 | thermostat                                                                    |       heating_mode      | standard heating mode of the thermostat (away, freeze, manual, ...)                                                         |
 | thermostat                                                                    | derogation_heating_mode | derogation heating mode of the thermostat (away, freeze, manual, ...)                                                       |
 | thermostat                                                                    |  derogation_activation  | derogation activation state (inactive, active)                                                                              |
@@ -161,6 +163,7 @@ Bridge somfytahoma:bridge:237dbae7 "Somfy Tahoma Bridge" [ email="my@email.com",
     Thing electricitysensor 9998e6ff-c17e-40d7-a4b4-3e797eca5bf7 "Electricity sensor" [ url="io://0204-4510-8041/288702124" ]
     Thing dock 1212f2e3-bcde-21dd-b3a6-13ef7abcd134 "Dock" [ url="io://0204-4510-8041/244402124" ]
     Thing siren 1212f2e3-aeae-21dd-b3a6-13ef7abcd134 "Siren" [ url="io://0204-4510-8041/244405678" ]
+    Thing extheatingsystem 1212f2e3-aeae-21dd-b3a6-13ef7abcd155 "Ext heating system" [ url="io://0204-4510-8041/144405678" ]
 }
 ```
 
@@ -213,6 +216,8 @@ Switch DockLongBeep "Dock long beep" { somfytahoma:dock:237dbae7:1212f2e3-bcde-2
 String SirenBattery "Siren battery [%s]" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:battery }
 Switch SirenSwitch "Siren switch" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:onoff }
 String SirenVolume "Siren volume [%s]" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:memorized_volume }
+
+Dimmer HeatingLevel "Ext heating level [%.1f]"  {channel="somfytahoma:exteriorheatingsystem:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd155:heating_level"}
 ```
 
 .sitemap file
@@ -249,6 +254,7 @@ Switch item=DockLongBeep
 String item=SirenBattery
 Switch item=SirenSwitch
 Selection item=SirenVolume mappings=["normal"="NORMAL", "highest"="HIGHEST"]
+Slider item=HeatingLevel
 ```
 
 ## Alexa compatibility

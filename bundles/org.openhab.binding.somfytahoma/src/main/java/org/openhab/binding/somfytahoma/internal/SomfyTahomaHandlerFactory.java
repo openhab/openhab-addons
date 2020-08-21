@@ -124,6 +124,8 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaHeatingSystemHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ONOFF_HEATING_SYSTEM)) {
             return new SomfyTahomaOnOffHeatingSystemHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_EXTERIOR_HEATING_SYSTEM)) {
+            return new SomfyTahomaExteriorHeatingSystemHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DOOR_LOCK)) {
             return new SomfyTahomaDoorLockHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_PERGOLA)) {

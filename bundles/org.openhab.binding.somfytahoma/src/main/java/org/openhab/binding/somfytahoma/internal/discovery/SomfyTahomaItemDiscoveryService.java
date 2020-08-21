@@ -237,6 +237,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService {
                     deviceDiscovered(device, THING_TYPE_HEATING_SYSTEM);
                 }
                 break;
+            case CLASS_EXTERIOR_HEATING_SYSTEM:
+                if ("DimmerExteriorHeating".equals(device.getWidget())) {
+                    // widget: DimmerExteriorHeating
+                    deviceDiscovered(device, THING_TYPE_EXTERIOR_HEATING_SYSTEM);
+                } else {
+                    logUnsupportedDevice(device);
+                }
+                break;
             case CLASS_HUMIDITY_SENSOR:
                 if (hasState(device, WATER_DETECTION_STATE)) {
                     deviceDiscovered(device, THING_TYPE_WATERSENSOR);
