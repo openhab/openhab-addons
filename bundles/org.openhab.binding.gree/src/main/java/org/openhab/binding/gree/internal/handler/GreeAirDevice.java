@@ -105,7 +105,7 @@ public class GreeAirDevice {
             columns.add(GREE_PROP_TEMPREC);
             columns.add(GREE_PROP_PWR_SAVING);
             columns.add(GREE_PROP_NOISESET);
-            columns.add(GREE_PROP_TEMP_SENSOR);
+            columns.add(GREE_PROP_CURRENT_TEMP_SENSOR);
 
             // Convert the parameter map values to arrays
             String[] colArray = columns.toArray(new String[0]);

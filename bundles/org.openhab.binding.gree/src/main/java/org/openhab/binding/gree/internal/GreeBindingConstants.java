@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gree.internal;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
