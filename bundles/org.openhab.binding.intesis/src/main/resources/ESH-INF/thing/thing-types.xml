@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Sample Thing Type -->
 	<thing-type id="intesisHome">
 		<label>IntesisHome WiFi Adapter</label>
 		<description>IntesisHome WiFi Adapter</description>
@@ -15,20 +14,20 @@
 			<channel id="windspeed" typeId="windspeed"/>
 			<channel id="swingUpDown" typeId="swingUpDown"/>
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="returnTemp" typeId="returnTemp"/>
-			<channel id="outdoorTemp" typeId="outdoorTemp"/>
+			<channel id="ambientTemperature" typeId="ambientTemperature"/>
+			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
 		</channels>
 
 		<config-description>
-			<parameter name="password" type="text" required="true">
-				<label>Password</label>
-				<description>Password for API access.</description>
-				<context>password</context>
-			</parameter>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>IP Address</label>
 				<description>IP Address of the IntesisHome device.</description>
 				<context>network-address</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for API access.</description>
+				<context>password</context>
 			</parameter>
 		</config-description>
 
@@ -88,15 +87,15 @@
 		<description>@text/channel-type.intesis.temperature.description</description>
 		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
 	</channel-type>
-	<channel-type id="returnTemp">
+	<channel-type id="ambientTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Room Temperature</label>
+		<label>Ambient Temperature</label>
 		<description>@text/channel-type.intesis.temperature.description</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
-	<channel-type id="outdoorTemp">
+	<channel-type id="outdoorTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>@Outdoor Temperature</label>
+		<label>Outdoor Temperature</label>
 		<description>@text/channel-type.intesis.temperature.description</description>
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>

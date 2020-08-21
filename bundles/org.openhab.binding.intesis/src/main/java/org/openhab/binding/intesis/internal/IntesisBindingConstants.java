@@ -36,8 +36,9 @@ public class IntesisBindingConstants {
     public static final String SWINGUD_CHANNEL = "swingUpDown";
     public static final String SWINGLR_CHANNEL = "swingLeftRight";
     public static final String TEMP_CHANNEL = "temperature";
-    public static final String RETURNTEMP_CHANNEL = "returnTemp";
-    public static final String OUTDOORTEMP_CHANNEL = "outdoorTemp";
+    public static final String AMBIENTTEMP_CHANNEL = "ambientTemperature";
+    public static final String OUTDOORTEMP_CHANNEL = "outdoorTemperature";
 
     public static final int INTESIS_HTTP_API_TIMEOUT_MS = 5000;
+    public static final int INTESIS_REFRESH_INTERVAL_SEC = 30;
 }

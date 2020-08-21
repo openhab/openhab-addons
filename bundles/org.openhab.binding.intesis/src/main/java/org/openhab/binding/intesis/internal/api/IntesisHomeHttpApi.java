@@ -25,8 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * {@link IntesisHomeHttpApi} wraps the IntesisHome REST API and provides various low level function to access the
- * device api (not
- * cloud api).
+ * device api (not cloud api).
  *
  * @author Hans-Jörg Merk - Initial contribution
  */
@@ -50,7 +49,6 @@ public class IntesisHomeHttpApi {
      */
     @Nullable
     public String postRequest(String ipAddress, String contentString) {
-
         String url = "http://" + ipAddress + "/api.cgi";
         try {
             Request request = httpClient.POST(url);
@@ -61,7 +59,7 @@ public class IntesisHomeHttpApi {
             ContentResponse contentResponse = request.send();
 
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
-            logger.trace("HTTP Response for getInfo {}: {}", contentResponse.getStatus(), response);
+            logger.trace("HTTP Response {}: {}", contentResponse.getStatus(), response);
 
             if (response != null && !response.isEmpty()) {
                 return response;

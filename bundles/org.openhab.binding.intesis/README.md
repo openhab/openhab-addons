@@ -26,12 +26,12 @@ The binding needs two configuration parameters, passwort and IP-Address.
 | Channel ID | Item Type          | Description                                                           | Possible Values |
 |------------|--------------------|-----------------------------------------------------------------------|-|
 | power      | Switch             | Turns power on/off for your climate system.                           | ON, OFF |
-| mode       | String             | The heating/cooling mode.                                             | AUTO, HEAT, COOL, DRY, FAN |
-| windspeed  | String             | Fan speed (if applicable)                                             | AUTO, 1-4 |
+| mode       | Number             | The heating/cooling mode.                                             | 0-5 |
+| windspeed  | Number             | Fan speed (if applicable)                                             | 0-4 |
 | temperature | Number:Temperature | The currently set target temperature.                                 | |
-| returnTemp | Number:Temperature | (Readonly) The ambient air temperature.                               | |
-| outdoorTemp | Number:Temperature | (Readonly) The outdoor air temperature.                               | |
-| swingUpDown     | String             | Control of up/down vanes (if applicable)                              | AUTO, 1-9, SWING, PULSE |
+| ambientTemperature | Number:Temperature | (Readonly) The ambient air temperature.                               | |
+| outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature.                               | |
+| swingUpDown     | Number             | Control of up/down vanes (if applicable)                              | 0-10 |
 
 
 
@@ -44,7 +44,7 @@ are ignored.
 
 ## Full Example
 
-The binding can be fully setup from the Paper UI but if you decide to use files here is a full example:
+The binding can be fully setup from the UI but if you decide to use files here is a full example:
 
 **Things**
 

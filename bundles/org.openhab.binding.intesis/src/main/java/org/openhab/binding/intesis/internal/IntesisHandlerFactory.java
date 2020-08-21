@@ -51,7 +51,6 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public IntesisHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
-        logger.debug("Activate Shelly HandlerFactory");
         super.activate(componentContext);
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
