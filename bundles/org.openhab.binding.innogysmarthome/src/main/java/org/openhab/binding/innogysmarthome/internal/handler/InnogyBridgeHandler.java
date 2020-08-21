@@ -82,7 +82,7 @@ import com.google.gson.Gson;
  * The {@link InnogyBridgeHandler} is responsible for handling the innogy SmartHome controller including the connection
  * to the innogy backend for all communications with the innogy {@link Device}s.
  * <p/>
- * It implements the {@link AccessTokenRefreshListener} to handle updates of the oauth2 tokens and the
+ * It implements the {@link CredentialRefreshListener} to handle updates of the oauth2 tokens and the
  * {@link EventListener} to handle {@link Event}s, that are received by the {@link InnogyWebSocket}.
  * <p/>
  * The {@link Device}s are organized by the {@link DeviceStructureManager}, which is also responsible for the connection
@@ -96,6 +96,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         implements AccessTokenRefreshListener, EventListener, DeviceStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+
+    private static final long WEBSOCKET_TIMEOUT_RETRY_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(InnogyBridgeHandler.class);
     private final Gson gson = new Gson();
@@ -240,10 +242,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 return;
             }
         }
-
-        Device bridgeDevice = deviceStructMan.getBridgeDevice();
-        setBridgeProperties(bridgeDevice);
-        bridgeId = bridgeDevice.getId();
+        setBridgeProperties(deviceStructMan.getBridgeDevice());
+        bridgeId = deviceStructMan.getBridgeDevice().getId();
         startWebsocket();
         cancelReinitJob();
     }
@@ -508,7 +508,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
                     case BaseEvent.TYPE_DISCONNECT:
                         logger.debug("Websocket disconnected.");
-                        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+                        scheduleRestartClient(0);
                         break;
 
                     case BaseEvent.TYPE_CONFIGURATION_CHANGED:
@@ -892,17 +892,18 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * @return boolean true, if binding should continue.
      */
     private boolean handleClientException(final Exception e) {
-        boolean isReinitialize = true;
+        long reinitialize = REINITIALIZE_DELAY_SECONDS;
         if (e instanceof SessionExistsException) {
             logger.debug("Session already exists. Continuing...");
-            isReinitialize = false;
+            reinitialize = -1;
         } else if (e instanceof InvalidActionTriggeredException) {
             logger.debug("Error triggering action: {}", e.getMessage());
-            isReinitialize = false;
+            reinitialize = -1;
         } else if (e instanceof RemoteAccessNotAllowedException) {
             // Remote access not allowed (usually by IP address change)
             logger.debug("Remote access not allowed. Dropping access token and reinitializing binding...");
             refreshAccessToken();
+            reinitialize = 0;
         } else if (e instanceof ControllerOfflineException) {
             logger.debug("innogy SmartHome Controller is offline.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
@@ -918,11 +919,12 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
+            reinitialize = WEBSOCKET_TIMEOUT_RETRY_SECONDS;
         } else if (e instanceof SocketTimeoutException) {
             logger.debug("Socket timeout: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof InterruptedException) {
-            isReinitialize = false;
+            reinitialize = -1;
             Thread.currentThread().interrupt();
         } else if (e instanceof ExecutionException) {
             logger.debug("ExecutionException: {}", ExceptionUtils.getRootCauseMessage(e));
@@ -931,8 +933,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.debug("Unknown exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
-        if (isReinitialize) {
-            scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+        if (reinitialize >= 0) {
+            scheduleRestartClient(reinitialize);
             return true;
         }
         return false;
