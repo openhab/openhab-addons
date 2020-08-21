@@ -39,6 +39,7 @@ public class MappingJsonReader extends JsonReaderDelegate {
         ABBREVIATIONS.put("aux_cmd_t", "aux_command_topic");
         ABBREVIATIONS.put("aux_stat_tpl", "aux_state_template");
         ABBREVIATIONS.put("aux_stat_t", "aux_state_topic");
+        ABBREVIATIONS.put("avty", "availability");
         ABBREVIATIONS.put("avty_t", "availability_topic");
         ABBREVIATIONS.put("away_mode_cmd_t", "away_mode_command_topic");
         ABBREVIATIONS.put("away_mode_stat_tpl", "away_mode_state_template");
@@ -101,6 +102,8 @@ public class MappingJsonReader extends JsonReaderDelegate {
         ABBREVIATIONS.put("json_attr", "json_attributes");
         ABBREVIATIONS.put("json_attr_t", "json_attributes_topic");
         ABBREVIATIONS.put("json_attr_tpl", "json_attributes_template");
+        ABBREVIATIONS.put("max_mirs", "max_mireds");
+        ABBREVIATIONS.put("min_mirs", "min_mireds");
         ABBREVIATIONS.put("max_temp", "max_temp");
         ABBREVIATIONS.put("min_temp", "min_temp");
         ABBREVIATIONS.put("mode_cmd_t", "mode_command_topic");
