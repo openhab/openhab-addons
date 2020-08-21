@@ -161,4 +161,13 @@ public class GreeBindingConstants {
     public static final int REFRESH_INTERVAL_SEC = 5;
 
     public static final int DIGITS_TEMP = 1;
+
+    /**
+     * The default value for the currentTemperatureOffset
+     * This defaults to -40 degrees Celsius. GREE airconditioners usually return a value from the temperature sensor which is offset by +40 
+     * degrees Celsius. The temperature value shown on the device LCD display should match the value shown by this binding.
+     *
+     * @See https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor for more details.
+     */
+    public static final BigDecimal CURRENT_TEMP_OFFSET_DEFAULT = new BigDecimal(-40.0);
 }

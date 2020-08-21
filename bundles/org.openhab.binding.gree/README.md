@@ -30,11 +30,6 @@ The Air Conditioner's IP address is mandatory, all other parameters are optional
 If the broadcast is not set (default) it will be derived from openHAB's network setting (PaperUI:Configuration:System:Network Settings). 
 Only change this if you have a good reason to.
 
-The currentTemperatureOffset defaults to -40 degrees Celsius. GREE airconditioners usually return a value from the temperature sensor
-which is offset by +40 degrees Celsius. The temperature value shown on the device LCD display should match the value shown by this binding.
-See [here](https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor) for more details.
-This currentTemperatureOffset configureable in case you would want to offset this temperature for calibration of the temperature sensor.
-
 ## Channels
 
 The following channels are supported for fans:
