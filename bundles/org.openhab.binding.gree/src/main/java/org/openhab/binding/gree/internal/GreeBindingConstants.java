@@ -138,7 +138,7 @@ public class GreeBindingConstants {
     public static final String GREE_PROP_HEAT = "StHt";
     public static final String GREE_PROP_HEATCOOL = "HeatCoolType";
     public static final String GREE_PROP_NOISESET = "NoiseSet";
-    public static final String GREE_PROP_TEMP_SENSOR = "TemSen";
+    public static final String GREE_PROP_CURRENT_TEMP_SENSOR = "TemSen";
 
     // Temperatur types and min/max ranges
     public static final int TEMP_UNIT_CELSIUS = 0;
