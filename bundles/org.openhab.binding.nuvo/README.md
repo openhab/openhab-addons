@@ -79,9 +79,9 @@ The following channels are available:
 | zoneN#lock (where N= 1-20)           | Contact     | Indicates if this zone is currently locked                                                                    |
 | zoneN#party (where N= 1-20)          | Switch      | Turn on or off the party mode feature with this zone as the host                                              |
 | sourceN#display_line1 (where N= 1-6) | String      | 1st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN#display_line2 (where N= 1-6) | String      | 2st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN#display_line3 (where N= 1-6) | String      | 3st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
-| sourceN#display_line4 (where N= 1-6) | String      | 4st line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#display_line2 (where N= 1-6) | String      | 2nd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#display_line3 (where N= 1-6) | String      | 3rd line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
+| sourceN#display_line4 (where N= 1-6) | String      | 4th line of text being displayed on the keypad. Can be updated for a non NuvoNet source                       |
 | sourceN#play_mode (where N= 1-6)     | String      | The current playback mode of the source, ie: Playing, Paused, etc. (ReadOnly) See rules example for updating  |
 | sourceN#track_length (where N= 1-6)  | Number:Time | The total running time of the current playing track (ReadOnly) See rules example for updating                 |
 | sourceN#track_position (where N= 1-6)| Number:Time | The running time elapsed of the current playing track (ReadOnly) See rules example for updating               |

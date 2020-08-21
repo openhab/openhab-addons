@@ -53,12 +53,12 @@ public enum NuvoEnum {
     SOURCE5("S5", "SCFG5"),
     SOURCE6("S6", "SCFG6");
 
-    private String id;
-    private String cfgId;
+    private final String id;
+    private final String cfgId;
 
     // make a list of all valid source ids
-    public static final List<String> VALID_SOURCES = Arrays.stream(values()).filter(s -> s.name().contains("SOURCE"))
-            .map(s -> s.name()).collect(Collectors.toList());
+    public static final List<String> VALID_SOURCES = Arrays.stream(values()).map(NuvoEnum::name)
+            .filter(s -> s.contains("SOURCE")).collect(Collectors.toList());
 
     NuvoEnum(String id, String cfgId) {
         this.id = id;

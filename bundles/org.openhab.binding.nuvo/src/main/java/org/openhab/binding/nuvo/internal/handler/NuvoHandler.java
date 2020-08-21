@@ -110,6 +110,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             .compile("^DISPINFO,DUR(\\d{1,6}),POS(\\d{1,6}),STATUS(\\d{1,2})$");
     private static final Pattern ZONE_CFG_PATTERN = Pattern.compile("^BASS(.*),TREB(.*),BAL(.*),LOUDCMP([0-1])$");
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy,MM,dd,HH,mm");
+
     private final Logger logger = LoggerFactory.getLogger(NuvoHandler.class);
     private final NuvoStateDescriptionOptionProvider stateDescriptionProvider;
     private final SerialPortManager serialPortManager;
@@ -192,9 +194,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             List<Integer> zonesToRemove = IntStream.range((this.numZones + 1), (MAX_ZONES + 1)).boxed()
                     .collect(Collectors.toList());
 
-            zonesToRemove.forEach(zone -> {
-                channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone)));
-            });
+            zonesToRemove.forEach(zone -> channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone))));
             updateThing(editThing().withChannels(channels).build());
         }
 
@@ -683,8 +683,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         clockSyncJob = scheduler.scheduleWithFixedDelay(() -> {
             if (this.isGConcerto) {
                 try {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy,MM,dd,HH,mm");
-                    connector.sendCommand(NuvoCommand.CFGTIME.getValue() + simpleDateFormat.format(new Date()));
+                    connector.sendCommand(NuvoCommand.CFGTIME.getValue() + DATE_FORMAT.format(new Date()));
                 } catch (NuvoException e) {
                     logger.debug("Error syncing clock: {}", e.getMessage());
                 }

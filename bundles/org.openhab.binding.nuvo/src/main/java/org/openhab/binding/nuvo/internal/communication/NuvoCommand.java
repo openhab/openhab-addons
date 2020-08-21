@@ -55,7 +55,7 @@ public enum NuvoCommand {
     PARTY_ON("PARTY1"),
     PARTY_OFF("PARTY0");
 
-    private String value;
+    private final String value;
 
     NuvoCommand(String value) {
         this.value = value;

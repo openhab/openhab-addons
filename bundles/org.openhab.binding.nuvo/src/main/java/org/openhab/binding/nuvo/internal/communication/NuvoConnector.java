@@ -145,12 +145,12 @@ public abstract class NuvoConnector {
         }
         if (readerThread != null) {
             readerThread.interrupt();
+            this.readerThread = null;
             try {
                 readerThread.join(3000);
             } catch (InterruptedException e) {
                 logger.warn("Error joining readerThread: {}", e.getMessage());
             }
-            this.readerThread = null;
         }
     }
 

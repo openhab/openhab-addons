@@ -71,7 +71,7 @@ public class NuvoStatusCodes {
     // see above comment
     public static String getBalanceFromInt(Integer value) {
         if (value < 0) {
-            return (L + (value * -1));
+            return (L + Math.abs(value));
         } else if (value == 0) {
             return C;
         } else if (value > 0) {

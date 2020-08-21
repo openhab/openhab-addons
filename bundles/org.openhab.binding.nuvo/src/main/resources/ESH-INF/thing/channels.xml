@@ -16,99 +16,107 @@
 				<label>System</label>
 				<description>System Level Commands</description>
 			</channel-group>
-			<channel-group id="zone1" typeId="zone1">
+			<channel-group id="zone1" typeId="zone">
 				<label>Zone 1</label>
 				<description>The Controls for Zone 1</description>
 			</channel-group>
-			<channel-group id="zone2" typeId="zone2">
+			<channel-group id="zone2" typeId="zone">
 				<label>Zone 2</label>
 				<description>The Controls for Zone 2</description>
 			</channel-group>
-			<channel-group id="zone3" typeId="zone3">
+			<channel-group id="zone3" typeId="zone">
 				<label>Zone 3</label>
 				<description>The Controls for Zone 3</description>
 			</channel-group>
-			<channel-group id="zone4" typeId="zone4">
+			<channel-group id="zone4" typeId="zone">
 				<label>Zone 4</label>
 				<description>The Controls for Zone 4</description>
 			</channel-group>
-			<channel-group id="zone5" typeId="zone5">
+			<channel-group id="zone5" typeId="zone">
 				<label>Zone 5</label>
 				<description>The Controls for Zone 5</description>
 			</channel-group>
-			<channel-group id="zone6" typeId="zone6">
+			<channel-group id="zone6" typeId="zone">
 				<label>Zone 6</label>
 				<description>The Controls for Zone 6</description>
 			</channel-group>
-			<channel-group id="zone7" typeId="zone7">
+			<channel-group id="zone7" typeId="zone">
 				<label>Zone 7</label>
 				<description>The Controls for Zone 7</description>
 			</channel-group>
-			<channel-group id="zone8" typeId="zone8">
+			<channel-group id="zone8" typeId="zone">
 				<label>Zone 8</label>
 				<description>The Controls for Zone 8</description>
 			</channel-group>
-			<channel-group id="zone9" typeId="zone9">
+			<channel-group id="zone9" typeId="zone">
 				<label>Zone 9</label>
 				<description>The Controls for Zone 9</description>
 			</channel-group>
-			<channel-group id="zone10" typeId="zone10">
+			<channel-group id="zone10" typeId="zone">
 				<label>Zone 10</label>
 				<description>The Controls for Zone 10</description>
 			</channel-group>
-			<channel-group id="zone11" typeId="zone11">
+			<channel-group id="zone11" typeId="zone">
 				<label>Zone 11</label>
 				<description>The Controls for Zone 11</description>
 			</channel-group>
-			<channel-group id="zone12" typeId="zone12">
+			<channel-group id="zone12" typeId="zone">
 				<label>Zone 12</label>
 				<description>The Controls for Zone 12</description>
 			</channel-group>
-			<channel-group id="zone13" typeId="zone13">
+			<channel-group id="zone13" typeId="zone">
 				<label>Zone 13</label>
 				<description>The Controls for Zone 13</description>
 			</channel-group>
-			<channel-group id="zone14" typeId="zone14">
+			<channel-group id="zone14" typeId="zone">
 				<label>Zone 14</label>
 				<description>The Controls for Zone 14</description>
 			</channel-group>
-			<channel-group id="zone15" typeId="zone15">
+			<channel-group id="zone15" typeId="zone">
 				<label>Zone 15</label>
 				<description>The Controls for Zone 15</description>
 			</channel-group>
-			<channel-group id="zone16" typeId="zone16">
+			<channel-group id="zone16" typeId="zone">
 				<label>Zone 16</label>
 				<description>The Controls for Zone 16</description>
 			</channel-group>
-			<channel-group id="zone17" typeId="zone17">
+			<channel-group id="zone17" typeId="zone">
 				<label>Zone 17</label>
 				<description>The Controls for Zone 17</description>
 			</channel-group>
-			<channel-group id="zone18" typeId="zone18">
+			<channel-group id="zone18" typeId="zone">
 				<label>Zone 18</label>
 				<description>The Controls for Zone 18</description>
 			</channel-group>
-			<channel-group id="source1" typeId="source1">
+			<channel-group id="zone19" typeId="zone">
+				<label>Zone 19</label>
+				<description>The Controls for Zone 19</description>
+			</channel-group>
+			<channel-group id="zone20" typeId="zone">
+				<label>Zone 20</label>
+				<description>The Controls for Zone 20</description>
+			</channel-group>
+			<channel-group id="source1" typeId="source">
 				<label>Source 1</label>
 				<description>The Display Information for Source 1</description>
 			</channel-group>
-			<channel-group id="source2" typeId="source2">
+			<channel-group id="source2" typeId="source">
 				<label>Source 2</label>
 				<description>The Display Information for Source 2</description>
 			</channel-group>
-			<channel-group id="source3" typeId="source3">
+			<channel-group id="source3" typeId="source">
 				<label>Source 3</label>
 				<description>The Display Information for Source 3</description>
 			</channel-group>
-			<channel-group id="source4" typeId="source4">
+			<channel-group id="source4" typeId="source">
 				<label>Source 4</label>
 				<description>The Display Information for Source 4</description>
 			</channel-group>
-			<channel-group id="source5" typeId="source5">
+			<channel-group id="source5" typeId="source">
 				<label>Source 5</label>
 				<description>The Display Information for Source 5</description>
 			</channel-group>
-			<channel-group id="source6" typeId="source6">
+			<channel-group id="source6" typeId="source">
 				<label>Source 6</label>
 				<description>The Display Information for Source 6</description>
 			</channel-group>
@@ -155,9 +163,9 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone1">
-		<label>Zone 1</label>
-		<description>The Controls for Zone 1</description>
+	<channel-group-type id="zone">
+		<label>Zone Controls</label>
+		<description>The Controls for the Zone</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="source" typeId="source"/>
@@ -174,445 +182,9 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="zone2">
-		<label>Zone 2</label>
-		<description>The Controls for Zone 2</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone3">
-		<label>Zone 3</label>
-		<description>The Controls for Zone 3</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone4">
-		<label>Zone 4</label>
-		<description>The Controls for Zone 4</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone5">
-		<label>Zone 5</label>
-		<description>The Controls for Zone 5</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone6">
-		<label>Zone 6</label>
-		<description>The Controls for Zone 6</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone7">
-		<label>Zone 7</label>
-		<description>The Controls for Zone 7</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone8">
-		<label>Zone 8</label>
-		<description>The Controls for Zone 8</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone9">
-		<label>Zone 9</label>
-		<description>The Controls for Zone 9</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone10">
-		<label>Zone 10</label>
-		<description>The Controls for Zone 10</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone11">
-		<label>Zone 11</label>
-		<description>The Controls for Zone 11</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone12">
-		<label>Zone 12</label>
-		<description>The Controls for Zone 12</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone13">
-		<label>Zone 13</label>
-		<description>The Controls for Zone 13</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone14">
-		<label>Zone 14</label>
-		<description>The Controls for Zone 14</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone15">
-		<label>Zone 15</label>
-		<description>The Controls for Zone 15</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone16">
-		<label>Zone 16</label>
-		<description>The Controls for Zone 16</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone17">
-		<label>Zone 17</label>
-		<description>The Controls for Zone 17</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone18">
-		<label>Zone 18</label>
-		<description>The Controls for Zone 18</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone19">
-		<label>Zone 19</label>
-		<description>The Controls for Zone 19</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="zone20">
-		<label>Zone 20</label>
-		<description>The Controls for Zone 20</description>
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="source" typeId="source"/>
-			<channel id="volume" typeId="system.volume"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="control" typeId="control"/>
-			<channel id="treble" typeId="treble"/>
-			<channel id="bass" typeId="bass"/>
-			<channel id="balance" typeId="balance"/>
-			<channel id="loudness" typeId="loudness"/>
-			<channel id="dnd" typeId="dnd"/>
-			<channel id="lock" typeId="lock"/>
-			<channel id="party" typeId="party"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="source1">
-		<label>Source 1</label>
-		<description>The Display Information for Source 1</description>
-		<channels>
-			<channel id="display_line1" typeId="display_line1"/>
-			<channel id="display_line2" typeId="display_line2"/>
-			<channel id="display_line3" typeId="display_line3"/>
-			<channel id="display_line4" typeId="display_line4"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="track_length" typeId="track_length"/>
-			<channel id="track_position" typeId="track_position"/>
-			<channel id="button_press" typeId="button_press"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="source2">
-		<label>Source 2</label>
-		<description>The Display Information for Source 2</description>
-		<channels>
-			<channel id="display_line1" typeId="display_line1"/>
-			<channel id="display_line2" typeId="display_line2"/>
-			<channel id="display_line3" typeId="display_line3"/>
-			<channel id="display_line4" typeId="display_line4"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="track_length" typeId="track_length"/>
-			<channel id="track_position" typeId="track_position"/>
-			<channel id="button_press" typeId="button_press"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="source3">
-		<label>Source 3</label>
-		<description>The Display Information for Source 3</description>
-		<channels>
-			<channel id="display_line1" typeId="display_line1"/>
-			<channel id="display_line2" typeId="display_line2"/>
-			<channel id="display_line3" typeId="display_line3"/>
-			<channel id="display_line4" typeId="display_line4"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="track_length" typeId="track_length"/>
-			<channel id="track_position" typeId="track_position"/>
-			<channel id="button_press" typeId="button_press"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="source4">
-		<label>Source 4</label>
-		<description>The Display Information for Source 4</description>
-		<channels>
-			<channel id="display_line1" typeId="display_line1"/>
-			<channel id="display_line2" typeId="display_line2"/>
-			<channel id="display_line3" typeId="display_line3"/>
-			<channel id="display_line4" typeId="display_line4"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="track_length" typeId="track_length"/>
-			<channel id="track_position" typeId="track_position"/>
-			<channel id="button_press" typeId="button_press"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="source5">
-		<label>Source 5</label>
-		<description>The Display Information for Source 5</description>
-		<channels>
-			<channel id="display_line1" typeId="display_line1"/>
-			<channel id="display_line2" typeId="display_line2"/>
-			<channel id="display_line3" typeId="display_line3"/>
-			<channel id="display_line4" typeId="display_line4"/>
-			<channel id="play_mode" typeId="play_mode"/>
-			<channel id="track_length" typeId="track_length"/>
-			<channel id="track_position" typeId="track_position"/>
-			<channel id="button_press" typeId="button_press"/>
-		</channels>
-	</channel-group-type>
-
-	<channel-group-type id="source6">
-		<label>Source 6</label>
-		<description>The Display Information for Source 6</description>
+	<channel-group-type id="source">
+		<label>Source Info</label>
+		<description>The Display Information for the Source</description>
 		<channels>
 			<channel id="display_line1" typeId="display_line1"/>
 			<channel id="display_line2" typeId="display_line2"/>

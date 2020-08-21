@@ -44,7 +44,7 @@ public class NuvoReaderThread extends Thread {
      * @param connector the object that should handle the received message
      */
     public NuvoReaderThread(NuvoConnector connector, String uid) {
-        super(NuvoBindingConstants.BINDING_ID + "-" + uid);
+        super("OH-binding-" + NuvoBindingConstants.BINDING_ID + "-" + uid);
         this.connector = connector;
         setDaemon(true);
     }

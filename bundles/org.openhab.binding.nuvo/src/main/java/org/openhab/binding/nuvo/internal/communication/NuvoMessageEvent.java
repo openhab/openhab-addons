@@ -24,9 +24,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class NuvoMessageEvent extends EventObject {
     private static final long serialVersionUID = 1L;
-    private String type;
-    private String key;
-    private String value;
+    private final String type;
+    private final String key;
+    private final String value;
 
     public NuvoMessageEvent(Object source, String type, String key, String value) {
         super(source);
