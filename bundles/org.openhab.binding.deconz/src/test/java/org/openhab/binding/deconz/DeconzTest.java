@@ -101,9 +101,9 @@ public class DeconzTest {
     @Test
     public void dateTimeConversionTest() {
         DateTimeType dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09Z");
-        Assert.assertEquals(new DateTimeType(ZonedDateTime.of(2020, 8, 22, 13, 9, 0, 0, ZoneId.systemDefault())), dateTime);
+        Assert.assertEquals(new DateTimeType(ZonedDateTime.of(2020, 8, 22, 13, 9, 0, 0, ZoneId.systemDefault())), dateTime.toZone(ZoneId.systemDefault()));
 
         dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09:47");
-        Assert.assertEquals(new DateTimeType(ZonedDateTime.of(2020, 8, 22, 13, 9, 47, 0, ZoneId.systemDefault())), dateTime);
+        Assert.assertEquals(new DateTimeType(ZonedDateTime.of(2020, 8, 22, 13, 9, 47, 0, ZoneId.systemDefault())), dateTime.toZone(ZoneId.systemDefault()));
     }
 }
