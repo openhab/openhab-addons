@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
-import org.openhab.binding.tankerkoenig.internal.config.Prices;
-import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
+import org.openhab.binding.tankerkoenig.internal.dto.LittleStation;
+import org.openhab.binding.tankerkoenig.internal.dto.Prices;
+import org.openhab.binding.tankerkoenig.internal.dto.TankerkoenigListResult;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonDeserializationContext;

@@ -15,6 +15,7 @@ package org.openhab.binding.solaredge.internal.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePrivateApi;
 import org.openhab.binding.solaredge.internal.command.AggregateDataUpdatePublicApi;
 import org.openhab.binding.solaredge.internal.command.SolarEdgeCommand;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class SolarEdgeAggregateDataPolling implements Runnable {
     /**
      * Logger

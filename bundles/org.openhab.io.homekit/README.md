@@ -90,8 +90,8 @@ A complex accessory will be made up of multiple openHAB items, e.g. HomeKit Ther
 Complex accessories require a tag on a Group Item indicating the accessory type, as well as tags on the items it composes.
 
 A HomeKit accessory has mandatory and optional characteristics (listed below in the table).
-The mapping between OpenHAB items and HomeKit accessory and characteristics is done by means of tagging.
-You can tag OpenHAB items using:
+The mapping between openHAB items and HomeKit accessory and characteristics is done by means of tagging.
+You can tag openHAB items using:
 
 - [tags](https://www.openhab.org/docs/configuration/items.html#tags) (deprecated)
 - [metadata](https://www.openhab.org/docs/concepts/items.html#item-metadata)
@@ -104,10 +104,10 @@ Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
 
 The HomeKit integration currently supports both options. You can mix both options in the same configuration file.
-If an OpenHAB item has both, tags and metadata, then HomeKit integration will use only metadata and ignore tags.
+If an openHAB item has both, tags and metadata, then HomeKit integration will use only metadata and ignore tags.
 In general, the `tag` way is considered legacy and may be removed in future releases.
 
-You can link one OpenHAB item to one or more HomeKit accessory, e.g.
+You can link one openHAB item to one or more HomeKit accessory, e.g.
 
 ```xtend
 Switch occupancy_and_motion_sensor       "Occupancy and Motion Sensor Tag"  {homekit="OccupancySensor,MotionSensor"}
@@ -556,7 +556,7 @@ The HomeKit valve accessory supports following 2 optional characteristics:
 Upon valve activation in home app, home app starts to count down from the "duration" to "0" without contacting the server. Home app also does not trigger any action if it remaining duration get 0. 
 It is up to valve to have an own timer and stop valve once the timer is over. 
 Some valves have such timer, e.g. pretty common for sprinklers. 
-In case the valve has no timer capability, OpenHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over. 
+In case the valve has no timer capability, openHAB can take care on this -  start an internal timer and send "Off" command to the valve once the timer is over. 
 
 configuration for these two cases looks as follow:
 

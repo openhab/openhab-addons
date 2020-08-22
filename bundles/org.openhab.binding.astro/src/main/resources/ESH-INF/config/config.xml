@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 	https://openhab.org/schemas/config-description-1.0.0.xsd">
 
-	<config-description uri="thing-type:astro:config">
+	<config-description uri="thing-type:astro:moonconfig">
 		<parameter name="geolocation" type="text" required="true">
 			<context>location</context>
 			<label>Location</label>
@@ -17,7 +17,7 @@
 			<default>300</default>
 		</parameter>
 	</config-description>
-	
+
 	<config-description uri="thing-type:astro:sunconfig">
 		<parameter name="geolocation" type="text" required="true">
 			<context>location</context>
@@ -25,7 +25,7 @@
 			<description>The latitude, longitude and altitude separated with a comma (lat,long,[alt]).</description>
 		</parameter>
 		<parameter name="useMeteorologicalSeason" type="boolean" required="true">
-			<label>Meteo Season</label>
+			<label>Meteorological Season</label>
 			<description>Uses meteorological season calculation method instead of equinox method.</description>
 			<advanced>true</advanced>
 			<default>false</default>

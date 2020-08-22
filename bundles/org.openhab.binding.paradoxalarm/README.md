@@ -58,7 +58,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | Value             | Description                                                                        |
 |-------------------|------------------------------------------------------------------------------------|
 | id                | The numeric ID of the zone/partition                                               |
-| disarmEnabled     | Optional boolean flag. Valid for partitions. When set to true the command DISARM will be allowed for the partition where the flag is enabled. CAUTION: Enabling DISARM command can be dangerous. If attacker can gain access to your OpenHAB (via API or UI), this command can be used to disarm your armed partition (area) |
+| disarmEnabled     | Optional boolean flag. Valid for partitions. When set to true the command DISARM will be allowed for the partition where the flag is enabled. CAUTION: Enabling DISARM command can be dangerous. If attacker can gain access to your openHAB (via API or UI), this command can be used to disarm your armed partition (area) |
 
 ### Panel channels:
 | Channel                  | Type                       | Description                                                                               |
@@ -175,7 +175,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
     }
 ```
 ## Acknowledgements
-This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective github repositories for their development that helped in creating this binding:
+This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective GitHub repositories for their development that helped in creating this binding:
 
 João Paulo Barraca - https://github.com/ParadoxAlarmInterface/pai
 

@@ -24,8 +24,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DimmerConfig {
     private static final int DEFAULT_FADE = 1;
+    private static final int DEFAULT_ONLEVEL = 100;
+    private static final boolean DEFAULT_ONTOLAST = false;
 
     public int integrationId;
     public BigDecimal fadeInTime = new BigDecimal(DEFAULT_FADE);
     public BigDecimal fadeOutTime = new BigDecimal(DEFAULT_FADE);
+    public BigDecimal onLevel = new BigDecimal(DEFAULT_ONLEVEL);
+    public Boolean onToLast = new Boolean(DEFAULT_ONTOLAST);
 }

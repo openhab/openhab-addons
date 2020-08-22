@@ -18,6 +18,7 @@ import java.util.Map;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;
+import org.openhab.binding.homematic.internal.model.HmInterface;
 import org.openhab.binding.homematic.internal.model.HmParamsetType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,13 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
                 boolean isHmSenMdirNextTrans = dpInfo.getName().equals("NEXT_TRANSMISSION")
                         && (deviceType.startsWith("HM-Sen-MDIR-O") || deviceType.startsWith("HM-Sen-MDIR-WM55"));
                 if (!isHmSenMdirNextTrans) {
-                    logger.warn("Can't set value for datapoint '{}'", dpInfo);
+                    if (dpInfo.getAddress().contains(":M_")
+                            && channel.getDevice().getHmInterface() == HmInterface.HMIP) {
+                        // These data points can't currently be recognized and therefore can't be created
+                        logger.debug("Can't set value for channel configuration datapoint '{}'", dpInfo);
+                    } else {
+                        logger.warn("Can't set value for datapoint '{}'", dpInfo);
+                    }
                 }
             }
         }

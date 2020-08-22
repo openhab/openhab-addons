@@ -15,21 +15,32 @@ package org.openhab.binding.hdpowerview.internal.api.responses;
 import java.util.Base64;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 
 /**
- * A list of Shades, as returned by the HD Power View Hub
+ * State of all Shades, as returned by an HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class Shades {
 
-    public List<Shade> shadeData;
-    public List<String> shadeIds;
+    public @Nullable List<ShadeData> shadeData;
+    public @Nullable List<Integer> shadeIds;
 
-    public static class Shade {
-        public String id;
-        String name;
+    /*
+     * the following SuppressWarnings annotation is because the Eclipse compiler
+     * does NOT expect a NonNullByDefault annotation on the inner class, since it is
+     * implicitly inherited from the outer class, whereas the Maven compiler always
+     * requires an explicit NonNullByDefault annotation on all classes
+     */
+    @SuppressWarnings("null")
+    @NonNullByDefault
+    public static class ShadeData {
+        public int id;
+        public @Nullable String name;
         public int roomId;
         public int groupId;
         public int order;
@@ -37,7 +48,8 @@ public class Shades {
         public double batteryStrength;
         public int batteryStatus;
         public boolean batteryIsLow;
-        public ShadePosition positions;
+        public @Nullable ShadePosition positions;
+        public @Nullable Boolean timedOut;
 
         public String getName() {
             return new String(Base64.getDecoder().decode(name));

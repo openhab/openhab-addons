@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.api.requests;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
 
 /**
@@ -19,10 +21,11 @@ import org.openhab.binding.hdpowerview.internal.api.ShadePosition;
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 class ShadeIdPosition {
 
     int id;
-    ShadePosition positions;
+    public @Nullable ShadePosition positions;
 
     public ShadeIdPosition(int id, ShadePosition position) {
         this.id = id;

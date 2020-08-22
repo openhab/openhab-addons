@@ -33,6 +33,7 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public abstract class ChannelHandler {
+
     public abstract boolean tryHandleCommand(Device device, Connection connection, String channelId, Command command)
             throws IOException, URISyntaxException;
 
