@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dlinksmarthome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="current_consumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Consumption</label>
+		<description>Current energy consumption.</description>
+				<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="total_consumption" advanced="true">
+		<item-type>Number</item-type>
+		<label>Total Consumption</label>
+		<description>Total energy consumption in device lifetime.</description>
+				<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Temperature</label>
+		<description>Device temperature.</description>
+				<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<description>State of the socket.</description>
+	</channel-type>
+</thing:thing-descriptions>

@@ -5,27 +5,52 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Motion Sensor DCH-S150 Thing Type -->
-	<thing-type id="DCH-S150">
-		<label>Motion Sensor</label>
-		<description>D-Link DCH-S150 WiFi motion sensor</description>
+		<thing-type id="DCH-S150">
+				<label>Motion Sensor</label>
+				<description>D-Link DCH-S150 WiFi motion sensor</description>
 
-		<channels>
-			<channel id="motion" typeId="system.trigger">
-				<label>Motion Detected</label>
-				<description>Triggered when the sensor detects motion</description>
-			</channel>
-		</channels>
-		<config-description>
-			<parameter name="ipAddress" type="text" required="true">
-				<context>network-address</context>
-				<label>Hostname or IP</label>
-				<description>Hostname or IP of the device.</description>
-			</parameter>
-			<parameter name="pin" type="text" required="true">
-				<context>password</context>
-				<label>PIN Code</label>
-				<description>PIN code from the back of the device.</description>
-			</parameter>
-		</config-description>
-	</thing-type>
+				<channels>
+						<channel id="motion" typeId="system.trigger">
+								<label>Motion Detected</label>
+								<description>Triggered when the sensor detects motion</description>
+						</channel>
+				</channels>
+				<config-description>
+						<parameter name="ipAddress" type="text" required="true">
+								<context>network-address</context>
+								<label>Hostname or IP</label>
+								<description>Hostname or IP of the device.</description>
+						</parameter>
+						<parameter name="pin" type="text" required="true">
+								<context>password</context>
+								<label>PIN Code</label>
+								<description>PIN code from the back of the device.</description>
+						</parameter>
+				</config-description>
+		</thing-type>
+
+		<!-- SmartPlug DSP-W215 Thing Type -->
+		<thing-type id="DSP-W215">
+				<label>Smart Plug</label>
+				<description>D-Link DSP-W215 WiFi smart plug</description>
+
+				<channels>
+						<channel id="current_consumption" typeId="current_consumption"/>
+						<channel id="total_consumption" typeId="total_consumption"/>
+						<channel id="temperature" typeId="temperature"/>
+						<channel id="state" typeId="state"/>
+				</channels>
+				<config-description>
+						<parameter name="ipAddress" type="text" required="true">
+								<context>network-address</context>
+								<label>Hostname or IP</label>
+								<description>Hostname or IP of the device.</description>
+						</parameter>
+						<parameter name="pin" type="text" required="true">
+								<context>password</context>
+								<label>PIN Code</label>
+								<description>PIN code from the back of the device.</description>
+						</parameter>
+				</config-description>
+		</thing-type>
 </thing:thing-descriptions>
