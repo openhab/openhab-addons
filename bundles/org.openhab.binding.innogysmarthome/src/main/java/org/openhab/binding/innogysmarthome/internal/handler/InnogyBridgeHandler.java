@@ -300,8 +300,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
         final long seconds = delayed ? REINITIALIZE_DELAY_SECONDS : 0;
         logger.debug("Scheduling reinitialize in {} seconds.", seconds);
-        reinitJob = scheduler.scheduleWithFixedDelay(this::startClient, seconds, REINITIALIZE_RETRY_SECONDS,
-                TimeUnit.SECONDS);
+        reinitJob = scheduler.schedule(this::startClient, seconds, TimeUnit.SECONDS);
     }
 
     private void setBridgeProperties(final Device bridgeDevice) {
