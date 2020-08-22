@@ -415,7 +415,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (!status.isEmpty()) {
                 setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, status);
             }
-        } catch (RuntimeException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.debug("{}: Unable to refresh status: {}", thingName, messages.get("statusupdate.failed"), e);
         } finally {
             if (scheduledUpdates > 0) {
@@ -742,7 +742,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 }
                 autoCoIoT = true;
             }
-        } catch (RuntimeException e) { // could be inconsistant format of beta version
+        } catch (NullPointerException e) { // could be inconsistant format of beta version
             logger.debug("{}: {}", thingName, messages.get("versioncheck.failed", prf.fwVersion));
         }
         if (status.update.hasUpdate) {
