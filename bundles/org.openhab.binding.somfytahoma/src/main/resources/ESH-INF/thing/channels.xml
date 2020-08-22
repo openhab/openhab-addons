@@ -348,7 +348,7 @@
 
 	<channel-type id="heating_level">
 		<item-type>Dimmer</item-type>
-		<label>Heating level</label>
+		<label>Heating Level</label>
 		<description>The level of the heating</description>
 		<state max="100" min="0" step="1" pattern="%d %%"/>
 	</channel-type>

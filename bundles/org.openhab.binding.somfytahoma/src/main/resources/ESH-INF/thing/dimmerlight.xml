@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 		<label>Somfy Dimmer Light</label>
 		<channels>
-			<channel id="switch" typeId="system.power"></channel>
 			<channel id="light_intensity" typeId="light_intensity"></channel>
 		</channels>
 		<config-description-ref uri="thing-type:somfytahoma:device"/>

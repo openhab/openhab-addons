@@ -13,7 +13,6 @@
 package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.HEATING_LEVEL;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.SWITCH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -24,7 +23,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants;
 import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 
 /**
@@ -50,10 +48,6 @@ public class SomfyTahomaExteriorHeatingSystemHandler extends SomfyTahomaBaseThin
                     int value = ((PercentType) newState).intValue();
                     PercentType inverted = new PercentType(100 - value);
                     updateState(chLevel.getUID(), inverted);
-                    Channel chSwitch = thing.getChannel(SWITCH);
-                    if (chSwitch != null) {
-                        updateState(chSwitch.getUID(), value == 100 ? OnOffType.OFF : OnOffType.ON);
-                    }
                 }
             }
         }
@@ -64,11 +58,13 @@ public class SomfyTahomaExteriorHeatingSystemHandler extends SomfyTahomaBaseThin
         super.handleCommand(channelUID, command);
         if (command instanceof RefreshType) {
             return;
-        } else if (SomfyTahomaBindingConstants.SWITCH.equals(channelUID.getId()) && command instanceof OnOffType) {
-            sendCommand(command.toString().toLowerCase());
         } else if (HEATING_LEVEL.equals(channelUID.getId())) {
-            int inverted = 100 - toInteger(command);
-            sendCommand("setLevel", "[" + inverted + "]");
+            if (command instanceof OnOffType) {
+                sendCommand(command.toString().toLowerCase());
+            } else {
+                int inverted = 100 - toInteger(command);
+                sendCommand("setLevel", "[" + inverted + "]");
+            }
         }
     }
 }

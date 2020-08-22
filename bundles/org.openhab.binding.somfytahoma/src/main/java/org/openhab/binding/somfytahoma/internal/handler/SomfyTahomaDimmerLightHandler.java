@@ -13,11 +13,9 @@
 package org.openhab.binding.somfytahoma.internal.handler;
 
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.LIGHT_INTENSITY;
-import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.SWITCH;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -34,7 +32,6 @@ public class SomfyTahomaDimmerLightHandler extends SomfyTahomaBaseThingHandler {
 
     public SomfyTahomaDimmerLightHandler(Thing thing) {
         super(thing);
-        stateNames.put(SWITCH, "core:OnOffState");
         stateNames.put(LIGHT_INTENSITY, "core:LightIntensityState");
     }
 
@@ -43,10 +40,12 @@ public class SomfyTahomaDimmerLightHandler extends SomfyTahomaBaseThingHandler {
         super.handleCommand(channelUID, command);
         if (command instanceof RefreshType) {
             return;
-        } else if (SWITCH.equals(channelUID.getId()) && command instanceof OnOffType) {
-            sendCommand(command.toString().toLowerCase());
         } else if (LIGHT_INTENSITY.equals(channelUID.getId())) {
-            sendCommand("setIntensity", "[" + toInteger(command) + "]");
+            if (command instanceof OnOffType) {
+                sendCommand(command.toString().toLowerCase());
+            } else {
+                sendCommand("setIntensity", "[" + toInteger(command) + "]");
+            }
         }
     }
 }

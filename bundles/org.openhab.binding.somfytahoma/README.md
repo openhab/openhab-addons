@@ -76,7 +76,7 @@ Please see the example below.
 | adjustable slats roller shutter                                               |          rocker         | used for setting the rocker position of the roller shutter, the only position allowing the slats control                    |
 | action group                                                                  |      execute_action     | switch which reacts to ON command and triggers the predefined Tahoma action                                                 |
 | onoff, light                                                                  |          switch         | reacts to standard ON/OFF commands                                                                                          |
-| dimmer light                                                                  |     light_intensity     | sets/gets intensity of the dimmer light                                                                                     |
+| dimmer light                                                                  |     light_intensity     | sets/gets intensity of the dimmer light or ON/OFF                                                                           |
 | smoke sensor, occupancy sensor, contact sensor & water sensor                 |         contact         | normal value is CLOSE, changes to OPEN when detection triggered                                                             |
 | smoke sensor, occupancy sensor, contact sensor & water sensor                 |      sensor_defect      | indicates the health of the sensor (dead, lowBatter, maintenanceRequired, noDefect)                                         |
 | smoke sensor                                                                  |      radio_battery      | maintenance radio part battery state (low, normal)                                                                          |
@@ -110,7 +110,7 @@ Please see the example below.
 | heating system                                                                |      current_state      | current state of the heating system                                                                                         |
 | heating system, thermostat                                                    |    target_temperature   | target temperature of the heating system                                                                                    |
 | heating system, thermostat                                                    |      battery_level      | battery level of the heating system                                                                                         |
-| exterior heating system                                                       |      heating_level      | heating level of the exterior heating system                                                                               |
+| exterior heating system                                                       |      heating_level      | heating level of the exterior heating system or ON/OFF                                                                      |
 | thermostat                                                                    |       heating_mode      | standard heating mode of the thermostat (away, freeze, manual, ...)                                                         |
 | thermostat                                                                    | derogation_heating_mode | derogation heating mode of the thermostat (away, freeze, manual, ...)                                                       |
 | thermostat                                                                    |  derogation_activation  | derogation activation state (inactive, active)                                                                              |
@@ -191,7 +191,7 @@ Switch Rollers2DOWN "Rollers 2nd floor DOWN" {channel="somfytahoma:actiongroup:2
 Switch TahomaZwaveSwitch "Switch" { channel="somfytahoma:onoff:237dbae7:095d6c49-9712-4220-a4c3-d3bb7a6cc5f0:switch" }
 Switch TahomaLightSwitch "Light Switch" { channel="somfytahoma:light:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14d:switch" }
 
-Switch DimmerLightSwitch "Dimmer Light Switch" { channel="somfytahoma:dimmerlight:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14e:switch" }
+Switch DimmerLightSwitch "Dimmer Light Switch" { channel="somfytahoma:dimmerlight:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14e:light_intensity" }
 Dimmer DimmerLightIntensity "Dimmer Light intensity [%.1f]"  {channel="somfytahoma:dimmerlight:237dbae7:1b8e7d29-bf1e-4ae1-9432-3dfef52ef14e:light_intensity"}
 
 Number LightSensor "Light Sensor [%.1f lux]" { channel="somfytahoma:lightsensor:237dbae7:2c90808c3a0c193f013a743f2f660f12:luminance" }
@@ -207,17 +207,18 @@ String HeatingSystemLevel "Heating level [%s]" { channel="somfytahoma:onoffheati
 Switch DoorLock "Lock" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:lock" }
 Switch DoorLockOpenClose "Open/Close" { channel="somfytahoma:doorlock:237dbae7:6612f2e3-bcde-21dd-b3a6-13ef7abcd134:open" }
 
-String DockBatteryStatus "Dock battery status [%s]" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:battery_status }
-String DockBatteryLevel "Dock battery level [%s]" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:battery_level }
-String DockSiren "Dock siren [%s]" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:siren }
-Switch DockShortBeep "Dock short beep" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:short_beep }
-Switch DockLongBeep "Dock long beep" { somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:long_beep }
+String DockBatteryStatus "Dock battery status [%s]" { channel="somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:battery_status" }
+String DockBatteryLevel "Dock battery level [%s]" { channel="somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:battery_level" }
+String DockSiren "Dock siren [%s]" { channel="somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:siren" }
+Switch DockShortBeep "Dock short beep" { channel="somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:short_beep" }
+Switch DockLongBeep "Dock long beep" { channel="somfytahoma:dock:237dbae7:1212f2e3-bcde-21dd-b3a6-13ef7abcd134:long_beep" }
 
-String SirenBattery "Siren battery [%s]" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:battery }
-Switch SirenSwitch "Siren switch" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:onoff }
-String SirenVolume "Siren volume [%s]" { somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:memorized_volume }
+String SirenBattery "Siren battery [%s]" { channel="somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:battery" }
+Switch SirenSwitch "Siren switch" { channel="somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:onoff" }
+String SirenVolume "Siren volume [%s]" { channel="somfytahoma:siren:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd134:memorized_volume" }
 
-Dimmer HeatingLevel "Ext heating level [%.1f]"  {channel="somfytahoma:exteriorheatingsystem:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd155:heating_level"}
+Dimmer HeatingLevel "Ext heating level [%.1f]"  { channel="somfytahoma:exteriorheatingsystem:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd155:heating_level" }
+Switch HeatingSwitch "Ext heating switch"  { channel="somfytahoma:exteriorheatingsystem:237dbae7:1212f2e3-aeae-21dd-b3a6-13ef7abcd155:heating_level" }
 ```
 
 .sitemap file
