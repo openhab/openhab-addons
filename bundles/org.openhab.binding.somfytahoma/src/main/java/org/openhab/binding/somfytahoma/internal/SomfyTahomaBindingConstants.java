@@ -73,6 +73,9 @@ public class SomfyTahomaBindingConstants {
     // Light
     public static final ThingTypeUID THING_TYPE_LIGHT = new ThingTypeUID(BINDING_ID, "light");
 
+    // DimmerLight
+    public static final ThingTypeUID THING_TYPE_DIMMER_LIGHT = new ThingTypeUID(BINDING_ID, "dimmerlight");
+
     // Light sensor
     public static final ThingTypeUID THING_TYPE_LIGHTSENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
 
@@ -106,6 +109,8 @@ public class SomfyTahomaBindingConstants {
     public static final ThingTypeUID THING_TYPE_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID, "heatingsystem");
     public static final ThingTypeUID THING_TYPE_ONOFF_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID,
             "onoffheatingsystem");
+    public static final ThingTypeUID THING_TYPE_EXTERIOR_HEATING_SYSTEM = new ThingTypeUID(BINDING_ID,
+            "exteriorheatingsystem");
 
     // Door lock
     public static final ThingTypeUID THING_TYPE_DOOR_LOCK = new ThingTypeUID(BINDING_ID, "doorlock");
@@ -169,6 +174,9 @@ public class SomfyTahomaBindingConstants {
     // OnOff, Light
     public static final String SWITCH = "switch";
 
+    // Dimmer Light
+    public static final String LIGHT_INTENSITY = "light_intensity";
+
     // Door lock
     public static final String LOCK = "lock";
     public static final String OPEN = "open";
@@ -208,6 +216,7 @@ public class SomfyTahomaBindingConstants {
     public static final String CURRENT_STATE = "current_state";
     public static final String BATTERY_LEVEL = "battery_level";
     public static final String TARGET_HEATING_LEVEL = "target_heating_level";
+    public static final String HEATING_LEVEL = "heating_level";
 
     // Thermostat
     public static final String HEATING_MODE = "heating_mode";
@@ -324,6 +333,7 @@ public class SomfyTahomaBindingConstants {
     public static final String CLASS_ALARM = "Alarm";
     public static final String CLASS_POD = "Pod";
     public static final String CLASS_HEATING_SYSTEM = "HeatingSystem";
+    public static final String CLASS_EXTERIOR_HEATING_SYSTEM = "ExteriorHeatingSystem";
     public static final String CLASS_DOOR_LOCK = "DoorLock";
     public static final String CLASS_PERGOLA = "Pergola";
     public static final String CLASS_WINDOW_HANDLE = "WindowHandle";
@@ -355,7 +365,8 @@ public class SomfyTahomaBindingConstants {
             THING_TYPE_DOOR_LOCK, THING_TYPE_PERGOLA, THING_TYPE_WINDOW_HANDLE, THING_TYPE_TEMPERATURESENSOR,
             THING_TYPE_GATE, THING_TYPE_CURTAIN, THING_TYPE_ELECTRICITYSENSOR, THING_TYPE_DOCK, THING_TYPE_SIREN,
             THING_TYPE_ADJUSTABLE_SLATS_ROLLERSHUTTER, THING_TYPE_MYFOX_CAMERA, THING_TYPE_ROLLERSHUTTER_UNO,
-            THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT));
+            THING_TYPE_WATERSENSOR, THING_TYPE_HUMIDITYSENSOR, THING_TYPE_MYFOX_ALARM, THING_TYPE_THERMOSTAT,
+            THING_TYPE_DIMMER_LIGHT, THING_TYPE_EXTERIOR_HEATING_SYSTEM));
 
     // somfy gateways
     public static Map<Integer, String> gatewayTypes = new HashMap<Integer, String>() {
