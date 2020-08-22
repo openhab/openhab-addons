@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -66,13 +67,26 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private Language lang;
     private Locale locale;
 
-    private String ipAddress;
-    private String password;
+    private String ipAddress = "";
+    private String password = "";
     private int refreshInterval;
     private boolean isConnected = false;
     private String unconnectedReason = "";
 
-    public ResolBridgeHandler(Bridge bridge, LocaleProvider localeProvider) {
+    // Background Runables
+
+    @Nullable
+    private ScheduledFuture<?> pollingJob;
+
+    @Nullable
+    private TcpDataSource dataSource;
+
+    @Nullable
+    private Connection tcpConnection;
+    private Specification spec;
+    private Set<String> availableDevices = new HashSet<String>();
+
+    public ResolBridgeHandler(Bridge bridge, @Nullable LocaleProvider localeProvider) {
         super(bridge);
         spec = Specification.getDefaultSpecification();
         if (localeProvider != null) {
@@ -101,21 +115,15 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     // Managing Thing Discovery Service
 
+    @Nullable
     private ResolDiscoveryService discoveryService = null;
 
     public void registerDiscoveryService(ResolDiscoveryService discoveryService) {
-
-        if (discoveryService == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null ThingDiscoveryListener.");
-        } else {
-            this.discoveryService = discoveryService;
-            logger.trace("register Discovery Service");
-        }
+        this.discoveryService = discoveryService;
     }
 
     public void unregisterDiscoveryService() {
         discoveryService = null;
-        logger.trace("unregister Discovery Service");
     }
 
     // Handles Thing discovery
@@ -171,19 +179,9 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    // Background Runables
-
-    private ScheduledFuture<?> pollingJob;
-
-    private TcpDataSource dataSource;
-    private Connection tcpConnection;
-    private Specification spec;
-    private Set<String> availableDevices = new HashSet<String>();
-
     private Runnable pollingRunnable = new Runnable() {
         @Override
         public void run() {
-            logger.trace("Polling job called");
             if (!isConnected) {
                 try {
                     dataSource = TcpDataSourceProvider.fetchInformation(InetAddress.getByName(ipAddress), 500);
@@ -200,7 +198,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                     tcpConnection.addListener(new ConnectionAdapter() {
 
                         @Override
-                        public void connectionStateChanged(Connection connection) {
+                        public void connectionStateChanged(@Nullable Connection connection) {
                             isConnected = (tcpConnection.getConnectionState()
                                     .equals(Connection.ConnectionState.CONNECTED));
                             logger.trace("Connection state changed to: {} isConnected = {}",
@@ -214,7 +212,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                         }
 
                         @Override
-                        public void packetReceived(Connection connection, Packet packet) {
+                        public void packetReceived(@Nullable Connection connection, @Nullable Packet packet) {
                             String thingType = spec.getSourceDeviceSpec(packet).getName(); // use En here
 
                             thingType = thingType.replace(" [", "-");
@@ -260,8 +258,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                                         pfv.formatTextValue(null, Locale.getDefault()));
                                 ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
                                 if (thingHandler != null) {
-                                    @NonNull
-                                    String channelId = pfv.getName(); // use english here
+                                    String channelId = pfv.getName(); // use English here
                                     channelId = channelId.replace(" [", "-");
                                     channelId = channelId.replace("]", "");
                                     channelId = channelId.replace("(", "-");
@@ -394,16 +391,19 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                     isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
                 } catch (IOException e) {
                     logger.trace("Connection failed", e);
-                    unconnectedReason = e.getMessage();
+                    unconnectedReason = e.getMessage(); // TODO: Better include the exception's message and remove
+                                                        // logging the stack trace. As logging the stack trace, when the
+                                                        // network fails seems a bit unreasonable.
                     isConnected = false;
                 } catch (InterruptedException e) {
                     isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
-                } catch (Exception e) {
+                } catch (Exception e) { // TODO: You should specify the concrete exception you want to catch, since
+                                        // catching Exception catches also all runtime exceptions.
                     isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
                     unconnectedReason = e.getMessage();
                 }
                 if (!isConnected) {
-                    logger.info("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
+                    logger.debug("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
                 } else {
                     unconnectedReason = "";
                 }
@@ -445,7 +445,6 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Resol bridge handler {}", this.toString());
         updateStatus();
         ResolConfiguration configuration = getConfigAs(ResolConfiguration.class);
         ipAddress = configuration.ipAddress;
@@ -456,9 +455,8 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Dispose Resol bridge handler{}", this.toString());
 
-        if (pollingJob != null && !pollingJob.isCancelled()) {
+        if (pollingJob != null) {
             pollingJob.cancel(true);
             try {
                 if (tcpConnection != null) {
@@ -469,6 +467,5 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             }
             pollingJob = null;
         }
-        updateStatus(ThingStatus.OFFLINE); // Set all State to offline
     }
 }
