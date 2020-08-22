@@ -285,7 +285,9 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
     /**
      * Schedules a re-initialization in the given future.
      *
-     * @param delayed when it is scheduled delayed, it starts with a delay of 30 seconds, otherwise it starts directly
+     * @param delayed when it is scheduled delayed, it starts with a delay of
+     * {@link org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants#REINITIALIZE_DELAY_SECONDS} seconds,
+     * otherwise it starts directly
      */
     private synchronized void scheduleRestartClient(final boolean delayed) {
         @Nullable final ScheduledFuture<?> localReinitJob = reinitJob;
