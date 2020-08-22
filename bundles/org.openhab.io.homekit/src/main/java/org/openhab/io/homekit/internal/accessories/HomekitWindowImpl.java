@@ -20,22 +20,22 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.accessories.WindowCoveringAccessory;
+import io.github.hapjava.accessories.WindowAccessory;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
-import io.github.hapjava.services.impl.WindowCoveringService;
+import io.github.hapjava.services.impl.WindowService;
 
 /**
  *
- * @author epike - Initial contribution
+ * @author Eugen Freiter - Initial contribution
  */
 @NonNullByDefault
-public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryImpl implements WindowCoveringAccessory {
+public class HomekitWindowImpl extends AbstractHomekitPositionAccessoryImpl implements WindowAccessory {
 
-    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+    public HomekitWindowImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        getServices().add(new WindowCoveringService(this));
+        getServices().add(new WindowService(this));
     }
 
     @Override
@@ -58,7 +58,7 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryI
 
     @Override
     @NonNullByDefault({})
-    public CompletableFuture<Void> setTargetPosition(int value) {
+    public CompletableFuture<Void> setTargetPosition(Integer value) {
         return super.setTargetPosition(value);
     }
 
