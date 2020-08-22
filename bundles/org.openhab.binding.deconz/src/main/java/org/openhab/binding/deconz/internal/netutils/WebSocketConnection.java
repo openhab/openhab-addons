@@ -13,8 +13,8 @@
 package org.openhab.binding.deconz.internal.netutils;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.api.Session;
@@ -46,8 +46,8 @@ public class WebSocketConnection {
 
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
-    private final Map<String, WebSocketMessageListener> sensorListener = new HashMap<>();
-    private final Map<String, WebSocketMessageListener> lightListener = new HashMap<>();
+    private final Map<String, WebSocketMessageListener> sensorListener = new ConcurrentHashMap<>();
+    private final Map<String, WebSocketMessageListener> lightListener = new ConcurrentHashMap<>();
     private final Gson gson;
     private boolean connected = false;
 
