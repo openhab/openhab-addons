@@ -42,7 +42,7 @@ public class MonopriceAudioReaderThread extends Thread {
      * @param uid unique identifier from the connector
      */
     public MonopriceAudioReaderThread(MonopriceAudioConnector connector, String uid) {
-        super(MonopriceAudioBindingConstants.BINDING_ID + "-" + uid);
+        super("OH-binding-" + MonopriceAudioBindingConstants.BINDING_ID + "-" + uid);
         this.connector = connector;
         setDaemon(true);
     }

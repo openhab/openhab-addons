@@ -39,8 +39,8 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioSerialConnector.class);
 
-    private String serialPortName;
-    private SerialPortManager serialPortManager;
+    private final String serialPortName;
+    private final SerialPortManager serialPortManager;
 
     private @Nullable SerialPort serialPort;
 

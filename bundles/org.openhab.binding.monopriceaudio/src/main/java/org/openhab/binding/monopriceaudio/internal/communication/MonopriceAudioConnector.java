@@ -60,7 +60,7 @@ public abstract class MonopriceAudioConnector {
 
     private @Nullable Thread readerThread;
 
-    private List<MonopriceAudioMessageEventListener> listeners = new ArrayList<>();
+    private final List<MonopriceAudioMessageEventListener> listeners = new ArrayList<>();
 
     /**
      * Get whether the connection is established or not

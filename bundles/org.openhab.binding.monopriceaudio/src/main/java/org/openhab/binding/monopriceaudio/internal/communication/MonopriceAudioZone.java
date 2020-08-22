@@ -47,15 +47,15 @@ public enum MonopriceAudioZone {
     ZONE17("35"),
     ZONE18("36");
 
-    private String zoneId;
+    private final String zoneId;
 
     // make a list of all valid zone names
-    public static final List<String> VALID_ZONES = Arrays.stream(values()).filter(z -> z != ALL).map(z -> z.name())
-            .collect(Collectors.toList());
+    public static final List<String> VALID_ZONES = Arrays.stream(values()).filter(z -> z != ALL)
+            .map(MonopriceAudioZone::name).collect(Collectors.toList());
 
     // make a list of all valid zone ids
     public static final List<String> VALID_ZONE_IDS = Arrays.stream(values()).filter(z -> z != ALL)
-            .map(z -> z.getZoneId()).collect(Collectors.toList());
+            .map(MonopriceAudioZone::getZoneId).collect(Collectors.toList());
 
     public static MonopriceAudioZone fromZoneId(String zoneId) throws MonopriceAudioException {
         return Arrays.stream(values()).filter(z -> z.zoneId.equalsIgnoreCase(zoneId)).findFirst()

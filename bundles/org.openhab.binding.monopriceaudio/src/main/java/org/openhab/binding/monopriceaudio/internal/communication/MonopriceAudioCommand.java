@@ -31,7 +31,7 @@ public enum MonopriceAudioCommand {
     BALANCE("BL"),
     DND("DT");
 
-    private String value;
+    private final String value;
 
     MonopriceAudioCommand(String value) {
         this.value = value;
