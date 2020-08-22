@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.resol", service = ThingHandlerFactory.class)
 public class ResolHandlerFactory extends BaseThingHandlerFactory {
 
-    private Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(ResolHandlerFactory.class);
 
     private @Nullable LocaleProvider localeProvider;
 

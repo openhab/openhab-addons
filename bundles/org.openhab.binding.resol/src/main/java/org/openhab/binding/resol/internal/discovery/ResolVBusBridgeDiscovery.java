@@ -14,6 +14,7 @@ package org.openhab.binding.resol.internal.discovery;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,11 +55,11 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
 
         @Override
         public void run() {
-            logger.trace("Start adapter discovery ");
-            logger.debug("Send broadcast message");
+            logger.trace("Start adapter discovery...");
 
             try {
-                InetAddress broadcastAddress = InetAddress.getByName("255.255.255.255");
+                InetAddress broadcastAddress = InetAddress
+                        .getByAddress(new byte[] { (byte) 255, (byte) 255, (byte) 255, (byte) 255 });
 
                 TcpDataSource[] dataSources = TcpDataSourceProvider.discoverDataSources(broadcastAddress, 3, 500,
                         false);
@@ -81,8 +82,8 @@ public class ResolVBusBridgeDiscovery extends AbstractDiscoveryService {
                     }
 
                 }
-            } catch (Exception e) {
-                logger.debug("No VBusLAN adapter found!");
+            } catch (UnknownHostException e) {
+                logger.debug("Could not resolve IPv4 broadcast address");
             }
         }
     };

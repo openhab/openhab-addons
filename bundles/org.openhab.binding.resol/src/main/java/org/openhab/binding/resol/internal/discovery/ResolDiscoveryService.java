@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ResolDiscoveryService extends AbstractDiscoveryService {
 
-    private Logger logger = LoggerFactory.getLogger(ResolDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(ResolDiscoveryService.class);
 
     private ResolBridgeHandler resolBridgeHandler;
 

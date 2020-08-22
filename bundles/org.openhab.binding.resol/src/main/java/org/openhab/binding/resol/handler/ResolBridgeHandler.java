@@ -62,7 +62,7 @@ import de.resol.vbus.TcpDataSourceProvider;
 @NonNullByDefault
 public class ResolBridgeHandler extends BaseBridgeHandler {
 
-    private Logger logger = LoggerFactory.getLogger(ResolBridgeHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(ResolBridgeHandler.class);
 
     private Language lang;
     private Locale locale;
@@ -103,6 +103,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     public void updateStatus(ThingStatus status) {
         super.updateStatus(status);
         updateThingHandlersStatus(status);
+        // TODO: Are you aware that the Things go offline automatically, when the bridge goes offline?
     }
 
     public void updateStatus() {
@@ -185,223 +186,252 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
             if (!isConnected) {
                 try {
                     dataSource = TcpDataSourceProvider.fetchInformation(InetAddress.getByName(ipAddress), 500);
-                    dataSource.setLivePassword(password);
-                    tcpConnection = dataSource.connectLive(0, 0x0020);
+                    if (dataSource != null) {
+                        dataSource.setLivePassword(password);
+                    }
+                } catch (IOException e) {
+                    isConnected = false;
+                    unconnectedReason = e.getMessage();
+                }
+                if (dataSource != null) {
+                    try {
+                        tcpConnection = dataSource.connectLive(0, 0x0020);
+                    } catch (Exception e) {
+                        // this generic Exception catch is required, as TcpDataSource.connectLive throws this generic
+                        // type
+                        isConnected = false;
+                        unconnectedReason = e.getMessage();
+                    }
 
-                    Thread.sleep(5000); // Wait
-                                        // for
-                                        // connection
-                                        // .
-
-                    // Add a listener to the Connection to monitor state changes and
-                    // add incoming packets to the HeaderSetConsolidator
-                    tcpConnection.addListener(new ConnectionAdapter() {
-
-                        @Override
-                        public void connectionStateChanged(@Nullable Connection connection) {
+                    if (tcpConnection != null) {
+                        try {
+                            Thread.sleep(5000); // Wait
+                                                // for
+                                                // connection
+                                                // .
+                        } catch (InterruptedException e) {
                             isConnected = (tcpConnection.getConnectionState()
                                     .equals(Connection.ConnectionState.CONNECTED));
-                            logger.trace("Connection state changed to: {} isConnected = {}",
-                                    tcpConnection.getConnectionState().toString(), isConnected);
-                            if (isConnected) {
-                                unconnectedReason = "";
-                            } else {
-                                unconnectedReason = "TCP Connection problem";
-                            }
-                            updateStatus();
                         }
 
-                        @Override
-                        public void packetReceived(@Nullable Connection connection, @Nullable Packet packet) {
-                            String thingType = spec.getSourceDeviceSpec(packet).getName(); // use En here
+                        // Add a listener to the Connection to monitor state changes and
+                        // add incoming packets to the HeaderSetConsolidator
+                        tcpConnection.addListener(new ConnectionAdapter() {
 
-                            thingType = thingType.replace(" [", "-");
-                            thingType = thingType.replace("]", "");
-                            thingType = thingType.replace(" #", "-");
-                            thingType = thingType.replace(" ", "_");
-                            thingType = thingType.replace("/", "_");
-                            thingType = thingType.replaceAll("[^A-Za-z0-9_-]+", "_");
-
-                            /*
-                             * It would be nice for the combination of MX and EM devices to filter only those with a
-                             * peerAddress of 0x10
-                             * because the MX redelivers the data from the EM to the DFA
-                             * See https://github.com/ramack/openhab2-addons/issues/23 to see why this is not so nice.
-                             */
-                            /* if (spec.getSourceDeviceSpec(packet).getPeerAddress() == 0x10) { */
-                            logger.trace("Received Data from {} (0x{}/0x{}) naming it {}",
-                                    spec.getSourceDeviceSpec(packet).getName(lang),
-                                    Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
-                                    Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()), thingType);
-                            /*
-                             * } else {
-                             * logger.trace("Ignoring Data from {} (0x{}/0x{}) naming it {}",
-                             * spec.getSourceDeviceSpec(packet).getName(lang),
-                             * Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
-                             * Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()),
-                             * thingType);
-                             * return;
-                             * }
-                             */
-                            // TODO: if the thing gets deleted, we should also remove it from this list...
-                            if (!availableDevices.contains(thingType)) {
-                                // register new device
-                                createThing(ResolBindingConstants.THING_ID_DEVICE, thingType,
-                                        spec.getSourceDeviceSpec(packet).getName(lang));
-                                availableDevices.add(thingType);
+                            @Override
+                            public void connectionStateChanged(@Nullable Connection connection) {
+                                isConnected = (tcpConnection.getConnectionState()
+                                        .equals(Connection.ConnectionState.CONNECTED));
+                                logger.trace("Connection state changed to: {} isConnected = {}",
+                                        tcpConnection.getConnectionState().toString(), isConnected);
+                                if (isConnected) {
+                                    unconnectedReason = "";
+                                } else {
+                                    unconnectedReason = "TCP Connection problem";
+                                }
+                                updateStatus();
                             }
 
-                            PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
-                            for (PacketFieldValue pfv : pfvs) {
-                                logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(),
-                                        pfv.getName(lang), pfv.getRawValueDouble(),
-                                        pfv.formatTextValue(null, Locale.getDefault()));
-                                ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
-                                if (thingHandler != null) {
-                                    String channelId = pfv.getName(); // use English here
-                                    channelId = channelId.replace(" [", "-");
-                                    channelId = channelId.replace("]", "");
-                                    channelId = channelId.replace("(", "-");
-                                    channelId = channelId.replace(")", "");
-                                    channelId = channelId.replace(" #", "-");
-                                    channelId = channelId.replaceAll("[^A-Za-z0-9_-]+", "_");
+                            @Override
+                            public void packetReceived(@Nullable Connection connection, @Nullable Packet packet) {
+                                String thingType = spec.getSourceDeviceSpec(packet).getName(); // use En here
 
-                                    ChannelTypeUID channelTypeUID;
+                                thingType = thingType.replace(" [", "-");
+                                thingType = thingType.replace("]", "");
+                                thingType = thingType.replace(" #", "-");
+                                thingType = thingType.replace(" ", "_");
+                                thingType = thingType.replace("/", "_");
+                                thingType = thingType.replaceAll("[^A-Za-z0-9_-]+", "_");
 
-                                    if (pfv.getPacketFieldSpec().getUnit().getUnitId() >= 0) {
-                                        channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                                pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
-                                        // TODO: add precision
-                                        // TODO: add special handling of unit percent as PercentType
-                                    } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Number) {
-                                        if (pfv.getEnumVariant() != null) {
-                                            // Do not auto-link the numeric value, if there is an enum for it
+                                /*
+                                 * It would be nice for the combination of MX and EM devices to filter only those with a
+                                 * peerAddress of 0x10
+                                 * because the MX redelivers the data from the EM to the DFA
+                                 * See https://github.com/ramack/openhab2-addons/issues/23 to see why this is not so
+                                 * nice.
+                                 */
+                                /* if (spec.getSourceDeviceSpec(packet).getPeerAddress() == 0x10) { */
+                                logger.trace("Received Data from {} (0x{}/0x{}) naming it {}",
+                                        spec.getSourceDeviceSpec(packet).getName(lang),
+                                        Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
+                                        Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()),
+                                        thingType);
+                                /*
+                                 * } else {
+                                 * logger.trace("Ignoring Data from {} (0x{}/0x{}) naming it {}",
+                                 * spec.getSourceDeviceSpec(packet).getName(lang),
+                                 * Integer.toHexString(spec.getSourceDeviceSpec(packet).getSelfAddress()),
+                                 * Integer.toHexString(spec.getSourceDeviceSpec(packet).getPeerAddress()),
+                                 * thingType);
+                                 * return;
+                                 * }
+                                 */
+                                // TODO: if the thing gets deleted, we should also remove it from this list...
+                                if (!availableDevices.contains(thingType)) {
+                                    // register new device
+                                    createThing(ResolBindingConstants.THING_ID_DEVICE, thingType,
+                                            spec.getSourceDeviceSpec(packet).getName(lang));
+                                    availableDevices.add(thingType);
+                                }
+
+                                PacketFieldValue[] pfvs = spec.getPacketFieldValuesForHeaders(new Packet[] { packet });
+                                for (PacketFieldValue pfv : pfvs) {
+                                    logger.trace("Id: {}, Name: {}, Raw: {}, Text: {}", pfv.getPacketFieldId(),
+                                            pfv.getName(lang), pfv.getRawValueDouble(),
+                                            pfv.formatTextValue(null, Locale.getDefault()));
+                                    ResolThingHandler thingHandler = thingHandlerMap.get(thingType);
+                                    if (thingHandler != null) {
+                                        String channelId = pfv.getName(); // use English here
+                                        channelId = channelId.replace(" [", "-");
+                                        channelId = channelId.replace("]", "");
+                                        channelId = channelId.replace("(", "-");
+                                        channelId = channelId.replace(")", "");
+                                        channelId = channelId.replace(" #", "-");
+                                        channelId = channelId.replaceAll("[^A-Za-z0-9_-]+", "_");
+
+                                        ChannelTypeUID channelTypeUID;
+
+                                        if (pfv.getPacketFieldSpec().getUnit().getUnitId() >= 0) {
                                             channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                                    "NoneHidden");
+                                                    pfv.getPacketFieldSpec().getUnit().getUnitCodeText());
+                                            // TODO: add precision
+                                            // TODO: add special handling of unit percent as PercentType
+                                        } else if (pfv.getPacketFieldSpec()
+                                                .getType() == SpecificationFile.Type.Number) {
+                                            if (pfv.getEnumVariant() != null) {
+                                                // Do not auto-link the numeric value, if there is an enum for it
+                                                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                                        "NoneHidden");
+                                            } else {
+                                                channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                                        "None");
+                                            }
+
+                                        } else if (pfv.getPacketFieldSpec()
+                                                .getType() == SpecificationFile.Type.DateTime) {
+                                            channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                                    "DateTime");
+                                            /*
+                                             * so far there seems no reasonable type for WeekDay and Time types, so we
+                                             * just
+                                             * make them strings
+                                             */
+                                            /*
+                                             * } else if (pfv.getPacketFieldSpec().getType() ==
+                                             * SpecificationFile.Type.WeekTime) {
+                                             * channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                             * "WeekTime");
+                                             * } else if (pfv.getPacketFieldSpec().getType() ==
+                                             * SpecificationFile.Type.Time)
+                                             * {
+                                             * channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
+                                             * "Time");
+                                             */
                                         } else {
                                             channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
                                                     "None");
                                         }
+                                        // TODO: use StringListType for interpreted String lists like Operation Status?
 
-                                    } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.DateTime) {
-                                        channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                                "DateTime");
-                                        /*
-                                         * so far there seems no reasonable type for WeekDay and Time types, so we just
-                                         * make them strings
-                                         */
-                                        /*
-                                         * } else if (pfv.getPacketFieldSpec().getType() ==
-                                         * SpecificationFile.Type.WeekTime) {
-                                         * channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                         * "WeekTime");
-                                         * } else if (pfv.getPacketFieldSpec().getType() == SpecificationFile.Type.Time)
-                                         * {
-                                         * channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID,
-                                         * "Time");
-                                         */
-                                    } else {
-                                        channelTypeUID = new ChannelTypeUID(ResolBindingConstants.BINDING_ID, "None");
-                                    }
-                                    // TODO: use StringListType for interpreted String lists like Operation Status?
+                                        String acceptedItemType = "String";
 
-                                    String acceptedItemType = "String";
-
-                                    Thing thing = thingHandler.getThing();
-                                    switch (pfv.getPacketFieldSpec().getType()) {
-                                        case DateTime:
-                                            acceptedItemType = "DateTime";
-                                            break;
-                                        case WeekTime:
-                                        case Number:
-                                            acceptedItemType = "Number";
-                                            break;
-                                        case Time:
-                                        default:
-                                            acceptedItemType = "String";
-                                            break;
-                                    }
-                                    if (thing.getChannel(channelId) == null && pfv.getRawValueDouble() != null) {
-                                        ThingBuilder thingBuilder = thingHandler.editThing();
-
-                                        ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-                                        Channel channel = ChannelBuilder.create(channelUID, acceptedItemType)
-                                                .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
-
-                                        thingBuilder.withChannel(channel).withLabel(thing.getLabel());
-
-                                        thingHandler.updateThing(thingBuilder.build());
-                                    }
-
-                                    switch (pfv.getPacketFieldSpec().getType()) {
-                                        case Number:
-                                            Double dd = pfv.getRawValueDouble();
-                                            if (dd != null) {
-                                                if (isSpecialValue(dd)) {
-                                                    /* some error occurred in the measurement - ignore the value */
-                                                } else {
-                                                    thingHandler.setChannelValue(channelId, dd.doubleValue());
-                                                }
-                                            } else {
-                                                /*
-                                                 * field not available in this packet, e. g. old firmware version
-                                                 * not (yet) transmitting it
-                                                 */
-                                            }
-                                            break;
-                                        case DateTime:
-                                            thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
-                                            break;
-                                        case WeekTime:
-                                        case Time:
-                                        default:
-                                            thingHandler.setChannelValue(channelId,
-                                                    pfv.formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
-                                    }
-
-                                    if (pfv.getEnumVariant() != null) {
-                                        // if we have an enum, we additionally add that as channel
-                                        String enumChannelId = channelId + "-str";
-                                        if (thing.getChannel(enumChannelId) == null) {
-                                            ChannelTypeUID enumChannelTypeUID = new ChannelTypeUID(
-                                                    ResolBindingConstants.BINDING_ID, "None");
+                                        Thing thing = thingHandler.getThing();
+                                        switch (pfv.getPacketFieldSpec().getType()) {
+                                            case DateTime:
+                                                acceptedItemType = "DateTime";
+                                                break;
+                                            case WeekTime:
+                                            case Number:
+                                                acceptedItemType = "Number";
+                                                break;
+                                            case Time:
+                                            default:
+                                                acceptedItemType = "String";
+                                                break;
+                                        }
+                                        if (thing.getChannel(channelId) == null && pfv.getRawValueDouble() != null) {
                                             ThingBuilder thingBuilder = thingHandler.editThing();
 
-                                            ChannelUID enumChannelUID = new ChannelUID(thing.getUID(), enumChannelId);
-                                            Channel channel = ChannelBuilder.create(enumChannelUID, "String")
-                                                    .withType(enumChannelTypeUID).withLabel(pfv.getName(lang)).build();
+                                            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
+                                            Channel channel = ChannelBuilder.create(channelUID, acceptedItemType)
+                                                    .withType(channelTypeUID).withLabel(pfv.getName(lang)).build();
 
                                             thingBuilder.withChannel(channel).withLabel(thing.getLabel());
 
                                             thingHandler.updateThing(thingBuilder.build());
                                         }
 
-                                        thingHandler.setChannelValue(enumChannelId, pfv.getEnumVariant().getText(lang));
+                                        switch (pfv.getPacketFieldSpec().getType()) {
+                                            case Number:
+                                                Double dd = pfv.getRawValueDouble();
+                                                if (dd != null) {
+                                                    if (isSpecialValue(dd)) {
+                                                        /* some error occurred in the measurement - ignore the value */
+                                                    } else {
+                                                        thingHandler.setChannelValue(channelId, dd.doubleValue());
+                                                    }
+                                                } else {
+                                                    /*
+                                                     * field not available in this packet, e. g. old firmware version
+                                                     * not (yet) transmitting it
+                                                     */
+                                                }
+                                                break;
+                                            case DateTime:
+                                                thingHandler.setChannelValue(channelId, pfv.getRawValueDate());
+                                                break;
+                                            case WeekTime:
+                                            case Time:
+                                            default:
+                                                thingHandler.setChannelValue(channelId, pfv
+                                                        .formatTextValue(pfv.getPacketFieldSpec().getUnit(), locale));
+                                        }
+
+                                        if (pfv.getEnumVariant() != null) {
+                                            // if we have an enum, we additionally add that as channel
+                                            String enumChannelId = channelId + "-str";
+                                            if (thing.getChannel(enumChannelId) == null) {
+                                                ChannelTypeUID enumChannelTypeUID = new ChannelTypeUID(
+                                                        ResolBindingConstants.BINDING_ID, "None");
+                                                ThingBuilder thingBuilder = thingHandler.editThing();
+
+                                                ChannelUID enumChannelUID = new ChannelUID(thing.getUID(),
+                                                        enumChannelId);
+                                                Channel channel = ChannelBuilder.create(enumChannelUID, "String")
+                                                        .withType(enumChannelTypeUID).withLabel(pfv.getName(lang))
+                                                        .build();
+
+                                                thingBuilder.withChannel(channel).withLabel(thing.getLabel());
+
+                                                thingHandler.updateThing(thingBuilder.build());
+                                            }
+
+                                            thingHandler.setChannelValue(enumChannelId,
+                                                    pfv.getEnumVariant().getText(lang));
+                                        }
+                                    } else {
+                                        logger.trace("ThingHandler for {} not registered.", thingType);
                                     }
-                                } else {
-                                    logger.trace("ThingHandler for {} not registered.", thingType);
                                 }
                             }
-                        }
-                    });
-
-                    // Establish the connection
-                    tcpConnection.connect();
-                    Thread.sleep(1000); // after a reconnect wait 1 sec
-                    isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
-                } catch (IOException e) {
-                    logger.trace("Connection failed", e);
-                    unconnectedReason = e.getMessage(); // TODO: Better include the exception's message and remove
-                                                        // logging the stack trace. As logging the stack trace, when the
-                                                        // network fails seems a bit unreasonable.
-                    isConnected = false;
-                } catch (InterruptedException e) {
-                    isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
-                } catch (Exception e) { // TODO: You should specify the concrete exception you want to catch, since
-                                        // catching Exception catches also all runtime exceptions.
-                    isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
-                    unconnectedReason = e.getMessage();
+                        });
+                    }
                 }
+                // Establish the connection
+                try {
+                    tcpConnection.connect();
+                } catch (IOException e) {
+                    logger.trace("Connection failed", e.getMessage());
+                    unconnectedReason = e.getMessage();
+                    isConnected = false;
+                }
+
+                try {
+                    Thread.sleep(1000);// after a reconnect wait 1 sec
+                } catch (InterruptedException e) {
+                    /* ignore interruptions */
+                }
+                isConnected = (tcpConnection.getConnectionState().equals(Connection.ConnectionState.CONNECTED));
                 if (!isConnected) {
                     logger.debug("Cannot establish connection to {} ({})", ipAddress, unconnectedReason);
                 } else {
