@@ -110,21 +110,27 @@ public class WebSocketConnection {
     @SuppressWarnings("null")
     @OnWebSocketMessage
     public void onMessage(String message) {
+        logger.trace("Raw data received by websocket: {}", message);
         DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
         switch (changedMessage.r) {
             case "sensors":
                 WebSocketMessageListener listener = sensorListener.get(changedMessage.id);
                 if (listener != null) {
                     listener.messageReceived(changedMessage.id, gson.fromJson(message, SensorMessage.class));
+                } else {
+                    logger.trace("Couldn't find sensor listener for id {}", changedMessage.id);
                 }
                 break;
             case "lights":
                 listener = lightListener.get(changedMessage.id);
                 if (listener != null) {
                     listener.messageReceived(changedMessage.id, gson.fromJson(message, LightMessage.class));
+                } else {
+                    logger.trace("Couldn't find light listener for id {}", changedMessage.id);
                 }
                 break;
             default:
+                logger.debug("Unknown message type: {}", changedMessage.r);
         }
     }
 
