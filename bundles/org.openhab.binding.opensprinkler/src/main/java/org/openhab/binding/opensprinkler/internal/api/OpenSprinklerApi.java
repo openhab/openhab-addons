@@ -101,6 +101,15 @@ public interface OpenSprinklerApi {
     public abstract int currentDraw() throws CommunicationApiException, NoCurrentDrawSensorException;
 
     /**
+     * Returns the water level in %.
+     *
+     * @return waterLevel in %
+     * @throws CommunicationApiException
+     * @throws
+     */
+    public abstract int waterLevel() throws CommunicationApiException;
+
+    /**
      * Returns the number of total stations that are controllable from the OpenSprinkler
      * device.
      *

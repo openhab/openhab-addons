@@ -101,7 +101,7 @@
 		<label>Switch</label>
 		<description>On/Off type action in Niko Home Control</description>
 		<channels>
-			<channel id="switch" typeId="switch"/>
+			<channel id="switch" typeId="system.power"/>
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
@@ -119,7 +119,7 @@
 		<label>Dimmer</label>
 		<description>Dimmer type action in Niko Home Control</description>
 		<channels>
-			<channel id="brightness" typeId="brightness"/>
+			<channel id="brightness" typeId="system.brightness"/>
 		</channels>
 		<config-description>
 			<parameter name="actionId" type="text" required="true">
@@ -205,18 +205,6 @@
 		<description>Pushbutton control for action in Niko Home Control</description>
 		<category>Switch</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<description>Switch control for action in Niko Home Control</description>
-		<category>Switch</category>
-	</channel-type>
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<description>Brightness control for dimmer action in Niko Home Control</description>
-		<category>DimmableLight</category>
 	</channel-type>
 	<channel-type id="rollershutter">
 		<item-type>Rollershutter</item-type>

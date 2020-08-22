@@ -683,7 +683,9 @@ public class AccountServlet extends HttpServlet {
         String resultHtml = html.replace("action=\"/", "action=\"" + servletUrl + "/")
                 .replace("action=\"&#x2F;", "action=\"" + servletUrl + "/")
                 .replace("https://www." + amazonSite + "/", servletUrl + "/")
+                .replace("https://www." + amazonSite + ":443" + "/", servletUrl + "/")
                 .replace("https:&#x2F;&#x2F;www." + amazonSite + "&#x2F;", servletUrl + "/")
+                .replace("https:&#x2F;&#x2F;www." + amazonSite + ":443" + "&#x2F;", servletUrl + "/")
                 .replace("http://www." + amazonSite + "/", servletUrl + "/")
                 .replace("http:&#x2F;&#x2F;www." + amazonSite + "&#x2F;", servletUrl + "/");
 

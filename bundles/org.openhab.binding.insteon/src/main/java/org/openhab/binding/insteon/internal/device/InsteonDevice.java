@@ -74,6 +74,7 @@ public class InsteonDevice {
     private boolean hasModemDBEntry = false;
     private DeviceStatus status = DeviceStatus.INITIALIZED;
     private Map<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
+    private Map<String, @Nullable Object> deviceConfigMap = new HashMap<String, @Nullable Object>();
 
     /**
      * Constructor
@@ -191,7 +192,15 @@ public class InsteonDevice {
         synchronized (mrequestQueue) {
             featureQueried = f;
         }
-    };
+    }
+
+    public void setDeviceConfigMap(Map<String, @Nullable Object> deviceConfigMap) {
+        this.deviceConfigMap = deviceConfigMap;
+    }
+
+    public Map<String, @Nullable Object> getDeviceConfigMap() {
+        return deviceConfigMap;
+    }
 
     public @Nullable DeviceFeature getFeatureQueried() {
         synchronized (mrequestQueue) {

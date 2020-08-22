@@ -21,6 +21,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.modbus.discovery.internal.ModbusEndpointDiscoveryService;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.binding.modbus.internal.config.ModbusSerialConfiguration;
 import org.openhab.io.transport.modbus.ModbusManager;
@@ -94,10 +95,10 @@ public class ModbusSerialThingHandler
     }
 
     @Override
-    public int getSlaveId() {
+    public int getSlaveId() throws EndpointNotInitializedException {
         ModbusSerialConfiguration config = this.config;
         if (config == null) {
-            throw new IllegalStateException("Poller not configured, but slave id is queried!");
+            throw new EndpointNotInitializedException();
         }
         return config.getId();
     }

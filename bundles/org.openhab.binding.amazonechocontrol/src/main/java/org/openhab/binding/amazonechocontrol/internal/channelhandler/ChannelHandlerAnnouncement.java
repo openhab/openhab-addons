@@ -27,12 +27,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link ChannelHandlerAnnouncement} is responsible for the announcement channel
+ * The {@link ChannelHandlerAnnouncement} is responsible for the announcement
+ * channel
  *
  * @author Michael Geramb - Initial contribution
  */
 @NonNullByDefault
 public class ChannelHandlerAnnouncement extends ChannelHandler {
+
     private static final String CHANNEL_NAME = "announcement";
 
     protected final IEchoThingHandler thingHandler;
@@ -64,7 +66,7 @@ public class ChannelHandlerAnnouncement extends ChannelHandler {
                             title = request.title;
                             body = request.body;
                             if (body == null) {
-                                body = "";
+                                body = speak;
                             }
                             Boolean sound = request.sound;
                             if (sound != null) {

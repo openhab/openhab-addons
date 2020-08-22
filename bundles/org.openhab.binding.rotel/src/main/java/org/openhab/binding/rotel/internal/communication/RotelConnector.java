@@ -186,6 +186,7 @@ public abstract class RotelConnector {
     /** true if the connection is established, false if not */
     private boolean connected;
 
+    protected String readerThreadName;
     private @Nullable Thread readerThread;
 
     private List<RotelMessageEventListener> listeners = new ArrayList<>();
@@ -221,13 +222,15 @@ public abstract class RotelConnector {
      * @param model the Rotel model in use
      * @param protocol the protocol to be used
      * @param simu whether the communication is simulated or real
+     * @param readerThreadName the name of thread to be created
      */
     public RotelConnector(RotelModel model, RotelProtocol protocol, Map<RotelSource, String> sourcesLabels,
-            boolean simu) {
+            boolean simu, String readerThreadName) {
         this.model = model;
         this.protocol = protocol;
         this.sourcesLabels = sourcesLabels;
         this.simu = simu;
+        this.readerThreadName = readerThreadName;
     }
 
     /**

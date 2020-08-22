@@ -206,7 +206,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
         updateState(CHANNEL_MEASURED, new QuantityType<>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
-        long overruletime = nhcThermostat.getRemainingOverruletime();
+        int overruletime = nhcThermostat.getRemainingOverruletime();
         updateState(CHANNEL_OVERRULETIME, new DecimalType(overruletime));
         // refresh the remaining time every minute
         scheduleRefreshOverruletime(nhcThermostat);
@@ -240,7 +240,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
-            long remainingTime = nhcThermostat.getRemainingOverruletime();
+            int remainingTime = nhcThermostat.getRemainingOverruletime();
             updateState(CHANNEL_OVERRULETIME, new DecimalType(remainingTime));
             if (remainingTime <= 0) {
                 cancelRefreshTimer();

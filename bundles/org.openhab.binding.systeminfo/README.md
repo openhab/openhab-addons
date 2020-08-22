@@ -177,7 +177,7 @@ OSHI project has a good support and regularly updates the library with fixes to 
 
 In order to update the version used in the binding, follow these easy steps:
 
--   Go to the [OSHI github repo](https://github.com/oshi/oshi) and download the newest version available of the module oshi-core or download the jar from the [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Coshi-). Check if the versions of the OSHI dependencies as well (jna and jna-platform) are changed;
+-   Go to the [OSHI GitHub repo](https://github.com/oshi/oshi) and download the newest version available of the module oshi-core or download the jar from the [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Coshi-). Check if the versions of the OSHI dependencies as well (jna and jna-platform) are changed;
 -   Replace the jars in lib folder;
 -   Modify the .classpath file with the new versions of the jars;
 -   Modify the header Bundle-ClassPath in the META-INF/MANIFEST.MF.

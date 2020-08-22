@@ -40,6 +40,7 @@ public class HomematicConstants {
     public static final String CHANNEL_TYPE_RAINDETECTOR = "RAINDETECTOR";
     public static final String CHANNEL_TYPE_POWERMETER = "POWERMETER";
     public static final String CHANNEL_TYPE_SHUTTER_CONTACT = "SHUTTER_CONTACT";
+    public static final String CHANNEL_TYPE_TILT_SENSOR = "TILT_SENSOR";
     public static final String CHANNEL_TYPE_SENSOR = "SENSOR";
     public static final String CHANNEL_TYPE_BLIND = "BLIND";
     public static final String CHANNEL_TYPE_WINMATIC = "WINMATIC";
@@ -47,6 +48,8 @@ public class HomematicConstants {
     public static final String CHANNEL_TYPE_JALOUSIE = "JALOUSIE";
     public static final String CHANNEL_TYPE_SHUTTER_TRANSMITTER = "SHUTTER_TRANSMITTER";
     public static final String CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER = "SHUTTER_VIRTUAL_RECEIVER";
+    public static final String CHANNEL_TYPE_BLIND_TRANSMITTER = "BLIND_TRANSMITTER";
+    public static final String CHANNEL_TYPE_BLIND_VIRTUAL_RECEIVER = "BLIND_VIRTUAL_RECEIVER";
 
     public static final String DATAPOINT_NAME_CONFIG_PENDING = "CONFIG_PENDING";
     public static final String DATAPOINT_NAME_UPDATE_PENDING = "UPDATE_PENDING";

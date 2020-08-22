@@ -19,6 +19,7 @@ Tested mowers
 | Husqvarna Automower 315 | Robonect Hx      | 0.9e, 1.0 preview         |
 | Husqvarna Automower 320 | Robonect Hx      | 1.0 Beta7a                |
 | Husqvarna Automower 420 | Robonect Hx      | 0.9e, 1.0 Beta2           |
+| Gardena SILENO city 250 | Robonect Hx      | 1.2                       |
 
 ## Discovery
 

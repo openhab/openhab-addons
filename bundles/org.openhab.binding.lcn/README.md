@@ -15,101 +15,6 @@ Bus members are inter-connected via a free wire in the standard NYM cable. Wirel
 This binding uses TCP/IP to access the LCN bus via the software LCN-PCHK (Windows/Linux) or the DIN rail device LCN-PKE.
 **This means 1 unused LCN-PCHK license or a LCN-PKE is required**
 
-## LCN Overview
-
-LCN modules and their connecting peripherals are explained in the following.
-
-### LCN Modules
-
-Active LCN components connected to the LCN bus are called *LCN modules*.
-LCN modules are addressed by their numeric id: Valid range is 5..254
-
-In larger buildings, a second topologic layer is added: *segments*.
-Valid range is 5..128 or 0 (= no segments exist) or 3 (= target all segments)
-
-LCN modules within the **same** segment can be grouped: Valid range is 5..254 or 3 (= target all groups)
-
-### LCN Firmware Versions
-
-Each LCN module has a feature-set based on its firmware version.
-This version is written as follows: \[year since 1990\]\[month\]\[day\]
-
-Each component is written in hexadecimal with 2 characters. Examples:
-
-- 090101 = 1. january 1990
-- 0D0C01 = 1. december 2003
-- 170206 = 6. feb. 2013
-
-### LCN Dimmer Outputs
-
-LCN modules support 2 to 4 dimmer output ports (number depends on firmware version).
-If the module hardware type doesn't feature physical dimmer outputs, the outputs can still be used as virtual.
-
-Status values are always in percent.
-Modules since 170206 have a 0.5%-steps resolution. Older modules have a 2%-steps resolution.
-
-The time it takes the output port to reach its setpoint is called *ramp*.
-
-### LCN Variables
-
-LCN modules support:
-
-- 3 or 12 (since 170206) analog variables for general purpose
-- 2 regulators with configurable setpoints
-- 5 or 4x4 (since 170206) thresholds (trigger levels)
-- 4 S0-input counters (since 170206, LCN-BU4L must be connected)
-
-### LCN Regulators (additions to variables)
-
-LCN modules have 2 regulators.
-Each one has a setpoint and uses one variable as its value source.
-A regulator can be locked, so that the target actuator keeps switched off, also if the value source is in control range.
-
-### LCN Thresholds
-
-LCN modules since firmware 170206 have 4 threshold registers. Each threshold register comprises 4 thresholds.
-
-A threshold register uses one variable as its value source (see [LCN Variables](#lcn-variables)).
-Arbitrary LCN commands can be send into the bus, when the value-source falls below a threshold or exceeds one.
-A threshold can be locked, so that the configured LCN command is not fired, also if the value source passes the threshold.
-
-### LCN Relays
-
-LCN modules support 8 relays. If no hardware relays are connected, the relays can still be used as virtual.
-
-### LCN Binary Sensors
-
-LCN modules support 8 binary sensors (e.g. motion detectors; hardware periphery must be connected).
-  
-### LCN LEDs (legacy name: *lamps*)
-
-12x multi-state variables can be used for logic operations or visualization (hardware periphery must be connected).
-
-Values: OFF, ON, BLINK, FLICKER
-
-### LCN Logic Operations (legacy name: *sums*)
-
-4x multi-state variables each representing the result of a logic operation of the associated LEDs.
-
-Values: NOT (all LEDs off), OR (some LEDs on), AND (all LEDs on)
-
-### LCN Keys
-
-LCN keys are data-points in the module with bound commands.
-LCN modules support 3 ("A-C") or 4 ("A-D") key-tables (number depends on firmware version).
-
-Each key-table holds 8 keys. Examples: A1, A7, D8
-
-Each key has 3 command types: HIT(press), MAKE(long press), BREAK(long press release)
-
-These keys can be locked. The bound (LCN-)commands cannot be executed, then.
-
-### LCN Access Control & Remote Controls
-
-LCN can interface several transponder readers and finger print sensors, used for access control.
-
-Remote controls can not only be used for triggering commands, but also for access control, by evaluating the transmitted serial number.
-
 ## Supported Things
 
 ### Thing: LCN Module
@@ -121,7 +26,7 @@ No known features/changes that need special handling were added until now (2020)
 Modules with older and newer firmware should work, too.
 The module hardware types (e.g. LCN-SH, LCN-HU, LCN-UPP, ...) are compatible to each other and can therefore be handled all in the same way.
 
-Thing ID: `module`
+Thing Type ID: `module`
 
 | Name        | Description                                                    | Type    | Required |
 |-------------|----------------------------------------------------------------|---------|----------|
@@ -131,7 +36,7 @@ Thing ID: `module`
 openHAB's discovery function can be used to add LCN modules automatically.
 See [Discover LCN Modules](#discover-lcn-modules).
 
-### Thing: LCN PCK Gateway
+### Bridge: LCN PCK Gateway
 
 PCK is the protocol spoken over TCP/IP with a PCK gateway to communicate with the LCN bus.
 Examples for PCK gateways are the *LCN-PCHK* software running on Windows or Linux and the DIN rail mounting device *LCN-PKE*.
@@ -143,7 +48,7 @@ Several PCK gateways can be added to openHAB to control multiple LCN busses in d
 The minimum recommended version is LCN-PCHK 2.8 (older versions will also work, but lack some functionality).
 Visit [https://www.lcn.eu](https://www.lcn.eu) for updates.
 
-Thing ID: `pckGateway`
+Thing Type ID: `pckGateway`
 
 | Name        | Description                                                                                                | Type    | Required |
 |-------------|------------------------------------------------------------------------------------------------------------|---------|----------|
@@ -172,7 +77,7 @@ To send commands to an LCN group, the group needs to be added to openHAB as a *T
 One LCN module within the group is used to represent the status of the whole group.
 For example, when a Dimmer Output is controlled via a LCN group *Thing*, openHAB will always visualize the state of the Dimmer Output of the chosen module. The states of the other modules in the group are ignored for visualization.
 
-Thing ID: `group`
+Thing Type ID: `group`
 
 | Name        | Description                                                                                                                                  | Type    | Required |
 |-------------|----------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|
@@ -186,12 +91,12 @@ The `groupId` must match the previously configured group number in the programmi
 
 ### Discover LCN Modules
 
-Basic data of LCN modules can be read out by openHAB.
-To do so, simply start openHAB's discovery.
+Basic data like the names of all LCN modules in the bus, can be read out by openHAB's discovery function.
 
 If not all LCN modules get listed on the first run, click on the refresh button to start another scan.
 
-When adding a module by discovery, the new *Thing*'s UID will be the module's serial number.
+When adding a module by discovery, the new *Thing*'s UID will be a combination of segment and module id using the following format:
+*S<segmentId>M<moduleId>* where *segmentId* and *moduleId* are formatted as three-digit numbers with leading zeros.
 
 ### Discover PCK Gateways
 
@@ -204,19 +109,22 @@ If your PCK gateway has multiple network interfaces, *LCN-PCHK* may listen on th
 
 Discovery has successfully been tested with LCN-PCHK 3.2.2 running on a Raspberry Pi with Raspbian and openHAB running on Windows 10.
 
-If discovery fails, you can add a PCK gateway manually. See [Thing: PCK Gateway](#thing-lcn-pck-gateway).
+If discovery fails, you can add a PCK gateway manually. See [Thing: PCK Gateway](#bridge-lcn-pck-gateway).
 
 Please be aware that you **have to configure** username, password and the dimmer output resolution also if you use discovery.
-See [Thing: PCK Gateway](#thing-lcn-pck-gateway).
+See [Thing: PCK Gateway](#bridge-lcn-pck-gateway).
 
 When adding a PCK gateway by discovery, the new *Thing*'s UID is the MAC address of the device, running the PCK gateway.
 
 ## Supported LCN Features and openHAB Channels
 
-The following table lists all features of LCN and their mappings to openHAB Channels. These Channels are available for the *Things* LCN module (`module`) and LCN group (`group`). The PCK gateway (`pckGateway`) has no Channels.
+The following table lists all features of LCN and their mappings to openHAB Channels.
+These Channels are available for the *Thing* LCN module (`module`).
+LCN group (`group`) has the same Channels, except status-only Channels like binary sensors or transponders.
+The PCK gateway (`pckGateway`) has no Channels.
 
 Although, there are many **Not implemented** entries, the vast majority of LCN features can be used with openHAB:<br />
-If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende Taste") can be used to hit a module's key virtually and execute an arbitrary command.
+If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende Tasten") can be used to hit a module's key virtually and execute an arbitrary command.
 
 | LCN Feature (English)           | LCN Feature (German)             | Channel                | IDs  | Type                           | Description                                                                                                                   |
 |---------------------------------|----------------------------------|------------------------|------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
@@ -244,10 +152,11 @@ If a special command is needed, the [Hit Key](#hit-key) action (German: "Sende T
 | Send Keys                       | Sende Tasten                     | N/A                    | N/A  | N/A                            | Action: "hitKey": Hits a key of a key table in an LCN module. Can be used to execute commands, not supported by this binding. |
 | Dimmer Output Control Multiple  | Mehrere Ausgänge steuern         | output                 | 1-4  | Dimmer, Switch                 | Control multiple outputs simultaneously. See below.                                                                           |
 | Transponder                     | Transponder                      | code#transponder       |      | Trigger                        | Receive transponder messages                                                                                                  |
+| Fingerprint                     | Fingerprint                      | code#fingerprint       |      | Trigger                        | Receive fingerprint code messages                                                                                                  |
 | Remote Control                  | Fernbedienung                    | code#remotecontrolkey  |      | Trigger                        | Receive commands from remote control                                                                                          |
 | Access Control                  | Zutrittskontrolle                | code#remotecontrolcode |      | Trigger                        | Receive serial numbers from remote control                                                                                    |
 | Remote Control Battery Low      | Fernbedienung Batterie schwach   | code#remotecontrolbatterylow | | Trigger                       | Triggered when the sending remote control has a low battery                                                                   |
-| Status Message                  | Statusmeldungen                  | -                      | -    | -                              | Automatically done by OpenHAB Binding                                                                                         |
+| Status Message                  | Statusmeldungen                  | -                      | -    | -                              | Automatically done by openHAB Binding                                                                                         |
 | Audio Beep                      | Audio Piepen                     | -                      | -    | -                              | Not implemented                                                                                                               |
 | Audio LCN-MRS                   | Audio LCN-MRS                    | -                      | -    | -                              | Not implemented                                                                                                               |
 | Count/Compute                   | Zählen/Rechnen                   | -                      | -    | -                              | Not implemented                                                                                                               |
@@ -280,17 +189,30 @@ S0 counter Channels need to be the pulses per kWh configured. If the value is le
 
 The Rollershutter Channels provide the boolean parameter `invertUpDown`, which can be set to 'true' if the Up/Down wires are interchanged.
 
-### Transponder
+The binary sensor Channels provide the boolean parameter `invertState`, which can be set to 'true' if the binary sensor connected uses inverted logic for signaling open/closed.
 
-LCN transponder readers can be integrated in openHAB e.g. for access control.
+### Transponder/Fingerprints
+
+LCN transponder readers or fingerprint readers can be integrated in openHAB e.g. for access control.
 The transponder function must be enabled in the module's I-port properties within *LCN-PRO*.
  
-Example: When the transponder card with the ID "12ABCD" is seen by the reader connected to LCN module "17B308349E", the item "M10_Relay7" is switched on:
+Example: When the transponder card with the ID "12ABCD" is seen by the reader connected to LCN module "S000M011", the item "M10_Relay7" is switched on:
 
 ```
 rule "My Transponder"
 when
-    Channel "lcn:module:b827ebfea4bb:17B308349E:code#transponder" triggered "12ABCD"
+    Channel "lcn:module:b827ebfea4bb:S000M011:code#transponder" triggered "12ABCD"
+then
+    M10_Relay7.sendCommand(ON)
+end
+```
+
+Example: When fingerprint with ID "AFFE12" is seen by reader connected to LCN module "S000M011", the item "M10_Relay7" is switched on:
+
+```
+rule "My Fingerprint"
+when
+    Channel "lcn:module:b827ebfea4bb:S000M011:code#fingerprint" triggered "AFFE12"
 then
     M10_Relay7.sendCommand(ON)
 end
@@ -309,7 +231,7 @@ The trigger *Channel* `lcn:module:<pckThing>:<moduleThing>:code#remotecontrolkey
 ```
 rule "Remote Control Key 3 on Layer 1 hit"
 when
-    Channel "lcn:module:b827ebfea4bb:17B3073D6A:code#remotecontrolkey" triggered "A3:HIT"
+    Channel "lcn:module:b827ebfea4bb:S000M012:code#remotecontrolkey" triggered "A3:HIT"
 then
     M10_Relay7.sendCommand(ON)
 end
@@ -324,8 +246,8 @@ The serial number of a remote control can be used for access control via the cha
 ```
 rule "Remote Control Key 3 on Layer 1 hit (only executed for serial number AB1234)"
 when
-    Channel "lcn:module:b827ebfea4bb:17B3073D6A:code#remotecontrolcode" triggered "AB1234:A3:HIT" or
-    Channel "lcn:module:b827ebfea4bb:17B3073D6A:code#remotecontrolcode" triggered "AB1234:A3:MAKE"
+    Channel "lcn:module:b827ebfea4bb:S000M012:code#remotecontrolcode" triggered "AB1234:A3:HIT" or
+    Channel "lcn:module:b827ebfea4bb:S000M012:code#remotecontrolcode" triggered "AB1234:A3:MAKE"
 then
     M10_Relay7.sendCommand(ON)
 end
@@ -344,9 +266,9 @@ The ramp parameter is not available for Color *Item*s.
 
 ```
 // Dim output 2 in 0.25s 
-Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
+Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:S000M010:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
 // Dim output 3 in 486s
-Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
+Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:S000M010:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
 ```
 
 The optional parameters *controlAllOutputs* and *controlOutputs12* can be used to control multiple outputs simultaneously.
@@ -354,12 +276,12 @@ Please note that the combination of these parameters with the *ramp* parameter i
 
 ```
 // Control outputs 1+2 simultaneously. Status of Output 1 is visualized. Only ramps of 0s or 0.25s are supported.
-Dimmer M10_Outputs12a {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlOutputs12=true]}
-Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
+Dimmer M10_Outputs12a {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlOutputs12=true]}
+Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
 // Control all outputs simultaneously. Status of Output 1 is visualized.
-Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]} // ramp only since firmware 180501
-Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp compatibility: all
-Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]} // ramp only since firmware 180501
+Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]} // ramp only since firmware 180501
+Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp compatibility: all
+Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]} // ramp only since firmware 180501
 ```
 
 ## Actions
@@ -369,7 +291,7 @@ Actions are special commands that can be sent to LCN modules or LCN groups.
 ### Hit Key
 
 This *Action* virtually hits a key of a key table in an LCN module.
-Simply spoken, OpenHab acts as a push button switch connected to an LCN module.
+Simply spoken, openHAB acts as a push button switch connected to an LCN module.
 
 This *Action* can be used to execute commands which are not natively supported by this binding.
 The function can be programmed via the software *LCN-PRO* onto a key in a module's key table.
@@ -386,7 +308,7 @@ rule "Hit key C4 hourly"
 when
     Time cron "0 0 * * * ?"
 then
-    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B4196847")
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:S000M010")
     actions.hitKey("C", 4, "HIT")
 end
 ```
@@ -411,7 +333,7 @@ rule "Send dynamic Text to GT10D hourly"
 when
     Time cron "0 0 * * * ?"
 then
-    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B3073D6A")
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:S000M012")
     actions.sendDynamicText(1, "Test 123 CO₂ öäüß€") // row 1
 end
 ```
@@ -435,7 +357,7 @@ rule "Flicker output 1 when window opens"
 when
     Item M10_BinarySensor5 changed to OPEN 
 then
-    val actions = getActions("lcn","lcn:module:b827ebfea4bb:17B4196847")
+    val actions = getActions("lcn","lcn:module:b827ebfea4bb:S000M010")
     // output=1, depth=2=100%, ramp=0=2s, count=3
     actions.flickerOutput(1, 2, 0, 3)
 end
@@ -475,73 +397,73 @@ Config .items
 
 ```
 // Dimmer Outputs
-Dimmer M10_Output1 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"}
-Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
-Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
+Dimmer M10_Output1 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"}
+Switch M10_Output2 {channel="lcn:module:b827ebfea4bb:S000M010:output#2"[profile="lcn:output", ramp=0.25]} // with ramp of 0.25s (smallest value)
+Dimmer M10_Output3 {channel="lcn:module:b827ebfea4bb:S000M010:output#3"[profile="lcn:output", ramp=486]}  // with ramp of 486s (biggest value)
 
 // Dimmer Outputs: Control all simultaneously. Status of Output 1 is visualized.
-Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]}    // ramp=0: only since firmware 180501
-Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp=0.25: compatibility: all firmwares
-Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]}  // ramp>=0.5: only since firmware 180501
+Dimmer M10_OutputAll1 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0]}    // ramp=0: only since firmware 180501
+Dimmer M10_OutputAll2 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.25]} // ramp=0.25: compatibility: all firmwares
+Dimmer M10_OutputAll3 {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlAllOutputs=true, ramp=0.5]}  // ramp>=0.5: only since firmware 180501
 
 // Dimmer Outputs: Control outputs 1+2 simultaneously. Status of Output 1 is visualized. Only ramps of 0s or 0.25s are supported.
-Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:17B4196847:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
+Dimmer M10_Outputs12b {channel="lcn:module:b827ebfea4bb:S000M010:output#1"[profile="lcn:output", controlOutputs12=true, ramp=0.25]}
 
 // Dimmer Outputs: RGB Control
-Color M10_Color {channel="lcn:module:b827ebfea4bb:17B4196847:output#color"[profile="lcn:output"]} 
+Color M10_Color {channel="lcn:module:b827ebfea4bb:S000M010:output#color"[profile="lcn:output"]} 
 
 // Roller Shutter on Output 1+2
-Rollershutter M10_RollershutterOutput1 {channel="lcn:module:b827ebfea4bb:17B4196847:rollershutteroutput#1"}
+Rollershutter M10_RollershutterOutput1 {channel="lcn:module:b827ebfea4bb:S000M010:rollershutteroutput#1"}
 
 // Relays
-Switch M10_Relay1 {channel="lcn:module:b827ebfea4bb:17B4196847:relay#1"}
+Switch M10_Relay1 {channel="lcn:module:b827ebfea4bb:S000M010:relay#1"}
 
 // Roller Shutter on Relays 1+2
-Rollershutter M10_RollershutterRelay1 {channel="lcn:module:b827ebfea4bb:17B4196847:rollershutterrelay#1"}
+Rollershutter M10_RollershutterRelay1 {channel="lcn:module:b827ebfea4bb:S000M010:rollershutterrelay#1"}
 
 // LEDs
-String M10_LED1 {channel="lcn:module:b827ebfea4bb:17B4196847:led#1"}
-String M10_LED2 {channel="lcn:module:b827ebfea4bb:17B4196847:led#2"}
+String M10_LED1 {channel="lcn:module:b827ebfea4bb:S000M010:led#1"}
+String M10_LED2 {channel="lcn:module:b827ebfea4bb:S000M010:led#2"}
 
 // Logic Operations (legacy name: "Sums")
-String M10_Logic1 {channel="lcn:module:b827ebfea4bb:17B4196847:logic#1"}
-String M10_Logic2 {channel="lcn:module:b827ebfea4bb:17B4196847:logic#2"[profile="transform:MAP", function="alertSystem.map"]}
+String M10_Logic1 {channel="lcn:module:b827ebfea4bb:S000M010:logic#1"}
+String M10_Logic2 {channel="lcn:module:b827ebfea4bb:S000M010:logic#2"[profile="transform:MAP", function="alertSystem.map"]}
 // conf/transform/alertSystem.map:
 // NOT=All windows are closed
 // OR=Some windows are open
 // AND=All windows are open
 
 // Binary Sensors
-Contact M10_BinarySensor1 {channel="lcn:module:b827ebfea4bb:17B4196847:binarysensor#1"}
+Contact M10_BinarySensor1 {channel="lcn:module:b827ebfea4bb:S000M010:binarysensor#1"}
 
 // Variables
 // The units of the variables must also be set in the Channels configuration, to be visualized correctly.
-Number:Temperature M10_Variable1 "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:variable#1"} // Temperature in °C
-Number:Temperature M10_Variable2 "[%.1f °F]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:variable#2"} // Temperature in °F
-Number M10_Variable3 "[%d ppm]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:variable#3"}              // Indoor air quality in ppm
-Number M10_Variable4 "[%d lx]"    {channel="lcn:module:b827ebfea4bb:17B4196847:variable#4"}                          // Illuminance in Lux
-Number:Illuminance M10_Variable5 "[%.1f klx]" {channel="lcn:module:b827ebfea4bb:17B4196847:variable#5"}              // Illuminance in kLux
-Number M10_Variable6 "[%.1f mA]"  {channel="lcn:module:b827ebfea4bb:17B4196847:variable#6"}                          // Electrical current in mA
-Number M10_Variable7 "[%.1f V]"   {channel="lcn:module:b827ebfea4bb:17B4196847:variable#7"}                          // Voltage in V
-Number M10_Variable8 "[%.1f m/s]" {channel="lcn:module:b827ebfea4bb:17B4196847:variable#8"}                          // Wind speed in m/s
-Number M10_Variable9 "[%.1f °]"  {channel="lcn:module:b827ebfea4bb:17B4196847:variable#9"}                           // position of the sun (azimuth or elevation) in °
-Number M10_Variable10 "[%d W]"    {channel="lcn:module:b827ebfea4bb:17B4196847:variable#10"}                         // Current power of an S0 input in W
-Number:Power M10_Variable11 "[%.1f kW]" {channel="lcn:module:b827ebfea4bb:17B4196847:variable#11"}                   // Current power of an S0 input in kW
+Number:Temperature M10_Variable1 "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:variable#1"} // Temperature in °C
+Number:Temperature M10_Variable2 "[%.1f °F]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:variable#2"} // Temperature in °F
+Number M10_Variable3 "[%d ppm]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:variable#3"}              // Indoor air quality in ppm
+Number M10_Variable4 "[%d lx]"    {channel="lcn:module:b827ebfea4bb:S000M010:variable#4"}                          // Illuminance in Lux
+Number:Illuminance M10_Variable5 "[%.1f klx]" {channel="lcn:module:b827ebfea4bb:S000M010:variable#5"}              // Illuminance in kLux
+Number M10_Variable6 "[%.1f mA]"  {channel="lcn:module:b827ebfea4bb:S000M010:variable#6"}                          // Electrical current in mA
+Number M10_Variable7 "[%.1f V]"   {channel="lcn:module:b827ebfea4bb:S000M010:variable#7"}                          // Voltage in V
+Number M10_Variable8 "[%.1f m/s]" {channel="lcn:module:b827ebfea4bb:S000M010:variable#8"}                          // Wind speed in m/s
+Number M10_Variable9 "[%.1f °]"  {channel="lcn:module:b827ebfea4bb:S000M010:variable#9"}                           // position of the sun (azimuth or elevation) in °
+Number M10_Variable10 "[%d W]"    {channel="lcn:module:b827ebfea4bb:S000M010:variable#10"}                         // Current power of an S0 input in W
+Number:Power M10_Variable11 "[%.1f kW]" {channel="lcn:module:b827ebfea4bb:S000M010:variable#11"}                   // Current power of an S0 input in kW
 
 // Regulators
-Number:Temperature M10_R1VarSetpoint "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:17B4196847:rvarsetpoint#1"} // Temperature in °C
-Switch M10_R1VarLock {channel="lcn:module:b827ebfea4bb:17B4196847:rvarlock#1"} // Lock state of R1Var
+Number:Temperature M10_R1VarSetpoint "[%.1f %unit%]" <temperature> {channel="lcn:module:b827ebfea4bb:S000M010:rvarsetpoint#1"} // Temperature in °C
+Switch M10_R1VarLock {channel="lcn:module:b827ebfea4bb:S000M010:rvarlock#1"} // Lock state of R1Var
 
 // Thresholds
-Number:Temperature M10_ThresholdRegister1_Threshold1 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:17B4196847:thresholdregister1#1"} // Temperature in °C
-Number:Temperature M10_ThresholdRegister4_Threshold2 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:17B4196847:thresholdregister4#2"} // Temperature in °C
+Number:Temperature M10_ThresholdRegister1_Threshold1 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:S000M010:thresholdregister1#1"} // Temperature in °C
+Number:Temperature M10_ThresholdRegister4_Threshold2 "[%.1f %unit%]" {channel="lcn:module:b827ebfea4bb:S000M010:thresholdregister4#2"} // Temperature in °C
 
 // S0 Counters
-Number:Energy M10_S0Counter1 "[%.1f kWh]" {channel="lcn:module:b827ebfea4bb:17B4196847:s0input#1"}
+Number:Energy M10_S0Counter1 "[%.1f kWh]" {channel="lcn:module:b827ebfea4bb:S000M010:s0input#1"}
 
 // Key Locks
-Switch M10_KeyLockA1 {channel="lcn:module:b827ebfea4bb:17B4196847:keylocktablea#1"}
-Switch M10_KeyLockD5 {channel="lcn:module:b827ebfea4bb:17B4196847:keylocktabled#5"}
+Switch M10_KeyLockA1 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktablea#1"}
+Switch M10_KeyLockD5 {channel="lcn:module:b827ebfea4bb:S000M010:keylocktabled#5"}
 ```
 
 Config .sitemap

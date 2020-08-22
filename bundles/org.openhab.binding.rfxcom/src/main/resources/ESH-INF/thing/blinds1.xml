@@ -41,6 +41,7 @@
 					<option value="T6">DC106/Rohrmotor24-RMF/Yooda</option>
 					<option value="T7">Forest</option>
 					<option value="T8">Chamberlain CS4330CN</option>
+					<option value="T11">ASP</option>
 				</options>
 			</parameter>
 		</config-description>

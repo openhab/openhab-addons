@@ -75,29 +75,33 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * Initial delay in s for polling job.
      */
     private static final int INITIAL_DELAY = 1;
+
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
     private long refreshInterval = 15;
+
     /**
      * Interface object for querying the FRITZ!Box web interface
      */
-    private @Nullable FritzAhaWebInterface connection;
+    protected @Nullable FritzAhaWebInterface connection;
+
     /**
      * Schedule for polling
      */
     private @Nullable ScheduledFuture<?> pollingJob;
+
     /**
-     * shared instance of HTTP client for asynchronous calls
+     * Shared instance of HTTP client for asynchronous calls
      */
-    private final HttpClient httpClient;
+    protected final HttpClient httpClient;
 
     private final AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     protected final List<FritzAhaStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
-     * keeps track of the {@link ChannelUID} for the 'apply_tamplate' {@link Channel}
+     * keeps track of the {@link ChannelUID} for the 'apply_template' {@link Channel}
      */
     private final ChannelUID applyTemplateChannelUID;
 
@@ -127,11 +131,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     "The 'ipAddress' parameter must be configured.");
             configValid = false;
         }
-        String localPassword = config.password;
-        if (localPassword == null || localPassword.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set.");
-            configValid = false;
-        }
         refreshInterval = config.pollingInterval;
         if (refreshInterval < 5) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -140,11 +139,30 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         }
 
         if (configValid) {
-            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+            updateStatus(ThingStatus.UNKNOWN);
+            manageConnections();
+        }
+    }
 
+    protected synchronized void manageConnections() {
+        AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
+        if (this.connection == null) {
+            this.connection = new FritzAhaWebInterface(config, this, httpClient);
             stopPolling();
             startPolling();
         }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        manageConnections();
+        super.channelLinked(channelUID);
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        manageConnections();
+        super.channelUnlinked(channelUID);
     }
 
     @Override
@@ -182,7 +200,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Start the polling.
      */
-    private void startPolling() {
+    protected void startPolling() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling job at interval {}s", refreshInterval);
@@ -193,7 +211,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Stops the polling.
      */
-    private void stopPolling() {
+    protected void stopPolling() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob != null && !localPollingJob.isCancelled()) {
             logger.debug("Stop polling job");
