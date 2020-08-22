@@ -177,7 +177,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             deviceStructMan = new DeviceStructureManager(localClient);
             oAuthService.addAccessTokenRefreshListener(this);
             registerDeviceStatusListener(InnogyBridgeHandler.this);
-            scheduleRestartClient(0);
+            scheduleRestartClient(false);
         }
     }
 
@@ -279,22 +279,24 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void onAccessTokenResponse(final AccessTokenResponse credential) {
-        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+        scheduleRestartClient(true);
     }
 
     /**
      * Schedules a re-initialization in the given future.
      *
-     * @param seconds
+     * @param delayed when it is scheduled delayed, it starts with a delay of 30 seconds, otherwise it starts directly
      */
-    private synchronized void scheduleRestartClient(final long seconds) {
+    private synchronized void scheduleRestartClient(final boolean delayed) {
         @Nullable final ScheduledFuture<?> localReinitJob = reinitJob;
 
         if (localReinitJob != null && isAlreadyScheduled(localReinitJob)) {
-            logger.debug("Scheduling reinitialize in {} seconds - ignored: already triggered in {} seconds.", seconds,
+            logger.debug("Scheduling reinitialize - ignored: already triggered in {} seconds.",
                     localReinitJob.getDelay(TimeUnit.SECONDS));
             return;
         }
+
+        final long seconds = delayed ? REINITIALIZE_DELAY_SECONDS : 0;
         logger.debug("Scheduling reinitialize in {} seconds.", seconds);
         reinitJob = scheduler.scheduleWithFixedDelay(this::startClient, seconds, REINITIALIZE_RETRY_SECONDS,
                 TimeUnit.SECONDS);
@@ -508,7 +510,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
                     case BaseEvent.TYPE_DISCONNECT:
                         logger.debug("Websocket disconnected.");
-                        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+                        scheduleRestartClient(true);
                         break;
 
                     case BaseEvent.TYPE_CONFIGURATION_CHANGED:
@@ -519,7 +521,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                         } else {
                             logger.info("Configuration changed from version {} to {}. Restarting innogy binding...",
                                     client.getConfigVersion(), event.getConfigurationVersion());
-                            scheduleRestartClient(0);
+                            scheduleRestartClient(false);
                         }
                         break;
 
@@ -705,7 +707,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void connectionClosed() {
-        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+        scheduleRestartClient(true);
     }
 
     /**
@@ -932,7 +934,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
         if (isReinitialize) {
-            scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+            scheduleRestartClient(true);
             return true;
         }
         return false;
