@@ -205,7 +205,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
             case "4106": // emeter_0: E, energy, Wh, U32
             case "4206": // emeter_1: E, energy, Wh, U32
             case "4306": // emeter_2: E, energy, Wh, U32
-                Double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
+                double total = profile.isEMeter ? s.value / 1000 : s.value / 60 / 1000;
                 updateChannel(updates, mGroup, CHANNEL_METER_TOTALKWH,
                         toQuantityType(total, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
                 break;

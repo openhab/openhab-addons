@@ -213,7 +213,8 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
         serviceName = serviceName.toLowerCase();
         if (!serviceName.contains(VENDOR.toLowerCase())) {
-            throw new IllegalArgumentException("Not a " + VENDOR + " device!");
+            logger.debug("Not a " + VENDOR + " device!");
+            return null;
         }
         return ShellyThingCreator.getThingUID(serviceName, "", "", false);
     }

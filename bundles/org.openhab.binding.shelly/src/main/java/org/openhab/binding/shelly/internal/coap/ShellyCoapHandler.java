@@ -176,6 +176,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                                 logger.debug(
                                         "{}: CoIoT versopm has changed from {} to {}, maybe the firmware was upgraded",
                                         thingName, coiotVers, iVersion);
+                                thingHandler.reinitializeThing();
                                 coiotBound = false;
                             }
                             if (!coiotBound) {
@@ -303,7 +304,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             }
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
-        } catch (RuntimeException e) {// incl JsonSyntaxException
+        } catch (NullPointerException | IllegalArgumentException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload, e);
         }
     }
@@ -333,7 +334,8 @@ public class ShellyCoapHandler implements ShellyCoapListener {
             } else {
                 sensorMap.replace(sen.id, fixed);
             }
-        } catch (RuntimeException e) { // depending on firmware release the CoAP device description is buggy
+        } catch (NullPointerException | IllegalArgumentException e) { // depending on firmware release the CoAP device
+                                                                      // description is buggy
             logger.debug("{}: Unable to decode sensor definition -> skip", thingName, e);
         }
 
@@ -409,7 +411,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                     logger.debug("{}: CoIoT data for id {}, type {}/{} not processed, value={}; payload={}", thingName,
                             sen.id, sen.type, sen.desc, s.value, payload);
                 }
-            } catch (RuntimeException e) {
+            } catch (NullPointerException | IllegalArgumentException e) {
                 // even the processing of one value failed we continue with the next one (sometimes this is caused by
                 // buggy formats provided by the device
                 logger.debug("{}: Unable to process data from sensor[{}], devId={}, payload={}", thingName, i, devId,
