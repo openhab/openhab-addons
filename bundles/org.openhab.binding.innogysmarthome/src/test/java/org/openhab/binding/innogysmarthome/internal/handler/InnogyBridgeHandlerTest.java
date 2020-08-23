@@ -14,9 +14,7 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
-import org.openhab.binding.innogysmarthome.internal.client.exception.AuthenticationException;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -24,6 +22,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import static org.mockito.Mockito.*;
 
 public class InnogyBridgeHandlerTest {
+
+    private static final int MAXIMUM_RETRY_EXECUTIONS = 10;
 
     private InnogyBridgeHandlerAccessible bridgeHandler;
     private Bridge bridgeMock;
@@ -71,7 +71,21 @@ public class InnogyBridgeHandlerTest {
         verify(webSocketMock).start();
     }
 
+    @Test
+    public void testInitializeErrorOnStartingWebSocket() throws Exception {
+        Configuration bridgeConfig = new Configuration();
+
+        when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
+
+        doThrow(new RuntimeException("Test-Exception")).when(webSocketMock).start();
+
+        bridgeHandler.initialize();
+
+        verify(webSocketMock, times(MAXIMUM_RETRY_EXECUTIONS)).start();
+    }
+
     private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
+
         private InnogyClient innogyClientMock;
         private ScheduledExecutorService schedulerMock;
         private int executionCount;
@@ -111,12 +125,10 @@ public class InnogyBridgeHandlerTest {
 
             @Override
             public Object answer(InvocationOnMock invocationOnMock) {
-                if(executionCount > 5) {
-                    throw new RuntimeException("More than 5 executions, something goes wrong!");
+                if(executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
+                    executionCount++;
+                    invocationOnMock.getArgument(0, Runnable.class).run();
                 }
-
-                executionCount++;
-                invocationOnMock.getArgument(0, Runnable.class).run();
                 return null;
             }
         }
