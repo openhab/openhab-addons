@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.BMWConnectedDriveBindingConstants.THING_TYPE_CONNECTED_CAR;
-
-import java.util.Collections;
-import java.util.Set;
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -26,41 +24,50 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedCarHandler;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * The {@link BMWConnectedDriveHandlerFactory} is responsible for creating things and thing
+ * The {@link ConnectedDriveHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.bmwconnecteddrive", service = ThingHandlerFactory.class)
-public class BMWConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
+public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_CONNECTED_CAR);
     private final HttpClientFactory httpClientFactory;
 
     @Activate
-    public BMWConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf) {
+    public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf) {
         httpClientFactory = hcf;
     }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_THING_SET.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-
-        if (THING_TYPE_CONNECTED_CAR.equals(thingTypeUID)) {
-            return new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient());
+        if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
+            return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
+                    bundleContext);
+        } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
+            return new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient(), thingTypeUID.getId());
         }
-
         return null;
+    }
+
+    @Override
+    protected void removeHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof ConnectedDriveBridgeHandler) {
+            // close Handler and remove Discovery Service
+            ((ConnectedDriveBridgeHandler) thingHandler).close();
+        }
     }
 }

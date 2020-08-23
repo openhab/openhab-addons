@@ -5,12 +5,13 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Sample Thing Type -->
-	<thing-type id="connected-car">
-		<label>BMW Connected Car</label>
-		<description>Car associated with the BMW Connected Drive Portal</description>
+	<bridge-type id="account">
+		<label>BMW ConnectedDrive Account</label>
+		<description>Access to BMW ConnectedDrive Portal for a specific user</description>
 
 		<channels>
-			<channel id="channel1" typeId="sample-channel"/>
+			<channel id="discovery-trigger" typeId="discovery-trigger-channel"/>
+			<channel id="discovery-fingerprint" typeId="discovery-fingerprint-channel"/>
 		</channels>
 
 		<config-description>
@@ -22,33 +23,29 @@
 				<label>Password</label>
 				<description>BMW Connected Drive Password</description>
 			</parameter>
-			<parameter name="vin" type="text" required="true">
-				<label>Vehicle Identification Number (VIN)</label>
-				<description>BMW Car VIN </description>
-			</parameter>
 			<parameter name="region" type="text" required="true">
-				<label>Location</label>
-				<description>Based on your location the appropriate BMW Server needs to be connected</description>
-				<default>Rest of the World</default>
+				<label>Region</label>
+				<description>Select your Region in order to connect to the appropriate BMW Server</description>
 				<options>
 					<option value="NORTH_AMERICA">North America</option>
 					<option value="CHINA">China</option>
 					<option value="ROW">Rest of the World</option>
 				</options>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
-				<label>Refresh Interval</label>
-				<description>Data Refresh Rate for your Car values </description>
-				<default>15</default>
+				<default>Rest of the World</default>
 			</parameter>
 		</config-description>
-	</thing-type>
+	</bridge-type>
 
-	<!-- Sample Channel Type -->
-	<channel-type id="sample-channel">
-		<item-type>bmwconnecteddriveItem</item-type>
-		<label>BMWConnectedDrive Binding Channel</label>
-		<description>Sample channel for BMWConnectedDrive Binding</description>
+	<channel-type id="discovery-trigger-channel">
+		<item-type>Switch</item-type>
+		<label>Start ConnectedDrive Discovery</label>
+		<description>Forcing an update of the ConnectedDrive data. Useful if e.g. user has a new car connected / removed from
+			his Account</description>
+	</channel-type>
+	<channel-type id="discovery-fingerprint-channel">
+		<item-type>Switch</item-type>
+		<label>Logging Troubleshooting Fingerprint Data</label>
+		<description>Forcing a log entry with needed data needed for problem analysis</description>
 	</channel-type>
 
 </thing:thing-descriptions>

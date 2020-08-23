@@ -12,15 +12,23 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
+import java.util.List;
 
 /**
- * The {@link ConnectedCarConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link ConnectedDriveUserInfo} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-@NonNullByDefault
-public class CarData {
+public class ConnectedDriveUserInfo {
+    // @SerializedName("sampling_rate")
+    // private int samplingRate;
+    private List<Vehicle> vehicles;
 
+    public List<Vehicle> getVehicles() {
+        return vehicles;
+    }
+
+    public void setVehicles(List<Vehicle> vehicles) {
+        this.vehicles = vehicles;
+    }
 }

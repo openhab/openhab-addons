@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="mileage-channel">
+		<item-type>Number</item-type>
+		<label>Total Distance Driven</label>
+	</channel-type>
+	<channel-type id="remaining-range-channel">
+		<item-type>Number</item-type>
+		<label>Remaining Range</label>
+	</channel-type>
+	<channel-type id="remaining-range-electric-channel">
+		<item-type>Number</item-type>
+		<label>Remaining Battery Range</label>
+	</channel-type>
+	<channel-type id="remaining-soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Remaining Battery Charge Level</label>
+	</channel-type>
+	<channel-type id="remaining-range-fuel-channel">
+		<item-type>Number</item-type>
+		<label>Remaining Fuel Range</label>
+	</channel-type>
+	<channel-type id="remaining-fuel-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Remaining Fuel Range</label>
+	</channel-type>
+	<channel-type id="last-update-channel">
+		<item-type>String</item-type>
+		<label>Date and Time of Last Update</label>
+	</channel-type>
+</thing:thing-descriptions>
