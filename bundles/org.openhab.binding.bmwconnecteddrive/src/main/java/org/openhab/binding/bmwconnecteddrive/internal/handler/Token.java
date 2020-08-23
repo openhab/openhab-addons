@@ -21,11 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class Token {
-    private String token = "";
-    private String tokenType = "";
+    private static final String EMPTY = "";
+    private String token = EMPTY;
+    private String tokenType = EMPTY;
     private long expiration = 0;
 
-    public String getToken() {
+    public String getBearerToken() {
         return tokenType + " " + token;
     }
 
@@ -43,5 +44,9 @@ public class Token {
 
     public void setType(String type) {
         tokenType = type;
+    }
+
+    public boolean isValid() {
+        return (!token.equals(EMPTY) && !tokenType.equals(EMPTY) && expiration > 0);
     }
 }

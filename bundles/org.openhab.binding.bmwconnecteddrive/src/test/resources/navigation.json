@@ -1,0 +1,12 @@
+{
+	"latitude": 50.556164,
+	"longitude": 8.495482,
+	"isoCountryCode": "DEU",
+	"auxPowerRegular": 1.4,
+	"auxPowerEcoPro": 1.2,
+	"auxPowerEcoProPlus": 0.4,
+	"soc": 25.952999114990234,
+	"pendingUpdate": false,
+	"vehicleTracking": true,
+	"socmax": 29.84
+}
