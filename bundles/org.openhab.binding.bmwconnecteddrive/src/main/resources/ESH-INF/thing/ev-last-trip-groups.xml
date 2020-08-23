@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="ev-last-trip-values">
+		<label>Efficiency Values for Last Trip</label>
+		<description>EV Consumption Values and Distances for the Last Trip</description>
+		<channels>
+			<channel id="distance" typeId="distance-channel"/>
+			<channel id="distance-since-charging" typeId="distance-since-charging-channel"/>
+			<channel id="avg-consumption" typeId="avg-consumption-channel"/>
+			<channel id="avg-recuperation" typeId="avg-recuperation-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

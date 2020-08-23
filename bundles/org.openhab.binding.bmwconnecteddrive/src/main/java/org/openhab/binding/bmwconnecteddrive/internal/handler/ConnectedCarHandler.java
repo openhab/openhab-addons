@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CARDATA_FINGERPRINT;
 import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
 import java.util.concurrent.ExecutionException;
@@ -25,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -43,6 +45,9 @@ import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributes;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributesMap;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.efficiency.Efficiency;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.efficiency.Score;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.efficiency.TripEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +71,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private @Nullable ConnectedDriveBridgeHandler bridgeHandler;
     protected @Nullable ScheduledFuture<?> refreshJob;
 
+    private @Nullable String vehicleFingerprint;
+    private @Nullable String efficiencyFingerprint;
+
     // Connected Drive APIs
     private @Nullable String vehicleAPI;
     private @Nullable String navigationAPI;
@@ -83,6 +91,23 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
+            if (command instanceof OnOffType) {
+                if (command.equals(OnOffType.ON)) {
+                    if (vehicleFingerprint != null) {
+                        logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - BEGIN");
+                        logger.warn("{}", vehicleFingerprint);
+                        logger.warn("{}", efficiencyFingerprint);
+                        logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - END");
+                    } else {
+                        logger.warn(
+                                "BMW ConnectedDrive Binding - No Car Data Troubleshoot fingerprint available. Please check for valid username and password Settings for proper connection towards ConnectDrive");
+                    }
+                }
+                // Switch back to off immediately
+                updateState(channelUID, OnOffType.OFF);
+            }
+        }
     }
 
     @Override
@@ -185,6 +210,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             logger.info("Status {}", contentResponse.getStatus());
             logger.info("Reason {}", contentResponse.getReason());
             logger.info("Efficiency {}", contentResponse.getContentAsString());
+            updateEfficiencyStates(contentResponse.getContentAsString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Get Data Exception {}", e.getMessage());
         }
@@ -199,6 +225,58 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             logger.info("Navigation {}", contentResponse.getContentAsString());
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Get Data Exception {}", e.getMessage());
+        }
+    }
+
+    private void updateEfficiencyStates(String content) {
+        efficiencyFingerprint = content;
+        if (driveTrain.equals(CarType.ELECTRIC_REX.toString()) || driveTrain.equals(CarType.ELECTRIC.toString())) {
+            Efficiency eff = GSON.fromJson(content, Efficiency.class);
+
+            if (eff.lastTripList != null) {
+                eff.lastTripList.forEach(entry -> {
+                    if (entry.name.equals(TripEntry.LASTTRIP_DELTA_KM)) {
+                        logger.info("Update {} with {}", tripDistance.toString(), entry.lastTrip);
+                        updateState(tripDistance,
+                                QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
+                    } else if (entry.name.equals(TripEntry.ACTUAL_DISTANCE_WITHOUT_CHARGING)) {
+                        logger.info("Update {} with {}", tripDistanceSinceCharging.toString(), entry.lastTrip);
+                        updateState(tripDistanceSinceCharging,
+                                QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
+                    } else if (entry.name.equals(TripEntry.AVERAGE_ELECTRIC_CONSUMPTION)) {
+                        logger.info("Update {} with {}", tripAvgConsumption.toString(), entry.lastTrip);
+                        updateState(tripAvgConsumption,
+                                QuantityType.valueOf(entry.lastTrip, SmartHomeUnits.KILOWATT_HOUR));
+                    } else if (entry.name.equals(TripEntry.AVERAGE_RECUPERATED_ENERGY_PER_100_KM)) {
+                        logger.info("Update {} with {}", tripAvgRecuperation.toString(), entry.lastTrip);
+                        updateState(tripAvgRecuperation,
+                                QuantityType.valueOf(entry.lastTrip, SmartHomeUnits.KILOWATT_HOUR));
+                    }
+                });
+            }
+            if (eff.scoreList != null) {
+                eff.scoreList.forEach(entry -> {
+                    if (entry.attrName.equals(Score.CUMULATED_ELECTRIC_DRIVEN_DISTANCE)) {
+                        logger.info("Update {} with {}", lifeTimeCumulatedDrivenDistance.toString(), entry.lifeTime);
+                        updateState(lifeTimeCumulatedDrivenDistance,
+                                QuantityType.valueOf(entry.lifeTime, MetricPrefix.KILO(SIUnits.METRE)));
+                    } else if (entry.attrName.equals(Score.LONGEST_DISTANCE_WITHOUT_CHARGING)) {
+                        logger.info("Update {} with {}", lifeTimeSingleLongestDistance.toString(), entry.lifeTime);
+                        updateState(lifeTimeSingleLongestDistance,
+                                QuantityType.valueOf(entry.lifeTime, MetricPrefix.KILO(SIUnits.METRE)));
+                    } else if (entry.attrName.equals(Score.AVERAGE_ELECTRIC_CONSUMPTION)) {
+                        logger.info("Update {} with {}", lifeTimeAverageConsumption.toString(), entry.lifeTime);
+                        updateState(lifeTimeAverageConsumption,
+                                QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
+                    } else if (entry.attrName.equals(Score.AVERAGE_RECUPERATED_ENERGY_PER_100_KM)) {
+                        logger.info("Update {} with {}", lifeTimeAverageRecuperation.toString(), entry.lifeTime);
+                        updateState(lifeTimeAverageRecuperation,
+                                QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
+                    }
+                });
+            }
+        } else {
+            logger.warn("No Efficiency values for {} supported yet", driveTrain);
         }
     }
 
@@ -231,7 +309,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             updateState(remainingSoc, QuantityType.valueOf(bevRexAttributes.chargingLevelHv, SmartHomeUnits.PERCENT));
             updateState(remainingFuel, QuantityType.valueOf(bevRexAttributes.fuelPercent, SmartHomeUnits.PERCENT));
             updateState(lastUpdate, new StringType(bevRexAttributes.Segment_LastTrip_time_segment_end_formatted));
+            bevRexAttributes.gps_lat = (float) 0.0;
+            bevRexAttributes.gps_lng = (float) 0.0;
+            vehicleFingerprint = GSON.toJson(bevRexAttributes);
         } else {
+            vehicleFingerprint = content;
             logger.warn("No update of for {} which {}", driveTrain, CarType.ELECTRIC_REX.toString());
         }
     }

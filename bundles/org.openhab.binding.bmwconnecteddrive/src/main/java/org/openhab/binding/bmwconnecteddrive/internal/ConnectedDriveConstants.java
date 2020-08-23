@@ -83,10 +83,13 @@ public class ConnectedDriveConstants {
     // Bridge Channels
     public static final String DISCOVERY_TRIGGER = "discovery-trigger";
     public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
+    public static final String CARDATA_FINGERPRINT = "cardata-fingerprint";
 
     // Group definitions
     public static final String CHANNEL_GROUP_PROPERTIES = "properties";
     public static final String CHANNEL_GROUP_RANGE = "range";
+    public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
+    public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
     public static final String CHANNEL_GROUP_CAR_STATUS = "status";
     public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
 
@@ -112,6 +115,7 @@ public class ConnectedDriveConstants {
     public static final String IMAGE_SIZE = "size";
     public static final String IMAGE_VIEW_DIRECTION = "view-direction";
 
+    // Range
     public static final String MILEAGE = "mileage";
     public static final String REMAINING_RANGE = "remaining-range";
     public static final String REMAINING_RANGE_ELECTRIC = "remaining-range-electric";
@@ -119,4 +123,14 @@ public class ConnectedDriveConstants {
     public static final String REMAINING_RANGE_FUEL = "remaining-range-fuel";
     public static final String REMAINING_FUEL = "remaining-fuel";
     public static final String LAST_UPDATE = "last-update";
+
+    // Lifetime
+    public static final String AVG_CONSUMPTION = "average-consumption";
+    public static final String AVG_RECUPERATION = "average-recuperation";
+    public static final String CUMULATED_DRIVEN_DISTANCE = "cumulated-driven-distance";
+    public static final String SINGLE_LONGEST_DISTANCE = "single-longest-distance";
+
+    // Last Trip
+    public static final String DISTANCE = "distance";
+    public static final String DISTANCE_SINCE_CHARGING = "distance-since-charging";
 }

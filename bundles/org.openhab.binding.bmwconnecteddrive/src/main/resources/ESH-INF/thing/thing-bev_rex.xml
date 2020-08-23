@@ -14,6 +14,8 @@
 
 		<channel-groups>
 			<channel-group id="range" typeId="hybrid-range-values"/>
+			<channel-group id="last-trip" typeId="ev-last-trip-values"/>
+			<channel-group id="lifetime" typeId="ev-lifetime-values"/>
 			<channel-group id="image" typeId="image-values"/>
 		</channel-groups>
 

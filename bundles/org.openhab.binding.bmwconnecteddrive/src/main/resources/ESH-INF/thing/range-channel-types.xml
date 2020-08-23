@@ -4,15 +4,15 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="mileage-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Total Distance Driven</label>
 	</channel-type>
 	<channel-type id="remaining-range-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Remaining Range</label>
 	</channel-type>
 	<channel-type id="remaining-range-electric-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Remaining Battery Range</label>
 	</channel-type>
 	<channel-type id="remaining-soc-channel">
@@ -20,7 +20,7 @@
 		<label>Remaining Battery Charge Level</label>
 	</channel-type>
 	<channel-type id="remaining-range-fuel-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Remaining Fuel Range</label>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">
