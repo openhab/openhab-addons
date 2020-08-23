@@ -21,12 +21,12 @@ import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import com.google.gson.Gson;
 
 /**
- * The {@link BEV_REX_VehcileValues} Test json responses from ConnectedDrive Portal
+ * The {@link BevRexVehicleTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BEV_REX_VehcileValues {
+public class BevRexVehicleTest {
     private static final Gson GSON = new Gson();
 
     @Test

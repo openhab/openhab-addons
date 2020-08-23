@@ -56,6 +56,18 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID remainingFuel;
     protected ChannelUID lastUpdate;
 
+    // Lifetime Efficiency Channels
+    protected ChannelUID lifeTimeAverageConsumption;
+    protected ChannelUID lifeTimeAverageRecuperation;
+    protected ChannelUID lifeTimeCumulatedDrivenDistance;
+    protected ChannelUID lifeTimeSingleLongestDistance;
+
+    // Last Trip Channels
+    protected ChannelUID tripDistance;
+    protected ChannelUID tripDistanceSinceCharging;
+    protected ChannelUID tripAvgConsumption;
+    protected ChannelUID tripAvgRecuperation;
+
     protected ChannelUID imageChannel;
     protected ChannelUID imageSizeChannel;
     protected ChannelUID imageViewDirectionChannel;
@@ -87,6 +99,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
                 PROPERTIES_NOT_SUPPORTED_SERVICES);
         chargingModesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_CHARGING_MODES);
 
+        // range Channels
         mileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, MILEAGE);
         remainingRange = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE);
         remainingRangeElectric = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_ELECTRIC);
@@ -94,6 +107,19 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         remainingRangeFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_FUEL);
         remainingFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_FUEL);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, LAST_UPDATE);
+
+        // Last Trip Channels
+        tripDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, DISTANCE);
+        tripDistanceSinceCharging = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, DISTANCE_SINCE_CHARGING);
+        tripAvgConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, AVG_CONSUMPTION);
+        tripAvgRecuperation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, AVG_RECUPERATION);
+
+        // Lifetime Channels
+        lifeTimeAverageConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, AVG_CONSUMPTION);
+        lifeTimeAverageRecuperation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, AVG_RECUPERATION);
+        lifeTimeCumulatedDrivenDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME,
+                CUMULATED_DRIVEN_DISTANCE);
+        lifeTimeSingleLongestDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, SINGLE_LONGEST_DISTANCE);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
         imageSizeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE_VIEW_DIRECTION);
