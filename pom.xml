@@ -9,7 +9,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>2.5.8-SNAPSHOT</version>
+  <version>2.5.8</version>
 
   <packaging>pom</packaging>
 
@@ -39,6 +39,7 @@
     <connection>scm:git:https://github.com/openhab/openhab-addons.git</connection>
     <developerConnection>scm:git:https://github.com/openhab/openhab-addons.git</developerConnection>
     <url>https://github.com/openhab/openhab-addons</url>
+<tag>2.5.8</tag>
   </scm>
 
   <issueManagement>
