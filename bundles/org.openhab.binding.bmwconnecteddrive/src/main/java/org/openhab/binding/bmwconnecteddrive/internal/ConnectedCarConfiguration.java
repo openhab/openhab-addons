@@ -21,22 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConnectedCarConfiguration {
-
-    /**
-     * Depending on the location the correct server needs to be called
-     */
-    public String region = "";
-
-    /**
-     * BMW Connected Drive Username
-     */
-    public String userName = "";
-
-    /**
-     * BMW Connected Drive Password
-     */
-    public String password = "";
-
     /**
      * Vehilce Identification Number (VIN)
      */

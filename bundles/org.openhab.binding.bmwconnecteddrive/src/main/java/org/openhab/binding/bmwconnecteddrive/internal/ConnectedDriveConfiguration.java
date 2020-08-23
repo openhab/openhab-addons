@@ -13,22 +13,27 @@
 package org.openhab.binding.bmwconnecteddrive.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link BMWConnectedDriveBindingConstants} class defines common constants, which are
- * used across the whole binding.
+ * The {@link ConnectedDriveConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BMWConnectedDriveBindingConstants {
+public class ConnectedDriveConfiguration {
 
-    private static final String BINDING_ID = "bmwconnecteddrive";
+    /**
+     * Depending on the location the correct server needs to be called
+     */
+    public String region = "";
 
-    // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_CONNECTED_CAR = new ThingTypeUID(BINDING_ID, "connected-car");
+    /**
+     * BMW Connected Drive Username
+     */
+    public String userName = "";
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    /**
+     * BMW Connected Drive Password
+     */
+    public String password = "";
 }

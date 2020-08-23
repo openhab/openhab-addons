@@ -12,25 +12,41 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.BMWConnectedDriveBindingConstants.CHANNEL_1;
+import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.RawType;
+import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.MetricPrefix;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.CarData;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributes;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributesMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link ConnectedCarHandler} is responsible for handling commands, which are
@@ -39,31 +55,34 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ConnectedCarHandler extends BaseThingHandler {
+public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
+    private static final Gson GSON = new Gson();
 
-    private final ConnectedDrivePortalHandler cdpHandler;
+    private String driveTrain;
+    private HttpClient httpClient;
+    private Token token = new Token();
+
+    private @Nullable ConnectedDriveBridgeHandler bridgeHandler;
     protected @Nullable ScheduledFuture<?> refreshJob;
 
-    public ConnectedCarHandler(Thing thing, HttpClient hc) {
+    // Connected Drive APIs
+    private @Nullable String vehicleAPI;
+    private @Nullable String navigationAPI;
+    private @Nullable String efficiencyAPI;
+    private @Nullable String remoteControlAPI;
+    private @Nullable String remoteExecutionAPI;
+    private @Nullable String sendMessageAPI;
+    private @Nullable String imageAPI;
+
+    public ConnectedCarHandler(Thing thing, HttpClient hc, String type) {
         super(thing);
-        cdpHandler = new ConnectedDrivePortalHandler(hc);
+        httpClient = hc;
+        driveTrain = type;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
@@ -72,7 +91,47 @@ public class ConnectedCarHandler extends BaseThingHandler {
         ConnectedCarConfiguration config = getConfigAs(ConnectedCarConfiguration.class);
         if (config != null) {
             scheduler.execute(() -> {
-                cdpHandler.initialize(config);
+                Bridge bridge = getBridge();
+                if (bridge != null) {
+                    BridgeHandler handler = bridge.getHandler();
+                    if (handler != null) {
+                        bridgeHandler = ((ConnectedDriveBridgeHandler) handler);
+                        String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/api/vehicle";
+
+                        // https://b2vapi.bmwgroup.com/api/vehicle/dynamic/v1/
+                        // from bimmer_connect project
+                        // r = requests.get(self.vehicleApi+'/dynamic/v1/'+self.bmwVin+'?offset=-60',
+                        vehicleAPI = baseUrl + "/dynamic/v1/" + config.vin + "?offset=-60";
+                        // r = requests.post(self.vehicleApi+'/myinfo/v1', data=json.dumps(values),
+                        sendMessageAPI = baseUrl + "/myinfo/v1";
+                        // r = requests.get(self.vehicleApi+'/navigation/v1/'+self.bmwVin,
+                        // headers=headers,allow_redirects=True)
+                        navigationAPI = baseUrl + "/navigation/v1/" + config.vin;
+                        // r = requests.get(self.vehicleApi+'/efficiency/v1/'+self.bmwVin,
+                        // headers=headers,allow_redirects=True)
+                        efficiencyAPI = baseUrl + "/efficiency/v1/" + config.vin;
+                        // r = requests.post(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/'+command,
+                        remoteControlAPI = baseUrl + "/remoteservices/v1/" + config.vin;
+                        // r = requests.get(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/state/execution',
+                        remoteExecutionAPI = baseUrl + "/remoteservices/v1/" + config.vin + "/state/execution";
+                        imageAPI = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
+                                + config.vin + "/image?width=400&height=400&view=REARBIRDSEYE";
+
+                        // String baseUrl = "https://" + bridgeHandler.getRegionServer();
+                        // statusAPI = baseUrl + "/webapi/v1/user/vehicles/" + config.vin + "/status";
+                        // lastTripAPI = baseUrl + "/webapi/v1/user/vehicles/" + config.vin + "/statistics/lastTrip";
+                        // /webapi/v1/user/vehicles/:VIN/chargingprofile
+                        // /webapi/v1/user/vehicles/:VIN/destinations
+                        // /webapi/v1/user/vehicles/:VIN/statistics/allTrips
+                        // /webapi/v1/user/vehicles/:VIN/rangemap
+                    } else {
+                        logger.warn("Brdige Handler null");
+                    }
+                } else {
+                    logger.warn("Bridge null");
+                }
+
+                getImage();
                 startSchedule(config.refreshInterval);
             });
         } else {
@@ -84,15 +143,11 @@ public class ConnectedCarHandler extends BaseThingHandler {
         ScheduledFuture<?> localRefreshJob = refreshJob;
         if (localRefreshJob != null) {
             if (localRefreshJob.isCancelled()) {
-                refreshJob = scheduler.scheduleWithFixedDelay(this::dataUpdate, 0, interval, TimeUnit.MINUTES);
+                refreshJob = scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES);
             } // else - scheduler is already running!
         } else {
-            refreshJob = scheduler.scheduleWithFixedDelay(this::dataUpdate, 0, interval, TimeUnit.MINUTES);
+            refreshJob = scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES);
         }
-    }
-
-    protected void dataUpdate() {
-        CarData carData = cdpHandler.getData();
     }
 
     @Override
@@ -101,5 +156,114 @@ public class ConnectedCarHandler extends BaseThingHandler {
         if (localRefreshJob != null) {
             localRefreshJob.cancel(true);
         }
+    }
+
+    public void getData() {
+        if (!tokenUpdate()) {
+            return;
+        }
+
+        Request req = httpClient.newRequest(vehicleAPI);
+        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+        try {
+            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+            logger.info("Status {}", contentResponse.getStatus());
+            logger.info("Reason {}", contentResponse.getReason());
+            logger.info("Vehicle {}", contentResponse.getContentAsString());
+            updateStatus(ThingStatus.ONLINE);
+            updateRangeStates(contentResponse.getContentAsString());
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Get Data Exception {}", e.getMessage());
+        }
+
+        req = httpClient.newRequest(efficiencyAPI);
+        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+        try {
+            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+            logger.info("Status {}", contentResponse.getStatus());
+            logger.info("Reason {}", contentResponse.getReason());
+            logger.info("Efficiency {}", contentResponse.getContentAsString());
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Get Data Exception {}", e.getMessage());
+        }
+
+        req = httpClient.newRequest(navigationAPI);
+        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+        try {
+            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+            logger.info("Status {}", contentResponse.getStatus());
+            logger.info("Reason {}", contentResponse.getReason());
+            logger.info("Navigation {}", contentResponse.getContentAsString());
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Get Data Exception {}", e.getMessage());
+        }
+    }
+
+    private void updateRangeStates(String content) {
+        if (driveTrain.equals(CarType.ELECTRIC_REX.toString())) {
+            BevRexAttributesMap data = GSON.fromJson(content, BevRexAttributesMap.class);
+            BevRexAttributes bevRexAttributes = data.attributesMap;
+            logger.info("Update Milage {} Channel {}", bevRexAttributes.mileage, mileage.toString());
+            // based on unit of length decide if range shall be reported in km or miles
+            if (bevRexAttributes.unitOfLength.equals("km")) {
+                updateState(mileage, QuantityType.valueOf(bevRexAttributes.mileage, MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(remainingRangeElectric, QuantityType.valueOf(bevRexAttributes.beRemainingRangeElectricKm,
+                        MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(remainingRangeFuel, QuantityType.valueOf(bevRexAttributes.beRemainingRangeFuelKm,
+                        MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(remainingRange,
+                        QuantityType.valueOf(
+                                bevRexAttributes.beRemainingRangeElectricKm + bevRexAttributes.beRemainingRangeFuelKm,
+                                MetricPrefix.KILO(SIUnits.METRE)));
+            } else {
+                updateState(mileage, QuantityType.valueOf(bevRexAttributes.mileage, ImperialUnits.MILE));
+                updateState(remainingRangeElectric,
+                        QuantityType.valueOf(bevRexAttributes.beRemainingRangeElectricMile, ImperialUnits.MILE));
+                updateState(remainingRangeFuel,
+                        QuantityType.valueOf(bevRexAttributes.beRemainingRangeFuelMile, ImperialUnits.MILE));
+                updateState(remainingRange, QuantityType.valueOf(
+                        bevRexAttributes.beRemainingRangeElectricMile + bevRexAttributes.beRemainingRangeFuelMile,
+                        ImperialUnits.MILE));
+            }
+            updateState(remainingSoc, QuantityType.valueOf(bevRexAttributes.chargingLevelHv, SmartHomeUnits.PERCENT));
+            updateState(remainingFuel, QuantityType.valueOf(bevRexAttributes.fuelPercent, SmartHomeUnits.PERCENT));
+            updateState(lastUpdate, new StringType(bevRexAttributes.Segment_LastTrip_time_segment_end_formatted));
+        } else {
+            logger.warn("No update of for {} which {}", driveTrain, CarType.ELECTRIC_REX.toString());
+        }
+    }
+
+    public void getImage() {
+        if (!tokenUpdate()) {
+            return;
+        }
+
+        logger.info("Get image {}", imageAPI);
+        Request req = httpClient.newRequest(imageAPI);
+        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+        try {
+            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+            logger.info("getStatus {}", contentResponse.getStatus());
+            logger.info("getMediaType {}", contentResponse.getMediaType());
+            byte[] image = contentResponse.getContent();
+            updateState(imageChannel, new RawType(image, RawType.DEFAULT_MIME_TYPE));
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Get Data Exception {}", e.getMessage());
+        }
+    }
+
+    public synchronized boolean tokenUpdate() {
+        if (token.isExpired()) {
+            token = bridgeHandler.getToken();
+            if (token.isExpired() || !token.isValid()) {
+                logger.info("Token update failed!");
+                return false;
+            }
+        }
+        return true;
     }
 }

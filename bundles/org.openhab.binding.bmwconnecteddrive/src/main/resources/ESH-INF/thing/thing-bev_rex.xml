@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="BEV_REX">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>BMW Electric Vehicle with REX</label>
+		<description>Car associated with the BMW Connected Drive Portal</description>
+
+		<channel-groups>
+			<channel-group id="range" typeId="hybrid-range-values"/>
+			<channel-group id="image" typeId="image-values"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="vin" type="text" required="true">
+				<label>Vehicle Identification Number (VIN)</label>
+				<description>BMW Car VIN </description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
+				<label>Refresh Interval</label>
+				<description>Data Refresh Rate for your Car values </description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
