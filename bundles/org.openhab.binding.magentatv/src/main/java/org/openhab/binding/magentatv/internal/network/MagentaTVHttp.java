@@ -110,9 +110,9 @@ public class MagentaTVHttp {
      * @throws IOException
      */
     public String sendData(String remoteIp, String remotePort, String data) throws MagentaTVException {
-        String response = "";
-        String errorMessage = "";
 
+        String errorMessage = "";
+        StringBuffer response = new StringBuffer();
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(NETWORK_TIMEOUT_MS); // set read timeout
             socket.connect(new InetSocketAddress(remoteIp, Integer.parseInt(remotePort)), NETWORK_TIMEOUT_MS);
@@ -122,13 +122,13 @@ public class MagentaTVHttp {
             ps.println(data);
 
             InputStream in = socket.getInputStream();
-            BufferedReader buff = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
             // wait until somthing to read is available or socket I/O fails (IOException)
-            String line = "";
+            BufferedReader buff = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
             do {
-                line = buff.readLine();
-                response = response + line + "\r\n";
+                String line = buff.readLine();
+                response.append(line);
+                response.append("\r\n");
             } while (buff.ready());
         } catch (UnknownHostException e) {
             errorMessage = "Unknown host!";
@@ -140,6 +140,6 @@ public class MagentaTVHttp {
             throw new MagentaTVException(
                     MessageFormat.format("Network I/O failed for {0}:{1}: {2}", remoteIp, remotePort, errorMessage));
         }
-        return response;
+        return response.toString();
     }
 }
