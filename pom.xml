@@ -284,6 +284,8 @@ Import-Package: \\
           <configuration>
             <compilerId>eclipse</compilerId>
             <compilerArgs>
+              <arg>-annotationpath</arg>
+              <arg>${project.build.directory}/eea</arg>
               <arg>-err:+nullAnnot(org.eclipse.jdt.annotation.Nullable|org.eclipse.jdt.annotation.NonNull|org.eclipse.jdt.annotation.NonNullByDefault),+inheritNullAnnot,-nullUncheckedConversion</arg>
               <arg>-warn:+null,+inheritNullAnnot,+nullAnnotConflict,-nullUncheckedConversion,+nullAnnotRedundant,+nullDereference</arg>
             </compilerArgs>

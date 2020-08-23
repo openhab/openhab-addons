@@ -447,6 +447,23 @@
               <type>jar</type>
             </configuration>
           </execution>
+          <execution>
+            <id>unpack-eea</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.lastnpe.eea</groupId>
+                  <artifactId>jdk-eea</artifactId>
+                  <version>0.0.1</version>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>${project.build.directory}/eea</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>
