@@ -24,14 +24,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -141,7 +138,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         final InnogyBridgeConfiguration bridgeConfiguration = getConfigAs(InnogyBridgeConfiguration.class);
         if (checkConfig(bridgeConfiguration)) {
             this.bridgeConfiguration = bridgeConfiguration;
-            scheduler.execute(this::initializeClient);
+            getScheduler().execute(this::initializeClient);
         }
     }
 
@@ -172,7 +169,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         this.oAuthService = oAuthService;
 
         if (checkOnAuthCode()) {
-            final InnogyClient localClient = new InnogyClient(oAuthService, httpClient);
+            final InnogyClient localClient = createInnogyClient(oAuthService, httpClient);
             client = localClient;
             deviceStructMan = new DeviceStructureManager(localClient);
             oAuthService.addAccessTokenRefreshListener(this);
@@ -253,20 +250,13 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      */
     private void startWebsocket() {
         try {
-            final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
-            final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}",
-                    accessTokenResponse.getAccessToken());
+            InnogyWebSocket localWebSocket = createWebSocket();
 
-            logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
-                    webSocketUrl.substring(webSocketUrl.length() - 10));
-            InnogyWebSocket localWebSocket = this.webSocket;
-
-            if (localWebSocket != null && localWebSocket.isRunning()) {
-                localWebSocket.stop();
+            if (this.webSocket != null && this.webSocket.isRunning()) {
+                this.webSocket.stop();
                 this.webSocket = null;
             }
-            localWebSocket = new InnogyWebSocket(this, URI.create(webSocketUrl),
-                    bridgeConfiguration.websocketidletimeout * 1000);
+
             logger.debug("Starting innogy websocket.");
             this.webSocket = localWebSocket;
             localWebSocket.start();
@@ -275,6 +265,18 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.warn("Error starting websocket.", e);
             handleClientException(e);
         }
+    }
+
+    InnogyWebSocket createWebSocket() throws IOException, AuthenticationException {
+        final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
+        final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}",
+                accessTokenResponse.getAccessToken());
+
+        logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
+                webSocketUrl.substring(webSocketUrl.length() - 10));
+
+        return new InnogyWebSocket(this, URI.create(webSocketUrl),
+                bridgeConfiguration.websocketidletimeout * 1000);
     }
 
     @Override
@@ -300,7 +302,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
         final long seconds = delayed ? REINITIALIZE_DELAY_SECONDS : 0;
         logger.debug("Scheduling reinitialize in {} seconds.", seconds);
-        reinitJob = scheduler.schedule(this::startClient, seconds, TimeUnit.SECONDS);
+        reinitJob = getScheduler().schedule(this::startClient, seconds, TimeUnit.SECONDS);
     }
 
     private void setBridgeProperties(final Device bridgeDevice) {
@@ -884,6 +886,14 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } catch (IOException | ApiException | AuthenticationException e) {
             handleClientException(e);
         }
+    }
+
+    ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    InnogyClient createInnogyClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
+        return new InnogyClient(oAuthService, httpClient);
     }
 
     /**

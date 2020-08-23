@@ -1,0 +1,124 @@
+package org.openhab.binding.innogysmarthome.internal.handler;
+
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
+import org.eclipse.smarthome.core.thing.Bridge;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
+import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
+import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
+import org.openhab.binding.innogysmarthome.internal.client.exception.AuthenticationException;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.concurrent.ScheduledExecutorService;
+
+import static org.mockito.Mockito.*;
+
+public class InnogyBridgeHandlerTest {
+
+    private InnogyBridgeHandlerAccessible bridgeHandler;
+    private Bridge bridgeMock;
+    private InnogyWebSocket webSocketMock;
+
+    @Before
+    public void before() throws Exception {
+        bridgeMock = mock(Bridge.class);
+        when(bridgeMock.getUID()).thenReturn(new ThingUID("innogysmarthome", "bridge"));
+
+        webSocketMock = mock(InnogyWebSocket.class);
+
+        OAuthClientService oAuthService = mock(OAuthClientService.class);
+
+        OAuthFactory oAuthFactoryMock = mock(OAuthFactory.class);
+        when(oAuthFactoryMock.createOAuthClientService(any(), any(), any(), any(), any(), any(), any())).thenReturn(oAuthService);
+
+        HttpClient httpClientMock = mock(HttpClient.class);
+
+        bridgeHandler = new InnogyBridgeHandlerAccessible(bridgeMock, oAuthFactoryMock, httpClientMock);
+    }
+
+    @Test
+    public void testInitializeBridgeNotAvailable() throws Exception {
+        Configuration bridgeConfig = new Configuration();
+        HashMap<String, Object> map  = new HashMap<>();
+        map.put("brand", "XY");
+        bridgeConfig.setProperties(map);
+
+        when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
+
+        bridgeHandler.initialize();
+
+        verify(webSocketMock, never()).start();
+    }
+
+    @Test
+    public void testInitialize() throws Exception {
+        Configuration bridgeConfig = new Configuration();
+
+        when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
+
+        bridgeHandler.initialize();
+
+        verify(webSocketMock).start();
+    }
+
+    private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
+        private InnogyClient innogyClientMock;
+        private ScheduledExecutorService schedulerMock;
+        private int executionCount;
+
+        private InnogyBridgeHandlerAccessible(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) throws Exception {
+            super(bridge, oAuthFactory, httpClient);
+
+            Device bridgeDevice = new Device();
+            bridgeDevice.setId("bridgeId");
+            bridgeDevice.setType(Device.DEVICE_TYPE_SHC);
+            bridgeDevice.setConfig(new DeviceConfig());
+
+            innogyClientMock = mock(InnogyClient.class);
+            when(innogyClientMock.getFullDevices()).thenReturn(Collections.singletonList(bridgeDevice));
+
+            schedulerMock = mock(ScheduledExecutorService.class);
+            doAnswer(new DirectExecutionAnswer()).when(schedulerMock).execute(any());
+            doAnswer(new DirectExecutionAnswer()).when(schedulerMock).schedule(any(Runnable.class), anyLong(), any());
+        }
+
+        @Override
+        InnogyClient createInnogyClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
+            return innogyClientMock;
+        }
+
+        @Override
+        InnogyWebSocket createWebSocket() {
+            return webSocketMock;
+        }
+
+        @Override
+        ScheduledExecutorService getScheduler() {
+            return schedulerMock;
+        }
+
+        private class DirectExecutionAnswer implements Answer<Object> {
+
+            @Override
+            public Object answer(InvocationOnMock invocationOnMock) {
+                if(executionCount > 5) {
+                    throw new RuntimeException("More than 5 executions, something goes wrong!");
+                }
+
+                executionCount++;
+                invocationOnMock.getArgument(0, Runnable.class).run();
+                return null;
+            }
+        }
+    }
+}
