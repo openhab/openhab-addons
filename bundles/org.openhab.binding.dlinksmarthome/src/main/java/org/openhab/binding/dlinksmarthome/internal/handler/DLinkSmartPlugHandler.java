@@ -50,7 +50,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants;
-import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig;
+import org.openhab.binding.dlinksmarthome.internal.DLinkThingConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;

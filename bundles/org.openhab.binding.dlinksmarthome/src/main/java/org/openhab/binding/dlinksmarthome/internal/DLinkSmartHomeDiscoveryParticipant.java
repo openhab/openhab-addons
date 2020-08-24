@@ -13,7 +13,7 @@
 package org.openhab.binding.dlinksmarthome.internal;
 
 import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.*;
-import static org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig.IP_ADDRESS;
+import static org.openhab.binding.dlinksmarthome.internal.DLinkThingConfig.IP_ADDRESS;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * The {@link DLinkSmartHomeDiscoveryParticipant} is responsible for discovering devices through UPnP.
  *
  * @author Mike Major - Initial contribution
+ * @author Pascal Bies - Add DSP-W215 discovery
  *
  */
 @Component(immediate = true)
