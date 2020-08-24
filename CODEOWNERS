@@ -162,6 +162,7 @@
 /bundles/org.openhab.binding.openwebnet/ @mvalla
 /bundles/org.openhab.binding.oppo/ @mlobstein
 /bundles/org.openhab.binding.orvibo/ @tavalin
+/bundles/org.openhab.binding.panasonicbr/ @mlobstein
 /bundles/org.openhab.binding.paradoxalarm/ @theater
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh

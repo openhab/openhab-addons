@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="panasonicbr"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Panasonic Blu-ray Player Thing -->
+	<thing-type id="player">
+		<label>Blu-ray Player</label>
+		<description>
+			A Panasonic Blu-ray player that supports IP control
+		</description>
+
+		<channels>
+			<channel id="button" typeId="button"/>
+			<channel id="play_mode" typeId="play_mode"/>
+			<channel id="time_elapsed" typeId="time_elapsed"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostName" type="text" required="true">
+				<context>network-address</context>
+				<label>Player Host Name/IP Address</label>
+				<description>Host Name or IP Address of the Player</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10" required="false" unit="min">
+				<label>Refresh Interval</label>
+				<description>Specifies the Refresh Interval in Seconds</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="button">
+		<item-type>String</item-type>
+		<label>Remote Button</label>
+		<description>A Remote Button Press to send to the player</description>
+		<state>
+			<options>
+				<option value="RC_POWER">Power</option>
+				<option value="RC_PLAYBACK">Play</option>
+				<option value="RC_PAUSE">Pause</option>
+				<option value="RC_SKIPREV">Skip Prev</option>
+				<option value="RC_SKIPFWD">Skip Fwd</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="play_mode">
+		<item-type>String</item-type>
+		<label>Play Mode</label>
+		<description>The Current Playback Mode</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="time_elapsed">
+		<item-type>Number:Time</item-type>
+		<label>Playback Time</label>
+		<description>The current playback time elapsed</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
