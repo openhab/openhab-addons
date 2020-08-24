@@ -1,8 +1,21 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.innogysmarthome.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -13,6 +26,9 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
+import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
+import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
+import org.openhab.binding.innogysmarthome.internal.manager.DeviceStructureManager;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +37,9 @@ import java.util.concurrent.ScheduledFuture;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * @author Sven Strohschein - Initial contribution
+ */
 public class InnogyBridgeHandlerTest {
 
     private static final int MAXIMUM_RETRY_EXECUTIONS = 10;
