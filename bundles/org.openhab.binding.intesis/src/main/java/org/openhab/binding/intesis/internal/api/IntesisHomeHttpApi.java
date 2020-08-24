@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.intesis.internal.api;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -55,7 +58,6 @@ public class IntesisHomeHttpApi {
             request.header(HttpHeader.CONTENT_TYPE, "application/json");
             request.content(new StringContentProvider(contentString), "application/json");
 
-            // Do request and get response
             ContentResponse contentResponse = request.send();
 
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
@@ -63,8 +65,11 @@ public class IntesisHomeHttpApi {
 
             if (response != null && !response.isEmpty()) {
                 return response;
+            } else {
+                return null;
             }
-        } catch (Exception e) {
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            logger.debug("Could not make HTTP Post request", e);
         }
         return null;
     }

@@ -144,7 +144,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.OFFLINE);
                     }
                 }
-            } catch (Exception e) {
+            } finally {
             }
         }, 0, TimeUnit.SECONDS);
     }
