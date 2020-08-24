@@ -68,12 +68,8 @@ public class InnogyWebSocket {
      * @throws Exception
      */
     public synchronized void start() throws Exception {
-        final SslContextFactory sslContextFactory = new SslContextFactory();
-
         if (client == null || client.isStopped()) {
-            client = new WebSocketClient(sslContextFactory);
-            client.setMaxIdleTimeout(this.maxIdleTimeout);
-            client.start();
+            client = startWebSocketClient();
         }
 
         if (session != null) {
@@ -150,5 +146,12 @@ public class InnogyWebSocket {
         } else {
             eventListener.onEvent(msg);
         }
+    }
+
+    WebSocketClient startWebSocketClient() throws Exception {
+        WebSocketClient client = new WebSocketClient(new SslContextFactory());
+        client.setMaxIdleTimeout(this.maxIdleTimeout);
+        client.start();
+        return client;
     }
 }
