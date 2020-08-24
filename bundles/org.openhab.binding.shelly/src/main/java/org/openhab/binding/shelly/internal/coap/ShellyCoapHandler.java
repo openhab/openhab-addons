@@ -353,7 +353,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      *            ignored.
      */
     private void handleStatusUpdate(String devId, String payload, int serial) {
-        logger.debug("{}: CoIoT Sensor data {}", thingName, payload);
+        logger.debug("{}: CoIoT Sensor data {} (serial={})", thingName, payload, serial);
         if (blkMap.isEmpty()) {
             // send discovery packet
             resetSerial();

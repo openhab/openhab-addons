@@ -276,14 +276,7 @@ public class ShellyCoIoTVersion2 extends ShellyCoIoTProtocol implements ShellyCo
                         value == 1 ? OnOffType.ON : OnOffType.OFF);
                 break;
             case "9102": // EV, wakeupEvent, battery/button/periodic/poweron/sensor/ext_power, "unknown"=unknown
-                if ((s.valueArray != null) && (s.valueArray.size() > 0)) {
-                    reason = getString((String) s.valueArray.get(0));
-                    boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP,
-                            getStringType(reason));
-                    if (changed) {
-                        thingHandler.postEvent(reason.toUpperCase(), true);
-                    }
-                }
+                thingHandler.updateWakeupReason(s.valueArray);
                 break;
             case "9103": // EVC, cfgChanged, U16
                 if ((lastCfgCount != -1) && (lastCfgCount != s.value)) {

@@ -536,7 +536,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             if (alarm.equals(ALARM_TYPE_NONE)) {
                 cache.updateChannel(channelId, getStringType(alarm));
             } else {
-                logger.warn("{}: {}", thingName, messages.get("event.triggered", alarm));
+                logger.info("{}: {}", thingName, messages.get("event.triggered", alarm));
                 triggerChannel(channelId, alarm);
                 cache.updateChannel(channelId, getStringType(alarm));
                 lastAlarmTs = now();
@@ -558,7 +558,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (thingName.equalsIgnoreCase(deviceName) || config.deviceIp.equals(ipAddress)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
-            int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) + 1 : -1;
+            int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : -1;
             if (!profile.isInitialized()) {
                 logger.debug("{}: Device is not yet initialized, event triggers initialization", deviceName);
                 requestUpdates(1, true);
@@ -893,6 +893,18 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             }
         }
         return updated;
+    }
+
+    public boolean updateWakeupReason(@Nullable List<Object> valueArray) {
+        boolean changed = false;
+        if ((valueArray != null) && (valueArray.size() > 0)) {
+            String reason = getString((String) valueArray.get(0));
+            changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));
+            if (changed) {
+                postEvent(reason.toUpperCase(), true);
+            }
+        }
+        return changed;
     }
 
     public void triggerButton(String group, String value) {

@@ -254,12 +254,13 @@ public class ShellyComponents {
                         ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), sdata));
             }
 
-            if ((sdata.actReasons != null) && (sdata.actReasons.length > 0)) {
+            if ((sdata.actReasons != null) && (sdata.actReasons.size() > 0)) {
+                String reason = sdata.actReasons.get(0);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP,
-                        getStringType(sdata.actReasons[0]));
+                        getStringType(reason));
                 updated |= changed;
                 if (changed) {
-                    thingHandler.postEvent(getString(sdata.actReasons[0]).toUpperCase(), true);
+                    thingHandler.postEvent(reason.toUpperCase(), true);
                 }
             }
 
