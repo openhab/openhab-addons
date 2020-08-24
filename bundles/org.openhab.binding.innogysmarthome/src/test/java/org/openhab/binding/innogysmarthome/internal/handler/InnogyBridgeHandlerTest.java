@@ -1,12 +1,12 @@
 package org.openhab.binding.innogysmarthome.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
@@ -120,17 +120,17 @@ public class InnogyBridgeHandlerTest {
             }).when(schedulerMock).schedule(any(Runnable.class), anyLong(), any());
         }
 
-        @Override @NotNull
-        InnogyClient createInnogyClient(@NotNull OAuthClientService oAuthService, @NotNull HttpClient httpClient) {
+        @Override @NonNull
+        InnogyClient createInnogyClient(@NonNull OAuthClientService oAuthService, @NonNull HttpClient httpClient) {
             return innogyClientMock;
         }
 
-        @Override @NotNull
+        @Override @NonNull
         InnogyWebSocket createWebSocket() {
             return webSocketMock;
         }
 
-        @Override @NotNull
+        @Override @NonNull
         ScheduledExecutorService getScheduler() {
             return schedulerMock;
         }
