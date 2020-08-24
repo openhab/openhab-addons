@@ -15,6 +15,8 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +88,12 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private @Nullable String sendMessageAPI;
     private @Nullable String imageAPI;
 
+    private @Nullable String lastTripAPI;// = baseUrl + "/statistics/lastTrip";
+    private @Nullable String allTripsAPI;// = baseUrl + "/statistics/allTrips";
+    private @Nullable String chargeAPI;// = baseUrl + "/chargingprofile";
+    private @Nullable String destinationAPI;// = baseUrl + "/destinations";
+    private List<String> allAPIs = new ArrayList<String>();
+
     private @Nullable String vehicleCache;
     private @Nullable String efficiencyCache;
 
@@ -128,6 +136,25 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
     }
 
+    /**
+     * URLs taken from https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/const.py
+     *
+     * """URLs for different services and error code mapping."""
+     *
+     * AUTH_URL = 'https://customer.bmwgroup.com/{gcdm_oauth_endpoint}/authenticate'
+     * AUTH_URL_LEGACY = 'https://{server}/gcdm/oauth/token'
+     * BASE_URL = 'https://{server}/webapi/v1'
+     *
+     * VEHICLES_URL = BASE_URL + '/user/vehicles'
+     * VEHICLE_VIN_URL = VEHICLES_URL + '/{vin}'
+     * VEHICLE_STATUS_URL = VEHICLE_VIN_URL + '/status'
+     * REMOTE_SERVICE_STATUS_URL = VEHICLE_VIN_URL + '/serviceExecutionStatus?serviceType={service_type}'
+     * REMOTE_SERVICE_URL = VEHICLE_VIN_URL + "/executeService"
+     * VEHICLE_IMAGE_URL = VEHICLE_VIN_URL + "/image?width={width}&height={height}&view={view}"
+     * VEHICLE_POI_URL = VEHICLE_VIN_URL + '/sendpoi'
+     *
+     * }
+     */
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
@@ -139,26 +166,43 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                     BridgeHandler handler = bridge.getHandler();
                     if (handler != null) {
                         bridgeHandler = ((ConnectedDriveBridgeHandler) handler);
-                        String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/api/vehicle";
+                        String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
+                                + config.vin;
+                        vehicleAPI = baseUrl + "/status";
+                        allAPIs.add(vehicleAPI);
+                        lastTripAPI = baseUrl + "/statistics/lastTrip";
+                        allAPIs.add(lastTripAPI);
+                        allTripsAPI = baseUrl + "/statistics/allTrips";
+                        allAPIs.add(allTripsAPI);
+                        chargeAPI = baseUrl + "/chargingprofile";
+                        allAPIs.add(chargeAPI);
+                        destinationAPI = baseUrl + "/destinations";
+                        allAPIs.add(destinationAPI);
+                        imageAPI = baseUrl + "/image?width=200&height=200&view=FRONT";
+                        allAPIs.add(imageAPI);
+                        tokenUpdate();
+                        allAPIs.forEach(entry -> {
+                            Request req = httpClient.newRequest(entry);
+                            req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+                            req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+                            try {
+                                ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+                                logger.info("Status {}", contentResponse.getStatus());
+                                logger.info("Reason {}", contentResponse.getReason());
+                                logger.info("{}", entry);
+                                logger.info("{}", contentResponse.getContentAsString());
+                            } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                                logger.warn("Get Data Exception {}", e.getMessage());
+                            }
+                        });
 
-                        // https://b2vapi.bmwgroup.com/api/vehicle/dynamic/v1/
-                        // from bimmer_connect project
-                        // r = requests.get(self.vehicleApi+'/dynamic/v1/'+self.bmwVin+'?offset=-60',
-                        vehicleAPI = baseUrl + "/dynamic/v1/" + config.vin + "?offset=-60";
-                        // r = requests.post(self.vehicleApi+'/myinfo/v1', data=json.dumps(values),
-                        sendMessageAPI = baseUrl + "/myinfo/v1";
-                        // r = requests.get(self.vehicleApi+'/navigation/v1/'+self.bmwVin,
-                        // headers=headers,allow_redirects=True)
-                        navigationAPI = baseUrl + "/navigation/v1/" + config.vin;
-                        // r = requests.get(self.vehicleApi+'/efficiency/v1/'+self.bmwVin,
-                        // headers=headers,allow_redirects=True)
-                        efficiencyAPI = baseUrl + "/efficiency/v1/" + config.vin;
-                        // r = requests.post(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/'+command,
-                        remoteControlAPI = baseUrl + "/remoteservices/v1/" + config.vin;
-                        // r = requests.get(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/state/execution',
-                        remoteExecutionAPI = baseUrl + "/remoteservices/v1/" + config.vin + "/state/execution";
-                        imageAPI = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
-                                + config.vin + "/image?width=400&height=400&view=REARBIRDSEYE";
+                        /**
+                         * REMOTE_SERVICE_STATUS_URL = VEHICLE_VIN_URL +
+                         * '/serviceExecutionStatus?serviceType={service_type}'
+                         * REMOTE_SERVICE_URL = VEHICLE_VIN_URL + "/executeService"
+                         * VEHICLE_IMAGE_URL = VEHICLE_VIN_URL + "/image?width={width}&height={height}&view={view}"
+                         * VEHICLE_POI_URL = VEHICLE_VIN_URL + '/sendpoi'
+                         */
 
                         // String baseUrl = "https://" + bridgeHandler.getRegionServer();
                         // statusAPI = baseUrl + "/webapi/v1/user/vehicles/" + config.vin + "/status";
@@ -181,6 +225,31 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
+
+    /**
+     * old APIS
+     *
+     * String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/api/vehicle";
+     * // https://b2vapi.bmwgroup.com/api/vehicle/dynamic/v1/
+     * // from bimmer_connect project
+     * // r = requests.get(self.vehicleApi+'/dynamic/v1/'+self.bmwVin+'?offset=-60',
+     * vehicleAPI = baseUrl + "/dynamic/v1/" + config.vin + "?offset=-60";
+     * // r = requests.post(self.vehicleApi+'/myinfo/v1', data=json.dumps(values),
+     * sendMessageAPI = baseUrl + "/myinfo/v1";
+     * // r = requests.get(self.vehicleApi+'/navigation/v1/'+self.bmwVin,
+     * // headers=headers,allow_redirects=True)
+     * navigationAPI = baseUrl + "/navigation/v1/" + config.vin;
+     * // r = requests.get(self.vehicleApi+'/efficiency/v1/'+self.bmwVin,
+     * // headers=headers,allow_redirects=True)
+     * efficiencyAPI = baseUrl + "/efficiency/v1/" + config.vin;
+     * // r = requests.post(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/'+command,
+     * remoteControlAPI = baseUrl + "/remoteservices/v1/" + config.vin;
+     * // r = requests.get(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/state/execution',
+     * remoteExecutionAPI = baseUrl + "/remoteservices/v1/" + config.vin + "/state/execution";
+     * imageAPI = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
+     * + config.vin + "/image?width=400&height=400&view=REARBIRDSEYE";
+     *
+     */
 
     private void startSchedule(int interval) {
         ScheduledFuture<?> localRefreshJob = refreshJob;
