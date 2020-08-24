@@ -109,8 +109,8 @@ _Note that it is planned to generate some part of this based on the XML files wi
 			
 ## Full Example
 
-After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.  All pool items will then be automatically discovered
-Goto the inbox and add them all.  Open any of the items and copy the bridgeUID (2ee76053) and replace all occurences in the items file. 
+After installing the binding, you will need to manually add the Hayward Connection thing and enter your credentials.  All pool items will then be automatically discovered.
+Goto the inbox and add the things.
 
 ### demo.items:
 
