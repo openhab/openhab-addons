@@ -6,10 +6,9 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
@@ -87,8 +86,8 @@ public class InnogyBridgeHandlerTest {
 
     private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
 
-        private InnogyClient innogyClientMock;
-        private ScheduledExecutorService schedulerMock;
+        private final InnogyClient innogyClientMock;
+        private final ScheduledExecutorService schedulerMock;
         private int executionCount;
 
         private InnogyBridgeHandlerAccessible(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) throws Exception {
@@ -121,31 +120,19 @@ public class InnogyBridgeHandlerTest {
             }).when(schedulerMock).schedule(any(Runnable.class), anyLong(), any());
         }
 
-        @Override
-        InnogyClient createInnogyClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
+        @Override @NotNull
+        InnogyClient createInnogyClient(@NotNull OAuthClientService oAuthService, @NotNull HttpClient httpClient) {
             return innogyClientMock;
         }
 
-        @Override
+        @Override @NotNull
         InnogyWebSocket createWebSocket() {
             return webSocketMock;
         }
 
-        @Override
+        @Override @NotNull
         ScheduledExecutorService getScheduler() {
             return schedulerMock;
-        }
-
-        private class DirectExecutionAnswer implements Answer<Object> {
-
-            @Override
-            public Object answer(InvocationOnMock invocationOnMock) {
-                if(executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
-                    executionCount++;
-                    invocationOnMock.getArgument(0, Runnable.class).run();
-                }
-                return null;
-            }
         }
     }
 }
