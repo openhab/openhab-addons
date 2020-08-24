@@ -42,7 +42,7 @@ public class OppoReaderThread extends Thread {
      * @param connector the object that should handle the received message
      */
     public OppoReaderThread(OppoConnector connector, String uid) {
-        super(OppoBindingConstants.BINDING_ID + "-" + uid);
+        super("OH-binding-" + OppoBindingConstants.BINDING_ID + "-" + uid);
         this.connector = connector;
         setDaemon(true);
     }

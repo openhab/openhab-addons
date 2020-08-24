@@ -58,7 +58,7 @@ public abstract class OppoConnector {
 
     private @Nullable Thread readerThread;
 
-    private List<OppoMessageEventListener> listeners = new ArrayList<>();
+    private final List<OppoMessageEventListener> listeners = new ArrayList<>();
 
     /**
      * Called when using direct IP connection for 83/93/95/103/105
