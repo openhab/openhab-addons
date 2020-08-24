@@ -103,6 +103,52 @@ public class InnogyBridgeHandlerTest {
         assertEquals(1, bridgeHandler.getDirectExecutionCount()); //only the first execution should be without a delay
     }
 
+    @Test
+    public void testConnectionClosed() throws Exception {
+        Configuration bridgeConfig = new Configuration();
+
+        when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
+
+        bridgeHandler.initialize();
+
+        verify(webSocketMock).start();
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+
+        bridgeHandler.connectionClosed();
+
+        verify(webSocketMock, times(2)).start(); //automatically restarted (with a delay)
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+
+        bridgeHandler.connectionClosed();
+
+        verify(webSocketMock, times(3)).start(); //automatically restarted (with a delay)
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+    }
+
+    @Test
+    public void testOnEventDisconnect() throws Exception {
+        final String disconnectEventJSON = "{ type: \"Disconnect\" }";
+
+        Configuration bridgeConfig = new Configuration();
+
+        when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
+
+        bridgeHandler.initialize();
+
+        verify(webSocketMock).start();
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+
+        bridgeHandler.onEvent(disconnectEventJSON);
+
+        verify(webSocketMock, times(2)).start(); //automatically restarted (with a delay)
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+
+        bridgeHandler.onEvent(disconnectEventJSON);
+
+        verify(webSocketMock, times(3)).start(); //automatically restarted (with a delay)
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+    }
+
     private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
 
         private final InnogyClient innogyClientMock;
