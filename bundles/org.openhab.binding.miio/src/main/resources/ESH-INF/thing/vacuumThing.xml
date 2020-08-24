@@ -4,7 +4,6 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- <thing-type id="vacuum" extensible="in_cleaning,water_box_status,water_box_carriage_status"> -->
 	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
 
@@ -32,6 +31,7 @@
 			<channel id="commands" typeId="commands" />
 			<channel id="fan" typeId="fan" />
 			<channel id="vacuum" typeId="vacuum" />
+			<channel id="segment" typeId="segment" />
 		</channels>
 	</channel-group-type>
 
@@ -257,6 +257,12 @@
 		<item-type>Switch</item-type>
 		<label>Vacuum On/Off</label>
 	</channel-type>
+	<channel-type id="segment" advanced="true">
+		<item-type>Number</item-type>
+		<label>Vacuum Room [room#]</label>
+		<state min="-1" max="64" step="1" readOnly="false" />
+	</channel-type>
+
 	<channel-type id="consumable_reset">
 		<item-type>String</item-type>
 		<label>Reset Consumable</label>

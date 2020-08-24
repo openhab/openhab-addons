@@ -48,6 +48,7 @@ public enum MiIoCommand {
     CHARGE("app_charge"),
     START_ZONE("app_zoned_clean"),
     FIND_ME("find_me"),
+    START_SEGMENT("app_segment_clean"),
 
     CONSUMABLES_GET("get_consumable"),
     CONSUMABLES_RESET("reset_consumable"),

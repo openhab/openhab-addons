@@ -226,6 +226,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel())) {
+            sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
+            forceStatusUpdate();
+            return;
+        }
         if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
             if (Integer.valueOf(command.toString()) > 0) {
                 sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
