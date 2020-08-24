@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="colorlogic" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge" />
+		</supported-bridge-type-refs>
+
+		<label>Color Logic Light</label>
+		<description>Color Logic Light</description>
+		<channels>
+			<channel id="colorLogicLightEnable" typeId="system.power" />
+			<channel id="colorLogicLightState" typeId="lightState" />
+			<channel id="colorLogicLightCurrentShow" typeId="currentShow" />
+		</channels>
+
+		<properties>
+			<property name="vendor">Hayward</property>
+		</properties>
+		<representation-property>systemID</representation-property>
+
+	</thing-type>
+
+	<channel-type id="lightState">
+		<item-type>Number</item-type>
+		<label>Light State</label>
+		<description>Light State</description>
+		<state readOnly="true" />
+	</channel-type>
+
+	<channel-type id="currentShow">
+		<item-type>Number</item-type>
+		<label>Current Show</label>
+		<description>Current Show</description>
+		<state min="0" max="16" step="1.0" pattern="%1f" readOnly="false" />
+	</channel-type>
+
+</thing:thing-descriptions>

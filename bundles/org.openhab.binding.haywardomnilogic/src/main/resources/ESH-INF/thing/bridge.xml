@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="haywardomnilogic"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The bridge to communicate with Hayward's server -->
+	<bridge-type id="bridge">
+		<label>Hayward OmniLogix Connection</label>
+		<description>Connection to Hayward's Server</description>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Host Name</label>
+				<!-- API Hostname -->
+				<default>https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
+				<!-- This is the hostname that the iOS mobile app utilizes -->
+				<!-- <default>http://209.114.50.126/MobileInterface/MobileInterface.ashx</default> -->
+				<description>The host name of the server.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="username" type="text">
+				<label>User Name</label>
+				<description>The username to connect to the server.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>The password to connect to the server.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="telemetryPollTime" type="integer" min="0" max="60">
+				<label>Telemetry Poll Delay</label>
+				<default>10</default>
+				<description>How often to request telemetry data. Enter 0 to disable.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="alarmPollTime" type="integer" min="0" max="120">
+				<label>Alarm Poll Delay</label>
+				<default>10</default>
+				<description>How often to request alarm data. Enter 0 to disable.</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="commandPollDelay" type="integer" min="0" max="60">
+				<label>Poll Delay</label>
+				<default>10</default>
+				<description>Delay to poll server after a command.  This allows time for the command to propogate to the Omnilogic and back to the cloud server. If items toggle after a command, increase the delay.  Enter 0 to disable/supress all outgoing commands.</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
