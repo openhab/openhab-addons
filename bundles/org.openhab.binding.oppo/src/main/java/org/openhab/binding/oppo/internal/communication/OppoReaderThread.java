@@ -40,9 +40,10 @@ public class OppoReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param connectionId a string that uniquely identifies the particular connection
      */
-    public OppoReaderThread(OppoConnector connector, String uid) {
-        super("OH-binding-" + OppoBindingConstants.BINDING_ID + "-" + uid);
+    public OppoReaderThread(OppoConnector connector, String connectionId) {
+        super("OH-binding-" + OppoBindingConstants.BINDING_ID + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
