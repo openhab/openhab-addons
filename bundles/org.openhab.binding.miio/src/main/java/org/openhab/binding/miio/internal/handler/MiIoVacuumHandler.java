@@ -221,6 +221,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
+        if (channelUID.getId().equals(RobotCababilities.WATERBOX_MODE.getChannel())) {
+            sendCommand(MiIoCommand.SET_WATERBOX_MODE, "[" + command.toString() + "]");
+            forceStatusUpdate();
+            return;
+        }
         if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
             if (Integer.valueOf(command.toString()) > 0) {
                 sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
@@ -328,12 +333,20 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
             updateState(CHANNEL_VACUUM, vacuum);
         }
-
+        if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_MODE)) {
+            safeUpdateState(RobotCababilities.WATERBOX_MODE.getChannel(), statusInfo.getWaterBoxMode());
+        }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_STATUS)) {
             safeUpdateState(RobotCababilities.WATERBOX_STATUS.getChannel(), statusInfo.getWaterBoxStatus());
         }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_CARRIAGE)) {
             safeUpdateState(RobotCababilities.WATERBOX_CARRIAGE.getChannel(), statusInfo.getWaterBoxCarriageStatus());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.LOCKSTATUS)) {
+            safeUpdateState(RobotCababilities.LOCKSTATUS.getChannel(), statusInfo.getLockStatus());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_FORBIDDEN)) {
+            safeUpdateState(RobotCababilities.MOP_FORBIDDEN.getChannel(), statusInfo.getMopForbiddenEnable());
         }
         return true;
     }
@@ -533,8 +546,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             }
         }
     }
-
-    ;
 
     private void createCapabilityChannels() {
         ThingBuilder thingBuilder = editThing();

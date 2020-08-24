@@ -28,8 +28,7 @@ public enum RobotCababilities {
     WATERBOX_MODE("water_box_mode", "water_box_mode", "miio:water_box_mode"),
     WATERBOX_CARRIAGE("water_box_carriage_status", "status#water_box_carriage_status",
             "miio:water_box_carriage_status"),
-    MOP_FORBIDDEN("mop_forbidden_enable", "mop_forbidden_enable", "miio:mop_forbidden_enable"),
-    ERROR_TEST("error_code", "status#error_code-chan", "miio:error_code");
+    MOP_FORBIDDEN("mop_forbidden_enable", "mop_forbidden_enable", "miio:mop_forbidden_enable");
 
     private final String statusFieldName;
     private final String channel;

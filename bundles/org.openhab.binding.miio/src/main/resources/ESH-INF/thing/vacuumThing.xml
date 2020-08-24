@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-<!-- 	<thing-type id="vacuum" extensible="in_cleaning,water_box_status,water_box_carriage_status">   -->
-		<thing-type id="vacuum" >  
+	<!-- <thing-type id="vacuum" extensible="in_cleaning,water_box_status,water_box_carriage_status"> -->
+	<thing-type id="vacuum">
 		<label>Xiaomi Robot Vacuum</label>
 
 		<channel-groups>
@@ -41,10 +41,10 @@
 			<channel id="battery" typeId="system.battery-level" />
 			<channel id="clean_area" typeId="clean_area" />
 			<channel id="clean_time" typeId="clean_time" />
-			<!-- <channel id="error_code" typeId="error_code" /> -->
+			<channel id="error_code" typeId="error_code" />
 			<channel id="error_id" typeId="error_id" />
 			<channel id="fan_power" typeId="fan_power" />
-			<channel id="in_cleaning" typeId="in_cleaning"/>
+			<channel id="in_cleaning" typeId="in_cleaning" />
 			<channel id="dnd_enabled" typeId="dnd_enabled" />
 			<channel id="map_present" typeId="map_present" />
 			<channel id="state" typeId="state" />
@@ -151,15 +151,29 @@
 		<label>State ID</label>
 		<state readOnly="true" />
 	</channel-type>
+
+	<!-- Dynamic Status Channels -->
+	<channel-type id="water_box_mode">
+		<item-type>Number</item-type>
+		<label>Water Box Mode</label>
+		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false" />
+		<config-description-ref uri="channel-type:miio:dynamic-channel-config" />
+	</channel-type>
 	<channel-type id="water_box_status">
 		<item-type>Switch</item-type>
 		<label>Water Box State</label>
 		<state readOnly="true" />
 		<config-description-ref uri="channel-type:miio:dynamic-channel-config" />
 	</channel-type>
-	<channel-type id="water_box_carriage_status">
+	<channel-type id="lock_status">
 		<item-type>Switch</item-type>
-		<label>Water Box Carriage State</label>
+		<label>Lock Status</label>
+		<state readOnly="true" />
+		<config-description-ref uri="channel-type:miio:dynamic-channel-config" />
+	</channel-type>
+	<channel-type id="mop_forbidden_enable">
+		<item-type>Switch</item-type>
+		<label>Mop Forbidden</label>
 		<state readOnly="true" />
 		<config-description-ref uri="channel-type:miio:dynamic-channel-config" />
 	</channel-type>
