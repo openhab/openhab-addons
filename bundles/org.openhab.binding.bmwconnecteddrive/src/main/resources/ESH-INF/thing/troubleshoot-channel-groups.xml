@@ -7,7 +7,7 @@
 		<label>Efficiency Lifetime Values</label>
 		<description>EV Consumption Values and Distances over Lifetime</description>
 		<channels>
-			<channel id="fingerprint" typeId="fingerprint-channel"/>
+			<channel id="cardata-fingerprint" typeId="cardata-fingerprint-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

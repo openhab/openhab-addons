@@ -34,8 +34,7 @@ public class BevRexVehicleTest {
         String resource1 = FileReader.readFileInString("src/test/resources/vehicle.json");
         BevRexAttributesMap attributesMap = GSON.fromJson(resource1, BevRexAttributesMap.class);
         BevRexAttributes attributes = attributesMap.attributesMap;
-        System.out.println("Mileage " + attributes.mileage);
         assertEquals("Mileage", 17236.0, attributes.mileage, 0.1);
-        System.out.println(attributes.beRemainingRangeFuel);
+        assertEquals("Heading", 41, attributes.heading, 0.0001);
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="longitude-channel">
+		<item-type>Number</item-type>
+		<label>Vehicle Location Longitude</label>
+	</channel-type>
+	<channel-type id="latitude-channel">
+		<item-type>Number</item-type>
+		<label>Vehicle Latitude Location</label>
+	</channel-type>
+	<channel-type id="latlong-channel">
+		<item-type>String</item-type>
+		<label>Latitude,Longitude as String for usage in e.g. Map Widget</label>
+	</channel-type>
+	<channel-type id="heading-channel">
+		<item-type>Number:Angle</item-type>
+		<label>Vehicle Heading Angle</label>
+	</channel-type>
+	<channel-type id="range-radius-channel">
+		<item-type>Number</item-type>
+		<label>Range Radius in Meter without unit as pure Number</label>
+	</channel-type>
+</thing:thing-descriptions>

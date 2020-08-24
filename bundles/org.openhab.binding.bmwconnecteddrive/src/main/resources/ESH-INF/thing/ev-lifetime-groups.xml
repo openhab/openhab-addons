@@ -7,10 +7,10 @@
 		<label>Efficiency Lifetime Values</label>
 		<description>EV Consumption Values and Distances over Lifetime</description>
 		<channels>
-			<channel id="average-consumption" typeId="average-ev-consumption-channel"/>
+			<channel id="average-consumption" typeId="average-consumption-channel"/>
 			<channel id="average-recuperation" typeId="average-recuperation-channel"/>
-			<channel id="cumulated-driven-distance" typeId="cumulated-ev-driven-distance-channel"/>
-			<channel id="single-longest-ev-distance" typeId="single-longest-ev-distance-channel"/>
+			<channel id="cumulated-driven-distance" typeId="cumulated-driven-distance-channel"/>
+			<channel id="single-longest-distance" typeId="single-longest-distance-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
