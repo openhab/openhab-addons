@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -73,6 +74,7 @@ public class InnogyBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock, never()).start();
+        assertEquals(0, bridgeHandler.getDirectExecutionCount());
     }
 
     @Test
@@ -84,6 +86,7 @@ public class InnogyBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock).start();
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
     }
 
     @Test
@@ -97,6 +100,7 @@ public class InnogyBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock, times(MAXIMUM_RETRY_EXECUTIONS)).start();
+        assertEquals(1, bridgeHandler.getDirectExecutionCount()); //only the first execution should be without a delay
     }
 
     private class InnogyBridgeHandlerAccessible extends InnogyBridgeHandler {
@@ -104,6 +108,7 @@ public class InnogyBridgeHandlerTest {
         private final InnogyClient innogyClientMock;
         private final ScheduledExecutorService schedulerMock;
         private int executionCount;
+        private int directExecutionCount;
 
         private InnogyBridgeHandlerAccessible(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) throws Exception {
             super(bridge, oAuthFactory, httpClient);
@@ -129,10 +134,19 @@ public class InnogyBridgeHandlerTest {
             doAnswer(invocationOnMock -> {
                 if(executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
                     executionCount++;
+                    long seconds = invocationOnMock.getArgument(1);
+                    if(seconds <= 0) {
+                        directExecutionCount++;
+                    }
+
                     invocationOnMock.getArgument(0, Runnable.class).run();
                 }
                 return mock(ScheduledFuture.class);
             }).when(schedulerMock).schedule(any(Runnable.class), anyLong(), any());
+        }
+
+        public int getDirectExecutionCount() {
+            return directExecutionCount;
         }
 
         @Override @NonNull
