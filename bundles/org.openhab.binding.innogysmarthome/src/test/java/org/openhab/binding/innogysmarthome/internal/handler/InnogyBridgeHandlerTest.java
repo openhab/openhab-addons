@@ -15,7 +15,6 @@ package org.openhab.binding.innogysmarthome.internal.handler;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
-import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenRefreshListener;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -26,9 +25,6 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
-import org.openhab.binding.innogysmarthome.internal.client.entity.event.Event;
-import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
-import org.openhab.binding.innogysmarthome.internal.manager.DeviceStructureManager;
 
 import java.util.Collections;
 import java.util.HashMap;
