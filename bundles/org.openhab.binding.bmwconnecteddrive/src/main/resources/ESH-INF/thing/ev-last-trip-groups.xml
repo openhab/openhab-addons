@@ -9,8 +9,8 @@
 		<channels>
 			<channel id="distance" typeId="distance-channel"/>
 			<channel id="distance-since-charging" typeId="distance-since-charging-channel"/>
-			<channel id="avg-consumption" typeId="avg-consumption-channel"/>
-			<channel id="avg-recuperation" typeId="avg-recuperation-channel"/>
+			<channel id="average-consumption" typeId="average-consumption-channel"/>
+			<channel id="average-recuperation" typeId="average-recuperation-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
