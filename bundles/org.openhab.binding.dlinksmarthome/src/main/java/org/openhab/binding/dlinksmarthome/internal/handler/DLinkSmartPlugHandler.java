@@ -28,7 +28,6 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.measure.Unit;
 import javax.naming.CommunicationException;
 import javax.security.auth.login.LoginException;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -66,17 +65,15 @@ import org.xml.sax.SAXException;
  */
 public class DLinkSmartPlugHandler extends BaseThingHandler {
 
-    Logger logger = LoggerFactory.getLogger(DLinkSmartPlugHandler.class);
-    String ip;
-    String pin;
-    String modelName;
-    String url;
-    static final String USER = "admin";
-    final HttpClient httpClient;
-    DocumentBuilder documentBuilder;
+    private Logger logger = LoggerFactory.getLogger(DLinkSmartPlugHandler.class);
+    private String ip;
+    private String pin;
+    private String url;
+    private static final String USER = "admin";
+    private final HttpClient httpClient;
     private ScheduledFuture<?> pollFuture;
-    static final int DETECT_POLL_S = 1;
-    final Runnable poller = new Runnable() {
+    private static final int DETECT_POLL_S = 1;
+    private final Runnable poller = new Runnable() {
         @Override
         public void run() {
             try {
@@ -104,12 +101,7 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         httpClient = new HttpClient();
         url = "http://" + ip + "/HNAP1/";
         try {
-            documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             httpClient.start();
-        } catch (ParserConfigurationException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
-                    "Unexpected internal error.");
-            logger.error("Failed to create document builder.");
         } catch (Exception e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Unexpected internal error.");
@@ -144,16 +136,14 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        final DLinkMotionSensorConfig config = getConfigAs(DLinkMotionSensorConfig.class);
+        final DLinkThingConfig config = getConfigAs(DLinkThingConfig.class);
         this.pin = config.pin;
         this.ip = config.ipAddress;
         this.url = "http://" + ip + "/HNAP1/";
         try {
             pollFuture = scheduler.scheduleWithFixedDelay(poller, 0, DETECT_POLL_S, TimeUnit.SECONDS);
-            this.modelName = soapAction("GetDeciceSettings", "ModelName", "");
         } catch (Exception e) {
-            logger.error("Failed to get model name.");
-            this.modelName = "Error";
+            logger.error("Failed to poll state.");
         }
     }
 
