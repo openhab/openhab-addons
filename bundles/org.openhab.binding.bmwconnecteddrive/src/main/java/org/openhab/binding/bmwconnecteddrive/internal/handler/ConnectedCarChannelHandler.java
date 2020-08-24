@@ -68,6 +68,13 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID tripAvgConsumption;
     protected ChannelUID tripAvgRecuperation;
 
+    // Location Channels
+    protected ChannelUID longitude;
+    protected ChannelUID latitude;
+    protected ChannelUID latlong;
+    protected ChannelUID heading;
+    protected ChannelUID rangeRadius;
+
     protected ChannelUID imageChannel;
     protected ChannelUID imageSizeChannel;
     protected ChannelUID imageViewDirectionChannel;
@@ -120,6 +127,13 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         lifeTimeCumulatedDrivenDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME,
                 CUMULATED_DRIVEN_DISTANCE);
         lifeTimeSingleLongestDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, SINGLE_LONGEST_DISTANCE);
+
+        // Location Channels
+        longitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LONGITUDE);
+        latitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATITUDE);
+        latlong = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATLONG);
+        heading = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, HEADING);
+        rangeRadius = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, RANGE_RADIUS);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
         imageSizeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE_VIEW_DIRECTION);

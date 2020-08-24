@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CARDATA_FINGERPRINT;
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
 import java.util.concurrent.ExecutionException;
@@ -26,6 +26,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.RawType;
@@ -40,7 +41,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributes;
@@ -83,6 +86,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private @Nullable String sendMessageAPI;
     private @Nullable String imageAPI;
 
+    private @Nullable String vehicleCache;
+    private @Nullable String efficiencyCache;
+
     public ConnectedCarHandler(Thing thing, HttpClient hc, String type) {
         super(thing);
         httpClient = hc;
@@ -91,7 +97,19 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            String group = channelUID.getGroupId();
+            logger.info("REFRESH {}", group);
+            if (CHANNEL_GROUP_LAST_TRIP.equals(group) || CHANNEL_GROUP_LAST_TRIP.equals(group)) {
+                updateEfficiencyStates(efficiencyCache);
+            } else if (CHANNEL_GROUP_CAR_STATUS.equals(group) || CHANNEL_GROUP_LOCATION.equals(group)) {
+                updateRangeStates(vehicleCache);
+            }
+        } else {
+            logger.info("No refresh");
+        }
         if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
+            logger.info("Trigger CarData Fingerprint");
             if (command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
                     if (vehicleFingerprint != null) {
@@ -228,7 +246,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
     }
 
-    private void updateEfficiencyStates(String content) {
+    private void updateEfficiencyStates(@Nullable String content) {
+        if (content == null) {
+            logger.warn("No Efficiency Values available");
+        }
+        efficiencyCache = content;
         efficiencyFingerprint = content;
         if (driveTrain.equals(CarType.ELECTRIC_REX.toString()) || driveTrain.equals(CarType.ELECTRIC.toString())) {
             Efficiency eff = GSON.fromJson(content, Efficiency.class);
@@ -236,19 +258,17 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             if (eff.lastTripList != null) {
                 eff.lastTripList.forEach(entry -> {
                     if (entry.name.equals(TripEntry.LASTTRIP_DELTA_KM)) {
-                        logger.info("Update {} with {}", tripDistance.toString(), entry.lastTrip);
                         updateState(tripDistance,
                                 QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
                     } else if (entry.name.equals(TripEntry.ACTUAL_DISTANCE_WITHOUT_CHARGING)) {
-                        logger.info("Update {} with {}", tripDistanceSinceCharging.toString(), entry.lastTrip);
                         updateState(tripDistanceSinceCharging,
                                 QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
                     } else if (entry.name.equals(TripEntry.AVERAGE_ELECTRIC_CONSUMPTION)) {
-                        logger.info("Update {} with {}", tripAvgConsumption.toString(), entry.lastTrip);
                         updateState(tripAvgConsumption,
                                 QuantityType.valueOf(entry.lastTrip, SmartHomeUnits.KILOWATT_HOUR));
                     } else if (entry.name.equals(TripEntry.AVERAGE_RECUPERATED_ENERGY_PER_100_KM)) {
-                        logger.info("Update {} with {}", tripAvgRecuperation.toString(), entry.lastTrip);
+                        ThingHandlerCallback thcb = super.getCallback();
+                        logger.info("Callback {}", thcb);
                         updateState(tripAvgRecuperation,
                                 QuantityType.valueOf(entry.lastTrip, SmartHomeUnits.KILOWATT_HOUR));
                     }
@@ -257,19 +277,19 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             if (eff.scoreList != null) {
                 eff.scoreList.forEach(entry -> {
                     if (entry.attrName.equals(Score.CUMULATED_ELECTRIC_DRIVEN_DISTANCE)) {
-                        logger.info("Update {} with {}", lifeTimeCumulatedDrivenDistance.toString(), entry.lifeTime);
                         updateState(lifeTimeCumulatedDrivenDistance,
                                 QuantityType.valueOf(entry.lifeTime, MetricPrefix.KILO(SIUnits.METRE)));
                     } else if (entry.attrName.equals(Score.LONGEST_DISTANCE_WITHOUT_CHARGING)) {
-                        logger.info("Update {} with {}", lifeTimeSingleLongestDistance.toString(), entry.lifeTime);
                         updateState(lifeTimeSingleLongestDistance,
                                 QuantityType.valueOf(entry.lifeTime, MetricPrefix.KILO(SIUnits.METRE)));
                     } else if (entry.attrName.equals(Score.AVERAGE_ELECTRIC_CONSUMPTION)) {
-                        logger.info("Update {} with {}", lifeTimeAverageConsumption.toString(), entry.lifeTime);
                         updateState(lifeTimeAverageConsumption,
                                 QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
                     } else if (entry.attrName.equals(Score.AVERAGE_RECUPERATED_ENERGY_PER_100_KM)) {
-                        logger.info("Update {} with {}", lifeTimeAverageRecuperation.toString(), entry.lifeTime);
+                        // create channel on demand
+                        // ChannelUID cuid = new ChannelUID(thing.getUID(), ConnectedDriveConstants.AVG_RECUPERATION);
+                        // logger.info("update {} with {}", cuid, entry.lifeTime);
+                        // updateState(cuid, QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
                         updateState(lifeTimeAverageRecuperation,
                                 QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
                     }
@@ -280,7 +300,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
     }
 
-    private void updateRangeStates(String content) {
+    private void updateRangeStates(@Nullable String content) {
+        if (content == null) {
+            logger.warn("No Vehicle Values available");
+        }
+        vehicleCache = content;
         if (driveTrain.equals(CarType.ELECTRIC_REX.toString())) {
             BevRexAttributesMap data = GSON.fromJson(content, BevRexAttributesMap.class);
             BevRexAttributes bevRexAttributes = data.attributesMap;
@@ -296,6 +320,10 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         QuantityType.valueOf(
                                 bevRexAttributes.beRemainingRangeElectricKm + bevRexAttributes.beRemainingRangeFuelKm,
                                 MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(rangeRadius,
+                        new DecimalType(
+                                (bevRexAttributes.beRemainingRangeElectricKm + bevRexAttributes.beRemainingRangeFuelKm)
+                                        * 1000));
             } else {
                 updateState(mileage, QuantityType.valueOf(bevRexAttributes.mileage, ImperialUnits.MILE));
                 updateState(remainingRangeElectric,
@@ -305,10 +333,21 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 updateState(remainingRange, QuantityType.valueOf(
                         bevRexAttributes.beRemainingRangeElectricMile + bevRexAttributes.beRemainingRangeFuelMile,
                         ImperialUnits.MILE));
+                updateState(rangeRadius, new DecimalType(
+                        (bevRexAttributes.beRemainingRangeElectricMile + bevRexAttributes.beRemainingRangeFuelMile)
+                                * 1000));
             }
             updateState(remainingSoc, QuantityType.valueOf(bevRexAttributes.chargingLevelHv, SmartHomeUnits.PERCENT));
             updateState(remainingFuel, QuantityType.valueOf(bevRexAttributes.fuelPercent, SmartHomeUnits.PERCENT));
             updateState(lastUpdate, new StringType(bevRexAttributes.Segment_LastTrip_time_segment_end_formatted));
+
+            updateState(longitude, new DecimalType(bevRexAttributes.gps_lng));
+            updateState(latitude, new DecimalType(bevRexAttributes.gps_lat));
+            updateState(latlong, new StringType(bevRexAttributes.gps_lat + "," + bevRexAttributes.gps_lng));
+            logger.info("Update {} with {}", heading.toString(), bevRexAttributes.heading);
+            updateState(heading, QuantityType.valueOf(bevRexAttributes.heading, SmartHomeUnits.DEGREE_ANGLE));
+            // updateState(headingChannleUID, new DecimalType(bevRexAttributes.heading));
+
             bevRexAttributes.gps_lat = (float) 0.0;
             bevRexAttributes.gps_lng = (float) 0.0;
             vehicleFingerprint = GSON.toJson(bevRexAttributes);

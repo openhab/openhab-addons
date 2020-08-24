@@ -53,7 +53,7 @@ public class EfficiencyTest {
 
         if (eff.lastTripList != null) {
             eff.lastTripList.forEach(entry -> {
-                System.out.println(entry.name + ":" + entry.lastTrip);
+                // logger.info(entry.name + ":" + entry.lastTrip);
                 if (entry.name.equals(TripEntry.LASTTRIP_DELTA_KM)) {
                     assertEquals("Trip Delta km", 2, entry.lastTrip, 0.01);
                 } else if (entry.name.equals(TripEntry.ACTUAL_DISTANCE_WITHOUT_CHARGING)) {

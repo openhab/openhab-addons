@@ -91,6 +91,7 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
     public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
     public static final String CHANNEL_GROUP_CAR_STATUS = "status";
+    public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
 
     public static final String PROPERTIES_BRAND = "brand";
@@ -133,4 +134,11 @@ public class ConnectedDriveConstants {
     // Last Trip
     public static final String DISTANCE = "distance";
     public static final String DISTANCE_SINCE_CHARGING = "distance-since-charging";
+
+    // Lifetime
+    public static final String LONGITUDE = "longitude";
+    public static final String LATITUDE = "latitude";
+    public static final String LATLONG = "latlong";
+    public static final String HEADING = "heading";
+    public static final String RANGE_RADIUS = "range-radius";
 }

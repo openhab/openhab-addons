@@ -11,11 +11,11 @@
 		<item-type>Number:Length</item-type>
 		<label>Distance Driven since Last Charge</label>
 	</channel-type>
-	<channel-type id="avg-consumption-channel">
+	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Average kw/h Consumption for 100 km Last Trip</label>
 	</channel-type>
-	<channel-type id="avg-recuperation-channel">
+	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Average kw/h Recuperation for 100 km Last Trip</label>
 	</channel-type>
