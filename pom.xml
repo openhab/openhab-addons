@@ -79,7 +79,7 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
-    <spotless.version>1.30.0</spotless.version>
+    <spotless.version>2.0.3</spotless.version>
   </properties>
 
   <dependencyManagement>
