@@ -125,7 +125,7 @@ public class InnogyWebSocket {
         if (statusCode == StatusCode.NORMAL) {
             logger.info("Connection to innogy Webservice was closed normally.");
         } else if (!closing) {
-            //An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
+            // An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
             logger.info("Connection to innogy Webservice was closed abnormally (code: {}). Reason: {}", statusCode,
                     reason);
             eventListener.connectionClosed();

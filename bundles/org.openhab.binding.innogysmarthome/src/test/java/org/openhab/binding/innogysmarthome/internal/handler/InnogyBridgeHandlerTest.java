@@ -12,6 +12,14 @@
  */
 package org.openhab.binding.innogysmarthome.internal.handler;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -25,14 +33,6 @@ import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.DeviceConfig;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -55,7 +55,8 @@ public class InnogyBridgeHandlerTest {
         OAuthClientService oAuthService = mock(OAuthClientService.class);
 
         OAuthFactory oAuthFactoryMock = mock(OAuthFactory.class);
-        when(oAuthFactoryMock.createOAuthClientService(any(), any(), any(), any(), any(), any(), any())).thenReturn(oAuthService);
+        when(oAuthFactoryMock.createOAuthClientService(any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(oAuthService);
 
         HttpClient httpClientMock = mock(HttpClient.class);
 
@@ -65,7 +66,7 @@ public class InnogyBridgeHandlerTest {
     @Test
     public void testInitializeBridgeNotAvailable() throws Exception {
         Configuration bridgeConfig = new Configuration();
-        HashMap<String, Object> map  = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
         map.put("brand", "XY");
         bridgeConfig.setProperties(map);
 
@@ -100,7 +101,7 @@ public class InnogyBridgeHandlerTest {
         bridgeHandler.initialize();
 
         verify(webSocketMock, times(MAXIMUM_RETRY_EXECUTIONS)).start();
-        assertEquals(1, bridgeHandler.getDirectExecutionCount()); //only the first execution should be without a delay
+        assertEquals(1, bridgeHandler.getDirectExecutionCount()); // only the first execution should be without a delay
     }
 
     @Test
@@ -116,12 +117,12 @@ public class InnogyBridgeHandlerTest {
 
         bridgeHandler.connectionClosed();
 
-        verify(webSocketMock, times(2)).start(); //automatically restarted (with a delay)
+        verify(webSocketMock, times(2)).start(); // automatically restarted (with a delay)
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
 
         bridgeHandler.connectionClosed();
 
-        verify(webSocketMock, times(3)).start(); //automatically restarted (with a delay)
+        verify(webSocketMock, times(3)).start(); // automatically restarted (with a delay)
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
     }
 
@@ -140,12 +141,12 @@ public class InnogyBridgeHandlerTest {
 
         bridgeHandler.onEvent(disconnectEventJSON);
 
-        verify(webSocketMock, times(2)).start(); //automatically restarted (with a delay)
+        verify(webSocketMock, times(2)).start(); // automatically restarted (with a delay)
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
 
         bridgeHandler.onEvent(disconnectEventJSON);
 
-        verify(webSocketMock, times(3)).start(); //automatically restarted (with a delay)
+        verify(webSocketMock, times(3)).start(); // automatically restarted (with a delay)
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
     }
 
@@ -170,7 +171,7 @@ public class InnogyBridgeHandlerTest {
             schedulerMock = mock(ScheduledExecutorService.class);
 
             doAnswer(invocationOnMock -> {
-                if(executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
+                if (executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
                     executionCount++;
                     invocationOnMock.getArgument(0, Runnable.class).run();
                 }
@@ -178,10 +179,10 @@ public class InnogyBridgeHandlerTest {
             }).when(schedulerMock).execute(any());
 
             doAnswer(invocationOnMock -> {
-                if(executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
+                if (executionCount <= MAXIMUM_RETRY_EXECUTIONS) {
                     executionCount++;
                     long seconds = invocationOnMock.getArgument(1);
-                    if(seconds <= 0) {
+                    if (seconds <= 0) {
                         directExecutionCount++;
                     }
 
@@ -195,17 +196,20 @@ public class InnogyBridgeHandlerTest {
             return directExecutionCount;
         }
 
-        @Override @NonNull
+        @Override
+        @NonNull
         InnogyClient createInnogyClient(@NonNull OAuthClientService oAuthService, @NonNull HttpClient httpClient) {
             return innogyClientMock;
         }
 
-        @Override @NonNull
+        @Override
+        @NonNull
         InnogyWebSocket createWebSocket() {
             return webSocketMock;
         }
 
-        @Override @NonNull
+        @Override
+        @NonNull
         ScheduledExecutorService getScheduler() {
             return schedulerMock;
         }

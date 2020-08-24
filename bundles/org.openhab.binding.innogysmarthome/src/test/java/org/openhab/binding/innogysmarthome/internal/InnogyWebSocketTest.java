@@ -12,19 +12,19 @@
  */
 package org.openhab.binding.innogysmarthome.internal;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
+
+import java.net.URI;
+import java.util.concurrent.Future;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
-
-import java.net.URI;
-import java.util.concurrent.Future;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 
 /**
  * @author Sven Strohschein - Initial contribution
@@ -79,7 +79,7 @@ public class InnogyWebSocketTest {
 
         assertFalse(eventListener.isOnEventCalled());
         assertFalse(eventListener.isOnErrorCalled());
-        //stop() itself causes a (abnormal) close event, that shouldn't get noticed
+        // stop() itself causes a (abnormal) close event, that shouldn't get noticed
         // (otherwise it would cause a reconnect event which would lead to an infinite loop ...)
         assertFalse(eventListener.isConnectionClosedCalled());
     }
@@ -97,7 +97,7 @@ public class InnogyWebSocketTest {
 
         assertFalse(eventListener.isOnEventCalled());
         assertFalse(eventListener.isOnErrorCalled());
-        //stop() itself causes a (abnormal) close event, that shouldn't get noticed
+        // stop() itself causes a (abnormal) close event, that shouldn't get noticed
         // (otherwise it would cause a reconnect event which would lead to an infinite loop ...)
         assertFalse(eventListener.isConnectionClosedCalled());
 
@@ -107,7 +107,7 @@ public class InnogyWebSocketTest {
 
         assertFalse(eventListener.isOnEventCalled());
         assertFalse(eventListener.isOnErrorCalled());
-        //A close event after a restart of the web socket should get recognized again
+        // A close event after a restart of the web socket should get recognized again
         assertTrue(eventListener.isConnectionClosedCalled());
     }
 
@@ -138,7 +138,7 @@ public class InnogyWebSocketTest {
 
         assertFalse(eventListener.isOnEventCalled());
         assertFalse(eventListener.isOnErrorCalled());
-        //Nothing should get noticed when a normal close is executed (for example by stopping OpenHAB)
+        // Nothing should get noticed when a normal close is executed (for example by stopping OpenHAB)
         assertFalse(eventListener.isConnectionClosedCalled());
     }
 
