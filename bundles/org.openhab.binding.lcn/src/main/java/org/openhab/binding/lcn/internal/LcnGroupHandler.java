@@ -45,6 +45,11 @@ public class LcnGroupHandler extends LcnModuleHandler {
     }
 
     @Override
+    protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
+        // nothing, don't request the serial number of an LCN group representation module
+    }
+
+    @Override
     protected LcnAddr getCommandAddress() throws LcnException {
         LcnAddrGrp localAddress = groupAddress;
         if (localAddress == null) {
