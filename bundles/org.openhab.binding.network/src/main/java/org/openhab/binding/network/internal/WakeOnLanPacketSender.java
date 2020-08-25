@@ -51,14 +51,17 @@ public class WakeOnLanPacketSender {
 
     private final String macAddress;
     private byte @Nullable [] magicPacket;
-    private Consumer<byte[]> magicPacketSender;
+    private final Consumer<byte[]> magicPacketSender;
 
     public WakeOnLanPacketSender(String macAddress) {
         this.macAddress = macAddress;
         this.magicPacketSender = this::broadcastMagicPacket;
     }
 
-    public WakeOnLanPacketSender(String macAddress, Consumer<byte[]> magicPacketSender) {
+    /**
+     * Used for testing only.
+     */
+    WakeOnLanPacketSender(String macAddress, Consumer<byte[]> magicPacketSender) {
         this.macAddress = macAddress;
         this.magicPacketSender = magicPacketSender;
     }

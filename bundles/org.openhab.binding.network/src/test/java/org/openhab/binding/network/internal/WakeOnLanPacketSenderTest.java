@@ -75,22 +75,22 @@ public class WakeOnLanPacketSenderTest {
         assertValidMagicPacket(HexUtils.hexToBytes("6f70656e4841"), actualPacket);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class, timeout = 10000)
     public void sendWithEmptyMacAddressThrowsException() {
         new WakeOnLanPacketSender("").sendPacket();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class, timeout = 10000)
     public void sendWithTooShortMacAddressThrowsException() {
         new WakeOnLanPacketSender("6f:70:65:6e:48").sendPacket();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class, timeout = 10000)
     public void sendWithTooLongMacAddressThrowsException() {
         new WakeOnLanPacketSender("6f:70:65:6e:48:41:42").sendPacket();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class, timeout = 10000)
     public void sendWithUnsupportedSeparatorInMacAddressThrowsException() {
         new WakeOnLanPacketSender("6f=70=65=6e=48=41").sendPacket();
     }

@@ -41,7 +41,7 @@ public class NetworkActions implements ThingActions, INetworkActions {
 
     private final Logger logger = LoggerFactory.getLogger(NetworkActions.class);
 
-    protected @Nullable NetworkHandler handler;
+    private @Nullable NetworkHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
