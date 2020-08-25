@@ -3,11 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="range-values">
+	<channel-group-type id="conv-range-values">
 		<label>Car Data Values</label>
 		<description>Provides values for the current Car Status, Electric charging state, remaining Range and more</description>
 		<channels>
-			<channel id="remaining-range-electric" typeId="remaining-range-electric-channel"/>
+			<channel id="mileage" typeId="mileage-channel"/>
+			<channel id="remaining-range" typeId="remaining-range-channel"/>
+			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
+			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

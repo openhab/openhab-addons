@@ -1,0 +1,34 @@
+{
+	"weeklyPlanner": {
+		"climatizationEnabled": false,
+		"chargingMode": "IMMEDIATE_CHARGING",
+		"chargingPreferences": "CHARGING_WINDOW",
+		"timer1": {
+			"departureTime": "05:00",
+			"timerEnabled": false,
+			"weekdays": [
+				"MONDAY",
+				"TUESDAY",
+				"WEDNESDAY",
+				"THURSDAY",
+				"FRIDAY"
+			]
+		},
+		"timer2": {
+			"departureTime": "12:00",
+			"timerEnabled": false,
+			"weekdays": [
+				"SATURDAY"
+			]
+		},
+		"timer3": {
+			"departureTime": "00:00",
+			"timerEnabled": false,
+			"weekdays": []
+		},
+		"preferredChargingWindow": {
+			"startTime": "00:00",
+			"endTime": "00:00"
+		}
+	}
+}

@@ -7,21 +7,4 @@
 		<item-type>Image</item-type>
 		<label>Rendered Image of your Car</label>
 	</channel-type>
-	<channel-type id="view-direction-channel">
-		<kind>trigger</kind>
-		<label>View Direction of the Image</label>
-		<event>
-			<options>
-				<option value="FRONTSIDE">frontside</option>
-				<option value="FRONT">front</option>
-				<option value="REARSIDE">rearside</option>
-				<option value="REAR">rear</option>
-				<option value="SIDE">side</option>
-				<option value="DASHBOARD">dashboard</option>
-				<option value="DRIVERDOOR">driverdoor</option>
-				<option value="REARBIRDSEYE">rearbirdseye</option>
-			</options>
-		</event>
-	</channel-type>
-
 </thing:thing-descriptions>

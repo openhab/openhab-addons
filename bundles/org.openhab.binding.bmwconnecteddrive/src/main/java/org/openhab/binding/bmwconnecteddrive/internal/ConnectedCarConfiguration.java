@@ -30,4 +30,22 @@ public class ConnectedCarConfiguration {
      * Data refresh rate in minutes
      */
     public int refreshInterval = 15;
+
+    /**
+     * image size - width & length (square)
+     */
+    public int imageSize = 300;
+
+    /**
+     * image viewport defined as options in thing xml
+     * <option value="FRONTSIDE">Frontside</option>
+     * <option value="FRONT">Front</option>
+     * <option value="REARSIDE">Rearside</option>
+     * <option value="REAR">Rear</option>
+     * <option value="SIDE">Slide</option>
+     * <option value="DASHBOARD">Dashboard</option>
+     * <option value="DRIVERDOOR">Driver Door</option>
+     * <option value="REARBIRDSEYE">Rear BirdsEye</option>
+     */
+    public String imageViewport = "FRONT";
 }

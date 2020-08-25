@@ -10,21 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
 /**
- * The {@link AttributesMap} Data Transfer Object
+ * The {@link Status} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class AttributesMap {
-    private DynamicVehicleRangeData attributesMap;
-
-    public DynamicVehicleRangeData getAttributesMap() {
-        return attributesMap;
-    }
-
-    public void setAttributesMap(DynamicVehicleRangeData attributesMap) {
-        this.attributesMap = attributesMap;
-    }
+public class Status {
+    public VehicleStatus vehicleStatus;
 }

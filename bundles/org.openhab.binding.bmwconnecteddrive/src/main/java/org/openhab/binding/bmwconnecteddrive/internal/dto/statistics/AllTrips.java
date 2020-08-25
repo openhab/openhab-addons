@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
 
 /**
- * The {@link CCMMessage} Data Transfer Object
+ * The {@link AllTrips} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class CCMMessage {
-
+public class AllTrips {
+    public Community allTrips;
 }
