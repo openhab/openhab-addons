@@ -49,7 +49,11 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
+After succesfull Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
+For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
+
+![Binding Config](doc/miioBindingConfig.jpg)
 
 ## Thing Configuration
 
@@ -1830,11 +1834,24 @@ Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel=
 Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_error" }
 Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_finish" }
 
-
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
 Note: cleaning map is only available with cloud access.
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+
+
 
 ### Mi Air Monitor v1 (zhimi.airmonitor.v1) item file lines
 
