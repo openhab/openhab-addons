@@ -55,7 +55,7 @@ public abstract class KaleidescapeConnector {
 
     private @Nullable Thread readerThread;
 
-    private List<KaleidescapeMessageEventListener> listeners = new ArrayList<>();
+    private final List<KaleidescapeMessageEventListener> listeners = new ArrayList<>();
 
     /**
      * Get whether the connection is established or not
@@ -121,12 +121,12 @@ public abstract class KaleidescapeConnector {
         }
         if (readerThread != null) {
             readerThread.interrupt();
+            this.readerThread = null;
             try {
                 readerThread.join(3000);
             } catch (InterruptedException e) {
                 logger.warn("Error joining readerThread: {}", e.getMessage());
             }
-            this.readerThread = null;
         }
     }
 
@@ -161,7 +161,7 @@ public abstract class KaleidescapeConnector {
      * @throws KaleidescapeException - In case of any problem
      */
     public void ping() throws KaleidescapeException {
-        sendCommand("GET_TIME");
+        sendCommand(KaleidescapeBindingConstants.GET_TIME);
     }
 
     /**

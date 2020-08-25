@@ -24,8 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class KaleidescapeMessageEvent extends EventObject {
     private static final long serialVersionUID = 1L;
-    private String key;
-    private String value;
+    private final String key;
+    private final String value;
 
     public KaleidescapeMessageEvent(Object source, String key, String value) {
         super(source);

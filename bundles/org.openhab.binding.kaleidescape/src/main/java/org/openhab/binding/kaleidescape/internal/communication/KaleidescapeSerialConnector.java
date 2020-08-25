@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
 public class KaleidescapeSerialConnector extends KaleidescapeConnector {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeSerialConnector.class);
 
-    private String serialPortName;
-    private SerialPortManager serialPortManager;
+    private final String serialPortName;
+    private final SerialPortManager serialPortManager;
 
     private @Nullable SerialPort serialPort;
 

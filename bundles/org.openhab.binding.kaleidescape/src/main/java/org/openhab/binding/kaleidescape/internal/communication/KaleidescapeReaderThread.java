@@ -40,9 +40,10 @@ public class KaleidescapeReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param connectionId a string that uniquely identifies the particular connection
      */
-    public KaleidescapeReaderThread(KaleidescapeConnector connector, String uid) {
-        super(KaleidescapeBindingConstants.BINDING_ID + "-" + uid);
+    public KaleidescapeReaderThread(KaleidescapeConnector connector, String connectionId) {
+        super("OH-binding-" + KaleidescapeBindingConstants.BINDING_ID + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
