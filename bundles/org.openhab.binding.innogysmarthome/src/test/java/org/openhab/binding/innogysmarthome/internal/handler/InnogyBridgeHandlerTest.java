@@ -15,6 +15,7 @@ package org.openhab.binding.innogysmarthome.internal.handler;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+import java.net.ConnectException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.ScheduledExecutorService;
@@ -123,6 +124,25 @@ public class InnogyBridgeHandlerTest {
         bridgeHandler.connectionClosed();
 
         verify(webSocketMock, times(3)).start(); // automatically restarted (with a delay)
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+    }
+
+    @Test
+    public void testConnectionClosedReconnectNotPossible() throws Exception {
+        Configuration bridgeConfig = new Configuration();
+
+        when(bridgeMock.getConfiguration()).thenReturn(bridgeConfig);
+
+        bridgeHandler.initialize();
+
+        verify(webSocketMock).start();
+        assertEquals(1, bridgeHandler.getDirectExecutionCount());
+
+        doThrow(new ConnectException("Connection refused")).when(webSocketMock).start();
+
+        bridgeHandler.connectionClosed();
+
+        verify(webSocketMock, times(10)).start(); // automatic reconnect attempts (with a delay)
         assertEquals(1, bridgeHandler.getDirectExecutionCount());
     }
 
