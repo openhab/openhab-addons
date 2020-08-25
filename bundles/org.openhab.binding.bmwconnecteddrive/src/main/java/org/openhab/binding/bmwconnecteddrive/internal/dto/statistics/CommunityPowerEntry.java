@@ -10,13 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
 
 /**
- * The {@link BevRexAttributesMap} Data Transfer Object
+ * The {@link CommunityPowerEntry} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class BevRexAttributesMap {
-    public BevRexAttributes attributesMap;
+public class CommunityPowerEntry {
+    public float communityLow;// ": 11.05,
+    public float communityAverage;// ": 16.28,
+    public float communityHigh;// ": 21.99,
+    public float userAverage;// ": 16.46
 }

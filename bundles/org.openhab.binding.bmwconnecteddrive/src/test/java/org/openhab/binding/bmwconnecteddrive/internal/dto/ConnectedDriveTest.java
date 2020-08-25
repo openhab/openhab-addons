@@ -34,7 +34,7 @@ public class ConnectedDriveTest {
 
     @Test
     public void testUserInfo() {
-        String resource1 = FileReader.readFileInString("src/test/resources/connected-drive-account-info.json");
+        String resource1 = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
         ConnectedDriveUserInfo userInfo = GSON.fromJson(resource1, ConnectedDriveUserInfo.class);
         List<Vehicle> vehicles = userInfo.getVehicles();
         assertEquals("Number of Vehicles", 1, vehicles.size());

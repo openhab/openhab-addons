@@ -10,18 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
 
 /**
- * The {@link CBSMessage} Data Transfer Object
+ * The {@link CommunityEletricDistanceEntry} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class CBSMessage {
-    public String description; // ": "Nächster Wechsel spätestens zum angegebenen Termin.",
-    public String text; // ": "Bremsflüssigkeit",
-    public int id; // ": 3,
-    public String status; // ": "OK",
-    public String messageType; // : "CBS",
-    public String date; // 2021-11"
+public class CommunityEletricDistanceEntry {
+    public float communityLow;// ": 19,
+    public float communityAverage;// ": 40850.56,
+    public float communityHigh;// ": 193006,
+    public float userTotal;// ": 16629.4
 }

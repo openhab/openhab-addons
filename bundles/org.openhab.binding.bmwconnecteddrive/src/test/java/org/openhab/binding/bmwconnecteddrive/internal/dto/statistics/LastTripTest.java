@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
@@ -21,20 +21,20 @@ import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import com.google.gson.Gson;
 
 /**
- * The {@link BevRexVehicleTest} Test json responses from ConnectedDrive Portal
+ * The {@link LastTripTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BevRexVehicleTest {
+public class LastTripTest {
     private static final Gson GSON = new Gson();
 
     @Test
-    public void testtestBEV_REX_Values() {
-        String resource1 = FileReader.readFileInString("src/test/resources/vehicle.json");
-        BevRexAttributesMap attributesMap = GSON.fromJson(resource1, BevRexAttributesMap.class);
-        BevRexAttributes attributes = attributesMap.attributesMap;
-        assertEquals("Mileage", 17236.0, attributes.mileage, 0.1);
-        assertEquals("Heading", 41, attributes.heading, 0.0001);
+    public void testUserInfo() {
+        String content = FileReader.readFileInString("src/test/resources/webapi/last-trip.json");
+        LastTrip lt = GSON.fromJson(content, LastTrip.class);
+        Trip trip = lt.lastTrip;
+        assertNotNull(trip);
+        System.out.println(trip.totalDistance);
     }
 }

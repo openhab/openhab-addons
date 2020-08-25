@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hybrid-range-values">
+		<label>Range values for Plugin-Hybrid or Electric Vehicles plus Range Extender</label>
+		<description>Provides range, state of charge and fuel values</description>
+		<channels>
+			<channel id="mileage" typeId="mileage-channel"/>
+			<channel id="remaining-range" typeId="remaining-range-channel"/>
+			<channel id="remaining-soc" typeId="remaining-soc-channel"/>
+			<channel id="last-update" typeId="last-update-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
