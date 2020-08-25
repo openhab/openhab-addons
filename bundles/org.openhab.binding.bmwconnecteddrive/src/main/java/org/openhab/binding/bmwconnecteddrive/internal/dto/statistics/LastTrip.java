@@ -10,16 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
-
-import java.util.List;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
 
 /**
- * The {@link VehicleMessages} Data Transfer Object
+ * The {@link LastTrip} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class VehicleMessages {
-    public List<CCMMessage> ccmMessages;
-    public List<CBSMessage> cbsMessages;
+public class LastTrip {
+    public Trip lastTrip;
 }

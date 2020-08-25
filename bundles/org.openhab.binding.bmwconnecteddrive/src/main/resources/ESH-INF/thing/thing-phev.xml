@@ -4,13 +4,13 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="BEV_REX">
+	<thing-type id="PHEV">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>BMW Electric Vehicle with REX</label>
-		<description>Electric Car with Range Extender</description>
+		<label>BMW Plug-In-Hybrid Electric Vehicle</label>
+		<description>Conventional Fuel Car with supporting Electric Engine</description>
 
 		<channel-groups>
 			<channel-group id="range" typeId="hybrid-range-values"/>

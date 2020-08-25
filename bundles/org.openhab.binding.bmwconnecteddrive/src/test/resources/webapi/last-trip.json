@@ -1,0 +1,19 @@
+{
+	"lastTrip": {
+		"efficiencyValue": 0.98,
+		"totalDistance": 2,
+		"electricDistance": 2,
+		"avgElectricConsumption": 7,
+		"avgRecuperation": 6,
+		"drivingModeValue": 0.87,
+		"accelerationValue": 0.99,
+		"anticipationValue": 0.99,
+		"totalConsumptionValue": 1.25,
+		"auxiliaryConsumptionValue": 0.78,
+		"avgCombinedConsumption": 0,
+		"electricDistanceRatio": 100,
+		"savedFuel": 0,
+		"date": "2020-08-24T17:55:00+0000",
+		"duration": 5
+	}
+}

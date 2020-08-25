@@ -12,11 +12,10 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CARDATA_FINGERPRINT;
 import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -43,16 +42,19 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributes;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.BevRexAttributesMap;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.efficiency.Efficiency;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.efficiency.Score;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.efficiency.TripEntry;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.Community;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.Trip;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Status;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,12 +69,13 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
-    private static final Gson GSON = new Gson();
+    private final static Gson GSON = new Gson();
 
     private String driveTrain;
     private HttpClient httpClient;
     private Token token = new Token();
 
+    private @Nullable ConnectedCarConfiguration configuration;
     private @Nullable ConnectedDriveBridgeHandler bridgeHandler;
     protected @Nullable ScheduledFuture<?> refreshJob;
 
@@ -81,21 +84,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
     // Connected Drive APIs
     private @Nullable String vehicleAPI;
-    private @Nullable String navigationAPI;
-    private @Nullable String efficiencyAPI;
-    private @Nullable String remoteControlAPI;
-    private @Nullable String remoteExecutionAPI;
-    private @Nullable String sendMessageAPI;
     private @Nullable String imageAPI;
-
-    private @Nullable String lastTripAPI;// = baseUrl + "/statistics/lastTrip";
-    private @Nullable String allTripsAPI;// = baseUrl + "/statistics/allTrips";
-    private @Nullable String chargeAPI;// = baseUrl + "/chargingprofile";
-    private @Nullable String destinationAPI;// = baseUrl + "/destinations";
-    private List<String> allAPIs = new ArrayList<String>();
-
-    private @Nullable String vehicleCache;
-    private @Nullable String efficiencyCache;
+    private @Nullable String lastTripAPI;
+    private @Nullable String allTripsAPI;
+    private @Nullable String chargeAPI;
+    private @Nullable String destinationAPI;
 
     public ConnectedCarHandler(Thing thing, HttpClient hc, String type) {
         super(thing);
@@ -108,11 +101,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         if (command instanceof RefreshType) {
             String group = channelUID.getGroupId();
             logger.info("REFRESH {}", group);
-            if (CHANNEL_GROUP_LAST_TRIP.equals(group) || CHANNEL_GROUP_LAST_TRIP.equals(group)) {
-                updateEfficiencyStates(efficiencyCache);
-            } else if (CHANNEL_GROUP_CAR_STATUS.equals(group) || CHANNEL_GROUP_LOCATION.equals(group)) {
-                updateRangeStates(vehicleCache);
-            }
         } else {
             logger.info("No refresh");
         }
@@ -159,6 +147,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         ConnectedCarConfiguration config = getConfigAs(ConnectedCarConfiguration.class);
+        configuration = config;
         if (config != null) {
             scheduler.execute(() -> {
                 Bridge bridge = getBridge();
@@ -169,32 +158,25 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
                                 + config.vin;
                         vehicleAPI = baseUrl + "/status";
-                        allAPIs.add(vehicleAPI);
                         lastTripAPI = baseUrl + "/statistics/lastTrip";
-                        allAPIs.add(lastTripAPI);
                         allTripsAPI = baseUrl + "/statistics/allTrips";
-                        allAPIs.add(allTripsAPI);
                         chargeAPI = baseUrl + "/chargingprofile";
-                        allAPIs.add(chargeAPI);
                         destinationAPI = baseUrl + "/destinations";
-                        allAPIs.add(destinationAPI);
-                        imageAPI = baseUrl + "/image?width=200&height=200&view=FRONT";
-                        allAPIs.add(imageAPI);
-                        tokenUpdate();
-                        allAPIs.forEach(entry -> {
-                            Request req = httpClient.newRequest(entry);
-                            req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-                            req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-                            try {
-                                ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-                                logger.info("Status {}", contentResponse.getStatus());
-                                logger.info("Reason {}", contentResponse.getReason());
-                                logger.info("{}", entry);
-                                logger.info("{}", contentResponse.getContentAsString());
-                            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                                logger.warn("Get Data Exception {}", e.getMessage());
-                            }
-                        });
+                        imageAPI = baseUrl + "/image";
+                        // allAPIs.forEach(entry -> {
+                        // Request req = httpClient.newRequest(entry);
+                        // req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+                        // req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+                        // try {
+                        // ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+                        // logger.info("Status {}", contentResponse.getStatus());
+                        // logger.info("Reason {}", contentResponse.getReason());
+                        // logger.info("{}", entry);
+                        // logger.info("{}", contentResponse.getContentAsString());
+                        // } catch (InterruptedException | TimeoutException | ExecutionException e) {
+                        // logger.warn("Get Data Exception {}", e.getMessage());
+                        // }
+                        // });
 
                         /**
                          * REMOTE_SERVICE_STATUS_URL = VEHICLE_VIN_URL +
@@ -217,7 +199,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 } else {
                     logger.warn("Bridge null");
                 }
-
                 getImage();
                 startSchedule(config.refreshInterval);
             });
@@ -274,152 +255,117 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         if (!tokenUpdate()) {
             return;
         }
-
-        Request req = httpClient.newRequest(vehicleAPI);
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-        try {
-            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            logger.info("Status {}", contentResponse.getStatus());
-            logger.info("Reason {}", contentResponse.getReason());
-            logger.info("Vehicle {}", contentResponse.getContentAsString());
-            updateStatus(ThingStatus.ONLINE);
-            updateRangeStates(contentResponse.getContentAsString());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Get Data Exception {}", e.getMessage());
-        }
-
-        req = httpClient.newRequest(efficiencyAPI);
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-        try {
-            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            logger.info("Status {}", contentResponse.getStatus());
-            logger.info("Reason {}", contentResponse.getReason());
-            logger.info("Efficiency {}", contentResponse.getContentAsString());
-            updateEfficiencyStates(contentResponse.getContentAsString());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Get Data Exception {}", e.getMessage());
-        }
-
-        req = httpClient.newRequest(navigationAPI);
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-        try {
-            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            logger.info("Status {}", contentResponse.getStatus());
-            logger.info("Reason {}", contentResponse.getReason());
-            logger.info("Navigation {}", contentResponse.getContentAsString());
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Get Data Exception {}", e.getMessage());
-        }
+        String vehicleStatusData = getJSON(vehicleAPI);
+        updateVehicleStatus(vehicleStatusData);
+        String lastTripData = getJSON(lastTripAPI);
+        updateLastTrip(lastTripData);
+        String allTripData = getJSON(allTripsAPI);
+        updateTripStatistics(allTripData);
+        String chargeData = getJSON(chargeAPI);
+        String destinationData = getJSON(destinationAPI);
     }
 
-    private void updateEfficiencyStates(@Nullable String content) {
-        if (content == null) {
-            logger.warn("No Efficiency Values available");
+    public @Nullable String getJSON(@Nullable String url) {
+        if (url == null) {
+            return null;
         }
-        efficiencyCache = content;
-        efficiencyFingerprint = content;
-        if (driveTrain.equals(CarType.ELECTRIC_REX.toString()) || driveTrain.equals(CarType.ELECTRIC.toString())) {
-            Efficiency eff = GSON.fromJson(content, Efficiency.class);
-
-            if (eff.lastTripList != null) {
-                eff.lastTripList.forEach(entry -> {
-                    if (entry.name.equals(TripEntry.LASTTRIP_DELTA_KM)) {
-                        updateState(tripDistance,
-                                QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
-                    } else if (entry.name.equals(TripEntry.ACTUAL_DISTANCE_WITHOUT_CHARGING)) {
-                        updateState(tripDistanceSinceCharging,
-                                QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
-                    } else if (entry.name.equals(TripEntry.AVERAGE_ELECTRIC_CONSUMPTION)) {
-                        updateState(tripAvgConsumption,
-                                QuantityType.valueOf(entry.lastTrip, SmartHomeUnits.KILOWATT_HOUR));
-                    } else if (entry.name.equals(TripEntry.AVERAGE_RECUPERATED_ENERGY_PER_100_KM)) {
-                        ThingHandlerCallback thcb = super.getCallback();
-                        logger.info("Callback {}", thcb);
-                        updateState(tripAvgRecuperation,
-                                QuantityType.valueOf(entry.lastTrip, SmartHomeUnits.KILOWATT_HOUR));
-                    }
-                });
+        Request req = httpClient.newRequest(url);
+        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
+        try {
+            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+            if (contentResponse.getStatus() != 200) {
+                logger.info("URL {}", url);
+                logger.info("Status {}", contentResponse.getStatus());
+                logger.info("Reason {}", contentResponse.getReason());
+            } else {
+                updateStatus(ThingStatus.ONLINE);
+                return contentResponse.getContentAsString();
             }
-            if (eff.scoreList != null) {
-                eff.scoreList.forEach(entry -> {
-                    if (entry.attrName.equals(Score.CUMULATED_ELECTRIC_DRIVEN_DISTANCE)) {
-                        updateState(lifeTimeCumulatedDrivenDistance,
-                                QuantityType.valueOf(entry.lifeTime, MetricPrefix.KILO(SIUnits.METRE)));
-                    } else if (entry.attrName.equals(Score.LONGEST_DISTANCE_WITHOUT_CHARGING)) {
-                        updateState(lifeTimeSingleLongestDistance,
-                                QuantityType.valueOf(entry.lifeTime, MetricPrefix.KILO(SIUnits.METRE)));
-                    } else if (entry.attrName.equals(Score.AVERAGE_ELECTRIC_CONSUMPTION)) {
-                        updateState(lifeTimeAverageConsumption,
-                                QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
-                    } else if (entry.attrName.equals(Score.AVERAGE_RECUPERATED_ENERGY_PER_100_KM)) {
-                        // create channel on demand
-                        // ChannelUID cuid = new ChannelUID(thing.getUID(), ConnectedDriveConstants.AVG_RECUPERATION);
-                        // logger.info("update {} with {}", cuid, entry.lifeTime);
-                        // updateState(cuid, QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
-                        updateState(lifeTimeAverageRecuperation,
-                                QuantityType.valueOf(entry.lifeTime, SmartHomeUnits.KILOWATT_HOUR));
-                    }
-                });
-            }
-        } else {
-            logger.warn("No Efficiency values for {} supported yet", driveTrain);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Get Data Exception {}", e.getMessage());
         }
+        return null;
     }
 
-    private void updateRangeStates(@Nullable String content) {
+    private void updateTripStatistics(@Nullable String content) {
         if (content == null) {
             logger.warn("No Vehicle Values available");
         }
-        vehicleCache = content;
+        AllTrips at = GSON.fromJson(content, AllTrips.class);
+        Community c = at.allTrips;
+        updateState(lifeTimeCumulatedDrivenDistance, QuantityType
+                .valueOf(Converter.round(c.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
+        updateState(lifeTimeSingleLongestDistance,
+                QuantityType.valueOf(Converter.round(c.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
+        updateState(lifeTimeAverageConsumption, QuantityType
+                .valueOf(Converter.round(c.avgElectricConsumption.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+        updateState(lifeTimeAverageRecuperation,
+                QuantityType.valueOf(Converter.round(c.avgRecuperation.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+        updateState(tripDistanceSinceCharging, QuantityType
+                .valueOf(Converter.round(c.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
+    }
+
+    private void updateLastTrip(@Nullable String content) {
+        if (content == null) {
+            logger.warn("No Vehicle Values available");
+        }
+        LastTrip lt = GSON.fromJson(content, LastTrip.class);
+        Trip trip = lt.lastTrip;
+        updateState(tripDistance,
+                QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
+        // updateState(tripDistanceSinceCharging,
+        // QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
+        updateState(tripAvgConsumption,
+                QuantityType.valueOf(Converter.round(trip.avgElectricConsumption), SmartHomeUnits.KILOWATT_HOUR));
+        updateState(tripAvgRecuperation,
+                QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
+    }
+
+    private void updateVehicleStatus(@Nullable String content) {
+        if (content == null) {
+            logger.warn("No Vehicle Values available");
+        }
         if (driveTrain.equals(CarType.ELECTRIC_REX.toString())) {
-            BevRexAttributesMap data = GSON.fromJson(content, BevRexAttributesMap.class);
-            BevRexAttributes bevRexAttributes = data.attributesMap;
-            logger.info("Update Milage {} Channel {}", bevRexAttributes.mileage, mileage.toString());
+            Status status = GSON.fromJson(content, Status.class);
+            VehicleStatus vStatus = status.vehicleStatus;
+            logger.info("Update Milage {} Channel {}", vStatus.mileage, mileage.toString());
             // based on unit of length decide if range shall be reported in km or miles
-            if (bevRexAttributes.unitOfLength.equals("km")) {
-                updateState(mileage, QuantityType.valueOf(bevRexAttributes.mileage, MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(remainingRangeElectric, QuantityType.valueOf(bevRexAttributes.beRemainingRangeElectricKm,
-                        MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(remainingRangeFuel, QuantityType.valueOf(bevRexAttributes.beRemainingRangeFuelKm,
-                        MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(remainingRange,
-                        QuantityType.valueOf(
-                                bevRexAttributes.beRemainingRangeElectricKm + bevRexAttributes.beRemainingRangeFuelKm,
-                                MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(rangeRadius,
-                        new DecimalType(
-                                (bevRexAttributes.beRemainingRangeElectricKm + bevRexAttributes.beRemainingRangeFuelKm)
-                                        * 1000));
-            } else {
-                updateState(mileage, QuantityType.valueOf(bevRexAttributes.mileage, ImperialUnits.MILE));
+            if (true) {
+                updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
                 updateState(remainingRangeElectric,
-                        QuantityType.valueOf(bevRexAttributes.beRemainingRangeElectricMile, ImperialUnits.MILE));
+                        QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
                 updateState(remainingRangeFuel,
-                        QuantityType.valueOf(bevRexAttributes.beRemainingRangeFuelMile, ImperialUnits.MILE));
+                        QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
                 updateState(remainingRange, QuantityType.valueOf(
-                        bevRexAttributes.beRemainingRangeElectricMile + bevRexAttributes.beRemainingRangeFuelMile,
-                        ImperialUnits.MILE));
-                updateState(rangeRadius, new DecimalType(
-                        (bevRexAttributes.beRemainingRangeElectricMile + bevRexAttributes.beRemainingRangeFuelMile)
-                                * 1000));
+                        vStatus.remainingRangeElectric + vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(rangeRadius,
+                        new DecimalType((vStatus.remainingRangeElectric + vStatus.remainingRangeFuel) * 1000));
+            } else {
+                updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
+                updateState(remainingRangeElectric,
+                        QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
+                updateState(remainingRangeFuel,
+                        QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
+                updateState(remainingRange, QuantityType.valueOf(
+                        vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
+                updateState(rangeRadius,
+                        new DecimalType((vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls) * 1000));
             }
-            updateState(remainingSoc, QuantityType.valueOf(bevRexAttributes.chargingLevelHv, SmartHomeUnits.PERCENT));
-            updateState(remainingFuel, QuantityType.valueOf(bevRexAttributes.fuelPercent, SmartHomeUnits.PERCENT));
-            updateState(lastUpdate, new StringType(bevRexAttributes.Segment_LastTrip_time_segment_end_formatted));
+            updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
+            updateState(remainingFuel,
+                    QuantityType.valueOf(vStatus.remainingFuel * 100 / vStatus.maxFuel, SmartHomeUnits.PERCENT));
 
-            updateState(longitude, new DecimalType(bevRexAttributes.gps_lng));
-            updateState(latitude, new DecimalType(bevRexAttributes.gps_lat));
-            updateState(latlong, new StringType(bevRexAttributes.gps_lat + "," + bevRexAttributes.gps_lng));
-            logger.info("Update {} with {}", heading.toString(), bevRexAttributes.heading);
-            updateState(heading, QuantityType.valueOf(bevRexAttributes.heading, SmartHomeUnits.DEGREE_ANGLE));
-            // updateState(headingChannleUID, new DecimalType(bevRexAttributes.heading));
+            LocalDateTime datetime = LocalDateTime.parse(vStatus.internalDataTimeUTC, Converter.inputPattern);
+            updateState(lastUpdate, new StringType(datetime.format(Converter.outputPattern)));
 
-            bevRexAttributes.gps_lat = (float) 0.0;
-            bevRexAttributes.gps_lng = (float) 0.0;
-            vehicleFingerprint = GSON.toJson(bevRexAttributes);
+            Position p = vStatus.position;
+            updateState(latitude, new DecimalType(p.lat));
+            updateState(longitude, new DecimalType(p.lon));
+            updateState(latlong, new StringType(p.lat + "," + p.lon));
+            updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
+
+            vehicleFingerprint = GSON.toJson(vStatus);
         } else {
             vehicleFingerprint = content;
             logger.warn("No update of for {} which {}", driveTrain, CarType.ELECTRIC_REX.toString());
@@ -428,26 +374,34 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
     public void getImage() {
         if (!tokenUpdate()) {
+            logger.warn("Car image Authorization failed");
+            return;
+        }
+        ConnectedCarConfiguration localConfig = configuration;
+        if (localConfig == null) {
+            logger.warn("Car image cannot be retrieved without config data");
             return;
         }
 
-        logger.info("Get image {}", imageAPI);
-        Request req = httpClient.newRequest(imageAPI);
+        Request req = httpClient.newRequest(imageAPI + "?width=" + localConfig.imageSize + "&height="
+                + localConfig.imageSize + "&view=" + localConfig.imageViewport);
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
         req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
         try {
             ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            logger.info("getStatus {}", contentResponse.getStatus());
-            logger.info("getMediaType {}", contentResponse.getMediaType());
+            // logger.info("getStatus {}", contentResponse.getStatus());
+            // logger.info("getMediaType {}", contentResponse.getMediaType());
             byte[] image = contentResponse.getContent();
-            updateState(imageChannel, new RawType(image, RawType.DEFAULT_MIME_TYPE));
+            String contentType = HttpUtil.guessContentTypeFromData(image);
+            logger.info("Image Content Type {} Size {}", contentType, image.length);
+            updateState(imageChannel, new RawType(image, contentType));
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Get Data Exception {}", e.getMessage());
         }
     }
 
     public synchronized boolean tokenUpdate() {
-        if (token.isExpired()) {
+        if (token.isExpired() || !token.isValid()) {
             token = bridgeHandler.getToken();
             if (token.isExpired() || !token.isValid()) {
                 logger.info("Token update failed!");
