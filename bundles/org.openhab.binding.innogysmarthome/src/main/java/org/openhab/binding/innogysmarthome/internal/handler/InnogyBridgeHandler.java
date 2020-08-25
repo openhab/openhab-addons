@@ -241,7 +241,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         setBridgeProperties(bridgeDevice);
         bridgeId = bridgeDevice.getId();
         startWebsocket();
-        cancelReinitJob();
     }
 
     /**
