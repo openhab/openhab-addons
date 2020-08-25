@@ -278,11 +278,11 @@ public class VerisureSession {
 
         switch (response.getStatus()) {
             case HttpStatus.OK_200:
-                if (content.contains("<title>MyPages</title>")) {
+                if (content.contains("<link href=\"/newapp")) {
                     setPasswordFromCookie();
                     return true;
                 } else {
-                    logger.debug("Not on mypages,verisure.com, we need to login again!");
+                    logger.debug("We need to login again!");
                     return false;
                 }
             case HttpStatus.MOVED_TEMPORARILY_302:
