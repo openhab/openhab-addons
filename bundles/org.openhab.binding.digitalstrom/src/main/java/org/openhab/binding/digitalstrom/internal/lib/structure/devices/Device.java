@@ -16,10 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.openhab.binding.digitalstrom.internal.lib.config.Config;
+import org.openhab.binding.digitalstrom.internal.lib.event.constants.EventNames;
 import org.openhab.binding.digitalstrom.internal.lib.event.types.EventItem;
+import org.openhab.binding.digitalstrom.internal.lib.sensorjobexecutor.sensorjob.impl.DeviceConsumptionSensorJob;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceSceneSpec;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.DeviceStateUpdate;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.DeviceBinarayInputEnum;
+import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FuncNameAndColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.FunctionalColorGroupEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.OutputModeEnum;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.deviceparameters.constants.SensorEnum;
@@ -471,7 +474,8 @@ public interface Device extends GeneralDeviceInformation {
      *
      * @param sceneProperties to save
      */
-    void saveConfigSceneSpecificationIntoDevice(Map<String, String> sceneProperties);
+    void saveConfigSceneSpecificationIntoDevice(
+            @org.eclipse.jdt.annotation.NonNull Map<@org.eclipse.jdt.annotation.NonNull String, @org.eclipse.jdt.annotation.NonNull String> sceneProperties);
 
     /**
      * Returns the min output value.

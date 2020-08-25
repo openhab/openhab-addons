@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -299,7 +300,8 @@ public class ZoneTemperatureControlHandler extends BaseThingHandler implements T
                                 "The communication with temperation sensor fails. Temperature control state emergency (temperature control though the control value) is active.");
                     }
                 }
-                Map<String, String> properties = editProperties();
+                @NonNull
+                Map<@NonNull String, @NonNull String> properties = editProperties();
                 properties.put("controlDSUID", tempControlStatus.getControlDSUID());
                 properties.put("controlMode", controlMode.getKey());
                 properties.put("controlState", controlState.getKey());

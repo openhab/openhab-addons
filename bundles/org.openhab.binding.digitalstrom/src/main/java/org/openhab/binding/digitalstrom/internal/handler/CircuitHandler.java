@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -185,7 +186,7 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
     @Override
     public void onDeviceRemoved(GeneralDeviceInformation device) {
         if (device instanceof Circuit) {
-            this.circuit = null;
+            this.circuit = (Circuit) device;
             if (this.getThing().getStatus().equals(ThingStatus.ONLINE)) {
                 if (!((Device) circuit).isPresent()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
@@ -221,7 +222,8 @@ public class CircuitHandler extends BaseThingHandler implements DeviceStatusList
 
     private void checkCircuitInfoProperties(Circuit device) {
         boolean propertiesChanged = false;
-        Map<String, String> properties = editProperties();
+        @NonNull
+        Map<@NonNull String, @NonNull String> properties = editProperties();
         // check device info
         if (device.getName() != null) {
             properties.put(DigitalSTROMBindingConstants.DEVICE_NAME, device.getName());
