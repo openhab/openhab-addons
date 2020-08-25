@@ -55,8 +55,8 @@ public class PanasonicBindingConstants {
     public static final String ZERO = "0";
     public static final String ONE = "1";
     public static final String TWO = "2";
-    public static final String STOP = "Stopped";
-    public static final String PLAY = "Playing";
-    public static final String PAUSE = "Paused";
+    public static final String STOP = "STOP";
+    public static final String PLAY = "PLAY";
+    public static final String PAUSE = "PAUSE";
     public static final String UNKNOWN = "unknown";
 }

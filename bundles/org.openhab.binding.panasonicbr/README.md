@@ -1,8 +1,8 @@
 # Panasonic Blu-ray Player Binding
 
-This binding connects Panasonic Blu-ray players from 2011/2012 and UHD player from 2019.
-Supported Blu-ray models: DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT-120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500 
-Supported UHD models: DP-UB420, DP-UB820 & DP-UB9000
+This binding connects Panasonic Blu-ray players from 2011/2012 and UHD players from 2019.
+Supported Blu-ray models: DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT-120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500. 
+Supported UHD models: DP-UB420, DP-UB820 & DP-UB9000.
 
 TBD...
 

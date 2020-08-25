@@ -51,6 +51,13 @@ import org.slf4j.LoggerFactory;
 public class PanasonicHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD = 10;
 
+    private static final Fields CONFIG_POST_CMD = new Fields();
+    static {
+        // pre-define the POST body for status update calls
+        CONFIG_POST_CMD.add("cCMD_PST.x", "100");
+        CONFIG_POST_CMD.add("cCMD_PST.y", "100");
+    }
+
     private final Logger logger = LoggerFactory.getLogger(PanasonicHandler.class);
     private final HttpClient httpClient;
 
@@ -59,7 +66,6 @@ public class PanasonicHandler extends BaseThingHandler {
     private String urlStr = "http://%host%/WAN/dvdr/dvdr_ctrl.cgi";
     private int refreshInterval = DEFAULT_REFRESH_PERIOD;
     private String playerStatus = "";
-    private Fields configPostCmd = new Fields();
 
     public PanasonicHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -75,13 +81,13 @@ public class PanasonicHandler extends BaseThingHandler {
 
         if (host != null) {
             urlStr = urlStr.replace("%host%", host);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must by specified");
+            return;
         }
 
-        // pre-define the POST body for status update calls
-        configPostCmd.add("cCMD_PST.x", "100");
-        configPostCmd.add("cCMD_PST.y", "100");
-
-        this.refreshInterval = config.refresh;
+        if (config.refresh >= 10)
+            refreshInterval = config.refresh;
 
         startAutomaticRefresh();
         updateStatus(ThingStatus.UNKNOWN);
@@ -94,19 +100,24 @@ public class PanasonicHandler extends BaseThingHandler {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                final String response = sendCommand(null, configPostCmd);
+                final String response = sendCommand(null, CONFIG_POST_CMD);
                 logger.debug("Blu-ray status: {}", response);
 
                 final String[] statusLines = response.split(CRLF);
 
                 // get the second line of the status message
                 if (statusLines[1] != null) {
-                    playerStatus = statusLines[1];
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                }
 
-                // update the channels
-                updateStatus();
+                    // if new status is different than the previous, cache the status and update the channels
+                    if (!playerStatus.equals(statusLines[1])) {
+                        playerStatus = statusLines[1];
+                        updateStatus();
+                    } else {
+                        // otherwise don't do anything
+                        return;
+                    }
+                }
             };
             this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshInterval, TimeUnit.SECONDS);
         }
