@@ -109,6 +109,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private String localIP = "";
     private String localPort = "";
 
+    private String lastWakeupReason = "";
+
     /**
      * Constructor
      *
@@ -197,6 +199,8 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     private boolean initializeThing() throws ShellyApiException {
         // Init from thing type to have a basic profile, gets updated when device info is received from API
         stopping = false;
+        refreshSettings = false;
+        lastWakeupReason = "";
         profile.initFromThingType(thingType);
         api.setConfig(thingName, config);
         cache.setThingName(thingName);
@@ -899,10 +903,13 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         boolean changed = false;
         if ((valueArray != null) && (valueArray.size() > 0)) {
             String reason = getString((String) valueArray.get(0));
+            String newVal = valueArray.toString();
             changed = updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, getStringType(reason));
+            changed |= !lastWakeupReason.isEmpty() && !lastWakeupReason.equals(newVal);
             if (changed) {
                 postEvent(reason.toUpperCase(), true);
             }
+            lastWakeupReason = newVal;
         }
         return changed;
     }

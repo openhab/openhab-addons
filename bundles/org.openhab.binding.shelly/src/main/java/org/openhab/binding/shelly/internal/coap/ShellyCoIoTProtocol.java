@@ -183,8 +183,6 @@ public class ShellyCoIoTProtocol {
     protected void handleInputEvent(CoIotDescrSen sen, String type, Integer count, Map<String, State> updates) {
         int idx = getSensorNumber(sen.desc, sen.id) - 1;
         String group = profile.getInputGroup(idx);
-        logger.debug("{}: handleInputEvent, sen={}/{}, type={}, count={}, idx={},group={}", thingName, sen.type,
-                sen.desc, type, count, idx, group);
         if (count == -1) {
             // event type
             updateChannel(updates, group, CHANNEL_STATUS_EVENTTYPE, new StringType(type));

@@ -254,15 +254,7 @@ public class ShellyComponents {
                         ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), sdata));
             }
 
-            if ((sdata.actReasons != null) && (sdata.actReasons.size() > 0)) {
-                String reason = sdata.actReasons.get(0);
-                boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP,
-                        getStringType(reason));
-                updated |= changed;
-                if (changed) {
-                    thingHandler.postEvent(reason.toUpperCase(), true);
-                }
-            }
+            updated |= thingHandler.updateWakeupReason(sdata.actReasons);
 
             if ((sdata.contact != null) && sdata.contact.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},

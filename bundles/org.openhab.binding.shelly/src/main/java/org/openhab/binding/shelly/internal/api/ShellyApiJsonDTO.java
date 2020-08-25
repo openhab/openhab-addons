@@ -891,8 +891,7 @@ public class ShellyApiJsonDTO {
         public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
 
         @SerializedName("act_reasons")
-        // public String[] actReasons; // HT/Smoke/Flood: list of reasons which woke up the device
-        public List<String> actReasons;
+        public List<Object> actReasons; // HT/Smoke/Flood: list of reasons which woke up the device
 
         @SerializedName("sensor_error")
         public String sensorError; // 1.5.7: Only displayed in case of error
