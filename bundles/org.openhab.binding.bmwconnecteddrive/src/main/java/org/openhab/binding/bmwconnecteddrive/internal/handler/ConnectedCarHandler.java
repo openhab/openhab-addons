@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CARDATA_FINGERPRINT;
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +73,10 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private String driveTrain;
     private HttpClient httpClient;
     private Token token = new Token();
+    private boolean imperial = false;
+    private boolean hasFuel = false;
+    private boolean isElectric = false;
+    private boolean isHybrid = false;
 
     private @Nullable ConnectedCarConfiguration configuration;
     private @Nullable ConnectedDriveBridgeHandler bridgeHandler;
@@ -90,16 +93,40 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private @Nullable String chargeAPI;
     private @Nullable String destinationAPI;
 
-    public ConnectedCarHandler(Thing thing, HttpClient hc, String type) {
+    private @Nullable String vehicleStatusCache;
+    private @Nullable String lastTripCache;
+    private @Nullable String allTripsCache;
+
+    public ConnectedCarHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
         super(thing);
         httpClient = hc;
         driveTrain = type;
+        this.imperial = imperial;
+        hasFuel = type.equals(CarType.CONVENTIONAL.toString()) || type.equals(CarType.PLUGIN_HYBRID.toString())
+                || type.equals(CarType.ELECTRIC_REX.toString());
+        isElectric = type.equals(CarType.PLUGIN_HYBRID.toString()) || type.equals(CarType.ELECTRIC_REX.toString())
+                || type.equals(CarType.ELECTRIC.toString());
+        isHybrid = hasFuel && isElectric;
+        logger.info("DriveTrain {} isElectric {} hasFuel {} Imperial {}", type, isElectric, hasFuel, imperial);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             String group = channelUID.getGroupId();
+            if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
+                if (lastTripCache != null) {
+                    updateLastTrip(lastTripCache);
+                }
+            } else if (CHANNEL_GROUP_LIFETIME.equals(group)) {
+                if (allTripsCache != null) {
+                    updateTripStatistics(allTripsCache);
+                }
+            } else {
+                if (vehicleStatusCache != null) {
+                    updateVehicleStatus(vehicleStatusCache);
+                }
+            }
             logger.info("REFRESH {}", group);
         } else {
             logger.info("No refresh");
@@ -291,7 +318,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private void updateTripStatistics(@Nullable String content) {
         if (content == null) {
             logger.warn("No Vehicle Values available");
+            return;
         }
+        allTripsCache = content;
         AllTrips at = GSON.fromJson(content, AllTrips.class);
         Community c = at.allTrips;
         updateState(lifeTimeCumulatedDrivenDistance, QuantityType
@@ -309,7 +338,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private void updateLastTrip(@Nullable String content) {
         if (content == null) {
             logger.warn("No Vehicle Values available");
+            return;
         }
+        lastTripCache = content;
         LastTrip lt = GSON.fromJson(content, LastTrip.class);
         Trip trip = lt.lastTrip;
         updateState(tripDistance,
@@ -322,54 +353,79 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
     }
 
-    private void updateVehicleStatus(@Nullable String content) {
+    void updateVehicleStatus(@Nullable String content) {
         if (content == null) {
             logger.warn("No Vehicle Values available");
+            return;
         }
-        if (driveTrain.equals(CarType.ELECTRIC_REX.toString())) {
-            Status status = GSON.fromJson(content, Status.class);
-            VehicleStatus vStatus = status.vehicleStatus;
-            logger.info("Update Milage {} Channel {}", vStatus.mileage, mileage.toString());
-            // based on unit of length decide if range shall be reported in km or miles
-            if (true) {
-                updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
+        vehicleStatusCache = content;
+        logger.info("Vehicle Status {}", content);
+        Status status = GSON.fromJson(content, Status.class);
+        VehicleStatus vStatus = status.vehicleStatus;
+        logger.info("Update Milage {} Channel {}", vStatus.mileage, mileage.toString());
+        // based on unit of length decide if range shall be reported in km or miles
+        if (!imperial) {
+            updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
+            float totalRange = 0;
+            if (isElectric) {
+                totalRange += vStatus.remainingRangeElectric;
                 updateState(remainingRangeElectric,
                         QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
+                logger.info("updated {} {}", remainingRangeElectric, vStatus.remainingRangeElectric);
+            } else {
+                logger.info("{} not updated", remainingRangeElectric);
+            }
+            if (hasFuel) {
+                totalRange += vStatus.remainingRangeFuel;
                 updateState(remainingRangeFuel,
                         QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(remainingRange, QuantityType.valueOf(
-                        vStatus.remainingRangeElectric + vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(rangeRadius,
-                        new DecimalType((vStatus.remainingRangeElectric + vStatus.remainingRangeFuel) * 1000));
+                logger.info("updated {} {}", remainingRangeFuel, vStatus.remainingRangeFuel);
             } else {
-                updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
+                logger.info("{} not updated", remainingRangeFuel);
+            }
+            if (isHybrid) {
+                updateState(remainingRangeHybrid,
+                        QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            updateState(rangeRadius, new DecimalType((totalRange) * 1000));
+        } else {
+            updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
+            float totalRange = 0;
+            if (isElectric) {
+                totalRange += vStatus.remainingRangeElectricMls;
                 updateState(remainingRangeElectric,
                         QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
+            }
+            if (hasFuel) {
+                totalRange = vStatus.remainingRangeFuelMls;
                 updateState(remainingRangeFuel,
                         QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
-                updateState(remainingRange, QuantityType.valueOf(
-                        vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
-                updateState(rangeRadius,
-                        new DecimalType((vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls) * 1000));
             }
+            if (isHybrid) {
+                updateState(remainingRangeHybrid, QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
+            }
+            updateState(rangeRadius, new DecimalType((totalRange) * 5280)); // Miles to feet
+        }
+        if (isElectric) {
             updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
+        }
+        if (hasFuel) {
             updateState(remainingFuel,
                     QuantityType.valueOf(vStatus.remainingFuel * 100 / vStatus.maxFuel, SmartHomeUnits.PERCENT));
-
-            LocalDateTime datetime = LocalDateTime.parse(vStatus.internalDataTimeUTC, Converter.inputPattern);
-            updateState(lastUpdate, new StringType(datetime.format(Converter.outputPattern)));
-
-            Position p = vStatus.position;
-            updateState(latitude, new DecimalType(p.lat));
-            updateState(longitude, new DecimalType(p.lon));
-            updateState(latlong, new StringType(p.lat + "," + p.lon));
-            updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
-
-            vehicleFingerprint = GSON.toJson(vStatus);
+            logger.info("updated {} {}", remainingFuel, vStatus.remainingFuel * 100 / vStatus.maxFuel);
         } else {
-            vehicleFingerprint = content;
-            logger.warn("No update of for {} which {}", driveTrain, CarType.ELECTRIC_REX.toString());
+            logger.info("{} not updated", remainingRangeFuel);
         }
+
+        updateState(lastUpdate, new StringType(Converter.getLocalDateTime(vStatus.internalDataTimeUTC)));
+
+        Position p = vStatus.position;
+        updateState(latitude, new DecimalType(p.lat));
+        updateState(longitude, new DecimalType(p.lon));
+        updateState(latlong, new StringType(p.lat + "," + p.lon));
+        updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
+
+        vehicleFingerprint = GSON.toJson(vStatus);
     }
 
     public void getImage() {
@@ -383,18 +439,23 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             return;
         }
 
-        Request req = httpClient.newRequest(imageAPI + "?width=" + localConfig.imageSize + "&height="
-                + localConfig.imageSize + "&view=" + localConfig.imageViewport);
+        String localImageUrl = imageAPI + "?width=" + localConfig.imageSize + "&height=" + localConfig.imageSize
+                + "&view=" + localConfig.imageViewport;
+        Request req = httpClient.newRequest(localImageUrl);
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
         req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
         try {
             ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            // logger.info("getStatus {}", contentResponse.getStatus());
-            // logger.info("getMediaType {}", contentResponse.getMediaType());
-            byte[] image = contentResponse.getContent();
-            String contentType = HttpUtil.guessContentTypeFromData(image);
-            logger.info("Image Content Type {} Size {}", contentType, image.length);
-            updateState(imageChannel, new RawType(image, contentType));
+            if (contentResponse.getStatus() != 200) {
+                logger.info("URL {}", localImageUrl);
+                logger.info("Status {}", contentResponse.getStatus());
+                logger.info("Reason {}", contentResponse.getReason());
+            } else {
+                byte[] image = contentResponse.getContent();
+                String contentType = HttpUtil.guessContentTypeFromData(image);
+                logger.info("Image Content Type {} Size {}", contentType, image.length);
+                updateState(imageChannel, new RawType(image, contentType));
+            }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Get Data Exception {}", e.getMessage());
         }

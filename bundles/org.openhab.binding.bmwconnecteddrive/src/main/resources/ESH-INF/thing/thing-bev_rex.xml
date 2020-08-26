@@ -21,6 +21,10 @@
 			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>
 		</channel-groups>
 
+		<properties>
+			<property name="Brand">BMW_I</property>
+		</properties>
+
 		<config-description>
 			<parameter name="vin" type="text" required="true">
 				<label>Vehicle Identification Number (VIN)</label>

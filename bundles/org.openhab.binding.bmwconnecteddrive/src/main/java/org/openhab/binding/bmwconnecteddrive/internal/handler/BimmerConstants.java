@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * are taken from the Bimmercode from github {@link https://github.com/bimmerconnected/bimmer_connected}
  * File defining these constants
  * {@link https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/account.py}
+ * https://customer.bmwgroup.com/one/app/oauth.js
  *
  * @author Bernd Weymann - Initial contribution
  */
