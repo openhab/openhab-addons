@@ -57,7 +57,7 @@ Vacuum Cleaner Config
 | is-charging         | Switch | Is Charging                | Is the vacuum cleaner currently charging?                                                 | True      |
 | available-commands  | String | Available Commands         | List of available commands.                                                               | True      |
 | error               | String | Error                      | Current error message in system.                                                          | True      |
-| command             | String | Send Command               | Send Commands to Vacuum Cleaner. (clean, pause, resume, stop, dock)                       | False     |
+| command             | String | Send Command               | Send Commands to Vacuum Cleaner. (clean with map, clean, pause, resume, stop, dock)                       | False     |
 | cleaning-category   | String | Cleaning Category          | Current or Last category of the cleaning. Manual, Normal House Cleaning or Spot Cleaning. | True      |
 | cleaning-mode       | String | Cleaning Mode              | Current or Last cleaning mode. Eco or Turbo.                                              | True      |
 | cleaning-modifier   | String | Cleaning Modifier          | Modifier of current or last cleaning. Normal or Double.                                   | True      |
@@ -92,7 +92,7 @@ String FannDammCommand  "Send Command" { channel = "neato:vacuumcleaner:fanndamm
 
 ```
 Frame label="Neato BotVac Connected" {
-    Switch item=FannDammCommand mappings=[clean="Clean",stop="Stop",pause="Pause",resume="Resume", dock="Send to dock"]
+    Switch item=FannDammCommand mappings=[cleanWithMap="cleanWithMap", clean="Clean",stop="Stop",pause="Pause",resume="Resume", dock="Send to dock"]
     Text item=FannDammBattery label="Battery level"
     Text item=FannDammState
     Text item=FannDammError label="Error Message" icon="siren"
