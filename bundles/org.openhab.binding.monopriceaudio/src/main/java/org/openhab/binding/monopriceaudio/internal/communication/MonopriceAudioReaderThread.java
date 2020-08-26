@@ -39,10 +39,10 @@ public class MonopriceAudioReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
-     * @param uid unique identifier from the connector
+     * @param connectionId a string that uniquely identifies the particular connection
      */
-    public MonopriceAudioReaderThread(MonopriceAudioConnector connector, String uid) {
-        super("OH-binding-" + MonopriceAudioBindingConstants.BINDING_ID + "-" + uid);
+    public MonopriceAudioReaderThread(MonopriceAudioConnector connector, String connectionId) {
+        super("OH-binding-" + MonopriceAudioBindingConstants.THING_TYPE_AMP + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
