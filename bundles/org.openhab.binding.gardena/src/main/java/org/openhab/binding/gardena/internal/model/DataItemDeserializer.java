@@ -23,7 +23,7 @@ import com.google.gson.*;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class DataItemDeserializer implements JsonDeserializer<DataItem> {
+public class DataItemDeserializer implements JsonDeserializer<DataItem<?>> {
     private static Gson gson = new GsonBuilder().create();
 
     @Override

@@ -18,5 +18,5 @@ package org.openhab.binding.gardena.internal.model.api;
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class DeviceDataItem extends DataItem {
+public class DeviceDataItem extends DataItem<Void> {
 }

@@ -18,6 +18,5 @@ package org.openhab.binding.gardena.internal.model.api;
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class CommonServiceDataItem extends DataItem {
-    public CommonService attributes;
+public class CommonServiceDataItem extends DataItem<CommonService> {
 }

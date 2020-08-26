@@ -22,5 +22,5 @@ import java.util.List;
 
 public class LocationResponse {
     public LocationDataItem data;
-    public List<DataItem> included;
+    public List<DataItem<?>> included;
 }

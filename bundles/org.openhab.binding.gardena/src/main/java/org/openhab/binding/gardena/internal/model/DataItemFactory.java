@@ -22,7 +22,7 @@ import org.openhab.binding.gardena.internal.model.api.*;
  */
 @NonNullByDefault
 public class DataItemFactory {
-    public static Class<? extends DataItem> create(String type) {
+    public static Class<? extends DataItem<?>> create(String type) {
         switch (type) {
             case "LOCATION":
                 return LocationDataItem.class;

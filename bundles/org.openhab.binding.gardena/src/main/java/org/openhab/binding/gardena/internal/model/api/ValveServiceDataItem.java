@@ -17,6 +17,5 @@ package org.openhab.binding.gardena.internal.model.api;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class ValveServiceDataItem extends DataItem {
-    public ValveService attributes;
+public class ValveServiceDataItem extends DataItem<ValveService> {
 }

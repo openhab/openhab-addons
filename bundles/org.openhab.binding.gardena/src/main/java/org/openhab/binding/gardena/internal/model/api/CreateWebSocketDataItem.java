@@ -18,6 +18,5 @@ package org.openhab.binding.gardena.internal.model.api;
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class CreateWebSocketDataItem extends DataItem {
-    public CreateWebSocket attributes;
+public class CreateWebSocketDataItem extends DataItem<CreateWebSocket> {
 }

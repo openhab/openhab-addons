@@ -168,12 +168,13 @@ public class GardenaThingHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        logger.debug("Command received: {}", command);
         try {
             boolean isOnCommand = command instanceof OnOffType && ((OnOffType) command) == OnOffType.ON;
             String dataItemProperty = getDeviceDataItemProperty(channelUID);
             if (RefreshType.REFRESH == command) {
-                logger.debug("Refreshing channel '{}'", channelUID);
-                updateChannel(channelUID);
+                logger.debug("Refreshing Gardena connection");
+                getGardenaSmart().restartWebsockets();
             } else if (isLocalDurationCommand(channelUID)) {
                 QuantityType<?> quantityType = (QuantityType<?>) command;
                 getDevice().getLocalService(dataItemProperty).commandDuration = quantityType.intValue() * 60;
@@ -183,7 +184,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                     logger.debug("Received Gardena command: {}, {}", gardenaCommand.getClass().getSimpleName(),
                             gardenaCommand.attributes.command);
 
-                    DataItem dataItem = PropertyUtils.getPropertyValue(getDevice(), dataItemProperty, DataItem.class);
+                    DataItem<?> dataItem = PropertyUtils.getPropertyValue(getDevice(), dataItemProperty, DataItem.class);
                     if (dataItem == null) {
                         logger.warn("DataItem {} is empty, ignoring command.", dataItemProperty);
                     } else {
@@ -265,9 +266,9 @@ public class GardenaThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns the Gardena smart system implementation if the bridge is available.
+     * Returns the Gardena account handler if the bridge is available.
      */
-    private GardenaSmart getGardenaSmart() throws AccountHandlerNotAvailableException {
+    private GardenaAccountHandler getGardenaAccountHandler() throws AccountHandlerNotAvailableException {
         if (getBridge() == null || getBridge().getHandler() == null
                 || ((GardenaAccountHandler) getBridge().getHandler()).getGardenaSmart() == null) {
             if (thing.getStatus() != ThingStatus.INITIALIZING) {
@@ -276,6 +277,13 @@ public class GardenaThingHandler extends BaseThingHandler {
             throw new AccountHandlerNotAvailableException("Gardena AccountHandler not yet available!");
         }
 
-        return ((GardenaAccountHandler) getBridge().getHandler()).getGardenaSmart();
+        return ((GardenaAccountHandler) getBridge().getHandler());
+    }
+
+    /**
+     * Returns the Gardena smart system implementation if the bridge is available.
+     */
+    private GardenaSmart getGardenaSmart() throws AccountHandlerNotAvailableException {
+        return getGardenaAccountHandler().getGardenaSmart();
     }
 }

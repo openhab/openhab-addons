@@ -110,7 +110,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
             for (LocationDataItem location : locationsResponse.data) {
                 LocationResponse locationResponse = loadLocation(location.id);
                 if (locationResponse.included != null) {
-                    for (DataItem dataItem : locationResponse.included) {
+                    for (DataItem<?> dataItem : locationResponse.included) {
                         handleDataItem(dataItem);
                     }
                 }
@@ -286,7 +286,8 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     /**
      * Restarts all websockets.
      */
-    private synchronized void restartWebsockets() {
+    @Override
+    public synchronized void restartWebsockets() {
         logger.debug("Restarting GardenaSmart Webservice");
         stopWebsockets();
         try {
@@ -300,7 +301,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     /**
      * Sets the dataItem from the websocket event into the correct device.
      */
-    private void handleDataItem(final DataItem dataItem) throws GardenaException {
+    private void handleDataItem(final DataItem<?> dataItem) throws GardenaException {
         final String deviceId = dataItem.getDeviceId();
         Device device = allDevicesById.get(deviceId);
         if (device == null && !(dataItem instanceof LocationDataItem)) {
@@ -336,7 +337,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     @Override
     public void onWebSocketMessage(String msg) {
         try {
-            DataItem dataItem = gson.fromJson(msg, DataItem.class);
+            DataItem<?> dataItem = gson.fromJson(msg, DataItem.class);
             handleDataItem(dataItem);
             Device device = allDevicesById.get(dataItem.getDeviceId());
             if (device != null && device.active) {
@@ -369,7 +370,7 @@ public class GardenaSmartImpl implements GardenaSmart, GardenaSmartWebSocketList
     }
 
     @Override
-    public void sendCommand(DataItem dataItem, GardenaCommand gardenaCommand) throws GardenaException {
+    public void sendCommand(DataItem<?> dataItem, GardenaCommand gardenaCommand) throws GardenaException {
         executeRequest(HttpMethod.PUT, URL_API_COMMAND + "/" + dataItem.id, new GardenaCommandRequest(gardenaCommand),
                 null);
     }

@@ -17,6 +17,5 @@ package org.openhab.binding.gardena.internal.model.api;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class SensorServiceDataItem extends DataItem {
-    public SensorService attributes;
+public class SensorServiceDataItem extends DataItem<SensorService> {
 }

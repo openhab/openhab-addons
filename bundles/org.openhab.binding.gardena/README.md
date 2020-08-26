@@ -99,12 +99,20 @@ smarthome:status WC_Valve_Duration // returns the duration of the last watering 
 smarthome:status WC_Valve_Activity // returns the current valve activity  (CLOSED|MANUAL_WATERING|SCHEDULED_WATERING)
 ```
 
-All channels are read-only, except the command group
+All channels are read-only, except the command group and the lastUpdate timestamp
 
 ```
 smarthome:send WC_Valve_cmd_Duration.sendCommand(10) // set the duration for the command to 10min
 smarthome:send WC_Valve_cmd_OpenWithDuration.sendCommand(ON) // start watering
 smarthome:send WC_Valve_cmd_CloseValve.sendCommand(ON) // stop any active watering
+```
+
+If you send a REFRESH command to the last update timestamp (no matter which thing), **ALL** items from **ALL** things are updated
+```
+DateTime LastUpdate "LastUpdate [%1$td.%1$tm.%1$tY %1$tH:%1$tM]" { channel="gardena:water_control:home:myWateringComputer:common#lastUpdate_timestamp" }
+
+// refresh ALL items
+smarthome:send LastUpdate REFRESH
 ```
 
 ### Debugging and Tracing

@@ -298,6 +298,9 @@
 			<channel id="rfLinkState_timestamp" typeId="timestamp">
 				<label>RF Link State Timestamp</label>
 			</channel>
+			<channel id="lastUpdate_timestamp" typeId="timestampRefresh">
+				<label>LastUpdate Timestamp</label>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -520,6 +523,12 @@
 		<label>Timestamp</label>
 		<description>Timestamp</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timestampRefresh">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>Timestamp</description>
 	</channel-type>
 
 	<channel-type id="name">

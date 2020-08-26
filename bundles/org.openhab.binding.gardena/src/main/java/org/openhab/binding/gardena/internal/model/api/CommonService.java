@@ -25,4 +25,5 @@ public class CommonService {
     public StringValue serial;
     public StringValue modelType;
     public TimestampedStringValue rfLinkState;
+    public TimestampValue lastUpdate = new TimestampValue();
 }

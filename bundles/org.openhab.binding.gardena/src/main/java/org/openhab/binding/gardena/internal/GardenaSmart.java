@@ -58,10 +58,15 @@ public interface GardenaSmart {
     /**
      * Sends a command to Gardena smart system.
      */
-    public void sendCommand(DataItem dataItem, GardenaCommand gardenaCommand) throws GardenaException;
+    public void sendCommand(DataItem<?> dataItem, GardenaCommand gardenaCommand) throws GardenaException;
 
     /**
      * Returns the id.
      */
     public String getId();
+
+    /**
+     * Restarts all WebSocket.
+     */
+    public void restartWebsockets();
 }

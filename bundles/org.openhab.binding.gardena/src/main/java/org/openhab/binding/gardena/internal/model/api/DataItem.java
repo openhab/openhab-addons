@@ -20,11 +20,13 @@ import org.apache.commons.lang.StringUtils;
  * @author Gerhard Riegler - Initial contribution
  */
 
-public class DataItem {
+public class DataItem<T> {
     public String id;
     public String type;
 
     public String getDeviceId() {
         return StringUtils.substringBeforeLast(id, ":");
     }
+
+    public T attributes;
 }

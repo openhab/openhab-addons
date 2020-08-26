@@ -14,6 +14,7 @@ package org.openhab.binding.gardena.internal.model;
 
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -138,6 +139,10 @@ public class Device {
             }
         } else {
             throw new GardenaException("Unknown dataItem with id: " + dataItem.id);
+        }
+
+        if (common != null && common.attributes != null) {
+            common.attributes.lastUpdate.timestamp = new Date();
         }
     }
 
