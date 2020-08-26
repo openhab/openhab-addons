@@ -130,6 +130,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         switch (lightType) {
             case ON_OFF_LIGHT:
             case ON_OFF_PLUGIN_UNIT:
+            case SMART_PLUG:
                 thingTypeUID = THING_TYPE_ONOFF_LIGHT;
                 break;
             case DIMMABLE_LIGHT:
@@ -158,7 +159,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             default:
                 logger.debug(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",
-                        light.modelid, light.name, lightType);
+                        light.modelid, light.name, light.type);
                 return;
         }
 
@@ -191,7 +192,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         } else if (sensor.type.contains("Presence")) { // ZHAPresence, CLIPPrensence
             thingTypeUID = THING_TYPE_PRESENCE_SENSOR;
         } else if (sensor.type.contains("Switch")) { // ZHASwitch
-            thingTypeUID = THING_TYPE_SWITCH;
+            if (sensor.modelid.contains("RGBW")) {
+                thingTypeUID = THING_TYPE_COLOR_CONTROL;
+            } else {
+                thingTypeUID = THING_TYPE_SWITCH;
+            }
         } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
             thingTypeUID = THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature

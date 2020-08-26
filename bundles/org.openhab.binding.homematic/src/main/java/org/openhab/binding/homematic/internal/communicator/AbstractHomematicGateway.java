@@ -530,7 +530,7 @@ public abstract class AbstractHomematicGateway implements RpcEventListener, Home
     @Override
     public void loadRssiValues() throws IOException {
         for (HmInterface hmInterface : availableInterfaces.keySet()) {
-            if (hmInterface == HmInterface.RF || hmInterface == HmInterface.CUXD) {
+            if (hmInterface == HmInterface.RF) {
                 List<HmRssiInfo> rssiInfos = getRpcClient(hmInterface).loadRssiInfo(hmInterface);
                 for (HmRssiInfo hmRssiInfo : rssiInfos) {
                     updateRssiInfo(hmRssiInfo.getAddress(), DATAPOINT_NAME_RSSI_DEVICE, hmRssiInfo.getDevice());

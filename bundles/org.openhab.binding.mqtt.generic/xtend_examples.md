@@ -32,6 +32,22 @@ Thing mqtt:topic:WorkBroker:WorkSonoff "Work Sonoff" (mqtt:broker:WorkBroker) @ 
         Type switch : WorkLightTele "Work Tele" [ stateTopic="tele/worklight/STATE", transformationPattern="JSONPATH:$.POWER" ]
 }
 ```
+tasmota.things: Example of a Tasmota Device with Availablity-Topic state and standard Online/Offline message-payload
+```xtend
+Bridge mqtt:broker:mybroker [ host="192.168.0.42", secure=false ]
+{
+    Thing mqtt:topic:SP111 "SP111" [availabilityTopic="tele/tasmota/LWT", payloadAvailable="Online", payloadNotAvailable="Offline"]{
+    Channels:
+        Type switch : power "Power" [ stateTopic="tele/tasmota/STATE", commandTopic="cmnd/tasmota/POWER", transformationPattern="JSONPATH:$.POWER", on="ON", off="OFF" ]
+        Type number : powerload "Power load"             [ stateTopic="tele/tasmota/SENSOR", transformationPattern="JSONPATH:$.ENERGY.Power"]
+        Type number : voltage   "Line voltage"           [ stateTopic="tele/tasmota/SENSOR", transformationPattern="JSONPATH:$.ENERGY.Voltage"]
+        Type number : current   "Line current"           [ stateTopic="tele/tasmota/SENSOR", transformationPattern="JSONPATH:$.ENERGY.Current"]
+        Type number : total     "Total energy today"     [ stateTopic="tele/tasmota/SENSOR", transformationPattern="JSONPATH:$.ENERGY.Today"]
+        Type number : totalyest "Total energy yesterday" [ stateTopic="tele/tasmota/SENSOR", transformationPattern="JSONPATH:$.ENERGY.Yesterday"]
+        Type number : rssi      "WiFi Signal Strength"   [ stateTopic="tele/tasmota/STATE", transformationPattern="JSONPATH:$.Wifi.RSSI"]
+       }
+}
+```
 
 When using .things and .items files for configuration, items and channels follow the format of:
 

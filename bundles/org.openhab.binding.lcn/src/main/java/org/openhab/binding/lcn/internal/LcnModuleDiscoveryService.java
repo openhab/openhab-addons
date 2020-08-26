@@ -33,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -65,7 +66,6 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
             .compile("=M(?<segId>\\d{3})(?<modId>\\d{3}).N(?<part>[1-2]{1})(?<name>.*)");
     private static final String SEGMENT_ID = "segmentId";
     private static final String MODULE_ID = "moduleId";
-    private static final String SERIAL_NUMBER = "serialNumber";
     private static final int MODULE_NAME_PART_COUNT = 2;
     private static final int DISCOVERY_TIMEOUT_SEC = 90;
     private static final int ACK_TIMEOUT_MS = 1000;
@@ -153,16 +153,18 @@ public class LcnModuleDiscoveryService extends AbstractDiscoveryService
 
                             ThingUID bridgeUid = localBridgeHandler.getThing().getUID();
                             String serialNumber = matcher.group("sn");
-                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_MODULE, bridgeUid,
-                                    serialNumber);
+
+                            String thingID = String.format("S%03dM%03d", addr.getSegmentId(), addr.getModuleId());
+
+                            ThingUID thingUid = new ThingUID(LcnBindingConstants.THING_TYPE_MODULE, bridgeUid, thingID);
 
                             Map<String, Object> properties = new HashMap<>(3);
                             properties.put(SEGMENT_ID, addr.getSegmentId());
                             properties.put(MODULE_ID, addr.getModuleId());
-                            properties.put(SERIAL_NUMBER, serialNumber);
+                            properties.put(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
 
                             DiscoveryResultBuilder discoveryResult = DiscoveryResultBuilder.create(thingUid)
-                                    .withProperties(properties).withRepresentationProperty(SERIAL_NUMBER)
+                                    .withProperties(properties).withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER)
                                     .withBridge(bridgeUid);
 
                             discoveryResultBuilders.put(addr, discoveryResult);

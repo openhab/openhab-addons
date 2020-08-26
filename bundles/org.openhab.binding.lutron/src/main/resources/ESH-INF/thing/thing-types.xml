@@ -84,6 +84,21 @@
 				<label>Fade Out Time</label>
 				<description>Fade time in seconds when turning off the light</description>
 			</parameter>
+			<parameter name="onLevel" type="decimal" min="0.01" max="100.00">
+				<label>On Level</label>
+				<description>Output level to go to when an ON command is received. Default is 100%.</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="onToLast" type="boolean">
+				<label>Turn On To Last Level</label>
+				<description>
+					If set to true, dimmer will go to the last non-zero level set when an ON command is received.
+					If the last level cannot be determined, the value of onLevel will be used instead.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 

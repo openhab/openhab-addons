@@ -58,7 +58,7 @@ public abstract class OppoConnector {
 
     private @Nullable Thread readerThread;
 
-    private List<OppoMessageEventListener> listeners = new ArrayList<>();
+    private final List<OppoMessageEventListener> listeners = new ArrayList<>();
 
     /**
      * Called when using direct IP connection for 83/93/95/103/105
@@ -135,12 +135,12 @@ public abstract class OppoConnector {
         }
         if (readerThread != null) {
             readerThread.interrupt();
+            this.readerThread = null;
             try {
                 readerThread.join(3000);
             } catch (InterruptedException e) {
                 logger.warn("Error joining readerThread: {}", e.getMessage());
             }
-            this.readerThread = null;
         }
     }
 

@@ -249,13 +249,15 @@ public class InsteonBinding {
         handler.updateState(channelUID, state);
     }
 
-    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey) {
+    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey,
+            Map<String, @Nullable Object> deviceConfigMap) {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
         dev.setProductKey(productKey);
         dev.setDriver(driver);
         dev.setIsModem(productKey.equals(InsteonDeviceHandler.PLM_PRODUCT_KEY));
+        dev.setDeviceConfigMap(deviceConfigMap);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);
         }

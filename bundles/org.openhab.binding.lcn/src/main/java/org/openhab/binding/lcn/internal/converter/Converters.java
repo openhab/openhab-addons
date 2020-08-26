@@ -33,14 +33,14 @@ public class Converters {
     public static final Converter IDENTITY;
 
     static {
-        TEMPERATURE = new Converter(SIUnits.CELSIUS, n -> (n - 1000) / 10d, h -> Math.round(h * 10) + 1000);
-        LIGHT = new Converter(SmartHomeUnits.LUX, Converters::lightToHumanReadable, Converters::lightToNative);
-        CO2 = new Converter(SmartHomeUnits.PARTS_PER_MILLION, n -> (double) n, Math::round);
-        CURRENT = new Converter(SmartHomeUnits.AMPERE, n -> n / 100d, h -> Math.round(h * 100));
-        VOLTAGE = new Converter(SmartHomeUnits.VOLT, n -> n / 400d, h -> Math.round(h * 400));
-        ANGLE = new Converter(SmartHomeUnits.DEGREE_ANGLE, n -> (n - 1000) / 10d, Converters::angleToNative);
-        WINDSPEED = new Converter(SmartHomeUnits.METRE_PER_SECOND, n -> n / 10d, h -> Math.round(h * 10));
-        IDENTITY = new Converter(null, n -> (double) n, Math::round);
+        TEMPERATURE = new ValueConverter(SIUnits.CELSIUS, n -> (n - 1000) / 10d, h -> Math.round(h * 10) + 1000);
+        LIGHT = new ValueConverter(SmartHomeUnits.LUX, Converters::lightToHumanReadable, Converters::lightToNative);
+        CO2 = new ValueConverter(SmartHomeUnits.PARTS_PER_MILLION, n -> (double) n, Math::round);
+        CURRENT = new ValueConverter(SmartHomeUnits.AMPERE, n -> n / 100d, h -> Math.round(h * 100));
+        VOLTAGE = new ValueConverter(SmartHomeUnits.VOLT, n -> n / 400d, h -> Math.round(h * 400));
+        ANGLE = new ValueConverter(SmartHomeUnits.DEGREE_ANGLE, n -> (n - 1000) / 10d, Converters::angleToNative);
+        WINDSPEED = new ValueConverter(SmartHomeUnits.METRE_PER_SECOND, n -> n / 10d, h -> Math.round(h * 10));
+        IDENTITY = new ValueConverter(null, n -> (double) n, Math::round);
     }
 
     private static long lightToNative(double value) {

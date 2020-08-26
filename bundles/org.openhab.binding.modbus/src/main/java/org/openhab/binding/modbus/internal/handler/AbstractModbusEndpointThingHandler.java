@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
 import org.openhab.binding.modbus.internal.ModbusConfigurationException;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
@@ -115,7 +116,7 @@ public abstract class AbstractModbusEndpointThingHandler<E extends ModbusSlaveEn
     }
 
     @Override
-    public abstract int getSlaveId();
+    public abstract int getSlaveId() throws EndpointNotInitializedException;
 
     /**
      * Must be overriden by subclasses to initialize config, endpoint, and poolConfiguration
