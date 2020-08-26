@@ -226,12 +226,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
-        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && command instanceof Number) {
-            if (((Number) command).intValue() >= 0) {
-                sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
-                updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
-                forceStatusUpdate();
-            }
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()) {
+            sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
+            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
+            forceStatusUpdate();
             return;
         }
         if (channelUID.getId().equals(CHANNEL_FAN_CONTROL)) {
@@ -294,6 +292,8 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             State vacuum = OnOffType.OFF;
             String control;
             switch (state) {
+                case ZONE:
+                case ROOM:
                 case CLEANING:
                     control = "vacuum";
                     vacuum = OnOffType.ON;
@@ -321,14 +321,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     break;
                 case SLEEPING:
                     control = "pause";
-                    break;
-                case ZONE:
-                    control = "zone";
-                    vacuum = OnOffType.ON;
-                    break;
-                case ROOM:
-                    control = "room";
-                    vacuum = OnOffType.ON;
                     break;
                 case SPOTCLEAN:
                     control = "spot";
