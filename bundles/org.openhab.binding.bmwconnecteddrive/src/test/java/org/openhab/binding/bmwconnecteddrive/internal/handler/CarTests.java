@@ -46,7 +46,34 @@ public class CarTests {
     }
 
     @Test
-    public void testF15() {
+    public void testi3Rex() {
+        String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
+        Thing thing = mock(Thing.class);
+        when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
+        HttpClient hc = mock(HttpClient.class);
+        ConnectedCarHandler cch = new ConnectedCarHandler(thing, hc, CarType.ELECTRIC_REX.toString(), true);
+        ThingHandlerCallback tc = mock(ThingHandlerCallback.class);
+        cch.setCallback(tc);
+        cch.updateRangeValues(content);
+
+        ArgumentCaptor<ChannelUID> channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
+        ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
+        ;
+
+        // ArgumentCaptor<List<ChannelUID>> channelCaptor;
+        // ArgumentCaptor<List<State>> stateCaptor;
+
+        verify(tc, times(12)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
+        List allChannels = channelCaptor.getAllValues();
+        List allStates = stateCaptor.getAllValues();
+        for (int i = 0; i < allChannels.size(); i++) {
+            logger.info("Channel {} {}", allChannels.get(i), allStates.get(i));
+        }
+        assertEquals("Results ", 12, allChannels.size());
+    }
+
+    @Test
+    public void testi3RexStatus() {
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
@@ -63,10 +90,9 @@ public class CarTests {
         // ArgumentCaptor<List<ChannelUID>> channelCaptor;
         // ArgumentCaptor<List<State>> stateCaptor;
 
-        verify(tc, times(12)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
+        verify(tc, times(6)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
         List allChannels = channelCaptor.getAllValues();
         List allStates = stateCaptor.getAllValues();
-        assertEquals("Results ", 12, allChannels.size());
         for (int i = 0; i < allChannels.size(); i++) {
             logger.info("Channel {} {}", allChannels.get(i), allStates.get(i));
         }

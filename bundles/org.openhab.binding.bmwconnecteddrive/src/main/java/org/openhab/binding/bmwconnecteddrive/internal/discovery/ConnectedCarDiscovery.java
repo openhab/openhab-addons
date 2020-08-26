@@ -101,7 +101,6 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
     public String getObject(Object obj, String compare) {
         StringBuffer buf = new StringBuffer();
         for (Field field : obj.getClass().getDeclaredFields()) {
-            // field.setAccessible(true); // if you want to modify private fields
             try {
                 if (field.get(obj).equals(compare)) {
                     buf.append(field.getName());
