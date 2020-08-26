@@ -95,6 +95,7 @@ public class ConnectedDriveConstants {
 
     // Group definitions
     public static final String CHANNEL_GROUP_PROPERTIES = "properties";
+    public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
     public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
@@ -120,9 +121,13 @@ public class ConnectedDriveConstants {
     public static final String PROPERTIES_NOT_SUPPORTED_SERVICES = "not-supported-services";
     public static final String PROPERTIES_CHARGING_MODES = "charging-modes";
 
-    public static final String IMAGE = "rendered";
-    public static final String IMAGE_SIZE = "size";
-    public static final String IMAGE_VIEW_DIRECTION = "view-direction";
+    // Status
+    public static final String DOORS = "doors";
+    public static final String WINDOWS = "windows";
+    public static final String LOCK = "lock";
+    public static final String SERVICE = "service";
+    public static final String CHECK_CONTROL = "check-control";
+    public static final String CHARGING_STATUS = "charging-status";
 
     // Range
     public static final String MILEAGE = "mileage";
@@ -149,4 +154,7 @@ public class ConnectedDriveConstants {
     public static final String LATLONG = "latlong";
     public static final String HEADING = "heading";
     public static final String RANGE_RADIUS = "range-radius";
+
+    // Image
+    public static final String IMAGE = "rendered";
 }

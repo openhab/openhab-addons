@@ -14,6 +14,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.util;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
 import java.util.Locale;
 
 import org.junit.Test;
@@ -48,5 +49,14 @@ public class LocaleTest {
         VehicleStatus vStatus = status.vehicleStatus;
         assertEquals("Input  DateTime", "2020-08-24T15:55:32", vStatus.internalDataTimeUTC);
         assertEquals("Output DateTime", "24.08.2020 17:55", Converter.getLocalDateTime(vStatus.internalDataTimeUTC));
+    }
+
+    @Test
+    public void testServiceDatePattern() {
+        String pattern = "2021-11-01";
+        LocalDate ldt = LocalDate.parse(pattern, Converter.serviceDateInputPattern);
+        assertEquals("Parsed Date", "2021-11-01", ldt.toString());
+        System.out.println();
+        assertEquals("Parsed Date", "Nov 2021", ldt.format(Converter.serviceDateOutputPattern));
     }
 }

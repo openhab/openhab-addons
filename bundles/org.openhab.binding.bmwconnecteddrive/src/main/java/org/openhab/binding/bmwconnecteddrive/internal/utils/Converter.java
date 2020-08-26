@@ -26,6 +26,9 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 public class Converter {
+    public final static DateTimeFormatter serviceDateInputPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public final static DateTimeFormatter serviceDateOutputPattern = DateTimeFormatter.ofPattern("MMM yyyy");
+
     private final static Logger logger = LoggerFactory.getLogger(Converter.class);
     private final static DateTimeFormatter inputPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private final static DateTimeFormatter outputPattern = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
@@ -37,11 +40,8 @@ public class Converter {
 
     public static String getLocalDateTime(String input) {
         LocalDateTime ldt = LocalDateTime.parse(input, Converter.inputPattern);
-        logger.info("Update Local DateTime {}", ldt);
         ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
-        logger.info("Update UTC DateTime   {}", zdtUTC);
         ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        logger.info("Update UTC DateTime   {}", zdtLZ);
         return zdtLZ.format(Converter.outputPattern);
     }
 }

@@ -13,6 +13,7 @@
 		<description>Electric Car with Range Extender</description>
 
 		<channel-groups>
+			<channel-group id="status" typeId="electric-vehicle-status"/>
 			<channel-group id="range" typeId="hybrid-range-values"/>
 			<channel-group id="last-trip" typeId="ev-last-trip-values"/>
 			<channel-group id="lifetime" typeId="ev-lifetime-values"/>
@@ -20,10 +21,6 @@
 			<channel-group id="image" typeId="image-values"/>
 			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>
 		</channel-groups>
-
-		<properties>
-			<property name="Brand">BMW_I</property>
-		</properties>
 
 		<config-description>
 			<parameter name="vin" type="text" required="true">

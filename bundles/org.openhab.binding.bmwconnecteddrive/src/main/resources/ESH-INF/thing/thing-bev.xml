@@ -13,6 +13,7 @@
 		<description>Electric Car</description>
 
 		<channel-groups>
+			<channel-group id="status" typeId="electric-vehicle-status"/>
 			<channel-group id="range" typeId="electric-range-values"/>
 			<channel-group id="last-trip" typeId="ev-last-trip-values"/>
 			<channel-group id="lifetime" typeId="ev-lifetime-values"/>
