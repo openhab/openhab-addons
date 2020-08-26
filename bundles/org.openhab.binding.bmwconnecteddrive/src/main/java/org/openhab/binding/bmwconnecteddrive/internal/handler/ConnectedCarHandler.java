@@ -371,15 +371,16 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         Status status = GSON.fromJson(content, Status.class);
         VehicleStatus vStatus = status.vehicleStatus;
 
-        updateState(lock, StringType.valueOf(vStatus.doorLockState));
-        updateState(chargingStatus, StringType.valueOf(vStatus.chargingStatus));
-
+        updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
         Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
         updateState(doors, StringType.valueOf(checkClosed(doorState)));
         Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
         updateState(windows, StringType.valueOf(checkClosed(windowState)));
         updateState(checkControl, StringType.valueOf(getCheckControl(vStatus.checkControlMessages)));
         updateState(service, StringType.valueOf(getNextService(vStatus.cbsData)));
+        if (isElectric) {
+            updateState(chargingStatus, StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
+        }
     }
 
     private @Nullable String getNextService(List<CBSMessage> cbsData) {
@@ -401,7 +402,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 }
             }
             if (serviceDate != null) {
-                return serviceDate.format(Converter.serviceDateOutputPattern) + ":" + service;
+                return serviceDate.format(Converter.serviceDateOutputPattern) + " " + Converter.toTitleCase(service);
             } else {
                 return "Unknown";
             }
@@ -412,7 +413,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         if (checkControlMessages.isEmpty()) {
             return "Ok";
         } else {
-            return checkControlMessages.get(0).ccmDescriptionShort;
+            return Converter.toTitleCase(checkControlMessages.get(0).ccmDescriptionShort);
         }
     }
 
@@ -421,7 +422,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             try {
                 if (field.get(dto).equals("OPEN")) {
                     // report the first door which is still open
-                    return field.getName() + " open";
+                    return Converter.toTitleCase(field.getName() + " Open");
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 logger.warn("Fields for {} Object not accesible", dto);

@@ -17,21 +17,20 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The {@link Converter} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class Converter {
-    public final static DateTimeFormatter serviceDateInputPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-    public final static DateTimeFormatter serviceDateOutputPattern = DateTimeFormatter.ofPattern("MMM yyyy");
+    public static final DateTimeFormatter serviceDateInputPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final DateTimeFormatter serviceDateOutputPattern = DateTimeFormatter.ofPattern("MMM yyyy");
 
-    private final static Logger logger = LoggerFactory.getLogger(Converter.class);
-    private final static DateTimeFormatter inputPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    private final static DateTimeFormatter outputPattern = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    public static final String SPACE = " ";
+    public static final String UNDERLINE = "_";
+
+    private static final DateTimeFormatter inputPattern = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private static final DateTimeFormatter outputPattern = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     public static double round(double value) {
         double scale = Math.pow(10, 1);
@@ -43,5 +42,15 @@ public class Converter {
         ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
         ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
         return zdtLZ.format(Converter.outputPattern);
+    }
+
+    public static String toTitleCase(String input) {
+        String lower = input.replaceAll(UNDERLINE, SPACE).toLowerCase();
+        String[] arr = lower.split(SPACE);
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < arr.length; i++) {
+            sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");
+        }
+        return sb.toString().trim();
     }
 }
