@@ -144,11 +144,12 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
 
     @Override
     public void initialize() {
+        final String uid = this.getThing().getUID().getAsString();
         NuvoThingConfiguration config = getConfigAs(NuvoThingConfiguration.class);
-        String serialPort = config.serialPort;
-        String host = config.host;
-        Integer port = config.port;
-        Integer numZones = config.numZones;
+        final String serialPort = config.serialPort;
+        final String host = config.host;
+        final Integer port = config.port;
+        final Integer numZones = config.numZones;
 
         // Check configuration settings
         String configError = null;
@@ -172,9 +173,9 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         }
 
         if (serialPort != null) {
-            connector = new NuvoSerialConnector(serialPortManager, serialPort);
+            connector = new NuvoSerialConnector(serialPortManager, serialPort, uid);
         } else if (port != null) {
-            connector = new NuvoIpConnector(host, port);
+            connector = new NuvoIpConnector(host, port, uid);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");

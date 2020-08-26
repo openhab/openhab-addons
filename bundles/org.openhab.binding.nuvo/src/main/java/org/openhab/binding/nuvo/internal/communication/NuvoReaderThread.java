@@ -15,7 +15,6 @@ package org.openhab.binding.nuvo.internal.communication;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.nuvo.internal.NuvoBindingConstants;
 import org.openhab.binding.nuvo.internal.NuvoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +41,11 @@ public class NuvoReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param uid the thing uid string
      * @param connectionId a string that uniquely identifies the particular connection
      */
-    public NuvoReaderThread(NuvoConnector connector, String connectionId) {
-        super("OH-binding-" + NuvoBindingConstants.THING_TYPE_AMP + "-" + connectionId);
+    public NuvoReaderThread(NuvoConnector connector, String uid, String connectionId) {
+        super("OH-binding-" + uid + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }

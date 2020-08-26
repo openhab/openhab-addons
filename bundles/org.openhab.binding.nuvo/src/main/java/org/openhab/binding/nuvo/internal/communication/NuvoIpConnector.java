@@ -36,8 +36,9 @@ public class NuvoIpConnector extends NuvoConnector {
 
     private final Logger logger = LoggerFactory.getLogger(NuvoIpConnector.class);
 
-    private @Nullable String address;
-    private int port;
+    private @Nullable final String address;
+    private final int port;
+    private final String uid;
 
     private @Nullable Socket clientSocket;
 
@@ -46,10 +47,12 @@ public class NuvoIpConnector extends NuvoConnector {
      *
      * @param address the IP address of the serial over ip adapter
      * @param port the TCP port to be used
+     * @param uid the thing uid string
      */
-    public NuvoIpConnector(@Nullable String address, int port) {
+    public NuvoIpConnector(@Nullable String address, int port, String uid) {
         this.address = address;
         this.port = port;
+        this.uid = uid;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class NuvoIpConnector extends NuvoConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new NuvoReaderThread(this, this.address + "." + this.port);
+            Thread thread = new NuvoReaderThread(this, this.uid, this.address + "." + this.port);
             setReaderThread(thread);
             thread.start();
 

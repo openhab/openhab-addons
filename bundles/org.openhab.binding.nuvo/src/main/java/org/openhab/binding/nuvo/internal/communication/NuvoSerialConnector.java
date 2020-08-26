@@ -39,8 +39,9 @@ public class NuvoSerialConnector extends NuvoConnector {
 
     private final Logger logger = LoggerFactory.getLogger(NuvoSerialConnector.class);
 
-    private String serialPortName;
-    private SerialPortManager serialPortManager;
+    private final String serialPortName;
+    private final SerialPortManager serialPortManager;
+    private final String uid;
 
     private @Nullable SerialPort serialPort;
 
@@ -49,10 +50,12 @@ public class NuvoSerialConnector extends NuvoConnector {
      *
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
+     * @param uid the thing uid string
      */
-    public NuvoSerialConnector(SerialPortManager serialPortManager, String serialPortName) {
+    public NuvoSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid) {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
+        this.uid = uid;
     }
 
     @Override
@@ -86,7 +89,7 @@ public class NuvoSerialConnector extends NuvoConnector {
                 }
             }
 
-            Thread thread = new NuvoReaderThread(this, this.serialPortName);
+            Thread thread = new NuvoReaderThread(this, this.uid, this.serialPortName);
             setReaderThread(thread);
             thread.start();
 
