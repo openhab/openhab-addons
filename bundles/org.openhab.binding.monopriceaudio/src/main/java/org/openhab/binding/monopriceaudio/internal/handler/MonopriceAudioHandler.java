@@ -123,11 +123,12 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
     @Override
     public void initialize() {
+        final String uid = this.getThing().getUID().getAsString();
         MonopriceAudioThingConfiguration config = getConfigAs(MonopriceAudioThingConfiguration.class);
-        String serialPort = config.serialPort;
-        String host = config.host;
-        Integer port = config.port;
-        String ignoreZonesConfig = config.ignoreZones;
+        final String serialPort = config.serialPort;
+        final String host = config.host;
+        final Integer port = config.port;
+        final String ignoreZonesConfig = config.ignoreZones;
 
         // Check configuration settings
         String configError = null;
@@ -151,9 +152,9 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
         }
 
         if (serialPort != null) {
-            connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort);
+            connector = new MonopriceAudioSerialConnector(serialPortManager, serialPort, uid);
         } else if (port != null) {
-            connector = new MonopriceAudioIpConnector(host, port);
+            connector = new MonopriceAudioIpConnector(host, port, uid);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");

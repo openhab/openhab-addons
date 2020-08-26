@@ -36,8 +36,9 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
 
     private final Logger logger = LoggerFactory.getLogger(MonopriceAudioIpConnector.class);
 
-    private @Nullable String address;
-    private int port;
+    private final @Nullable String address;
+    private final int port;
+    private final String uid;
 
     private @Nullable Socket clientSocket;
 
@@ -46,10 +47,12 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
      *
      * @param address the IP address of the serial over IP device
      * @param port the TCP port to be used
+     * @param uid the thing uid string
      */
-    public MonopriceAudioIpConnector(@Nullable String address, int port) {
+    public MonopriceAudioIpConnector(@Nullable String address, int port, String uid) {
         this.address = address;
         this.port = port;
+        this.uid = uid;
     }
 
     @Override
@@ -62,7 +65,7 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new MonopriceAudioReaderThread(this, this.address + "." + this.port);
+            Thread thread = new MonopriceAudioReaderThread(this, this.uid, this.address + "." + this.port);
 
             setReaderThread(thread);
             thread.start();
