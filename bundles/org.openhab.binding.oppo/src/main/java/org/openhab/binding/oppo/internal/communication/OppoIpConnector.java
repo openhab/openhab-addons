@@ -37,6 +37,7 @@ public class OppoIpConnector extends OppoConnector {
 
     private final @Nullable String address;
     private final int port;
+    private final String uid;
 
     private @Nullable Socket clientSocket;
 
@@ -45,10 +46,12 @@ public class OppoIpConnector extends OppoConnector {
      *
      * @param address the IP address of the player or serial over ip adapter
      * @param port the TCP port to be used
+     * @param uid the thing uid string
      */
-    public OppoIpConnector(@Nullable String address, int port) {
+    public OppoIpConnector(@Nullable String address, int port, String uid) {
         this.address = address;
         this.port = port;
+        this.uid = uid;
     }
 
     @Override
@@ -61,7 +64,7 @@ public class OppoIpConnector extends OppoConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new OppoReaderThread(this, this.address + ":" + this.port);
+            Thread thread = new OppoReaderThread(this, this.uid, this.address + ":" + this.port);
             setReaderThread(thread);
             thread.start();
 
