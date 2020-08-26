@@ -42,9 +42,10 @@ public class NuvoReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param connectionId a string that uniquely identifies the particular connection
      */
-    public NuvoReaderThread(NuvoConnector connector, String uid) {
-        super("OH-binding-" + NuvoBindingConstants.BINDING_ID + "-" + uid);
+    public NuvoReaderThread(NuvoConnector connector, String connectionId) {
+        super("OH-binding-" + NuvoBindingConstants.THING_TYPE_AMP + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
