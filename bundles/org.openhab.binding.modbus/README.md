@@ -176,7 +176,7 @@ You must give each of your bridge Things a reference (thing ID) that is unique f
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
 | ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                              |
-| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.                                                                                                                                         |
+| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.  Note that protocol max is 123                                                                                                           |
 | `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `"coil"` (FC01), `"discrete"` (FC02), `"holding"`(FC03), `"input"` (FC04). |
 | `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                          |
 | `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
@@ -310,7 +310,7 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 
 Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
 
-Note that the main binding does not recognize any device, so it is pointless to turn this on unless you have the correct binding installed.
+Note that the main binding does not recognize any devices, so it is pointless to turn this on unless you have a suitable add-on binding installed.
 
 ## Details
 
