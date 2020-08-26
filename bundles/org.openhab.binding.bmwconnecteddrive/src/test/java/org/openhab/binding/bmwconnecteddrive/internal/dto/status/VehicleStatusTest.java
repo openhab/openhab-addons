@@ -14,22 +14,19 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
 import static org.junit.Assert.assertEquals;
 
-import java.time.LocalDateTime;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 import com.google.gson.Gson;
 
 /**
- * The {@link BevRexVehicleTest} Test json responses from ConnectedDrive Portal
+ * The {@link VehicleStatusTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class BevRexVehicleTest {
+public class VehicleStatusTest {
     private static final Gson GSON = new Gson();
 
     @Test
@@ -40,8 +37,5 @@ public class BevRexVehicleTest {
         assertEquals("Mileage", 17273.0, vStatus.mileage, 0.1);
         Position p = vStatus.position;
         assertEquals("Heading", 219, p.heading);
-
-        LocalDateTime datetime = LocalDateTime.parse(vStatus.internalDataTimeUTC, Converter.inputPattern);
-        assertEquals("Date", "24.08.2020 15:55", datetime.format(Converter.outputPattern));
     }
 }

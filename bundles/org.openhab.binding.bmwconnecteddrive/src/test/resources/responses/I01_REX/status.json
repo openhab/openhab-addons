@@ -1,0 +1,61 @@
+{
+  "vehicleStatus" : {
+    "doorPassengerFront" : "CLOSED",
+    "cbsData" : [ {
+      "cbsDueDate" : "2018-05",
+      "cbsState" : "OK",
+      "cbsDescription" : "Next change due at the latest by the stated date.",
+      "cbsType" : "BRAKE_FLUID"
+    }, {
+      "cbsDueDate" : "2018-05",
+      "cbsState" : "OK",
+      "cbsDescription" : "Next visual inspection due when the stated distance has been covered or by the stated date.",
+      "cbsType" : "VEHICLE_CHECK"
+    } ],
+    "windowDriverFront" : "CLOSED",
+    "DCS_CCH_Ongoing" : false,
+    "updateReason" : "VEHICLE_SHUTDOWN_SECURED",
+    "rearWindow" : "INVALID",
+    "remainingRangeFuelMls" : 65,
+    "DCS_CCH_Activation" : "NA",
+    "chargingInductivePositioning" : "NOT_POSITIONED",
+    "remainingRangeElectric" : 48,
+    "singleImmediateCharging" : false,
+    "maxRangeElectric" : 94,
+    "chargingConnectionType" : "CONDUCTIVE",
+    "positionLight" : "OFF",
+    "lastChargingEndReason" : "UNKNOWN",
+    "chargingStatus" : "CHARGING",
+    "vin" : "I01_VIN",
+    "doorDriverFront" : "CLOSED",
+    "mileage" : 38807,
+    "chargingTimeRemaining" : 332,
+    "checkControlMessages" : [ ],
+    "parkingLight" : "OFF",
+    "windowDriverRear" : "CLOSED",
+    "remainingRangeElectricMls" : 30,
+    "lastChargingEndResult" : "UNKNOWN",
+    "steering" : "LH",
+    "updateTime" : "2018-03-12T08:38:57+0100",
+    "remainingFuel" : 8,
+    "windowPassengerRear" : "CLOSED",
+    "trunk" : "CLOSED",
+    "hood" : "CLOSED",
+    "internalDataTimeUTC" : "2018-03-12T06:21:01",
+    "maxRangeElectricMls" : 58,
+    "maxFuel" : 8,
+    "windowPassengerFront" : "CLOSED",
+    "doorLockState" : "SECURED",
+    "doorPassengerRear" : "CLOSED",
+    "remainingRangeFuel" : 106,
+    "doorDriverRear" : "CLOSED",
+    "connectionStatus" : "CONNECTED",
+    "chargingLevelHv" : 54,
+    "position" : {
+      "heading" : 356,
+      "lon" : 15.00000,
+      "lat" : 58.000000,
+      "status" : "OK"
+    }
+  }
+}

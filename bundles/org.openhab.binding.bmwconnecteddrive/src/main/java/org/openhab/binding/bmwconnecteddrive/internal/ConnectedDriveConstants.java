@@ -64,6 +64,14 @@ public class ConnectedDriveConstants {
         }
     };
 
+    // Countries with Mileage display
+    public static final Set<String> MILE_COUNTRIES = new HashSet<String>() {
+        {
+            add("US");
+            add("GB");
+        }
+    };
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONNECTED_DRIVE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
     public static final ThingTypeUID THING_TYPE_CONV = new ThingTypeUID(BINDING_ID, CarType.CONVENTIONAL.toString());
@@ -118,7 +126,7 @@ public class ConnectedDriveConstants {
 
     // Range
     public static final String MILEAGE = "mileage";
-    public static final String REMAINING_RANGE = "remaining-range";
+    public static final String REMAINING_RANGE_HYBRID = "remaining-range-hybrid";
     public static final String REMAINING_RANGE_ELECTRIC = "remaining-range-electric";
     public static final String REMAINING_SOC = "remaining-soc";
     public static final String REMAINING_RANGE_FUEL = "remaining-range-fuel";

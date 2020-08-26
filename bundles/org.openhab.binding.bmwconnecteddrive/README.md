@@ -14,6 +14,16 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 _Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
 
+## TroubleShooting
+
+### Discovery
+
+### Car Data
+
+### Update Timestamp
+
+Check your Locale Time Settings of your Raspi / PC
+
 ## Binding Configuration
 
 _If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_

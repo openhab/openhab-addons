@@ -49,7 +49,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
 
     // Vehcile channels
     protected ChannelUID mileage;
-    protected ChannelUID remainingRange;
+    protected ChannelUID remainingRangeHybrid;
     protected ChannelUID remainingRangeElectric;
     protected ChannelUID remainingSoc;
     protected ChannelUID remainingRangeFuel;
@@ -108,7 +108,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
 
         // range Channels
         mileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, MILEAGE);
-        remainingRange = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE);
+        remainingRangeHybrid = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_HYBRID);
         remainingRangeElectric = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_ELECTRIC);
         remainingSoc = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_SOC);
         remainingRangeFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_FUEL);
