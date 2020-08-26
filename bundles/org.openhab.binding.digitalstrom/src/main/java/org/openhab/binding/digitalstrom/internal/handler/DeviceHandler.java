@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
@@ -482,8 +481,7 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
      */
     private void checkDeviceInfoProperties(Device device) {
         boolean propertiesChanged = false;
-        @NonNull
-        Map<@NonNull String, @NonNull String> properties = editProperties();
+        Map<String, String> properties = editProperties();
         // check device info
         if (device.getName() != null) {
             properties.put(DigitalSTROMBindingConstants.DEVICE_NAME, device.getName());
@@ -617,15 +615,13 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
     }
 
     private void checkSensorChannel() {
-        @NonNull
-        List<@NonNull Channel> channelList = new LinkedList<>(this.getThing().getChannels());
+        List<Channel> channelList = new LinkedList<>(this.getThing().getChannels());
 
         boolean channelListChanged = false;
 
         // if sensor channels with priority never are loaded delete these channels
         if (!channelList.isEmpty()) {
-            @NonNull
-            Iterator<@NonNull Channel> channelInter = channelList.iterator();
+            Iterator<Channel> channelInter = channelList.iterator();
             while (channelInter.hasNext()) {
                 Channel channel = channelInter.next();
                 String channelID = channel.getUID().getId();
@@ -736,14 +732,12 @@ public class DeviceHandler extends BaseThingHandler implements DeviceStatusListe
         }
         currentChannel = channelTypeUID.getId();
 
-        @NonNull
-        List<@NonNull Channel> channelList = new LinkedList<>(this.getThing().getChannels());
+        List<Channel> channelList = new LinkedList<>(this.getThing().getChannels());
         boolean channelIsAlreadyLoaded = false;
         boolean channelListChanged = false;
 
         if (!channelList.isEmpty()) {
-            @NonNull
-            Iterator<@NonNull Channel> channelInter = channelList.iterator();
+            Iterator<Channel> channelInter = channelList.iterator();
             while (channelInter.hasNext()) {
                 Channel eshChannel = channelInter.next();
                 if (DsChannelTypeProvider.isOutputChannel(eshChannel.getUID().getId())) {

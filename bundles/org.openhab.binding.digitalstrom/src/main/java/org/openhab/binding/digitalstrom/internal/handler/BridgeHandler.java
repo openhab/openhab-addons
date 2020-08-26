@@ -26,7 +26,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -186,8 +185,7 @@ public class BridgeHandler extends BaseBridgeHandler
                 configuration.put(APPLICATION_TOKEN, connMan.getApplicationToken());
                 configChanged = true;
             }
-            @NonNull
-            Map<@NonNull String, @NonNull String> properties = editProperties();
+            Map<String, String> properties = editProperties();
             String dSSname = connMan.getDigitalSTROMAPI().getInstallationName(connMan.getSessionToken());
             if (dSSname != null) {
                 properties.put(DS_NAME, dSSname);
