@@ -279,6 +279,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 control = "spot";
                 vacuum = OnOffType.ON;
                 break;
+            case ZONE:
+            case ROOM:
+                vacuum = OnOffType.ON;
             default:
                 control = "undef";
                 break;
