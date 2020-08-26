@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.regex.Matcher;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -71,7 +70,6 @@ public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
     private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
     private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
-    private static final String SERIAL_NUMBER = "serialNumber";
     private @Nullable LcnAddrMod moduleAddress;
     private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
@@ -91,7 +89,6 @@ public class LcnModuleHandler extends BaseThingHandler {
         super(thing);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         LcnModuleConfiguration localConfig = getConfigAs(LcnModuleConfiguration.class);
@@ -99,28 +96,7 @@ public class LcnModuleHandler extends BaseThingHandler {
 
         try {
             // Determine serial number of manually added modules
-            String serialNumberProperty = getThing().getProperties().get(SERIAL_NUMBER);
-            if (getThing().getThingTypeUID().equals(LcnBindingConstants.THING_TYPE_MODULE)
-                    && (serialNumberProperty == null || serialNumberProperty.isEmpty())) {
-                PckGatewayHandler localBridgeHandler = getPckGatewayHandler();
-                localBridgeHandler.registerPckListener(data -> {
-                    Matcher matcher;
-
-                    if ((matcher = LcnModuleMetaFirmwareSubHandler.PATTERN.matcher(data)).matches()) {
-                        if (isMyAddress(matcher.group("segId"), matcher.group("modId"))
-                                && matcher.pattern() == LcnModuleMetaFirmwareSubHandler.PATTERN) {
-                            String serialNumber = matcher.group("sn");
-                            updateProperty(SERIAL_NUMBER, serialNumber);
-                        }
-                    }
-                });
-                synchronized (LcnModuleHandler.this) {
-                    Connection connection = localBridgeHandler.getConnection();
-                    if (connection != null) {
-                        connection.sendSerialNumberRequest(localModuleAddress);
-                    }
-                }
-            }
+            requestFirmwareVersionAndSerialNumberIfNotSet();
 
             // create sub handlers
             ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
@@ -164,6 +140,22 @@ public class LcnModuleHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (LcnException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+    }
+
+    /**
+     * Triggers requesting the firmware version of the LCN module. The message also contains the serial number.
+     *
+     * @throws LcnException when the handler is not initialized
+     */
+    @SuppressWarnings("null")
+    protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
+        String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
+        if (serialNumber == null || serialNumber.isEmpty()) {
+            LcnAddrMod localModuleAddress = moduleAddress;
+            if (localModuleAddress != null) {
+                getPckGatewayHandler().getModInfo(localModuleAddress).requestFirmwareVersion();
+            }
         }
     }
 
@@ -329,6 +321,15 @@ public class LcnModuleHandler extends BaseThingHandler {
         }
 
         updateState(channelUid, convertedState);
+    }
+
+    /**
+     * Updates the LCN module's serial number property.
+     *
+     * @param serialNumber the new serial number
+     */
+    public void updateSerialNumberProperty(String serialNumber) {
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
     }
 
     /**
