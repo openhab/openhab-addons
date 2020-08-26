@@ -37,9 +37,14 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     private InputStream input;
     private OutputStream output;
     private boolean connected;
+    protected String readerThreadName;
     private Thread readerThread;
     private long waitingForResponse;
     private List<PowermaxMessageEventListener> listeners = new ArrayList<>();
+
+    public PowermaxConnector(String readerThreadName) {
+        this.readerThreadName = readerThreadName;
+    }
 
     @Override
     public abstract void open();

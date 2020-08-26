@@ -40,6 +40,10 @@
 			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
 			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
+		<properties>
+			<property name="serialNumber"/>
+		</properties>
+		<representation-property>serialNumber</representation-property>
 
 		<config-description-ref uri="thing-type:lcn:module"/>
 	</thing-type>
@@ -277,6 +281,14 @@
 		<item-type>Contact</item-type>
 		<label>Binary Sensor</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+		<config-description>
+			<parameter name="invertState" type="boolean">
+				<label>Invert State</label>
+				<description>Per default a binary sensor state 0 corresponds to "closed" while 1 corresponds to "open". Use this
+					parameter to invert that logic.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
 	</channel-type>
 
 	<channel-group-type id="binarysensors">
@@ -610,6 +622,7 @@
 		<label>Transponder &amp; Remote Control</label>
 		<channels>
 			<channel typeId="transponders" id="transponder"/>
+			<channel typeId="fingerprints" id="fingerprint"/>
 			<channel typeId="remotecontrolkeys" id="remotecontrolkey"/>
 			<channel typeId="remotecontrolcodes" id="remotecontrolcode"/>
 			<channel typeId="remotecontrolsbatterylow" id="remotecontrolbatterylow"/>
@@ -619,6 +632,12 @@
 	<channel-type id="transponders" advanced="true">
 		<kind>trigger</kind>
 		<label>Transponder Codes</label>
+		<event/>
+	</channel-type>
+
+	<channel-type id="fingerprints" advanced="true">
+		<kind>trigger</kind>
+		<label>Fingerprint Codes</label>
 		<event/>
 	</channel-type>
 

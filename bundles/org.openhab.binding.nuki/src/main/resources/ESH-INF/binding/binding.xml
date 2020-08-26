@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Nuki Binding</name>
-	<description>The Nuki Binding allows simple and fast integration of Nuki Smart Locks into OpenHAB. This binding needs
+	<description>The Nuki Binding allows simple and fast integration of Nuki Smart Locks into openHAB. This binding needs
 		the Nuki Smart Lock(s) to be paired via Bluetooth with a Nuki Bridge to function correctly.</description>
 	<author>Markus Katter</author>
 

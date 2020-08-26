@@ -51,6 +51,7 @@ import org.openhab.binding.lcn.internal.connection.Connection;
 import org.openhab.binding.lcn.internal.connection.ModInfo;
 import org.openhab.binding.lcn.internal.converter.Converter;
 import org.openhab.binding.lcn.internal.converter.Converters;
+import org.openhab.binding.lcn.internal.converter.InversionConverter;
 import org.openhab.binding.lcn.internal.converter.S0Converter;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleMetaAckSubHandler;
@@ -67,20 +68,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class LcnModuleHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LcnModuleHandler.class);
-    private static final Map<String, Converter> CONVERTERS = new HashMap<>();
+    private static final Map<String, Converter> VALUE_CONVERTERS = new HashMap<>();
+    private static final InversionConverter INVERSION_CONVERTER = new InversionConverter();
     private @Nullable LcnAddrMod moduleAddress;
     private final Map<LcnChannelGroup, @Nullable AbstractLcnModuleSubHandler> subHandlers = new HashMap<>();
     private final List<AbstractLcnModuleSubHandler> metadataSubHandlers = new ArrayList<>();
     private final Map<ChannelUID, @Nullable Converter> converters = new HashMap<>();
 
     static {
-        CONVERTERS.put("temperature", Converters.TEMPERATURE);
-        CONVERTERS.put("light", Converters.LIGHT);
-        CONVERTERS.put("co2", Converters.CO2);
-        CONVERTERS.put("current", Converters.CURRENT);
-        CONVERTERS.put("voltage", Converters.VOLTAGE);
-        CONVERTERS.put("angle", Converters.ANGLE);
-        CONVERTERS.put("windspeed", Converters.WINDSPEED);
+        VALUE_CONVERTERS.put("temperature", Converters.TEMPERATURE);
+        VALUE_CONVERTERS.put("light", Converters.LIGHT);
+        VALUE_CONVERTERS.put("co2", Converters.CO2);
+        VALUE_CONVERTERS.put("current", Converters.CURRENT);
+        VALUE_CONVERTERS.put("voltage", Converters.VOLTAGE);
+        VALUE_CONVERTERS.put("angle", Converters.ANGLE);
+        VALUE_CONVERTERS.put("windspeed", Converters.WINDSPEED);
     }
 
     public LcnModuleHandler(Thing thing) {
@@ -93,6 +95,9 @@ public class LcnModuleHandler extends BaseThingHandler {
         LcnAddrMod localModuleAddress = moduleAddress = new LcnAddrMod(localConfig.segmentId, localConfig.moduleId);
 
         try {
+            // Determine serial number of manually added modules
+            requestFirmwareVersionAndSerialNumberIfNotSet();
+
             // create sub handlers
             ModInfo info = getPckGatewayHandler().getModInfo(localModuleAddress);
             for (LcnChannelGroup type : LcnChannelGroup.values()) {
@@ -103,11 +108,13 @@ public class LcnModuleHandler extends BaseThingHandler {
             metadataSubHandlers.add(new LcnModuleMetaAckSubHandler(this, info));
             metadataSubHandlers.add(new LcnModuleMetaFirmwareSubHandler(this, info));
 
-            // initialize variable value converters
+            // initialize converters
             for (Channel channel : thing.getChannels()) {
                 Object unitObject = channel.getConfiguration().get("unit");
                 Object parameterObject = channel.getConfiguration().get("parameter");
+                Object invertConfig = channel.getConfiguration().get("invertState");
 
+                // Initialize value converters
                 if (unitObject instanceof String) {
                     switch ((String) unitObject) {
                         case "power":
@@ -115,18 +122,40 @@ public class LcnModuleHandler extends BaseThingHandler {
                             converters.put(channel.getUID(), new S0Converter(parameterObject));
                             break;
                         default:
-                            if (CONVERTERS.containsKey(unitObject)) {
-                                converters.put(channel.getUID(), CONVERTERS.get(unitObject));
+                            if (VALUE_CONVERTERS.containsKey(unitObject)) {
+                                converters.put(channel.getUID(), VALUE_CONVERTERS.get(unitObject));
                             }
                             break;
                     }
                 }
+
+                // Initialize inversion converter
+                if (invertConfig instanceof Boolean && invertConfig.equals(true)) {
+                    converters.put(channel.getUID(), INVERSION_CONVERTER);
+                }
+
             }
 
             // module is assumed as online, when the corresponding Bridge (PckGatewayHandler) is online.
             updateStatus(ThingStatus.ONLINE);
         } catch (LcnException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+    }
+
+    /**
+     * Triggers requesting the firmware version of the LCN module. The message also contains the serial number.
+     *
+     * @throws LcnException when the handler is not initialized
+     */
+    @SuppressWarnings("null")
+    protected void requestFirmwareVersionAndSerialNumberIfNotSet() throws LcnException {
+        String serialNumber = getThing().getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
+        if (serialNumber == null || serialNumber.isEmpty()) {
+            LcnAddrMod localModuleAddress = moduleAddress;
+            if (localModuleAddress != null) {
+                getPckGatewayHandler().getModInfo(localModuleAddress).requestFirmwareVersion();
+            }
         }
     }
 
@@ -290,7 +319,17 @@ public class LcnModuleHandler extends BaseThingHandler {
         if (converter != null) {
             convertedState = converter.onStateUpdateFromHandler(state);
         }
+
         updateState(channelUid, convertedState);
+    }
+
+    /**
+     * Updates the LCN module's serial number property.
+     *
+     * @param serialNumber the new serial number
+     */
+    public void updateSerialNumberProperty(String serialNumber) {
+        updateProperty(Thing.PROPERTY_SERIAL_NUMBER, serialNumber);
     }
 
     /**

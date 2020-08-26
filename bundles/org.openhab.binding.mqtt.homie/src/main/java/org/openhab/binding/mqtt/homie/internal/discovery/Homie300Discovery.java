@@ -25,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.discovery.AbstractMQTTDiscovery;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
-import org.openhab.binding.mqtt.generic.tools.WaitForTopicValue;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -92,12 +91,7 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
             return;
         }
 
-        // Retrieve name and update found discovery
-        WaitForTopicValue w = new WaitForTopicValue(connection, topic.replace("$homie", "$name"));
-        w.waitForTopicValueAsync(scheduler, 700).whenComplete((name, ex) -> {
-            String deviceName = ex == null ? name : deviceID;
-            publishDevice(connectionBridge, connection, deviceID, topic, deviceName);
-        });
+        publishDevice(connectionBridge, connection, deviceID, topic, deviceID);
     }
 
     void publishDevice(ThingUID connectionBridge, MqttBrokerConnection connection, String deviceID, String topic,

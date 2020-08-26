@@ -130,6 +130,11 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
 
     private void readDeviceDatabase() {
         Project project = null;
+
+        if (bridgeHandler == null || bridgeHandler.getIPBridgeConfig() == null) {
+            logger.debug("Unable to get bridge config. Exiting.");
+            return;
+        }
         String discFileName = bridgeHandler.getIPBridgeConfig().discoveryFile;
         String address = "http://" + bridgeHandler.getIPBridgeConfig().ipAddress + "/DbXmlInfo.xml";
 

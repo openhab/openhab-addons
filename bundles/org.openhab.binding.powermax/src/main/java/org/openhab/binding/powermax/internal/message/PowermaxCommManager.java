@@ -57,10 +57,8 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
     private static final int DEFAULT_BAUD_RATE = 9600;
     private static final int WAITING_DELAY_FOR_RESPONSE = 750;
     private static final long DELAY_BETWEEN_SETUP_DOWNLOADS = TimeUnit.SECONDS.toMillis(45);
-    private static final String COMM_MANAGER_THREAD_POOL_NAME = "powermax-comm";
 
-    private final ScheduledExecutorService scheduler = ThreadPoolManager
-            .getScheduledPool(COMM_MANAGER_THREAD_POOL_NAME);
+    private final ScheduledExecutorService scheduler;
 
     /** The object to store the current settings of the Powermax alarm system */
     private PowermaxPanelSettings panelSettings;
@@ -99,16 +97,19 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time
      * @param serialPortManager the serial port manager
+     * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String sPort, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime, SerialPortManager serialPortManager) {
+            boolean autoSyncTime, SerialPortManager serialPortManager, String threadName) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
         this.panelSettings = new PowermaxPanelSettings(panelType);
+        this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
         String serialPort = (sPort != null && !sPort.trim().isEmpty()) ? sPort.trim() : null;
         if (serialPort != null) {
-            connector = new PowermaxSerialConnector(serialPortManager, serialPort, DEFAULT_BAUD_RATE);
+            connector = new PowermaxSerialConnector(serialPortManager, serialPort, DEFAULT_BAUD_RATE,
+                    threadName + "-reader");
         } else {
             connector = null;
         }
@@ -123,17 +124,19 @@ public class PowermaxCommManager implements PowermaxMessageEventListener {
      * @param forceStandardMode true to force the standard mode rather than trying using the Powerlink mode
      * @param autoSyncTime true for automatic sync time
      * @param serialPortManager
+     * @param threadName the prefix name of threads to be created
      */
     public PowermaxCommManager(String ip, int port, PowermaxPanelType panelType, boolean forceStandardMode,
-            boolean autoSyncTime) {
+            boolean autoSyncTime, String threadName) {
         this.panelType = panelType;
         this.forceStandardMode = forceStandardMode;
         this.autoSyncTime = autoSyncTime;
         this.panelSettings = new PowermaxPanelSettings(panelType);
+        this.scheduler = ThreadPoolManager.getScheduledPool(threadName + "-sender");
         String ipAddress = (ip != null && !ip.trim().isEmpty()) ? ip.trim() : null;
         int tcpPort = (port > 0) ? port : DEFAULT_TCP_PORT;
         if (ipAddress != null) {
-            connector = new PowermaxTcpConnector(ipAddress, tcpPort, TCP_CONNECTION_TIMEOUT);
+            connector = new PowermaxTcpConnector(ipAddress, tcpPort, TCP_CONNECTION_TIMEOUT, threadName + "-reader");
         } else {
             connector = null;
         }

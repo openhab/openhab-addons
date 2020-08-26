@@ -13,8 +13,8 @@
 package org.openhab.binding.deconz.internal.netutils;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.websocket.api.Session;
@@ -46,8 +46,8 @@ public class WebSocketConnection {
 
     private final WebSocketClient client;
     private final WebSocketConnectionListener connectionListener;
-    private final Map<String, WebSocketMessageListener> sensorListener = new HashMap<>();
-    private final Map<String, WebSocketMessageListener> lightListener = new HashMap<>();
+    private final Map<String, WebSocketMessageListener> sensorListener = new ConcurrentHashMap<>();
+    private final Map<String, WebSocketMessageListener> lightListener = new ConcurrentHashMap<>();
     private final Gson gson;
     private boolean connected = false;
 
@@ -110,21 +110,27 @@ public class WebSocketConnection {
     @SuppressWarnings("null")
     @OnWebSocketMessage
     public void onMessage(String message) {
+        logger.trace("Raw data received by websocket: {}", message);
         DeconzBaseMessage changedMessage = gson.fromJson(message, DeconzBaseMessage.class);
         switch (changedMessage.r) {
             case "sensors":
                 WebSocketMessageListener listener = sensorListener.get(changedMessage.id);
                 if (listener != null) {
                     listener.messageReceived(changedMessage.id, gson.fromJson(message, SensorMessage.class));
+                } else {
+                    logger.trace("Couldn't find sensor listener for id {}", changedMessage.id);
                 }
                 break;
             case "lights":
                 listener = lightListener.get(changedMessage.id);
                 if (listener != null) {
                     listener.messageReceived(changedMessage.id, gson.fromJson(message, LightMessage.class));
+                } else {
+                    logger.trace("Couldn't find light listener for id {}", changedMessage.id);
                 }
                 break;
             default:
+                logger.debug("Unknown message type: {}", changedMessage.r);
         }
     }
 

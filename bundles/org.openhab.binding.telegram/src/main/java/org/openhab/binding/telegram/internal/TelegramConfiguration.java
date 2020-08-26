@@ -35,6 +35,7 @@ public class TelegramConfiguration {
     private @Nullable Integer proxyPort;
     private @Nullable String proxyType;
     private String parseMode = "";
+    private int longPollingTime;
 
     public @Nullable String getBotUsername() {
         return botUsername;
@@ -62,5 +63,9 @@ public class TelegramConfiguration {
 
     public @Nullable String getProxyType() {
         return proxyType;
+    }
+
+    public int getLongPollingTime() {
+        return longPollingTime;
     }
 }

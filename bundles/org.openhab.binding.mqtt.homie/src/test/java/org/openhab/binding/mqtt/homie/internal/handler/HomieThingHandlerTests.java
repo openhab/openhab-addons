@@ -132,7 +132,7 @@ public class HomieThingHandlerTests {
         doReturn(false).when(scheduledFuture).isDone();
         doReturn(scheduledFuture).when(scheduler).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
 
-        final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, 30, 5);
+        final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, 1000, 30, 5);
         thingHandler = spy(handler);
         thingHandler.setCallback(callback);
         final Device device = new Device(thing.getUID(), thingHandler, spy(new DeviceAttributes()),

@@ -30,5 +30,10 @@ public class JsonAnnouncementTarget {
     public static class TargetDevice {
         public @Nullable String deviceSerialNumber;
         public @Nullable String deviceTypeId;
+
+        public TargetDevice(JsonDevices.Device device) {
+            deviceSerialNumber = device.serialNumber;
+            deviceTypeId = device.deviceType;
+        }
     }
 }

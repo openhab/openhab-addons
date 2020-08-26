@@ -301,6 +301,7 @@ A Blinds1 device
         *   T6 - DC106/Rohrmotor24-RMF/Yooda
         *   T7 - Forest
         *   T8 - Chamberlain CS4330CN
+        *   T11 - ASP
 
 ### chime - RFXCOM Chime
 

@@ -97,6 +97,11 @@
 				</options>
 				<limitToOptions>false</limitToOptions>
 			</parameter>
+
+			<parameter name="deviceConfig" type="text">
+				<label>Device Configuration</label>
+				<description>Optional JSON object with device specific configuration.</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

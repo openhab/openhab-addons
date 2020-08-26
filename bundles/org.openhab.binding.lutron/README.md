@@ -104,7 +104,17 @@ Bridge lutron:ipbridge:radiora2 [ ipAddress="192.168.1.2", user="lutron", passwo
 
 ### Dimmers
 
-Dimmers can optionally be configured to specify a fade in and fade out time in seconds using the `fadeInTime` and `fadeOutTime` parameters.
+Dimmers can optionally be configured to specify a default fade in and fade out time in seconds using the `fadeInTime` and `fadeOutTime` parameters.
+These are used for ON and OFF commands, respectively, and default to 1 second if not set.
+Commands using a specific percent value will use a default fade time of 0.25 seconds.
+
+Dimmers also support the optional advanced parameters `onLevel` and `onToLast`.
+The `onLevel` parameter specifies the level to which the dimmer will go when sent an ON command.
+It defaults to 100.
+The `onToLast` parameter is a boolean that defaults to false.
+If set to "true", the dimmer will go to its last non-zero level when sent an ON command.
+If the last non-zero level cannot be determined, the value of `onLevel` will be used instead.
+
 A **dimmer** thing has a single channel *lightlevel* with type Dimmer and category DimmableLight.
 
 Thing configuration file example:
@@ -112,6 +122,19 @@ Thing configuration file example:
 ```
 Thing dimmer livingroom [ integrationId=8, fadeInTime=0.5, fadeOutTime=5 ]
 ```
+
+The **dimmer** thing supports the thing action `setLevel(Double level, Double fadeTime, Double delayTime)` for automation rules.
+
+The parameters are:
+
+* `level` The new light level to set (0-100)
+* `fadeTime` The time in seconds over which the dimmer should fade to the new level
+* `delayTime` The time in seconds to delay before starting to fade to the new level
+
+The fadeTime and delayTime parameters are significant to 2 digits after the decimal point (i.e. to hundredths of a second), but some Lutron systems may round the time to the nearest 0.25 seconds when processing the command.
+Times of 100 seconds or more will be rounded to the nearest integer value.
+
+See below for an example rule using thing actions.
 
 ### Switches
 
@@ -594,7 +617,7 @@ The only exceptions are **greenmode** *step*, which is periodically polled and a
 Many other channels accept REFRESH commands to initiate a poll, but sending one should not normally be necessary.
 
 
-## RadioRA 2 Configuration File Example
+## RadioRA 2/HomeWorks QS Configuration File Examples:
 
 demo.things:
 
@@ -633,6 +656,19 @@ Number   Greenmode_Step      "Green Step"      { channel="lutron:greenmode:radio
 Rollershutter Lib_Shade1     "Shade 1"         { channel="lutron:shade:radiora2:libraryshade1:shadelevel" }
 
 ```
+
+dimmerAction.rules:
+
+```
+rule "Test dimmer action"
+when
+    Item TestSwitch received command ON
+then
+    val actions = getActions("lutron","lutron:dimmer:radiora2:lrtable")
+    actions.setLevel(100, 5.5, 0)
+end
+```
+
 
 # Lutron RadioRA (Classic) Binding
 
