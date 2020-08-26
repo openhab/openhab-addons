@@ -112,16 +112,17 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     @Override
     public void initialize() {
+        final String uid = this.getThing().getUID().getAsString();
         KaleidescapeThingConfiguration config = getConfigAs(KaleidescapeThingConfiguration.class);
         @Nullable
-        String componentType = config.componentType;
+        final String componentType = config.componentType;
 
         // Check configuration settings
         String configError = null;
-        String serialPort = config.serialPort;
-        String host = config.host;
-        Integer port = config.port;
-        Integer updatePeriod = config.updatePeriod;
+        final String serialPort = config.serialPort;
+        final String host = config.host;
+        final Integer port = config.port;
+        final Integer updatePeriod = config.updatePeriod;
 
         if ((serialPort == null || serialPort.isEmpty()) && (host == null || host.isEmpty())) {
             configError = "undefined serialPort and host configuration settings; please set one of them";
@@ -187,9 +188,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
         updateThing(editThing().withChannels(channels).build());
 
         if (serialPort != null) {
-            connector = new KaleidescapeSerialConnector(serialPortManager, serialPort);
+            connector = new KaleidescapeSerialConnector(serialPortManager, serialPort, uid);
         } else if (port != null) {
-            connector = new KaleidescapeIpConnector(host, port);
+            connector = new KaleidescapeIpConnector(host, port, uid);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Either Serial port or Host & Port must be specifed");

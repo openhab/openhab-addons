@@ -40,6 +40,7 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
 
     private final String serialPortName;
     private final SerialPortManager serialPortManager;
+    private final String uid;
 
     private @Nullable SerialPort serialPort;
 
@@ -48,10 +49,12 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
      *
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
+     * @param uid the thing uid string
      */
-    public KaleidescapeSerialConnector(SerialPortManager serialPortManager, String serialPortName) {
+    public KaleidescapeSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid) {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
+        this.uid = uid;
     }
 
     @Override
@@ -84,7 +87,7 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
                 }
             }
 
-            Thread thread = new KaleidescapeReaderThread(this, this.serialPortName);
+            Thread thread = new KaleidescapeReaderThread(this, this.uid, this.serialPortName);
             setReaderThread(thread);
             thread.start();
 

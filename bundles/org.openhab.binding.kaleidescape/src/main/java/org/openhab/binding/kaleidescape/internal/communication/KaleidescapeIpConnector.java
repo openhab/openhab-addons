@@ -37,6 +37,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
 
     private final @Nullable String address;
     private final int port;
+    private final String uid;
 
     private @Nullable Socket clientSocket;
 
@@ -46,9 +47,10 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
      * @param address the IP address of the Kaleidescape component
      * @param port the TCP port to be used
      */
-    public KaleidescapeIpConnector(@Nullable String address, int port) {
+    public KaleidescapeIpConnector(@Nullable String address, int port, String uid) {
         this.address = address;
         this.port = port;
+        this.uid = uid;
     }
 
     @Override
@@ -61,7 +63,7 @@ public class KaleidescapeIpConnector extends KaleidescapeConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new KaleidescapeReaderThread(this, this.address + "." + this.port);
+            Thread thread = new KaleidescapeReaderThread(this, this.uid, this.address + "." + this.port);
             setReaderThread(thread);
             thread.start();
 

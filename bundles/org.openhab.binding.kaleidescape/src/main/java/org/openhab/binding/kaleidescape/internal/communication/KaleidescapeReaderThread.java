@@ -15,7 +15,6 @@ package org.openhab.binding.kaleidescape.internal.communication;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants;
 import org.openhab.binding.kaleidescape.internal.KaleidescapeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +39,11 @@ public class KaleidescapeReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param uid the thing uid string
      * @param connectionId a string that uniquely identifies the particular connection
      */
-    public KaleidescapeReaderThread(KaleidescapeConnector connector, String connectionId) {
-        super("OH-binding-" + KaleidescapeBindingConstants.THING_TYPE_PLAYER_ZONE + "-" + connectionId);
+    public KaleidescapeReaderThread(KaleidescapeConnector connector, String uid, String connectionId) {
+        super("OH-binding-" + uid + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
