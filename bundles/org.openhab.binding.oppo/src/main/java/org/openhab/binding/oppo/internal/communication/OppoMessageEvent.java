@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class OppoMessageEvent extends EventObject {
 
     private static final long serialVersionUID = 1L;
-    private String key;
-    private String value;
+    private final String key;
+    private final String value;
 
     public OppoMessageEvent(Object source, String key, String value) {
         super(source);

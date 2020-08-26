@@ -66,7 +66,7 @@ public enum OppoCommand {
     SET_INPUT_SOURCE("SIS"),
     NO_OP("NOP");
 
-    private String value;
+    private final String value;
 
     public static final Set<OppoCommand> INITIAL_COMMANDS = new HashSet<>(
             Arrays.asList(QUERY_POWER_STATUS, QUERY_FIRMWARE_VERSION, QUERY_VOLUME, QUERY_HDMI_RESOLUTION,

@@ -14,11 +14,6 @@ package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +23,6 @@ import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -41,6 +35,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.thing.type.ChannelKind;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.SensorConfig;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
@@ -190,12 +185,10 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
         // "Last seen" is the last "ping" from the device, whereas "last update" is the last status changed.
         // For example, for a fire sensor, the device pings regularly, without necessarily updating channels.
         // So to monitor a sensor is still alive, the "last seen" is necessary.
-        if (stateResponse.lastseen != null && config.lastSeenPolling > 0) {
+        String lastSeen = stateResponse.lastseen;
+        if (lastSeen != null && config.lastSeenPolling > 0) {
             createChannel(CHANNEL_LAST_SEEN, ChannelKind.STATE);
-            updateState(CHANNEL_LAST_SEEN,
-                    new DateTimeType(ZonedDateTime.ofInstant(
-                            LocalDateTime.parse(stateResponse.lastseen, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                            ZoneOffset.UTC, ZoneId.systemDefault())));
+            updateState(CHANNEL_LAST_SEEN, Util.convertTimestampToDateTime(lastSeen));
             // Because "last seen" is never updated by the WebSocket API - if this is supported, then we have to
             // manually poll it after the defined time (default is off)
             if (config.lastSeenPolling > 0) {
@@ -266,10 +259,7 @@ public abstract class SensorBaseThingHandler extends DeconzBaseThingHandler<Sens
             case CHANNEL_LAST_UPDATED:
                 String lastUpdated = newState.lastupdated;
                 if (lastUpdated != null && !"none".equals(lastUpdated)) {
-                    updateState(channelID,
-                            new DateTimeType(ZonedDateTime.ofInstant(
-                                    LocalDateTime.parse(lastUpdated, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                                    ZoneOffset.UTC, ZoneId.systemDefault())));
+                    updateState(channelID, Util.convertTimestampToDateTime(lastUpdated));
                 }
                 break;
             default:
