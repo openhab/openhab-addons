@@ -43,7 +43,7 @@ public class KaleidescapeReaderThread extends Thread {
      * @param connectionId a string that uniquely identifies the particular connection
      */
     public KaleidescapeReaderThread(KaleidescapeConnector connector, String connectionId) {
-        super("OH-binding-" + KaleidescapeBindingConstants.BINDING_ID + "-" + connectionId);
+        super("OH-binding-" + KaleidescapeBindingConstants.THING_TYPE_PLAYER_ZONE + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
