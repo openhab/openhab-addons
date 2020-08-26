@@ -47,7 +47,15 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID notSupportedServicesChannel;
     protected ChannelUID chargingModesChannel;
 
-    // Vehcile channels
+    // Vahicle Status Channels
+    protected ChannelUID doors;
+    protected ChannelUID windows;
+    protected ChannelUID lock;
+    protected ChannelUID service;
+    protected ChannelUID checkControl;
+    protected ChannelUID chargingStatus;
+
+    // Range channels
     protected ChannelUID mileage;
     protected ChannelUID remainingRangeHybrid;
     protected ChannelUID remainingRangeElectric;
@@ -76,8 +84,6 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID rangeRadius;
 
     protected ChannelUID imageChannel;
-    protected ChannelUID imageSizeChannel;
-    protected ChannelUID imageViewDirectionChannel;
 
     public ConnectedCarChannelHandler(Thing thing) {
         super(thing);
@@ -105,6 +111,14 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         notSupportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
                 PROPERTIES_NOT_SUPPORTED_SERVICES);
         chargingModesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_CHARGING_MODES);
+
+        // Vehicle Status channels
+        doors = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, DOORS);
+        windows = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, WINDOWS);
+        lock = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LOCK);
+        service = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE);
+        checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
+        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGING_STATUS);
 
         // range Channels
         mileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, MILEAGE);
@@ -136,8 +150,6 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         rangeRadius = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, RANGE_RADIUS);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
-        imageSizeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE_VIEW_DIRECTION);
-        imageViewDirectionChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE_SIZE);
     }
 
     @Override

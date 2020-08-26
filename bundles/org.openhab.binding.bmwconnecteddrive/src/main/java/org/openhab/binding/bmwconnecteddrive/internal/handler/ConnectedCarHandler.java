@@ -15,6 +15,9 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -50,9 +53,13 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.Community;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.Trip;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Status;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,7 +131,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 }
             } else {
                 if (vehicleStatusCache != null) {
-                    updateVehicleStatus(vehicleStatusCache);
+                    updateRangeValues(vehicleStatusCache);
                 }
             }
             logger.info("REFRESH {}", group);
@@ -284,6 +291,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
         String vehicleStatusData = getJSON(vehicleAPI);
         updateVehicleStatus(vehicleStatusData);
+        updateRangeValues(vehicleStatusData);
         String lastTripData = getJSON(lastTripAPI);
         updateLastTrip(lastTripData);
         String allTripData = getJSON(allTripsAPI);
@@ -358,11 +366,78 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             logger.warn("No Vehicle Values available");
             return;
         }
-        vehicleStatusCache = content;
         logger.info("Vehicle Status {}", content);
+        vehicleStatusCache = content;
         Status status = GSON.fromJson(content, Status.class);
         VehicleStatus vStatus = status.vehicleStatus;
-        logger.info("Update Milage {} Channel {}", vStatus.mileage, mileage.toString());
+
+        updateState(lock, StringType.valueOf(vStatus.doorLockState));
+        updateState(chargingStatus, StringType.valueOf(vStatus.chargingStatus));
+
+        Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
+        updateState(doors, StringType.valueOf(checkClosed(doorState)));
+        Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
+        updateState(windows, StringType.valueOf(checkClosed(windowState)));
+        updateState(checkControl, StringType.valueOf(getCheckControl(vStatus.checkControlMessages)));
+        updateState(service, StringType.valueOf(getNextService(vStatus.cbsData)));
+    }
+
+    private @Nullable String getNextService(List<CBSMessage> cbsData) {
+        if (cbsData.isEmpty()) {
+            return "No Service Requests";
+        } else {
+            LocalDate serviceDate = null;
+            String service = null;
+            for (int i = 0; i < cbsData.size(); i++) {
+                CBSMessage entry = cbsData.get(i);
+                LocalDate d = LocalDate.parse(entry.cbsDueDate + "-01", Converter.serviceDateInputPattern);
+                if (serviceDate == null) {
+                    serviceDate = d;
+                    service = entry.cbsType;
+                } else {
+                    if (d.isBefore(serviceDate)) {
+                        serviceDate = d;
+                    }
+                }
+            }
+            if (serviceDate != null) {
+                return serviceDate.format(Converter.serviceDateOutputPattern) + ":" + service;
+            } else {
+                return "Unknown";
+            }
+        }
+    }
+
+    private @Nullable String getCheckControl(List<CCMMessage> checkControlMessages) {
+        if (checkControlMessages.isEmpty()) {
+            return "Ok";
+        } else {
+            return checkControlMessages.get(0).ccmDescriptionShort;
+        }
+    }
+
+    String checkClosed(Object dto) {
+        for (Field field : dto.getClass().getDeclaredFields()) {
+            try {
+                if (field.get(dto).equals("OPEN")) {
+                    // report the first door which is still open
+                    return field.getName() + " open";
+                }
+            } catch (IllegalArgumentException | IllegalAccessException e) {
+                logger.warn("Fields for {} Object not accesible", dto);
+                return "Unknown";
+            }
+        }
+        return "Closed";
+    }
+
+    void updateRangeValues(@Nullable String content) {
+        if (content == null) {
+            logger.warn("No Vehicle Values available");
+            return;
+        }
+        Status status = GSON.fromJson(content, Status.class);
+        VehicleStatus vStatus = status.vehicleStatus;
         // based on unit of length decide if range shall be reported in km or miles
         if (!imperial) {
             updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
@@ -402,7 +477,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
             }
             if (isHybrid) {
-                updateState(remainingRangeHybrid, QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
+                updateState(remainingRangeHybrid,
+                        QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
             }
             updateState(rangeRadius, new DecimalType((totalRange) * 5280)); // Miles to feet
         }

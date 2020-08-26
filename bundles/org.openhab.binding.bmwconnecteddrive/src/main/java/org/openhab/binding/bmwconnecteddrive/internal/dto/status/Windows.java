@@ -13,13 +13,15 @@
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
 /**
- * The {@link CBSMessage} Data Transfer Object
+ * The {@link Windows} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class CBSMessage {
-    public String cbsType;// ": "BRAKE_FLUID",
-    public String cbsState;// ": "OK",
-    public String cbsDueDate;// ": "2021-11",
-    public String cbsDescription;// ": "Next change due at the latest by the stated date."
+public class Windows {
+    public String windowDriverFront;// ": "CLOSED",
+    public String windowDriverRear;// ": "CLOSED",
+    public String windowPassengerFront;// ": "CLOSED",
+    public String windowPassengerRear;// ": "CLOSED",
+    public String sunroof;// ": "CLOSED",
+    public String rearWindow;// ": "INVALID",
 }
