@@ -43,7 +43,7 @@ public class OppoReaderThread extends Thread {
      * @param connectionId a string that uniquely identifies the particular connection
      */
     public OppoReaderThread(OppoConnector connector, String connectionId) {
-        super("OH-binding-" + OppoBindingConstants.BINDING_ID + "-" + connectionId);
+        super("OH-binding-" + OppoBindingConstants.THING_TYPE_PLAYER + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }
