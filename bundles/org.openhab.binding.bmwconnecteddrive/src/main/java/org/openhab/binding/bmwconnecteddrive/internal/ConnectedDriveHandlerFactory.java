@@ -16,6 +16,7 @@ import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConst
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -40,10 +41,12 @@ import org.osgi.service.component.annotations.Reference;
 public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
+    private boolean imperial = false;
 
     @Activate
-    public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf) {
+    public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocaleProvider lp) {
         httpClientFactory = hcf;
+        imperial = MILE_COUNTRIES.contains(lp.getLocale().getCountry());
     }
 
     @Override
@@ -58,7 +61,8 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
             return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     bundleContext);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            return new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient(), thingTypeUID.getId());
+            return new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient(), thingTypeUID.getId(),
+                    imperial);
         }
         return null;
     }

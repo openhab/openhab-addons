@@ -7,9 +7,9 @@
 		<item-type>Number:Length</item-type>
 		<label>Total Distance Driven</label>
 	</channel-type>
-	<channel-type id="remaining-range-channel">
+	<channel-type id="remaining-range-hybrid-channel">
 		<item-type>Number:Length</item-type>
-		<label>Remaining Range</label>
+		<label>Remaining Hybrid Range</label>
 	</channel-type>
 	<channel-type id="remaining-range-electric-channel">
 		<item-type>Number:Length</item-type>

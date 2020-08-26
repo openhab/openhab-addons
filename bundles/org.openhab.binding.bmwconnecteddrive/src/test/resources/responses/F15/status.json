@@ -1,0 +1,66 @@
+{
+  "vehicleStatus" : {
+    "doorPassengerFront" : "CLOSED",
+    "cbsData" : [ {
+      "cbsState" : "OK",
+      "cbsRemainingMileage" : 47000,
+      "cbsDescription" : "Next change due at the latest when the stated distance has been covered.",
+      "cbsType" : "BRAKE_PADS_FRONT"
+    }, {
+      "cbsState" : "OK",
+      "cbsRemainingMileage" : 46000,
+      "cbsDescription" : "Next change due at the latest when the stated distance has been covered.",
+      "cbsType" : "BRAKE_PADS_REAR"
+    }, {
+      "cbsDueDate" : "2018-06",
+      "cbsState" : "OK",
+      "cbsRemainingMileage" : 12000,
+      "cbsDescription" : "Next service due when the stated distance has been covered or by the specified date.",
+      "cbsType" : "OIL"
+    }, {
+      "cbsDueDate" : "2021-06",
+      "cbsState" : "OK",
+      "cbsRemainingMileage" : 50000,
+      "cbsDescription" : "Next visual inspection due when the stated distance has been covered or by the stated date.",
+      "cbsType" : "VEHICLE_CHECK"
+    }, {
+      "cbsDueDate" : "2020-04",
+      "cbsState" : "OK",
+      "cbsDescription" : "Next change due at the latest by the stated date.",
+      "cbsType" : "BRAKE_FLUID"
+    } ],
+    "windowDriverFront" : "CLOSED",
+    "DCS_CCH_Ongoing" : false,
+    "updateReason" : "VEHICLE_SHUTDOWN",
+    "rearWindow" : "INVALID",
+    "remainingRangeFuelMls" : 154,
+    "DCS_CCH_Activation" : "NA",
+    "singleImmediateCharging" : false,
+    "positionLight" : "OFF",
+    "vin" : "F15_VIN",
+    "doorDriverFront" : "CLOSED",
+    "mileage" : 1629,
+    "checkControlMessages" : [ ],
+    "parkingLight" : "OFF",
+    "windowDriverRear" : "CLOSED",
+    "steering" : "LH",
+    "updateTime" : "2018-03-08T22:21:39-0500",
+    "remainingFuel" : 30,
+    "windowPassengerRear" : "CLOSED",
+    "trunk" : "CLOSED",
+    "hood" : "CLOSED",
+    "internalDataTimeUTC" : "2018-03-09T03:21:39",
+    "windowPassengerFront" : "CLOSED",
+    "doorLockState" : "UNLOCKED",
+    "doorPassengerRear" : "CLOSED",
+    "remainingRangeFuel" : 249,
+    "doorDriverRear" : "CLOSED",
+    "sunroof" : "CLOSED",
+    "position" : {
+      "heading" : 11,
+      "lon" : -123.123,
+      "lat" : 123.123,
+      "status" : "OK"
+    }
+  }
+}
