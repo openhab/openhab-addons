@@ -23,9 +23,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.intesis.internal.IntesisConfiguration;
+import org.openhab.binding.intesis.internal.IntesisHomeModeEnum;
 import org.openhab.binding.intesis.internal.api.IntesisHomeHttpApi;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO;
 import org.openhab.binding.intesis.internal.gson.IntesisHomeJSonDTO.AuthenticateData;
@@ -166,7 +167,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         int value = 0;
         String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
-            getAllUidValues();
+            // getAllUidValues();
         } else {
             switch (channelId) {
                 case POWER_CHANNEL:
@@ -175,17 +176,45 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     break;
                 case MODE_CHANNEL:
                     uid = 2;
-                    value = Integer.parseInt(command.toString());
+                    value = IntesisHomeModeEnum.valueOf(command.toString()).getMode();
                     break;
-                case WINDSPEED_CHANNEL:
+                case FANSPEED_CHANNEL:
                     uid = 4;
-                    value = Integer.parseInt(command.toString());
+                    if (("AUTO").equals(command.toString())) {
+                        value = 0;
+                    } else {
+                        value = Integer.parseInt(command.toString());
+                    }
                     break;
-                case SWINGUD_CHANNEL:
+                case VANESUD_CHANNEL:
                     uid = 5;
-                    value = Integer.parseInt(command.toString());
+                    if (("AUTO").equals(command.toString())) {
+                        value = 0;
+                    } else if (("SWING").equals(command.toString())) {
+                        value = 10;
+                    } else if (("SWIRL").equals(command.toString())) {
+                        value = 11;
+                    } else if (("WIDE").equals(command.toString())) {
+                        value = 12;
+                    } else {
+                        value = Integer.parseInt(command.toString());
+                    }
                     break;
-                case TEMP_CHANNEL:
+                case VANESLR_CHANNEL:
+                    uid = 6;
+                    if (("AUTO").equals(command.toString())) {
+                        value = 0;
+                    } else if (("SWING").equals(command.toString())) {
+                        value = 10;
+                    } else if (("SWIRL").equals(command.toString())) {
+                        value = 11;
+                    } else if (("WIDE").equals(command.toString())) {
+                        value = 12;
+                    } else {
+                        value = Integer.parseInt(command.toString());
+                    }
+                    break;
+                case SETTEMP_CHANNEL:
                     uid = 9;
                     value = (Integer.parseInt(command.toString().replace(" °C", ""))) * 10;
                     break;
@@ -260,15 +289,45 @@ public class IntesisHomeHandler extends BaseThingHandler {
                 if (uid.length >= 12) {
                     int value = uid[0].value;
                     updateState(POWER_CHANNEL, String.valueOf(value).equals("0") ? OnOffType.OFF : OnOffType.ON);
-                    State stateValue = new DecimalType(uid[1].value);
-                    updateState(MODE_CHANNEL, stateValue);
-                    stateValue = new DecimalType(uid[2].value);
-                    updateState(WINDSPEED_CHANNEL, stateValue);
-                    stateValue = new DecimalType(uid[3].value);
-                    updateState(SWINGUD_CHANNEL, stateValue);
+                    value = uid[1].value;
+                    switch (value) {
+                        case 0:
+                            updateState(MODE_CHANNEL, StringType.valueOf("AUTO"));
+                            break;
+                        case 1:
+                            updateState(MODE_CHANNEL, StringType.valueOf("HEAT"));
+                            break;
+                        case 2:
+                            updateState(MODE_CHANNEL, StringType.valueOf("DRY"));
+                            break;
+                        case 3:
+                            updateState(MODE_CHANNEL, StringType.valueOf("FAN"));
+                            break;
+                        case 4:
+                            updateState(MODE_CHANNEL, StringType.valueOf("COOL"));
+                            break;
+                    }
+                    value = uid[2].value;
+                    if (value == 0) {
+                        updateState(FANSPEED_CHANNEL, StringType.valueOf("AUTO"));
+                    } else {
+                        updateState(FANSPEED_CHANNEL, StringType.valueOf(String.valueOf(value)));
+                    }
+                    value = uid[3].value;
+                    if (value == 0) {
+                        updateState(VANESUD_CHANNEL, StringType.valueOf("AUTO"));
+                    } else if (value == 10) {
+                        updateState(VANESUD_CHANNEL, StringType.valueOf("SWING"));
+                    } else if (value == 11) {
+                        updateState(VANESUD_CHANNEL, StringType.valueOf("SWIRL"));
+                    } else if (value == 12) {
+                        updateState(VANESUD_CHANNEL, StringType.valueOf("WIDE"));
+                    } else {
+                        updateState(VANESUD_CHANNEL, StringType.valueOf(String.valueOf(value)));
+                    }
                     int unit = Math.round((uid[4].value) / 10);
-                    stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-                    updateState(TEMP_CHANNEL, stateValue);
+                    State stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                    updateState(SETTEMP_CHANNEL, stateValue);
                     unit = Math.round((uid[5].value) / 10);
                     stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
                     updateState(AMBIENTTEMP_CHANNEL, stateValue);

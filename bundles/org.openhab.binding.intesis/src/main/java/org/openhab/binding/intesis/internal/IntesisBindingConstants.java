@@ -26,19 +26,19 @@ public class IntesisBindingConstants {
 
     private static final String BINDING_ID = "intesis";
 
+    public static final int INTESIS_HTTP_API_TIMEOUT_MS = 5000;
+    public static final int INTESIS_REFRESH_INTERVAL_SEC = 30;
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_INTESISHOME = new ThingTypeUID(BINDING_ID, "intesisHome");
 
     // List of all Channel ids
     public static final String POWER_CHANNEL = "power";
     public static final String MODE_CHANNEL = "mode";
-    public static final String WINDSPEED_CHANNEL = "windspeed";
-    public static final String SWINGUD_CHANNEL = "swingUpDown";
-    public static final String SWINGLR_CHANNEL = "swingLeftRight";
-    public static final String TEMP_CHANNEL = "temperature";
+    public static final String FANSPEED_CHANNEL = "fanSpeed";
+    public static final String VANESUD_CHANNEL = "vanesUpDown";
+    public static final String VANESLR_CHANNEL = "vanesLeftRight";
+    public static final String SETTEMP_CHANNEL = "setTemperature";
     public static final String AMBIENTTEMP_CHANNEL = "ambientTemperature";
     public static final String OUTDOORTEMP_CHANNEL = "outdoorTemperature";
-
-    public static final int INTESIS_HTTP_API_TIMEOUT_MS = 5000;
-    public static final int INTESIS_REFRESH_INTERVAL_SEC = 30;
 }
