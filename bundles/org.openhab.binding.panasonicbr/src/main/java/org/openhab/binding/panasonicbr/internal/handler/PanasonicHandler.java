@@ -49,11 +49,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class PanasonicHandler extends BaseThingHandler {
-    private static final int DEFAULT_REFRESH_PERIOD = 10;
+    private static final int DEFAULT_REFRESH_PERIOD_SEC = 10;
 
+    // pre-define the POST body for status update calls
     private static final Fields CONFIG_POST_CMD = new Fields();
     static {
-        // pre-define the POST body for status update calls
         CONFIG_POST_CMD.add("cCMD_PST.x", "100");
         CONFIG_POST_CMD.add("cCMD_PST.y", "100");
     }
@@ -64,7 +64,7 @@ public class PanasonicHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
 
     private String urlStr = "http://%host%/WAN/dvdr/dvdr_ctrl.cgi";
-    private int refreshInterval = DEFAULT_REFRESH_PERIOD;
+    private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
     private String playerStatus = "";
 
     public PanasonicHandler(Thing thing, HttpClient httpClient) {
@@ -82,7 +82,7 @@ public class PanasonicHandler extends BaseThingHandler {
         if (host != null) {
             urlStr = urlStr.replace("%host%", host);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must by specified");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
             return;
         }
 

@@ -56,16 +56,16 @@ public class PanasonicDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
-        ThingUID uid = getThingUID(device);
+        final ThingUID uid = getThingUID(device);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(3);
+            final Map<String, Object> properties = new HashMap<>(3);
 
-            URL url = device.getIdentity().getDescriptorURL();
-            String label = device.getDetails().getFriendlyName();
+            final URL url = device.getIdentity().getDescriptorURL();
+            final String label = device.getDetails().getFriendlyName();
 
             properties.put("hostName", url.getHost());
 
-            DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
+            final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                     .build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
