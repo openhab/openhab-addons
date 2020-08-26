@@ -12,10 +12,16 @@
  */
 package org.openhab.binding.deconz.internal;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 
 /**
  * The {@link Util} class defines common utility methods
@@ -46,5 +52,22 @@ public class Util {
 
     public static int constrainToRange(int intValue, int min, int max) {
         return Math.max(min, Math.min(intValue, max));
+    }
+
+    /**
+     * convert a timestamp string to a DateTimeType
+     *
+     * @param timestamp either in zoned date time or local date time format
+     * @return the corresponding DateTimeType
+     */
+    public static DateTimeType convertTimestampToDateTime(String timestamp) {
+        if (timestamp.endsWith("Z")) {
+            return new DateTimeType(
+                    ZonedDateTime.parse(timestamp));
+        } else {
+            return new DateTimeType(
+                    ZonedDateTime.ofInstant(LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                            ZoneOffset.UTC, ZoneId.systemDefault()));
+        }
     }
 }

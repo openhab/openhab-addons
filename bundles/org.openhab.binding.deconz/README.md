@@ -26,19 +26,20 @@ These sensors are supported:
 | Vibration Sensor                  | ZHAVibration                      | `vibrationsensor`    |
 | deCONZ Artificial Daylight Sensor | deCONZ specific: simulated sensor | `daylightsensor`     |
 | Carbon-Monoxide Sensor            | ZHACarbonmonoxide                 | `carbonmonoxide`     |
+| Color Controller                  | ZBT-Remote-ALL-RGBW               | `colorcontrol`       |
 
 
 Additionally lights, window coverings (blinds) and thermostats are supported:
 
-| Device type                          | Resource Type                          | Thing type           |
-|--------------------------------------|----------------------------------------|----------------------|
-| Dimmable Light                       | Dimmable light, Dimmable plug-in unit  | `dimmablelight`      |
-| On/Off Light                         | On/Off light, On/Off plug-in unit      | `onofflight`         |
-| Color Light (w/o temperature)        | Color dimmable light                   | `colorlight`         |
-| Extended Color Light (w/temperature) | Extended color light                   | `extendedcolorlight` |
-| Blind / Window Covering              | Window covering device                 | `windowcovering`     |
-| Thermostat                           | ZHAThermostat                          | `thermostat`         |
-| Warning Device (Siren)               | Warning device                         | `warningdevice`      |
+| Device type                          | Resource Type                                 | Thing type           |
+|--------------------------------------|-----------------------------------------------|----------------------|
+| Dimmable Light                       | Dimmable light, Dimmable plug-in unit         | `dimmablelight`      |
+| On/Off Light                         | On/Off light, On/Off plug-in unit, Smart plug | `onofflight`         |
+| Color Light (w/o temperature)        | Color dimmable light                          | `colorlight`         |
+| Extended Color Light (w/temperature) | Extended color light                          | `extendedcolorlight` |
+| Blind / Window Covering              | Window covering device                        | `windowcovering`     |
+| Thermostat                           | ZHAThermostat                                 | `thermostat`         |
+| Warning Device (Siren)               | Warning device                                | `warningdevice`      |
 
 ## Discovery
 
@@ -122,7 +123,7 @@ The sensor devices support some of the following channels:
 | consumption     | Number:Energy            |      R      | Current power usage in Watts/Hour                                                         | consumptionsensor                            |
 | voltage         | Number:ElectricPotential |      R      | Current voltage in V                                                                      | some powersensors                            |
 | current         | Number:ElectricCurrent   |      R      | Current current in mA                                                                     | some powersensors                            |
-| button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch                                       |
+| button          | Number                   |      R      | Last pressed button id on a switch                                                        | switch, colorcontrol                         |
 | gesture         | Number                   |      R      | A gesture that was performed with the switch                                              | switch                                       |
 | lightlux        | Number:Illuminance       |      R      | Current light illuminance in Lux                                                          | lightsensor                                  |
 | light_level     | Number                   |      R      | Current light level                                                                       | lightsensor                                  |
@@ -142,7 +143,7 @@ The sensor devices support some of the following channels:
 | battery_level   | Number                   |      R      | Battery level (in %)                                                                      | any battery-powered sensor                   |
 | battery_low     | Switch                   |      R      | Battery level low: `ON`; `OFF`                                                            | any battery-powered sensor                   |
 | carbonmonoxide  | Switch                   |      R      | `ON` = carbon monoxide detected                                                           | carbonmonoxide                               |
-
+| color           | Color                    |      R      | Color set by remote                                                                       | colorcontrol                                 |
 
 **NOTE:** Beside other non mandatory channels, the `battery_level` and `battery_low` channels will be added to the Thing during runtime if the sensor is battery-powered.
 The specification of your sensor depends on the deCONZ capabilities.
@@ -169,10 +170,10 @@ Other devices support
 
 The dimmer switch additionally supports trigger channels.
 
-| Channel Type ID | Description              | Thing types |
-|-----------------|--------------------------|-------------|
-| buttonevent     | Event for switch pressed | switch      |
-| gestureevent    | Event for gestures       | switch      |
+| Channel Type ID | Description              | Thing types          |
+|-----------------|--------------------------|----------------------|
+| buttonevent     | Event for switch pressed | switch, colorcontrol |
+| gestureevent    | Event for gestures       | switch               |
 
 **NOTE:** The `gestureevent` trigger channel is only available if the optional channel `gesture` is present.
 Both will be added during runtime if supported by the switch.

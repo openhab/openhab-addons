@@ -37,8 +37,8 @@ import org.slf4j.LoggerFactory;
 public class OppoSerialConnector extends OppoConnector {
     private final Logger logger = LoggerFactory.getLogger(OppoSerialConnector.class);
 
-    private String serialPortName;
-    private SerialPortManager serialPortManager;
+    private final String serialPortName;
+    private final SerialPortManager serialPortManager;
 
     private @Nullable SerialPort serialPort;
 

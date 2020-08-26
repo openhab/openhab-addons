@@ -34,6 +34,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_POWER_SENSOR = new ThingTypeUID(BINDING_ID, "powersensor");
     public static final ThingTypeUID THING_TYPE_CONSUMPTION_SENSOR = new ThingTypeUID(BINDING_ID, "consumptionsensor");
     public static final ThingTypeUID THING_TYPE_DAYLIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "daylightsensor");
+    public static final ThingTypeUID THING_TYPE_COLOR_CONTROL = new ThingTypeUID(BINDING_ID, "colorcontrol");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");

@@ -35,8 +35,8 @@ import org.slf4j.LoggerFactory;
 public class OppoIpConnector extends OppoConnector {
     private final Logger logger = LoggerFactory.getLogger(OppoIpConnector.class);
 
-    private @Nullable String address;
-    private int port;
+    private final @Nullable String address;
+    private final int port;
 
     private @Nullable Socket clientSocket;
 
