@@ -39,6 +39,7 @@ public class OppoSerialConnector extends OppoConnector {
 
     private final String serialPortName;
     private final SerialPortManager serialPortManager;
+    private final String uid;
 
     private @Nullable SerialPort serialPort;
 
@@ -47,10 +48,12 @@ public class OppoSerialConnector extends OppoConnector {
      *
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name to be used
+     * @param uid the thing uid string
      */
-    public OppoSerialConnector(SerialPortManager serialPortManager, String serialPortName) {
+    public OppoSerialConnector(SerialPortManager serialPortManager, String serialPortName, String uid) {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
+        this.uid = uid;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class OppoSerialConnector extends OppoConnector {
                 }
             }
 
-            Thread thread = new OppoReaderThread(this, this.serialPortName);
+            Thread thread = new OppoReaderThread(this, this.uid, this.serialPortName);
             setReaderThread(thread);
             thread.start();
 
