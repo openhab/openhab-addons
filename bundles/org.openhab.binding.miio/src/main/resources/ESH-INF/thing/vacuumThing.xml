@@ -159,9 +159,15 @@
 		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false" />
 		<config-description-ref uri="channel-type:miio:dynamic-channel-config" />
 	</channel-type>
-	<channel-type id="water_box_status">
+    <channel-type id="water_box_status">
+        <item-type>Switch</item-type>
+        <label>Water Box State</label>
+        <state readOnly="true" />
+        <config-description-ref uri="channel-type:miio:dynamic-channel-config" />
+    </channel-type>
+	<channel-type id="water_box_carriage_status">
 		<item-type>Switch</item-type>
-		<label>Water Box State</label>
+		<label>Water Box Carriage State</label>
 		<state readOnly="true" />
 		<config-description-ref uri="channel-type:miio:dynamic-channel-config" />
 	</channel-type>

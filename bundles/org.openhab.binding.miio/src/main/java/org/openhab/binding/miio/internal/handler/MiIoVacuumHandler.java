@@ -326,6 +326,10 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     control = "zone";
                     vacuum = OnOffType.ON;
                     break;
+                case ROOM:
+                    control = "room";
+                    vacuum = OnOffType.ON;
+                    break;
                 case SPOTCLEAN:
                     control = "spot";
                     vacuum = OnOffType.ON;
@@ -583,7 +587,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                     logger.debug("Found channelType '{}' for capability {}", channelType, capability.name());
                     ChannelUID channelUID = new ChannelUID(getThing().getUID(), capability.getChannel());
                     Channel channel = ChannelBuilder.create(channelUID, channelType.getItemType())
-                            .withType(capability.getChannelType()).build();
+                            .withType(capability.getChannelType()).withLabel(channelType.getLabel()).build();
                     thingBuilder.withChannel(channel);
                     cnt++;
                 } else {
