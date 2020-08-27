@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.remote;
 
 /**
- * The {@link Status} Data Transfer Object
+ * The {@link ExecutionStatusContainer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class Status {
-    public VehicleStatus vehicleStatus;
+public class ExecutionStatusContainer {
+    public ExecutionStatus executionStatus;
 }
