@@ -39,12 +39,12 @@ public class EmergencyBlock implements Data {
     public OnOffType dischargeLockTime = OnOffType.OFF;
 
     // Possible Status definitions according to chapter 3.1.2, Register 40084, page 14 & 15
-    public static final StringType EP_NOT_SUPPORTED = new StringType("EP not supported");
-    public static final StringType EP_ACTIVE = new StringType("EP active");
-    public static final StringType EP_NOT_ACTIVE = new StringType("EP not active");
-    public static final StringType EP_POSSIBLE = new StringType("EP possible");
-    public static final StringType EP_SWITCH = new StringType("EP Switch in wrong position");
-    public static final StringType EP_UNKOWN = new StringType("EP Status unknown");
+    public static final StringType EP_NOT_SUPPORTED = StringType.valueOf("EP not supported");
+    public static final StringType EP_ACTIVE = StringType.valueOf("EP active");
+    public static final StringType EP_NOT_ACTIVE = StringType.valueOf("EP not active");
+    public static final StringType EP_POSSIBLE = StringType.valueOf("EP possible");
+    public static final StringType EP_SWITCH = StringType.valueOf("EP Switch in wrong position");
+    public static final StringType EP_UNKOWN = StringType.valueOf("EP Status unknown");
     public static final StringType[] EP_STATUS_ARRAY = new StringType[] { EP_NOT_SUPPORTED, EP_ACTIVE, EP_NOT_ACTIVE,
             EP_POSSIBLE, EP_SWITCH };
 
@@ -65,12 +65,12 @@ public class EmergencyBlock implements Data {
         // uint16 status register 40085 shall be handled as Bits - check cahpter 3.1.3 page 17
         byte[] emsStatusBytes = new byte[] { bArray[3], bArray[2] };
         BitSet bs = BitSet.valueOf(emsStatusBytes);
-        batteryChargingLocked = bs.get(EMS_CHARGING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
-        batteryDischargingLocked = bs.get(EMS_DISCHARGING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
-        epPossible = bs.get(EMS_DISCHARGING_LOCK_BIT) ? OnOffType.ON : OnOffType.OFF;
-        weatherPredictedCharging = bs.get(EMS_WEATHER_CHARGING_BIT) ? OnOffType.ON : OnOffType.OFF;
-        regulationStatus = bs.get(EMS_REGULATION_BIT) ? OnOffType.ON : OnOffType.OFF;
-        chargeLockTime = bs.get(EMS_CHARGE_LOCKTIME_BIT) ? OnOffType.ON : OnOffType.OFF;
-        dischargeLockTime = bs.get(EMS_DISCHARGE_LOCKTIME_BIT) ? OnOffType.ON : OnOffType.OFF;
+        batteryChargingLocked = OnOffType.from(bs.get(EMS_CHARGING_LOCK_BIT));
+        batteryDischargingLocked = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
+        epPossible = OnOffType.from(bs.get(EMS_DISCHARGING_LOCK_BIT));
+        weatherPredictedCharging = OnOffType.from(bs.get(EMS_WEATHER_CHARGING_BIT));
+        regulationStatus = OnOffType.from(bs.get(EMS_REGULATION_BIT));
+        chargeLockTime = OnOffType.from(bs.get(EMS_CHARGE_LOCKTIME_BIT));
+        dischargeLockTime = OnOffType.from(bs.get(EMS_DISCHARGE_LOCKTIME_BIT));
     }
 }

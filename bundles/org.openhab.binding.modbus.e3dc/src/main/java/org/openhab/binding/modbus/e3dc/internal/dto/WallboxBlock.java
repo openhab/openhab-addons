@@ -51,19 +51,19 @@ public class WallboxBlock implements Data {
      */
     public WallboxBlock(byte[] bArray) {
         bitSet = BitSet.valueOf(bArray);
-        wbAvailable = bitSet.get(WB_AVAILABLE_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbSunmode = bitSet.get(WB_SUNMODE_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbChargingAborted = bitSet.get(WB_CHARGING_ABORTED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbCharging = bitSet.get(WB_CHARGING_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbJackLocked = bitSet.get(WB_JACK_LOCKED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbJackPlugged = bitSet.get(WB_JACK_PLUGGED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbSchukoOn = bitSet.get(WB_SCHUKO_ON_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbSchukoPlugged = bitSet.get(WB_SCHUKO_PLUGGED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbSchukoLocked = bitSet.get(WB_SCHUKO_LOCKED_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbSchukoRelay16 = bitSet.get(WB_SCHUKO_RELAY16A_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbRelay16 = bitSet.get(WB_RELAY_16A_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wbRelay32 = bitSet.get(WB_RELAY_32A_BIT) ? OnOffType.ON : OnOffType.OFF;
-        wb1phase = bitSet.get(WB_1PHASE_BIT) ? OnOffType.ON : OnOffType.OFF;
+        wbAvailable = OnOffType.from(bitSet.get(WB_AVAILABLE_BIT));
+        wbSunmode = OnOffType.from(bitSet.get(WB_SUNMODE_BIT));
+        wbChargingAborted = OnOffType.from(bitSet.get(WB_CHARGING_ABORTED_BIT));
+        wbCharging = OnOffType.from(bitSet.get(WB_CHARGING_BIT));
+        wbJackLocked = OnOffType.from(bitSet.get(WB_JACK_LOCKED_BIT));
+        wbJackPlugged = OnOffType.from(bitSet.get(WB_JACK_PLUGGED_BIT));
+        wbSchukoOn = OnOffType.from(bitSet.get(WB_SCHUKO_ON_BIT));
+        wbSchukoPlugged = OnOffType.from(bitSet.get(WB_SCHUKO_PLUGGED_BIT));
+        wbSchukoLocked = OnOffType.from(bitSet.get(WB_SCHUKO_LOCKED_BIT));
+        wbSchukoRelay16 = OnOffType.from(bitSet.get(WB_SCHUKO_RELAY16A_BIT));
+        wbRelay16 = OnOffType.from(bitSet.get(WB_RELAY_16A_BIT));
+        wbRelay32 = OnOffType.from(bitSet.get(WB_RELAY_32A_BIT));
+        wb1phase = OnOffType.from(bitSet.get(WB_1PHASE_BIT));
     }
 
     public BitSet getBitSet() {
