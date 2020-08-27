@@ -229,7 +229,7 @@ public class DateTimeUtils {
                         int minutes = Integer.parseInt(elements[1]);
                         return (hour * 60) + minutes;
                     }
-                } catch (Exception ex) {
+                } catch (NumberFormatException ex) {
                     LOGGER.warn(
                             "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
                             time);

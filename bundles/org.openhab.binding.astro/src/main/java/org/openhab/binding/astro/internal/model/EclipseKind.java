@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * All kind of eclipses.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public enum EclipseKind {
     PARTIAL,
     TOTAL,

@@ -347,7 +347,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob();
 
-    protected abstract @Nullable Position getPositionAt(ZonedDateTime date);
+    abstract @Nullable public Position getPositionAt(ZonedDateTime date);
 
     public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
         Position position = getPositionAt(date);

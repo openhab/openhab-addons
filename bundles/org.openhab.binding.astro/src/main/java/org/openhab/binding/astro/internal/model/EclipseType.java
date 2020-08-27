@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Astro objects susceptible of being eclipsed.
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public enum EclipseType {
     SUN,
     MOON;

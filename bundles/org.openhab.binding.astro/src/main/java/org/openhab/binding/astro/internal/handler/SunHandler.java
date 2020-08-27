@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.astro.internal.calc.SunCalc;
 import org.openhab.binding.astro.internal.job.DailyJobSun;
 import org.openhab.binding.astro.internal.job.Job;
-import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Range;
@@ -69,14 +68,8 @@ public class SunHandler extends AstroThingHandler {
         sunCalc.setPositionalInfo(Calendar.getInstance(), latitude != null ? latitude : 0,
                 longitude != null ? longitude : 0, altitude != null ? altitude : 0, sun);
 
-        Eclipse eclipses = sun.getEclipse();
-        eclipses.getKinds().forEach(eclipseKind -> {
-            Calendar eclipseDate = eclipses.getDate(eclipseKind);
-            Position position = getPositionAt(eclipseDate.toInstant().atZone(timeZoneProvider.getTimeZone()));
-            if (position != null) {
-                eclipses.set(eclipseKind, eclipseDate, position);
-            }
-        });
+        sun.getEclipse().setElevations(this, timeZoneProvider);
+
         publishPlanet();
     }
 
@@ -117,7 +110,7 @@ public class SunHandler extends AstroThingHandler {
     }
 
     @Override
-    protected @Nullable Position getPositionAt(ZonedDateTime date) {
+    public @Nullable Position getPositionAt(ZonedDateTime date) {
         Sun localSun = getSunAt(date);
         Double latitude = thingConfig.latitude;
         Double longitude = thingConfig.longitude;

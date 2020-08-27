@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +30,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Season season = new Season();
 
-    private Eclipse eclipse = new Eclipse(Arrays.asList(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING));
+    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = new Radiation();
 
