@@ -106,8 +106,6 @@ Basic parameters
 | `port`    | integer |          | `502`              | Port number                                                 |
 | `id`      | integer |          | `1`                | Slave id. Also known as station address or unit identifier. |
 
-**Note:** A device may have more than one interface with a port 502 it responds on, but may have no connection to the real bus hardware. Use the Ethernet IP.
-
 Advanced parameters
 
 | Parameter                       | Required | Type    | Default if omitted | Description                                                                                                                                                        |
@@ -176,13 +174,12 @@ You must give each of your bridge Things a reference (thing ID) that is unique f
 | `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
 | `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                                   |
 
-**Note:** Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
+Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
 When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated.
 In case the `poller` had just received a data response or an error occurred, a cached response is used instead.
 See [Refresh command](#refresh-command) section for more details.
 
-**Note II:** Some devices do not allow to query a range of registers than spans reserved or special registers.
-They may respond with an error or no error but invalid register data.
+Some devices do not allow to query a range of registers that is too large or spans reserved registers.
 Eventually split your poller into multiple smaller ones to work around this problem.
 
 ### `data` Thing
@@ -990,6 +987,18 @@ end
 ```
 
 Please be aware that `REFRESH` commands are "throttled" (to be exact, responses are cached) with `poller` parameter `cacheMillis`.
+
+## Troubleshooting
+
+Modbus, while simple at its heart, potentially is a complicated standard to use because there's a lot of freedom (and bugs) when it comes to implementations.
+There are many device or vendor specific quirks and wrinkles you might stumble across. Here's some:
+
+* a device may have more than one interface with a port open (502 or other) that it responds on, but may have no connection to the real bus hardware.
+Check ALL interfaces including (and preferring) any serial connection. Usually either that or the Ethernet IP will do.
+
+* some devices do not allow to query a range of registers that is too large or spans reserved registers.
+They may respond with an error or no error but invalid register data.
+Eventually turn your poller thing into multiple things to cover smaller ranges to work around this problem.
 
 ## Changes From Modbus 1.x Binding
 
