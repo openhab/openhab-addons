@@ -137,7 +137,7 @@
             <bnd><![CDATA[Bundle-SymbolicName: ${project.artifactId}
 Automatic-Module-Name: ${def;bsn}
 Import-Package: \\
-  io.swagger.annotations.*;resolution:=optional,\\
+  io.swagger.v3.oas.annotations.*;resolution:=optional,\\
   javax.annotation.security.*;resolution:=optional,\\
   org.eclipse.jdt.annotation.*;resolution:=optional,\\
   org.openhab.core.automation.annotation.*;resolution:=optional;version=!,\\
