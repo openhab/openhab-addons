@@ -93,7 +93,7 @@ public class ConnectedDriveConstants {
     public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
     public static final String CARDATA_FINGERPRINT = "cardata-fingerprint";
 
-    // Group definitions
+    // Thing Group definitions
     public static final String CHANNEL_GROUP_PROPERTIES = "properties";
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_GROUP_RANGE = "range";
@@ -102,6 +102,7 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_CAR_STATUS = "status";
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
+    public static final String CHANNEL_GROUP_REMOTE = "remote";
 
     public static final String PROPERTIES_BRAND = "brand";
     public static final String PROPERTIES_MODEL = "model";
@@ -157,4 +158,13 @@ public class ConnectedDriveConstants {
 
     // Image
     public static final String IMAGE = "rendered";
+
+    // Remote Services
+    public static final String REMOTE_SERVICE_LIGHT_FLASH = "light";
+    public static final String REMOTE_SERVICE_VEHICLE_FINDER = "finder";
+    public static final String REMOTE_SERVICE_DOOR_LOCK = "lock";
+    public static final String REMOTE_SERVICE_DOOR_UNLOCK = "unlock";
+    public static final String REMOTE_SERVICE_HORN = "horn";
+    public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
+    public static final String REMOTE_STATE = "state";
 }

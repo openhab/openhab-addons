@@ -83,7 +83,17 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID heading;
     protected ChannelUID rangeRadius;
 
+    // Image
     protected ChannelUID imageChannel;
+
+    // Remote Services
+    protected ChannelUID remoteLightChannel;
+    protected ChannelUID remoteFinderChannel;
+    protected ChannelUID remoteLockChannel;
+    protected ChannelUID remoteUnlockChannel;
+    protected ChannelUID remoteHornChannel;
+    protected ChannelUID remoteClimateChannel;
+    protected ChannelUID remoteStateChannel;
 
     public ConnectedCarChannelHandler(Thing thing) {
         super(thing);
@@ -150,6 +160,14 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         rangeRadius = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, RANGE_RADIUS);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
+
+        remoteLightChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_LIGHT_FLASH);
+        remoteFinderChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_VEHICLE_FINDER);
+        remoteLockChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_DOOR_LOCK);
+        remoteUnlockChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_DOOR_UNLOCK);
+        remoteHornChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_HORN);
+        remoteClimateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_AIR_CONDITIONING);
+        remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
     }
 
     @Override

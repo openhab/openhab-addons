@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -50,15 +51,15 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.Community;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.Trip;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Status;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
@@ -75,11 +76,18 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
-    private final static Gson GSON = new Gson();
+
+    final static Gson GSON = new Gson();
+    Token token = new Token();
+    @Nullable
+    String serviceExecutionAPI;
+    @Nullable
+    String serviceExecutionStateAPI;
 
     private String driveTrain;
     private HttpClient httpClient;
-    private Token token = new Token();
+    protected RemoteServiceHandler remoteService;
+
     private boolean imperial = false;
     private boolean hasFuel = false;
     private boolean isElectric = false;
@@ -99,6 +107,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private @Nullable String allTripsAPI;
     private @Nullable String chargeAPI;
     private @Nullable String destinationAPI;
+    private @Nullable String rangeMapAPI;
 
     private @Nullable String vehicleStatusCache;
     private @Nullable String lastTripCache;
@@ -106,6 +115,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
     public ConnectedCarHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
         super(thing);
+        remoteService = new RemoteServiceHandler(this, hc);
         httpClient = hc;
         driveTrain = type;
         this.imperial = imperial;
@@ -134,9 +144,38 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                     updateRangeValues(vehicleStatusCache);
                 }
             }
-            logger.info("REFRESH {}", group);
+            // logger.info("REFRESH {}", group);
         } else {
             logger.info("No refresh");
+        }
+        if (CHANNEL_GROUP_REMOTE.equals(channelUID.getGroupId())) {
+            logger.info("Remote Command {}", CHANNEL_GROUP_REMOTE);
+            if (command instanceof OnOffType) {
+                if (command.equals(OnOffType.ON)) {
+                    switch (channelUID.getIdWithoutGroup()) {
+                        case REMOTE_SERVICE_LIGHT_FLASH:
+                            remoteService.execute(RemoteServiceHandler.RemoteService.LIGHT_FLASH);
+                            break;
+                        case REMOTE_SERVICE_AIR_CONDITIONING:
+                            remoteService.execute(RemoteServiceHandler.RemoteService.AIR_CONDITIONING);
+                            break;
+                        case REMOTE_SERVICE_DOOR_LOCK:
+                            remoteService.execute(RemoteServiceHandler.RemoteService.DOOR_LOCK);
+                            break;
+                        case REMOTE_SERVICE_DOOR_UNLOCK:
+                            remoteService.execute(RemoteServiceHandler.RemoteService.DOOR_UNLOCK);
+                            break;
+                        case REMOTE_SERVICE_HORN:
+                            remoteService.execute(RemoteServiceHandler.RemoteService.HORN);
+                            break;
+                        case REMOTE_SERVICE_VEHICLE_FINDER:
+                            remoteService.execute(RemoteServiceHandler.RemoteService.VEHICLE_FINDER);
+                            break;
+                    }
+                }
+            }
+        } else {
+            logger.info("Not a Remote Command {}", channelUID.getGroupId());
         }
         if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
             logger.info("Trigger CarData Fingerprint");
@@ -197,36 +236,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         chargeAPI = baseUrl + "/chargingprofile";
                         destinationAPI = baseUrl + "/destinations";
                         imageAPI = baseUrl + "/image";
-                        // allAPIs.forEach(entry -> {
-                        // Request req = httpClient.newRequest(entry);
-                        // req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-                        // req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-                        // try {
-                        // ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-                        // logger.info("Status {}", contentResponse.getStatus());
-                        // logger.info("Reason {}", contentResponse.getReason());
-                        // logger.info("{}", entry);
-                        // logger.info("{}", contentResponse.getContentAsString());
-                        // } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                        // logger.warn("Get Data Exception {}", e.getMessage());
-                        // }
-                        // });
 
-                        /**
-                         * REMOTE_SERVICE_STATUS_URL = VEHICLE_VIN_URL +
-                         * '/serviceExecutionStatus?serviceType={service_type}'
-                         * REMOTE_SERVICE_URL = VEHICLE_VIN_URL + "/executeService"
-                         * VEHICLE_IMAGE_URL = VEHICLE_VIN_URL + "/image?width={width}&height={height}&view={view}"
-                         * VEHICLE_POI_URL = VEHICLE_VIN_URL + '/sendpoi'
-                         */
+                        serviceExecutionAPI = baseUrl + "/executeService";
+                        serviceExecutionStateAPI = baseUrl + "/serviceExecutionStatus?serviceType=";
 
-                        // String baseUrl = "https://" + bridgeHandler.getRegionServer();
-                        // statusAPI = baseUrl + "/webapi/v1/user/vehicles/" + config.vin + "/status";
-                        // lastTripAPI = baseUrl + "/webapi/v1/user/vehicles/" + config.vin + "/statistics/lastTrip";
-                        // /webapi/v1/user/vehicles/:VIN/chargingprofile
-                        // /webapi/v1/user/vehicles/:VIN/destinations
-                        // /webapi/v1/user/vehicles/:VIN/statistics/allTrips
-                        // /webapi/v1/user/vehicles/:VIN/rangemap
+                        // currently delivers response 500 - Internal Server Error
+                        // rangeMapAPI = baseUrl + "/rangemap";
+
                     } else {
                         logger.warn("Brdige Handler null");
                     }
@@ -240,31 +256,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
-
-    /**
-     * old APIS
-     *
-     * String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/api/vehicle";
-     * // https://b2vapi.bmwgroup.com/api/vehicle/dynamic/v1/
-     * // from bimmer_connect project
-     * // r = requests.get(self.vehicleApi+'/dynamic/v1/'+self.bmwVin+'?offset=-60',
-     * vehicleAPI = baseUrl + "/dynamic/v1/" + config.vin + "?offset=-60";
-     * // r = requests.post(self.vehicleApi+'/myinfo/v1', data=json.dumps(values),
-     * sendMessageAPI = baseUrl + "/myinfo/v1";
-     * // r = requests.get(self.vehicleApi+'/navigation/v1/'+self.bmwVin,
-     * // headers=headers,allow_redirects=True)
-     * navigationAPI = baseUrl + "/navigation/v1/" + config.vin;
-     * // r = requests.get(self.vehicleApi+'/efficiency/v1/'+self.bmwVin,
-     * // headers=headers,allow_redirects=True)
-     * efficiencyAPI = baseUrl + "/efficiency/v1/" + config.vin;
-     * // r = requests.post(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/'+command,
-     * remoteControlAPI = baseUrl + "/remoteservices/v1/" + config.vin;
-     * // r = requests.get(self.vehicleApi+'/remoteservices/v1/'+self.bmwVin+'/state/execution',
-     * remoteExecutionAPI = baseUrl + "/remoteservices/v1/" + config.vin + "/state/execution";
-     * imageAPI = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
-     * + config.vin + "/image?width=400&height=400&view=REARBIRDSEYE";
-     *
-     */
 
     private void startSchedule(int interval) {
         ScheduledFuture<?> localRefreshJob = refreshJob;
@@ -296,6 +287,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         updateLastTrip(lastTripData);
         String allTripData = getJSON(allTripsAPI);
         updateTripStatistics(allTripData);
+        String rangemapData = getJSON(rangeMapAPI);
         String chargeData = getJSON(chargeAPI);
         String destinationData = getJSON(destinationAPI);
     }
@@ -329,8 +321,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             return;
         }
         allTripsCache = content;
-        AllTrips at = GSON.fromJson(content, AllTrips.class);
-        Community c = at.allTrips;
+        AllTripsContainer at = GSON.fromJson(content, AllTripsContainer.class);
+        AllTrips c = at.allTrips;
         updateState(lifeTimeCumulatedDrivenDistance, QuantityType
                 .valueOf(Converter.round(c.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
         updateState(lifeTimeSingleLongestDistance,
@@ -349,8 +341,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             return;
         }
         lastTripCache = content;
-        LastTrip lt = GSON.fromJson(content, LastTrip.class);
-        Trip trip = lt.lastTrip;
+        LastTripContainer lt = GSON.fromJson(content, LastTripContainer.class);
+        LastTrip trip = lt.lastTrip;
         updateState(tripDistance,
                 QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
         // updateState(tripDistanceSinceCharging,
@@ -368,7 +360,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
         logger.info("Vehicle Status {}", content);
         vehicleStatusCache = content;
-        Status status = GSON.fromJson(content, Status.class);
+        VehicleStatusContainer status = GSON.fromJson(content, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
 
         updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
@@ -402,7 +394,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 }
             }
             if (serviceDate != null) {
-                return serviceDate.format(Converter.serviceDateOutputPattern) + " " + Converter.toTitleCase(service);
+                return serviceDate.format(Converter.serviceDateOutputPattern) + " - " + Converter.toTitleCase(service);
             } else {
                 return "Unknown";
             }
@@ -437,7 +429,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             logger.warn("No Vehicle Values available");
             return;
         }
-        Status status = GSON.fromJson(content, Status.class);
+        VehicleStatusContainer status = GSON.fromJson(content, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
         // based on unit of length decide if range shall be reported in km or miles
         if (!imperial) {
@@ -547,5 +539,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             }
         }
         return true;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    public void updateRemoteExecutionStatus(String status) {
+        updateState(remoteStateChannel, StringType.valueOf(status));
     }
 }

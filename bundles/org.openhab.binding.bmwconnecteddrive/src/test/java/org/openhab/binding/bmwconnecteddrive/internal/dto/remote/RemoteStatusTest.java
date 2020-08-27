@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
-
-import static org.junit.Assert.assertNotNull;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.remote;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
@@ -21,20 +19,19 @@ import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import com.google.gson.Gson;
 
 /**
- * The {@link LastTripTest} Test json responses from ConnectedDrive Portal
+ * The {@link RemoteStatusTest} Test json responses from ConnectedDrive Portal
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class LastTripTest {
+public class RemoteStatusTest {
     private static final Gson GSON = new Gson();
 
     @Test
-    public void testUserInfo() {
-        String content = FileReader.readFileInString("src/test/resources/webapi/last-trip.json");
-        LastTripContainer lt = GSON.fromJson(content, LastTripContainer.class);
-        LastTrip trip = lt.lastTrip;
-        assertNotNull(trip);
-        System.out.println(trip.totalDistance);
+    public void testStatus() {
+        String resource1 = FileReader.readFileInString("src/test/resources/webapi/remote-services/pending.json");
+        ExecutionStatusContainer esc = GSON.fromJson(resource1, ExecutionStatusContainer.class);
+        ExecutionStatus execStatus = esc.executionStatus;
+        System.out.println(execStatus.status);
     }
 }

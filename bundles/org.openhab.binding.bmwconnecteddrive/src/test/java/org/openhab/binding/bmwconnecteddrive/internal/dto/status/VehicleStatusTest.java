@@ -32,7 +32,7 @@ public class VehicleStatusTest {
     @Test
     public void testtestBEV_REX_Values() {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        Status status = GSON.fromJson(resource1, Status.class);
+        VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
         assertEquals("Mileage", 17273.0, vStatus.mileage, 0.1);
         Position p = vStatus.position;

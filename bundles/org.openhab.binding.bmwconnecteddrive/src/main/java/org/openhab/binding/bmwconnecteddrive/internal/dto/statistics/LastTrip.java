@@ -18,5 +18,19 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
  * @author Bernd Weymann - Initial contribution
  */
 public class LastTrip {
-    public Trip lastTrip;
+    public float efficiencyValue;// ": 0.98,
+    public float totalDistance;// ": 2,
+    public float electricDistance;// ": 2,
+    public float avgElectricConsumption;// ": 7,
+    public float avgRecuperation;// ": 6,
+    public float drivingModeValue;// ": 0.87,
+    public float accelerationValue;// ": 0.99,
+    public float anticipationValue;// ": 0.99,
+    public float totalConsumptionValue;// ": 1.25,
+    public float auxiliaryConsumptionValue;// ": 0.78,
+    public float avgCombinedConsumption;// ": 0,
+    public float electricDistanceRatio;// ": 100,
+    public float savedFuel;// ": 0,
+    public String date;// ": "2020-08-24T17:55:00+0000",
+    public float duration;// ": 5
 }

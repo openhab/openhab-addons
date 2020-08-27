@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="troubleshoot-control">
-		<label>Efficiency Lifetime Values</label>
-		<description>EV Consumption Values and Distances over Lifetime</description>
+		<label>Troubleshooting</label>
+		<description>Generating Debug Data if a Problem Report shall be raised</description>
 		<channels>
 			<channel id="cardata-fingerprint" typeId="cardata-fingerprint-channel"/>
 		</channels>

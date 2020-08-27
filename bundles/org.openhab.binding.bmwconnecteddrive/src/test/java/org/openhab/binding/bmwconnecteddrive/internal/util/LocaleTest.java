@@ -19,7 +19,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Status;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
@@ -45,7 +45,7 @@ public class LocaleTest {
     @Test
     public void testTimeUTCToLocaleTime() {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        Status status = GSON.fromJson(resource1, Status.class);
+        VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
         assertEquals("Input  DateTime", "2020-08-24T15:55:32", vStatus.internalDataTimeUTC);
         assertEquals("Output DateTime", "24.08.2020 17:55", Converter.getLocalDateTime(vStatus.internalDataTimeUTC));
