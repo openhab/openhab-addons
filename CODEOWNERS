@@ -128,6 +128,7 @@
 /bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
+/bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
