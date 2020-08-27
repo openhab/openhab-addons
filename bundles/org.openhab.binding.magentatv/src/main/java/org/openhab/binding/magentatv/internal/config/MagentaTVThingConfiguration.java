@@ -79,7 +79,7 @@ public class MagentaTVThingConfiguration {
 
     public void setPort(String port) {
         if (modelId.contains(MODEL_MR400) && port.equals("49153")) {
-            // overwrite port returned by discovery (invaslid for this model)
+            // overwrite port returned by discovery (invalid for this model)
             this.port = MR400_DEF_REMOTE_PORT;
         } else {
             this.port = port;

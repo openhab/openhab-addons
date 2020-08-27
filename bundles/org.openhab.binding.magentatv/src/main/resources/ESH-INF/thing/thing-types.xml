@@ -40,7 +40,7 @@
 			</parameter>
 			<parameter name="ipAddress" type="text">
 				<label>Media Receiver's IP Address</label>
-				<description>IP Address of the receiver</description>
+				<description>IP address of the receiver</description>
 				<required>true</required>
 				<context>network-address</context>
 			</parameter>
@@ -51,7 +51,7 @@
 			</parameter>
 			<parameter name="accountName" type="text">
 				<label>Account Name</label>
-				<description>Credentials: Login name (xxx@t-online.de, same as for the Telekom Kundencenter)</description>
+				<description>Credentials: Login name (e.g. xxx@t-online.de, same as for the Telekom Kundencenter)</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="accountPassword" type="text">
@@ -61,8 +61,8 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="userId" type="text">
-				<label>User ID</label>
-				<description>Technical User ID for pairing</description>
+				<label>UID</label>
+				<description>Technical UID required for pairing process</description>
 				<required>false</required>
 				<advanced>true</advanced>
 			</parameter>

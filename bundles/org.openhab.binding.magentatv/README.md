@@ -48,26 +48,10 @@ The receiver needs to be powered on to get discovered.
 
 
 
-# Device setup
+# Device Setup
 
-Once the thing will be added from the Inbox in PaperUI you'll need your T-Online credentials to query the userID.
-Open the thing configuration and enter the credentials:
-
-|Field            |Description                                      |
-|---------------- |------------------------------------------------ |
-|Account Name     |Your T-Online user id, e.g. test7017@t-online.de |
-|Account Password |The password for your Telekom account.           |
-
-For security reasons the credentials will be automatically deleted from the thing configuration (replaced with '***' in the thing config) after the initial authentication process.
-The openHAB instance needs access to the Internet to perform that operation, which can be disabled afterwards.
-
-One the userID has been obtained from the Telekom portal the binding initiates the pairing with the receiver.
-This is an automated process.
-The thing changes to ONLINE state once the pairing result is received.
-Otherwise open PaperUI:Confuguration:Things and check for an error message.
-Using [Show Properties] you see more details and could verify if the discovery and pairing were completed successful.
-
-The binding uses the network settings in openHAB system configuration to determine the local ip address. The device can't be discovered when the openHAB system and receiver are not on the same network (ip/netmask).
+The binding uses the network settings in openHAB system configuration to determine the local IP address.
+The device can't be discovered if the openHAB system and receiver are not on the same network (IP/Netmask).
 
 ## Thing Configuration
 
@@ -80,11 +64,22 @@ The binding uses the network settings in openHAB system configuration to determi
 |accountName     |T-Online account name, should be the registered e-mail address                                                  |
 |accountPassword |T-Online password for the account                                                                               |
 
+You need to setup your credentials while adding the media receiver thing.
+Those will be used to query the UID, which is required to pair with the receiver on the local network. 
+The openHAB instance needs access to the Internet to perform that operation, which can be disabled afterwards.
+
+The binding initiates the pairing with the receiver once the UID has been obtained from the Telekom portal, this is an automated process.
+The thing changes to ONLINE once the pairing result is received.
+Otherwise check the Thing status for an error message.
+The Thing properties show more details.
+
+For security reasons the credentials will be automatically deleted from the thing configuration (replaced with '***' in the thing config) after the initial authentication process.
+
 
 ## Channels
 
 |Group   |Channel        |Item-Type|Description                                                               |
-|-------|----------------|---------|--------------------------------------------------------------------------|
+|--------|---------------|---------|--------------------------------------------------------------------------|
 |control |power          |Switch   |Switching the channel simulates pressing the power button (same as sending 
 "POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state.
 For that it's tricky to ensure the power state. Maybe some future versions will use some kind of 
@@ -211,8 +206,8 @@ please contribute an example
 
 ### magentatv.rules
 
-Due to the fact the POWER is a toggle button and the binding can't detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off.
-We spend some time to fiddle out a better handling and find a way to detect a network message when the receiver gets powered off (MR4xx only).
+Due to the fact the POWER is a toggle button and the binding cannot detect the current status, which could lead into the situation that you want to power on the receiver as part of a scene, but due to the fact that it is already ON you switch it off.
+We spend some time to fiddle out a better handling and find a way to detect a network message i the receiver gets powered off (MR4xx only).
 In this case MagentaTV_Power is switch to OFF.
 
 This said you could use the following
