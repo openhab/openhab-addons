@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="doors-channel">
+		<item-type>String</item-type>
+		<label>Door Status</label>
+	</channel-type>
+	<channel-type id="windows-channel">
+		<item-type>String</item-type>
+		<label>Windows Status</label>
+	</channel-type>
+	<channel-type id="lock-channel">
+		<item-type>String</item-type>
+		<label>Doors Locked Status</label>
+	</channel-type>
+	<channel-type id="service-channel">
+		<item-type>String</item-type>
+		<label>Next Upcoming Service</label>
+	</channel-type>
+	<channel-type id="check-control-channel">
+		<item-type>String</item-type>
+		<label>Active Check Control Message</label>
+	</channel-type>
+	<channel-type id="charging-status-channel">
+		<item-type>String</item-type>
+		<label>Actual Charging Status</label>
+	</channel-type>
+</thing:thing-descriptions>

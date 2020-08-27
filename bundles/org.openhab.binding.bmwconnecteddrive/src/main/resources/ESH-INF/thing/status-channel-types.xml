@@ -3,28 +3,32 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="doors-channel">
-		<item-type>String</item-type>
-		<label>Door Status</label>
+	<channel-type id="remote-light-channel">
+		<item-type>Switch</item-type>
+		<label>Activate Flash Lights</label>
 	</channel-type>
-	<channel-type id="windows-channel">
-		<item-type>String</item-type>
-		<label>Windows Status</label>
+	<channel-type id="remote-finder-channel">
+		<item-type>Switch</item-type>
+		<label>Find Vahicle</label>
 	</channel-type>
-	<channel-type id="lock-channel">
-		<item-type>String</item-type>
-		<label>Doors Locked Status</label>
+	<channel-type id="remote-lock-channel">
+		<item-type>Switch</item-type>
+		<label>Lock Doors</label>
 	</channel-type>
-	<channel-type id="service-channel">
-		<item-type>String</item-type>
-		<label>Next Upcoming Service</label>
+	<channel-type id="remote-unlock-channel">
+		<item-type>Switch</item-type>
+		<label>Unlock Doors</label>
 	</channel-type>
-	<channel-type id="check-control-channel">
-		<item-type>String</item-type>
-		<label>Active Check Control Message</label>
+	<channel-type id="remote-horn-channel">
+		<item-type>Switch</item-type>
+		<label>Horn Blow</label>
 	</channel-type>
-	<channel-type id="charging-status-channel">
+	<channel-type id="remote-climate-channel">
+		<item-type>Switch</item-type>
+		<label>Active Air Conditioning</label>
+	</channel-type>
+	<channel-type id="remote-state-channel">
 		<item-type>String</item-type>
-		<label>Actual Charging Status</label>
+		<label>Actual Service Execution State</label>
 	</channel-type>
 </thing:thing-descriptions>

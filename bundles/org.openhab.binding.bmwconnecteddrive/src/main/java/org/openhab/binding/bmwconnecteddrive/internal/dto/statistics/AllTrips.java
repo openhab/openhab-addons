@@ -18,5 +18,14 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
  * @author Bernd Weymann - Initial contribution
  */
 public class AllTrips {
-    public Community allTrips;
+    public CommunityPowerEntry avgElectricConsumption;
+    public CommunityPowerEntry avgRecuperation;
+    public CommunityChargeCycleEntry chargecycleRange;
+    public CommunityEletricDistanceEntry totalElectricDistance;
+    public CommunityPowerEntry avgCombinedConsumption;
+    public float savedCO2;// ":461.083,"
+    public float savedCO2greenEnergy;// ":2712.255,"
+    public float totalSavedFuel;// ":0,"
+    public String resetDate;// ":"2020-08-24T14:40:40+0000","
+    public int batterySizeMax;// ":33200
 }

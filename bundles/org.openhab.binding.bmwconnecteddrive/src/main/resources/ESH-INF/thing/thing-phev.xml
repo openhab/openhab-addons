@@ -18,6 +18,7 @@
 			<channel-group id="last-trip" typeId="ev-last-trip-values"/>
 			<channel-group id="lifetime" typeId="ev-lifetime-values"/>
 			<channel-group id="location" typeId="location-values"/>
+			<channel-group id="remote" typeId="remote-services"/>
 			<channel-group id="image" typeId="image-values"/>
 			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>
 		</channel-groups>
@@ -31,6 +32,15 @@
 				<label>Refresh Interval</label>
 				<description>Data Refresh Rate for your Car values </description>
 				<default>5</default>
+			</parameter>
+			<parameter name="units" type="text">
+				<label>Unit Selection</label>
+				<description>Units are selected via auto-detection but you can overrule</description>
+				<options>
+					<option value="AUTODETECT">Auto Detect</option>
+					<option value="METRIC">Metric</option>
+					<option value="IMPERIAL">Imperial</option>
+				</options>
 			</parameter>
 			<parameter name="imageSize" type="integer">
 				<label>Image Picture Size</label>
