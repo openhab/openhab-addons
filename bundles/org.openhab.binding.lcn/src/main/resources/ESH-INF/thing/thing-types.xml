@@ -670,6 +670,83 @@
 	<channel-type id="sendKeys" advanced="true">
 		<kind>trigger</kind>
 		<label>Send Keys</label>
-		<event/>
+		<event>
+			<options>
+				<option value="A1:HIT">A1 Hit</option>
+				<option value="A1:MAKE">A1 Make</option>
+				<option value="A1:BREAK">A1 Break</option>
+				<option value="A2:HIT">A2 Hit</option>
+				<option value="A2:MAKE">A2 Make</option>
+				<option value="A2:BREAK">A2 Break</option>
+				<option value="A3:HIT">A3 Hit</option>
+				<option value="A3:MAKE">A3 Make</option>
+				<option value="A3:BREAK">A3 Break</option>
+				<option value="A4:HIT">A4 Hit</option>
+				<option value="A4:MAKE">A4 Make</option>
+				<option value="A4:BREAK">A4 Break</option>
+				<option value="A5:HIT">A5 Hit</option>
+				<option value="A5:MAKE">A5 Make</option>
+				<option value="A5:BREAK">A5 Break</option>
+				<option value="A6:HIT">A6 Hit</option>
+				<option value="A6:MAKE">A6 Make</option>
+				<option value="A6:BREAK">A6 Break</option>
+				<option value="A7:HIT">A7 Hit</option>
+				<option value="A7:MAKE">A7 Make</option>
+				<option value="A7:BREAK">A7 Break</option>
+				<option value="A8:HIT">A8 Hit</option>
+				<option value="A8:MAKE">A8 Make</option>
+				<option value="A8:BREAK">A8 Break</option>
+
+				<option value="B1:HIT">B1 Hit</option>
+				<option value="B1:MAKE">B1 Make</option>
+				<option value="B1:BREAK">B1 Break</option>
+				<option value="B2:HIT">B2 Hit</option>
+				<option value="B2:MAKE">B2 Make</option>
+				<option value="B2:BREAK">B2 Break</option>
+				<option value="B3:HIT">B3 Hit</option>
+				<option value="B3:MAKE">B3 Make</option>
+				<option value="B3:BREAK">B3 Break</option>
+				<option value="B4:HIT">B4 Hit</option>
+				<option value="B4:MAKE">B4 Make</option>
+				<option value="B4:BREAK">B4 Break</option>
+				<option value="B5:HIT">B5 Hit</option>
+				<option value="B5:MAKE">B5 Make</option>
+				<option value="B5:BREAK">B5 Break</option>
+				<option value="B6:HIT">B6 Hit</option>
+				<option value="B6:MAKE">B6 Make</option>
+				<option value="B6:BREAK">B6 Break</option>
+				<option value="B7:HIT">B7 Hit</option>
+				<option value="B7:MAKE">B7 Make</option>
+				<option value="B7:BREAK">B7 Break</option>
+				<option value="B8:HIT">B8 Hit</option>
+				<option value="B8:MAKE">B8 Make</option>
+				<option value="B8:BREAK">B8 Break</option>
+
+				<option value="C1:HIT">C1 Hit</option>
+				<option value="C1:MAKE">C1 Make</option>
+				<option value="C1:BREAK">C1 Break</option>
+				<option value="C2:HIT">C2 Hit</option>
+				<option value="C2:MAKE">C2 Make</option>
+				<option value="C2:BREAK">C2 Break</option>
+				<option value="C3:HIT">C3 Hit</option>
+				<option value="C3:MAKE">C3 Make</option>
+				<option value="C3:BREAK">C3 Break</option>
+				<option value="C4:HIT">C4 Hit</option>
+				<option value="C4:MAKE">C4 Make</option>
+				<option value="C4:BREAK">C4 Break</option>
+				<option value="C5:HIT">C5 Hit</option>
+				<option value="C5:MAKE">C5 Make</option>
+				<option value="C5:BREAK">C5 Break</option>
+				<option value="C6:HIT">C6 Hit</option>
+				<option value="C6:MAKE">C6 Make</option>
+				<option value="C6:BREAK">C6 Break</option>
+				<option value="C7:HIT">C7 Hit</option>
+				<option value="C7:MAKE">C7 Make</option>
+				<option value="C7:BREAK">C7 Break</option>
+				<option value="C8:HIT">C8 Hit</option>
+				<option value="C8:MAKE">C8 Make</option>
+				<option value="C8:BREAK">C8 Break</option>
+			</options>
+		</event>
 	</channel-type>
 </thing:thing-descriptions>
