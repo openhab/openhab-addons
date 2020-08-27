@@ -73,7 +73,7 @@ public class HTTPHandler {
             return null;
         } else {
             String url = sensorUrl + sensorId + "/";
-            ContentResponse contentResponse = localClient.newRequest(url).timeout(180, TimeUnit.SECONDS).send();
+            ContentResponse contentResponse = localClient.newRequest(url).timeout(15, TimeUnit.SECONDS).send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
             switch (httpStatus) {
