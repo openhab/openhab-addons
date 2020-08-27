@@ -549,13 +549,13 @@ public class BridgeHandler extends BaseBridgeHandler
                 return;
             case CONNECTION_RESUMED:
                 if (connectionTimeoutCounter > 0) {
+                    // reset connection timeout counter
+                    connectionTimeoutCounter = 0;
                     if (connMan.checkConnection()) {
                         restartServices();
                         setStatus(ThingStatus.ONLINE);
                     }
                 }
-                // reset connection timeout counter
-                connectionTimeoutCounter = 0;
                 return;
             case APPLICATION_TOKEN_GENERATED:
                 if (connMan != null) {
