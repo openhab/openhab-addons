@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
+import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.COLOR_MODE;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 
 /**
@@ -100,8 +101,8 @@ public class ComponentLight extends AbstractComponent<ComponentLight.ChannelConf
     public ComponentLight(CFactory.ComponentConfiguration builder) {
         super(builder, ChannelConfiguration.class);
         this.channelStateUpdateListener = builder.getUpdateListener();
-        ColorValue value = new ColorValue("rgb", channelConfiguration.payload_on, channelConfiguration.payload_off,
-                100);
+        ColorValue value = new ColorValue(COLOR_MODE.rgb, channelConfiguration.payload_on,
+                channelConfiguration.payload_off, 100);
 
         // Create three MQTT subscriptions and use this class object as update listener
         switchChannel = buildChannel(switchChannelID, value, channelConfiguration.name, this)//

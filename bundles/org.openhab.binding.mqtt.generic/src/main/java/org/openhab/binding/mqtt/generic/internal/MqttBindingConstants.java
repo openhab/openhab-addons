@@ -42,8 +42,9 @@ public class MqttBindingConstants {
     public static final String ROLLERSHUTTER = "rollershutter";
     public static final String TRIGGER = "trigger";
 
-    // Color mode
-    public static final String COLOR_MODE_HSB = "hsb";
-    public static final String COLOR_MODE_RGB = "rgb";
-    public static final String COLOR_MODE_XYY = "xyY";
+    public static enum COLOR_MODE {
+        hsb,
+        rgb,
+        xyY
+    }
 }

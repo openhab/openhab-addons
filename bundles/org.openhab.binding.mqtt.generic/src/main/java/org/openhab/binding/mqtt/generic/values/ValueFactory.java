@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.COLOR_MODE;
 
 /**
  * A factory t
@@ -53,7 +54,8 @@ public class ValueFactory {
                 value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);
                 break;
             case MqttBindingConstants.COLOR:
-                value = new ColorValue(config.colorMode, config.on, config.off, config.onBrightness);
+                value = new ColorValue(COLOR_MODE.valueOf(config.colorMode), config.on, config.off,
+                        config.onBrightness);
                 break;
             case MqttBindingConstants.SWITCH:
                 value = new OnOffValue(config.on, config.off);

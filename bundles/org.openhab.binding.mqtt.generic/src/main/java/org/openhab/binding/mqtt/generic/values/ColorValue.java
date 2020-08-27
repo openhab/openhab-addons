@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.COLOR_MODE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ColorValue extends Value {
     private final Logger logger = LoggerFactory.getLogger(ColorValue.class);
-    private final String colorMode;
+
+    private final COLOR_MODE colorMode;
     private final String onValue;
     private final String offValue;
     private final int onBrightness;
@@ -54,12 +55,12 @@ public class ColorValue extends Value {
     /**
      * Creates a non initialized color value.
      *
-     * @param colorMode The color mode: "hsb", "rgb" or "xyY".
+     * @param colorMode The color mode: hsb, rgb or xyY.
      * @param onValue The ON value string. This will be compared to MQTT messages.
      * @param offValue The OFF value string. This will be compared to MQTT messages.
      * @param onBrightness When receiving a ON command, the brightness percentage is set to this value
      */
-    public ColorValue(String colorMode, @Nullable String onValue, @Nullable String offValue, int onBrightness) {
+    public ColorValue(COLOR_MODE colorMode, @Nullable String onValue, @Nullable String offValue, int onBrightness) {
         super(CoreItemFactory.COLOR,
                 Stream.of(OnOffType.class, PercentType.class, StringType.class).collect(Collectors.toList()));
 
@@ -101,14 +102,14 @@ public class ColorValue extends Value {
                     throw new IllegalArgumentException(updatedValue + " is not a valid string syntax");
                 }
                 switch (this.colorMode) {
-                    case MqttBindingConstants.COLOR_MODE_HSB:
+                    case hsb:
                         state = new HSBType(updatedValue);
                         break;
-                    case MqttBindingConstants.COLOR_MODE_RGB:
+                    case rgb:
                         state = HSBType.fromRGB(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
                                 Integer.parseInt(split[2]));
                         break;
-                    case MqttBindingConstants.COLOR_MODE_XYY:
+                    case xyY:
                         HSBType temp_state = HSBType.fromXY(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
                         state = new HSBType(temp_state.getHue(), temp_state.getSaturation(), new PercentType(split[2]));
                         break;
@@ -136,7 +137,7 @@ public class ColorValue extends Value {
 
         String formatPattern = pattern;
         if (formatPattern == null || "%s".equals(formatPattern)) {
-            if (this.colorMode.equals(MqttBindingConstants.COLOR_MODE_XYY)) {
+            if (this.colorMode.equals(COLOR_MODE.xyY)) {
                 formatPattern = "%1$f,%2$f,%3$.2f";
             } else {
                 formatPattern = "%1$d,%2$d,%3$d";
@@ -146,15 +147,15 @@ public class ColorValue extends Value {
         HSBType hsb_state = (HSBType) state;
 
         switch (this.colorMode) {
-            case MqttBindingConstants.COLOR_MODE_HSB:
+            case hsb:
                 return String.format(formatPattern, hsb_state.getHue().intValue(), hsb_state.getSaturation().intValue(),
                         hsb_state.getBrightness().intValue());
-            case MqttBindingConstants.COLOR_MODE_RGB:
+            case rgb:
                 PercentType[] rgb = hsb_state.toRGB();
                 return String.format(formatPattern, rgb[0].toBigDecimal().multiply(factor).intValue(),
                         rgb[1].toBigDecimal().multiply(factor).intValue(),
                         rgb[2].toBigDecimal().multiply(factor).intValue());
-            case MqttBindingConstants.COLOR_MODE_XYY:
+            case xyY:
                 PercentType[] xyY = hsb_state.toXY();
                 return String.format(Locale.ROOT, formatPattern, xyY[0].floatValue() / 100.0f,
                         xyY[1].floatValue() / 100.0f, hsb_state.getBrightness().floatValue());

@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.COLOR_MODE;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
@@ -210,7 +211,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveRGBColorTest() {
-        ColorValue value = new ColorValue("rgb", "FON", "FOFF", 10);
+        ColorValue value = new ColorValue(COLOR_MODE.rgb, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -237,7 +238,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveHSBColorTest() {
-        ColorValue value = new ColorValue("hsb", "FON", "FOFF", 10);
+        ColorValue value = new ColorValue(COLOR_MODE.hsb, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -260,7 +261,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveXYYColorTest() {
-        ColorValue value = new ColorValue("xyY", "FON", "FOFF", 10);
+        ColorValue value = new ColorValue(COLOR_MODE.xyY, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 

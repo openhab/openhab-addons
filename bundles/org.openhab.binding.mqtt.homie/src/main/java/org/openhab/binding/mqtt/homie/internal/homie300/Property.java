@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.util.UIDUtils;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants.COLOR_MODE;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
@@ -177,9 +178,9 @@ public class Property implements AttributeChanged {
                 break;
             case color_:
                 if (attributes.format.equals("hsv")) {
-                    value = new ColorValue("hsb", null, null, 100);
+                    value = new ColorValue(COLOR_MODE.hsb, null, null, 100);
                 } else if (attributes.format.equals("rgb")) {
-                    value = new ColorValue("rgb", null, null, 100);
+                    value = new ColorValue(COLOR_MODE.rgb, null, null, 100);
                 } else {
                     logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
                             attributes.format);
