@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,7 +29,7 @@ import org.openhab.binding.mqtt.generic.values.Value;
 @NonNullByDefault
 public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelConfiguration> {
     public static final String sensorChannelID = "sensor"; // Randomly chosen channel "ID"
-    private static final List<String> triggerIcons = Arrays.asList("mdi:toggle", "mdi:gesture");
+    private static final Pattern triggerIcons = Pattern.compile("^mdi:(toggle|gesture).*$");
 
     /**
      * Configuration class for MQTT component
@@ -67,10 +66,7 @@ public class ComponentSensor extends AbstractComponent<ComponentSensor.ChannelCo
 
         String icon = channelConfiguration.icon;
 
-        boolean trigger = false;
-        if (!icon.isEmpty()) {
-            trigger = triggerIcons.stream().anyMatch(triggerIcon -> icon.startsWith(triggerIcon));
-        }
+        boolean trigger = triggerIcons.matcher(icon).matches();
 
         buildChannel(sensorChannelID, value, channelConfiguration.name, componentConfiguration.getUpdateListener())//
                 .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
