@@ -59,7 +59,8 @@ public class GetParamsetParser extends CommonRpcParser<Object[], Void> {
                 // suppress warning for this datapoint due wrong CCU metadata
                 String deviceType = channel.getDevice().getType();
                 boolean isHmSenMdirNextTrans = dpInfo.getName().equals("NEXT_TRANSMISSION")
-                        && (deviceType.startsWith("HM-Sen-MDIR-O") || deviceType.startsWith("HM-Sen-MDIR-WM55"));
+                        && (deviceType.startsWith("HM-Sen-MDIR-O") || deviceType.startsWith("HM-Sen-MDIR-WM55")
+                                || deviceType.startsWith("HM-Sec-MDIR-2"));
                 if (!isHmSenMdirNextTrans) {
                     if (dpInfo.getParamsetType() == HmParamsetType.MASTER
                             && channel.getDevice().getHmInterface() == HmInterface.HMIP) {
