@@ -5,42 +5,16 @@
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:gce:ipx800v3Config">
-            <parameter name="hostname" type="text" required="true">
-                <context>network-address</context>
-                <label>Network Address</label>
-                <description>Network/IP address of the IPX800 without http(s) prefix</description>
-            </parameter>
-            <parameter name="portNumber" type="integer" required="false">
-                <label>Port Number</label>
-                <description>TCP client connection port</description>
-                <default>9870</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="reconnectTimeout" type="integer" required="false" min="1000" max="60000" unit="ms"
-                groupName="connection">
-                <label>Reconnect Timeout</label>
-                <description>Time before reconnecting in case of failure (in milliseconds).</description>
-                <default>5000</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="sendTimeout" type="integer" required="false" min="500" max="60000" unit="ms"
-                groupName="connection">
-                <label>Send Timeout</label>
-                <description>Time before assuming send failure (in milliseconds).</description>
-                <default>1000</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="maxKeepAliveFailure" type="integer" min="1" max="10" groupName="connection">
-                <label>Allowed Keep Alive Failures</label>
-                <description>Max keep alive failures before reconnecting (tentatives, 1-10)</description>
-                <default>1</default>
-                <advanced>true</advanced>
-            </parameter>
-            <parameter name="keepAliveTimeout" type="integer" min="5000" max="30000" groupName="connection" unit="ms">
-                <label>Keep Alive Timeout</label>
-                <description>Max keep timeout (in milliseconds)</description>
-                <default>30000</default>
-                <advanced>true</advanced>
-            </parameter>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Network Address</label>
+				<description>Network/IP address of the IPX800 without http(s) prefix.</description>
+			</parameter>
+			<parameter name="portNumber" type="integer" required="false">
+				<label>Port Number</label>
+				<description>TCP client connection port.</description>
+				<default>9870</default>
+				<advanced>true</advanced>
+			</parameter>
 	</config-description>
 </config-description:config-descriptions>

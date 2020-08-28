@@ -24,8 +24,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Ipx800Configuration {
     public String hostname = "";
     public int portNumber = 9870;
-    public int reconnectTimeout = 5000;
-    public int sendTimeout = 1000;
-    public int maxKeepAliveFailure = 1;
-    public int keepAliveTimeout = 30000;
 }

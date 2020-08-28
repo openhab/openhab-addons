@@ -14,7 +14,6 @@ package org.openhab.binding.gce.internal.test;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
-import org.openhab.binding.gce.internal.config.Ipx800Configuration;
 import org.openhab.binding.gce.internal.handler.Ipx800DeviceConnector;
 import org.openhab.binding.gce.internal.handler.Ipx800MessageParser;
 
@@ -46,8 +45,7 @@ public class Ipx800DeviceConnectorTest {
         // Command :
         // I=10000000000000000000000000000000&O=00000000000000000000000000000000&A0=0&A1=0&A2=0&A3=0&A4=0&A5=0&A6=0&A7=0&A8=0&A9=0&A10=0&A11=0&A12=0&A13=0&A14=0&A15=0&C1=2064&C2=1&C3=3&C4=4&C5=5&C6=6&C7=7&C8=8
 
-        Ipx800Configuration configuration = new Ipx800Configuration();
-        Ipx800DeviceConnector connector = new Ipx800DeviceConnector(configuration);
+        Ipx800DeviceConnector connector = new Ipx800DeviceConnector("", 9870);
         Ipx800MessageParser parser = new Ipx800MessageParser(connector, null);
         parser.setExpectedResponse("GetOutputs");
         parser.unsollicitedUpdate("01010010100101010101010101010101");

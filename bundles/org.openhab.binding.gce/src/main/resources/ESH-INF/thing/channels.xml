@@ -9,70 +9,70 @@
 		<label>Digital Inputs</label>
 		<channels>
 			<channel id="1" typeId="digitalInput" >
-				<label>Digital Input 1</label></channel> 
+				<label>Digital Input 1</label></channel>
 			<channel id="1-event" typeId="pushButtonTrigger" />
 			<channel id="1-duration" typeId="duration" />
 			<channel id="2" typeId="digitalInput" >
-				<label>Digital Input 2</label></channel> 
+				<label>Digital Input 2</label></channel>
 			<channel id="2-event" typeId="pushButtonTrigger" />
 			<channel id="2-duration" typeId="duration" />
 			<channel id="3" typeId="digitalInput" >
-				<label>Digital Input 3</label></channel> 
+				<label>Digital Input 3</label></channel>
 			<channel id="3-event" typeId="pushButtonTrigger" />
 			<channel id="3-duration" typeId="duration" />
 			<channel id="4" typeId="digitalInput" >
-				<label>Digital Input 4</label></channel> 
+				<label>Digital Input 4</label></channel>
 			<channel id="4-event" typeId="pushButtonTrigger" />
 			<channel id="4-duration" typeId="duration" />
 			<channel id="5" typeId="digitalInput" >
-				<label>Digital Input 5</label></channel> 
+				<label>Digital Input 5</label></channel>
 			<channel id="5-event" typeId="pushButtonTrigger" />
 			<channel id="5-duration" typeId="duration" />
 			<channel id="6" typeId="digitalInput" >
-				<label>Digital Input 6</label></channel> 
+				<label>Digital Input 6</label></channel>
 			<channel id="6-event" typeId="pushButtonTrigger" />
 			<channel id="6-duration" typeId="duration" />
 			<channel id="7" typeId="digitalInput" >
-				<label>Digital Input 7</label></channel> 
+				<label>Digital Input 7</label></channel>
 			<channel id="7-event" typeId="pushButtonTrigger" />
 			<channel id="7-duration" typeId="duration" />
 			<channel id="8" typeId="digitalInput" >
-				<label>Digital Input 8</label></channel> 
+				<label>Digital Input 8</label></channel>
 			<channel id="8-event" typeId="pushButtonTrigger" />
 			<channel id="8-duration" typeId="duration" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="O">
 		<label>Digital Outputs</label>
 		<channels>
 			<channel id="1" typeId="digitalOutput" >
-				<label>Digital Output 1</label></channel> 
+				<label>Digital Output 1</label></channel>
 			<channel id="1-duration" typeId="duration" />
 			<channel id="2" typeId="digitalOutput" >
-				<label>Digital Output 2</label></channel> 
+				<label>Digital Output 2</label></channel>
 			<channel id="2-duration" typeId="duration" />
 			<channel id="3" typeId="digitalOutput" >
-				<label>Digital Output 3</label></channel> 
+				<label>Digital Output 3</label></channel>
 			<channel id="3-duration" typeId="duration" />
 			<channel id="4" typeId="digitalOutput" >
-				<label>Digital Output 4</label></channel> 
+				<label>Digital Output 4</label></channel>
 			<channel id="4-duration" typeId="duration" />
 			<channel id="5" typeId="digitalOutput" >
-				<label>Digital Output 5</label></channel> 
+				<label>Digital Output 5</label></channel>
 			<channel id="5-duration" typeId="duration" />
 			<channel id="6" typeId="digitalOutput" >
-				<label>Digital Output 6</label></channel> 
+				<label>Digital Output 6</label></channel>
 			<channel id="6-duration" typeId="duration" />
 			<channel id="7" typeId="digitalOutput" >
-				<label>Digital Output 7</label></channel> 
+				<label>Digital Output 7</label></channel>
 			<channel id="7-duration" typeId="duration" />
 			<channel id="8" typeId="digitalOutput" >
-				<label>Digital Output 8</label></channel> 
+				<label>Digital Output 8</label></channel>
 			<channel id="8-duration" typeId="duration" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="C">
 		<label>Counters</label>
 		<channels>
@@ -102,25 +102,25 @@
 			<channel id="8-duration" typeId="duration" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-group-type id="A">
 		<label>Analog Inputs</label>
 		<channels>
 			<channel id="1" typeId="analogInput" >
-				<label>Analog Input 1</label></channel> 
+				<label>Analog Input 1</label></channel>
 			<channel id="1-duration" typeId="duration" />
 			<channel id="2" typeId="analogInput" >
-				<label>Analog Input 2</label></channel> 
+				<label>Analog Input 2</label></channel>
 			<channel id="2-duration" typeId="duration" />
 			<channel id="3" typeId="analogInput" >
-				<label>Analog Input 3</label></channel> 
+				<label>Analog Input 3</label></channel>
 			<channel id="3-duration" typeId="duration" />
 			<channel id="4" typeId="analogInput" >
-				<label>Analog Input 4</label></channel> 
+				<label>Analog Input 4</label></channel>
 			<channel id="4-duration" typeId="duration" />
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-type id="digitalInput">
 		<item-type>Contact</item-type>
 		<label>Digital Input</label>
@@ -148,7 +148,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	
+
 	<channel-type id="digitalOutput">
 		<item-type>Switch</item-type>
 		<label>Digital Output</label>
@@ -171,7 +171,7 @@
 			</parameter>
 		</config-description>
 	</channel-type>
-	
+
 	<channel-type id="analogInput">
 		<item-type>Number</item-type>
 		<label>Analog Input</label>
@@ -194,7 +194,7 @@
 		<description>Duration of previous state before state change.</description>
 		<state pattern="%d %unit%" readOnly="true" />
 	</channel-type>
-	
+
 	<channel-type id="pushButtonTrigger">
 		<kind>trigger</kind>
 		<label>Push Button Trigger Channel</label>

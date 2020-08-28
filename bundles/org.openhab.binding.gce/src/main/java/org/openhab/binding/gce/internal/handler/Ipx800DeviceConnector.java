@@ -21,7 +21,6 @@ import java.net.SocketTimeoutException;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.gce.internal.config.Ipx800Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,9 +34,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Ipx800DeviceConnector extends Thread {
     private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
+    private static final int DEFAULT_SOCKET_TIMEOUT = 5000;
+    private static final int DEFAULT_RECONNECT_TIMEOUT = 5000;
+    private static final int MAX_KEEPALIVE_FAILURE = 3;
     private final static String ENDL = "\r\n";
 
-    private final Ipx800Configuration config;
+    private final String hostname;
+    public final int portNumber;
     private Optional<Ipx800MessageParser> parser = Optional.empty();
 
     private boolean interrupted = false;
@@ -50,8 +53,9 @@ public class Ipx800DeviceConnector extends Thread {
     private int failedKeepalive = 0;
     private boolean waitingKeepaliveResponse = false;
 
-    public Ipx800DeviceConnector(Ipx800Configuration config) {
-        this.config = config;
+    public Ipx800DeviceConnector(String hostname, int portNumber) {
+        this.hostname = hostname;
+        this.portNumber = portNumber;
     }
 
     public synchronized void send(String message) {
@@ -67,14 +71,14 @@ public class Ipx800DeviceConnector extends Thread {
      */
     private void connect() throws IOException {
         disconnect();
-        logger.debug("Connecting {}:{}...", config.hostname, config.portNumber);
-        client = new Socket(config.hostname, config.portNumber);
-        client.setSoTimeout(config.keepAliveTimeout);
+        logger.debug("Connecting {}:{}...", hostname, portNumber);
+        client = new Socket(hostname, portNumber);
+        client.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
         client.getInputStream().skip(client.getInputStream().available());
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         out = new PrintWriter(client.getOutputStream(), true);
         connected = true;
-        logger.debug("Connected to {}:{}", config.hostname, config.portNumber);
+        logger.debug("Connected to {}:{}", hostname, portNumber);
     }
 
     /**
@@ -127,7 +131,7 @@ public class Ipx800DeviceConnector extends Thread {
                 failedKeepalive = 0;
                 connect();
                 while (!interrupted) {
-                    if (failedKeepalive > config.maxKeepAliveFailure) {
+                    if (failedKeepalive > MAX_KEEPALIVE_FAILURE) {
                         throw new IOException("Max keep alive attempts has been reached");
                     }
                     try {
@@ -143,7 +147,7 @@ public class Ipx800DeviceConnector extends Thread {
                 handleException(e);
             }
             try {
-                Thread.sleep(config.reconnectTimeout);
+                Thread.sleep(DEFAULT_RECONNECT_TIMEOUT);
             } catch (InterruptedException e) {
                 interrupted = true;
                 Thread.currentThread().interrupt();
@@ -156,7 +160,7 @@ public class Ipx800DeviceConnector extends Thread {
             sendKeepalive();
             return;
         } else if (e instanceof IOException) {
-            logger.info("Communication error : '{}', will retry in {} ms", e.getMessage(), config.reconnectTimeout);
+            logger.info("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT);
         }
         parser.ifPresent(parser -> parser.errorOccurred(e));
         logger.debug(e.getMessage());

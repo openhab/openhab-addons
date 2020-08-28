@@ -99,7 +99,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         logger.debug("Initializing IPX800 handler for uid '{}'", getThing().getUID());
 
-        connector = new Ipx800DeviceConnector(configuration);
+        connector = new Ipx800DeviceConnector(configuration.hostname, configuration.portNumber);
         connector.setName("OH-binding-" + getThing().getUID());
         connector.setDaemon(true);
 
