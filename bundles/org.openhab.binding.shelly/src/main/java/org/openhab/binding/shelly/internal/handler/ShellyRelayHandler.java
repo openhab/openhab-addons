@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -127,15 +128,6 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
             case CHANNEL_TIMER_AUTOOFF:
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
                 api.setTimer(rIndex, SHELLY_TIMER_AUTOOFF, ((DecimalType) command).doubleValue());
-                break;
-
-            case CHANNEL_LED_STATUS_DISABLE:
-                logger.debug("{}: Set STATUS LED disabled to {}", thingName, command);
-                api.setLedStatus(SHELLY_LED_STATUS_DISABLE, command == OnOffType.ON);
-                break;
-            case CHANNEL_LED_POWER_DISABLE:
-                logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
-                api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
                 break;
         }
         return true;
@@ -377,9 +369,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             : CHANNEL_GROUP_ROL_CONTROL;
 
                     createRollerChannels(control);
-                    if (getString(control.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
-                        Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
-                                Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
+
+                    String state = getString(control.state);
+
+                    if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
+                        int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
                                 toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), SmartHomeUnits.PERCENT));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
@@ -387,7 +381,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         scheduledUpdates = 1; // one more poll and then stop
                     }
 
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
+                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
                     updated |= updateInputs(groupName, status, i);
 

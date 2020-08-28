@@ -128,8 +128,8 @@ public class ShellyUtils {
         try {
             return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new ShellyApiException(e,
-                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input);
+            throw new ShellyApiException(
+                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input, e);
         }
     }
 
