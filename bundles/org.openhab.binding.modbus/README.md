@@ -993,12 +993,17 @@ Please be aware that `REFRESH` commands are "throttled" (to be exact, responses 
 Modbus, while simple at its heart, potentially is a complicated standard to use because there's a lot of freedom (and bugs) when it comes to implementations.
 There are many device or vendor specific quirks and wrinkles you might stumble across. Here's some:
 
-* a device may have more than one interface with a port open (502 or other) that it responds on, but may have no connection to the real bus hardware.
-Check ALL interfaces including (and preferring) any serial connection. Usually either that or the Ethernet IP will do.
+* With Modbus TCP devices, there may be multiple network interfaces available, e.g. Wifi and wired Ethernet. However, with some devices the Modbus data is accessible via only one of the interfaces. You need to check the device manufacturer manual, or simply try out which of the IPs are returning valid modbus data.
+Attention: a device may have an interface with a port open (502 or other) that it responds to Modbus requests on, but that may have no connection to the real bus hardware, resulting in generic Modbus error responses to _every_ request.
+So check ALL interfaces. Usually either the IP on Ethernet will do.
 
-* some devices do not allow to query a range of registers that is too large or spans reserved registers.
-They may respond with an error or no error but invalid register data.
-Eventually turn your poller thing into multiple things to cover smaller ranges to work around this problem.
+* some devices do not allow to query a range of registers that is too large or spans reserved registers. Do not poll more than 123 registers.
+Devices may respond with an error or no error but invalid register data so this error can easily go undedetected.
+Turn your poller thing into multiple things to cover smaller ranges to work around this problem.
+
+* there's potentially many more or less weird inconsistencies with some devices.
+If you fail to read a register or you only ever get invalid values (such as 00 or FF bytes), try with various poller lengths such as the exact length of a register in question or twice the amount.
+In extreme cases you might even need more than a poller for a single register so you have two or more poller with two or more data things and need to combine these into another item using a rule.
 
 ## Changes From Modbus 1.x Binding
 
