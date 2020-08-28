@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Ipx800DeviceConnector extends Thread {
-    private static final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
     private final static String ENDL = "\r\n";
 
     private final Ipx800Configuration config;
@@ -50,10 +50,6 @@ public class Ipx800DeviceConnector extends Thread {
     private int failedKeepalive = 0;
     private boolean waitingKeepaliveResponse = false;
 
-    /**
-     *
-     * @param config
-     */
     public Ipx800DeviceConnector(Ipx800Configuration config) {
         this.config = config;
     }
@@ -149,7 +145,8 @@ public class Ipx800DeviceConnector extends Thread {
             try {
                 Thread.sleep(config.reconnectTimeout);
             } catch (InterruptedException e) {
-                handleException(e);
+                interrupted = true;
+                Thread.currentThread().interrupt();
             }
         }
     }

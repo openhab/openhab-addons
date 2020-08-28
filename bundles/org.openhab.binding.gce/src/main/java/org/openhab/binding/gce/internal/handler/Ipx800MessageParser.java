@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,9 +22,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * This class handles message translation to and from the IPX.
+ *
+ * @author Gaël L'hopital - Initial contribution
+ */
 @NonNullByDefault
 public class Ipx800MessageParser {
-    private static final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
     private static final String IO_DESCRIPTOR = "(\\d{32})";
     private static final Pattern IO_PATTERN = Pattern.compile(IO_DESCRIPTOR);
     private static final Pattern VALIDATION_PATTERN = Pattern
@@ -129,7 +134,7 @@ public class Ipx800MessageParser {
             setExpectedResponse(request);
             connector.send(request);
         } catch (InterruptedException e) {
-            errorOccurred(e);
+            Thread.currentThread().interrupt();
         }
     }
 

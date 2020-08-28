@@ -11,7 +11,7 @@
                 <description>Network/IP address of the IPX800 without http(s) prefix</description>
             </parameter>
             <parameter name="portNumber" type="integer" required="false">
-                <label>Port number</label>
+                <label>Port Number</label>
                 <description>TCP client connection port</description>
                 <default>9870</default>
                 <advanced>true</advanced>

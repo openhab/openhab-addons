@@ -20,8 +20,8 @@ import org.openhab.binding.gce.internal.handler.Ipx800MessageParser;
 
 /**
  *
- * @author Seebag
- * @since 1.8.0
+ * @author Seebag - Initial contribution on OH1
+ * @author Gaël L'hopital - Ported and adapted for OH2
  *
  */
 @NonNullByDefault

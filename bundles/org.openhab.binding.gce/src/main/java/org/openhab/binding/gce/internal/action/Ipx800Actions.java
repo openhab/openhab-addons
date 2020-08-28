@@ -68,7 +68,7 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         if (theHandler != null) {
             theHandler.resetCounter(counter);
         } else {
-            logger.info("IPX800 Action service ThingHandler is null!");
+            logger.info("Method call resetCounter failed because IPX800 action service ThingHandler is null!");
         }
     }
 
@@ -80,7 +80,7 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         if (theHandler != null) {
             theHandler.reset();
         } else {
-            logger.info("IPX800 Action service ThingHandler is null!");
+            logger.info("Method call reset failed because IPX800 action service ThingHandler is null!");
         }
     }
 

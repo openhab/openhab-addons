@@ -37,8 +37,7 @@ public class PortData {
         pulsing = null;
     }
 
-    @Override
-    protected void finalize() {
+    public void destroy() {
         cancelPulsing();
         if (pullJob != null) {
             pullJob.cancel(true);
@@ -51,7 +50,7 @@ public class PortData {
         this.timestamp = timestamp;
     }
 
-    public Double getValue() {
+    public double getValue() {
         return value;
     }
 

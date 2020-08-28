@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,7 +98,15 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         configuration = getConfigAs(Ipx800Configuration.class);
 
         logger.debug("Initializing IPX800 handler for uid '{}'", getThing().getUID());
-        scheduler.execute(this::doInitialization);
+
+        connector = new Ipx800DeviceConnector(configuration);
+        connector.setName("OH-binding-" + getThing().getUID());
+        connector.setDaemon(true);
+
+        parser = Optional.of(new Ipx800MessageParser(connector, this));
+
+        updateStatus(ThingStatus.ONLINE);
+        connector.start();
     }
 
     @Override
@@ -106,24 +114,19 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         if (connector != null) {
             connector.destroyAndExit();
         }
+
+        portDatas.values().stream().forEach(portData -> {
+            if (portData != null) {
+                portData.destroy();
+            }
+        });
+
         super.dispose();
-    }
-
-    protected void doInitialization() {
-        logger.debug("Initialize IPX800 input blocks handler.");
-
-        connector = new Ipx800DeviceConnector(configuration);
-        parser = Optional.of(new Ipx800MessageParser(connector, this));
-        updateStatus(ThingStatus.ONLINE);
-        connector.run();
     }
 
     @Override
     public void errorOccurred(Exception e) {
-        logger.warn(e.getMessage());
-        if (e instanceof InterruptedException) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
     }
 
     private @Nullable Channel getChannelForPort(String port) {
@@ -178,13 +181,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                                     scheduler.schedule(new LongPressEvaluator(channel, port, portData),
                                             config2.longPressTime, TimeUnit.MILLISECONDS);
                                 } else if (config2.pulsePeriod != 0) {
-                                    portData.setPulsing(scheduler.scheduleAtFixedRate(() -> {
+                                    portData.setPulsing(scheduler.scheduleWithFixedDelay(() -> {
                                         triggerPushButtonChannel(channel, EVENT_PULSE);
                                     }, config2.pulsePeriod, config2.pulsePeriod, TimeUnit.MILLISECONDS));
                                     if (config2.pulseTimeout != 0) {
-                                        scheduler.schedule(() -> {
-                                            portData.cancelPulsing();
-                                        }, config2.pulseTimeout, TimeUnit.MILLISECONDS);
+                                        scheduler.schedule(portData::cancelPulsing, config2.pulseTimeout,
+                                                TimeUnit.MILLISECONDS);
                                     }
                                 }
                             } else {
@@ -225,12 +227,12 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
-        String channelName = channelUID.getIdWithoutGroup();
         Channel channel = thing.getChannel(channelUID.getId());
-        if (channelName.chars().allMatch(Character::isDigit) && RELAY_OUTPUT.equalsIgnoreCase(channelUID.getGroupId())
+        if (isValidPortId(channelUID) && RELAY_OUTPUT.equalsIgnoreCase(channelUID.getGroupId())
                 && command instanceof OnOffType && channel != null) {
             RelayOutputConfiguration config = channel.getConfiguration().as(RelayOutputConfiguration.class);
-            parser.ifPresent(p -> p.setOutput(channelName, (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse));
+            parser.ifPresent(p -> p.setOutput(channelUID.getIdWithoutGroup(),
+                    (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse));
             return;
         }
         logger.info("Can not handle command '{}' on channel '{}'", command, channelUID);
@@ -240,14 +242,14 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     public void channelLinked(ChannelUID channelUID) {
         logger.debug("channelLinked: {}", channelUID);
         final String channelId = channelUID.getId();
-        if (channelUID.getIdWithoutGroup().chars().allMatch(Character::isDigit)) {
+        if (isValidPortId(channelUID)) {
             Channel channel = thing.getChannel(channelUID);
             if (channel != null) {
                 Configuration configuration = channel.getConfiguration();
                 PortData data = new PortData();
                 if (configuration.get("pullFrequency") != null) {
                     int pullFrequency = configuration.as(CounterConfiguration.class).pullFrequency;
-                    data.setPullJob(scheduler.scheduleAtFixedRate(() -> {
+                    data.setPullJob(scheduler.scheduleWithFixedDelay(() -> {
                         parser.ifPresent(p -> p.getValue(channelId));
                     }, pullFrequency, pullFrequency, TimeUnit.MILLISECONDS));
                 }
@@ -256,10 +258,17 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         }
     }
 
+    private boolean isValidPortId(ChannelUID channelUID) {
+        return channelUID.getIdWithoutGroup().chars().allMatch(Character::isDigit);
+    }
+
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         super.channelUnlinked(channelUID);
-        portDatas.remove(channelUID.getId());
+        PortData portData = portDatas.remove(channelUID.getId());
+        if (portData != null) {
+            portData.destroy();
+        }
     }
 
     public void resetCounter(int counter) {

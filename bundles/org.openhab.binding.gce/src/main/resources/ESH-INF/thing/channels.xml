@@ -128,7 +128,7 @@
         <state pattern="%s" readOnly="true"></state>
         <config-description>
             <parameter name="debouncePeriod" type="integer" min="0" max="3000" unit="ms">
-                <label>Debounce time</label>
+                <label>Debounce Time</label>
                 <default>0</default>
             </parameter>
             <parameter name="longPressTime" type="integer" step="1000" min="0" max="5000" unit="ms">
@@ -154,7 +154,7 @@
         <label>Digital Output</label>
         <config-description>
             <parameter name="pulse" type="boolean">
-                <label>Pulse output</label>
+                <label>Pulse Output</label>
                 <default>false</default>
             </parameter>
         </config-description>

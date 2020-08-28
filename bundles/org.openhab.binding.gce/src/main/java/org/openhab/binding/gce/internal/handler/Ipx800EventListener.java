@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,7 +25,7 @@ public interface Ipx800EventListener {
     /**
      * Procedure for receive data from IPX800 controller.
      *
-     * @param port  Port (kind and number) receiving update
+     * @param port Port (kind and number) receiving update
      * @param value value updated
      */
     void dataReceived(String port, Double value);

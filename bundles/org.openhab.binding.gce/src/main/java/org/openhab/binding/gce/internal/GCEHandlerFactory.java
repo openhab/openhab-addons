@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2019 Contributors to the openHAB project
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,8 +23,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.gce.internal.handler.Ipx800v3Handler;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link GCEHandlerFactory} is responsible for creating things and
@@ -35,7 +33,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.gce")
 public class GCEHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(GCEHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -48,7 +45,6 @@ public class GCEHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(IPXV3_THING_TYPE)) {
             return new Ipx800v3Handler(thing);
         }
-        logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
         return null;
     }
 }
