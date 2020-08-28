@@ -104,13 +104,9 @@ public class Eclipse {
         getKinds().forEach(eclipseKind -> {
             Calendar eclipseDate = getDate(eclipseKind);
             if (eclipseDate != null) {
-                Position position = astroHandler
-                        .getPositionAt(eclipseDate.toInstant().atZone(timeZoneProvider.getTimeZone()));
-                if (position != null) {
-                    set(eclipseKind, eclipseDate, position);
-                }
+                set(eclipseKind, eclipseDate,
+                        astroHandler.getPositionAt(eclipseDate.toInstant().atZone(timeZoneProvider.getTimeZone())));
             }
         });
     }
-
 }

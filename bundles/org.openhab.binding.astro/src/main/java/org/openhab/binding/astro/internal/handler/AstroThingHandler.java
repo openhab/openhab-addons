@@ -99,8 +99,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(AstroThingConfig.class);
         boolean validConfig = true;
-
-        if (thingConfig.geolocation == null || thingConfig.geolocation.trim().isEmpty()) {
+        String geoLocation = thingConfig.geolocation;
+        if (geoLocation == null || geoLocation.trim().isEmpty()) {
             logger.error("Astro parameter geolocation is mandatory and must be configured, disabling thing '{}'",
                     thingUid);
             validConfig = false;
@@ -347,7 +347,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob();
 
-    abstract @Nullable public Position getPositionAt(ZonedDateTime date);
+    public abstract @Nullable Position getPositionAt(ZonedDateTime date);
 
     public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
         Position position = getPositionAt(date);
