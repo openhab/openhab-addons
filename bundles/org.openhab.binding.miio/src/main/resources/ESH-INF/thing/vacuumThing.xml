@@ -125,15 +125,14 @@
 		<state min="1" max="99" step="1" pattern="%.0f%%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="in_cleaning" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>In Cleaning</label>
-		<state pattern="%.0f" readOnly="true"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="map_present" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Map Present</label>
-		<category>Energy</category>
-		<state pattern="%.0f" readOnly="true"/>
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="msg_seq" advanced="true">
 		<item-type>Number</item-type>
@@ -307,7 +306,7 @@
 		<state pattern="%.0f" readOnly="true"/>
 	</channel-type>
 	<channel-type id="last_clean_finish">
-		<item-type>Number</item-type>
+		<item-type>Switch</item-type>
 		<label>Cleaning Finished</label>
 		<state readOnly="true"/>
 	</channel-type>
