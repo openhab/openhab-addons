@@ -5,208 +5,208 @@
 
 	<!-- This file contains channel specific information and describes how the different channel types should be rendered. -->
 
-    <channel-group-type id="I">
-        <label>Digital Inputs</label>
-        <channels>
-            <channel id="1" typeId="digitalInput" >
-                <label>Digital Input 1</label></channel> 
-            <channel id="1-event" typeId="pushButtonTrigger" />
-            <channel id="1-duration" typeId="duration" />
-            <channel id="2" typeId="digitalInput" >
-                <label>Digital Input 2</label></channel> 
-            <channel id="2-event" typeId="pushButtonTrigger" />
-            <channel id="2-duration" typeId="duration" />
-            <channel id="3" typeId="digitalInput" >
-                <label>Digital Input 3</label></channel> 
-            <channel id="3-event" typeId="pushButtonTrigger" />
-            <channel id="3-duration" typeId="duration" />
-            <channel id="4" typeId="digitalInput" >
-                <label>Digital Input 4</label></channel> 
-            <channel id="4-event" typeId="pushButtonTrigger" />
-            <channel id="4-duration" typeId="duration" />
-            <channel id="5" typeId="digitalInput" >
-                <label>Digital Input 5</label></channel> 
-            <channel id="5-event" typeId="pushButtonTrigger" />
-            <channel id="5-duration" typeId="duration" />
-            <channel id="6" typeId="digitalInput" >
-                <label>Digital Input 6</label></channel> 
-            <channel id="6-event" typeId="pushButtonTrigger" />
-            <channel id="6-duration" typeId="duration" />
-            <channel id="7" typeId="digitalInput" >
-                <label>Digital Input 7</label></channel> 
-            <channel id="7-event" typeId="pushButtonTrigger" />
-            <channel id="7-duration" typeId="duration" />
-            <channel id="8" typeId="digitalInput" >
-                <label>Digital Input 8</label></channel> 
-            <channel id="8-event" typeId="pushButtonTrigger" />
-            <channel id="8-duration" typeId="duration" />
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="O">
-        <label>Digital Outputs</label>
-        <channels>
-            <channel id="1" typeId="digitalOutput" >
-                <label>Digital Output 1</label></channel> 
-            <channel id="1-duration" typeId="duration" />
-            <channel id="2" typeId="digitalOutput" >
-                <label>Digital Output 2</label></channel> 
-            <channel id="2-duration" typeId="duration" />
-            <channel id="3" typeId="digitalOutput" >
-                <label>Digital Output 3</label></channel> 
-            <channel id="3-duration" typeId="duration" />
-            <channel id="4" typeId="digitalOutput" >
-                <label>Digital Output 4</label></channel> 
-            <channel id="4-duration" typeId="duration" />
-            <channel id="5" typeId="digitalOutput" >
-                <label>Digital Output 5</label></channel> 
-            <channel id="5-duration" typeId="duration" />
-            <channel id="6" typeId="digitalOutput" >
-                <label>Digital Output 6</label></channel> 
-            <channel id="6-duration" typeId="duration" />
-            <channel id="7" typeId="digitalOutput" >
-                <label>Digital Output 7</label></channel> 
-            <channel id="7-duration" typeId="duration" />
-            <channel id="8" typeId="digitalOutput" >
-                <label>Digital Output 8</label></channel> 
-            <channel id="8-duration" typeId="duration" />
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="C">
-        <label>Counters</label>
-        <channels>
-            <channel id="1" typeId="counter" >
-            	<label>Counter 1</label></channel>           
-            <channel id="1-duration" typeId="duration" />
-            <channel id="2" typeId="counter">
-                <label>Counter 2</label></channel>
-            <channel id="2-duration" typeId="duration" />
-            <channel id="3" typeId="counter">
-                <label>Counter 3</label></channel>
-            <channel id="3-duration" typeId="duration" />
-            <channel id="4" typeId="counter">
-                <label>Counter 4</label></channel>
-            <channel id="4-duration" typeId="duration" />
-            <channel id="5" typeId="counter">
-                <label>Counter 5</label></channel>
-            <channel id="5-duration" typeId="duration" />
-            <channel id="6" typeId="counter">
-                 <label>Counter 6</label></channel>
-            <channel id="6-duration" typeId="duration" />
-            <channel id="7" typeId="counter">
-                <label>Counter 7</label></channel>
-            <channel id="7-duration" typeId="duration" />
-            <channel id="8" typeId="counter">
-                <label>Counter 8</label></channel>
-            <channel id="8-duration" typeId="duration" />
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="A">
-        <label>Analog Inputs</label>
-        <channels>
-            <channel id="1" typeId="analogInput" >
-                <label>Analog Input 1</label></channel> 
-            <channel id="1-duration" typeId="duration" />
-            <channel id="2" typeId="analogInput" >
-                <label>Analog Input 2</label></channel> 
-            <channel id="2-duration" typeId="duration" />
-            <channel id="3" typeId="analogInput" >
-                <label>Analog Input 3</label></channel> 
-            <channel id="3-duration" typeId="duration" />
-            <channel id="4" typeId="analogInput" >
-                <label>Analog Input 4</label></channel> 
-            <channel id="4-duration" typeId="duration" />
-        </channels>
-    </channel-group-type>
-    
-    <channel-type id="digitalInput">
-        <item-type>Contact</item-type>
-        <label>Digital Input</label>
-        <category>Contact</category>
-        <state pattern="%s" readOnly="true"></state>
-        <config-description>
-            <parameter name="debouncePeriod" type="integer" min="0" max="3000" unit="ms">
-                <label>Debounce Time</label>
-                <default>0</default>
-            </parameter>
-            <parameter name="longPressTime" type="integer" step="1000" min="0" max="5000" unit="ms">
-                <label>Long Press Time</label>
-                <description>Long press time in milliseconds.</description>
-                <default>0</default>
-            </parameter>
-            <parameter name="pulsePeriod" type="integer" step="500" min="0" max="50000" unit="ms">
-                <label>Pulse Period</label>
-                <description>Pulse period in milliseconds.</description>
-                <default>0</default>
-            </parameter>
-            <parameter name="pulseTimeout" type="integer" step="500" min="0" max="50000" unit="ms">
-                <label>Pulse Timeout</label>
-                <description>Maximum period for sending pulses in milliseconds.</description>
-                <default>0</default>
-            </parameter>
-        </config-description>
-    </channel-type>
-    
-    <channel-type id="digitalOutput">
-        <item-type>Switch</item-type>
-        <label>Digital Output</label>
-        <config-description>
-            <parameter name="pulse" type="boolean">
-                <label>Pulse Output</label>
-                <default>false</default>
-            </parameter>
-        </config-description>
-    </channel-type>
+	<channel-group-type id="I">
+		<label>Digital Inputs</label>
+		<channels>
+			<channel id="1" typeId="digitalInput" >
+				<label>Digital Input 1</label></channel> 
+			<channel id="1-event" typeId="pushButtonTrigger" />
+			<channel id="1-duration" typeId="duration" />
+			<channel id="2" typeId="digitalInput" >
+				<label>Digital Input 2</label></channel> 
+			<channel id="2-event" typeId="pushButtonTrigger" />
+			<channel id="2-duration" typeId="duration" />
+			<channel id="3" typeId="digitalInput" >
+				<label>Digital Input 3</label></channel> 
+			<channel id="3-event" typeId="pushButtonTrigger" />
+			<channel id="3-duration" typeId="duration" />
+			<channel id="4" typeId="digitalInput" >
+				<label>Digital Input 4</label></channel> 
+			<channel id="4-event" typeId="pushButtonTrigger" />
+			<channel id="4-duration" typeId="duration" />
+			<channel id="5" typeId="digitalInput" >
+				<label>Digital Input 5</label></channel> 
+			<channel id="5-event" typeId="pushButtonTrigger" />
+			<channel id="5-duration" typeId="duration" />
+			<channel id="6" typeId="digitalInput" >
+				<label>Digital Input 6</label></channel> 
+			<channel id="6-event" typeId="pushButtonTrigger" />
+			<channel id="6-duration" typeId="duration" />
+			<channel id="7" typeId="digitalInput" >
+				<label>Digital Input 7</label></channel> 
+			<channel id="7-event" typeId="pushButtonTrigger" />
+			<channel id="7-duration" typeId="duration" />
+			<channel id="8" typeId="digitalInput" >
+				<label>Digital Input 8</label></channel> 
+			<channel id="8-event" typeId="pushButtonTrigger" />
+			<channel id="8-duration" typeId="duration" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="O">
+		<label>Digital Outputs</label>
+		<channels>
+			<channel id="1" typeId="digitalOutput" >
+				<label>Digital Output 1</label></channel> 
+			<channel id="1-duration" typeId="duration" />
+			<channel id="2" typeId="digitalOutput" >
+				<label>Digital Output 2</label></channel> 
+			<channel id="2-duration" typeId="duration" />
+			<channel id="3" typeId="digitalOutput" >
+				<label>Digital Output 3</label></channel> 
+			<channel id="3-duration" typeId="duration" />
+			<channel id="4" typeId="digitalOutput" >
+				<label>Digital Output 4</label></channel> 
+			<channel id="4-duration" typeId="duration" />
+			<channel id="5" typeId="digitalOutput" >
+				<label>Digital Output 5</label></channel> 
+			<channel id="5-duration" typeId="duration" />
+			<channel id="6" typeId="digitalOutput" >
+				<label>Digital Output 6</label></channel> 
+			<channel id="6-duration" typeId="duration" />
+			<channel id="7" typeId="digitalOutput" >
+				<label>Digital Output 7</label></channel> 
+			<channel id="7-duration" typeId="duration" />
+			<channel id="8" typeId="digitalOutput" >
+				<label>Digital Output 8</label></channel> 
+			<channel id="8-duration" typeId="duration" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="C">
+		<label>Counters</label>
+		<channels>
+			<channel id="1" typeId="counter" >
+				<label>Counter 1</label></channel>
+			<channel id="1-duration" typeId="duration" />
+			<channel id="2" typeId="counter">
+				<label>Counter 2</label></channel>
+			<channel id="2-duration" typeId="duration" />
+			<channel id="3" typeId="counter">
+				<label>Counter 3</label></channel>
+			<channel id="3-duration" typeId="duration" />
+			<channel id="4" typeId="counter">
+				<label>Counter 4</label></channel>
+			<channel id="4-duration" typeId="duration" />
+			<channel id="5" typeId="counter">
+				<label>Counter 5</label></channel>
+			<channel id="5-duration" typeId="duration" />
+			<channel id="6" typeId="counter">
+				 <label>Counter 6</label></channel>
+			<channel id="6-duration" typeId="duration" />
+			<channel id="7" typeId="counter">
+				<label>Counter 7</label></channel>
+			<channel id="7-duration" typeId="duration" />
+			<channel id="8" typeId="counter">
+				<label>Counter 8</label></channel>
+			<channel id="8-duration" typeId="duration" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-group-type id="A">
+		<label>Analog Inputs</label>
+		<channels>
+			<channel id="1" typeId="analogInput" >
+				<label>Analog Input 1</label></channel> 
+			<channel id="1-duration" typeId="duration" />
+			<channel id="2" typeId="analogInput" >
+				<label>Analog Input 2</label></channel> 
+			<channel id="2-duration" typeId="duration" />
+			<channel id="3" typeId="analogInput" >
+				<label>Analog Input 3</label></channel> 
+			<channel id="3-duration" typeId="duration" />
+			<channel id="4" typeId="analogInput" >
+				<label>Analog Input 4</label></channel> 
+			<channel id="4-duration" typeId="duration" />
+		</channels>
+	</channel-group-type>
+	
+	<channel-type id="digitalInput">
+		<item-type>Contact</item-type>
+		<label>Digital Input</label>
+		<category>Contact</category>
+		<state pattern="%s" readOnly="true"></state>
+		<config-description>
+			<parameter name="debouncePeriod" type="integer" min="0" max="3000" unit="ms">
+				<label>Debounce Time</label>
+				<default>0</default>
+			</parameter>
+			<parameter name="longPressTime" type="integer" step="1000" min="0" max="5000" unit="ms">
+				<label>Long Press Time</label>
+				<description>Long press time in milliseconds.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="pulsePeriod" type="integer" step="500" min="0" max="50000" unit="ms">
+				<label>Pulse Period</label>
+				<description>Pulse period in milliseconds.</description>
+				<default>0</default>
+			</parameter>
+			<parameter name="pulseTimeout" type="integer" step="500" min="0" max="50000" unit="ms">
+				<label>Pulse Timeout</label>
+				<description>Maximum period for sending pulses in milliseconds.</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	
+	<channel-type id="digitalOutput">
+		<item-type>Switch</item-type>
+		<label>Digital Output</label>
+		<config-description>
+			<parameter name="pulse" type="boolean">
+				<label>Pulse Output</label>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</channel-type>
 
-    <channel-type id="counter">
-        <item-type>Number</item-type>
-        <label>Counter</label>
-        <config-description>
-            <parameter name="pullFrequency" type="integer" required="false" min="500" max="60000" unit="ms">
-                <label>Pull Frequency</label>
-                <description>Delay for pulling Analog and Counters info (in milliseconds).</description>
-                <default>5000</default>
-            </parameter>
-        </config-description>
-    </channel-type>
-    
-    <channel-type id="analogInput">
-        <item-type>Number</item-type>
-        <label>Analog Input</label>
-        <config-description>
-            <parameter name="histeresis" type="integer" min="0">
-                <label>Histeresis</label>
-                <default>0</default>
-            </parameter>
-            <parameter name="pullFrequency" type="integer" required="false" min="500" max="60000" unit="ms">
-                <label>Pull Frequency</label>
-                <description>Delay for pulling Analog and Counters info (in milliseconds).</description>
-                <default>5000</default>
-            </parameter>
-        </config-description>
-    </channel-type>
-  
-    <channel-type id="duration" advanced="true">
-        <item-type>Number:Time</item-type>
-        <label>Previous State Duration</label>
-        <description>Duration of previous state before state change.</description>
-        <state pattern="%d %unit%" readOnly="true" />
-    </channel-type>
-    
-    <channel-type id="pushButtonTrigger">
-        <kind>trigger</kind>
-        <label>Push Button Trigger Channel</label>
-        <event>
-            <options>
-                <option value="PRESSED">Pressed</option>
-                <option value="RELEASED">Released</option>
-                <option value="SHORT_PRESS">Short press</option>
-                <option value="LONG_PRESS">Long press</option>
-                <option value="PULSE">Pulse</option>
-            </options>
-        </event>
-    </channel-type>
+	<channel-type id="counter">
+		<item-type>Number</item-type>
+		<label>Counter</label>
+		<config-description>
+			<parameter name="pullFrequency" type="integer" required="false" min="500" max="60000" unit="ms">
+				<label>Pull Frequency</label>
+				<description>Delay for pulling Analog and Counters info (in milliseconds).</description>
+				<default>5000</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+	
+	<channel-type id="analogInput">
+		<item-type>Number</item-type>
+		<label>Analog Input</label>
+		<config-description>
+			<parameter name="histeresis" type="integer" min="0">
+				<label>Histeresis</label>
+				<default>0</default>
+			</parameter>
+			<parameter name="pullFrequency" type="integer" required="false" min="500" max="60000" unit="ms">
+				<label>Pull Frequency</label>
+				<description>Delay for pulling Analog and Counters info (in milliseconds).</description>
+				<default>5000</default>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="duration" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Previous State Duration</label>
+		<description>Duration of previous state before state change.</description>
+		<state pattern="%d %unit%" readOnly="true" />
+	</channel-type>
+	
+	<channel-type id="pushButtonTrigger">
+		<kind>trigger</kind>
+		<label>Push Button Trigger Channel</label>
+		<event>
+			<options>
+				<option value="PRESSED">Pressed</option>
+				<option value="RELEASED">Released</option>
+				<option value="SHORT_PRESS">Short press</option>
+				<option value="LONG_PRESS">Long press</option>
+				<option value="PULSE">Pulse</option>
+			</options>
+		</event>
+	</channel-type>
 
 </thing:thing-descriptions>

@@ -28,7 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * The {@link GCEHandlerFactory} is responsible for creating things and
  * thing handlers.
  *
- * @author Gaël L'hopital - Initial Implementation
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.gce")

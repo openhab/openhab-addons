@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link Ipx800Configuration} class holds configuration informations of
  * the ipx800v3 thing.
  *
- * @author Gaël L'hopital - Initial implementation
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class Ipx800Configuration {

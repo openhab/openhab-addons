@@ -19,7 +19,7 @@ import org.eclipse.smarthome.config.core.Configuration;
  * The {@link DigitalInputConfiguration} class holds configuration informations of
  * an ipx800 Digital Input port.
  *
- * @author Gaël L'hopital - Initial Implementation
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class DigitalInputConfiguration extends Configuration {

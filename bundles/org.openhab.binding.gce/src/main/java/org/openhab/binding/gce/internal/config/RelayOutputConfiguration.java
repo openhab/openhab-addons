@@ -19,7 +19,7 @@ import org.eclipse.smarthome.config.core.Configuration;
  * The {@link RelayOutputConfiguration} class holds configuration informations of
  * an ipx800 relay output.
  *
- * @author Gaël L'hopital - Initial Implementation
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class RelayOutputConfiguration extends Configuration {

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class Ipx800MessageParser {
-    private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(Ipx800MessageParser.class);
     private static final String IO_DESCRIPTOR = "(\\d{32})";
     private static final Pattern IO_PATTERN = Pattern.compile(IO_DESCRIPTOR);
     private static final Pattern VALIDATION_PATTERN = Pattern

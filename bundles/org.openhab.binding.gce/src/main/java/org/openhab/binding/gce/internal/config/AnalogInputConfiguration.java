@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link AnalogInputConfiguration} class holds configuration informations of
  * an ipx800 Analog Input port.
  *
- * @author Gaël L'hopital - Initial Implementation
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class AnalogInputConfiguration extends CounterConfiguration {

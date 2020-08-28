@@ -19,7 +19,7 @@ import org.eclipse.smarthome.config.core.Configuration;
  * The {@link CounterConfiguration} class holds configuration informations of
  * an ipx800 counter.
  *
- * @author Gaël L'hopital - Initial Implementation
+ * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
 public class CounterConfiguration extends Configuration {
