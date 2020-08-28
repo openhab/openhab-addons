@@ -139,14 +139,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 if (allTripsCache != null) {
                     updateTripStatistics(allTripsCache);
                 }
-            } else {
-                if (vehicleStatusCache != null) {
+            } else if (vehicleStatusCache != null) {
                     updateRangeValues(vehicleStatusCache);
-                }
             }
-            // logger.info("REFRESH {}", group);
-        } else {
-            logger.info("No refresh");
         }
         if (CHANNEL_GROUP_REMOTE.equals(channelUID.getGroupId())) {
             logger.info("Remote Command {}", CHANNEL_GROUP_REMOTE);
@@ -174,8 +169,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                     }
                 }
             }
-        } else {
-            logger.info("Not a Remote Command {}", channelUID.getGroupId());
         }
         if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
             logger.info("Trigger CarData Fingerprint");
@@ -288,7 +281,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         String allTripData = getJSON(allTripsAPI);
         updateTripStatistics(allTripData);
         String rangemapData = getJSON(rangeMapAPI);
+        logger.info("RangeMap {}",rangemapData);
         String chargeData = getJSON(chargeAPI);
+        logger.info("Chatge Data {}",chargeData);
         String destinationData = getJSON(destinationAPI);
     }
 
