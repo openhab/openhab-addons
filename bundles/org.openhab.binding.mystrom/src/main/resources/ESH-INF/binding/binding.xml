@@ -3,8 +3,8 @@
 	xmlns:binding="https://openhab.org/schemas/binding/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
-	<name>mystrom Binding</name>
-	<description>This is the binding for mystrom.</description>
+	<name>myStrom Binding</name>
+	<description>This is the binding for myStrom devices.</description>
 	<author>Paul Frank</author>
 
 </binding:binding>

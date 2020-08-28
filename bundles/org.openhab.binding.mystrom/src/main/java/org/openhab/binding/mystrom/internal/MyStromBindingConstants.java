@@ -24,7 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MyStromBindingConstants {
 
-    public static final int DEFAULT_REFRESH_RATE = 60;
+    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 10;
+    public static final int DEFAULT_REFRESH_RATE = 10;
 
     private static final String BINDING_ID = "mystrom";
 
@@ -34,6 +35,5 @@ public class MyStromBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_ENERGY = "energy";
     public static final String CHANNEL_TEMPERATURE = "temperature";
 }

@@ -12,10 +12,27 @@
  */
 package org.openhab.binding.mystrom.internal;
 
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.*;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.CELSIUS;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.WATT;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_POWER;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_SWITCH;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_TEMPERATURE;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_WAIT_BEFORE_INITIAL_REFRESH;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import com.google.gson.Gson;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -34,65 +51,127 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyStromHandler extends BaseThingHandler {
 
+    private static final int HTTP_OK_CODE = 200;
+    private static final String COMMUNICATION_ERROR = "Error while communicating to myStrom: ";
+
     private final Logger logger = LoggerFactory.getLogger(MyStromHandler.class);
 
     private @Nullable MyStromConfiguration config;
+    private HttpClient httpClient;
+    private String hostname = "";
 
-    public MyStromHandler(Thing thing) {
+    @Nullable
+    private ScheduledFuture<?> pollingJob;
+
+    private final Gson gson = new Gson();
+
+    public MyStromHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
+    }
+
+    private static class MyStromReport {
+
+        public float power;
+        public float Ws;
+        public boolean relay;
+        public float temperature;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_SWITCH.equals(channelUID.getId())) {
+        try {
             if (command instanceof RefreshType) {
-                // TODO: handle data refresh
+                refreshPlug();
+            } else {
+                if (command instanceof OnOffType && CHANNEL_SWITCH.equals(channelUID.getId())) {
+                    sendHttpGet("relay?state=" + (command == OnOffType.ON ? "1" : "0"));
+                    scheduler.schedule(() -> {
+                        pollDevice();
+                    }, 500, TimeUnit.MILLISECONDS);
+                }
+
             }
+        } catch (MyStromException e) {
+            logger.error(COMMUNICATION_ERROR, e);
+        }
+    }
 
-            // TODO: handle command
 
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+    private void refreshPlug() throws MyStromException {
+        String returnContent = sendHttpGet("report");
+        MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
+        updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
+        updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
+    }
+
+    private void pollDevice() {
+        try {
+            refreshPlug();
+        } catch (MyStromException e) {
+            logger.error(COMMUNICATION_ERROR, e);
         }
     }
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
+        logger.debug("Start initializing!");
         config = getConfigAs(MyStromConfiguration.class);
+        hostname = config.hostname;
 
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
+                config.refresh, TimeUnit.SECONDS);
 
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
 
         // Example for background initialization:
         scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
+            try {
+                refreshPlug();
+                updateStatus(ThingStatus.ONLINE);                
+            } catch (MyStromException e) {
+                logger.error(COMMUNICATION_ERROR, e);
                 updateStatus(ThingStatus.OFFLINE);
             }
         });
 
-        // logger.debug("Finished initializing!");
+        logger.debug("Finished initializing!");
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            pollingJob = null;
+        }
+    }
+
+    /**
+     * Given a URL and a set parameters, send a HTTP GET request to the URL location
+     * created by the URL and parameters.
+     *
+     * @param url The URL to send a GET request to.
+     * @return String contents of the response for the GET request.
+     * @throws Exception
+     */
+    public String sendHttpGet(String action) throws MyStromException {
+
+        String url = "http://" + hostname + "/" + action;
+        ContentResponse response = null;
+        try {
+            response = httpClient.newRequest(url).method(HttpMethod.GET).send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new MyStromException("Request to mystrom device failed: " + e.getMessage());
+        }
+
+        if (response.getStatus() != HTTP_OK_CODE) {
+            throw new MyStromException(
+                    "Error sending HTTP GET request to " + url + ". Got response code: " + response.getStatus());
+        }
+        return response.getContentAsString();
     }
 }
