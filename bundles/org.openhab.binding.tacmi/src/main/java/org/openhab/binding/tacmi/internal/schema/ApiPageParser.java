@@ -23,7 +23,7 @@ import java.util.Set;
 
 import org.attoparser.ParseException;
 import org.attoparser.simple.AbstractSimpleMarkupHandler;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.util.StringUtil;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public class ApiPageParser extends AbstractSimpleMarkupHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ApiPageParser.class);
@@ -76,22 +77,21 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         OFF
     }
 
-    private @NonNull ParserState parserState = ParserState.INIT;
-    private @NonNull TACmiSchemaHandler taCmiSchemaHandler;
-    private @NonNull TACmiChannelTypeProvider channelTypeProvider;
+    private ParserState parserState = ParserState.INIT;
+    private TACmiSchemaHandler taCmiSchemaHandler;
+    private TACmiChannelTypeProvider channelTypeProvider;
     private boolean configChanged = false;
-    private @NonNull FieldType fieldType = FieldType.UNKNOWN;
+    private FieldType fieldType = FieldType.UNKNOWN;
     private @Nullable String id;
     private @Nullable String address;
     private @Nullable StringBuilder value;
-    private @NonNull ButtonValue buttonValue = ButtonValue.UNKNOWN;
-    private @NonNull Map<@NonNull String, @Nullable ApiPageEntry> entries;
-    private @NonNull Set<@NonNull String> seenNames = new HashSet<>();
-    private @NonNull List<@NonNull Channel> channels = new ArrayList<>();
+    private ButtonValue buttonValue = ButtonValue.UNKNOWN;
+    private Map<String, @Nullable ApiPageEntry> entries;
+    private Set<String> seenNames = new HashSet<>();
+    private List<Channel> channels = new ArrayList<>();
 
-    public ApiPageParser(@NonNull TACmiSchemaHandler taCmiSchemaHandler,
-            @NonNull Map<String, @Nullable ApiPageEntry> entries,
-            @NonNull TACmiChannelTypeProvider channelTypeProvider) {
+    public ApiPageParser(TACmiSchemaHandler taCmiSchemaHandler, Map<String, @Nullable ApiPageEntry> entries,
+            TACmiChannelTypeProvider channelTypeProvider) {
         super();
         this.taCmiSchemaHandler = taCmiSchemaHandler;
         this.entries = entries;
@@ -114,6 +114,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     }
 
     @Override
+    @NonNullByDefault({})
     public void handleStandaloneElement(final @Nullable String elementName,
             final @Nullable Map<String, String> attributes, final boolean minimized, final int line, final int col)
             throws ParseException {
@@ -122,6 +123,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
     }
 
     @Override
+    @NonNullByDefault({})
     public void handleOpenElement(final @Nullable String elementName, final @Nullable Map<String, String> attributes,
             final int line, final int col) throws ParseException {
 
@@ -440,7 +442,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                             break;
                         case SELECT:
                             itemType = "String";
-                            for (Entry<@NonNull String, @Nullable String> entry : cx2e.options.entrySet()) {
+                            for (Entry<String, @Nullable String> entry : cx2e.options.entrySet()) {
                                 String val = entry.getValue();
                                 if (val != null) {
                                     sdb.withOption(new StateOption(val, entry.getKey()));
@@ -476,7 +478,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
         return this.configChanged;
     }
 
-    protected @NonNull List<@NonNull Channel> getChannels() {
+    protected List<Channel> getChannels() {
         return channels;
     }
 }

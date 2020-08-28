@@ -17,7 +17,7 @@ import java.util.Map;
 
 import org.attoparser.ParseException;
 import org.attoparser.simple.AbstractSimpleMarkupHandler;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tacmi.internal.schema.ChangerX2Entry.OptionType;
 import org.slf4j.Logger;
@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christian Niessner - Initial contribution
  */
+@NonNullByDefault
 public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ChangerX2Parser.class);
@@ -43,13 +44,13 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     }
 
     private @Nullable String curOptionId;
-    private @NonNull ParserState parserState = ParserState.INIT;
+    private ParserState parserState = ParserState.INIT;
     private @Nullable String address;
     private @Nullable String addressFieldName;
     private @Nullable String optionFieldName;
     private @Nullable OptionType optionType;
     private @Nullable StringBuilder curOptionValue;
-    private @NonNull Map<@NonNull String, @Nullable String> options;
+    private Map<String, @Nullable String> options;
 
     public ChangerX2Parser() {
         super();
@@ -71,6 +72,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     }
 
     @Override
+    @NonNullByDefault({})
     public void handleStandaloneElement(final String elementName, final Map<String, String> attributes,
             final boolean minimized, final int line, final int col) throws ParseException {
 
@@ -78,6 +80,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     }
 
     @Override
+    @NonNullByDefault({})
     public void handleOpenElement(final String elementName, final Map<String, String> attributes, final int line,
             final int col) throws ParseException {
 
@@ -221,6 +224,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
         logger.info("Unexpected ProcessingInstruction {}:{}: {} {}", line, col, target, content);
     }
 
+    @Nullable
     protected ChangerX2Entry getParsedEntry() {
         String addressFieldName = this.addressFieldName;
         String address = this.address;
