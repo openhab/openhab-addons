@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mystrom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="mystromplug">
+		<label>mystrom Binding Thing</label>
+		<description>Sample thing for mystrom Binding</description>
+
+		<channels>
+			<channel id="switch" typeId="switch-channel" />
+			<channel id="power" typeId="power-channel" />
+			<channel id="energy" typeId="energy-channel" />
+			<channel id="temperature" typeId="temperature-channel" />
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>The host name or IP address of the mystrom plug. It may or may not start with the
+					protocol, e.g. in order to use https:// instead of the default http://.</description>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="refresh" type="integer">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>60</default>
+			</parameter>			
+		</config-description>
+
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch the plug on or off</description>
+	</channel-type>
+
+	<channel-type id="power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>The current power delivered by the plug</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="energy-channel">
+		<item-type>Number:Energy</item-type>
+		<label>Energy</label>
+		<description>The energy delivered by the plug</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temeperature</item-type>
+		<label>Temperature</label>
+		<description>The current temperature at the plug</description>
+		<state readOnly="true"/>
+	</channel-type>	
+</thing:thing-descriptions>

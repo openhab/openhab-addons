@@ -136,6 +136,7 @@
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homie/ @davidgraeff
+/bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.nanoleaf/ @raepple
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @tmrobert8
