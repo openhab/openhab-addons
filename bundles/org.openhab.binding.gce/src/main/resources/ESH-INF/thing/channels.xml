@@ -92,7 +92,7 @@
 				<label>Counter 5</label></channel>
 			<channel id="5-duration" typeId="duration" />
 			<channel id="6" typeId="counter">
-				 <label>Counter 6</label></channel>
+				<label>Counter 6</label></channel>
 			<channel id="6-duration" typeId="duration" />
 			<channel id="7" typeId="counter">
 				<label>Counter 7</label></channel>

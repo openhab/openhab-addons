@@ -163,7 +163,6 @@ public class Ipx800DeviceConnector extends Thread {
             logger.info("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT);
         }
         parser.ifPresent(parser -> parser.errorOccurred(e));
-        logger.debug(e.getMessage());
     }
 
     public void setParser(Ipx800MessageParser parser) {
