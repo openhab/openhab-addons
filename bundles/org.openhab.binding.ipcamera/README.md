@@ -118,7 +118,7 @@ Thing ipcamera:HIKVISION:West "West Camera"
 + Some FOSCAM cameras need to have a detection area listed in the URL when you enable the motion alarm. As each model has a different resolution and two different URLs, this makes it difficult to make this automatic so an override feature was added to create your own enable the alarm URL. This setting is called ``MOTION_URL_OVERRIDE`` and the steps to using it are:
 
 
-1. Enable the motion alarm in the web interface of your camera and setup any areas you wish movement to be ignored in ie. Tree branches moving in the wind.
+1. Enable the motion alarm in the web interface of your camera and setup any areas you wish movement to be ignored in. E.g. tree branches moving in the wind.
 2. Use any web browser to fetch this URL https://x.x.x.x/cgi-bin/CGIProxy.fcgi?cmd=getMotionDetectConfig1&usr=xxxxx&pwd=xxxxx
 3. Use the information returned by the above URL to create the override settings.
 
