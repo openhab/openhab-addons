@@ -1,56 +1,56 @@
-# mystrom Binding
+# myStrom Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
-
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This extension adds support for the myStrom devices. Currently only the smart plug is implemented.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+This bundle adds the following thing types:
+
+| Thing              | ThingTypeID | Description                                        |
+| ------------------ | ----------- | -------------------------------------------------- |
+| myStrom Smart Plug | mystromplug | A myStrom smart plug                               |
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+This extension does not support autodiscovery. The things need to be added manually.
 
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+The following parameters are valid for all thing types:
 
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+| Parameter | Type    | Required | Default if omitted | Description                                                                |
+| --------- | ------- | -------- | ------------------ | -------------------------------------------------------------------------- |
+| hostname  | string  | yes      | localhost          | The IP address or hostname of the myStrom smart plug                       |
+| refresh   | integer | no       | 10                 | Poll interval in seconds. Increase this if you encounter connection errors |
 
 ## Channels
 
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+| Channel ID       | Item Type            | Read only | Description                                                   |
+| ---------------- | -------------------- | --------- | ------------------------------------------------------------- |
+| switch           | Switch               | false     | Turn the smart plug on or off                                 |
+| power            | Number:Power         | true      | The currently delivered power                                 |
+| temperature      | Number:Temperature   | true      | The temperature at the plug                                   |
 
 ## Full Example
+### Thing Configuration
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+```
+Thing mystrom:mystromplug:d6217a31 "Plug" [hostname="hostname|ip"]
+```
 
-## Any custom content here!
+### Item Configuration
+```
+Switch PlugSwitch		"Plug" 	                		 		{channel="mystrom:mystromplug:d6217a31:switch"}
+Number:Temperature PlugTemperature "Temperature: [%.1f °C]"     {channel="mystrom:mystromplug:d6217a31:temperature"}  
+Number:Power PlugPower "Power: [%.1f W]"                        {channel="mystrom:mystromplug:d6217a31:power"} 
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+```
+### Sitemap Configuration
+```
+Frame label="myStrom Plug" { 
+    Switch item=PlugSwitch
+    Text item=PlugTemperature
+    Text item=PlugPower
+}
+```

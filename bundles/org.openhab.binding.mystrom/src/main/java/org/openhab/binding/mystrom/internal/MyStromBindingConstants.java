@@ -30,7 +30,7 @@ public class MyStromBindingConstants {
     private static final String BINDING_ID = "mystrom";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "mystromplug");
+    public static final ThingTypeUID THING_TYPE_PLUG = new ThingTypeUID(BINDING_ID, "mystromplug");
 
     // List of all Channel ids
     public static final String CHANNEL_SWITCH = "switch";

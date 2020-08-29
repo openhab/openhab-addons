@@ -14,20 +14,23 @@ package org.openhab.binding.mystrom.internal;
 
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_REFRESH_RATE;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 
 /**
  * The {@link MyStromConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Paul Frank - Initial contribution
  */
+@NonNullByDefault
 public class MyStromConfiguration {
 
     /**
-     * Hostname of the OpenSprinkler API.
+     * Hostname of the myStrom device.
      */
-    public String hostname = null;
+    public String hostname = "localhost";
     /**
-     * Number of seconds in between refreshes from the OpenSprinkler device.
+     * Number of seconds in between refreshes from the myStrom device.
      */
     public int refresh = DEFAULT_REFRESH_RATE;    
 

@@ -73,7 +73,6 @@ public class MyStromHandler extends BaseThingHandler {
     private static class MyStromReport {
 
         public float power;
-        public float Ws;
         public boolean relay;
         public float temperature;
     }
@@ -82,7 +81,7 @@ public class MyStromHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (command instanceof RefreshType) {
-                refreshPlug();
+                pollDevice();
             } else {
                 if (command instanceof OnOffType && CHANNEL_SWITCH.equals(channelUID.getId())) {
                     sendHttpGet("relay?state=" + (command == OnOffType.ON ? "1" : "0"));
@@ -97,20 +96,17 @@ public class MyStromHandler extends BaseThingHandler {
         }
     }
 
-
-    private void refreshPlug() throws MyStromException {
-        String returnContent = sendHttpGet("report");
-        MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
-        updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
-        updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
-    }
-
     private void pollDevice() {
         try {
-            refreshPlug();
+            String returnContent = sendHttpGet("report");
+            MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
+            updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
+            updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
+            updateStatus(ThingStatus.ONLINE);
         } catch (MyStromException e) {
             logger.error(COMMUNICATION_ERROR, e);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 
@@ -125,19 +121,9 @@ public class MyStromHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            try {
-                refreshPlug();
-                updateStatus(ThingStatus.ONLINE);                
-            } catch (MyStromException e) {
-                logger.error(COMMUNICATION_ERROR, e);
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        scheduler.execute(this::pollDevice);
 
         logger.debug("Finished initializing!");
-
     }
 
     @Override
