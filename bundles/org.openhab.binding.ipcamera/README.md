@@ -77,7 +77,7 @@ then
 end
 ```
 
-### HikVision NVR's
+### HikVision NVRs
 
 In case your HikVision NVR does not communicate with the binding, make sure that:
 
