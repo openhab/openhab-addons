@@ -184,8 +184,6 @@ Below is a list of the configuration parameters that can be used in textual conf
 If you do not specify any of these, the binding will use the default which should work in most cases. 
 Very few of them are needed in order to get a working camera and examples are shown in the `Full Example` section.
 
-DO NOT try and change a setting using PaperUI after using textual configuration as the two will conflict as the text file locks the settings preventing them from changing. 
-
 
 | Parameter | Description |
 |-|-|
@@ -228,7 +226,7 @@ DO NOT try and change a setting using PaperUI after using textual configuration 
 
 ## Channels
 
-Use PaperUI to see a full list of channels and the descriptions, most are easy to understand however any channels which need further explanation will be added here.
+The OpenHAB UI will show a full list of channels and the descriptions, most are easy to understand however any channels which need a further explanation will be added here.
 Each camera brand will have different channels depending on how much of the support for an API has been added. 
 The channels are kept consistent as much as possible from brand to brand to make upgrading to a different branded camera easier and to help when sharing rules with other users in the forum.
 
@@ -329,7 +327,7 @@ The URL must be in this format without the IP:Port info and the binding will han
 
 Use the following examples to base your setup on to save some time if you wish to use textual config.
 
-NOTE: If you used PaperUI to create the camera thing instead of textual config, you will need to ensure the 001 is replaced with the cameras UID which may look like "0A78687F" or the IP address without the dots if it was found with auto discovery.
+NOTE: If you used the UI to create the camera thing instead of textual config, you will need to ensure the 001 is replaced with the cameras UID which may look like "0A78687F" or the IP address without the dots if it was found with auto discovery.
 
 Replace AMCREST or HIKVISION with the name of the supported thing type you are using as all cameras use consistant naming of channels and configs so changing between them is easy.
 
@@ -339,7 +337,7 @@ BindingID: is always ipcamera.
 THINGTYPE: is found listed above under the heading "supported things"
 UID: Can be made up but it must be UNIQUE, hence why it is called UniqueID. 
 
-PaperUI will choose a new random UID each time you remove and add the camera causing you to edit your rules, items and sitemaps to make them match. The auto discovery will choose to use the IP address with the dots removed as the UID.
+OpenHAB's UI will choose a new random UID each time you remove and add the camera causing you to edit your rules, items and sitemaps to make them match. The auto discovery will choose to use the IP address with the dots removed as the UID.
 By using textual config you can name it something useful like "DrivewayCamera" if you wish.
 
 
@@ -1208,9 +1206,7 @@ tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log
 ```
 
 CTRL+C will close the stream. 
-You can also use SAMBA/network shares to open or copy the file directly, but my favorite way to view the logs is with "Frontail". 
-Frontail is another UI that can be selected like paperUI, and can be installed using the OpenHABian config tool. 
-This allows you to search and only show what you care about, ie a particular warning or error.
+You can also use SAMBA/network shares to open or copy the file directly, but my favorite way to view the logs is with "Frontail".
 
 
 ### openhab.log 
