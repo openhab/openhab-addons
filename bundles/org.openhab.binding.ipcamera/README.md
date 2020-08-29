@@ -1295,7 +1295,7 @@ If you wish to contribute then please create an issue ticket first to discuss ho
 This is for multiple reasons due to needing to keep things CONSISTENT between brands, lower the risk of breaking changes, and also keep the binding easy to maintain.
 
 The following list is a great place to start helping with this binding if you wish to contribute. 
-Any feedback, push requests and ideas are welcome, just please create a Github issue with your plans first.
+Any feedback, pull requests and ideas are welcome, just please create a Github issue with your plans first.
 
 
 Areas the binding could be improved are:
