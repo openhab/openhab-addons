@@ -20,9 +20,9 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.dlinksmarthome.internal.DLinkThingConfig;
 import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorCommunication;
 import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorCommunication.DeviceStatus;
-import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorConfig;
 import org.openhab.binding.dlinksmarthome.internal.motionsensor.DLinkMotionSensorListener;
 
 /**
@@ -49,7 +49,7 @@ public class DLinkMotionSensorHandler extends BaseThingHandler implements DLinkM
 
     @Override
     public void initialize() {
-        final DLinkMotionSensorConfig config = getConfigAs(DLinkMotionSensorConfig.class);
+        final DLinkThingConfig config = getConfigAs(DLinkThingConfig.class);
         motionSensor = new DLinkMotionSensorCommunication(config, this, scheduler);
     }
 

@@ -20,6 +20,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.dlinksmarthome.internal.handler.DLinkMotionSensorHandler;
+import org.openhab.binding.dlinksmarthome.internal.handler.DLinkSmartPlugHandler;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -27,6 +28,7 @@ import org.osgi.service.component.annotations.Component;
  * handlers.
  *
  * @author Mike Major - Initial contribution
+ * @author Pascal Bies - Add DSP-W215 thing type
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.dlinksmarthome")
 public class DLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
@@ -42,6 +44,8 @@ public class DLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_DCHS150)) {
             return new DLinkMotionSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_DSPW215)) {
+            return new DLinkSmartPlugHandler(thing);
         }
 
         return null;

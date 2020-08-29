@@ -10,14 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.dlinksmarthome.internal.motionsensor;
+package org.openhab.binding.dlinksmarthome.internal;
 
 /**
  * The {@link DLinkMotionSensorConfig} provides configuration data
  *
  * @author Mike Major - Initial contribution
+ * @author Pascal Bies - Rename DLinkMotionSensorConfig -> DLinkThingConfig
  */
-public class DLinkMotionSensorConfig {
+public class DLinkThingConfig {
 
     /**
      * Constants representing the configuration strings
