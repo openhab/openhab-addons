@@ -3,7 +3,7 @@
 This binding allows you to use most IP cameras in openHAB and has many features, so please take the time to read through this guide to learn the many hidden features and different ways to work with cameras that you may not know about. 
 I recommend purchasing a brand of camera that has an open API, as many of the features use far less CPU when done with an API camera, and they usually have better picture quality and more features compared to lower priced cameras.
 
-To see what features each brand has implemented from their API's, please see this post:
+To see what features each brand has implemented from their APIs, please see this post:
 
 <https://community.openhab.org/t/ipcamera-new-ip-camera-binding/42771>
 
