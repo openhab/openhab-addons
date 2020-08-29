@@ -13,7 +13,7 @@ To see what features each brand has implemented from their APIs, please see this
 + Check this readme to see if there are any special setup steps that are needed for your brand of camera, and if the topic is covered by the readme.
 + Always look at the log files, which includes looking at the logs with TRACE enabled. This readme has a section on logs that explains how to do this. To keep your log file clean, the binding holds back a lot of useful fault finding information out of the logs unless you turn on DEBUG or TRACE logging.
 + Search the forum using any error messages to help you find how others with the same problem have already solved it.
-+ Only after doing the above ask for help in the forum and create a new thread, then when it is fixed post how and mark the thread as solved to help others. This is how a community helps each other out and no one is paid as Openhab is an opensource project with all volunteers.
++ Only after doing the above ask for help in the forum and create a new thread, then when it is fixed post how and mark the thread as solved to help others. This is how a community helps each other out and no one is paid as openHAB is an open source project with all volunteers.
 
 
 
