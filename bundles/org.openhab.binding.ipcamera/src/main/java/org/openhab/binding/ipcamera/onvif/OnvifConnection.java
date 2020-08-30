@@ -56,8 +56,8 @@ import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
- * The {@link OnvifConnection} is a WIP and is currently not used. Will eventually remove the need for an external ONVIF
- * lib.
+ * The {@link OnvifConnection} This is a basic Netty implementation for connecting and communicating to ONVIF cameras.
+ *
  *
  *
  * @author Matthew Skinner - Initial contribution
