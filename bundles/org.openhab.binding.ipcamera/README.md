@@ -275,7 +275,7 @@ You can now change the files name by using the channel `gifFilename` Just change
 
 **lastMotionType**
 
-Cameras with multiple alarm types will update this with which alarm detected motion.ie a lineCrossing, faceDetection or item stolen alarm. 
+Cameras with multiple alarm types will update this with which alarm detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. 
 You can use this to create a timestamp of when the last motion was detected by creating a rule when this channel is updated.
 
 items:
@@ -701,8 +701,8 @@ sudo apt update && sudo apt install ffmpeg
 
 **IMPORTANT:**
 The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `IP_WHITELIST`. 
-Requests from outside IP's or internal requests that are not on the `IP_WHITELIST` will fail to get any answer. 
-If you prefer to use your own firewall instead, you can also choose to make the `IP_WHITELIST` equal "DISABLE" (the default since the feature also needs a valid SERVER_PORT set) to turn this feature off and then all internal IP's will have access.
+Requests from external IPs or internal requests that are not on the `IP_WHITELIST` will fail to get any answer. 
+If you prefer to use your own firewall instead, you can also choose to make the `IP_WHITELIST` equal "DISABLE" (the default since the feature also needs a valid SERVER_PORT set) to turn this feature off and then all internal IPs will have access.
 
 There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://192.168.xxx.xxx:SERVER_PORT/name.format` replacing the name.format with one of the options that are listed below:
 
@@ -860,7 +860,7 @@ Browsers that support this format can also display HLS using the webview or HABp
 Apple devices have excellent support for HLS due to the standard being invented by Apple so they work out of the box. 
 Some browsers like Chrome may require a plugin or an update to be installed before they are able to display the video.
 
-To use the HLS steaming features, you need to:
+To use the HLS streaming features, you need to:
 
 + Set a valid `SERVER_PORT` as the default value of -1 will turn the feature off.
 + The audio format in the cameras settings must be AAC and not missing for Chromecast to work.
