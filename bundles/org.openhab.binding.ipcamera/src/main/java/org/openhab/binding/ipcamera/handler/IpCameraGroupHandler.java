@@ -362,7 +362,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         if (!(command instanceof RefreshType)) {
             switch (channelUID.getId()) {
                 case CHANNEL_START_STREAM:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command))) {
                         logger.info("Starting HLS generation for all cameras in a group.");
                         hlsTurnedOn = true;
                         for (IpCameraHandler handler : cameraOrder) {
