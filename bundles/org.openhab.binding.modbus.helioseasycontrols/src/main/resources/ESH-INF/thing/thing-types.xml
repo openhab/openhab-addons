@@ -632,7 +632,7 @@
 		<label>Party Mode Remaining Time</label>
 		<description>Party mode remaining time</description>
 		<category>Party</category>
-	   <state min="0" max="180" step="1" pattern="%d %unit%" readOnly="true"/>
+		<state min="0" max="180" step="1" pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	
 	<channel-type id="partyModeStatus" advanced="false">
