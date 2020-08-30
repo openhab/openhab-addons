@@ -27,4 +27,9 @@
 
 	</thing-type>
 
+	<thing-type id="shellyunknown">
+		<label>Unknown Shelly Device</label>
+		<description>This device is currently not supported</description>
+	</thing-type>
+
 </thing:thing-descriptions>

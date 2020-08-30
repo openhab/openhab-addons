@@ -112,6 +112,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
     @Override
     public void initialize() {
         OppoThingConfiguration config = getConfigAs(OppoThingConfiguration.class);
+        final String uid = this.getThing().getUID().getAsString();
 
         // Check configuration settings
         String configError = null;
@@ -157,9 +158,9 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
         }
 
         if (serialPort != null) {
-            connector = new OppoSerialConnector(serialPortManager, serialPort);
+            connector = new OppoSerialConnector(serialPortManager, serialPort, uid);
         } else if (port != null) {
-            connector = new OppoIpConnector(host, port);
+            connector = new OppoIpConnector(host, port, uid);
             connector.overrideCmdPreamble(override);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,

@@ -68,10 +68,9 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
-            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING,
-                    THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
+            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
+            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
@@ -396,6 +395,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             scaledValue = scaledValue < 0 ? 0 : scaledValue;
             scaledValue = scaledValue > 100 ? 100 : scaledValue;
         }
+        logger.debug("val = '{}', scaledValue = '{}'", val, scaledValue);
         return new PercentType(scaledValue);
     }
 

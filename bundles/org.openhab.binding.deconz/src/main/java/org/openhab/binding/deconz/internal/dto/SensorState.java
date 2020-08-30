@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -76,6 +78,8 @@ public class SensorState {
     public @Nullable Integer valve;
     /** deCONZ sends a last update string with every event. */
     public @Nullable String lastupdated;
+    /** color controllers send xy values */
+    public double @Nullable [] xy;
 
     @Override
     public String toString() {
@@ -85,6 +89,7 @@ public class SensorState {
                 + ", carbonmonoxide=" + carbonmonoxide + ", pressure=" + pressure + ", presence=" + presence
                 + ", power=" + power + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage
                 + ", current=" + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture="
-                + gesture + ", lastupdated='" + lastupdated + '\'' + '}';
+                + gesture + ", valve=" + valve + ", lastupdated='" + lastupdated + '\'' + ", xy=" + Arrays.toString(xy)
+                + '}';
     }
 }

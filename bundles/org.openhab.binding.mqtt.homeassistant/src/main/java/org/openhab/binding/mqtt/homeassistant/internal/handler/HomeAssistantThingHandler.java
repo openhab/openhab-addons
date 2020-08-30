@@ -189,8 +189,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         started = true;
 
         connection.setQos(1);
-
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "No response from the device yet");
+        updateStatus(ThingStatus.UNKNOWN);
 
         // Start all known components and channels within the components and put the Thing offline
         // if any subscribing failed ( == broker connection lost)
@@ -218,6 +217,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
             started = false;
         }
+        super.stop();
     }
 
     @SuppressWarnings({ "null", "unused" })

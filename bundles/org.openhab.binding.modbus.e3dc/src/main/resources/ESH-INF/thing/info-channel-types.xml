@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="modbus-id-channel">
+		<item-type>String</item-type>
+		<label>Modbus-ID</label>
+		<description>Modbus ID / Magic Byte of E3DC</description>
+	</channel-type>
+	<channel-type id="modbus-firmware-channel">
+		<item-type>String</item-type>
+		<label>Modbus Firmware</label>
+		<description>Version of Modbus Firmware</description>
+	</channel-type>
+	<channel-type id="supported-registers-channel">
+		<item-type>Number</item-type>
+		<label>Supported Registers</label>
+		<description>Number of registers supported by Modbus</description>
+	</channel-type>
+	<channel-type id="manufacturer-name-channel">
+		<item-type>String</item-type>
+		<label>Manufacturer Name</label>
+		<description>Name of the Device Manufacturer</description>
+	</channel-type>
+	<channel-type id="model-name-channel">
+		<item-type>String</item-type>
+		<label>Model Name</label>
+		<description>Name of the E3DC Model</description>
+	</channel-type>
+	<channel-type id="firmware-release-channel">
+		<item-type>String</item-type>
+		<label>Firmware Release</label>
+		<description>Firmware installed on this particular E3DC Device</description>
+	</channel-type>
+	<channel-type id="serial-number-channel">
+		<item-type>String</item-type>
+		<label>Serial Number</label>
+		<description>Serial Number of this particular E3DC Device</description>
+	</channel-type>
+</thing:thing-descriptions>
