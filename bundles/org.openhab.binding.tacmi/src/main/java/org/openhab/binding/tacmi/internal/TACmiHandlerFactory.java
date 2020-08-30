@@ -29,6 +29,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.openhab.binding.tacmi.internal.coe.TACmiCoEBridgeHandler;
+import org.openhab.binding.tacmi.internal.coe.TACmiHandler;
 import org.openhab.binding.tacmi.internal.schema.TACmiSchemaHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;

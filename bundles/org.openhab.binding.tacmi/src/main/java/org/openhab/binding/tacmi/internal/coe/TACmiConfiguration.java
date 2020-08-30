@@ -10,22 +10,27 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal.stateCache;
-
-import java.util.Collection;
+package org.openhab.binding.tacmi.internal.coe;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link StateCache} class defines a state cache required
- * for communication with the TA C.M.I.
+ * The {@link TACmiConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
-public class StateCache {
+public class TACmiConfiguration {
 
-    // could be Nullable due to json.read
-    public @Nullable Collection<PodStates> pods;
+    /**
+     * host address of the C.M.I.
+     */
+    public @Nullable String host;
+
+    /**
+     * CoE / CAN node ID we are representing
+     */
+    public int node;
+
 }

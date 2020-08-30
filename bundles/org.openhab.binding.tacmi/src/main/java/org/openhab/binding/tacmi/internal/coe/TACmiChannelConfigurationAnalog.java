@@ -10,28 +10,37 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal;
+package org.openhab.binding.tacmi.internal.coe;
+
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link TACmiConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link TACmiConfiguration} class contains fields mapping thing
+ * configuration parameters.
  *
  * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
-public class TACmiChannelConfiguration {
+public class TACmiChannelConfigurationAnalog extends TACmiChannelConfiguration {
 
     /**
-     * chnanel / output id
+     * measurement type
      */
-    public int output;
+    public int type;
+
+    /**
+     * initial value
+     */
+    public @Nullable Double initialValue;
 
     // required for MAP operations...
     @Override
     public int hashCode() {
-        return output;
+        Double iv = initialValue;
+        return 31 * output * type * (iv == null ? 1 : iv.hashCode());
     }
 
     @Override
@@ -39,10 +48,10 @@ public class TACmiChannelConfiguration {
         if (this == other) {
             return true;
         }
-        if (other == null || !other.getClass().equals(TACmiChannelConfiguration.class)) {
+        if (other == null || !other.getClass().equals(TACmiChannelConfigurationAnalog.class)) {
             return false;
         }
-        TACmiChannelConfiguration o = (TACmiChannelConfiguration) other;
-        return this.output == o.output;
+        TACmiChannelConfigurationAnalog o = (TACmiChannelConfigurationAnalog) other;
+        return this.output == o.output && this.type == o.type && Objects.equals(this.initialValue, o.initialValue);
     }
 }

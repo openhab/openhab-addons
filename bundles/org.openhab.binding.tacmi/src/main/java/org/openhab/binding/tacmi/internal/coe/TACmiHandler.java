@@ -10,11 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal;
+package org.openhab.binding.tacmi.internal.coe;
 
 import static org.openhab.binding.tacmi.internal.TACmiBindingConstants.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -23,7 +22,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -37,14 +35,13 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.openhab.binding.tacmi.internal.TACmiBindingConstants;
+import org.openhab.binding.tacmi.internal.TACmiMeasureType;
 import org.openhab.binding.tacmi.internal.message.AnalogMessage;
 import org.openhab.binding.tacmi.internal.message.AnalogValue;
 import org.openhab.binding.tacmi.internal.message.DigitalMessage;
 import org.openhab.binding.tacmi.internal.message.Message;
 import org.openhab.binding.tacmi.internal.message.MessageType;
-import org.openhab.binding.tacmi.internal.podData.PodData;
-import org.openhab.binding.tacmi.internal.podData.PodIdentifier;
-import org.openhab.binding.tacmi.internal.stateCache.StateCacheUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,19 +57,12 @@ public class TACmiHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TACmiHandler.class);
 
-    private final String STATE_CACHE_BASE = ConfigConstants.getUserDataFolder() + File.separator
-            + TACmiBindingConstants.BINDING_ID + File.separator;
-
     private final Map<@Nullable PodIdentifier, @Nullable PodData> podDatas = new HashMap<>();
     private final Map<@Nullable ChannelUID, @Nullable TACmiChannelConfiguration> channelConfigByUID = new HashMap<>();
 
     private @Nullable TACmiCoEBridgeHandler bridge;
     private long lastMessageRecvTS; // last received message timestamp
     private boolean online; // online status shadow
-
-    // state persistence (required as multiple states are sent at once so we need all
-    // current states after startup)
-    private @Nullable StateCacheUtils stateCacheUtils;
 
     /**
      * the C.M.I.'s address
@@ -116,6 +106,7 @@ public class TACmiHandler extends BaseThingHandler {
 
         // initialize lookup maps...
         this.channelConfigByUID.clear();
+        this.podDatas.clear();
         for (final Channel chann : getThing().getChannels()) {
             final ChannelTypeUID ct = chann.getChannelTypeUID();
             final boolean analog = CHANNEL_TYPE_COE_ANALOG_IN_UID.equals(ct)
@@ -126,20 +117,53 @@ public class TACmiHandler extends BaseThingHandler {
             // channel we take it from the C.M.I.
             final Class<? extends TACmiChannelConfiguration> ccClass = CHANNEL_TYPE_COE_ANALOG_OUT_UID.equals(ct)
                     ? TACmiChannelConfigurationAnalog.class
-                    : TACmiChannelConfiguration.class;
-            final TACmiChannelConfiguration cc = chann.getConfiguration().as(ccClass);
-            this.channelConfigByUID.put(chann.getUID(), cc);
+                    : TACmiChannelConfigurationDigital.class;
+            final TACmiChannelConfiguration channelConfig = chann.getConfiguration().as(ccClass);
+            this.channelConfigByUID.put(chann.getUID(), channelConfig);
             final MessageType messageType = analog ? MessageType.ANALOG : MessageType.DIGITAL;
-            final byte podId = this.getPodId(messageType, cc.output);
+            final byte podId = this.getPodId(messageType, channelConfig.output);
             final PodIdentifier pi = new PodIdentifier(messageType, podId, outgoing);
             // initialize podData
-            getPodData(pi);
+            PodData pd = this.getPodData(pi);
+            if (outgoing) {
+                int outputIdx = getOutputIndex(channelConfig.output, analog);
+                PodDataOutgoing podDataOutgoing = (PodDataOutgoing) pd;
+                // we have to track value state for all outgoing channels to ensure we have valid values for all
+                // channels in use before we send a message to the C.M.I. otherwise it could trigger some strange things
+                // on TA side...
+                boolean set = false;
+                if (analog) {
+                    TACmiChannelConfigurationAnalog ca = (TACmiChannelConfigurationAnalog) channelConfig;
+                    Double initialValue = ca.initialValue;
+                    if (initialValue != null) {
+                        final TACmiMeasureType measureType = TACmiMeasureType.values()[ca.type];
+                        final double val = initialValue.doubleValue() * measureType.getOffset();
+                        @Nullable
+                        Message message = pd.message;
+                        if (message != null) {
+                            // shouldn't happen, just in case...
+                            message.setValue(outputIdx, (short) val, measureType.ordinal());
+                            set = true;
+                        }
+                    }
+                } else {
+                    // digital...
+                    TACmiChannelConfigurationDigital ca = (TACmiChannelConfigurationDigital) channelConfig;
+                    Boolean initialValue = ca.initialValue;
+                    if (initialValue != null) {
+                        @Nullable
+                        DigitalMessage message = (DigitalMessage) pd.message;
+                        if (message != null) {
+                            // shouldn't happen, just in case...
+                            message.setPortState(outputIdx, initialValue);
+                            set = true;
+                        }
+                    }
+                }
+                podDataOutgoing.channeUIDs[outputIdx] = chann.getUID();
+                podDataOutgoing.initialized[outputIdx] = set;
+            }
         }
-
-        // this automatically restores persisted states...
-        this.stateCacheUtils = new StateCacheUtils(
-                new File(STATE_CACHE_BASE + getThing().getUID().getAsString().replace(':', '_') + ".json"),
-                this.podDatas.values(), config.persistInterval);
 
         final Bridge br = getBridge();
         final TACmiCoEBridgeHandler bridge = br == null ? null : (TACmiCoEBridgeHandler) br.getHandler();
@@ -158,10 +182,10 @@ public class TACmiHandler extends BaseThingHandler {
     private PodData getPodData(final PodIdentifier pi) {
         PodData pd = this.podDatas.get(pi);
         if (pd == null) {
-            pd = new PodData(pi.podId, pi.messageType);
             if (pi.outgoing) {
-                pd.message = pd.messageType == MessageType.ANALOG ? new AnalogMessage((byte) this.node, pi.podId)
-                        : new DigitalMessage((byte) this.node, pi.podId);
+                pd = new PodDataOutgoing(pi, (byte) this.node);
+            } else {
+                pd = new PodData(pi, (byte) this.node);
             }
             this.podDatas.put(pi, pd);
         }
@@ -171,17 +195,37 @@ public class TACmiHandler extends BaseThingHandler {
     private byte getPodId(final MessageType messageType, final int output) {
         assert output >= 1 && output <= 32; // range 1-32
         // pod ID's: 0 & 9 for digital states, 1-8 for analog values
+        boolean analog = messageType == MessageType.ANALOG;
+        int outputIdx = getOutputIndex(output, analog);
         if (messageType == MessageType.ANALOG) {
-            return (byte) (((output - 1) / 4) + 1);
+            return (byte) (outputIdx + 1);
         }
-        return (byte) (((output - 1) / 16) == 0 ? 0 : 9);
+        return (byte) (outputIdx == 0 ? 0 : 9);
+    }
+
+    /**
+     * calculates output index position within the POD.
+     * TA output index starts with 1, our arrays starts at 0. We also have to keep the pod size in mind...
+     *
+     * @param output
+     * @param analog
+     * @return
+     */
+    private int getOutputIndex(int output, boolean analog) {
+        int outputIdx = output - 1;
+        if (analog) {
+            outputIdx %= 4;
+        } else {
+            outputIdx %= 16;
+        }
+        return outputIdx;
     }
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         final TACmiChannelConfiguration channelConfig = this.channelConfigByUID.get(channelUID);
         if (channelConfig == null) {
-            logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
+            logger.warn("Recived unhandled command '{}' for unknown Channel {} ", command, channelUID);
             return;
         }
         final Channel channel = thing.getChannel(channelUID);
@@ -197,7 +241,7 @@ public class TACmiHandler extends BaseThingHandler {
             } else if ((TACmiBindingConstants.CHANNEL_TYPE_COE_ANALOG_IN_UID.equals(channel.getChannelTypeUID()))) {
                 mt = MessageType.ANALOG;
             } else {
-                logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
+                logger.warn("Recived unhandled command '{}' on unknown Channel type {} ", command, channelUID);
                 return;
             }
             final byte podId = getPodId(mt, channelConfig.output);
@@ -217,52 +261,50 @@ public class TACmiHandler extends BaseThingHandler {
             }
             return;
         }
+        boolean analog;
         MessageType mt;
         if ((TACmiBindingConstants.CHANNEL_TYPE_COE_DIGITAL_OUT_UID.equals(channel.getChannelTypeUID()))) {
             mt = MessageType.DIGITAL;
+            analog = false;
         } else if ((TACmiBindingConstants.CHANNEL_TYPE_COE_ANALOG_OUT_UID.equals(channel.getChannelTypeUID()))) {
             mt = MessageType.ANALOG;
+            analog = true;
         } else {
             logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
             return;
         }
 
         final byte podId = getPodId(mt, channelConfig.output);
-        PodData pd = getPodData(new PodIdentifier(mt, podId, true));
+        PodDataOutgoing podDataOutgoing = (PodDataOutgoing) getPodData(new PodIdentifier(mt, podId, true));
         @Nullable
-        Message message = pd.message;
+        Message message = podDataOutgoing.message;
         if (message == null) {
             logger.error("Internal error - BUG - no outgoing message for command '{}' on Channel {} ", command,
                     channelUID);
             return;
         }
+        int outputIdx = getOutputIndex(channelConfig.output, analog);
         boolean modified;
-        switch (mt) {
-            case DIGITAL:
-                final boolean state = OnOffType.ON.equals(command) ? true : false;
-                modified = ((DigitalMessage) message).setPortState((channelConfig.output - 1) % 16, state);
-                break;
-            case ANALOG:
-                final TACmiMeasureType measureType = TACmiMeasureType
-                        .values()[((TACmiChannelConfigurationAnalog) channelConfig).type];
-                final DecimalType dt = (DecimalType) command;
-                final double val = dt.doubleValue() * measureType.getOffset();
-                modified = message.setValue((channelConfig.output - 1) % 4, (short) val, measureType.ordinal());
-                break;
-            default:
-                logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
-                return;
+        if (analog) {
+            final TACmiMeasureType measureType = TACmiMeasureType
+                    .values()[((TACmiChannelConfigurationAnalog) channelConfig).type];
+            final DecimalType dt = (DecimalType) command;
+            final double val = dt.doubleValue() * measureType.getOffset();
+            modified = message.setValue(outputIdx, (short) val, measureType.ordinal());
+        } else {
+            final boolean state = OnOffType.ON.equals(command) ? true : false;
+            modified = ((DigitalMessage) message).setPortState(outputIdx, state);
         }
+        podDataOutgoing.initialized[outputIdx] = true;
         if (modified) {
-            pd.dirty = true; // flag as dirty
             try {
                 @Nullable
                 final TACmiCoEBridgeHandler br = this.bridge;
                 @Nullable
                 final InetAddress cmia = this.cmiAddress;
-                if (br != null && cmia != null) {
+                if (br != null && cmia != null && podDataOutgoing.isAllValuesInitialized()) {
                     br.sendData(message.getRaw(), cmia);
-                    pd.lastSent = System.currentTimeMillis();
+                    podDataOutgoing.lastSent = System.currentTimeMillis();
                 }
                 // we also update the local state after we successfully sent out the command
                 // there is no feedback from the C.M.I. so we only could assume the message has been received when we
@@ -279,11 +321,6 @@ public class TACmiHandler extends BaseThingHandler {
         final TACmiCoEBridgeHandler br = this.bridge;
         if (br != null) {
             br.unregisterCMI(this);
-        }
-        @Nullable
-        final StateCacheUtils scu = this.stateCacheUtils;
-        if (scu != null) {
-            scu.persistStates(podDatas.values(), true);
         }
         super.dispose();
     }
@@ -329,36 +366,44 @@ public class TACmiHandler extends BaseThingHandler {
     public void checkForTimeout() {
         final long refTs = System.currentTimeMillis();
         if (online && refTs - this.lastMessageRecvTS > 900000) {
-            // 900 sec no data - set thing to offline..
+            // no data received for 900 seconds - set thing status to offline..
             this.online = false;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "No update from C.M.I. for 15 min");
         }
         for (final PodData pd : this.podDatas.values()) {
-            if (pd == null) {
+            if (pd == null || !(pd instanceof PodDataOutgoing)) {
                 continue;
             }
+            PodDataOutgoing podDataOutgoing = (PodDataOutgoing) pd;
             @Nullable
             Message message = pd.message;
-            if (message != null && refTs - pd.lastSent > 300000) {
-                // reset every 300 secs...
-                try {
-                    @Nullable
-                    final TACmiCoEBridgeHandler br = this.bridge;
-                    @Nullable
-                    final InetAddress cmia = this.cmiAddress;
-                    if (br != null && cmia != null) {
-                        br.sendData(message.getRaw(), cmia);
-                        pd.lastSent = System.currentTimeMillis();
+            if (message != null && refTs - podDataOutgoing.lastSent > 300000) {
+                // re-send every 300 seconds...
+                @Nullable
+                final InetAddress cmia = this.cmiAddress;
+                if (podDataOutgoing.isAllValuesInitialized()) {
+                    try {
+                        @Nullable
+                        final TACmiCoEBridgeHandler br = this.bridge;
+                        if (br != null && cmia != null) {
+                            br.sendData(message.getRaw(), cmia);
+                            podDataOutgoing.lastSent = System.currentTimeMillis();
+                        }
+                    } catch (final IOException e) {
+                        logger.warn("Error sending message to C.M.I.: {}: {}", e.getClass().getName(), e.getMessage());
                     }
-                } catch (final IOException e) {
-                    logger.warn("Error sending message to C.M.I.: {}: {}", e.getClass().getName(), e.getMessage());
+                } else {
+                    // pod is not entirely initialized - log warn for user but also set lastSent to prevent flooding of
+                    // logs...
+                    if (cmia != null) {
+                        logger.warn("Sending data to {} {}.{} is blocked as we don't have valid values for channels {}",
+                                cmia.getHostAddress(), this.node, podDataOutgoing.podId,
+                                podDataOutgoing.getUninitializedChannelNames());
+                    }
+                    podDataOutgoing.lastSent = System.currentTimeMillis();
                 }
             }
-        }
-        final StateCacheUtils scu = this.stateCacheUtils;
-        if (scu != null) {
-            scu.persistStates(podDatas.values(), false);
         }
     }
 }

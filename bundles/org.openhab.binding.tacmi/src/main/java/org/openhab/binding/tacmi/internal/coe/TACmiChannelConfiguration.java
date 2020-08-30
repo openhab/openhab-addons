@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal;
+package org.openhab.binding.tacmi.internal.coe;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -21,20 +21,28 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
-public class TACmiConfiguration {
+public class TACmiChannelConfiguration {
 
     /**
-     * host address of the C.M.I.
+     * chnanel / output id
      */
-    public @Nullable String host;
+    public int output;
 
-    /**
-     * CoE / CAN node ID we are representing
-     */
-    public int node;
+    // required for MAP operations...
+    @Override
+    public int hashCode() {
+        return output;
+    }
 
-    /**
-     * this identifies the persistence mode / interval
-     */
-    public int persistInterval = 0;
+    @Override
+    public boolean equals(@Nullable Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (other == null || !other.getClass().equals(TACmiChannelConfiguration.class)) {
+            return false;
+        }
+        TACmiChannelConfiguration o = (TACmiChannelConfiguration) other;
+        return this.output == o.output;
+    }
 }

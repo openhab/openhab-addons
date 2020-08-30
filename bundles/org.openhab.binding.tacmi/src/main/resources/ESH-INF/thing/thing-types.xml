@@ -23,12 +23,6 @@
 				<label>Node</label>
 				<description>The CoE / CAN Node number openHAB should represent</description>
 			</parameter>
-			<parameter name="persistInterval" type="integer" min="-1" max="3600" required="false">
-				<label>Persistence Interval</label>
-				<description>Mode (-1: during shutdown only; 0: disabled) and interval (in s) for persisting thing states</description>
-				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -55,6 +49,10 @@
 				<label>Output</label>
 				<description>Network Output</description>
 			</parameter>
+            <parameter name="initialValue" type="boolean" required="false">
+                <label>Initial Value</label>
+                <description>Initial value to set after startup (optional, defaults to uninitialized)</description>
+            </parameter>
 		</config-description>
 	</channel-type>
 	<!-- COA analog Channel Type -->
@@ -107,13 +105,16 @@
 					<option value="21">Unknown 21</option>
 				</options>
 			</parameter>
+            <parameter name="initialValue" type="decimal" required="false">
+                <label>Initial Value</label>
+                <description>Initial value to set after startup (optional, defaults to uninitialized)</description>
+            </parameter>
 		</config-description>
 	</channel-type>
 
 	<thing-type id="cmiSchema" extensible="schema-switch-ro,schema-switch-rw,schema-numeric-ro,schema-state-ro">
 		<label>TA C.M.I. Schema API Connection</label>
-		<description>Communication to a special "API" schema page on a "Technische Alternative C.M.I. Control and Monitoring
-			Interface"</description>
+		<description>Communication to a special "API" schema page on a "Technische Alternative C.M.I. Control and Monitoring Interface"</description>
 
 		<config-description>
 			<parameter name="host" type="text" required="true">

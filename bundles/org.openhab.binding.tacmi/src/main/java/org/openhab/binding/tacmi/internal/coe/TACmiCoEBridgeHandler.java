@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal;
+package org.openhab.binding.tacmi.internal.coe;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

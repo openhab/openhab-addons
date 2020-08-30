@@ -10,7 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal;
+package org.openhab.binding.tacmi.internal.coe;
+
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,17 +24,18 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
-public class TACmiChannelConfigurationAnalog extends TACmiChannelConfiguration {
+public class TACmiChannelConfigurationDigital extends TACmiChannelConfiguration {
 
     /**
-     * measurement type
+     * initial value
      */
-    public int type;
+    public @Nullable Boolean initialValue;
 
     // required for MAP operations...
     @Override
     public int hashCode() {
-        return 31 * output * type;
+        Boolean iv = initialValue;
+        return 31 * output * (iv == null ? 1 : iv.booleanValue() ? 9 : 3);
     }
 
     @Override
@@ -40,10 +43,10 @@ public class TACmiChannelConfigurationAnalog extends TACmiChannelConfiguration {
         if (this == other) {
             return true;
         }
-        if (other == null || !other.getClass().equals(TACmiChannelConfigurationAnalog.class)) {
+        if (other == null || !other.getClass().equals(TACmiChannelConfigurationDigital.class)) {
             return false;
         }
-        TACmiChannelConfigurationAnalog o = (TACmiChannelConfigurationAnalog) other;
-        return this.output == o.output && this.type == o.type;
+        TACmiChannelConfigurationDigital o = (TACmiChannelConfigurationDigital) other;
+        return this.output == o.output && Objects.equals(this.initialValue, o.initialValue);
     }
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tacmi.internal.podData;
+package org.openhab.binding.tacmi.internal.coe;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,18 +23,17 @@ import org.openhab.binding.tacmi.internal.message.MessageType;
  * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
-public final class PodData {
-    public final byte podId;
-    public final MessageType messageType;
-    public boolean dirty;
-    public @Nullable Message message;
-    public long lastSent;
+public class PodData {
+    protected final byte podId;
+    protected final MessageType messageType;
+    @Nullable
+    protected Message message;
 
     /**
      * Create new AnalogValue with specified value and type
      */
-    public PodData(byte podId, MessageType messageType) {
-        this.podId = podId;
-        this.messageType = messageType;
+    public PodData(PodIdentifier pi, byte node) {
+        this.podId = pi.podId;
+        this.messageType = pi.messageType;
     }
 }
