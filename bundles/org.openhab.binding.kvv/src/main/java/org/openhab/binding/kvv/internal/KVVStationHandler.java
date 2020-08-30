@@ -106,10 +106,10 @@ public class KVVStationHandler extends BaseThingHandler {
     private synchronized void setDepartures(final DepartureResult departures, final int maxTrains) {
         for (int i = 0; i < maxTrains; i++) {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"),
-                    new StringType(departures.getDepartures().get(i).getRoute()));
+                    new StringType(departures.departures.get(i).route));
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"),
-                    new StringType(departures.getDepartures().get(i).getDestination()));
-            String eta = departures.getDepartures().get(i).getTime();
+                    new StringType(departures.departures.get(i).destination));
+            String eta = departures.departures.get(i).time;
             if (eta.equals("0")) {
                 eta += " min";
             }
