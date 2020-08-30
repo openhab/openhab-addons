@@ -364,8 +364,11 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                 lock.release();
                                 updateStatus(ThingStatus.ONLINE);
                             }, failureInfo -> {
-                                handleError("{} encountered error writing to device: {}",
-                                        failureInfo.getCause().getMessage(), lock);
+                                String errorMsg = failureInfo.getCause().getMessage();
+                                logger.warn("{} encountered error writing to device: {}",
+                                        HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
+                                lock.release();
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
                             });
                     // ensure the openHAB item is updated with the device's actual value
                     scheduler.schedule(new Runnable() {
@@ -422,12 +425,20 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                             processResponse(v, registers.get());
                                         }
                                     }, failureInfo -> {
-                                        handleError("{} encountered error reading from device: {}",
-                                                failureInfo.getCause().getMessage(), lock);
+                                        String errorMsg = failureInfo.getCause().getMessage();
+                                        logger.warn("{} encountered error reading from device: {}",
+                                                HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
+                                        lock.release();
+                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                                errorMsg);
                                     });
                         }, failureInfo -> {
-                            handleError("{} encountered error writing to device: {}",
-                                    failureInfo.getCause().getMessage(), lock);
+                            String errorMsg = failureInfo.getCause().getMessage();
+                            logger.warn("{} encountered error writing to device: {}",
+                                    HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
+                            lock.release();
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
+
                         });
             }
         } else {
@@ -661,27 +672,13 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     }
 
     /**
-     * Logs an error (as a warning entry), updates the thing status and releases the provided lock
-     *
-     * @param logMsg The message to be logged (has to include 2 parameters for the class name as well as the error
-     *            message)
-     * @param errorMsg The error message to be logged and provided with the Thing's status update
-     * @param lock The lock to be released
-     */
-    private void handleError(String logMsg, String errorMsg, final Semaphore lock) {
-        logger.warn(logMsg, HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
-        lock.release();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
-    }
-
-    /**
      * Logs an error (as a warning entry) and updates the thing status
      *
      * @param errorMsg The error message to be logged and provided with the Thing's status update
      * @param status The Thing's new status
      */
     private void handleError(String errorMsg, ThingStatusDetail status) {
-        logger.warn("", errorMsg);
+        logger.warn("{}", errorMsg);
         updateStatus(ThingStatus.OFFLINE, status, errorMsg);
     }
 }

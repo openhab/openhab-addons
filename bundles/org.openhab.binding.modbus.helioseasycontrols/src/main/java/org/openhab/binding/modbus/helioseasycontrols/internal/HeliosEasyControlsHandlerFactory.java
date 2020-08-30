@@ -17,7 +17,6 @@ import static org.openhab.binding.modbus.helioseasycontrols.internal.HeliosEasyC
 import java.util.Collections;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.helioseasycontrols", service = ThingHandlerFactory.class)
 public class HeliosEasyControlsHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<@NonNull ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS);
 
     /**

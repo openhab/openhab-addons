@@ -9,7 +9,9 @@ Helios Heat-Recovery Ventilation devices use a Modbus protocol to communicate wi
 | helios-ventilation-easycontrols | Helios Heat-Recovery Ventilation devices with easyControls |
 
 ## Configuration
+
 You first need to set up a Modbus bridge according to the Modbus documentation. Things in this extension will use the selected bridge to connect to the device. The configuration of a Helios Ventilation device via a `.things` file would look like the following code sample. It's required to provide the device's IP address, port and unit ID (port and unit ID cannot be changed and always have to be 502 and 180; in fact the values provided here are ignored by the binding and the fixed values 502 and 180 are used):
+
 ```
 Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="x.x.x.x", port=502, id=180, enableDiscovery=true ] {
     Thing helios-ventilation-easycontrols kwl "KWL"
@@ -17,6 +19,7 @@ Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="x.x.x.x", port=
 ```
 
 ## Channels
+
 The following channels are supported:
 
 | Channel                          | Channel Group   | Description                                                      | Item Type                | Unit | Values                                                                                               |
@@ -213,13 +216,17 @@ The following channels are supported:
 Please also see `variables.json` for further details: https://github.com/openhab/openhab-addons/blob/2.5.x/bundles/org.openhab.binding.modbus.helioseasycontrols/src/main/java/org/openhab/binding/modbus/helioseasycontrols/internal/variables.json
 
 ## Full Example
+
 ### Thing Configuration
+
 ```
 Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="192.168.47.11", port=502, id=180, enableDiscovery=true ] {
     Thing helios-ventilation-easycontrols kwl "KWL"
 }
 ```
+
 ### Item Configuration
+
 ```
 // Manual operation
 Switch KWL_Manual                        "Manual operation"                          <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
@@ -255,7 +262,9 @@ String KWL_Warnings_String               "Warning messages [%s]"                
 Number KWL_Infos                         "Number infos [%d]"                         <info>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#noOfInfos"}
 String KWL_Infos_String                  "Info messages [%s]"                        <info>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#infosMsg"}
 ```
+
 ### Transformation
+
 ```
 0=no
 1=yes
@@ -264,7 +273,9 @@ ON=yes
 -=-
 NULL=-
 ```
+
 ### Sitemap
+
 ```
 Text label="KWL" icon="fan" {
     Frame label="Manual operation" {
