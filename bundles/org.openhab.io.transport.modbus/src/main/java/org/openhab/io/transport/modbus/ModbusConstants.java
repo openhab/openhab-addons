@@ -99,4 +99,25 @@ public class ModbusConstants {
                     .orElseThrow(() -> new IllegalArgumentException("Invalid valueType " + configValueType));
         }
     }
+
+    /**
+     * Maximum number of coils or discrete inputs that are allowed to be read.
+     * Limitation by Modbus protocol
+     */
+    public static final int MAX_BITS_READ_COUNT = 2000;
+    /**
+     * Maximum number of registers that are allowed to be read.
+     * Limitation by Modbus protocol
+     */
+    public static final int MAX_REGISTERS_READ_COUNT = 125;
+    /**
+     * Maximum number of coils or discrete inputs that are allowed to be written.
+     * Limitation by Modbus protocol
+     */
+    public static final int MAX_BITS_WRITE_COUNT = 1968;
+    /**
+     * Maximum number of registers that are allowed to be written.
+     * Limitation by Modbus protocol
+     */
+    public static final int MAX_REGISTERS_WRITE_COUNT = 123;
 }

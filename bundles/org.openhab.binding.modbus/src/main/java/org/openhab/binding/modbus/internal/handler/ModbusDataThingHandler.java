@@ -337,9 +337,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             ModbusDataConfiguration localConfig = config = getConfigAs(ModbusDataConfiguration.class);
             updateUnchangedValuesEveryMillis = localConfig.getUpdateUnchangedValuesEveryMillis();
             Bridge bridge = getBridge();
-            if (bridge == null) {
-                logger.debug("Thing {} '{}' has no bridge", getThing().getUID(), getThing().getLabel());
-                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
+            if (bridge == null || !bridge.getStatus().equals(ThingStatus.ONLINE)) {
+                logger.debug("Thing {} '{}' has no bridge or it is not online", getThing().getUID(),
+                        getThing().getLabel());
+                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No online bridge");
                 return;
             }
             BridgeHandler bridgeHandler = bridge.getHandler();
@@ -362,8 +363,9 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 pollerHandler = localPollerHandler;
                 ModbusReadRequestBlueprint localReadRequest = localPollerHandler.getRequest();
                 if (localReadRequest == null) {
-                    logger.debug("Poller {} '{}' has no read request -- configuration is changing?", bridge.getUID(),
-                            bridge.getLabel());
+                    logger.debug(
+                            "Poller {} '{}' has no read request -- configuration is changing or bridge having invalid configuration?",
+                            bridge.getUID(), bridge.getLabel());
                     updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             String.format("Poller %s '%s' has no poll task", bridge.getUID(), bridge.getLabel()));
                     return;
