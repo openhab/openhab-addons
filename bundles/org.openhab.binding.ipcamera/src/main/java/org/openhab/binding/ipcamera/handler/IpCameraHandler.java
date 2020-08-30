@@ -434,7 +434,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         FullHttpRequest request;
-        if (httpMethod.contentEquals("PUT")) {
+        if ("PUT".equals(httpMethod)) {
             if (useDigestAuth && digestString == null) {
                 request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
                 request.headers().set(HttpHeaderNames.HOST, ipAddress);
