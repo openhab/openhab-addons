@@ -13,9 +13,9 @@
 package org.openhab.persistence.jpa.internal.model;
 
 import java.text.DateFormat;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,7 +48,7 @@ public class JpaPersistentItem implements HistoricItem {
     private String name = "";
     private String realName = "";
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private Date timestamp = new Date();
     @Column(length = 32672) // 32k, max varchar for apache derby
     private String value = "";
 
@@ -79,10 +79,10 @@ public class JpaPersistentItem implements HistoricItem {
 
     @Override
     public ZonedDateTime getTimestamp() {
-        return timestamp.atZone(ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(timestamp.toInstant(), ZoneId.systemDefault());
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

@@ -12,8 +12,8 @@
  */
 package org.openhab.persistence.jpa.internal;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -140,7 +140,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         }
         pItem.setName(name);
         pItem.setRealName(item.getName());
-        pItem.setTimestamp(LocalDateTime.now());
+        pItem.setTimestamp(new Date());
 
         EntityManager em = getEntityManagerFactory().createEntityManager();
         try {
@@ -209,10 +209,10 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             Query query = em.createQuery(queryString);
             query.setParameter("itemName", item.getName());
             if (hasBeginDate) {
-                query.setParameter("beginDate", filter.getBeginDateZoned());
+                query.setParameter("beginDate", Date.from(filter.getBeginDateZoned().toInstant()));
             }
             if (hasEndDate) {
-                query.setParameter("endDate", filter.getEndDateZoned());
+                query.setParameter("endDate", Date.from(filter.getEndDateZoned().toInstant()));
             }
 
             query.setFirstResult(filter.getPageNumber() * filter.getPageSize());
