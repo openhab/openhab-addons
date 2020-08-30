@@ -358,7 +358,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!"REFRESH".equals(command.toString())) {
+        if (!(command instanceof RefreshType)) {
             switch (channelUID.getId()) {
                 case CHANNEL_START_STREAM:
                     if ("ON".equals(command.toString())) {
