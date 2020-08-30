@@ -4,13 +4,7 @@
 	<feature name="openhab-binding-ipcamera" description="ipcamera Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature dependency="true">openhab.tp-jaxb</feature>
-		<bundle dependency="true">mvn:io.netty/netty-codec-http/${netty.version}</bundle>
-		<bundle dependency="true">mvn:io.netty/netty-common/${netty.version}</bundle>
-		<bundle dependency="true">mvn:io.netty/netty-buffer/${netty.version}</bundle>
-		<bundle dependency="true">mvn:io.netty/netty-transport/${netty.version}</bundle>
-		<bundle dependency="true">mvn:io.netty/netty-codec/${netty.version}</bundle>
-		<bundle dependency="true">mvn:io.netty/netty-resolver/${netty.version}</bundle>
-		<bundle dependency="true">mvn:io.netty/netty-handler/${netty.version}</bundle>
+		<feature dependency="true">openhab.tp-netty</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.ipcamera/${project.version}</bundle>
 	</feature>
 </features>
