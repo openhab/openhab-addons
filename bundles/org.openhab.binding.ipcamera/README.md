@@ -701,7 +701,7 @@ sudo apt update && sudo apt install ffmpeg
 
 **IMPORTANT:**
 The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `IP_WHITELIST`. 
-Requests from outside IP's or internal requests that are not on the `IP_WHITELIST` will fail to get any answer. 
+Requests from external IPs or internal requests that are not on the `IP_WHITELIST` will fail to get any answer. 
 If you prefer to use your own firewall instead, you can also choose to make the `IP_WHITELIST` equal "DISABLE" (the default since the feature also needs a valid SERVER_PORT set) to turn this feature off and then all internal IP's will have access.
 
 There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://192.168.xxx.xxx:SERVER_PORT/name.format` replacing the name.format with one of the options that are listed below:
