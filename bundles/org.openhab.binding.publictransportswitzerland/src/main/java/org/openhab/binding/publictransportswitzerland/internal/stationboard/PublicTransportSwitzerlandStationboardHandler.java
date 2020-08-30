@@ -64,7 +64,10 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             "stationboard/stop/delay",
             "stationboard/stop/platform");
 
+    private final ChannelGroupUID stationboardChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "stationboard");
     private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "departures");
+
+    private final ChannelUID tsvChannelUID = new ChannelUID(stationboardChannelGroupUID, "tsv");
 
     private final Logger logger = LoggerFactory.getLogger(PublicTransportSwitzerlandStationboardHandler.class);
 
@@ -100,6 +103,11 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         } else {
             updateStatus(ThingStatus.UNKNOWN);
             startChannelUpdate();
+        }
+
+        if (getThing().getChannelsOfGroup(stationboardChannelGroupUID.getId()).isEmpty()) {
+            Channel tsvChannel = ChannelBuilder.create(tsvChannelUID, "String").build();
+            updateThing(editThing().withChannel(tsvChannel).build());
         }
     }
 
@@ -191,7 +199,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         if (jsonObject == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
 
-            updateState(CHANNEL_TSV, UnDefType.UNDEF);
+            updateState(tsvChannelUID, UnDefType.UNDEF);
 
             for (Channel channel : getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())) {
                 updateState(channel.getUID(), UnDefType.UNDEF);
@@ -248,7 +256,7 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             tsvRows.add(String.join("\t", identifier, departureTimeElement.toString(), destination, track, delay));
         }
 
-        updateState(CHANNEL_TSV, new StringType(String.join("\n", tsvRows)));
+        updateState(tsvChannelUID, new StringType(String.join("\n", tsvRows)));
     }
 
     private @Nullable String getStringValueOrNull(@Nullable JsonElement jsonElement) {

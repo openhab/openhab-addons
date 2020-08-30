@@ -23,7 +23,7 @@ Please consult their [website](https://sbb.ch/en).
 | channel | type   | description |
 |---------|--------|-------------|
 | departures#n   | String | A dynamic channel for each upcoming departure |
-| tsv (advanced) | String | A tsv which contains the fields:<br />`identifier, departureTime, destination, track, delay` |
+| stationboard#tsv (advanced) | String | A tsv which contains the fields:<br />`identifier, departureTime, destination, track, delay` |
 
 ## Discovery
 
