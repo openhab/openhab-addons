@@ -15,7 +15,6 @@ package org.openhab.binding.oppo.internal.communication;
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.oppo.internal.OppoBindingConstants;
 import org.openhab.binding.oppo.internal.OppoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +39,11 @@ public class OppoReaderThread extends Thread {
      * Constructor
      *
      * @param connector the object that should handle the received message
+     * @param uid the thing uid string
+     * @param connectionId a string that uniquely identifies the particular connection
      */
-    public OppoReaderThread(OppoConnector connector, String uid) {
-        super(OppoBindingConstants.BINDING_ID + "-" + uid);
+    public OppoReaderThread(OppoConnector connector, String uid, String connectionId) {
+        super("OH-binding-" + uid + "-" + connectionId);
         this.connector = connector;
         setDaemon(true);
     }

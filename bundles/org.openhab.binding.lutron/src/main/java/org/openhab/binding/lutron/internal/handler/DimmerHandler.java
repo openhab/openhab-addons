@@ -17,6 +17,7 @@ import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -38,16 +39,16 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with a light dimmer.
  *
  * @author Allan Tong - Initial contribution
- * @author Bob Adair - Added initDeviceState method
+ * @author Bob Adair - Added initDeviceState method, and onLevel and onToLast parameters
  */
 public class DimmerHandler extends LutronHandler {
     private static final Integer ACTION_ZONELEVEL = 1;
 
     private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
-
     private DimmerConfig config;
     private LutronDuration fadeInTime;
     private LutronDuration fadeOutTime;
+    private final AtomicReference<BigDecimal> lastLightLevel = new AtomicReference<>();
 
     public DimmerHandler(Thing thing) {
         super(thing);
@@ -90,6 +91,7 @@ public class DimmerHandler extends LutronHandler {
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
             queryOutput(ACTION_ZONELEVEL); // handleUpdate() will set thing status to online when response arrives
+            lastLightLevel.set(config.onLevel);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -110,7 +112,11 @@ public class DimmerHandler extends LutronHandler {
                 int level = ((Number) command).intValue();
                 output(ACTION_ZONELEVEL, level, 0.25);
             } else if (command.equals(OnOffType.ON)) {
-                output(ACTION_ZONELEVEL, 100, fadeInTime);
+                if (config.onToLast) {
+                    output(ACTION_ZONELEVEL, lastLightLevel.get(), fadeInTime);
+                } else {
+                    output(ACTION_ZONELEVEL, config.onLevel, fadeInTime);
+                }
             } else if (command.equals(OnOffType.OFF)) {
                 output(ACTION_ZONELEVEL, 0, fadeOutTime);
             }
@@ -129,6 +135,9 @@ public class DimmerHandler extends LutronHandler {
             BigDecimal level = new BigDecimal(parameters[1]);
             if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                 updateStatus(ThingStatus.ONLINE);
+            }
+            if (level.compareTo(BigDecimal.ZERO) == 1) { // if (level > 0)
+                lastLightLevel.set(level);
             }
             updateState(CHANNEL_LIGHTLEVEL, new PercentType(level));
         }

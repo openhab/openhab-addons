@@ -181,4 +181,4 @@ end
 
 ## Source
 
-[OpenHAB community thread with a detailed example.](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)
+[openHAB community thread with a detailed example.](https://community.openhab.org/t/1-openhab-433mhz-radio-transmitter-tutorial/34977)

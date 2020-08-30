@@ -294,11 +294,12 @@ public abstract class NhcThermostat {
     /**
      * @return remaining overrule time in minutes
      */
-    public long getRemainingOverruletime() {
+    public int getRemainingOverruletime() {
         if (overruleStart == null) {
             return 0;
         } else {
-            return overruletime - ChronoUnit.MINUTES.between(overruleStart, LocalDateTime.now());
+            // overruletime time max 23h59min, therefore can safely cast to int
+            return overruletime - (int) ChronoUnit.MINUTES.between(overruleStart, LocalDateTime.now());
         }
     }
 

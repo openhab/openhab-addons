@@ -93,7 +93,7 @@ This list has been compiled mostly through trial and error. Your mileage may var
 | STOP        | "STOP" button                                            |
 
 
-A sample HABPanel remote control widget can be found [in this github repository.](https://github.com/bbrodt/openhab2-misc)
+A sample HABPanel remote control widget can be found [in this GitHub repository.](https://github.com/bbrodt/openhab2-misc)
 
 ## Console Commands
 

@@ -294,7 +294,15 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
+    public void testInitCoilsOutOfIndex2() {
+        // Reading coils 4, 5, 6. Coil 7 is out of bounds
+        testOutOfBoundsGeneric(4, 3, "7", ModbusReadFunctionCode.READ_COILS, ModbusConstants.ValueType.BIT,
+                ThingStatus.OFFLINE);
+    }
+
+    @Test
     public void testInitCoilsOK() {
+        // Reading coils 4, 5, 6. Coil 6 is OK
         testOutOfBoundsGeneric(4, 3, "6", ModbusReadFunctionCode.READ_COILS, ModbusConstants.ValueType.BIT,
                 ThingStatus.ONLINE);
     }
@@ -349,12 +357,20 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     @Test
     public void testInitRegistersWithInt16OK() {
+        // Poller reading registers 4, 5, 6. Register 6 is OK
         testOutOfBoundsGeneric(4, 3, "6", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT16, ThingStatus.ONLINE);
     }
 
     @Test
     public void testInitRegistersWithInt16OutOfBounds() {
+        // Poller reading registers 4, 5, 6. Register 7 is out-of-bounds
+        testOutOfBoundsGeneric(4, 3, "7", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
+                ModbusConstants.ValueType.INT16, ThingStatus.OFFLINE);
+    }
+
+    @Test
+    public void testInitRegistersWithInt16OutOfBounds2() {
         testOutOfBoundsGeneric(4, 3, "8", ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                 ModbusConstants.ValueType.INT16, ThingStatus.OFFLINE);
     }

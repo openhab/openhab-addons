@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -63,7 +65,7 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                     THING_TYPE_HUMIDITY_SENSOR, THING_TYPE_PRESSURE_SENSOR, THING_TYPE_SWITCH,
                     THING_TYPE_OPENCLOSE_SENSOR, THING_TYPE_WATERLEAKAGE_SENSOR, THING_TYPE_FIRE_SENSOR,
                     THING_TYPE_ALARM_SENSOR, THING_TYPE_VIBRATION_SENSOR, THING_TYPE_BATTERY_SENSOR,
-                    THING_TYPE_CARBONMONOXIDE_SENSOR).collect(Collectors.toSet()));
+                    THING_TYPE_CARBONMONOXIDE_SENSOR, THING_TYPE_COLOR_CONTROL).collect(Collectors.toSet()));
 
     private static final List<String> CONFIG_CHANNELS = Arrays.asList(CHANNEL_BATTERY_LEVEL, CHANNEL_BATTERY_LOW,
             CHANNEL_TEMPERATURE);
@@ -136,6 +138,12 @@ public class SensorThingHandler extends SensorBaseThingHandler {
                 break;
             case CHANNEL_LIGHT_LUX:
                 updateQuantityTypeChannel(channelID, newState.lux, LUX);
+                break;
+            case CHANNEL_COLOR:
+                final double @Nullable [] xy = newState.xy;
+                if (xy != null && xy.length == 2) {
+                    updateState(channelID, HSBType.fromXY((float) xy[0], (float) xy[1]));
+                }
                 break;
             case CHANNEL_LIGHT_LEVEL:
                 updateDecimalTypeChannel(channelID, newState.lightlevel);

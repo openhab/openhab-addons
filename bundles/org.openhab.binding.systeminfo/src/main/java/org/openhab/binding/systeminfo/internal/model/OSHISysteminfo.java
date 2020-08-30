@@ -49,7 +49,7 @@ import oshi.util.EdidUtil;
  *         CentralProcessor#getSystemSerialNumber()
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
  *
- * @see <a href="https://github.com/oshi/oshi">OSHI github repository</a>
+ * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
 @NonNullByDefault
 @Component(service = SysteminfoInterface.class)

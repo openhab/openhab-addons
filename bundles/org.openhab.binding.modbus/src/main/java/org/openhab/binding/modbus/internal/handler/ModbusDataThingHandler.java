@@ -631,7 +631,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
         // Determine bit positions polled, both start and end inclusive
         int pollStartBitIndex = readRequest.getReference() * dataElementBits;
-        int pollEndBitIndex = pollStartBitIndex + readRequest.getDataLength() * dataElementBits;
+        int pollEndBitIndex = pollStartBitIndex + readRequest.getDataLength() * dataElementBits - 1;
 
         // Determine bit positions read, both start and end inclusive
         int readStartBitIndex = readIndex.get() * dataElementBits + readSubIndex.orElse(0) * valueTypeBitCount;

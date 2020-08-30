@@ -30,6 +30,11 @@
 				<description>Hostname or IP of the device</description>
 			</parameter>
 
+			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2})">
+				<label>MAC Address</label>
+				<description>MAC address used for waking the device by the Wake-on-LAN action</description>
+			</parameter>
+
 			<parameter name="refreshInterval" type="integer">
 				<label>Refresh Interval</label>
 				<description>States how long to wait after a device state update before the next refresh shall occur (in ms)</description>
@@ -83,6 +88,11 @@
 				<description>The port on which the device can be accessed. Windows systems usually have the 445 port open.
 					Webservers are on port 80.</description>
 				<default>80</default>
+			</parameter>
+
+			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2})">
+				<label>MAC Address</label>
+				<description>MAC address used for waking the device by the Wake-on-LAN action</description>
 			</parameter>
 
 			<parameter name="retry" type="integer">

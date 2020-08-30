@@ -808,7 +808,8 @@ public class ModbusManagerImpl implements ModbusManager {
         public boolean unregisterRegularPoll(PollTask task) {
             synchronized (ModbusManagerImpl.this) {
                 if (closed) {
-                    throw new IllegalStateException("Communication interface is closed already!");
+                    // Closed already, nothing to unregister
+                    return false;
                 }
                 pollTasksRegisteredByThisCommInterface.remove(task);
                 ModbusSlaveConnectionFactoryImpl localConnectionFactory = connectionFactory;
@@ -853,7 +854,8 @@ public class ModbusManagerImpl implements ModbusManager {
         public void close() throws Exception {
             synchronized (ModbusManagerImpl.this) {
                 if (closed) {
-                    throw new IllegalStateException("Communication interface is closed already!");
+                    // Closed already, nothing to unregister
+                    return;
                 }
                 // Iterate over all tasks registered by this communication interface, and unregister those
                 // We copy pollTasksRegisteredByThisCommInterface temporarily so that unregisterRegularPoll can

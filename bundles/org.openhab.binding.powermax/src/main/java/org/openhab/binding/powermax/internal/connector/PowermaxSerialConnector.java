@@ -46,8 +46,11 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
      * @param serialPortManager the serial port manager
      * @param serialPortName the serial port name
      * @param baudRate the baud rate to be used
+     * @param readerThreadName the name of thread to be created
      */
-    public PowermaxSerialConnector(SerialPortManager serialPortManager, String serialPortName, int baudRate) {
+    public PowermaxSerialConnector(SerialPortManager serialPortManager, String serialPortName, int baudRate,
+            String readerThreadName) {
+        super(readerThreadName);
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.baudRate = baudRate;
@@ -87,7 +90,7 @@ public class PowermaxSerialConnector extends PowermaxConnector implements Serial
                     logger.debug("Too Many Listeners Exception: {}", e.getMessage(), e);
                 }
 
-                setReaderThread(new PowermaxReaderThread(this));
+                setReaderThread(new PowermaxReaderThread(this, readerThreadName));
                 getReaderThread().start();
 
                 setConnected(true);
