@@ -278,7 +278,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
         } catch (MalformedURLException e) {
             if (!longUrl.equals("ffmpeg")) {
-                logger.error("A non valid url has been given to the binding, it is: {}", longUrl);
+                cameraConfigError("A non valid URL has been given to the binding, check they work in a browser.");
                 return "";
             }
         }
@@ -909,9 +909,8 @@ public class IpCameraHandler extends BaseThingHandler {
                     updateState(CHANNEL_IMAGE_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
                 } catch (Exception e) {
-                    logger.error(
-                            "Exception occured when starting the streaming server. Try changing the SERVER_PORT to another number: {}",
-                            e.getMessage());
+                    cameraConfigError(
+                            "Exception occured when starting the streaming server. Try changing the SERVER_PORT to another number.");
                 }
             }
         }

@@ -42,6 +42,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -118,7 +119,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             String file = handle.config.get(CONFIG_FFMPEG_OUTPUT).toString() + "ipcamera.m3u8";
             camerasm3u8 = new String(Files.readAllBytes(Paths.get(file)));
         } catch (IOException e) {
-            logger.error("Error occured fetching cameras m3u8 file :{}", e.getMessage());
+            logger.error("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
         }
         return camerasm3u8;
     }
@@ -248,9 +249,8 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                     updateState(CHANNEL_IMAGE_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
                 } catch (Exception e) {
-                    logger.error(
-                            "Exception occured when starting the streaming server. Try changing the SERVER_PORT to another number: {}",
-                            e.getMessage());
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Exception occured when starting the streaming server. Try changing the SERVER_PORT to another number.");
                 }
             }
         }
