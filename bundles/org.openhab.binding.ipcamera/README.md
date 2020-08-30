@@ -275,7 +275,7 @@ You can now change the files name by using the channel `gifFilename` Just change
 
 **lastMotionType**
 
-Cameras with multiple alarm types will update this with which alarm detected motion.ie a lineCrossing, faceDetection or item stolen alarm. 
+Cameras with multiple alarm types will update this with which alarm detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. 
 You can use this to create a timestamp of when the last motion was detected by creating a rule when this channel is updated.
 
 items:
