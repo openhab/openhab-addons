@@ -28,7 +28,7 @@
 			</parameter-group>
 
 			<parameter name="POLL_CAMERA_MS" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label></label>
+				<label>Time Before Rotating to Next Camera</label>
 				<description>Time in milliseconds of how long to display a camera before changing to the next camera in the group.
 				</description>
 				<default>2000</default>
@@ -257,7 +257,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -299,7 +298,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -534,7 +532,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -781,7 +778,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1079,7 +1075,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1359,7 +1354,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1635,7 +1629,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -1937,7 +1930,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -2226,7 +2218,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<label>FFMPEG_MOTION_ARGUMENTS</label>
 				<description>This gives you direct access to specify your own ffmpeg options to be used for detecting motion.
 				</description>
-				<default></default>
 				<advanced>true</advanced>
 			</parameter>
 
