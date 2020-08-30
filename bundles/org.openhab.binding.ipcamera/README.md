@@ -42,7 +42,7 @@ Some cameras allow the keyframe to be created every second or a different amount
 ### ESP32 Cameras
 
 These cameras do not have the ability to create H.264 streams and hence can not be used with HLS, however all other features should work.
-See the `Full Example` section to see how to setup these cameras.
+See the [Full Example](#full-example) section to see how to setup these cameras.
 Due to many custom firmwares available, you may need to ask the firmware developer what the URLs are for snapshots and MJPEG streams if they have changed from the defaults that the Arduino IDE sample code uses.
 
 ### Amcrest
