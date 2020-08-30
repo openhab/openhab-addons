@@ -51,6 +51,16 @@ public class Event {
     }
 
     @Override
+    public String toString() {
+        String[] tagStrings = new String[this.commandTags.size()];
+        for (int i = 0; i < tagStrings.length; i++) {
+            tagStrings[i] = this.commandTags.get(i).toString();
+        }
+        return "Event(title: " + this.title + ", start: " + this.start.toString() + ", end: " + this.end.toString()
+                + ", commandTags: List(" + String.join(", ", tagStrings) + ")";
+    }
+
+    @Override
     public boolean equals(@Nullable Object other) {
         if (other == null || other.getClass() != this.getClass()) {
             return false;
