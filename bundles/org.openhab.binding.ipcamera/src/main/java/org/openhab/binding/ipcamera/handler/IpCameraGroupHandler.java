@@ -370,7 +370,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                                     + handler.getThing().getUID().getId() + ":";
 
                             handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM),
-                                    OnOffType.valueOf("ON"));
+                                    OnOffType.ON);
                         }
                     } else {
                         // do we turn all off or do we remember the state before we turned them all on?
