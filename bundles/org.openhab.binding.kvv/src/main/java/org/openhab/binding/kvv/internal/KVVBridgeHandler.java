@@ -14,11 +14,8 @@ package org.openhab.binding.kvv.internal;
 
 import java.io.IOException;
 
-import java.nio.charset.StandardCharsets;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -66,7 +63,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         try {
             data = HttpUtil.executeUrl("GET", url, KVVBindingConstants.TIMEOUT_IN_SECONDS * 1000);
         } catch (IOException e) {
-            logger.warn("Failed to get departures from '{}': {}", url, e);
+            logger.warn("Failed to get departures from '{}'", url, e);
             return null;
         }
 

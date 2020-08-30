@@ -32,8 +32,7 @@ public class DepartureResult {
 
     @Override
     public String toString() {
-        return "DepartureResult [stopName=" + stopName + ", departures=" + departures
-                + "]";
+        return "DepartureResult [stopName=" + stopName + ", departures=" + departures + "]";
     }
 
     /**
