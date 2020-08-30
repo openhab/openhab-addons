@@ -709,7 +709,7 @@ There are multiple ways to get a moving picture, to use them just enter the URL 
 + **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
 This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
 Please understand that this format due to the way it works will give you lag behind realtime, more on this below.
-+ **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UI's and browsers.
++ **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
 It is normally 1 second or less behind real-time.
 FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
 A lot of cameras limit the resolution in this format, so consider using HLS, autofps.mjpeg, or snapshots.mjpeg instead which will be in a higher resolution.
@@ -789,7 +789,7 @@ end
 ## MJPEG Streams
 
 Cameras that have built in MJPEG abilities can stream to openHAB with the MJPEG format with next to no CPU load, less than 1 second lag, and FFmpeg does not need to be installed.
-Cameras without this ability can still use this binding to convert their cameras RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion. 
+Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion. 
 The alternative HLS format does not need the conversion and does not use any CPU to speak of, however due to HLS needing to buffer the files to disk, the HLS will result in lag (delay) behind real time.
 For video without a delay, you need MJPEG and without a camera that can create it, you will need to use a lot of CPU power. This could be done in a dedicated video server which will be the only way with lots of cameras unless you purchase cameras that have the ability built in.
 
@@ -822,13 +822,13 @@ Always try to get the default settings working first before you begin to experim
 
 These similar features allow you to request a MJPEG stream created by the binding with low CPU usage from the cameras snapshots.
 Snapshots are usually high resolution and look great, however they are limited to a max of 1 frame per second (1 FPS).
-The reason this is more useful than snapshots on their own, is some UI's will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
+The reason this is more useful than snapshots on their own, is some UIs will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
 
 The autofps.mjpeg feature will display a snapshot that updates every 8 seconds to keep network traffic low, then when motion is detected it will automatically increase the frames to every second until the motion stops.
 This means lower traffic unless the picture is actually changing. 
 
 Request the stream to be sent to an item with this URL. 
-NOTE: The IP is openHABs not your cameras IP and the 54321 is what you have set as the SERVER_PORT.
+NOTE: The IP is openHAB's not your cameras IP and the 54321 is what you have set as the SERVER_PORT.
 
 `http://192.168.xxx.xxx:54321/snapshots.mjpeg`
 
@@ -1101,7 +1101,7 @@ end
 
 ## Group Displays
 
-The full example section shows how to setup a group display.
+The [Full Example](#full-example) section shows how to setup a group display.
 
 Some additional things to check to get it working are:
 
