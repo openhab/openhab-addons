@@ -48,7 +48,6 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-
     }
 
     @Override
