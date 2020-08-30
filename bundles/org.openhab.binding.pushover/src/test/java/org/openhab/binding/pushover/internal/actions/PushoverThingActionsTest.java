@@ -13,17 +13,22 @@
 package org.openhab.binding.pushover.internal.actions;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.binding.pushover.actions.PushoverThingActions;
 import org.openhab.binding.pushover.internal.connection.PushoverMessageBuilder;
 import org.openhab.binding.pushover.internal.handler.PushoverAccountHandler;
 import org.openhab.core.thing.Thing;
@@ -35,6 +40,8 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class PushoverThingActionsTest {
 
     private static final String MESSAGE = "My message";
@@ -61,10 +68,8 @@ public class PushoverThingActionsTest {
 
     private final PushoverThingActions pushoverThingActions = new PushoverThingActions();
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
-
         when(mockPushoverAccountHandler.getDefaultPushoverMessageBuilder(any()))
                 .thenReturn(PushoverMessageBuilder.getInstance("key", "user"));
         when(mockPushoverAccountHandler.sendMessage(any())).thenReturn(Boolean.TRUE);
@@ -73,19 +78,21 @@ public class PushoverThingActionsTest {
     }
 
     // sendMessage
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendMessageThingActionsIsNull() {
-        PushoverThingActions.sendMessage(null, MESSAGE, TITLE);
+        assertThrows(IllegalArgumentException.class, () -> PushoverThingActions.sendMessage(null, MESSAGE, TITLE));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendMessageThingActionsIsNotPushoverThingActions() {
-        PushoverThingActions.sendMessage(thingActionsStub, MESSAGE, TITLE);
+        assertThrows(IllegalArgumentException.class,
+                () -> PushoverThingActions.sendMessage(thingActionsStub, MESSAGE, TITLE));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testSendMessageThingHandlerIsNull() {
-        PushoverThingActions.sendMessage(pushoverThingActions, MESSAGE, TITLE);
+        assertThrows(RuntimeException.class,
+                () -> PushoverThingActions.sendMessage(pushoverThingActions, MESSAGE, TITLE));
     }
 
     @Test
@@ -103,21 +110,22 @@ public class PushoverThingActionsTest {
     }
 
     // sendPriorityMessage
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void sendPriorityMessageThingActionsIsNull() {
-        PushoverThingActions.sendPriorityMessage(null, MESSAGE, TITLE, PushoverMessageBuilder.EMERGENCY_PRIORITY);
+        assertThrows(IllegalArgumentException.class, () -> PushoverThingActions.sendPriorityMessage(null, MESSAGE,
+                TITLE, PushoverMessageBuilder.EMERGENCY_PRIORITY));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void sendPriorityMessageThingActionsIsNotPushoverThingActions() {
-        PushoverThingActions.sendPriorityMessage(thingActionsStub, MESSAGE, TITLE,
-                PushoverMessageBuilder.EMERGENCY_PRIORITY);
+        assertThrows(IllegalArgumentException.class, () -> PushoverThingActions.sendPriorityMessage(thingActionsStub,
+                MESSAGE, TITLE, PushoverMessageBuilder.EMERGENCY_PRIORITY));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void sendPriorityMessageMessageThingHandlerIsNull() {
-        PushoverThingActions.sendPriorityMessage(pushoverThingActions, MESSAGE, TITLE,
-                PushoverMessageBuilder.EMERGENCY_PRIORITY);
+        assertThrows(RuntimeException.class, () -> PushoverThingActions.sendPriorityMessage(pushoverThingActions,
+                MESSAGE, TITLE, PushoverMessageBuilder.EMERGENCY_PRIORITY));
     }
 
     @Test
@@ -137,19 +145,21 @@ public class PushoverThingActionsTest {
     }
 
     // cancelPriorityMessage
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void cancelPriorityMessageThingActionsIsNull() {
-        PushoverThingActions.cancelPriorityMessage(null, RECEIPT);
+        assertThrows(IllegalArgumentException.class, () -> PushoverThingActions.cancelPriorityMessage(null, RECEIPT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void cancelPriorityMessageThingActionsIsNotPushoverThingActions() {
-        PushoverThingActions.cancelPriorityMessage(thingActionsStub, RECEIPT);
+        assertThrows(IllegalArgumentException.class,
+                () -> PushoverThingActions.cancelPriorityMessage(thingActionsStub, RECEIPT));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void cancelPriorityMessageThingHandlerIsNull() {
-        PushoverThingActions.cancelPriorityMessage(pushoverThingActions, RECEIPT);
+        assertThrows(RuntimeException.class,
+                () -> PushoverThingActions.cancelPriorityMessage(pushoverThingActions, RECEIPT));
     }
 
     @Test
