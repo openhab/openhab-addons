@@ -860,7 +860,7 @@ Browsers that support this format can also display HLS using the webview or HABp
 Apple devices have excellent support for HLS due to the standard being invented by Apple so they work out of the box. 
 Some browsers like Chrome may require a plugin or an update to be installed before they are able to display the video.
 
-To use the HLS steaming features, you need to:
+To use the HLS streaming features, you need to:
 
 + Set a valid `SERVER_PORT` as the default value of -1 will turn the feature off.
 + The audio format in the cameras settings must be AAC and not missing for Chromecast to work.
