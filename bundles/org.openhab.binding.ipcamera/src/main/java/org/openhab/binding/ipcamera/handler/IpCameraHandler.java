@@ -791,7 +791,7 @@ public class IpCameraHandler extends BaseThingHandler {
             if (cause == null || ctx == null) {
                 return;
             }
-            if (cause.toString().contains("java.lang.ArrayIndexOutOfBoundsException")) {
+            if (cause instanceof ArrayIndexOutOfBoundsException) {
                 logger.debug("Camera sent {} bytes when the content-length header was {}.", bytesAlreadyRecieved,
                         bytesToRecieve);
             } else {
