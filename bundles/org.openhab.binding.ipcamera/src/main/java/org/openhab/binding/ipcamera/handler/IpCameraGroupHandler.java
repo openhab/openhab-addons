@@ -362,15 +362,14 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         if (!(command instanceof RefreshType)) {
             switch (channelUID.getId()) {
                 case CHANNEL_START_STREAM:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         logger.debug("Starting HLS generation for all cameras in a group.");
                         hlsTurnedOn = true;
                         for (IpCameraHandler handler : cameraOrder) {
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"
                                     + handler.getThing().getUID().getId() + ":";
 
-                            handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM),
-                                    OnOffType.valueOf("ON"));
+                            handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
                         }
                     } else {
                         // do we turn all off or do we remember the state before we turned them all on?
