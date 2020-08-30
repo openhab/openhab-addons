@@ -27,7 +27,7 @@ curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
 ### demo.things
 
 ```things
-Bridge kvv:kvvbridge:1 {
+Bridge kvv:kvvbridge:1 "Bridge" @ "Wohnzimmer" {
 	kvvstation gottesauerplatz		"Gottesauer Platz/BGV"		[ commonName="Gottesauer Platz/BGV", stationId="de:8212:6", maxTrains="3", updateInterval="10" ]
 }
 ```
