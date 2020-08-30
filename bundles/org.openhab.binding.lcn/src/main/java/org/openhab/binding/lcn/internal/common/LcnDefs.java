@@ -14,6 +14,8 @@ package org.openhab.binding.lcn.internal.common;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -118,10 +120,25 @@ public final class LcnDefs {
 
     /** Command types used when sending LCN keys. */
     public enum SendKeyCommand {
-        DONTSEND,
-        HIT,
-        MAKE,
-        BREAK
+        DONTSEND(0),
+        HIT(1),
+        MAKE(2),
+        BREAK(3);
+
+        private int id;
+
+        SendKeyCommand(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public static SendKeyCommand get(int id) {
+            return Arrays.stream(values()).filter(v -> v.getId() == id).findAny()
+                    .orElseThrow(NoSuchElementException::new);
+        }
     }
 
     /** Key-lock modifiers used in LCN commands. */

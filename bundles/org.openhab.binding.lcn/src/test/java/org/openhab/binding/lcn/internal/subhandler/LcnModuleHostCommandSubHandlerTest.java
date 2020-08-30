@@ -26,43 +26,43 @@ import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
  */
 @NonNullByDefault
 public class LcnModuleHostCommandSubHandlerTest extends AbstractTestLcnModuleSubHandler {
-    private @NonNullByDefault({}) LcnModuleHostCommandSubHandler l;
+    private @NonNullByDefault({}) LcnModuleHostCommandSubHandler subHandler;
 
     @Override
     @Before
     public void setUp() {
         super.setUp();
 
-        l = new LcnModuleHostCommandSubHandler(handler, info);
+        subHandler = new LcnModuleHostCommandSubHandler(handler, info);
     }
 
     @Test
     public void testA1Hit() {
-        l.tryParse("+M004000005.STH065001");
+        subHandler.tryParse("+M004000005.STH065001");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A1:HIT");
     }
 
     @Test
     public void testA1Make() {
-        l.tryParse("+M004000005.STH066001");
+        subHandler.tryParse("+M004000005.STH066001");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A1:MAKE");
     }
 
     @Test
     public void testC8Break() {
-        l.tryParse("+M004000005.STH112128");
+        subHandler.tryParse("+M004000005.STH112128");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "C8:BREAK");
     }
 
     @Test
     public void testC1Hit() {
-        l.tryParse("+M004000005.STH080001");
+        subHandler.tryParse("+M004000005.STH080001");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "C1:HIT");
     }
 
     @Test
     public void testMultiple() {
-        l.tryParse("+M004000005.STH121034");
+        subHandler.tryParse("+M004000005.STH121034");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A2:HIT");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "A6:HIT");
         verify(handler).triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys", "B2:MAKE");

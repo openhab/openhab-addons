@@ -59,10 +59,10 @@ public class LcnModuleHostCommandSubHandler extends AbstractLcnModuleSubHandler 
             for (int keyNumber = 0; keyNumber < LcnDefs.KEY_COUNT; keyNumber++) {
                 int actionRaw = (keyTableAndActionMask >> (keyTableNumber * 2)) & 3;
 
-                if (actionRaw > LcnDefs.SendKeyCommand.DONTSEND.ordinal()
-                        && actionRaw <= LcnDefs.SendKeyCommand.BREAK.ordinal()
+                if (actionRaw > LcnDefs.SendKeyCommand.DONTSEND.getId()
+                        && actionRaw <= LcnDefs.SendKeyCommand.BREAK.getId()
                         && ((1 << keyNumber) & keyNumberMask) != 0) {
-                    String actionName = LcnDefs.SendKeyCommand.values()[actionRaw].name();
+                    String actionName = LcnDefs.SendKeyCommand.get(actionRaw).name();
 
                     handler.triggerChannel(LcnChannelGroup.HOSTCOMMAND, "sendKeys",
                             keyTableName + (keyNumber + 1) + ":" + actionName);
