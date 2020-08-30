@@ -43,6 +43,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
         UNKNOWN
     }
 
+    private final String channelName;
     private @Nullable String curOptionId;
     private ParserState parserState = ParserState.INIT;
     private @Nullable String address;
@@ -52,9 +53,10 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     private @Nullable StringBuilder curOptionValue;
     private Map<String, @Nullable String> options;
 
-    public ChangerX2Parser() {
+    public ChangerX2Parser(String channelName) {
         super();
         this.options = new LinkedHashMap<>();
+        this.channelName = channelName;
     }
 
     @Override
@@ -76,7 +78,8 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     public void handleStandaloneElement(final String elementName, final Map<String, String> attributes,
             final boolean minimized, final int line, final int col) throws ParseException {
 
-        logger.info("Unexpected StandaloneElement in {}{}: {} [{}]", line, col, elementName, attributes);
+        logger.info("Error parsing options for {}: Unexpected StandaloneElement in {}{}: {} [{}]", channelName, line,
+                col, elementName, attributes);
     }
 
     @Override
@@ -115,7 +118,8 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                     this.options.put(ChangerX2Entry.NUMBER_MAX, attributes.get(ChangerX2Entry.NUMBER_MAX));
                     this.options.put(ChangerX2Entry.NUMBER_STEP, attributes.get(ChangerX2Entry.NUMBER_STEP));
                 } else {
-                    logger.warn("Unhandled input field in {}:{}: {}", line, col, attributes);
+                    logger.warn("Error parsing options for {}: Unhandled input field in {}:{}: {}", channelName, line,
+                            col, attributes);
                 }
             }
         } else if (this.parserState == ParserState.SELECT && "option".equals(elementName)) {
@@ -124,7 +128,8 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             this.curOptionValue = new StringBuilder();
             this.curOptionId = attributes == null ? null : attributes.get("value");
         } else {
-            logger.info("Unexpected OpenElement in {}:{}: {} [{}]", line, col, elementName, attributes);
+            logger.info("Error parsing options for {}: Unexpected OpenElement in {}:{}: {} [{}]", channelName, line,
+                    col, elementName, attributes);
         }
     }
 
@@ -144,18 +149,21 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             this.curOptionId = null;
             if (value != null) {
                 if (id == null || id.trim().isEmpty()) {
-                    logger.info("Got option with empty 'value' in {}:{}: [{}]", line, col, value);
+                    logger.info("Error parsing options for {}: Got option with empty 'value' in {}:{}: [{}]",
+                            channelName, line, col, value);
                     return;
                 }
                 // we use the value as key and the id as value, as we have to map from the value to the id...
                 @Nullable
                 String prev = this.options.put(value, id);
                 if (prev != null && !prev.equals(value)) {
-                    logger.info("Got duplicate options in {}:{} for {}: {} and {}", line, col, value, prev, id);
+                    logger.info("Error parsing options for {}: Got duplicate options in {}:{} for {}: {} and {}",
+                            channelName, line, col, value, prev, id);
                 }
             }
         } else {
-            logger.info("Unexpected CloseElement in {}:{}: {}", line, col, elementName);
+            logger.info("Error parsing options for {}: Unexpected CloseElement in {}:{}: {}", channelName, line, col,
+                    elementName);
         }
     }
 
@@ -207,8 +215,12 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             }
         } else if (this.parserState == ParserState.INIT && len == 1 && buffer[offset] == '\n') {
             // single newline - ignore/drop it...
+        } else if (this.parserState == ParserState.INPUT) {
+            // this is a label next to the value input field - we currently have no use for it so
+            // it's dropped...
         } else {
-            logger.info("Unexpected Text {}:{}: ({}) {} ", line, col, len, new String(buffer, offset, len));
+            logger.info("Error parsing options for {}: Unexpected Text {}:{}: (ctx: {} len: {}) '{}' ",
+                    this.channelName, line, col, this.parserState, len, new String(buffer, offset, len));
         }
     }
 

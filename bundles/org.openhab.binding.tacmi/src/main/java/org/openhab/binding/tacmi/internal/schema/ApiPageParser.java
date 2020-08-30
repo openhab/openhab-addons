@@ -406,7 +406,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             if (this.fieldType == FieldType.FORM_VALUE) {
                 try {
                     URI uri = this.taCmiSchemaHandler.buildUri("INCLUDE/changerx2.cgi?sadrx2=" + address);
-                    final ChangerX2Parser pp = this.taCmiSchemaHandler.parsePage(uri, new ChangerX2Parser());
+                    final ChangerX2Parser pp = this.taCmiSchemaHandler.parsePage(uri, new ChangerX2Parser(shortName));
                     cx2e = pp.getParsedEntry();
                 } catch (final Exception ex) {
                     logger.error("Error loading API Scheme: {} ", ex.getMessage(), ex);

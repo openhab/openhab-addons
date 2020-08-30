@@ -13,10 +13,9 @@
 package org.openhab.binding.tacmi.internal.schema;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tacmi.internal.TACmiConfiguration;
 
 /**
- * The {@link TACmiConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link TACmiSchemaConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Niessner - Initial contribution
  */

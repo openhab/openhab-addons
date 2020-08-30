@@ -50,12 +50,11 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.tacmi.internal.TACmiChannelTypeProvider;
-import org.openhab.binding.tacmi.internal.TACmiHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link TACmiHandler} is responsible for handling commands, which are sent
+ * The {@link TACmiSchemaHandler} is responsible for handling commands, which are sent
  * to one of the channels.
  *
  * @author Christian Niessner - Initial contribution
