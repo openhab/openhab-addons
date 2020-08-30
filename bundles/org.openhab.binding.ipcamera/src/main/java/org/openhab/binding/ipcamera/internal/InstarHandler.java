@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.ipcamera.handler.IpCameraHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -139,7 +140,7 @@ public class InstarHandler extends ChannelDuplexHandler {
 
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString() == "REFRESH") {
+        if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_MOTION_ALARM:
                     if (ipCameraHandler.serverPort > 0) {

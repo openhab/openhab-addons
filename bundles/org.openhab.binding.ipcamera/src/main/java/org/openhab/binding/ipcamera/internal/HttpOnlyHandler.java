@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.ipcamera.handler.IpCameraHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -49,7 +50,7 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
 
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString() == "REFRESH") {
+        if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_ENABLE_AUDIO_ALARM:
                     return;

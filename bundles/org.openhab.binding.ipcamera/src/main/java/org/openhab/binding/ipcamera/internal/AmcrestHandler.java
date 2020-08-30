@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.ipcamera.handler.IpCameraHandler;
 
@@ -115,7 +116,7 @@ public class AmcrestHandler extends ChannelDuplexHandler {
 
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString() == "REFRESH") {
+        if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_THRESHOLD_AUDIO_ALARM:
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=AudioDetect[0]");

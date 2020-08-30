@@ -57,6 +57,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.ipcamera.internal.AmcrestHandler;
 import org.openhab.binding.ipcamera.internal.DahuaHandler;
@@ -1321,7 +1322,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString() == "REFRESH") {
+        if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_PAN:
                     if (onvifCamera.supportsPTZ()) {

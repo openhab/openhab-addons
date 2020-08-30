@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.ipcamera.handler.IpCameraHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -79,7 +80,7 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
 
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command.toString() == "REFRESH") {
+        if (command instanceof RefreshType) {
             return;
         } // end of "REFRESH"
         switch (channelUID.getId()) {
