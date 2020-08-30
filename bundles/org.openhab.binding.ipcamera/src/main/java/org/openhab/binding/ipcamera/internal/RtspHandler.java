@@ -182,6 +182,5 @@ public class RtspHandler extends ChannelDuplexHandler {
 
     @Override
     public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
-
     }
 }
