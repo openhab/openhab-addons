@@ -3,7 +3,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="kvvstation">
+	<thing-type id="station">
 		<label>KVV Station</label>
 		<description>Train station for KVV Binding.</description>
 
