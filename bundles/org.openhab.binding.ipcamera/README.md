@@ -1014,7 +1014,7 @@ If you don't like doing things the easy way with a ready made widget, below are 
 
 **How to manually display HLS without using the above WIDGETS:**
 
-+ Add a template widget with the following code using an Openhab item to link to your cameras ``hlsUrl`` channel.
++ Add a template widget with the following code using an openHAB item to link to your cameras ``hlsUrl`` channel.
 
 
 ```
