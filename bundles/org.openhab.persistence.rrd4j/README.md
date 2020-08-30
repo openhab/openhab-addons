@@ -18,7 +18,7 @@ It cannot store complex data types.
 Round-robin databases (RRDs) have fixed length so called "archives" for storing values.
 Think of an archive as a "drawer" with a fixed number of "storage boxes" in it.
 
-The persistence service reads data "samples" from the OpenHAB core at regular intervals, and these are then put into the storage boxes.
+The persistence service reads data "samples" from the openHAB core at regular intervals, and these are then put into the storage boxes.
 Either a) the samples are stored singly directly into a box, or b) multiple samples are consolidated (using a consolidation function) into a box.
 
 The service starts by storing samples in the leftmost box in the drawer.
