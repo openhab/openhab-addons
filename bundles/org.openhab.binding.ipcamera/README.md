@@ -181,7 +181,7 @@ Not only does this hide your login details, it will also make changing your pass
 
 Below are a list of the configuration parameters that can be used in textual configuration. 
 If you do not specify any of these, the binding will use the default which should work in most cases. 
-Very few of them are needed in order to get a working camera and examples are shown in the `Full Example` section.
+Very few of them are needed in order to get a working camera and examples are shown in the [Full Example](#full-example) section.
 
 
 | Parameter | Description |
