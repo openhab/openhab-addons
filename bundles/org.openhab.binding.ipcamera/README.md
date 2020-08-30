@@ -822,7 +822,7 @@ Always try to get the default settings working first before you begin to experim
 
 These similar features allow you to request a MJPEG stream created by the binding with low CPU usage from the cameras snapshots.
 Snapshots are usually high resolution and look great, however they are limited to a max of 1 frame per second (1 FPS).
-The reason this is more useful than snapshots on their own, is some UI's will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
+The reason this is more useful than snapshots on their own, is some UIs will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
 
 The autofps.mjpeg feature will display a snapshot that updates every 8 seconds to keep network traffic low, then when motion is detected it will automatically increase the frames to every second until the motion stops.
 This means lower traffic unless the picture is actually changing. 
