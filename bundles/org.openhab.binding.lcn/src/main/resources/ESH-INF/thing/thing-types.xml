@@ -62,8 +62,6 @@
 			<channel-group typeId="leds" id="led"/>
 			<channel-group typeId="relays" id="relay"/>
 			<channel-group typeId="rollershutterrelays" id="rollershutterrelay"/>
-			<channel-group typeId="logics" id="logic"/>
-			<channel-group typeId="binarysensors" id="binarysensor"/>
 			<channel-group typeId="variables" id="variable"/>
 			<channel-group typeId="rvarsetpoints" id="rvarsetpoint"/>
 			<channel-group typeId="rvarlocks" id="rvarlock"/>
@@ -71,12 +69,10 @@
 			<channel-group typeId="thresholdregisters2" id="thresholdregister2"/>
 			<channel-group typeId="thresholdregisters3" id="thresholdregister3"/>
 			<channel-group typeId="thresholdregisters4" id="thresholdregister4"/>
-			<channel-group typeId="s0inputs" id="s0input"/>
 			<channel-group typeId="keyslocktablea" id="keylocktablea"/>
 			<channel-group typeId="keyslocktableb" id="keylocktableb"/>
 			<channel-group typeId="keyslocktablec" id="keylocktablec"/>
 			<channel-group typeId="keyslocktabled" id="keylocktabled"/>
-			<channel-group typeId="codes" id="code"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:lcn:group"/>

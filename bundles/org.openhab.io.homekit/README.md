@@ -8,7 +8,6 @@ HomeKit organizes your home into "accessories" that are made up of a number of "
 Some accessory types require a specific set of characteristics.
 
 HomeKit integration supports following accessory types:
-- Window Covering/Blinds
 - Switchable 
 - Outlet
 - Lighting (simple, dimmable, color)
@@ -18,7 +17,11 @@ HomeKit integration supports following accessory types:
 - Lock
 - Security System
 - Garage Door Opener
+- Motorized Door
+- Motorized Window
+- Window Covering/Blinds
 - Valve
+- Air Quality Sensor
 - Contact Sensor
 - Leak Sensor
 - Motion Sensor
@@ -250,6 +253,20 @@ Switch light2 "Light 2" (gLight) {homekit="Lighting.OnState"}
 |                      |                             | FaultStatus                  | Switch, Contact          | Fault status                                                     |
 |                      |                             | TamperedStatus               | Switch, Contact          | Tampered status                                                  |
 |                      |                             | BatteryLowStatus             | Switch, Contact          | Battery status                                                   |
+| Door                 |                             |                              |                          | Motorized door. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
+|                      | CurrentPosition             |                              | Rollershutter            | Current position of motorized door                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter            | Target position of motorized door                                                                                                                                                                                                                                                                       |
+|                      | PositionState               |                              | Rollershutter            | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
+|                      |                             | Name                         | String                   | Name of the motorized door                                                                                                                                                                                                                                                                             |
+|                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
+|                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
+| Window               |                             |                              |                          | Motorized window. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
+|                      | CurrentPosition             |                              | Rollershutter            | Current position of motorized window                                                                                                                                                                                                                                                                       |
+|                      | TargetPosition              |                              | Rollershutter            | Target position of motorized window                                                                                                                                                                                                                                                                       |
+|                      | PositionState               |                              | Rollershutter            | Position state. Supported states: DECREASING, INCREASING, STOPPED. Mapping can be redefined at item level, e.g. [DECREASING="Down", INCREASING="Up"]. If no state provided, "STOPPED" is used.                                                                                                |
+|                      |                             | Name                         | String                   | Name of the motorized window                                                                                                                                                                                                                                                                             |
+|                      |                             | HoldPosition                 | Switch                   | Motorized door should stop at its current position. A value of ON must hold the state of the accessory.  A value of OFF should be ignored.                                                                                                                                                               |
+|                      |                             | ObstructionStatus            | Switch, Contact          | Current status of obstruction sensor. ON-obstruction detected, OFF - no obstruction                                                                                                                                                                                                                       |
 | WindowCovering       |                             |                              |                          | Window covering / blinds. One Rollershutter item covers all mandatory characteristics. see examples below.                                                                                                                                                                                                |
 |                      | CurrentPosition             |                              | Rollershutter            | Current position of window covering                                                                                                                                                                                                                                                                       |
 |                      | TargetPosition              |                              | Rollershutter            | Target position of window covering                                                                                                                                                                                                                                                                        |
@@ -461,7 +478,7 @@ Group           gSecuritySystem            "Security System Group"              
 String          security_current_state     "Security Current State"             (gSecuritySystem)    {homekit="SecuritySystem.CurrentSecuritySystemState"}
 String          security_target_state      "Security Target State"              (gSecuritySystem)    {homekit="SecuritySystem.TargetSecuritySystemState"}
 
-Group  			gCooler    				"Cooler Group"       				 	                {homekit="HeaterCooler"}
+Group  			gCooler    			        "Cooler Group"       				 	                {homekit="HeaterCooler"}
 Switch          cooler_active 				"Cooler Active" 				    (gCooler) 		    {homekit="ActiveStatus"}
 Number 			cooler_current_temp     	"Cooler Current Temp [%.1f C]"  	(gCooler)  	        {homekit="CurrentTemperature"}
 String 			cooler_current_mode  	    "Cooler Current Mode" 		        (gCooler) 			{homekit="CurrentHeaterCoolerState" [HEATING="HEAT", COOLING="COOL"]}          
@@ -502,18 +519,20 @@ Following modes are supported:
  Dimmer dimmer_light_2	"Dimmer Light 2" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
  Dimmer dimmer_light_3	"Dimmer Light 3" 	 {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
  ```
-### Windows Covering / Blinds
+### Windows Covering (Blinds) / Window / Door
 
-HomeKit Windows Covering accessory type has following mandatory characteristics: 
+HomeKit Windows Covering, Window and Door accessory types have following mandatory characteristics: 
 
 - CurrentPosition (0-100% of current window covering position)
 - TargetPosition (0-100% of target position)
-- PositionState (DECREASING,INCREASING or STOPPED as state. HomeKit integration currently supports only STOPPED)
+- PositionState (DECREASING,INCREASING or STOPPED as state). If no state provided, HomeKit will send STOPPED
 
-These characteristics can be mapped to a single openHAB rollershutter item. In such case currentPosition will always equal target position, means if you request to close a blind, HomeKit will immediately report that the blind is closed.
+These characteristics can be mapped to a single openHAB rollershutter item. In such case currentPosition will always equal target position, means if you request to close a blind/window/door, HomeKit will immediately report that the blind/window/door is closed.
 As discussed above, one can use full or shorthand definition. Following two definitions are equal:
 
 ```xtend
+Rollershutter 	window 		            "Window"  	                {homekit = "Window"}
+Rollershutter 	door		            "Door"  	                {homekit = "Door"}
 Rollershutter   window_covering         "Window Rollershutter"      {homekit = "WindowCovering"}
 Rollershutter 	window_covering_long 	"Window Rollershutter long" {homekit = "WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
  ```
@@ -523,7 +542,7 @@ openHAB Rollershutter is defined by default as:
 - OPEN if position is 0%,
 - CLOSED if position is 100%.
 
-In contrast, HomeKit window covering has inverted mapping
+In contrast, HomeKit window covering/door/window have inverted mapping
 - OPEN if position 100%
 - CLOSED if position is 0%
 
@@ -532,6 +551,9 @@ In case you need to disable this logic you can do it with configuration paramete
 
 ```xtend
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted="false"]}
+Rollershutter window		   "Window"  	         {homekit = "Window" [inverted="false"]}
+Rollershutter door		       "Door"  	         {homekit = "Door" [inverted="false"]}
+
  ```
 
 Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger. 
