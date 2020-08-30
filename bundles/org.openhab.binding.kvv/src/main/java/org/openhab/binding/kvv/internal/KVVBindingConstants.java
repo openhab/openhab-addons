@@ -40,4 +40,7 @@ public class KVVBindingConstants {
 
     /** URL of the KVV API */
     public static final String API_URL = "https://live.kvv.de/webapp";
+
+    /** Timout for API calls in seconds */
+    public static final int TIMEOUT_IN_SECONDS = 10;
 }

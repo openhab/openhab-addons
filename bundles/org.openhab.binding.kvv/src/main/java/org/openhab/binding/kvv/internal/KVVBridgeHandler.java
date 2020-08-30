@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.kvv.internal;
 
+import java.io.IOException;
+
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,14 +62,15 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + config.stationId + "?key="
                 + config.apiKey + "&maxInfos=" + config.maxTrains;
 
-        final RawType data = HttpUtil.downloadData(url, null, false, -1);
-        if (data == null) {
-            logger.warn("Failed to get departures from '{}'", url);
+        String data;
+        try {
+            data = HttpUtil.executeUrl("GET", url, KVVBindingConstants.TIMEOUT_IN_SECONDS * 1000);
+        } catch (IOException e) {
+            logger.warn("Failed to get departures from '{}': {}", url, e);
             return null;
         }
 
-        final DepartureResult result = new Gson().fromJson(new String(data.getBytes(), StandardCharsets.UTF_8),
-                DepartureResult.class);
+        final DepartureResult result = new Gson().fromJson(data, DepartureResult.class);
         if (result.departures.size() != config.maxTrains) {
             logger.warn("Result size (={}) differs from maxTrain setting (={})", result.departures.size(),
                     config.maxTrains);
