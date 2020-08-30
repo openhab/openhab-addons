@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.avmfritz.internal.actions.AVMFritzHeatingActionsHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
@@ -78,22 +79,24 @@ public class AVMFritzHeatingActions implements ThingActions {
         invokeMethodOf(actions).setWindowOpenMode(duration);
     }
 
-    private static AVMFritzHeatingActions invokeMethodOf(@Nullable ThingActions actions) {
+    private static AVMFritzHeatingActionsHandler invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
             throw new IllegalArgumentException("Actions cannot be null");
         }
-        if (actions.getClass().getName().equals(AVMFritzHeatingActions.class.getName())) {
-            if (actions instanceof AVMFritzHeatingActions) {
-                return (AVMFritzHeatingActions) actions;
+        if (actions.getClass().getName().equals(AVMFritzHeatingActionsHandler.class.getName())) {
+            if (actions instanceof AVMFritzHeatingActionsHandler) {
+                return (AVMFritzHeatingActionsHandler) actions;
             } else {
-                return (AVMFritzHeatingActions) Proxy.newProxyInstance(AVMFritzHeatingActions.class.getClassLoader(),
-                        new Class[] { AVMFritzHeatingActions.class }, (Object proxy, Method method, Object[] args) -> {
+                return (AVMFritzHeatingActionsHandler) Proxy.newProxyInstance(
+                        AVMFritzHeatingActionsHandler.class.getClassLoader(),
+                        new Class[] { AVMFritzHeatingActionsHandler.class },
+                        (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
                             return m.invoke(actions, args);
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of AVMFritzHeatingActions");
+        throw new IllegalArgumentException("Actions is not an instance of AVMFritzHeatingActionsHandler");
     }
 }

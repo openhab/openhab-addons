@@ -162,8 +162,7 @@ public class AVMFritzBindingConstants {
             .unmodifiableSet(Stream.of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS.stream(), SUPPORTED_HEATING_THING_TYPES.stream(),
-                    SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_GROUP_THING_TYPES_UIDS.stream(),
-                    SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
-            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
+            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
+                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.avmfritz.actions;
+package org.openhab.binding.avmfritz.internal.actions;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +18,7 @@ import java.util.Collections;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.avmfritz.actions.AVMFritzHeatingActions;
 
 /**
  * The {@link AVMFritzHeatingActionsHandler} defines interface handlers to handle heating thing actions.
