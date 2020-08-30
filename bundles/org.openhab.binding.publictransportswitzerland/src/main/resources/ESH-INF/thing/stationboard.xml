@@ -8,23 +8,12 @@
 		<label>Stationboard</label>
 		<description>Upcoming departures for a single station.</description>
 
-		<channels>
-			<channel id="tsv" typeId="tsv" />
-		</channels>
-
 		<config-description>
 			<parameter name="station" type="text" required="true">
 				<label>Station</label>
 				<description>The name of the station</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
-
-	<channel-type id="tsv" advanced="true">
-		<item-type>String</item-type>
-		<label>TSV</label>
-		<description>A TSV representation</description>
-	</channel-type>
 
 </thing:thing-descriptions>
