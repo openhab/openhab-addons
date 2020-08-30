@@ -241,7 +241,7 @@
 		<config-description>
 			<parameter name="addressMask" type="text">
 				<label>Address Mask</label>
-				<description>Receive and send messages from a specific keypad (0=any)</description>
+				<description>String containing the address mask in hex that the keypad thing will receive messages for. (0=any)</description>
 				<default>0</default>
 			</parameter>
 			<parameter name="sendCommands" type="boolean">

@@ -100,7 +100,7 @@ Command strings containing invalid characters will be ignored.
 
 Parameters:
 
-* `addressMask` (required) Keypad address mask (0 = All addresses)
+* `addressMask` (default = 0) String containing the mask in hex of addresses that the keypad thing will receive messages for (0 = all addresses).
 * `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
 * `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
 * `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
