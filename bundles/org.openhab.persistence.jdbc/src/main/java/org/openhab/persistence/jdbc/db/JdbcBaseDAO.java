@@ -352,11 +352,11 @@ public class JdbcBaseDAO {
                 filter.toString(), numberDecimalcount, table, simpleName);
 
         String filterString = "";
-        if (filter.getBeginDate() != null) {
+        if (filter.getBeginDateZoned() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
             filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDateZoned()) + "'";
         }
-        if (filter.getEndDate() != null) {
+        if (filter.getEndDateZoned() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
             filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDateZoned()) + "'";
         }

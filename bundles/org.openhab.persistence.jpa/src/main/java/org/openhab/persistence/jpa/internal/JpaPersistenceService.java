@@ -12,8 +12,8 @@
  */
 package org.openhab.persistence.jpa.internal;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -140,7 +140,7 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         }
         pItem.setName(name);
         pItem.setRealName(item.getName());
-        pItem.setTimestamp(LocalDateTime.now());
+        pItem.setTimestamp(new Date());
 
         EntityManager em = getEntityManagerFactory().createEntityManager();
         try {
@@ -188,11 +188,11 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         boolean hasEndDate = false;
         String queryString = "SELECT n FROM " + JpaPersistentItem.class.getSimpleName()
                 + " n WHERE n.realName = :itemName";
-        if (filter.getBeginDate() != null) {
+        if (filter.getBeginDateZoned() != null) {
             queryString += " AND n.timestamp >= :beginDate";
             hasBeginDate = true;
         }
-        if (filter.getEndDate() != null) {
+        if (filter.getEndDateZoned() != null) {
             queryString += " AND n.timestamp <= :endDate";
             hasEndDate = true;
         }
@@ -209,10 +209,10 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             Query query = em.createQuery(queryString);
             query.setParameter("itemName", item.getName());
             if (hasBeginDate) {
-                query.setParameter("beginDate", filter.getBeginDate());
+                query.setParameter("beginDate", Date.from(filter.getBeginDateZoned().toInstant()));
             }
             if (hasEndDate) {
-                query.setParameter("endDate", filter.getEndDate());
+                query.setParameter("endDate", Date.from(filter.getEndDateZoned().toInstant()));
             }
 
             query.setFirstResult(filter.getPageNumber() * filter.getPageSize());
