@@ -363,7 +363,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_START_STREAM:
                     if ("ON".equals(command.toString())) {
-                        logger.info("Starting HLS generation for all cameras in a group.");
+                        logger.debug("Starting HLS generation for all cameras in a group.");
                         hlsTurnedOn = true;
                         for (IpCameraHandler handler : cameraOrder) {
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"
