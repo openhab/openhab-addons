@@ -100,10 +100,26 @@ Command strings containing invalid characters will be ignored.
 
 Parameters:
 
-* `addressMask` (default = 0) String containing the mask in hex of addresses that the keypad thing will receive messages for (0 = all addresses).
+* `addressMask` (default = 0) String containing the mask in hex of addresses for which the keypad thing will receive messages (0 = all addresses).
 * `sendCommands` (default = false) Allow keypad commands to be sent to the alarm system from openHAB. Enabling this means the alarm system will be only as secure as your openHAB system.
 * `sendStar` (default = false) When disarmed/faulted, automatically send the * character to obtain zone fault information.
 * `commandMapping` (optional) Comma separated list of key/value pairs mapping integers to command strings for `intcommand` channel.
+
+Address masks
+
+Each bit in the 4 bytes of the address mask represents a device address, ranging from device 0 to device 31.
+The first byte (left to right) represents devices 0-7, the second 8-15, the third 16-23, and the fourth 24-31.
+The mask itself is represented as a string containing a hexadecimal number.
+For example, a mask of 03000000 would indicate devices 0 and 1 as follows:
+
+```
+Mask: 03000000
+Bytes: 03       00       00       00
+Bits:  00000011 00000000 00000000 00000000
+       -------- -------- -------- --------
+Device#         111111   22221111 33222222
+       76543210 54321098 32109876 10987654
+```
 
 Thing config file example:
 
