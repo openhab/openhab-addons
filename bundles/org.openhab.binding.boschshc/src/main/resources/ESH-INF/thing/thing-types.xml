@@ -30,9 +30,9 @@
 		<description>In-wall switch for light control</description>
 
 		<channels>
-			<channel id="power-switch" typeId="power-switch" />
-			<channel id="power-consumption" typeId="power-consumption" />
-			<channel id="energy-consumption" typeId="energy-consumption" />
+			<channel id="power-switch" typeId="power-switch"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="energy-consumption" typeId="energy-consumption"/>
 		</channels>
 
 		<config-description>
@@ -51,14 +51,14 @@
 		<description>TwinGuard environmental sensor</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="temperature-rating" typeId="temperature-rating" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="humidity-rating" typeId="humidity-rating" />
-			<channel id="purity" typeId="purity" />
-			<channel id="air-description" typeId="air-description" />
-			<channel id="purity-rating" typeId="purity-rating" />
-			<channel id="combined-rating" typeId="combined-rating" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature-rating" typeId="temperature-rating"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="humidity-rating" typeId="humidity-rating"/>
+			<channel id="purity" typeId="purity"/>
+			<channel id="air-description" typeId="air-description"/>
+			<channel id="purity-rating" typeId="purity-rating"/>
+			<channel id="combined-rating" typeId="combined-rating"/>
 		</channels>
 
 		<config-description>
@@ -77,7 +77,7 @@
 		<description>Contact for windows and doors</description>
 
 		<channels>
-			<channel id="contact" typeId="contact" />
+			<channel id="contact" typeId="contact"/>
 		</channels>
 
 		<config-description>
@@ -95,7 +95,7 @@
 		<description>Bosch Motion Detector</description>
 
 		<channels>
-			<channel id="latest-motion" typeId="latest-motion" />
+			<channel id="latest-motion" typeId="latest-motion"/>
 		</channels>
 
 		<config-description>
@@ -110,14 +110,14 @@
 
 	<thing-type id="shutter-control">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="shc" />
+			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
 		<label>Shutter Control</label>
 		<description>Bosch Shutter Control</description>
 
 		<channels>
-			<channel id="level" typeId="level" />
+			<channel id="level" typeId="level"/>
 		</channels>
 
 		<config-description>
@@ -132,15 +132,15 @@
 
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="shc" />
+			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
 		<label>Thermostat</label>
 		<description>Bosch Thermostat</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="valve-tappet-position" typeId="valve-tappet-position" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 		</channels>
 
 		<config-description>
@@ -155,7 +155,7 @@
 
 	<thing-type id="climate-control">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="shc" />
+			<bridge-type-ref id="shc"/>
 		</supported-bridge-type-refs>
 
 		<label>Climate Control</label>
@@ -163,8 +163,8 @@
 			thermostats in it.</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="setpoint-temperature" typeId="setpoint-temperature" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="setpoint-temperature" typeId="setpoint-temperature"/>
 		</channels>
 
 		<config-description>
@@ -188,7 +188,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current measured temperature.</description>
-		<state min="0" max="40" step="0.5" pattern="%.1f °C" readOnly="true" />
+		<state min="0" max="40" step="0.5" pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature-rating">
@@ -261,21 +261,21 @@
 		<item-type>Rollershutter</item-type>
 		<label>Level</label>
 		<description>Current open ratio (0 to 100).</description>
-		<state min="0" max="100" step="0.5" readOnly="false" />
+		<state min="0" max="100" step="0.5" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="valve-tappet-position">
 		<item-type>Number</item-type>
 		<label>Valve Tappet Position</label>
 		<description>Current open ratio (0 to 100).</description>
-		<state min="0" max="100" step="1" readOnly="true" />
+		<state min="0" max="100" step="1" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="setpoint-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
 		<description>Desired temperature (in degree celsius).</description>
-		<state min="5" max="30" step="0.5" pattern="%.1f °C" />
+		<state min="5" max="30" step="0.5" pattern="%.1f °C"/>
 	</channel-type>
 
 </thing:thing-descriptions>
