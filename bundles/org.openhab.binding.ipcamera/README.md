@@ -27,13 +27,7 @@ To keep your log file clean, the binding holds back a lot of useful fault findin
 
 This binding can turn a RTSP stream into snapshots (.jpg still pictures), create motion and audio alarms, cast the camera stream and much more. 
 FFmpeg is required to be installed for these features to work and this must be done manually.
-
-Under Linux, FFmpeg can be installed very easily with this one command. 
-For other platforms their website has guides.
-
-```
-sudo apt update && sudo apt install ffmpeg
-```
+Under Linux, FFmpeg can be installed very easily see [Video Streams](#video-streams).
 
 The Image channel will not update when using FFmpeg to create snapshots, so you will need to use one of the other much better methods like `ipcamera.jpg` or any of the streams that are explained in this readme.
 If your camera does have a snapshot URL, provide it to the binding via the config called `SNAPSHOT_URL_OVERRIDE` after first testing the URL in any browser.

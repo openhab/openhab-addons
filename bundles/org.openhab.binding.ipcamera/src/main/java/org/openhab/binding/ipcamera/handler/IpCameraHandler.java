@@ -1287,39 +1287,6 @@ public class IpCameraHandler extends BaseThingHandler {
         return ""; // Did not find the String we were searching for
     }
 
-    public String searchString(String rawString, String searchedString) {
-        String result = "";
-        int index = 0;
-        index = rawString.indexOf(searchedString);
-        if (index != -1) // -1 means "not found"
-        {
-            result = rawString.substring(index + searchedString.length(), rawString.length());
-            index = result.indexOf(',');
-            if (index == -1) {
-                index = result.indexOf('"');
-                if (index == -1) {
-                    index = result.indexOf('}');
-                    if (index == -1) {
-                        return result;
-                    } else {
-                        return result.substring(0, index);
-                    }
-                } else {
-                    return result.substring(0, index);
-                }
-            } else {
-                result = result.substring(0, index);
-                index = result.indexOf('"');
-                if (index == -1) {
-                    return result;
-                } else {
-                    return result.substring(0, index);
-                }
-            }
-        }
-        return "";
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {

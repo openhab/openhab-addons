@@ -80,7 +80,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     if (content.contains("var show_1=\"0\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(""));
                     } else {
-                        value1 = ipCameraHandler.searchString(content, "var name_1=\"");
+                        value1 = searchString(content, "var name_1=\"");
                         if (!value1.isEmpty()) {
                             ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(value1));
                         }
@@ -97,7 +97,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                 case "/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr":// Audio Alarm
                     if (content.contains("var aa_enable=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
-                        value1 = ipCameraHandler.searchString(content, "var aa_value=\"");
+                        value1 = searchString(content, "var aa_value=\"");
                         if (!value1.isEmpty()) {
                             // ipCameraHandler.logger.debug("Threshold is changing to {}", value1);
                             ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value1));
@@ -126,6 +126,45 @@ public class InstarHandler extends ChannelDuplexHandler {
         } finally {
             ReferenceCountUtil.release(msg);
         }
+    }
+
+    /**
+     * The {@link searchString} Used to grab values out of JSON or other quote encapsulated structures without needing
+     * an external lib. String may be terminated by ," or }.
+     *
+     * @author Matthew Skinner - Initial contribution
+     */
+    String searchString(String rawString, String searchedString) {
+        String result = "";
+        int index = 0;
+        index = rawString.indexOf(searchedString);
+        if (index != -1) // -1 means "not found"
+        {
+            result = rawString.substring(index + searchedString.length(), rawString.length());
+            index = result.indexOf(',');
+            if (index == -1) {
+                index = result.indexOf('"');
+                if (index == -1) {
+                    index = result.indexOf('}');
+                    if (index == -1) {
+                        return result;
+                    } else {
+                        return result.substring(0, index);
+                    }
+                } else {
+                    return result.substring(0, index);
+                }
+            } else {
+                result = result.substring(0, index);
+                index = result.indexOf('"');
+                if (index == -1) {
+                    return result;
+                } else {
+                    return result.substring(0, index);
+                }
+            }
+        }
+        return "";
     }
 
     public String encodeSpecialChars(String text) {
