@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
@@ -144,13 +143,6 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=true&VideoWidget[0].CustomTitle[1].Text="
                                     + text);
-                }
-                return;
-            case CHANNEL_API_ACCESS:
-                if (command.toString() != null) {
-                    ipCameraHandler.logger.info("API Access was sent this command :{}", command.toString());
-                    ipCameraHandler.sendHttpGET(command.toString());
-                    ipCameraHandler.setChannelState(CHANNEL_API_ACCESS, StringType.valueOf(""));
                 }
                 return;
             case CHANNEL_ENABLE_LED:

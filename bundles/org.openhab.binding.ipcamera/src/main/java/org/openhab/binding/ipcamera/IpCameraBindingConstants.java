@@ -126,7 +126,6 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_TOO_BRIGHT_ALARM = "tooBrightAlarm";
     public static final String CHANNEL_TOO_BLURRY_ALARM = "tooBlurryAlarm";
     public static final String CHANNEL_TEXT_OVERLAY = "textOverlay";
-    public static final String CHANNEL_API_ACCESS = "apiAccess";
     public static final String CHANNEL_EXTERNAL_LIGHT = "externalLight";
     public static final String CHANNEL_DOORBELL = "doorBell";
     public static final String CHANNEL_LAST_MOTION_TYPE = "lastMotionType";

@@ -964,7 +964,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="autoLED" typeId="autoLED"/>
 			<channel id="enableLED" typeId="enableLED"/>
 			<channel id="textOverlay" typeId="textOverlay"/>
-			<channel id="apiAccess" typeId="apiAccess"/>
 			<channel id="pan" typeId="pan"/>
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
@@ -2765,12 +2764,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<item-type>String</item-type>
 		<label>Text Overlay</label>
 		<description>Some custom text you wish to overlay onto the cameras snapshot and video stream.</description>
-	</channel-type>
-
-	<channel-type id="apiAccess">
-		<item-type>String</item-type>
-		<label>API Access</label>
-		<description>Change the string to the correct URL format and the binding will send the GET request to the camera.</description>
 	</channel-type>
 
 	<channel-type id="gotoPreset">

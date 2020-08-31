@@ -291,32 +291,6 @@ end
 ```
 
 
-**apiAccess**
-
-A special String channel has been added that allows you to send any GET request to Dahua cameras only. 
-This is due to the HTTP binding currently not supporting the DIGEST method that these cameras must use in the latest firmwares. 
-For other brands you can use the HTTP binding should a feature not have direct support in this binding. 
-It is far better to add or request a feature so that it gets added to the binding so that all future users benefit. 
-One goal of this binding is to save all users from needing to learn an API, instead they can use that time saved to automate with openHAB.
-
-The reply from the camera is not captured nor returned, so this is only a 1 way GET request.
-To use this feature you can simply use this command inside any rule at any time and with as many URL Strings as you wish. 
-User/pass and the IP are handled automagically.
-
-item:
-
-```java
-String CamAPIAccess "Access the API" { channel="ipcamera:DAHUA:001:apiAccess" }
-```
-
-Command to use in rules:
-
-```java
-CamAPIAccess.sendCommand('/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off')
-```
-
-The URL must be in this format without the IP:Port info and the binding will handle the user and password for you making it far simpler to change a password on a camera without the need to update countless lines in your openHAB files.
-
 ## Full Example
 
 Use the following examples to base your setup on to save some time if you wish to use textual config.
@@ -409,7 +383,6 @@ Dimmer BabyCamAudioThreshold "Audio Threshold [%d]" { channel="ipcamera:DAHUA:00
 Dimmer BabyCamLED "IR LED [%d]" { channel="ipcamera:DAHUA:001:enableLED" }
 Switch BabyCamAutoLED "Auto IR LED" { channel="ipcamera:DAHUA:001:autoLED" }
 String BabyCamTextOverlay "Text to overlay" { channel="ipcamera:DAHUA:001:textOverlay" }
-String BabyCamAPIAccess "Access the API" { channel="ipcamera:DAHUA:001:apiAccess" }
 String BabyCamStreamUrl "MJPEG Stream" { channel="ipcamera:DAHUA:BabyCamera:streamUrl" }
 String BabyCamHlsStreamUrl "HLS Stream" { channel="ipcamera:DAHUA:BabyCamera:hlsUrl" }
 String BabyCamRTSPStreamUrl "RTSP Stream" { channel="ipcamera:DAHUA:BabyCamera:rtspUrl" }
