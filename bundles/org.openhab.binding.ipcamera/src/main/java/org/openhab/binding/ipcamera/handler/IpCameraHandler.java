@@ -1229,7 +1229,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void motionDetected(String thisAlarmsChannel) {
         updateState(CHANNEL_LAST_MOTION_TYPE, new StringType(thisAlarmsChannel));
-        updateState(thisAlarmsChannel, OnOffType.valueOf("ON"));
+        updateState(thisAlarmsChannel, OnOffType.ON);
         motionDetected = true;
         if (streamingAutoFps) {
             startSnapshotPolling();
