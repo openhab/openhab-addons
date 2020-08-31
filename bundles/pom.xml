@@ -67,6 +67,7 @@
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
+    <module>org.openhab.binding.comfoair</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.coronastats</module>
     <module>org.openhab.binding.daikin</module>
