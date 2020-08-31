@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +23,6 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.location.Locat
 import org.openhab.binding.innogysmarthome.internal.client.entity.message.Message;
 
 import com.google.gson.annotations.SerializedName;
-
-import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 
 /**
  * Defines the structure of a {@link Device}.
