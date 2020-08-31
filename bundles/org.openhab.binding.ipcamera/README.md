@@ -294,20 +294,18 @@ end
 ## Full Example
 
 Use the following examples to base your setup on to save some time if you wish to use textual config.
+Textual config should only be used by advanced users as the [Discovery](#discovery) method should be preferred by new users.
 
-NOTE: If you used the UI to create the camera thing instead of textual config, you will need to ensure the 001 is replaced with the cameras UID which may look like "0A78687F" or the IP address without the dots if it was found with auto discovery.
+Replace AMCREST or HIKVISION with the name of the supported thing type you are using, as all cameras use consistent naming of channels and configs so changing between them is easy.
 
-Replace AMCREST or HIKVISION with the name of the supported thing type you are using as all cameras use consistant naming of channels and configs so changing between them is easy.
+In the examples you will see the format is: `bindingID:thingType:UID` [param1="string",param2=x,param3=x]
 
-In the examples you will see the format is: `bindingID:THINGTYPE:UID` [param1="string",param2=x,param3=x]
+bindingID: is always ipcamera.
+thingType: is found listed above under [Supported Things](#supported-things).
+UID: Can be made up but it must be UNIQUE, hence why it is called uniqueID. 
 
-BindingID: is always ipcamera.
-THINGTYPE: is found listed above under the heading "supported things"
-UID: Can be made up but it must be UNIQUE, hence why it is called UniqueID. 
-
-openHAB's UI will choose a new random UID each time you remove and add the camera causing you to edit your rules, items and sitemaps to make them match. 
-The auto discovery will choose to use the IP address with the dots removed as the UID.
-By using textual config you can name it something useful like "DrivewayCamera" if you wish.
+openHAB's discovery method will use the IP address with the dots removed as the UID.
+By using textual config, you can name it something useful like "DrivewayCamera" if you wish, or stick with the same convention.
 
 
 *.things
@@ -525,8 +523,6 @@ rule "Create time of last movement"
 end
 
 ```
-
-Note: For the above notifications to work you will need to setup multiple users with the correct email address's at the openHAB cloud.
 
 
 ## Moving PTZ Cameras
@@ -984,7 +980,6 @@ KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
 ```
 
 
-
 ## HABpanel
 
 This section is about how to get things working in HABpanel.
@@ -1013,7 +1008,6 @@ If you don't like doing things the easy way with a ready made widget, below are 
 <video width="100%" height="100%" autoplay src="{{itemValue('Camera_hlsUrl')}}"</video>
 
 ```
-
 
 
 ## Animated GIF
