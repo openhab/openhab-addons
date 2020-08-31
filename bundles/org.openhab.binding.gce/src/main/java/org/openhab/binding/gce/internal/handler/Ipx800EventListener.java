@@ -28,7 +28,7 @@ public interface Ipx800EventListener {
      * @param port Port (kind and number) receiving update
      * @param value value updated
      */
-    void dataReceived(String port, Double value);
+    void dataReceived(String port, double value);
 
     /**
      * Procedure for receiving information fatal error.
@@ -36,5 +36,4 @@ public interface Ipx800EventListener {
      * @param e Error occurred.
      */
     void errorOccurred(Exception e);
-
 }

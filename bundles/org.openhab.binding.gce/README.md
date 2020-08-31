@@ -29,26 +29,27 @@ There is no configuration at binding level.
 
 ## Thing Configuration
 
-The IPX800v3 accepts the following configuration parameters
+The IPX800v3 (ID : 'ipx800v3') accepts the following configuration parameters :
 
 | Property            | Default | Required | Description                 |
 |---------------------|---------|----------|-----------------------------|
 | hostname            |         | Yes      | IP address or hostname.     |
 | portNumber          | 9870    | No       | TCP client connection port. |
 
-The thing provides four kinds of channels.
+The thing provides four groups of channels.
 
 ### Digital Inputs
 
 #### Configuration
 
-| Property        | Default | Description                                                                     |
-|-----------------|---------|---------------------------------------------------------------------------------|
-| debouncePeriod  |    0    | Debounce time (ignores flappling within this time). No debounce is done if '0'. |
-| longPressTime   |    0    | Delay (in ms) before triggering long press event. Ignored if '0'.               |
-| pulsePeriod     |    0    | Period of pulse event triggering while the entry is closed. Ignored if '0'.     |
-| pulseTimeout    |    0    | Period of time after pulsing will be stopped. None if '0'.                      |
+| Property        | Default | Unit | Description                                                                     |
+|-----------------|---------|------|---------------------------------------------------------------------------------|
+| debouncePeriod  |    0(*) | ms   | Debounce time (ignores flappling within this time). No debounce is done if '0'. |
+| longPressTime   |    0(*) | ms   | Delay before triggering long press event. Ignored if '0'.                       |
+| pulsePeriod     |    0(*) | ms   | Period of pulse event triggering while the entry is closed. Ignored if '0'.     |
+| pulseTimeout    |    0(*) | ms   | Period of time after pulsing will be stopped. None if '0'.                      |
 
+(*) Values below 100ms should be avoided as the JVM could skip them and proceed in the same time slice.
 
 ### Digital Outputs (relays)
 
@@ -62,18 +63,18 @@ The thing provides four kinds of channels.
 
 #### Configuration
 
-| Property        | Default | Description                                                                     |
-|-----------------|---------|---------------------------------------------------------------------------------|
-| pullFrequency   |  5000   | Counter value refreshing frequency (in ms).                                     |
+| Property     | Default | Description                                                                     |
+|--------------|---------|---------------------------------------------------------------------------------|
+| pullInterval |  5000   | Counter value refreshing frequency (in ms).                                     |
 
 ### Analog Inputs
 
 #### Configuration
 
-| Property        | Default | Description                                                                            |
-|-----------------|---------|----------------------------------------------------------------------------------------|
-| pullFrequency   |  5000   | Counter value refreshing frequency (in ms).                                            |
-| histeresis      |  0      | Threshold that must be reached between two refreshes to trigger an update of the value |
+| Property     | Default | Unit |  Description                                                                            |
+|--------------|---------|------|-----------------------------------------------------------------------------------------|
+| pullInterval |  5000   | ms   | Counter value refreshing frequency.                                                     |
+| hysteresis   |  0      |      | Threshold that must be reached between two refreshes to trigger an update of the value. |
 
 ## Item Configuration
 

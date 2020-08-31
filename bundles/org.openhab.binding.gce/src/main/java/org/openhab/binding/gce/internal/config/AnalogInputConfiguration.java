@@ -22,5 +22,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AnalogInputConfiguration extends CounterConfiguration {
-    public long histeresis;
+    public long hysteresis;
 }

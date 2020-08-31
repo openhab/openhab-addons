@@ -93,7 +93,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE);
 
         configuration = getConfigAs(Ipx800Configuration.class);
 
@@ -105,7 +104,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         parser = Optional.of(new Ipx800MessageParser(connector, this));
 
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(ThingStatus.UNKNOWN);
         connector.start();
     }
 
@@ -136,12 +135,13 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     @Override
-    public void dataReceived(String port, Double value) {
+    public void dataReceived(String port, double value) {
+        updateStatus(ThingStatus.ONLINE);
         Channel channel = getChannelForPort(port);
         if (channel != null) {
             PortData portData = portDatas.get(channel.getUID().getId());
             if (portData != null) {
-                if (value.equals(portData.getValue())) {
+                if (value == portData.getValue()) {
                     return;
                 }
 
@@ -157,9 +157,9 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                             break;
                         case ANALOG_INPUT:
                             AnalogInputConfiguration config = configuration.as(AnalogInputConfiguration.class);
-                            long histeresis = config.histeresis / 2;
-                            if (portData.isInitializing() || value > portData.getValue() + histeresis
-                                    || value < portData.getValue() - histeresis) {
+                            long hysteresis = config.hysteresis / 2;
+                            if (portData.isInitializing() || value > portData.getValue() + hysteresis
+                                    || value < portData.getValue() - hysteresis) {
                                 state = new DecimalType(value);
                             } else {
                                 return;
@@ -235,7 +235,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
                     (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse));
             return;
         }
-        logger.info("Can not handle command '{}' on channel '{}'", command, channelUID);
+        logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
     }
 
     @Override
@@ -247,11 +247,11 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
             if (channel != null) {
                 Configuration configuration = channel.getConfiguration();
                 PortData data = new PortData();
-                if (configuration.get("pullFrequency") != null) {
-                    int pullFrequency = configuration.as(CounterConfiguration.class).pullFrequency;
+                if (configuration.get("pullInterval") != null) {
+                    int pullInterval = configuration.as(CounterConfiguration.class).pullInterval;
                     data.setPullJob(scheduler.scheduleWithFixedDelay(() -> {
                         parser.ifPresent(p -> p.getValue(channelId));
-                    }, pullFrequency, pullFrequency, TimeUnit.MILLISECONDS));
+                    }, pullInterval, pullInterval, TimeUnit.MILLISECONDS));
                 }
                 portDatas.put(channelId, data);
             }
@@ -278,5 +278,4 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     public void reset() {
         parser.ifPresent(Ipx800MessageParser::reset);
     }
-
 }

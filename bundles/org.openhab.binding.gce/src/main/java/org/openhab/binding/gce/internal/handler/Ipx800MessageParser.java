@@ -67,13 +67,13 @@ public class Ipx800MessageParser {
      *
      * @param data
      */
-    public void unsollicitedUpdate(String data) {
+    public void unsolicitedUpdate(String data) {
         if (IO_PATTERN.matcher(data).matches()) {
             String portKind = "GetOutputs".equalsIgnoreCase(expectedResponse) ? RELAY_OUTPUT
                     : "GetInputs".equalsIgnoreCase(expectedResponse) ? DIGITAL_INPUT : null;
             if (portKind != null) {
                 for (int count = 0; count < data.length(); count++) {
-                    setStatus(portKind + String.valueOf(count + 1), new Double(data.charAt(count) - '0'));
+                    setStatus(portKind + (count + 1), (double) data.charAt(count) - '0');
                 }
             }
         } else if (VALIDATION_PATTERN.matcher(data).matches()) {
@@ -85,8 +85,7 @@ public class Ipx800MessageParser {
                     case DIGITAL_INPUT:
                     case RELAY_OUTPUT: {
                         for (int count = 0; count < statusPart[1].length(); count++) {
-                            setStatus(portKind + String.valueOf(count + 1),
-                                    new Double(statusPart[1].charAt(count) - '0'));
+                            setStatus(portKind + (count + 1), (double) statusPart[1].charAt(count) - '0');
                         }
                         break;
                     }
@@ -94,20 +93,19 @@ public class Ipx800MessageParser {
                         portNumShift = -1; // Align counters on 1 based array
                     case ANALOG_INPUT: {
                         int portNumber = Integer.parseInt(statusPart[0].substring(1));
-                        setStatus(portKind + String.valueOf(portNumber + portNumShift + 1),
-                                Double.parseDouble(statusPart[1]));
+                        setStatus(portKind + (portNumber + portNumShift + 1), Double.parseDouble(statusPart[1]));
                     }
                 }
             }
-        } else if (!"".equals(expectedResponse)) {
+        } else if (!expectedResponse.isEmpty()) {
             setStatus(expectedResponse, Double.parseDouble(data));
         }
 
         expectedResponse = "";
     }
 
-    private void setStatus(String port, Double value) {
-        logger.debug("Received {} : {}", port, value.toString());
+    private void setStatus(String port, double value) {
+        logger.debug("Received {} : {}", port, value);
         listener.ifPresent(l -> l.dataReceived(port, value));
     }
 
@@ -145,7 +143,7 @@ public class Ipx800MessageParser {
 
     public synchronized void getValue(String channelId) {
         logger.debug("Requested value for {}", channelId);
-        if ("".equals(expectedResponse)) { // Do not send a request is something is expected
+        if (expectedResponse.isEmpty()) { // Do not send a request is something is expected
             String[] elements = channelId.split("#");
             String command = "Get" + elements[0].replaceAll(ANALOG_INPUT, "An").replaceAll(COUNTER, "Count")
                     .replaceAll(DIGITAL_INPUT, "An").replaceAll(RELAY_OUTPUT, "Out") + elements[1];

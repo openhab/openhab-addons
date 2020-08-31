@@ -23,5 +23,5 @@ import org.eclipse.smarthome.config.core.Configuration;
  */
 @NonNullByDefault
 public class CounterConfiguration extends Configuration {
-    public int pullFrequency = 5000;
+    public int pullInterval = 5000;
 }

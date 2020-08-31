@@ -34,16 +34,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Ipx800DeviceConnector extends Thread {
     private final Logger logger = LoggerFactory.getLogger(Ipx800DeviceConnector.class);
-    private static final int DEFAULT_SOCKET_TIMEOUT = 5000;
-    private static final int DEFAULT_RECONNECT_TIMEOUT = 5000;
+    private static final int DEFAULT_SOCKET_TIMEOUT_MS = 5000;
+    private static final int DEFAULT_RECONNECT_TIMEOUT_MS = 5000;
     private static final int MAX_KEEPALIVE_FAILURE = 3;
-    private final static String ENDL = "\r\n";
+    private static final String ENDL = "\r\n";
 
     private final String hostname;
     public final int portNumber;
     private Optional<Ipx800MessageParser> parser = Optional.empty();
 
-    private boolean interrupted = false;
     private boolean connected = false;
 
     private @NonNullByDefault({}) Socket client;
@@ -73,7 +72,7 @@ public class Ipx800DeviceConnector extends Thread {
         disconnect();
         logger.debug("Connecting {}:{}...", hostname, portNumber);
         client = new Socket(hostname, portNumber);
-        client.setSoTimeout(DEFAULT_SOCKET_TIMEOUT);
+        client.setSoTimeout(DEFAULT_SOCKET_TIMEOUT_MS);
         client.getInputStream().skip(client.getInputStream().available());
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         out = new PrintWriter(client.getOutputStream(), true);
@@ -88,6 +87,8 @@ public class Ipx800DeviceConnector extends Thread {
         if (connected) {
             logger.debug("Disconnecting");
             try {
+                in.close();
+                out.close();
                 client.close();
             } catch (IOException e) {
                 logger.warn("Unable to disconnect {}", e.getMessage());
@@ -101,7 +102,7 @@ public class Ipx800DeviceConnector extends Thread {
      * Stop the device thread
      */
     public void destroyAndExit() {
-        interrupted = true;
+        Thread.currentThread().interrupt();
         disconnect();
     }
 
@@ -124,20 +125,19 @@ public class Ipx800DeviceConnector extends Thread {
 
     @Override
     public void run() {
-        interrupted = false;
-        while (!interrupted) {
+        while (!interrupted()) {
             try {
                 waitingKeepaliveResponse = false;
                 failedKeepalive = 0;
                 connect();
-                while (!interrupted) {
+                while (!interrupted()) {
                     if (failedKeepalive > MAX_KEEPALIVE_FAILURE) {
                         throw new IOException("Max keep alive attempts has been reached");
                     }
                     try {
                         String command = in.readLine();
                         waitingKeepaliveResponse = false;
-                        parser.ifPresent(parser -> parser.unsollicitedUpdate(command));
+                        parser.ifPresent(parser -> parser.unsolicitedUpdate(command));
                     } catch (SocketTimeoutException e) {
                         handleException(e);
                     }
@@ -147,9 +147,8 @@ public class Ipx800DeviceConnector extends Thread {
                 handleException(e);
             }
             try {
-                Thread.sleep(DEFAULT_RECONNECT_TIMEOUT);
+                Thread.sleep(DEFAULT_RECONNECT_TIMEOUT_MS);
             } catch (InterruptedException e) {
-                interrupted = true;
                 Thread.currentThread().interrupt();
             }
         }
@@ -160,7 +159,7 @@ public class Ipx800DeviceConnector extends Thread {
             sendKeepalive();
             return;
         } else if (e instanceof IOException) {
-            logger.info("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT);
+            logger.warn("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
         }
         parser.ifPresent(parser -> parser.errorOccurred(e));
     }
