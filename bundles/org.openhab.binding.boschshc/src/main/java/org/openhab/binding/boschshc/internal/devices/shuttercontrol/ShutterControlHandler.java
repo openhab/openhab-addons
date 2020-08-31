@@ -14,7 +14,6 @@ package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -32,27 +31,26 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Utility functions to convert data between Bosch things and openHAB items
- * 
- * @author Christian Oeing - Initial contribution
- */
-final class DataConversion {
-    public static int levelToOpenPercentage(double level) {
-        return (int) Math.round((1 - level) * 100);
-    }
-
-    public static double openPercentageToLevel(double openPercentage) {
-        return (100 - openPercentage) / 100.0;
-    }
-}
-
-/**
  * Handler for a shutter control device
  * 
  * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
 public class ShutterControlHandler extends BoschSHCHandler {
+    /**
+     * Utility functions to convert data between Bosch things and openHAB items
+     * 
+     * @author Christian Oeing - Initial contribution
+     */
+    static final class DataConversion {
+        public static int levelToOpenPercentage(double level) {
+            return (int) Math.round((1 - level) * 100);
+        }
+
+        public static double openPercentageToLevel(double openPercentage) {
+            return (100 - openPercentage) / 100.0;
+        }
+    }
 
     final String ShutterControlServiceName = "ShutterControl";
 
@@ -96,7 +94,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void processUpdate(String id, @NonNull JsonElement state) {
+    public void processUpdate(String id, JsonElement state) {
         try {
             Gson gson = new Gson();
             updateState(gson.fromJson(state, ShutterControlState.class));

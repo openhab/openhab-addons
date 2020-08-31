@@ -33,7 +33,7 @@ import tec.uom.se.unit.Units;
 /**
  * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
  * 
- * @author Christian Oeing (christian.oeing@slashgames.org)
+ * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
 public final class ClimateControlHandler extends BoschSHCHandler {

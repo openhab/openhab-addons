@@ -12,17 +12,16 @@
  */
 package org.openhab.binding.boschshc.internal.services.roomclimatecontrol;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 
 /**
  * Service of a virtual device which controls the radiator thermostats in a room.
  * 
- * @author Christian Oeing (christian.oeing@slashgames.org)
+ * @author Christian Oeing - Initial contribution
  */
 @NonNullByDefault
-public class RoomClimateControlService extends BoschSHCService<@NonNull RoomClimateControlServiceState> {
+public class RoomClimateControlService extends BoschSHCService<RoomClimateControlServiceState> {
     /**
      * Constructor.
      */
