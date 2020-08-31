@@ -18,6 +18,8 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -37,9 +39,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.gce.internal.action.Ipx800Actions;
 import org.openhab.binding.gce.internal.config.AnalogInputConfiguration;
 import org.openhab.binding.gce.internal.config.CounterConfiguration;
 import org.openhab.binding.gce.internal.config.DigitalInputConfiguration;
@@ -277,5 +281,10 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     public void reset() {
         parser.ifPresent(Ipx800MessageParser::reset);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(Ipx800Actions.class);
     }
 }

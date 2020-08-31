@@ -91,7 +91,35 @@ The thing provides four groups of channels.
 * Long press
 
 
-### Example
+## Rule Actions
+
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
+
+Getting ipxActions variable in scripts
+
+```
+ val ipxActions = getActions("gce","gce:ipx800v3:43cc8d07")
+ if(null === ipxActions) {
+        logInfo("actions", "ipxActions not found, check thing ID")
+        return
+ } else {
+        // do something with sunActions
+ }
+```
+
+### resetCounter(counterId)
+
+Resets the value of the given counter to 0.
+
+* `counterId` (Integer) - id of the counter.
+
+
+### reset(placeholder)
+
+Restarts the PLC.
+
+* `placeholder` (Integer) - This parameter is not used (can be null).
+
 
 ```
 ```

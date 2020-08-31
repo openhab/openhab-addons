@@ -62,7 +62,7 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
     @Override
     @RuleAction(label = "GCE : Reset counter", description = "Resets to 0 value of a given counter")
     public void resetCounter(
-            @ActionInput(name = "counter", label = "Counter", required = true, description = "Id of the counter") int counter) {
+            @ActionInput(name = "counter", label = "Counter", required = true, description = "Id of the counter", type = "java.lang.Integer") Integer counter) {
         logger.debug("IPX800 action 'resetCounter' called");
         Ipx800v3Handler theHandler = this.handler;
         if (theHandler != null) {
@@ -74,7 +74,8 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
 
     @Override
     @RuleAction(label = "GCE : Reset PLC", description = "Restarts the IPX800")
-    public void reset() {
+    public void reset(
+            @ActionInput(name = "placeholder", label = "Placeholder", required = false, description = "This parameter is not used", type = "java.lang.Integer") @Nullable Integer placeholder) {
         logger.debug("IPX800 action 'reset' called");
         Ipx800v3Handler theHandler = this.handler;
         if (theHandler != null) {
@@ -84,12 +85,12 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         }
     }
 
-    public static void resetCounter(@Nullable ThingActions actions, int counter) {
+    public static void resetCounter(@Nullable ThingActions actions, Integer counter) {
         invokeMethodOf(actions).resetCounter(counter);
     }
 
-    public static void reset(@Nullable ThingActions actions) {
-        invokeMethodOf(actions).reset();
+    public static void reset(@Nullable ThingActions actions, @Nullable Integer placeholder) {
+        invokeMethodOf(actions).reset(placeholder);
     }
 
     private static IIpx800Actions invokeMethodOf(@Nullable ThingActions actions) {
@@ -110,4 +111,5 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         }
         throw new IllegalArgumentException("Actions is not an instance of Ipx800Actions");
     }
+
 }

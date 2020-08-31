@@ -13,6 +13,7 @@
 package org.openhab.binding.gce.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link IIpx800Actions} defines the interface for all thing actions supported by the binding.
@@ -21,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface IIpx800Actions {
-    public void resetCounter(int counter);
+    public void resetCounter(Integer counter);
 
-    public void reset();
+    public void reset(@Nullable Integer placeholder);
 }
