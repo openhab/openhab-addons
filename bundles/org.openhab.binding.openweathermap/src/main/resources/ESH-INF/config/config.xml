@@ -88,4 +88,25 @@
 		</parameter>
 	</config-description>
 
+	<config-description uri="thing-type:openweathermap:onecall">
+		<parameter name="location" type="text" required="true">
+			<context>location</context>
+			<label>Location of Weather</label>
+			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:openweathermap:onecall-history">
+		<parameter name="location" type="text" required="true">
+			<context>location</context>
+			<label>Location of Weather</label>
+			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
+		</parameter>
+		<parameter name="historyDay" type="integer" min="1" max="5" step="1">
+			<label>History Day</label>
+			<description>Relative number of days in the past for historical data.</description>
+			<default>1</default>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

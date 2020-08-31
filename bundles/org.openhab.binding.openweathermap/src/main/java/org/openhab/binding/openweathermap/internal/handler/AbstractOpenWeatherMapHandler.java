@@ -70,7 +70,12 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX).collect(Collectors.toSet()));
+            Stream.of(
+                    THING_TYPE_WEATHER_AND_FORECAST,
+                    THING_TYPE_UVINDEX,
+                    THING_TYPE_ONECALL_WEATHER_AND_FORECAST,
+                    THING_TYPE_ONECALL_HISTORY
+            ).collect(Collectors.toSet()));
 
     private final TimeZoneProvider timeZoneProvider;
 
@@ -151,8 +156,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
      *
      * @param connection {@link OpenWeatherMapConnection} instance
      * @return true, if the request for the OpenWeatherMap data was successful
-     * @throws OpenWeatherMapCommunicationException
-     * @throws OpenWeatherMapConfigurationException
+     * @throws OpenWeatherMapCommunicationException if there is a problem retrieving the data
+     * @throws OpenWeatherMapConfigurationException if there is a configuration error
      */
     protected abstract boolean requestData(OpenWeatherMapConnection connection)
             throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException;
@@ -207,7 +212,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     protected List<Channel> createChannelsForGroup(String channelGroupId, ChannelGroupTypeUID channelGroupTypeUID) {
         logger.debug("Building channel group '{}' for thing '{}'.", channelGroupId, getThing().getUID());
         List<Channel> channels = new ArrayList<>();
-        ThingHandlerCallback callback = getCallback();
+        @Nullable ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             for (ChannelBuilder channelBuilder : callback.createChannelBuilders(
                     new ChannelGroupUID(getThing().getUID(), channelGroupId), channelGroupTypeUID)) {

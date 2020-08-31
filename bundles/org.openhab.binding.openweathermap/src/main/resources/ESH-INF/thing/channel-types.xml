@@ -105,6 +105,157 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="oneCallCurrent">
+		<label>One Call API Current Weather</label>
+		<description>Current weather data from the One Call API.</description>
+		<channels>
+			<channel id="time-stamp" typeId="time-stamp"/>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunset" typeId="sunset" />
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="uvindex" typeId="uvindex"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallMinutely">
+		<label>One Call API Minutely Forecast</label>
+		<description>Minutely weather forecast delivered by the One Call API, where available.
+			Currently only contains precipitation data</description>
+		<channels>
+			<channel id="time-stamp" typeId="time-stamp"/>
+			<channel id="precipitation" typeId="precipitation"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallHourly">
+		<label>One Call API Hourly Forecast</label>
+		<description>Hourly weather forecast delivered by the One Call API.</description>
+		<channels>
+			<channel id="time-stamp" typeId="hourly-forecast-time-stamp"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="probability" typeId="probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallDaily">
+		<label>One Call API Daily Forecast</label>
+		<description>Daily weather forecast delivered by the One Call API.</description>
+		<channels>
+			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunset" typeId="sunset" />
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="morning-temperature" typeId="morning-temperature"/>
+			<channel id="day-temperature" typeId="day-temperature"/>
+			<channel id="evening-temperature" typeId="evening-temperature"/>
+			<channel id="night-temperature" typeId="night-temperature"/>
+			<channel id="min-temperature" typeId="forecasted-min-outdoor-temperature"/>
+			<channel id="max-temperature" typeId="forecasted-max-outdoor-temperature"/>
+			<channel id="apparent-morning" typeId="apparent-morning"/>
+			<channel id="apparent-day" typeId="apparent-day"/>
+			<channel id="apparent-evening" typeId="apparent-evening"/>
+			<channel id="apparent-night" typeId="apparent-night"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="uvindex" typeId="forecasted-uvindex"/>
+			<channel id="probability" typeId="probability"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallHistory">
+		<label>One Call API Historical Weather</label>
+		<description>Historical weather data from the One Call API at the given point in time.</description>
+		<channels>
+			<channel id="time-stamp" typeId="time-stamp"/>
+			<channel id="sunrise" typeId="sunrise"/>
+			<channel id="sunset" typeId="sunset" />
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="uvindex" typeId="uvindex"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="oneCallHistoryHours">
+		<label>One Call API Hourly Historical Weather Data</label>
+		<description>Historical weather data from the One Call API for one day per hour.</description>
+		<channels>
+			<channel id="time-stamp" typeId="time-stamp"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="condition-id" typeId="condition-id"/>
+			<channel id="icon" typeId="condition-icon"/>
+			<channel id="icon-id" typeId="condition-icon-id"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="apparent-temperature" typeId="apparent-temperature"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
+			<channel id="dew-point" typeId="dew-point"/>
+			<channel id="uvindex" typeId="uvindex"/>
+			<channel id="wind-speed" typeId="system.wind-speed"/>
+			<channel id="wind-direction" typeId="system.wind-direction"/>
+			<channel id="gust-speed" typeId="gust-speed"/>
+			<channel id="cloudiness" typeId="cloudiness"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="visibility" typeId="visibility"/>
+		</channels>
+	</channel-group-type>
+
+
 	<!-- Channels for OpenWeatherMap Binding -->
 	<channel-type id="station-id">
 		<item-type>String</item-type>
@@ -124,6 +275,22 @@
 		<item-type>DateTime</item-type>
 		<label>Observation Time</label>
 		<description>Time of data observation.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="sunrise">
+		<item-type>DateTime</item-type>
+		<label>Sunrise Time</label>
+		<description>Time of sunrise for the given day.</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
+	</channel-type>
+
+	<channel-type id="sunset">
+		<item-type>DateTime</item-type>
+		<label>Sunset Time</label>
+		<description>Time of sunset for the given day.</description>
 		<category>Time</category>
 		<state readOnly="true" pattern="%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS"/>
 	</channel-type>
@@ -205,12 +372,92 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="day-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Day Temperature</label>
+		<description>Forecasted outdoor temperature for the day.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="morning-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Moring Temperature</label>
+		<description>Forecasted outdoor temperature for the morning.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="evening-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Evening Temperature</label>
+		<description>Forecasted outdoor temperature for the evening.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="night-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Night Temperature</label>
+		<description>Forecasted outdoor temperature for the night.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
 	<channel-type id="apparent-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Apparent Temperature</label>
 		<description>Current apparent temperature.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="apparent-morning">
+		<item-type>Number:Temperature</item-type>
+		<label>Apparent Morning Temperature</label>
+		<description>Forecasted apparent temperature in the morning.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="apparent-day">
+		<item-type>Number:Temperature</item-type>
+		<label>Apparent Day Temperature</label>
+		<description>Forecasted apparent temperature during the day.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="apparent-evening">
+		<item-type>Number:Temperature</item-type>
+		<label>Apparent Evening Temperature</label>
+		<description>Forecasted apparent temperature at the evening.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="apparent-night">
+		<item-type>Number:Temperature</item-type>
+		<label>Apparent Night Temperature</label>
+		<description>Forecasted apparent temperature in the night.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="dew-point">
+		<item-type>Number:Temperature</item-type>
+		<label>Dew-Point Temperature</label>
+		<description>Forecasted dew-point temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="precipitation">
+		<item-type>Number:Length</item-type>
+		<label>Precipitation</label>
+		<description>Precipitation volume of the related timespan.</description>
+		<category>Precipitation</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="forecasted-apparent-temperature">
@@ -336,6 +583,13 @@
 		<label>Visibility</label>
 		<description>Current visibility.</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="probability">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Prbability</label>
+		<description>Probability of forecast.</description>
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 </thing:thing-descriptions>

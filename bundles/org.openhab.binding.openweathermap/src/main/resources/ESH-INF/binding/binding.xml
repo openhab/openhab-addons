@@ -5,6 +5,6 @@
 
 	<name>OpenWeatherMap Binding</name>
 	<description>OpenWeatherMap - Current weather and forecasts in your city.</description>
-	<author>Christoph Weitkamp</author>
+	<author>Christoph Weitkamp, Wolfgang Klimt</author>
 
 </binding:binding>
