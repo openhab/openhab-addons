@@ -18,6 +18,10 @@
 				<label>IP Address of the YIO Dock</label>
 				<description>IP Address of the YIO Dock</description>
 			</parameter>
+			<parameter name="yiodockaccesstoken" type="text" required="true">
+                <label>Access token for the YIO Dock</label>
+                <description>Access token for the YIO Dock</description>
+            </parameter>
 		</config-description>
 
 	</thing-type>

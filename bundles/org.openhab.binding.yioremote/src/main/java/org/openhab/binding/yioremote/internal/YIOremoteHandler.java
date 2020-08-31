@@ -30,6 +30,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
  * The {@link YIOremoteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -46,8 +50,7 @@ public class YIOremoteHandler extends BaseThingHandler {
     private YIOremoteWebsocket YIOremote_DockwebSocketClientSocket = new YIOremoteWebsocket();
     private ClientUpgradeRequest YIOremote_DockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI URI_yiodockwebsocketaddress;
-    String dest = "ws://192.168.178.21:946/";
-    WebSocketClient client = new WebSocketClient();
+    private @Nullable JsonObject JsonObject_recievedJsonObject;
 
     public YIOremoteHandler(Thing thing) {
         super(thing);
@@ -106,9 +109,50 @@ public class YIOremoteHandler extends BaseThingHandler {
                         YIOremote_DockwebSocketClientrequest);
                 logger.debug("Connected websocket client");
 
+                logger.debug("Check for authentication requested by YIO Dock");
                 YIOremote_DockwebSocketClientSocket.getLatch().await();
-                YIOremote_DockwebSocketClientSocket.sendMessage("echo");
-                YIOremote_DockwebSocketClientSocket.sendMessage("test");
+                Thread.sleep(1000);
+
+                try {
+                    JsonObject_recievedJsonObject = StringtoJsonObject(
+                            YIOremote_DockwebSocketClientSocket.get_string_receivedmessage());
+
+                    if (JsonObject_recievedJsonObject.has("type")) {
+                        logger.debug("json string has type member");
+
+                        if (JsonObject_recievedJsonObject.get("type").toString()
+                                .equalsIgnoreCase("\"auth_required\"")) {
+                            logger.debug("send authentication to YIO dock");
+                            YIOremote_DockwebSocketClientSocket.sendMessage(
+                                    "{\"type\":\"auth\", \"token\":\"" + config.yiodockaccesstoken + "\"}");
+                            Thread.sleep(1000);
+
+                            JsonObject_recievedJsonObject = StringtoJsonObject(
+                                    YIOremote_DockwebSocketClientSocket.get_string_receivedmessage());
+                            if (JsonObject_recievedJsonObject.has("type")) {
+                                logger.debug("json string has type member");
+                                if (JsonObject_recievedJsonObject.get("type").toString()
+                                        .equalsIgnoreCase("\"auth_ok\"")) {
+                                    logger.debug("authentication to YIO dock ok");
+                                    updateStatus(ThingStatus.ONLINE);
+
+                                } else {
+                                    logger.debug("authentication to YIO dock not ok");
+                                    updateStatus(ThingStatus.OFFLINE);
+                                }
+                            } else {
+                                logger.debug("json string has no type member");
+                            }
+                        }
+
+                    } else {
+                        logger.debug("json string has no type member");
+                    }
+
+                } catch (IllegalArgumentException e) {
+                    logger.warn("JSON convertion failure " + e.toString(), e);
+                }
+
             } catch (Exception e) {
                 logger.warn("Web socket connect failed " + e.toString(), e);
                 // throw new IOException("Web socket start failed");
@@ -136,12 +180,27 @@ public class YIOremoteHandler extends BaseThingHandler {
          * });
          */
 
-        // logger.debug("Finished initializing!");
+        logger.debug("Finished initializing!");
 
         // Note: When initialization can NOT be done set the status with more details for further
         // analysis. See also class ThingStatusDetail for all available status details.
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    private JsonObject StringtoJsonObject(String jsonString) {
+        logger.debug("StringtoJsonElement function called");
+        JsonParser parser = new JsonParser();
+        JsonElement jsonElement = parser.parse(jsonString);
+
+        JsonObject result = null;
+        if (jsonElement instanceof JsonObject) {
+            result = jsonElement.getAsJsonObject();
+        } else {
+            logger.debug(jsonString + " is not valid JSON stirng");
+            throw new IllegalArgumentException(jsonString + " is not valid JSON stirng");
+        }
+        return result;
     }
 }

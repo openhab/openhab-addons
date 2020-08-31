@@ -23,4 +23,5 @@ public class YIOremoteConfiguration {
      * Sample configuration parameter. Replace with your own.
      */
     public String yiodockhostip;
+    public String yiodockaccesstoken;
 }

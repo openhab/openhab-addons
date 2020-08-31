@@ -3,21 +3,32 @@ package org.openhab.binding.yioremote.internal;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @WebSocket
 public class YIOremoteWebsocket {
 
     private Session session;
+    private @Nullable String string_receivedmessage;
+    private final Logger logger = LoggerFactory.getLogger(YIOremoteHandler.class);
 
     CountDownLatch latch = new CountDownLatch(1);
 
     @OnWebSocketMessage
     public void onText(Session session, String message) throws IOException {
-        System.out.println("Message received from server:" + message);
+        logger.debug("Message received from server:" + message);
+        string_receivedmessage = message;
+        System.out.println("Message received from server:" + message + string_receivedmessage);
+    }
+
+    public String get_string_receivedmessage() {
+        return this.string_receivedmessage;
     }
 
     @OnWebSocketConnect
