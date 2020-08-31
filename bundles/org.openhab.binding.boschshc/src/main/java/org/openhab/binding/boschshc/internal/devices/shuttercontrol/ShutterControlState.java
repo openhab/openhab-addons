@@ -14,11 +14,14 @@ package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * State for a shutter control device
  * 
  * @author Christian Oeing - Initial contribution
  */
+@NonNullByDefault
 public class ShutterControlState {
     @SerializedName("@type")
     public String type = "shutterControlState";
@@ -35,9 +38,11 @@ public class ShutterControlState {
 
     public ShutterControlState() {
         this.level = 0.0;
+        this.operationState = OperationState.STOPPED;
     }
 
     public ShutterControlState(double level) {
         this.level = level;
+        this.operationState = OperationState.STOPPED;
     }
 }

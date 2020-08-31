@@ -12,14 +12,19 @@
  */
 package org.openhab.binding.boschshc.internal.services;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Generic error response of the Bosch REST API.
  * 
- * @author Christian Oeing (christian.oeing@slashgames.org)
+ * @author Christian Oeing - Initial contribution
  */
+@NonNullByDefault
 public class JsonRestExceptionResponse extends BoschSHCServiceState {
     public JsonRestExceptionResponse() {
         super("JsonRestExceptionResponseEntity");
+        this.errorCode = "";
+        this.statusCode = 0;
     }
 
     /**
