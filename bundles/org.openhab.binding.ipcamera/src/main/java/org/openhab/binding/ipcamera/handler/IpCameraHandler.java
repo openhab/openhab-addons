@@ -1443,7 +1443,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_PAN:
                     if (onvifCamera.supportsPTZ()) {
                         if (command instanceof IncreaseDecreaseType) {
-                            if ("INCREASE".equals(command.toString())) {
+                            if (command == IncreaseDecreaseType.INCREASE) {
                                 if ((boolean) config.get(CONFIG_PTZ_CONTINUOUS)) {
                                     onvifCamera.sendPTZRequest("ContinuousMoveLeft");
                                 } else {
