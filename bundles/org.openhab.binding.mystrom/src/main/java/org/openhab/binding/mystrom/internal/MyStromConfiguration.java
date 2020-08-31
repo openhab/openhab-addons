@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mystrom.internal;
 
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_REFRESH_RATE;
+import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_REFRESH_RATE_SECONDS;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -32,6 +32,6 @@ public class MyStromConfiguration {
     /**
      * Number of seconds in between refreshes from the myStrom device.
      */
-    public int refresh = DEFAULT_REFRESH_RATE;    
+    public int refresh = DEFAULT_REFRESH_RATE_SECONDS;    
 
 }

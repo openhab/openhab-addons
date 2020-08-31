@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class MyStromBindingConstants {
 
-    public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH_SECONDS = 10;
     public static final int DEFAULT_REFRESH_RATE_SECONDS = 10;
 
     private static final String BINDING_ID = "mystrom";

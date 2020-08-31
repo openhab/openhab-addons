@@ -17,8 +17,8 @@ import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.WATT;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_POWER;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_SWITCH;
 import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.CHANNEL_TEMPERATURE;
-import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAULT_WAIT_BEFORE_INITIAL_REFRESH;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -31,11 +31,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -51,6 +53,13 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MyStromHandler extends BaseThingHandler {
 
+    private static class MyStromReport {
+
+        public float power;
+        public boolean relay;
+        public float temperature;
+    }    
+
     private static final int HTTP_OK_CODE = 200;
     private static final String COMMUNICATION_ERROR = "Error while communicating to myStrom: ";
 
@@ -61,7 +70,8 @@ public class MyStromHandler extends BaseThingHandler {
     private String hostname = "";
 
     private @Nullable ScheduledFuture<?> pollingJob;
-
+    private ExpiringCache<MyStromReport> cache = new ExpiringCache<>(Duration.ofSeconds(3),
+    this::getReport);
     private final Gson gson = new Gson();
 
     public MyStromHandler(Thing thing, HttpClient httpClient) {
@@ -69,12 +79,7 @@ public class MyStromHandler extends BaseThingHandler {
         this.httpClient = httpClient;
     }
 
-    private static class MyStromReport {
 
-        public float power;
-        public boolean relay;
-        public float temperature;
-    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -89,20 +94,31 @@ public class MyStromHandler extends BaseThingHandler {
 
             }
         } catch (MyStromException e) {
-            logger.error(COMMUNICATION_ERROR, e);
+            logger.warn(COMMUNICATION_ERROR, e);
+        }
+    }
+
+    private @Nullable  MyStromReport getReport() {
+        try {
+            String returnContent = sendHttpGet("report");
+            MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
+            return report;
+        } catch (MyStromException e) {
+            logger.debug(COMMUNICATION_ERROR, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
+            return null;
         }
     }
 
     private void pollDevice() {
-        try {
-            String returnContent = sendHttpGet("report");
-            MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
+        MyStromReport report = cache.getValue();
+        if (report != null) {
             updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
             updateStatus(ThingStatus.ONLINE);
-        } catch (MyStromException e) {
-            logger.error(COMMUNICATION_ERROR, e);
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
         }
     }
@@ -113,12 +129,9 @@ public class MyStromHandler extends BaseThingHandler {
         config = getConfigAs(MyStromConfiguration.class);
         hostname = config.hostname;
 
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, DEFAULT_WAIT_BEFORE_INITIAL_REFRESH,
-                config.refresh, TimeUnit.SECONDS);
-
         updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.execute(this::pollDevice);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0,
+                config.refresh, TimeUnit.SECONDS);
 
         logger.debug("Finished initializing!");
     }
