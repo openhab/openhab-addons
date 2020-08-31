@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BoschSHCConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Stefan Kästle - Initial contribution
  */
+@NonNullByDefault
 public class BoschSHCConfiguration {
 
     /**

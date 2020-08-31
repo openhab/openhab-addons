@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
  * The {@link BoschSHCHandlerFactory} is responsible for creating things and
  * thing handlers.
  *
- * TODO Most of the things in here should actually be a Bridge?
- *
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - added Shutter Control and ThermostatHandler
  */
@@ -67,8 +65,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         logger.debug("Thing createHandler for thing: {} - {}", thing.getLabel(), thingTypeUID);
-
-        // XXX Make the names in here consistent - remove the stupid Bosch prefixes.
 
         if (THING_TYPE_SHC.equals(thingTypeUID)) {
             return new BoschSHCBridgeHandler((Bridge) thing);
