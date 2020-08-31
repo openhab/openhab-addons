@@ -204,10 +204,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                 recievedBytes = incomingJpeg.length;
                 if (content instanceof LastHttpContent) {
                     if (updateSnapshot) {
-                        ipCameraHandler.lockCurrentSnapshot.lock();
-                        ipCameraHandler.currentSnapshot = incomingJpeg;
-                        ipCameraHandler.lockCurrentSnapshot.unlock();
-                        ipCameraHandler.processSnapshot();
+                        ipCameraHandler.processSnapshot(incomingJpeg);
                     } else if (onvifEvent) {
                         ipCameraHandler.onvifCamera.eventRecieved(new String(incomingJpeg, StandardCharsets.UTF_8));
                     } else { // handles the snapshots that make up mjpeg from rtsp to ffmpeg conversions.

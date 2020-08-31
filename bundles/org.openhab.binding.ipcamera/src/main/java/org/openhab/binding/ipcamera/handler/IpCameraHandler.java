@@ -560,42 +560,43 @@ public class IpCameraHandler extends BaseThingHandler {
         });
     }
 
-    public void processSnapshot() {
+    public void processSnapshot(byte[] incommingSnapshot) {
         lockCurrentSnapshot.lock();
-
-        if (streamingSnapshotMjpeg) {
-            sendMjpegFrame(currentSnapshot, snapshotMjpegChannelGroup);
-        }
-        if (streamingAutoFps) {
-            if (motionDetected) {
-                sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
-            } else if (updateAutoFps) {
-                sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
-                updateAutoFps = false;
-            }
-        }
+        currentSnapshot = incommingSnapshot;
         if (preroll > 0) {
-            fifoSnapshotBuffer.add(currentSnapshot);
+            fifoSnapshotBuffer.add(incommingSnapshot);
             if (fifoSnapshotBuffer.size() > (preroll + postroll)) {
                 fifoSnapshotBuffer.removeFirst();
             }
         }
+        lockCurrentSnapshot.unlock();
+
+        if (streamingSnapshotMjpeg) {
+            sendMjpegFrame(incommingSnapshot, snapshotMjpegChannelGroup);
+        }
+        if (streamingAutoFps) {
+            if (motionDetected) {
+                sendMjpegFrame(incommingSnapshot, autoSnapshotMjpegChannelGroup);
+            } else if (updateAutoFps) {
+                // only happens every 8 seconds as some browsers need a frame that often to keep stream alive.
+                sendMjpegFrame(incommingSnapshot, autoSnapshotMjpegChannelGroup);
+                updateAutoFps = false;
+            }
+        }
 
         if (updateImageChannel) {
-            updateState(CHANNEL_IMAGE, new RawType(currentSnapshot, "image/jpeg"));
+            updateState(CHANNEL_IMAGE, new RawType(incommingSnapshot, "image/jpeg"));
         } else if (firstMotionAlarm || motionAlarmUpdateSnapshot) {
-            updateState(CHANNEL_IMAGE, new RawType(currentSnapshot, "image/jpeg"));
+            updateState(CHANNEL_IMAGE, new RawType(incommingSnapshot, "image/jpeg"));
             firstMotionAlarm = motionAlarmUpdateSnapshot = false;
         } else if (firstAudioAlarm || audioAlarmUpdateSnapshot) {
-            updateState(CHANNEL_IMAGE, new RawType(currentSnapshot, "image/jpeg"));
+            updateState(CHANNEL_IMAGE, new RawType(incommingSnapshot, "image/jpeg"));
             firstAudioAlarm = audioAlarmUpdateSnapshot = false;
         }
-        lockCurrentSnapshot.unlock();
     }
 
-    // These methods handle the response from all Camera brands, nothing specific to
+    // These methods handle the response from all camera brands, nothing specific to
     // any brand should be in here //
-
     private class CommonCameraHandler extends ChannelDuplexHandler {
         private int bytesToRecieve = 0;
         private int bytesAlreadyRecieved = 0;
@@ -690,10 +691,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                 incomingJpeg[bytesAlreadyRecieved++] = content.content().getByte(i);
                             }
                             if (content instanceof LastHttpContent) {
-                                lockCurrentSnapshot.lock();
-                                currentSnapshot = incomingJpeg;
-                                lockCurrentSnapshot.unlock();
-                                processSnapshot();
+                                processSnapshot(incomingJpeg);
                                 // testing next line and if works need to do a full cleanup of this function.
                                 closeConnection = true;
                                 if (closeConnection) {
