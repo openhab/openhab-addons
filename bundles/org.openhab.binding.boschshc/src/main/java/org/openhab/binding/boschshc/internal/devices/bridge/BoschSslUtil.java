@@ -112,7 +112,7 @@ public class BoschSslUtil {
             }
         } catch (OperatorCreationException | GeneralSecurityException | IOException e) {
             logger.warn("Can not create or load keystore {}. Check path, write access and JKS content.", keystorePath);
-            logger.debug("Exception during kesstore creation: {}", e);
+            logger.debug("Exception during kesstore creation", e);
             throw new IllegalStateException(e);
         }
     }

@@ -93,7 +93,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 try {
                     httpClient.start();
                 } catch (Exception e) {
-                    logger.warn("Failed to start Bosch SHC Bridge: {}", e);
+                    logger.warn("Failed to start Bosch SHC Bridge", e);
                 }
 
                 logger.debug("Initializing Bosch SHC Bridge: {} - HTTP client is: {} - version: 2020-04-05",
@@ -127,7 +127,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-pairing");
             } catch (Exception e) {
-                logger.warn("Failed to initialize Bosch SHC: {}", e);
+                logger.warn("Failed to initialize Bosch SHC", e);
                 // TODO add offline conf-error description
                 updateStatus(ThingStatus.OFFLINE);
             }
@@ -168,7 +168,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         logger.info("Found device: name={} id={}", d.name, d.id);
                         if (d.deviceSerivceIDs != null) {
                             for (String s : d.deviceSerivceIDs) {
-                                logger.info(".... service: " + s);
+                                logger.info(".... service: {}", s);
                             }
                         }
                     }
@@ -177,7 +177,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 return true;
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
+                logger.warn("HTTP request failed", e);
                 return false;
             }
         } else {
@@ -385,7 +385,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                 } catch (Exception e) {
 
-                    logger.warn("Execption in long polling - error: {}", e);
+                    logger.warn("Execption in long polling", e);
 
                     // Timeout before retry
                     try {
@@ -438,7 +438,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 return true;
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
+                logger.warn("HTTP request failed", e);
                 return false;
             }
         } else {
@@ -503,7 +503,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             return state;
 
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("refreshState: HTTP request failed: {}", e);
+            logger.warn("refreshState: HTTP request failed", e);
             return null;
         }
     }
@@ -527,7 +527,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             Response response = request.send();
             return response;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("HTTP request failed: {}", e);
+            logger.warn("HTTP request failed", e);
             return null;
         }
     }
@@ -573,7 +573,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 logger.debug("Response complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("HTTP request failed: {}", e);
+                logger.warn("HTTP request failed", e);
             }
         }
     }

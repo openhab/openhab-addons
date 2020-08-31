@@ -26,8 +26,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -55,7 +53,6 @@ final class DataConversion {
  */
 @NonNullByDefault
 public class ShutterControlHandler extends BoschSHCHandler {
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
     final String ShutterControlServiceName = "ShutterControl";
 
