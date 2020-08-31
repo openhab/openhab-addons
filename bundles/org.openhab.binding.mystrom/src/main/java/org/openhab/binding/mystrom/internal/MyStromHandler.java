@@ -103,7 +103,7 @@ public class MyStromHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
         } catch (MyStromException e) {
             logger.error(COMMUNICATION_ERROR, e);
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
         }
     }
 
