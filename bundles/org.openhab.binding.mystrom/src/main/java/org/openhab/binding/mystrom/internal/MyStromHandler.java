@@ -60,8 +60,7 @@ public class MyStromHandler extends BaseThingHandler {
     private HttpClient httpClient;
     private String hostname = "";
 
-    @Nullable
-    private ScheduledFuture<?> pollingJob;
+    private @Nullable ScheduledFuture<?> pollingJob;
 
     private final Gson gson = new Gson();
 
