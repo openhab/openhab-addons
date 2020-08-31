@@ -141,7 +141,6 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         } finally {
                             ipCameraHandler.lock.unlock();
                         }
-
                         if (content.contains("<enabled>true</enabled>")) {
                             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("ON"));
                         } else if (content.contains("<enabled>false</enabled>")) {
@@ -357,39 +356,36 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         ipCameraHandler.lock.lock();
         try {
             indexInLists = (byte) ipCameraHandler.listOfRequests.indexOf(httpGetPutURL);
+            if (indexInLists >= 0) {
+                if (!"".contains(ipCameraHandler.listOfReplies.get(indexInLists))) {
+                    body = ipCameraHandler.listOfReplies.get(indexInLists);
+                    logger.trace("An OLD reply from the camera was:{}", body);
+                    if (body.contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+                        body = body.substring("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".length());
+                    }
+                    int elementIndexStart = body.indexOf("<" + removeElement + ">");
+                    int elementIndexEnd = body.indexOf("</" + removeElement + ">");
+                    body = body.substring(0, elementIndexStart) + replaceRemovedElementWith
+                            + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
+                    logger.trace("Body for this PUT is going to be:{}", body);
+                    ipCameraHandler.listOfReplies.set(indexInLists, body);
+                    FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
+                            httpGetPutURL);
+                    request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.ipAddress);
+                    request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+                    request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
+                    ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
+                    request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
+                    request.content().clear().writeBytes(bbuf);
+                    ipCameraHandler.sendHttpPUT(httpGetPutURL, request);
+                } else {
+                    logger.warn(
+                            "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
+                    ipCameraHandler.sendHttpGET(httpGetPutURL);
+                }
+            }
         } finally {
             ipCameraHandler.lock.unlock();
-        }
-        if (indexInLists >= 0) {
-            ipCameraHandler.lock.lock();
-            if (!"".contains(ipCameraHandler.listOfReplies.get(indexInLists))) {
-                body = ipCameraHandler.listOfReplies.get(indexInLists);
-                ipCameraHandler.lock.unlock();
-                logger.trace("An OLD reply from the camera was:{}", body);
-                if (body.contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
-                    body = body.substring("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".length());
-                }
-                int elementIndexStart = body.indexOf("<" + removeElement + ">");
-                int elementIndexEnd = body.indexOf("</" + removeElement + ">");
-                body = body.substring(0, elementIndexStart) + replaceRemovedElementWith
-                        + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
-                logger.trace("Body for this PUT is going to be:{}", body);
-                ipCameraHandler.listOfReplies.set(indexInLists, body);
-                FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
-                        httpGetPutURL);
-                request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.ipAddress);
-                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-                request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
-                ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
-                request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
-                request.content().clear().writeBytes(bbuf);
-                ipCameraHandler.sendHttpPUT(httpGetPutURL, request);
-            } else {
-                logger.warn(
-                        "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
-                ipCameraHandler.lock.unlock();
-                ipCameraHandler.sendHttpGET(httpGetPutURL);
-            }
         }
     }
 

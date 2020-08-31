@@ -223,18 +223,21 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
     private void sendSnapshotImage(ChannelHandlerContext ctx, String contentType) throws IOException {
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         ipCameraHandler.lockCurrentSnapshot.lock();
-        ByteBuf snapshotData = Unpooled.copiedBuffer(ipCameraHandler.currentSnapshot);
-        ipCameraHandler.lockCurrentSnapshot.unlock();
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
-        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, snapshotData.readableBytes());
-        response.headers().add("Access-Control-Allow-Origin", "*");
-        response.headers().add("Access-Control-Expose-Headers", "*");
-        ctx.channel().write(response);
-        ctx.channel().write(snapshotData);
-        ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
-        ctx.channel().writeAndFlush(footerBbuf);
+        try {
+            ByteBuf snapshotData = Unpooled.copiedBuffer(ipCameraHandler.currentSnapshot);
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
+            response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+            response.headers().add(HttpHeaderNames.CONTENT_LENGTH, snapshotData.readableBytes());
+            response.headers().add("Access-Control-Allow-Origin", "*");
+            response.headers().add("Access-Control-Expose-Headers", "*");
+            ctx.channel().write(response);
+            ctx.channel().write(snapshotData);
+            ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
+            ctx.channel().writeAndFlush(footerBbuf);
+        } finally {
+            ipCameraHandler.lockCurrentSnapshot.unlock();
+        }
     }
 
     private void sendFile(ChannelHandlerContext ctx, String fileUri, String contentType) throws IOException {

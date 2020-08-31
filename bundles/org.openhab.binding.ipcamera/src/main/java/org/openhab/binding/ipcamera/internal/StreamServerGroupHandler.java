@@ -159,19 +159,22 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).lockCurrentSnapshot.lock();
-        ByteBuf snapshotData = Unpooled
-                .copiedBuffer(ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).currentSnapshot);
-        ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).lockCurrentSnapshot.unlock();
-        response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
-        response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
-        response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, snapshotData.readableBytes());
-        response.headers().add("Access-Control-Allow-Origin", "*");
-        response.headers().add("Access-Control-Expose-Headers", "*");
-        ctx.channel().write(response);
-        ctx.channel().write(snapshotData);
-        ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
-        ctx.channel().writeAndFlush(footerBbuf);
+        try {
+            ByteBuf snapshotData = Unpooled.copiedBuffer(
+                    ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).currentSnapshot);
+            response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
+            response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+            response.headers().add(HttpHeaderNames.CONTENT_LENGTH, snapshotData.readableBytes());
+            response.headers().add("Access-Control-Allow-Origin", "*");
+            response.headers().add("Access-Control-Expose-Headers", "*");
+            ctx.channel().write(response);
+            ctx.channel().write(snapshotData);
+            ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
+            ctx.channel().writeAndFlush(footerBbuf);
+        } finally {
+            ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).lockCurrentSnapshot.unlock();
+        }
     }
 
     private void sendFile(ChannelHandlerContext ctx, String fileUri, String contentType) throws IOException {

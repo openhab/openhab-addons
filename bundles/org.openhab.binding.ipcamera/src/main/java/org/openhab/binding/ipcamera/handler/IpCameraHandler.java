@@ -288,29 +288,32 @@ public class IpCameraHandler extends BaseThingHandler {
 
     private void cleanChannels() {
         lock.lock();
-        for (byte index = 0; index < listOfRequests.size(); index++) {
-            logger.debug("Channel status is {} for URL:{}", listOfChStatus.get(index), listOfRequests.get(index));
-            switch (listOfChStatus.get(index)) {
-                case 2: // Open and OK to reuse
-                case 1: // Open
-                case 0: // Closing but still open
-                    Channel channel = listOfChannels.get(index);
-                    if (channel.isOpen()) {
+        try {
+            for (byte index = 0; index < listOfRequests.size(); index++) {
+                logger.debug("Channel status is {} for URL:{}", listOfChStatus.get(index), listOfRequests.get(index));
+                switch (listOfChStatus.get(index)) {
+                    case 2: // Open and OK to reuse
+                    case 1: // Open
+                    case 0: // Closing but still open
+                        Channel channel = listOfChannels.get(index);
+                        if (channel.isOpen()) {
+                            break;
+                        } else {
+                            listOfChStatus.set(index, (byte) -1);
+                            logger.warn("Cleaning the channels has just found a connection with wrong open state.");
+                        }
+                    case -1: // closed
+                        listOfRequests.remove(index);
+                        listOfChStatus.remove(index);
+                        listOfChannels.remove(index);
+                        listOfReplies.remove(index);
+                        index--;
                         break;
-                    } else {
-                        listOfChStatus.set(index, (byte) -1);
-                        logger.warn("Cleaning the channels has just found a connection with wrong open state.");
-                    }
-                case -1: // closed
-                    listOfRequests.remove(index);
-                    listOfChStatus.remove(index);
-                    listOfChannels.remove(index);
-                    listOfReplies.remove(index);
-                    index--;
-                    break;
+                }
             }
+        } finally {
+            lock.unlock();
         }
-        lock.unlock();
     }
 
     private void closeChannel(String url) {
@@ -562,14 +565,17 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void processSnapshot(byte[] incommingSnapshot) {
         lockCurrentSnapshot.lock();
-        currentSnapshot = incommingSnapshot;
-        if (preroll > 0) {
-            fifoSnapshotBuffer.add(incommingSnapshot);
-            if (fifoSnapshotBuffer.size() > (preroll + postroll)) {
-                fifoSnapshotBuffer.removeFirst();
+        try {
+            currentSnapshot = incommingSnapshot;
+            if (preroll > 0) {
+                fifoSnapshotBuffer.add(incommingSnapshot);
+                if (fifoSnapshotBuffer.size() > (preroll + postroll)) {
+                    fifoSnapshotBuffer.removeFirst();
+                }
             }
+        } finally {
+            lockCurrentSnapshot.unlock();
         }
-        lockCurrentSnapshot.unlock();
 
         if (streamingSnapshotMjpeg) {
             sendMjpegFrame(incommingSnapshot, snapshotMjpegChannelGroup);
@@ -921,16 +927,22 @@ public class IpCameraHandler extends BaseThingHandler {
             if (auto) {
                 autoSnapshotMjpegChannelGroup.add(ctx.channel());
                 lockCurrentSnapshot.lock();
-                sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
-                // iOS uses a FIFO? and needs two frames to display a pic
-                sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
-                lockCurrentSnapshot.unlock();
+                try {
+                    sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
+                    // iOS uses a FIFO? and needs two frames to display a pic
+                    sendMjpegFrame(currentSnapshot, autoSnapshotMjpegChannelGroup);
+                } finally {
+                    lockCurrentSnapshot.unlock();
+                }
                 streamingAutoFps = true;
             } else {
                 snapshotMjpegChannelGroup.add(ctx.channel());
                 lockCurrentSnapshot.lock();
-                sendMjpegFrame(currentSnapshot, snapshotMjpegChannelGroup);
-                lockCurrentSnapshot.unlock();
+                try {
+                    sendMjpegFrame(currentSnapshot, snapshotMjpegChannelGroup);
+                } finally {
+                    lockCurrentSnapshot.unlock();
+                }
                 streamingSnapshotMjpeg = true;
                 startSnapshotPolling();
             }
@@ -1029,22 +1041,24 @@ public class IpCameraHandler extends BaseThingHandler {
         int count = 0;
         // Need to lock as fifoSnapshotBuffer is not thread safe and new snapshots can be incoming.
         lockCurrentSnapshot.lock();
-        logger.debug("Storing snapshots now to disk for GIF");
-        for (Object incomingJpeg : fifoSnapshotBuffer) {
-            byte[] foo = (byte[]) incomingJpeg;
-            File file = new File(ffmpegOutputFolder + "snapshot" + count + ".jpg");
-            count++;
-            try {
-                OutputStream fos = new FileOutputStream(file);
-                fos.write(foo);
-                fos.close();
-            } catch (FileNotFoundException e) {
-                logger.warn("FileNotFoundException {}", e.getMessage());
-            } catch (IOException e) {
-                logger.warn("IOException {}", e.getMessage());
+        try {
+            for (Object incomingJpeg : fifoSnapshotBuffer) {
+                byte[] foo = (byte[]) incomingJpeg;
+                File file = new File(ffmpegOutputFolder + "snapshot" + count + ".jpg");
+                count++;
+                try {
+                    OutputStream fos = new FileOutputStream(file);
+                    fos.write(foo);
+                    fos.close();
+                } catch (FileNotFoundException e) {
+                    logger.warn("FileNotFoundException {}", e.getMessage());
+                } catch (IOException e) {
+                    logger.warn("IOException {}", e.getMessage());
+                }
             }
+        } finally {
+            lockCurrentSnapshot.unlock();
         }
-        lockCurrentSnapshot.unlock();
     }
 
     public void setupFfmpegFormat(String format) {

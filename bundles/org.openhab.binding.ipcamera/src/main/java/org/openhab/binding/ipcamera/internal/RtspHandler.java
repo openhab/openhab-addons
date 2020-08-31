@@ -42,8 +42,9 @@ import io.netty.handler.codec.rtsp.RtspVersions;
 import io.netty.util.CharsetUtil;
 
 /**
- * The {@link RtspHandler} is a WIP and is currently not used. Will be able to report what format the stream is in mjpeg
- * or h264/5.
+ * The {@link RtspHandler} is a WIP and is currently not used. Soon will be able to report what format the stream is in
+ * mjpeg
+ * or H.264/5.
  *
  *
  * @author Matthew Skinner - Initial contribution
