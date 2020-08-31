@@ -1041,9 +1041,9 @@ public class IpCameraHandler extends BaseThingHandler {
                 fos.write(foo);
                 fos.close();
             } catch (FileNotFoundException e) {
-                logger.error("FileNotFoundException {}", e.getMessage());
+                logger.warn("FileNotFoundException {}", e.getMessage());
             } catch (IOException e) {
-                logger.error("IOException {}", e.getMessage());
+                logger.warn("IOException {}", e.getMessage());
             }
         }
         lockCurrentSnapshot.unlock();
@@ -1052,15 +1052,15 @@ public class IpCameraHandler extends BaseThingHandler {
     public void setupFfmpegFormat(String format) {
         String inOptions = "";
         if (ffmpegOutputFolder.equals("")) {
-            logger.error("The camera tried to use a ffmpeg feature when the output folder is not set.");
+            logger.warn("The camera tried to use a FFmpeg feature when the output folder is not set.");
             return;
         }
         if (rtspUri.equals("")) {
-            logger.error("The camera tried to use a ffmpeg feature when no valid input for ffmpeg is provided.");
+            logger.warn("The camera tried to use a FFmpeg feature when no valid input for FFmpeg is provided.");
             return;
         }
         if (config.get(CONFIG_FFMPEG_LOCATION) == null) {
-            logger.error("The camera tried to use a ffmpeg feature when the location for ffmpeg is not known.");
+            logger.warn("The camera tried to use a FFmpeg feature when the location for FFmpeg is not known.");
             return;
         }
 
@@ -1588,7 +1588,7 @@ public class IpCameraHandler extends BaseThingHandler {
         try {
             encodedString = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
-            logger.error("Failed to encode special characters for URL. {}", e.getMessage());
+            logger.warn("Failed to encode special characters for URL. {}", e.getMessage());
         }
         return encodedString;
     }

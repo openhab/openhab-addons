@@ -77,7 +77,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             array = null;
             return stringBuffer.toString();
         } catch (NoSuchAlgorithmException e) {
-            logger.error("NoSuchAlgorithmException error when calculating MD5 hash");
+            logger.warn("NoSuchAlgorithmException error when calculating MD5 hash");
         }
         return "";
     }

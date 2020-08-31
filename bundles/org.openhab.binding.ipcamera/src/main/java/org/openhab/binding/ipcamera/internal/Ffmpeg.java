@@ -121,7 +121,7 @@ public class Ffmpeg {
                     }
                 }
             } catch (IOException e) {
-                logger.error("{}", e.toString());
+                logger.warn("An error occured trying to process the messages from FFmpeg.");
             } finally {
                 switch (format) {
                     case "GIF":

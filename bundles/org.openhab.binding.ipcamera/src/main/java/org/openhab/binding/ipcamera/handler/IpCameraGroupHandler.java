@@ -120,7 +120,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             String file = handle.config.get(CONFIG_FFMPEG_OUTPUT).toString() + "ipcamera.m3u8";
             camerasm3u8 = new String(Files.readAllBytes(Paths.get(file)));
         } catch (IOException e) {
-            logger.error("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
+            logger.warn("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());
         }
         return camerasm3u8;
     }
@@ -130,7 +130,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         for (int loop = numberToRetain; loop > 0; loop--) {
             start = string.lastIndexOf("#EXTINF:", start - 1);
             if (start == -1) {
-                logger.error(
+                logger.warn(
                         "Playlist did not contain enough entries, check all cameras in groups use the same HLS settings.");
                 return "";
             }
@@ -144,7 +144,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         for (int loop = numberToRemove; loop > 0; loop--) {
             startingFrom = string.indexOf("#EXTINF:", startingFrom + 27);
             if (startingFrom == -1) {
-                logger.error(
+                logger.warn(
                         "Playlist failed to remove entries from start, check all cameras in groups use the same HLS settings.");
                 return string;
             }
