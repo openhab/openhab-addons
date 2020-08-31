@@ -31,20 +31,20 @@
 			</parameter>
 			<parameter name="telemetryPollTime" type="integer" min="0" max="60">
 				<label>Telemetry Poll Delay</label>
-				<default>10</default>
+				<default>12</default>
 				<description>How often to request telemetry data. Enter 0 to disable.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="alarmPollTime" type="integer" min="0" max="120">
 				<label>Alarm Poll Delay</label>
-				<default>10</default>
+				<default>60</default>
 				<description>How often to request alarm data. Enter 0 to disable.</description>
 				<required>true</required>
 			</parameter>
 			<parameter name="commandPollDelay" type="integer" min="0" max="60">
-				<label>Poll Delay</label>
-				<default>10</default>
-				<description>Delay to poll server after a command.  This allows time for the command to propogate to the Omnilogic and back to the cloud server. If items toggle after a command, increase the delay.  Enter 0 to disable/supress all outgoing commands.</description>
+				<label>Command Poll Delay</label>
+				<default>12</default>
+				<description>Delay to poll server after a command.  This allows time for the command to propagate to the Omnilogic and back to the cloud server. If items toggle after a command, increase the delay.  Enter 0 to disable/suppress all outgoing commands.</description>
 				<required>true</required>
 			</parameter>
 		</config-description>
