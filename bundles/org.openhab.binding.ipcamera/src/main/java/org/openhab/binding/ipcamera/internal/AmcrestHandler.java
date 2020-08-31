@@ -105,7 +105,7 @@ public class AmcrestHandler extends ChannelDuplexHandler {
     }
 
     public String encodeSpecialChars(String text) {
-        String Processed = text;
+        String processed = text;
         try {
             Processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
