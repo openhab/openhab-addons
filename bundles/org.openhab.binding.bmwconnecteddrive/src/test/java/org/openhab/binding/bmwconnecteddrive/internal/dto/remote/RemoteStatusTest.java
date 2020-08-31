@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.remote;
 
+import static org.junit.Assert.assertEquals;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 
 import com.google.gson.Gson;
@@ -32,6 +35,6 @@ public class RemoteStatusTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/remote-services/pending.json");
         ExecutionStatusContainer esc = GSON.fromJson(resource1, ExecutionStatusContainer.class);
         ExecutionStatus execStatus = esc.executionStatus;
-        System.out.println(execStatus.status);
+        assertEquals("Status", ExecutionState.PENDING.toString(), execStatus.status);
     }
 }

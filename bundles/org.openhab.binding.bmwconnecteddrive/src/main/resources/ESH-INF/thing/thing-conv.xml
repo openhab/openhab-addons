@@ -27,8 +27,8 @@
 				<description>BMW Car VIN </description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
-				<label>Refresh Interval</label>
-				<description>Data Refresh Rate for your Car values </description>
+				<label>Refresh Interval in Minutes</label>
+				<description>Data Refresh Rate for your Vehicle data </description>
 				<default>5</default>
 			</parameter>
 			<parameter name="units" type="text">
@@ -52,7 +52,7 @@
 					<option value="FRONT">Front</option>
 					<option value="REARSIDE">Rearside</option>
 					<option value="REAR">Rear</option>
-					<option value="SIDE">Slide</option>
+					<option value="SIDE">Side</option>
 					<option value="DASHBOARD">Dashboard</option>
 					<option value="DRIVERDOOR">Driver Door</option>
 					<option value="REARBIRDSEYE">Rear BirdsEye</option>

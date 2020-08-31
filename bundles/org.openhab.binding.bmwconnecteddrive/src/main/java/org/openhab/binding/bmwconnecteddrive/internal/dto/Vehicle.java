@@ -21,9 +21,10 @@ import java.util.List;
  * @author Bernd Weymann - Initial contribution
  */
 public class Vehicle {
-    public final static String ACTIVATED = "ACTIVATED";
-    public final static String SUPPORTED = "SUPPORTED";
-    public final static String NOT_SUPPORTED = "NOT_SUPPORTED";
+    public static final String ACTIVATED = "ACTIVATED";
+    public static final String SUPPORTED = "SUPPORTED";
+    public static final String NOT_SUPPORTED = "NOT_SUPPORTED";
+
     public String vin;
     public String model;
     public String driveTrain;

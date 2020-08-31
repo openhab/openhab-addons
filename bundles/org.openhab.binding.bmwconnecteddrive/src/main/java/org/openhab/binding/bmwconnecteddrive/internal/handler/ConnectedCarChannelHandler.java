@@ -29,23 +29,23 @@ import org.eclipse.smarthome.core.types.Command;
 @NonNullByDefault
 public class ConnectedCarChannelHandler extends BaseThingHandler {
     // Property Channels
-    protected ChannelUID brandChannel;
-    protected ChannelUID modelChannel;
-    protected ChannelUID drivetrainChannel;
-    protected ChannelUID bodyChannel;
-    protected ChannelUID colorChannel;
-    protected ChannelUID constructionYearChannel;
-    protected ChannelUID communityStatisticsChannel;
-    protected ChannelUID alarmChannel;
-    protected ChannelUID dealerNameChannel;
-    protected ChannelUID dealerAddressChannel;
-    protected ChannelUID dealerPhoneChannel;
-    protected ChannelUID breakdownPhoneChannel;
-    protected ChannelUID activatedServicesChannel;
-    protected ChannelUID deactivatedServicesChannel;
-    protected ChannelUID supportedServicesChannel;
-    protected ChannelUID notSupportedServicesChannel;
-    protected ChannelUID chargingModesChannel;
+    // protected ChannelUID brandChannel;
+    // protected ChannelUID modelChannel;
+    // protected ChannelUID drivetrainChannel;
+    // protected ChannelUID bodyChannel;
+    // protected ChannelUID colorChannel;
+    // protected ChannelUID constructionYearChannel;
+    // protected ChannelUID communityStatisticsChannel;
+    // protected ChannelUID alarmChannel;
+    // protected ChannelUID dealerNameChannel;
+    // protected ChannelUID dealerAddressChannel;
+    // protected ChannelUID dealerPhoneChannel;
+    // protected ChannelUID breakdownPhoneChannel;
+    // protected ChannelUID activatedServicesChannel;
+    // protected ChannelUID deactivatedServicesChannel;
+    // protected ChannelUID supportedServicesChannel;
+    // protected ChannelUID notSupportedServicesChannel;
+    // protected ChannelUID chargingModesChannel;
 
     // Vahicle Status Channels
     protected ChannelUID doors;
@@ -95,32 +95,35 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID remoteClimateChannel;
     protected ChannelUID remoteStateChannel;
 
+    // Troubleshooting
+    protected ChannelUID carDataFingerprint;
+
     public ConnectedCarChannelHandler(Thing thing) {
         super(thing);
 
         // create properties channels
-        brandChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BRAND);
-        modelChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_MODEL);
-        drivetrainChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DRIVETRAIN);
-        bodyChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BODYTYPE);
-        colorChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_COLOR);
-        constructionYearChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-                PROPERTIES_CONSTRUCTION_YEAR);
-        communityStatisticsChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_COMMUNITY);
-        alarmChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_ALARM);
-        dealerNameChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_NAME);
-        dealerAddressChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_ADDRESS);
-        dealerPhoneChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_PHONE);
-        breakdownPhoneChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BREAKDOWN_PHONE);
-        activatedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-                PROPERTIES_ACTIVATED_SERVICES);
-        deactivatedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-                PROPERTIES_DEACTIVATED_SERVICES);
-        supportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-                PROPERTIES_SUPPORTED_SERVICES);
-        notSupportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-                PROPERTIES_NOT_SUPPORTED_SERVICES);
-        chargingModesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_CHARGING_MODES);
+        // brandChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BRAND);
+        // modelChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_MODEL);
+        // drivetrainChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DRIVETRAIN);
+        // bodyChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BODYTYPE);
+        // colorChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_COLOR);
+        // constructionYearChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
+        // PROPERTIES_CONSTRUCTION_YEAR);
+        // communityStatisticsChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_COMMUNITY);
+        // alarmChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_ALARM);
+        // dealerNameChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_NAME);
+        // dealerAddressChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_ADDRESS);
+        // dealerPhoneChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_PHONE);
+        // breakdownPhoneChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BREAKDOWN_PHONE);
+        // activatedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
+        // PROPERTIES_ACTIVATED_SERVICES);
+        // deactivatedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
+        // PROPERTIES_DEACTIVATED_SERVICES);
+        // supportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
+        // PROPERTIES_SUPPORTED_SERVICES);
+        // notSupportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
+        // PROPERTIES_NOT_SUPPORTED_SERVICES);
+        // chargingModesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_CHARGING_MODES);
 
         // Vehicle Status channels
         doors = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, DOORS);
@@ -168,6 +171,8 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         remoteHornChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_HORN);
         remoteClimateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_AIR_CONDITIONING);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
+
+        carDataFingerprint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, CARDATA_FINGERPRINT);
     }
 
     @Override

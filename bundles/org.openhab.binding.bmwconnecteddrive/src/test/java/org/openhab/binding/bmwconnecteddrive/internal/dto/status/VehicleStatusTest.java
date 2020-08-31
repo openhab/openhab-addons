@@ -30,12 +30,15 @@ public class VehicleStatusTest {
     private static final Gson GSON = new Gson();
 
     @Test
-    public void testtestBEV_REX_Values() {
+    public void testtestBevRexValues() {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
         VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
         assertEquals("Mileage", 17273.0, vStatus.mileage, 0.1);
         Position p = vStatus.position;
         assertEquals("Heading", 219, p.heading);
+
+        assertEquals("DCS Activation", "NA", vStatus.dcsCchActivation);
+        assertEquals("DCS Ongoing", false, vStatus.dcsCchOngoing);
     }
 }

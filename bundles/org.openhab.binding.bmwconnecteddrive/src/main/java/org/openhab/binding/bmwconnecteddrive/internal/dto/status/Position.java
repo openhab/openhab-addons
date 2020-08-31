@@ -22,4 +22,9 @@ public class Position {
     public float lon;// ": 8.495669,
     public int heading;// ": 219,
     public String status;// ": "OK"
+
+    @Override
+    public String toString() {
+        return new StringBuffer(Float.toString(lat)).append(",").append(Float.toString(lon)).toString();
+    }
 }

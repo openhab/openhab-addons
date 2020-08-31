@@ -45,7 +45,6 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
     public ConnectedCarDiscovery(ConnectedDriveBridgeHandler bh) {
         super(SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
         bridgeHandler = bh;
-        logger.info("Created ConnectedCarDiscovery");
     }
 
     @Override
@@ -73,10 +72,12 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                     properties.put("yearOfConstruction", vehicle.yearOfConstruction);
                     properties.put("bodytype", vehicle.bodytype);
                     properties.put("statisticsCommunityEnabled", vehicle.color);
-                    properties.put("dealerName", vehicle.dealer.name);
-                    properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
-                            + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
-                    properties.put("dealerPhone", vehicle.dealer.phone);
+                    if (vehicle.dealer != null) {
+                        properties.put("dealerName", vehicle.dealer.name);
+                        properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
+                                + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
+                        properties.put("dealerPhone", vehicle.dealer.phone);
+                    }
                     properties.put("breakdownNumber", vehicle.breakdownNumber);
                     StringBuffer chargingModes = new StringBuffer();
                     if (vehicle.supportedChargingModes != null) {
@@ -102,8 +103,10 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
         StringBuffer buf = new StringBuffer();
         for (Field field : obj.getClass().getDeclaredFields()) {
             try {
-                if (field.get(obj).equals(compare)) {
-                    buf.append(field.getName());
+                if (field.get(obj) != null) {
+                    if (field.get(obj).equals(compare)) {
+                        buf.append(field.getName());
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 logger.warn("Field {} not found {}", compare, e.getMessage());

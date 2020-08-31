@@ -13,23 +13,16 @@
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
-import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.CONTENT_TYPE_JSON;
 
-import java.lang.reflect.Field;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -54,13 +47,13 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,47 +70,37 @@ import com.google.gson.Gson;
 public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
 
-    final static Gson GSON = new Gson();
-    Token token = new Token();
-    @Nullable
-    String serviceExecutionAPI;
-    @Nullable
-    String serviceExecutionStateAPI;
+    static final Gson GSON = new Gson();
 
-    private String driveTrain;
-    private HttpClient httpClient;
-    protected RemoteServiceHandler remoteService;
+    private Optional<ConnectedDriveProxy> proxy = Optional.empty();
+    private Optional<RemoteServiceHandler> remote = Optional.empty();
+    private Optional<ConnectedCarConfiguration> configuration = Optional.empty();
 
     private boolean imperial = false;
     private boolean hasFuel = false;
     private boolean isElectric = false;
     private boolean isHybrid = false;
 
-    private @Nullable ConnectedCarConfiguration configuration;
-    private @Nullable ConnectedDriveBridgeHandler bridgeHandler;
-    protected @Nullable ScheduledFuture<?> refreshJob;
+    private Position currentPosition = new Position();
 
-    private @Nullable String vehicleFingerprint;
-    private @Nullable String efficiencyFingerprint;
+    StringResponseCallback vehicleStatusCallback = new VehicleStatusCallback();
+    StringResponseCallback lastTripCallback = new LastTripCallback();
+    StringResponseCallback allTripsCallback = new AllTripsCallback();
+    StringResponseCallback chargeProfileCallback = new ChargeProfilesCallback();
+    StringResponseCallback rangeMapCallback = new RangeMapCallback();
+    ByteResponseCallback imageCallback = new ImageCallback();
 
-    // Connected Drive APIs
-    private @Nullable String vehicleAPI;
-    private @Nullable String imageAPI;
-    private @Nullable String lastTripAPI;
-    private @Nullable String allTripsAPI;
-    private @Nullable String chargeAPI;
-    private @Nullable String destinationAPI;
-    private @Nullable String rangeMapAPI;
+    private Optional<String> vehicleStatusCache = Optional.empty();
+    private Optional<String> lastTripCache = Optional.empty();
+    private Optional<String> allTripsCache = Optional.empty();
+    private Optional<String> chargeProfileCache = Optional.empty();
+    private Optional<String> rangeMapCache = Optional.empty();
 
-    private @Nullable String vehicleStatusCache;
-    private @Nullable String lastTripCache;
-    private @Nullable String allTripsCache;
+    private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
+    protected Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     public ConnectedCarHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
         super(thing);
-        remoteService = new RemoteServiceHandler(this, hc);
-        httpClient = hc;
-        driveTrain = type;
         this.imperial = imperial;
         hasFuel = type.equals(CarType.CONVENTIONAL.toString()) || type.equals(CarType.PLUGIN_HYBRID.toString())
                 || type.equals(CarType.ELECTRIC_REX.toString());
@@ -129,63 +112,117 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        String group = channelUID.getGroupId();
+
+        // Refresh of Channels with cached values
         if (command instanceof RefreshType) {
-            String group = channelUID.getGroupId();
             if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
-                if (lastTripCache != null) {
-                    updateLastTrip(lastTripCache);
-                }
+                lastTripCallback.onResponse(lastTripCache);
             } else if (CHANNEL_GROUP_LIFETIME.equals(group)) {
-                if (allTripsCache != null) {
-                    updateTripStatistics(allTripsCache);
-                }
-            } else if (vehicleStatusCache != null) {
-                    updateRangeValues(vehicleStatusCache);
+                allTripsCallback.onResponse(allTripsCache);
+            } else if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
+                lastTripCallback.onResponse(lastTripCache);
+            } else if (CHANNEL_GROUP_LAST_TRIP.equals(group)) {
+                lastTripCallback.onResponse(lastTripCache);
+            } else if (CHANNEL_GROUP_STATUS.equals(group)) {
+                vehicleStatusCallback.onResponse(vehicleStatusCache);
+            } else if (CHANNEL_GROUP_CHARGE_PROFILE.equals(group)) {
+                vehicleStatusCallback.onResponse(chargeProfileCache);
+            } else if (CHANNEL_GROUP_RANGE_MAP.equals(group)) {
+                vehicleStatusCallback.onResponse(rangeMapCache);
             }
-        }
-        if (CHANNEL_GROUP_REMOTE.equals(channelUID.getGroupId())) {
-            logger.info("Remote Command {}", CHANNEL_GROUP_REMOTE);
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    switch (channelUID.getIdWithoutGroup()) {
-                        case REMOTE_SERVICE_LIGHT_FLASH:
-                            remoteService.execute(RemoteServiceHandler.RemoteService.LIGHT_FLASH);
-                            break;
-                        case REMOTE_SERVICE_AIR_CONDITIONING:
-                            remoteService.execute(RemoteServiceHandler.RemoteService.AIR_CONDITIONING);
-                            break;
-                        case REMOTE_SERVICE_DOOR_LOCK:
-                            remoteService.execute(RemoteServiceHandler.RemoteService.DOOR_LOCK);
-                            break;
-                        case REMOTE_SERVICE_DOOR_UNLOCK:
-                            remoteService.execute(RemoteServiceHandler.RemoteService.DOOR_UNLOCK);
-                            break;
-                        case REMOTE_SERVICE_HORN:
-                            remoteService.execute(RemoteServiceHandler.RemoteService.HORN);
-                            break;
-                        case REMOTE_SERVICE_VEHICLE_FINDER:
-                            remoteService.execute(RemoteServiceHandler.RemoteService.VEHICLE_FINDER);
-                            break;
+        } else {
+            // Executing Remote Services
+            if (CHANNEL_GROUP_REMOTE.equals(channelUID.getGroupId())) {
+                logger.info("Remote Command {}", CHANNEL_GROUP_REMOTE);
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        if (remote.isPresent()) {
+                            switch (channelUID.getIdWithoutGroup()) {
+                                case REMOTE_SERVICE_LIGHT_FLASH:
+                                    updateState(remoteLightChannel,
+                                            OnOffType.from(remote.get().execute(RemoteService.LIGHT_FLASH)));
+                                    break;
+                                case REMOTE_SERVICE_AIR_CONDITIONING:
+                                    updateState(remoteClimateChannel,
+                                            OnOffType.from(remote.get().execute(RemoteService.AIR_CONDITIONING)));
+                                    break;
+                                case REMOTE_SERVICE_DOOR_LOCK:
+                                    updateState(remoteLockChannel,
+                                            OnOffType.from(remote.get().execute(RemoteService.DOOR_LOCK)));
+                                    break;
+                                case REMOTE_SERVICE_DOOR_UNLOCK:
+                                    updateState(remoteUnlockChannel,
+                                            OnOffType.from(remote.get().execute(RemoteService.DOOR_UNLOCK)));
+                                    break;
+                                case REMOTE_SERVICE_HORN:
+                                    updateState(remoteHornChannel,
+                                            OnOffType.from(remote.get().execute(RemoteService.HORN)));
+                                    break;
+                                case REMOTE_SERVICE_VEHICLE_FINDER:
+                                    updateState(remoteFinderChannel,
+                                            OnOffType.from(remote.get().execute(RemoteService.VEHICLE_FINDER)));
+                                    break;
+                            }
+                        }
+                        updateState(carDataFingerprint, OnOffType.OFF);
                     }
                 }
             }
-        }
-        if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
-            logger.info("Trigger CarData Fingerprint");
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    if (vehicleFingerprint != null) {
+
+            // Log Troubleshoot data
+            if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
+                logger.info("Trigger CarData Fingerprint");
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
                         logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - BEGIN");
-                        logger.warn("{}", vehicleFingerprint);
-                        logger.warn("{}", efficiencyFingerprint);
+                        if (vehicleStatusCache.isPresent()) {
+                            logger.warn("### Vehicle Status ###");
+                            // Anonymous data for VIN and Position
+                            VehicleStatusContainer container = GSON.fromJson(vehicleStatusCache.get(),
+                                    VehicleStatusContainer.class);
+                            VehicleStatus status = container.vehicleStatus;
+                            status.vin = ANONYMOUS;
+                            if (status.position != null) {
+                                status.position.lat = -1;
+                                status.position.lon = -1;
+                                status.position.heading = -1;
+                                logger.warn("{}", GSON.toJson(container));
+                            }
+                        } else {
+                            logger.warn("### Vehicle Status Empty ###");
+                        }
+                        if (lastTripCache.isPresent()) {
+                            logger.warn("### Last Trip ###");
+                            logger.warn("{}", lastTripCache.get());
+                        } else {
+                            logger.warn("### Last Trip Empty ###");
+                        }
+                        if (allTripsCache.isPresent()) {
+                            logger.warn("### All Trips ###");
+                            logger.warn("{}", allTripsCache.get());
+                        } else {
+                            logger.warn("### All Trips Empty ###");
+                        }
+                        if (isElectric) {
+                            if (chargeProfileCache.isPresent()) {
+                                logger.warn("### Charge Profile ###");
+                                logger.warn("{}", chargeProfileCache.get());
+                            } else {
+                                logger.warn("### Charge Profile Empty ###");
+                            }
+                        }
+                        if (rangeMapCache.isPresent()) {
+                            logger.warn("### Range Map ###");
+                            logger.warn("{}", rangeMapCache.get());
+                        } else {
+                            logger.warn("### Range Map Empty ###");
+                        }
                         logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - END");
-                    } else {
-                        logger.warn(
-                                "BMW ConnectedDrive Binding - No Car Data Troubleshoot fingerprint available. Please check for valid username and password Settings for proper connection towards ConnectDrive");
                     }
+                    // Switch back to off immediately
+                    updateState(channelUID, OnOffType.OFF);
                 }
-                // Switch back to off immediately
-                updateState(channelUID, OnOffType.OFF);
             }
         }
     }
@@ -212,335 +249,344 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        ConnectedCarConfiguration config = getConfigAs(ConnectedCarConfiguration.class);
-        configuration = config;
-        if (config != null) {
+        configuration = Optional.of(getConfigAs(ConnectedCarConfiguration.class));
+        if (configuration.isPresent()) {
             scheduler.execute(() -> {
                 Bridge bridge = getBridge();
                 if (bridge != null) {
                     BridgeHandler handler = bridge.getHandler();
                     if (handler != null) {
-                        bridgeHandler = ((ConnectedDriveBridgeHandler) handler);
-                        String baseUrl = "https://" + bridgeHandler.getRegionServer() + "/webapi/v1/user/vehicles/"
-                                + config.vin;
-                        vehicleAPI = baseUrl + "/status";
-                        lastTripAPI = baseUrl + "/statistics/lastTrip";
-                        allTripsAPI = baseUrl + "/statistics/allTrips";
-                        chargeAPI = baseUrl + "/chargingprofile";
-                        destinationAPI = baseUrl + "/destinations";
-                        imageAPI = baseUrl + "/image";
-
-                        serviceExecutionAPI = baseUrl + "/executeService";
-                        serviceExecutionStateAPI = baseUrl + "/serviceExecutionStatus?serviceType=";
-
-                        // currently delivers response 500 - Internal Server Error
-                        // rangeMapAPI = baseUrl + "/rangemap";
-
+                        bridgeHandler = Optional.of(((ConnectedDriveBridgeHandler) handler));
+                        proxy = bridgeHandler.get().getProxy();
+                        if (proxy.isPresent()) {
+                            remote = Optional.of(proxy.get().getRemoteServiceHandler(this));
+                        }
                     } else {
                         logger.warn("Brdige Handler null");
                     }
                 } else {
                     logger.warn("Bridge null");
                 }
-                getImage();
-                startSchedule(config.refreshInterval);
+
+                // Switch all Remote Service Channels Off
+                switchRemoteServicesOff();
+                updateState(carDataFingerprint, OnOffType.OFF);
+
+                // get Car Image one time at the beginning
+                proxy.get().requestImage(configuration.get(), imageCallback);
+
+                // check imperial setting is different to AutoDetect
+                if (!UNITS_AUTODETECT.equals(configuration.get().units)) {
+                    imperial = UNITS_IMPERIAL.equals(configuration.get().units);
+                }
+
+                // start update schedule
+                startSchedule(configuration.get().refreshInterval);
             });
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
     }
 
+    private void switchRemoteServicesOff() {
+        updateState(remoteLightChannel, OnOffType.from(false));
+        updateState(remoteFinderChannel, OnOffType.from(false));
+        updateState(remoteLockChannel, OnOffType.from(false));
+        updateState(remoteUnlockChannel, OnOffType.from(false));
+        updateState(remoteHornChannel, OnOffType.from(false));
+        updateState(remoteClimateChannel, OnOffType.from(false));
+        updateState(remoteStateChannel, OnOffType.from(false));
+    }
+
     private void startSchedule(int interval) {
-        ScheduledFuture<?> localRefreshJob = refreshJob;
-        if (localRefreshJob != null) {
-            if (localRefreshJob.isCancelled()) {
-                refreshJob = scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES);
+        if (refreshJob.isPresent()) {
+            if (refreshJob.get().isCancelled()) {
+                Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
             } // else - scheduler is already running!
         } else {
-            refreshJob = scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES);
+            Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
         }
     }
 
     @Override
     public void dispose() {
-        ScheduledFuture<?> localRefreshJob = refreshJob;
-        if (localRefreshJob != null) {
-            localRefreshJob.cancel(true);
+        if (refreshJob.isPresent()) {
+            refreshJob.get().cancel(true);
         }
     }
 
     public void getData() {
-        if (!tokenUpdate()) {
-            return;
-        }
-        String vehicleStatusData = getJSON(vehicleAPI);
-        updateVehicleStatus(vehicleStatusData);
-        updateRangeValues(vehicleStatusData);
-        String lastTripData = getJSON(lastTripAPI);
-        updateLastTrip(lastTripData);
-        String allTripData = getJSON(allTripsAPI);
-        updateTripStatistics(allTripData);
-        String rangemapData = getJSON(rangeMapAPI);
-        logger.info("RangeMap {}",rangemapData);
-        String chargeData = getJSON(chargeAPI);
-        logger.info("Chatge Data {}",chargeData);
-        String destinationData = getJSON(destinationAPI);
-    }
-
-    public @Nullable String getJSON(@Nullable String url) {
-        if (url == null) {
-            return null;
-        }
-        Request req = httpClient.newRequest(url);
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-        try {
-            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            if (contentResponse.getStatus() != 200) {
-                logger.info("URL {}", url);
-                logger.info("Status {}", contentResponse.getStatus());
-                logger.info("Reason {}", contentResponse.getReason());
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-                return contentResponse.getContentAsString();
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Get Data Exception {}", e.getMessage());
-        }
-        return null;
-    }
-
-    private void updateTripStatistics(@Nullable String content) {
-        if (content == null) {
-            logger.warn("No Vehicle Values available");
-            return;
-        }
-        allTripsCache = content;
-        AllTripsContainer at = GSON.fromJson(content, AllTripsContainer.class);
-        AllTrips c = at.allTrips;
-        updateState(lifeTimeCumulatedDrivenDistance, QuantityType
-                .valueOf(Converter.round(c.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
-        updateState(lifeTimeSingleLongestDistance,
-                QuantityType.valueOf(Converter.round(c.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
-        updateState(lifeTimeAverageConsumption, QuantityType
-                .valueOf(Converter.round(c.avgElectricConsumption.userAverage), SmartHomeUnits.KILOWATT_HOUR));
-        updateState(lifeTimeAverageRecuperation,
-                QuantityType.valueOf(Converter.round(c.avgRecuperation.userAverage), SmartHomeUnits.KILOWATT_HOUR));
-        updateState(tripDistanceSinceCharging, QuantityType
-                .valueOf(Converter.round(c.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
-    }
-
-    private void updateLastTrip(@Nullable String content) {
-        if (content == null) {
-            logger.warn("No Vehicle Values available");
-            return;
-        }
-        lastTripCache = content;
-        LastTripContainer lt = GSON.fromJson(content, LastTripContainer.class);
-        LastTrip trip = lt.lastTrip;
-        updateState(tripDistance,
-                QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
-        // updateState(tripDistanceSinceCharging,
-        // QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
-        updateState(tripAvgConsumption,
-                QuantityType.valueOf(Converter.round(trip.avgElectricConsumption), SmartHomeUnits.KILOWATT_HOUR));
-        updateState(tripAvgRecuperation,
-                QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
-    }
-
-    void updateVehicleStatus(@Nullable String content) {
-        if (content == null) {
-            logger.warn("No Vehicle Values available");
-            return;
-        }
-        logger.info("Vehicle Status {}", content);
-        vehicleStatusCache = content;
-        VehicleStatusContainer status = GSON.fromJson(content, VehicleStatusContainer.class);
-        VehicleStatus vStatus = status.vehicleStatus;
-
-        updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
-        Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
-        updateState(doors, StringType.valueOf(checkClosed(doorState)));
-        Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
-        updateState(windows, StringType.valueOf(checkClosed(windowState)));
-        updateState(checkControl, StringType.valueOf(getCheckControl(vStatus.checkControlMessages)));
-        updateState(service, StringType.valueOf(getNextService(vStatus.cbsData)));
-        if (isElectric) {
-            updateState(chargingStatus, StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
-        }
-    }
-
-    private @Nullable String getNextService(List<CBSMessage> cbsData) {
-        if (cbsData.isEmpty()) {
-            return "No Service Requests";
-        } else {
-            LocalDate serviceDate = null;
-            String service = null;
-            for (int i = 0; i < cbsData.size(); i++) {
-                CBSMessage entry = cbsData.get(i);
-                LocalDate d = LocalDate.parse(entry.cbsDueDate + "-01", Converter.serviceDateInputPattern);
-                if (serviceDate == null) {
-                    serviceDate = d;
-                    service = entry.cbsType;
-                } else {
-                    if (d.isBefore(serviceDate)) {
-                        serviceDate = d;
-                    }
-                }
-            }
-            if (serviceDate != null) {
-                return serviceDate.format(Converter.serviceDateOutputPattern) + " - " + Converter.toTitleCase(service);
-            } else {
-                return "Unknown";
-            }
-        }
-    }
-
-    private @Nullable String getCheckControl(List<CCMMessage> checkControlMessages) {
-        if (checkControlMessages.isEmpty()) {
-            return "Ok";
-        } else {
-            return Converter.toTitleCase(checkControlMessages.get(0).ccmDescriptionShort);
-        }
-    }
-
-    String checkClosed(Object dto) {
-        for (Field field : dto.getClass().getDeclaredFields()) {
-            try {
-                if (field.get(dto).equals("OPEN")) {
-                    // report the first door which is still open
-                    return Converter.toTitleCase(field.getName() + " Open");
-                }
-            } catch (IllegalArgumentException | IllegalAccessException e) {
-                logger.warn("Fields for {} Object not accesible", dto);
-                return "Unknown";
-            }
-        }
-        return "Closed";
-    }
-
-    void updateRangeValues(@Nullable String content) {
-        if (content == null) {
-            logger.warn("No Vehicle Values available");
-            return;
-        }
-        VehicleStatusContainer status = GSON.fromJson(content, VehicleStatusContainer.class);
-        VehicleStatus vStatus = status.vehicleStatus;
-        // based on unit of length decide if range shall be reported in km or miles
-        if (!imperial) {
-            updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
-            float totalRange = 0;
+        if (proxy.isPresent() && configuration.isPresent()) {
+            proxy.get().requestVehcileStatus(configuration.get(), vehicleStatusCallback);
             if (isElectric) {
-                totalRange += vStatus.remainingRangeElectric;
-                updateState(remainingRangeElectric,
-                        QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
-                logger.info("updated {} {}", remainingRangeElectric, vStatus.remainingRangeElectric);
-            } else {
-                logger.info("{} not updated", remainingRangeElectric);
+                proxy.get().requestLastTrip(configuration.get(), lastTripCallback);
+                proxy.get().requestAllTrips(configuration.get(), allTripsCallback);
+                proxy.get().requestChargingProfile(configuration.get(), chargeProfileCallback);
             }
-            if (hasFuel) {
-                totalRange += vStatus.remainingRangeFuel;
-                updateState(remainingRangeFuel,
-                        QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
-                logger.info("updated {} {}", remainingRangeFuel, vStatus.remainingRangeFuel);
-            } else {
-                logger.info("{} not updated", remainingRangeFuel);
-            }
-            if (isHybrid) {
-                updateState(remainingRangeHybrid,
-                        QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
-            }
-            updateState(rangeRadius, new DecimalType((totalRange) * 1000));
         } else {
-            updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
-            float totalRange = 0;
-            if (isElectric) {
-                totalRange += vStatus.remainingRangeElectricMls;
-                updateState(remainingRangeElectric,
-                        QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
-            }
-            if (hasFuel) {
-                totalRange = vStatus.remainingRangeFuelMls;
-                updateState(remainingRangeFuel,
-                        QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
-            }
-            if (isHybrid) {
-                updateState(remainingRangeHybrid,
-                        QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
-            }
-            updateState(rangeRadius, new DecimalType((totalRange) * 5280)); // Miles to feet
-        }
-        if (isElectric) {
-            updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
-        }
-        if (hasFuel) {
-            updateState(remainingFuel,
-                    QuantityType.valueOf(vStatus.remainingFuel * 100 / vStatus.maxFuel, SmartHomeUnits.PERCENT));
-            logger.info("updated {} {}", remainingFuel, vStatus.remainingFuel * 100 / vStatus.maxFuel);
-        } else {
-            logger.info("{} not updated", remainingRangeFuel);
-        }
-
-        updateState(lastUpdate, new StringType(Converter.getLocalDateTime(vStatus.internalDataTimeUTC)));
-
-        Position p = vStatus.position;
-        updateState(latitude, new DecimalType(p.lat));
-        updateState(longitude, new DecimalType(p.lon));
-        updateState(latlong, new StringType(p.lat + "," + p.lon));
-        updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
-
-        vehicleFingerprint = GSON.toJson(vStatus);
-    }
-
-    public void getImage() {
-        if (!tokenUpdate()) {
-            logger.warn("Car image Authorization failed");
-            return;
-        }
-        ConnectedCarConfiguration localConfig = configuration;
-        if (localConfig == null) {
-            logger.warn("Car image cannot be retrieved without config data");
-            return;
-        }
-
-        String localImageUrl = imageAPI + "?width=" + localConfig.imageSize + "&height=" + localConfig.imageSize
-                + "&view=" + localConfig.imageViewport;
-        Request req = httpClient.newRequest(localImageUrl);
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-        try {
-            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
-            if (contentResponse.getStatus() != 200) {
-                logger.info("URL {}", localImageUrl);
-                logger.info("Status {}", contentResponse.getStatus());
-                logger.info("Reason {}", contentResponse.getReason());
-            } else {
-                byte[] image = contentResponse.getContent();
-                String contentType = HttpUtil.guessContentTypeFromData(image);
-                logger.info("Image Content Type {} Size {}", contentType, image.length);
-                updateState(imageChannel, new RawType(image, contentType));
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Get Data Exception {}", e.getMessage());
+            logger.warn("ConnectedDrive Proxy isn't present");
         }
     }
 
-    public synchronized boolean tokenUpdate() {
-        if (token.isExpired() || !token.isValid()) {
-            token = bridgeHandler.getToken();
-            if (token.isExpired() || !token.isValid()) {
-                logger.info("Token update failed!");
-                return false;
+    void requestRangeMap(Position p) {
+        // format_string = '%Y-%m-%dT%H:%M:%S'
+        // timestamp = datetime.datetime.now().strftime(format_string)
+        // params = {
+        // 'deviceTime': timestamp,
+        // 'dlat': self._vehicle.observer_latitude,
+        // 'dlon': self._vehicle.observer_longitude,
+        // }
+        double diff = Converter.measure(p.lat, p.lon, currentPosition.lat, currentPosition.lon);
+        if (diff > 1000) {
+            logger.info("Difference between old {} and new Position {} = {}", currentPosition.toString(), p.toString(),
+                    diff);
+            LocalDateTime ldt = LocalDateTime.now();
+            MultiMap<String> dataMap = new MultiMap<String>();
+            dataMap.add("deviceTime", ldt.format(Converter.DATE_INPUT_PATTERN));
+            dataMap.add("dlat", Float.toString(p.lat));
+            dataMap.add("dlon", Float.toString(p.lon));
+            if (configuration.isPresent()) {
+                proxy.get().requestRangeMap(configuration.get(), dataMap, rangeMapCallback);
             }
         }
-        return true;
+        currentPosition = p;
+    }
+
+    public void updateRemoteExecutionStatus(String service, String status) {
+        updateState(remoteStateChannel, StringType
+                .valueOf(Converter.toTitleCase(new StringBuffer(service).append(" ").append(status).toString())));
+        if (ExecutionState.EXECUTED.toString().equals(status)) {
+            switchRemoteServicesOff();
+        }
+    }
+
+    public Optional<ConnectedCarConfiguration> getConfiguration() {
+        return configuration;
     }
 
     public ScheduledExecutorService getScheduler() {
         return scheduler;
     }
 
-    public void updateRemoteExecutionStatus(String status) {
-        updateState(remoteStateChannel, StringType.valueOf(status));
+    /**
+     * Callbacks for ConnectedDrive Portal
+     *
+     * @author bernd
+     *
+     */
+
+    @NonNullByDefault
+    public class ChargeProfilesCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(Optional<String> content) {
+            chargeProfileCache = content;
+        }
+
+        @Override
+        public void onError(String reason) {
+            logger.debug("Unable to retrieve Charging Profile: {}", reason);
+        }
+    }
+
+    @NonNullByDefault
+    public class RangeMapCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(Optional<String> content) {
+            rangeMapCache = content;
+        }
+
+        @Override
+        public void onError(String reason) {
+            logger.debug("Unable to retrieve RangeMap: {}", reason);
+        }
+    }
+
+    @NonNullByDefault
+    public class ImageCallback implements ByteResponseCallback {
+        @Override
+        public void onResponse(Optional<byte[]> content) {
+            if (content.isPresent()) {
+                // byte[] image = content.get().getBytes();
+                logger.info("Content {} {} {} {}", content.get()[0], content.get()[1], content.get()[2],
+                        content.get()[3]);
+                String contentType = HttpUtil.guessContentTypeFromData(content.get());
+                logger.info("Image Content Type {} Size {}", contentType, content.get().length);
+                updateState(imageChannel, new RawType(content.get(), contentType));
+            }
+        }
+
+        @Override
+        public void onError(String reason) {
+            logger.debug("Unable to retrieve Image: {}", reason);
+        }
+    }
+
+    @NonNullByDefault
+    public class AllTripsCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(Optional<String> content) {
+            if (content.isPresent()) {
+                allTripsCache = content;
+                AllTripsContainer at = GSON.fromJson(content.get(), AllTripsContainer.class);
+                AllTrips c = at.allTrips;
+                if (c == null) {
+                    return;
+                }
+                updateState(lifeTimeCumulatedDrivenDistance, QuantityType
+                        .valueOf(Converter.round(c.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(lifeTimeSingleLongestDistance, QuantityType
+                        .valueOf(Converter.round(c.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(lifeTimeAverageConsumption, QuantityType
+                        .valueOf(Converter.round(c.avgElectricConsumption.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+                updateState(lifeTimeAverageRecuperation, QuantityType
+                        .valueOf(Converter.round(c.avgRecuperation.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+                updateState(tripDistanceSinceCharging, QuantityType.valueOf(
+                        Converter.round(c.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+        }
+
+        @Override
+        public void onError(String reason) {
+            logger.debug("Unable to retrieve All Trips: {}", reason);
+        }
+
+    }
+
+    @NonNullByDefault
+    public class LastTripCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(Optional<String> content) {
+            if (content.isPresent()) {
+                lastTripCache = content;
+                LastTripContainer lt = GSON.fromJson(content.get(), LastTripContainer.class);
+                LastTrip trip = lt.lastTrip;
+                if (trip == null) {
+                    return;
+                }
+                updateState(tripDistance,
+                        QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
+                // updateState(tripDistanceSinceCharging,
+                // QuantityType.valueOf(entry.lastTrip, MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(tripAvgConsumption, QuantityType.valueOf(Converter.round(trip.avgElectricConsumption),
+                        SmartHomeUnits.KILOWATT_HOUR));
+                updateState(tripAvgRecuperation,
+                        QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
+            }
+        }
+
+        @Override
+        public void onError(String reason) {
+            logger.debug("Unable to retrieve Last Trip: {}", reason);
+        }
+    }
+
+    /**
+     * The VehicleStatus is supported by all Car Types so it's used to reflect the Thing Status
+     */
+    @NonNullByDefault
+    public class VehicleStatusCallback implements StringResponseCallback {
+        private ThingStatus thingStatus = ThingStatus.UNKNOWN;
+
+        private void setThingStatus(ThingStatus status, ThingStatusDetail detail, String reason) {
+            if (thingStatus != status) {
+                // STatus is supported by all cars so callback is used to report ONLINE state
+                updateStatus(status, detail, reason);
+            }
+        }
+
+        @Override
+        public void onResponse(Optional<String> content) {
+            if (content.isPresent()) {
+                vehicleStatusCache = content;
+                logger.info("Content: {}", content.get());
+                VehicleStatusContainer status = GSON.fromJson(content.get(), VehicleStatusContainer.class);
+                VehicleStatus vStatus = status.vehicleStatus;
+                if (vStatus == null) {
+                    return;
+                }
+                updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
+                Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
+                updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
+                Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
+                updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
+                updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
+                updateState(service, StringType.valueOf(vStatus.getNextService(imperial)));
+                if (isElectric) {
+                    updateState(chargingStatus, StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
+                }
+
+                // Range values
+                // based on unit of length decide if range shall be reported in km or miles
+                if (!imperial) {
+                    updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
+                    float totalRange = 0;
+                    if (isElectric) {
+                        totalRange += vStatus.remainingRangeElectric;
+                        updateState(remainingRangeElectric,
+                                QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
+                        logger.info("updated {} {}", remainingRangeElectric, vStatus.remainingRangeElectric);
+                    } else {
+                        logger.info("{} not updated", remainingRangeElectric);
+                    }
+                    if (hasFuel) {
+                        totalRange += vStatus.remainingRangeFuel;
+                        updateState(remainingRangeFuel,
+                                QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
+                        logger.info("updated {} {}", remainingRangeFuel, vStatus.remainingRangeFuel);
+                    } else {
+                        logger.info("{} not updated", remainingRangeFuel);
+                    }
+                    if (isHybrid) {
+                        updateState(remainingRangeHybrid,
+                                QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
+                    }
+                    updateState(rangeRadius, new DecimalType((totalRange) * 1000));
+                } else {
+                    updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
+                    float totalRange = 0;
+                    if (isElectric) {
+                        totalRange += vStatus.remainingRangeElectricMls;
+                        updateState(remainingRangeElectric,
+                                QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
+                    }
+                    if (hasFuel) {
+                        totalRange += vStatus.remainingRangeFuelMls;
+                        updateState(remainingRangeFuel,
+                                QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
+                    }
+                    if (isHybrid) {
+                        updateState(remainingRangeHybrid,
+                                QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
+                    }
+                    updateState(rangeRadius, new DecimalType((totalRange) * Converter.MILES_TO_FEET_FACTOR));
+                }
+                if (isElectric) {
+                    updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
+                }
+                if (hasFuel) {
+                    updateState(remainingFuel, QuantityType.valueOf(vStatus.remainingFuel, SmartHomeUnits.LITRE));
+                }
+                // last update Time
+                if (vStatus.internalDataTimeUTC != null) {
+                    updateState(lastUpdate, new StringType(Converter.getLocalDateTime(vStatus.internalDataTimeUTC)));
+                } else {
+                    updateState(lastUpdate, new StringType(Converter.getZonedDateTime(vStatus.updateTime)));
+                }
+
+                Position p = vStatus.position;
+                updateState(latitude, new DecimalType(p.lat));
+                updateState(longitude, new DecimalType(p.lon));
+                updateState(latlong, StringType.valueOf(p.toString()));
+                updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
+                requestRangeMap(p);
+            }
+        }
+
+        @Override
+        public void onError(String reason) {
+            logger.debug("Unable to retrieve Vehicle Status {}", reason);
+            setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        }
+
     }
 }
