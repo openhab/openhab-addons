@@ -153,13 +153,13 @@ public class DahuaHandler extends ChannelDuplexHandler {
     }
 
     public String encodeSpecialChars(String text) {
-        String Processed = text;
+        String processed = text;
         try {
-            Processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
+            processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
 
         }
-        return Processed;
+        return processed;
     }
 
     // This handles the commands that come from the Openhab event bus.
