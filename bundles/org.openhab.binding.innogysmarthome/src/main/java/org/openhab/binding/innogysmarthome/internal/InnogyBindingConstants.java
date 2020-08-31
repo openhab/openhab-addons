@@ -39,13 +39,7 @@ public class InnogyBindingConstants {
     public static final String CLIENT_SECRET_INNOGY_SMARTHOME = "no secret";
     public static final String REDIRECT_URL_INNOGY_SMARTHOME = "https://www.openhab.org/oauth/innogy/innogy-smarthome.html";
 
-    // Bridge config parameters
-    public static final String CONFIG_BRAND = "brand";
-
     public static final String CONFIG_AUTH_CODE = "authcode";
-    public static final String CONFIG_ACCESS_TOKEN = "accesstoken";
-    public static final String CONFIG_REFRESH_TOKEN = "refreshtoken";
-    public static final String CONFIG_WEBSOCKET_IDLE_TIMEOUT = "websocketidletimeout";
 
     public static final long REINITIALIZE_DELAY_SECONDS = 30;
     public static final long REINITIALIZE_RETRY_SECONDS = 60;
@@ -75,7 +69,6 @@ public class InnogyBindingConstants {
     public static final String PROPERTY_BACKEND_CONNECTION_MONITORED = "Backend connection monitored";
     public static final String PROPERTY_RFCOM_FAILURE_NOTIFICATION = "RFComm failure notification";
     public static final String PROPERTY_DISPLAY_CURRENT_TEMPERATURE = "Display current temperature";
-    public static final String PROPERTY_UNDERLYING_DEVICE_IDS = "Underlying device IDs (thermostats)";
     public static final String PROPERTY_METER_ID = "Meter ID";
     public static final String PROPERTY_METER_FIRMWARE_VERSION = "Meter firmware version";
 
