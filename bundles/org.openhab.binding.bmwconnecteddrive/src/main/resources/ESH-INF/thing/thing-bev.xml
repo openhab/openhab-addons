@@ -25,8 +25,8 @@
 
 		<config-description>
 			<parameter name="vin" type="text" required="true">
-				<label>Vehicle Identification Number (VIN)</label>
-				<description>BMW Car VIN </description>
+				<label>Refresh Interval in Minutes</label>
+				<description>Data Refresh Rate for your Vehicle data </description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
 				<label>Refresh Interval</label>

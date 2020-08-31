@@ -54,7 +54,7 @@ public class ConnectedDriveTest {
 
     @Test
     public void testChannelUID() {
-        ThingTypeUID THING_TYPE_PHEV = new ThingTypeUID("bmwconnecteddrive", "plugin-hybrid-car");
-        assertEquals("Car Type", "plugin-hybrid-car", THING_TYPE_PHEV.getId());
+        ThingTypeUID thingTypePHEV = new ThingTypeUID("bmwconnecteddrive", "plugin-hybrid-car");
+        assertEquals("Car Type", "plugin-hybrid-car", thingTypePHEV.getId());
     }
 }

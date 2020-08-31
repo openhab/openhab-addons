@@ -32,6 +32,14 @@ public class ConnectedCarConfiguration {
     public int refreshInterval = 15;
 
     /**
+     * Either Auto Detect Miles units (UK & US) or select Format directly
+     * <option value="AUTODETECT">Auto Detect</option>
+     * <option value="METRIC">Metric</option>
+     * <option value="IMPERIAL">Imperial</option>
+     */
+    public String units = "AUTODETECT";
+
+    /**
      * image size - width & length (square)
      */
     public int imageSize = 300;

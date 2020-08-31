@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.handler.HTTPConstants.*;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
 
 import java.nio.charset.Charset;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -30,7 +30,6 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +47,7 @@ public class RemoteServiceHandler {
     // after 60 retries the state update will give up
     private int counter = 0;
     private final int giveUpCounter = 120;
+    private static final int TIMEOUT_SEC = 10;
 
     public enum ExecutionState {
         READY("READY"),
@@ -88,39 +88,54 @@ public class RemoteServiceHandler {
         }
     }
 
+    private ConnectedDriveProxy proxy;
     private ConnectedCarHandler handler;
     private HttpClient httpClient;
-    private @Nullable String serviceExecuting;
+    private Optional<String> serviceExecuting = Optional.empty();
 
-    public RemoteServiceHandler(ConnectedCarHandler connectedCarHandler, HttpClient hc) {
+    private String serviceExecutionAPI;
+    private String serviceExecutionStateAPI;
+
+    public RemoteServiceHandler(ConnectedCarHandler connectedCarHandler, ConnectedDriveProxy connectedDriveProxy,
+            HttpClient hc) {
         handler = connectedCarHandler;
+        proxy = connectedDriveProxy;
         httpClient = hc;
+        if (handler.getConfiguration().isPresent()) {
+            serviceExecutionAPI = proxy.baseUrl + handler.getConfiguration().get().vin + proxy.serviceExecutionAPI;
+            serviceExecutionStateAPI = proxy.baseUrl + handler.getConfiguration().get().vin
+                    + proxy.serviceExecutionStateAPI;
+        } else {
+            serviceExecutionAPI = "";
+            serviceExecutionStateAPI = "";
+            logger.warn("No configuration for CarHandler available");
+        }
     }
 
     boolean execute(RemoteService service) {
         synchronized (this) {
-            if (serviceExecuting != null) {
+            if (serviceExecuting.isPresent()) {
                 return false;
             }
-            serviceExecuting = service.toString();
+            serviceExecuting = Optional.of(service.toString());
         }
-        if (handler.tokenUpdate()) {
+        if (proxy.tokenUpdate()) {
             MultiMap<String> dataMap = new MultiMap<String>();
             dataMap.add("serviceType", service.toString());
             String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
 
-            Request req = httpClient.POST(handler.serviceExecutionAPI);
+            Request req = httpClient.POST(serviceExecutionAPI);
             req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
             req.header("Content-Length", urlEncodedData.length() + "");
-            req.header(HttpHeader.AUTHORIZATION, handler.token.getBearerToken());
+            req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
             req.content(new StringContentProvider(urlEncodedData));
             // logger.info("URL encoded data {}", urlEncodedData);
             // logger.info("Data size {} ", urlEncodedData.length());
 
             try {
-                ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+                ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
                 if (contentResponse.getStatus() != 200) {
-                    logger.info("URL {}", handler.serviceExecutionAPI);
+                    logger.info("URL {}", serviceExecutionAPI);
                     logger.info("Status {}", contentResponse.getStatus());
                     logger.info("Reason {}", contentResponse.getReason());
                     reset();
@@ -150,26 +165,25 @@ public class RemoteServiceHandler {
             logger.warn("Giving up updating state for {} after {} times", serviceExecuting, giveUpCounter);
         }
         counter++;
-        Request req = httpClient.newRequest(handler.serviceExecutionStateAPI + serviceExecuting);
+        Request req = httpClient.newRequest(serviceExecutionStateAPI + serviceExecuting);
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.AUTHORIZATION, handler.token.getBearerToken());
+        req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
 
         try {
-            ContentResponse contentResponse = req.timeout(30, TimeUnit.SECONDS).send();
+            ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (contentResponse.getStatus() != 200) {
-                logger.info("URL {}", handler.serviceExecutionStateAPI);
+                logger.info("URL {}", serviceExecutionStateAPI);
                 logger.info("Status {}", contentResponse.getStatus());
                 logger.info("Reason {}", contentResponse.getReason());
             } else {
                 String state = contentResponse.getContentAsString();
-                logger.info("Executed {}, Response {}", serviceExecuting.toString(), state);
+                logger.info("Executed {}, Response {}", serviceExecuting.get(), state);
                 ExecutionStatusContainer esc = ConnectedCarHandler.GSON.fromJson(state, ExecutionStatusContainer.class);
                 ExecutionStatus execStatus = esc.executionStatus;
 
+                handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
                 if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
                     logger.info("Continue state observing");
-                    handler.updateRemoteExecutionStatus(
-                            Converter.toTitleCase(serviceExecuting + " " + execStatus.status));
                     handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
                 } else {
                     logger.info("Execution finished");
@@ -186,7 +200,7 @@ public class RemoteServiceHandler {
 
     private void reset() {
         synchronized (this) {
-            serviceExecuting = null;
+            serviceExecuting = Optional.empty();
             counter = 0;
         }
     }

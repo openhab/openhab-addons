@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.statistics;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
@@ -35,6 +35,6 @@ public class LastTripTest {
         LastTripContainer lt = GSON.fromJson(content, LastTripContainer.class);
         LastTrip trip = lt.lastTrip;
         assertNotNull(trip);
-        System.out.println(trip.totalDistance);
+        assertEquals("Distance Driven", 2.0, trip.totalDistance, 0.01);
     }
 }

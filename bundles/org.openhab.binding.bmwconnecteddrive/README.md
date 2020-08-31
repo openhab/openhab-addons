@@ -1,66 +1,160 @@
 # BMWConnectedDrive Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+<img align="right" src="./doc/bmw-connected.png" width="150" height="150"/>
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+The Binding connects your BMW Vehicales which are registered in your _Garage_ in your BMW ConnectedDrive Portal.
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+### Bridge
+
+The Bridge etsablishes the Connection between BMW ConnectedDrive Portal and opanHAB.
+
+| Name                       | Bridge Type ID | Description                                                |
+|----------------------------|----------------|------------------------------------------------------------|
+| BMW ConnectedDrive Account | account        | Access to BMW ConnectedDrive Portal for a specific user    |
+
+
+### Things
+
+Four different Vehcile Types are provided. They differ in the supported Channel Groups & Channels. 
+While Conventional Fuel Vehicles have no "Charging Profile" Electric Vehicles don't provide a _fuel range_. 
+For Hybrid Vehicles _fuel range_ and _electric range_ is provided and in addition a _combined range_
+ 
+| Name                                | Thing Type ID | Supported Channel Groups                                   |
+|-------------------------------------|---------------|------------------------------------------------------------|
+| BMW Electric Vehicle                | BEV           | status, range, last-trip, all-trips, charge-profile, image, troubeshoot |
+| BMW Electric Vehicle with REX       | BEV_REX       | status, range, last-trip, all-trips, charge-profile, image, troubeshoot |
+| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, last-trip, all-trips, image, troubeshoot |
+| BMW Conventional Vehicle            | CONV          | status, range, last-trip, all-trips, image, troubeshoot |
 
 ## Discovery
 
-_Describe the available auto-discovery features here. Mention for what it works and what needs to be kept in mind when using it._
+Auto Discovery is starting after you created the Bridge towards BMW ConnectedDrive Portal. 
+A list of your registered Vehicles is queried and all found Vehicles are added in Inbox.
+As Unique Identifier the _Vehicle Identification Number_ (VIN) is used. 
+So if you already predefined a Thing in *.things configuration with the same VIN the Discovery won't highlight it again. 
+Please note for Auto Detected Vehicles there are many Properties for the Vehicle added like Color, Model Type, responsible Dealer and more.
+
+## Configuration
+
+### Bridge
+
+| Parameter       | Type    | Description                                                             |           
+|-----------------|---------|-------------------------------------------------------------------------|
+| userName        | text    | BMW Connected Drive Username                  |
+| password        | text    | BMW Connected Drive Password                  |
+| region          | text    | Select your Region in order to connect to the appropriate BMW Server. Select from Drop Down list _North America_, _China_ or _Rest of World_.  |
+
+### Things
+
+All Things are needing the same Configuration Data
+
+| Parameter       | Type    | Description                                                             |           
+|-----------------|---------|-------------------------------------------------------------------------|
+| vin             | text    | Vehicle Identification Number (VIN)               |
+| refreshInterval | integer | Refresh Interval in Minutes             |
+| units           | text    | Unit Selection. Either AUTODETECT (UK & US) or directly set the desired Units Metric or Imperial  |
+| imageSize       | integer | Image Picture Size<  |
+| imageViewport   | text    | Image Viewport - FRONT, REAR, SIDE, DASHBOARD, DRIVERDOOR |
+
+## Channels
+
+There are many Channels available for each Vehilce. For better overview they are clustered in different Channel Groups.
+
+### Channel Group _Status_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | status           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+
+### Channel Group _Range Data_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | range           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+### Channel Group _Last Trip_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | status           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+
+### Channel Group _Lifetime Statistics_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | range           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+### Channel Group _Vehicle Location_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | status           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+
+### Channel Group _Remote Services_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | range           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+### Channel Group _Image_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | status           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
+
+
+### Channel Group _Troubleshooting_
+
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
+|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
+| Modbus-ID             | range           | modbus-id           | String | Modbus ID / Magic Byte of E3DC                    |
 
 ## TroubleShooting
 
+In order to to identify issues the TroubleShooting Channels are providing Analysis Informations
+
 ### Discovery
+
+If your Vehicle isn't discovered correctly perform the following steps
+
+* Check if your Vehicle is attached correctly in ConnectedDrive. Only if it's attached to your ConnectedDrive Account it's possible to detect it.
+* In the below example sitemap the Switch _Log Discovery Fingerprint_ can be executed. 
 
 ### Car Data
 
 ### Update Timestamp
 
-Check your Locale Time Settings of your Raspi / PC
-
-## Binding Configuration
-
-_If your binding requires or supports general configuration settings, please create a folder ```cfg``` and place the configuration file ```<bindingId>.cfg``` inside it. In this section, you should link to this file and provide some information about the options. The file could e.g. look like:_
-
-```
-# Configuration for the Philips Hue Binding
-#
-# Default secret key for the pairing of the Philips Hue Bridge.
-# It has to be between 10-40 (alphanumeric) characters
-# This may be changed by the user for security reasons.
-secret=openHABSecret
-```
-
-_Note that it is planned to generate some part of this based on the information that is available within ```src/main/resources/ESH-INF/binding``` of your binding._
-
-_If your binding does not offer any generic configurations, you can remove this section completely._
-
-## Thing Configuration
-
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-## Channels
-
-_Here you should provide information about available channel types, what their meaning is and how they can be used._
-
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
-
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| control  | Switch | This is the control channel  |
+There's a timestamp showing the last update of your Vehicle. If this isn't shown correctly please check the date settings.
+In case of Raspberry Pi execute _raspi-cinfig_, select _Localization Options_, the _Change Time Zone_
+Select your _Geaographical Area_ and afterwards the correct City.
+One restart of openHAB service with _systemctl restart openhab2_ is necessary in order to see the corrected Time Settings.
 
 ## Full Example
 
-_Provide a full usage example based on textual configuration files (*.things, *.items, *.sitemap)._
+### Things
 
-## Any custom content here!
+### Items
 
-_Feel free to add additional sections for whatever you think should also be mentioned about your binding!_
+### Sitemap
+
+## Going further
+
+You're now able to receive your Vehicle Data in openHAB. Continue the work and combine this data with other Powerful openHAB Bindings and Widgets.
+
+### OpenstreetMap Widget
+
+### OpenWeatherMap Binding and Widget
+
+Especially Electric Vehicles which maybe are charged with your Local Photovoltaic System the Weather forecast and corresponding Cloudiness is interesting.
+Use the OpenWeatherMap Binding and existing [Widget Solutions[(https://community.openhab.org/t/openweathermap-widget-for-habpanel/65027) to check this data in addition to your Vehicles State of Charge.
+
+## Credits
+
+This work is based on the work of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected). 
+Also a [manual installation based on python](https://community.openhab.org/t/script-to-access-the-bmw-connecteddrive-portal-via-oh/37345) was already available for openHAB.
+This Binding is basically a port to openHAB based on these concept works!  

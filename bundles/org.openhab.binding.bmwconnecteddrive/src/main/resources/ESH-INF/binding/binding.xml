@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>BMW ConnectedDrive</name>
-	<description>Provides access to your Car via BMW Connected Drive Portal</description>
+	<description>Provides access to your Vehicle Data via BMW Connected Drive Portal</description>
 	<author>Bernd Weymann</author>
 
 </binding:binding>
