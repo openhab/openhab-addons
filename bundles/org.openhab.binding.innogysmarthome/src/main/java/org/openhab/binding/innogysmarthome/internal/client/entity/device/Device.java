@@ -42,6 +42,7 @@ public class Device {
     public static final String DEVICE_TYPE_PSS = "PSS";
     public static final String DEVICE_TYPE_PSSO = "PSSO";
     public static final String DEVICE_TYPE_RST = "RST";
+    public static final String DEVICE_TYPE_RST2 = "RST2";
     public static final String DEVICE_TYPE_SMARTMETER = "SmartMeter";
     public static final String DEVICE_TYPE_TWO_WAY_METER = "TwoWayMeter";
     public static final String DEVICE_TYPE_VARIABLE_ACTUATOR = "VariableActuator";
