@@ -178,11 +178,7 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
-    private final static Object[] SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
-            .keySet().toArray();
-    static {
-        Arrays.sort(SORTED_READ_FUNCTION_CODES);
-    }
+    private final static List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.keySet().stream().sorted().collect(Collectors.toList());
 
     private @NonNullByDefault({}) ModbusPollerConfiguration config;
     private long cacheMillis;
