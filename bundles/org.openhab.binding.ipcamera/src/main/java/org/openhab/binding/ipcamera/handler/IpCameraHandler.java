@@ -1211,7 +1211,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void noMotionDetected(String thisAlarmsChannel) {
-        setChannelState(thisAlarmsChannel, OnOffType.valueOf("OFF"));
+        setChannelState(thisAlarmsChannel, OnOffType.OFF);
         firstMotionAlarm = false;
         motionAlarmUpdateSnapshot = false;
         motionDetected = false;
