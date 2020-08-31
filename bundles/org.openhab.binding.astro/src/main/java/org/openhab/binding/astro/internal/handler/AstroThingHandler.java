@@ -271,7 +271,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     private boolean isPositionalChannelLinked() {
         for (Channel channel : getThing().getChannels()) {
             String id = channel.getUID().getId();
-            return (Arrays.asList(getPositionalChannelIds()).contains(id) && isLinked(id));
+            if (Arrays.asList(getPositionalChannelIds()).contains(id) && isLinked(id)) {
+                return true;
+            }
         }
         return false;
     }
