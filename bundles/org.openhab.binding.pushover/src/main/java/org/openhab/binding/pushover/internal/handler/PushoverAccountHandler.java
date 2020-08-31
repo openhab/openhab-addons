@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.pushover.internal.actions.PushoverThingActions;
+import org.openhab.binding.pushover.actions.PushoverThingActions;
 import org.openhab.binding.pushover.internal.config.PushoverAccountConfiguration;
 import org.openhab.binding.pushover.internal.connection.PushoverAPIConnection;
 import org.openhab.binding.pushover.internal.connection.PushoverCommunicationException;
@@ -139,7 +139,7 @@ public class PushoverAccountHandler extends BaseThingHandler implements ConfigOp
         if (connection != null) {
             return connection.sendMessage(messageBuilder);
         } else {
-            throw new RuntimeException("PushoverAPIConnection is null!");
+            throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
     }
 
@@ -152,7 +152,7 @@ public class PushoverAccountHandler extends BaseThingHandler implements ConfigOp
         if (connection != null) {
             return connection.sendPriorityMessage(messageBuilder);
         } else {
-            throw new RuntimeException("PushoverAPIConnection is null!");
+            throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
     }
 
@@ -165,7 +165,7 @@ public class PushoverAccountHandler extends BaseThingHandler implements ConfigOp
         if (connection != null) {
             return connection.cancelPriorityMessage(receipt);
         } else {
-            throw new RuntimeException("PushoverAPIConnection is null!");
+            throw new IllegalArgumentException("PushoverAPIConnection is null!");
         }
     }
 

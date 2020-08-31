@@ -66,10 +66,12 @@ public class PushoverThingActionsTest {
     private @Mock HttpClient mockHttpClient;
     private @Mock PushoverAccountHandler mockPushoverAccountHandler;
 
-    private final PushoverThingActions pushoverThingActions = new PushoverThingActions();
+    private PushoverThingActions pushoverThingActions;
 
     @BeforeEach
     public void setUp() {
+        pushoverThingActions = new PushoverThingActions();
+
         when(mockPushoverAccountHandler.getDefaultPushoverMessageBuilder(any()))
                 .thenReturn(PushoverMessageBuilder.getInstance("key", "user"));
         when(mockPushoverAccountHandler.sendMessage(any())).thenReturn(Boolean.TRUE);
