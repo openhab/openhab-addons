@@ -35,35 +35,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonElement;
 
 /**
- * Service State for a Bosch device.
- *
- * @author Christian Oeing - refactorings of e.g. server registration
- */
-@NonNullByDefault
-class DeviceService<TState extends BoschSHCServiceState> {
-    /**
-     * Constructor.
-     * 
-     * @param service Service which belongs to the device.
-     * @param affectedChannels Channels which are affected by the state of this service.
-     */
-    public DeviceService(BoschSHCService<TState> service, Collection<String> affectedChannels) {
-        this.service = service;
-        this.affectedChannels = affectedChannels;
-    }
-
-    /**
-     * Service which belongs to the device.
-     */
-    public BoschSHCService<TState> service;
-
-    /**
-     * Channels which are affected by the state of this service.
-     */
-    public Collection<String> affectedChannels;
-}
-
-/**
  * The {@link BoschSHCHandler} represents Bosch Things. Each type of device
  * inherits from this abstract thing handler.
  *
@@ -71,6 +42,34 @@ class DeviceService<TState extends BoschSHCServiceState> {
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
+    /**
+     * Service State for a Bosch device.
+     *
+     * @author Christian Oeing - refactorings of e.g. server registration
+     */
+    @NonNullByDefault
+    class DeviceService<TState extends BoschSHCServiceState> {
+        /**
+         * Constructor.
+         * 
+         * @param service Service which belongs to the device.
+         * @param affectedChannels Channels which are affected by the state of this service.
+         */
+        public DeviceService(BoschSHCService<TState> service, Collection<String> affectedChannels) {
+            this.service = service;
+            this.affectedChannels = affectedChannels;
+        }
+
+        /**
+         * Service which belongs to the device.
+         */
+        public BoschSHCService<TState> service;
+
+        /**
+         * Channels which are affected by the state of this service.
+         */
+        public Collection<String> affectedChannels;
+    }
 
     protected final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
     private @Nullable BoschSHCConfiguration config;
