@@ -1175,21 +1175,3 @@ rule "Create time of last movement"
 end
 
 ```
-
-
-## Roadmap for Further Development
-
-Currently the focus is on creating a stable framework that allows all brands to be used in a consistent way, additional features can be added over time.
-
-If you wish to contribute, these are some areas that the binding can be improved:
-
-+ Fixing any text that may be confusing in this readme.md, any log output or in the user interfaces.
-+ Automate the fetching of names for ONVIF presets.
-+ 1 and 2 way audio.
-+ Any of the API methods not implemented.
-+ Any of the ONVIF methods not implemented.
-
-
-If you want to implement more ONVIF features, I have found some SOAP contents at the link below to be useful.
-Often example SOAP traces are not in the ONVIF documentation.
-<https://git.linuxmce.org/garagevibes/linuxmce/tree/08c52739954c0bfce7443eddc1ad4f6936a70fbe/src/Advanced_IP_Camera/onvif>
