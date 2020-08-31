@@ -20,6 +20,7 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
 import org.openhab.binding.lcn.internal.subhandler.AbstractLcnModuleSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleBinarySensorSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleCodeSubHandler;
+import org.openhab.binding.lcn.internal.subhandler.LcnModuleHostCommandSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleKeyLockTableSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleLedSubHandler;
 import org.openhab.binding.lcn.internal.subhandler.LcnModuleLogicSubHandler;
@@ -59,7 +60,8 @@ public enum LcnChannelGroup {
     KEYLOCKTABLEB(8, LcnModuleKeyLockTableSubHandler::new),
     KEYLOCKTABLEC(8, LcnModuleKeyLockTableSubHandler::new),
     KEYLOCKTABLED(8, LcnModuleKeyLockTableSubHandler::new),
-    CODE(0, LcnModuleCodeSubHandler::new);
+    CODE(0, LcnModuleCodeSubHandler::new),
+    HOSTCOMMAND(0, LcnModuleHostCommandSubHandler::new);
 
     private int count;
     private BiFunction<LcnModuleHandler, ModInfo, ? extends AbstractLcnModuleSubHandler> handlerFactory;
