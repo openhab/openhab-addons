@@ -163,9 +163,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                             } else if (httpRequest.uri().contains(".jpg")) {
                                 // Allow access to the preroll and postroll jpg files
                                 sendFile(ctx, queryStringDecoder.path(), "image/jpg");
-                            } else if (httpRequest.uri().contains(".m4s")) {
-                                sendFile(ctx, queryStringDecoder.path(), "video/mp4");
-                            } else if (httpRequest.uri().contains(".mp4")) {
+                            } else if (httpRequest.uri().contains(".m4s") || httpRequest.uri().contains(".mp4")) {
                                 sendFile(ctx, queryStringDecoder.path(), "video/mp4");
                             }
                             return;
