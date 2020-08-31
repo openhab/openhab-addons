@@ -1211,7 +1211,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void noMotionDetected(String thisAlarmsChannel) {
-        setChannelState(thisAlarmsChannel, OnOffType.valueOf("OFF"));
+        setChannelState(thisAlarmsChannel, OnOffType.OFF);
         firstMotionAlarm = false;
         motionAlarmUpdateSnapshot = false;
         motionDetected = false;
@@ -1229,7 +1229,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void motionDetected(String thisAlarmsChannel) {
         updateState(CHANNEL_LAST_MOTION_TYPE, new StringType(thisAlarmsChannel));
-        updateState(thisAlarmsChannel, OnOffType.valueOf("ON"));
+        updateState(thisAlarmsChannel, OnOffType.ON);
         motionDetected = true;
         if (streamingAutoFps) {
             startSnapshotPolling();
@@ -1251,7 +1251,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void audioDetected() {
-        updateState(CHANNEL_AUDIO_ALARM, OnOffType.valueOf("ON"));
+        updateState(CHANNEL_AUDIO_ALARM, OnOffType.ON);
         if (updateImageEvents.contains("3")) {
             if (!firstAudioAlarm) {
                 if (!snapshotUri.isEmpty()) {
@@ -1266,7 +1266,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void noAudioDetected() {
-        setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.valueOf("OFF"));
+        setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.OFF);
         firstAudioAlarm = false;
         audioAlarmUpdateSnapshot = false;
     }
@@ -1410,7 +1410,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_PAN:
                     if (onvifCamera.supportsPTZ()) {
                         if (command instanceof IncreaseDecreaseType) {
-                            if ("INCREASE".equals(command.toString())) {
+                            if (command == IncreaseDecreaseType.INCREASE) {
                                 if ((boolean) config.get(CONFIG_PTZ_CONTINUOUS)) {
                                     onvifCamera.sendPTZRequest("ContinuousMoveLeft");
                                 } else {
