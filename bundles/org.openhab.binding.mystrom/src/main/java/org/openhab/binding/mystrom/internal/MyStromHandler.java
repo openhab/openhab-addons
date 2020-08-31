@@ -84,9 +84,7 @@ public class MyStromHandler extends BaseThingHandler {
             } else {
                 if (command instanceof OnOffType && CHANNEL_SWITCH.equals(channelUID.getId())) {
                     sendHttpGet("relay?state=" + (command == OnOffType.ON ? "1" : "0"));
-                    scheduler.schedule(() -> {
-                        pollDevice();
-                    }, 500, TimeUnit.MILLISECONDS);
+                    scheduler.schedule(this::pollDevice, 500, TimeUnit.MILLISECONDS);
                 }
 
             }
