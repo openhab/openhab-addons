@@ -13,9 +13,6 @@
 package org.openhab.binding.yioremote.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -30,8 +27,6 @@ public class YIOremoteBindingConstants {
     private static final String BINDING_ID = "yioremote";
 
     // List of all used global variables
-    public static final WebSocketClient yiodockwebSocketClient = new WebSocketClient();
-    public static @Nullable Session yiodockwebSocketClientSession = null;
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");

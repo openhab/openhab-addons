@@ -15,11 +15,12 @@ package org.openhab.binding.yioremote.internal;
 import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_1;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
+import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -41,6 +42,10 @@ public class YIOremoteHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(YIOremoteHandler.class);
 
     private @Nullable YIOremoteConfiguration config;
+    private @Nullable WebSocketClient YIOremote_DockwebSocketClient;
+    private @Nullable Session YIOremote_DockwebSocketClientSession;
+    String dest = "ws://192.168.178.21:946/";
+    WebSocketClient client = new WebSocketClient();
 
     public YIOremoteHandler(Thing thing) {
         super(thing);
@@ -79,38 +84,60 @@ public class YIOremoteHandler extends BaseThingHandler {
         // the framework is then able to reuse the resources from the thing handler initialization.
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
-
         try {
-            URI uri;
-            uri = new URI("ws://" + config.yiodockhostip + ":946");
 
+            YIOremoteWebsocket socket = new YIOremoteWebsocket();
+            client.start();
+            URI echoUri = new URI(dest);
+            ClientUpgradeRequest request = new ClientUpgradeRequest();
+            client.connect(socket, echoUri, request);
+            socket.getLatch().await();
+            socket.sendMessage("echo");
+            socket.sendMessage("test");
+            Thread.sleep(10000l);
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
             try {
-                logger.debug("Starting websocket Client");
-                YIOremoteBindingConstants.yiodockwebSocketClient.start();
+                client.stop();
             } catch (Exception e) {
-                logger.warn("Web socket start failed", e);
-                // throw new IOException("Web socket start failed");
+                e.printStackTrace();
             }
-
-            try {
-                logger.debug("Connecting to: {}...", uri);
-                YIOremoteBindingConstants.yiodockwebSocketClientSession = YIOremoteBindingConstants.yiodockwebSocketClient
-                        .connect(this, uri, new ClientUpgradeRequest()).get();
-            } catch (Exception e) {
-                logger.warn("Web socket connect failed ", e);
-                // throw new IOException("Web socket start failed");
-            }
-
-        } catch (URISyntaxException e) {
-            logger.debug("Initialize web socket failed", e);
         }
-        if (YIOremoteBindingConstants.yiodockwebSocketClientSession != null) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE);
-        }
-        // Example for background initialization:
+
         /*
+         * try {
+         * URI uri;
+         * uri = new URI("ws://" + config.yiodockhostip + ":946");
+         *
+         * try {
+         * logger.debug("Starting websocket Client");
+         * YIOremote_DockwebSocketClient.start();
+         * } catch (Exception e) {
+         * logger.warn("Web socket start failed", e);
+         * // throw new IOException("Web socket start failed");
+         * }
+         *
+         * try {
+         * logger.debug("Connecting to: {}...", uri);
+         * YIOremote_DockwebSocketClientSession = YIOremote_DockwebSocketClient
+         * .connect(this, uri, new ClientUpgradeRequest()).get();
+         * } catch (Exception e) {
+         * logger.warn("Web socket connect failed " + e.toString(), e);
+         * // throw new IOException("Web socket start failed");
+         * }
+         *
+         * } catch (URISyntaxException e) {
+         * logger.debug("Initialize web socket failed", e);
+         * }
+         * if (YIOremote_DockwebSocketClientSession != null) {
+         * updateStatus(ThingStatus.ONLINE);
+         * } else {
+         * updateStatus(ThingStatus.OFFLINE);
+         * }
+         * // Example for background initialization:
+         * /*
          * scheduler.execute(() -> {
          * boolean thingReachable = true; // <background task with long running initialization here>
          * // when done do:
