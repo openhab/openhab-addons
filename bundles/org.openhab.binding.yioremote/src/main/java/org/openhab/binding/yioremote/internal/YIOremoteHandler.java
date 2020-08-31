@@ -15,10 +15,10 @@ package org.openhab.binding.yioremote.internal;
 import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_1;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -42,8 +42,10 @@ public class YIOremoteHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(YIOremoteHandler.class);
 
     private @Nullable YIOremoteConfiguration config;
-    private @Nullable WebSocketClient YIOremote_DockwebSocketClient;
-    private @Nullable Session YIOremote_DockwebSocketClientSession;
+    private WebSocketClient YIOremote_DockwebSocketClient = new WebSocketClient();
+    private YIOremoteWebsocket YIOremote_DockwebSocketClientSocket = new YIOremoteWebsocket();
+    private ClientUpgradeRequest YIOremote_DockwebSocketClientrequest = new ClientUpgradeRequest();
+    private @Nullable URI URI_yiodockwebsocketaddress;
     String dest = "ws://192.168.178.21:946/";
     WebSocketClient client = new WebSocketClient();
 
@@ -85,25 +87,34 @@ public class YIOremoteHandler extends BaseThingHandler {
         // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
         try {
+            logger.debug("Starting generating URI_yiodockwebsocketaddress");
+            URI_yiodockwebsocketaddress = new URI("ws://" + config.yiodockhostip + ":946");
+            logger.debug("Finished generating URI_yiodockwebsocketaddress");
 
-            YIOremoteWebsocket socket = new YIOremoteWebsocket();
-            client.start();
-            URI echoUri = new URI(dest);
-            ClientUpgradeRequest request = new ClientUpgradeRequest();
-            client.connect(socket, echoUri, request);
-            socket.getLatch().await();
-            socket.sendMessage("echo");
-            socket.sendMessage("test");
-            Thread.sleep(10000l);
-
-        } catch (Throwable t) {
-            t.printStackTrace();
-        } finally {
             try {
-                client.stop();
+
+                logger.debug("Starting websocket Client");
+                YIOremote_DockwebSocketClient.start();
+                logger.debug("Started websocket Client");
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.warn("Web socket start failed", e);
+                // throw new IOException("Web socket start failed");
             }
+            try {
+                logger.debug("Connect websocket client");
+                YIOremote_DockwebSocketClient.connect(YIOremote_DockwebSocketClientSocket, URI_yiodockwebsocketaddress,
+                        YIOremote_DockwebSocketClientrequest);
+                logger.debug("Connected websocket client");
+
+                YIOremote_DockwebSocketClientSocket.getLatch().await();
+                YIOremote_DockwebSocketClientSocket.sendMessage("echo");
+                YIOremote_DockwebSocketClientSocket.sendMessage("test");
+            } catch (Exception e) {
+                logger.warn("Web socket connect failed " + e.toString(), e);
+                // throw new IOException("Web socket start failed");
+            }
+        } catch (URISyntaxException e) {
+            logger.debug("Initialize web socket failed", e);
         }
 
         /*
