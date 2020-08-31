@@ -291,6 +291,658 @@ end
 ```
 
 
+## Moving PTZ Cameras
+
+To move a camera with this binding you need an ONVIF camera that supports one of the following:
+
++ Absolute movements
++ Relative movements
++ Continuous movements  
++ Presets
+
+
+To test your cameras compatibility and also to create some preset locations, use a free program called `ONVIF Device Manager` (ODM for short).
+Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets can not be created with the binding, only loaded after they are already created.
+After creating new or changing existing presets, it may be necessary to restart the binding before they can be used. 
+You can create names using the mappings feature of the selection element.
+See docs here <https://www.openhab.org/docs/configuration/sitemaps.html#mappings>
+
+Moving the camera using Relative or Continuous (the config `PTZ_CONTINUOUS` must be true) movements can be done by sending the INCREASE and DECREASE commands to the Pan, Tilt and Zoom channels.
+When the config is set to false (the default if not specified) the binding will send Relative movements. 
+There are some widgets created in the HABpanel widget gallery that you can download and use right away saving you time if your camera supports either presets, relative or continuous modes.
+For sitemaps the below example can be used.
+The OFF command (can be sent to any of the PTZ channels) will stop the cameras movements in the case of continuous being selected in the things config setup.
+
+
+
+
+item:
+
+```java
+
+Number BabyCamGotoPreset "Goto Preset" { channel="ipcamera:DAHUA:BabyCamera:gotoPreset" }
+Dimmer BabyCamPan "Pan [%d] left/right" { channel="ipcamera:DAHUA:BabyCamera:pan" }
+Dimmer BabyCamTilt "Tilt [%d] up/down" { channel="ipcamera:DAHUA:BabyCamera:tilt" }
+Dimmer BabyCamZoom "Zoom [%d] in/out" { channel="ipcamera:DAHUA:BabyCamera:zoom" }
+
+```
+
+sitemap:
+
+```java
+
+Selection item=BabyCamGotoPreset
+Switch item=BabyCamPan mappings=[INCREASE="Left",OFF="STOP",DECREASE="Right"]
+Switch item=BabyCamTilt mappings=[INCREASE="Down",OFF="STOP",DECREASE="Up"]
+Switch item=BabyCamZoom mappings=[INCREASE="Zoom In",OFF="STOP",DECREASE="Zoom Out"]
+Slider item=BabyCamPan icon=movecontrol
+Slider item=BabyCamTilt icon=movecontrol
+Slider item=BabyCamZoom icon=zoom
+
+```
+
+
+Moving the camera to an EXACT repeatable location (Preset 1 saved location) with a rule:
+
+```java
+BabyCamGotoPreset.sendCommand(1)
+```
+
+
+Moving the camera to an EXACT repeatable location using Absolute movement with a rule:
+
+```java
+BabyCamPan.sendCommand(22)
+BabyCamTilt.sendCommand(60)
+BabyCamZoom.sendCommand(0)
+```
+
+
+## FFmpeg Motion and Audio Alarms
+
+Any camera with a RTSP feed can use FFmpeg to create either a `ffmpegMotionAlarm` or `audioAlarm`.
+Even if your camera has a motion alarm, you may find that it does not provide enough flexibility to ignore moving trees, or have its sensitivity adjusted on the fly to reduce its sensitivity during rain. 
+This is where this feature can come in handy as you can even add your own FFmpeg arguments (options) to use the Crop or any other FFmpeg filter, as this wont effect the video feeds you watch.
+<https://ffmpeg.org/ffmpeg-filters.html#Examples-52>
+
+
+To get this working:
+
++ Provide a RTSP URL to the bindings config `FFMPEG_MOTION_INPUT`, or you can leave it blank to use the auto detected URL if your camera has ONVIF.
+The advantage of using a separate feed for this is that you can provide a low resolution and low frame rate feed to keep the CPU load on your server to a minimum without having to sacrifice the feeds quality that you record or use to view the camera with.
++ Have FFmpeg installed and the binding knows the location of where to find it.
++ You have the resolution and FPS at realistic settings for your CPU. You need to reach 1.x speed otherwise the alarm will lag further behind realtime the longer you have this running.
+1080p and 10 fps maximum for an ARM processor is probably a good place to start testing or even lower if you can.
++ Set the `ffmpegMotionControl` channel to 16 with a slider control and if the alarm stays on increase the value until it works as desired.
+If it will not trigger, lower the control until it does.
++ Set the `ffmpegMotionControl` to OFF or 0 and it stops using your CPU.
+You can link this same channel to BOTH a switch and a slider at the same time if you like to have both types of controls.
++ The output of the alarm will go to a channel called `ffmpegMotionAlarm` and you can use the `lastMotionType` channel to determine which alarm was last tripped if your camera has multiple alarm types.
+
+**audioAlarm**
+
+This works in much the same way, just with different channels. 
+If you setup a lower resolution URL in the config `FFMPEG_MOTION_INPUT` you need to ensure it contains audio otherwise this feature wont work.
+
+
+## Image / Snapshots
+
+There are a number of ways to use snapshots with this binding.
+There are multiple advantages to using these methods from the binding instead of directly from the camera. 
+
+**Ways to use snapshots are:**
+
++ Use the cameras URL so it passes from the camera to your end device ie a tablet, without passing any data through the openHAB server. This is always the best option if it works.
++ Request a snapshot with the URL `http://192.168.xxx.xxx:54321/ipcamera.jpg`.
+The IP is for your openHAB server not the camera, and 54321 is the SERVER_PORT number that you specified in the bindings setup. If you find the snapshot is old you can set the gif preroll to a number above 0 and this forces the camera to keep updating the stored JPG in ram.
+This file does not exist on disk and is served out of ram to keep disk writes to a minimum with this binding. 
+The binding can serve a JPG file much faster than a camera can directly, as a camera waits for a keyframe, then has to compress the data, before it can finally be sent.
+All of this takes time giving you a delay compared to serving the file from Ram and can make a sitemap or HABpanel UI feel slow to respond if the pictures take time to appear.
+The ipcamera.jpg can also be cast, as most cameras can not cast their snapshots without using the binding.
++ Use the `http://192.168.xxx.xxx:54321/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
+See the streaming section for more info.
++ Use the update GIF feature and use a preroll value >0. 
+This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each poll amount of time. 
+This means you can get a snapshot from an exact amount of time before, on, or after triggering the GIF to be created. 
+Handy for cameras which lag due to slow processors and buffering, or if you do not want a hand blocking the image when the door bell was pushed.
+These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
+`http://192.168.xxx.xxx:54321/snapshot0.jpg` Where the IP is your openHAB server and the port is what is setup in the binding as the SERVER_PORT.
++ The Image channel can be used but is not recommended unless the poll time is above 8 seconds as the image data passes through the event bus of openHAB that can create bottlenecks.
++ Also worth a mention is that you can off load cameras to a software package running on a separate hardware server such as, Motion, Shinobi and Zoneminder.
+
+
+See this forum thread for examples of how to use snapshots and streams in a sitemap.
+<https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
+
+If you use HABpanel, then these widgets are worth checking out.
+<https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
+
+## Video Streams
+
+To get some of the video formats working, you need to install the FFmpeg program. 
+Visit their site here to learn how <https://ffmpeg.org/>
+
+Under Linux, FFmpeg can be installed very easily with this one command.
+
+```
+sudo apt update && sudo apt install ffmpeg
+```
+
+**IMPORTANT:**
+The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `IP_WHITELIST`. 
+Requests from external IPs or internal requests that are not on the `IP_WHITELIST` will fail to get any answer. 
+If you prefer to use your own firewall instead, you can also choose to make the `IP_WHITELIST` equal "DISABLE" (the default since the feature also needs a valid SERVER_PORT set) to turn this feature off and then all internal IPs will have access.
+
+There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://192.168.xxx.xxx:SERVER_PORT/name.format` replacing the name.format with one of the options that are listed below:
+
++ **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
+This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
+Please understand that this format due to the way it works will give you lag behind realtime, more on this below.
++ **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
+It is normally 1 second or less behind real-time.
+FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
+A lot of cameras limit the resolution in this format, so consider using HLS, autofps.mjpeg, or snapshots.mjpeg instead which will be in a higher resolution.
++ **snapshots.mjpeg** is a special MJPEG stream created from the cameras snapshots that are taken at the polling rate.
++ **autofps.mjpeg** This requires a camera that has a motion alarm to be turned on or it will only send a picture every 8 seconds.
+You can also use the `externalMotion` channel to change the framerate.
+This feature is designed to keep data traffic to your mobile devices as low as possible by automatically sending 1fps when motion is occurring, but only 1 picture every 8 seconds when the picture has no motion.
+The idea is to not send lots of pictures if the picture has not changed as doing so only eats up your data plan.
++ **ipcamera.gif** This is small in size and very compatible and handy to use in push notifications, Pushover, Telegram, or emails.
+You can cast it which can be handy to show a moving picture that keeps repeating on a Google/Nest home hub or your wall mounted tablet. 
++ MP4 recordings can be created by the binding and FFmpeg, more on this below.
+
+This forum thread has examples of how to use snapshots and streams in a sitemap.
+<https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
+
+If you use HABpanel, then these widgets are worth checking out.
+<https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
+
+
+## MJPEG Streams
+
+Cameras that have built in MJPEG abilities can stream to openHAB with the MJPEG format with next to no CPU load, less than 1 second lag, and FFmpeg does not need to be installed.
+Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion. 
+The alternative HLS format does not need the conversion and does not use any CPU to speak of, however due to HLS needing to buffer the files to disk, the HLS will result in lag (delay) behind real time.
+For video without a delay, you need MJPEG and without a camera that can create it, you will need to use a lot of CPU power. This could be done in a dedicated video server which will be the only way with lots of cameras unless you purchase cameras that have the ability built in.
+
+An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
+This is limited to 1 frame a second but often results in far greater picture quality, so be sure to try the different ways and choose what you prefer.
+
+The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, Hikvision, Foscam HD and Instar HD.
+To set this up, see the special setup steps for each brand in this readme.
+The binding can then distribute this stream to many devices around your home whilst the camera only sees a single open stream.
+
+To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the SERVER_PORT to match the settings in the bindings setup for that camera. 
+ipcamera.mjpeg is not changed and stays the same for all of your cameras, it is the port that changes between multiple cameras, the rest stays the same. 
+
+<http://openHABIP:SERVER_PORT/ipcamera.mjpeg>
+
+
+To use this feature, all you need to do is set the config as follows `STREAM_URL_OVERRIDE="ffmpeg"` to use your CPU to generate the MJPEG stream with FFmpeg.
+If you leave the option blank the binding will warn you in the logs and still use FFmpeg, so by adding this line it will remove the warning from your logs. 
+For cameras that have an API you can opt to not use the cameras stream and use FFmpeg instead by doing this as well should you need the streams for other reasons.
+
+FFmpeg may require you to lower the resolution and/or the FPS to lower the CPU load down enough to run, you may need to experiment.
+To change the settings used by this feature the binding exposes the config `FFMPEG_MJPEG_ARGUMENTS` which the default is currently `-q:v 5 -r 2 -vf scale=640:-2 -update 1` where 5 is the JPG quality/compression setting, and -r 2 is how many frames per second to try and create.
+In this case it will create 2 frames every second. 
+`-vf scale=640:-2` will lower the resolution down to make the video 640 pixels wide.
+You can remove this to use the same resolution as the camera is set to use, however it may become a trade off and you may get less frames per second if you raise the resolution.
+Always try to get the default settings working first before you begin to experiment and if your stream is above 1080p and 10 frames per second, consider lowering it if you have issues on an ARM based server like a Raspberry PIx.
+ 
+
+## snapshots.mjpeg and autofps.mjpeg
+
+These similar features allow you to request a MJPEG stream created by the binding with low CPU usage from the cameras snapshots.
+Snapshots are usually high resolution and look great, however they are limited to a max of 1 frame per second (1 FPS).
+The reason this is more useful than snapshots on their own, is some UIs will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
+
+The autofps.mjpeg feature will display a snapshot that updates every 8 seconds to keep network traffic low, then when motion is detected it will automatically increase the frames to every second until the motion stops.
+This means lower traffic unless the picture is actually changing. 
+
+Request the stream to be sent to an item with this URL. 
+NOTE: The IP is openHAB's not your cameras IP and the 54321 is what you have set as the SERVER_PORT.
+
+`http://192.168.xxx.xxx:54321/snapshots.mjpeg`
+
+Use the following to display it in your sitemap.
+
+```
+Video url="http://192.168.0.32:54321/autofps.mjpeg" encoding="mjpeg"
+
+Video url="http://192.168.0.32:54321/snapshots.mjpeg" encoding="mjpeg"
+```
+
+
+
+
+## HLS (HTTP Live Streaming)
+
+HLS is a way of splitting the live stream up into small H.264 based files so it can be played in many browsers without using much CPU power and it can also contain audio. 
+Because the files need to be created and are not streamed live, this creates a lag/delay behind real time that can be lowered (more on that below). 
+
+The channel called 'startStream' can be used to create HLS non stop and remove the startup delay that comes with using this type of stream. 
+The startup delay and the lag are two different things with the startup delay easily solved by turning this switch ON.
+If the channel is OFF, the stream will start and stop automatically as required, but you will get a delay before the stream is fully running and this may cause you to need to ask twice for the stream.
+With a fast server running openHAB it should only need to be requested once, but on slower ARM systems it takes a while for FFmpeg to get running at full speed.
+
+It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://192.168.0.2:54321/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
+This 64 second delay before the stream is stopped helps when you are moving back and forth in a UI, as the stream does not keep stopping and needing to start each time you move around the UI.
+Cameras with H.264 format streams (most cameras except ESP32 based Cameras) can use the HLS format to stream to Chromecasts and Nest Home Hubs.
+Browsers that support this format can also display HLS using the webview or HABpanel items. 
+Apple devices have excellent support for HLS due to the standard being invented by Apple so they work out of the box. 
+Some browsers like Chrome may require a plugin or an update to be installed before they are able to display the video.
+
+To use the HLS streaming features, you need to:
+
++ Set a valid `SERVER_PORT` as the default value of -1 will turn the feature off.
++ The audio format in the cameras settings must be AAC and not missing for Chromecast to work.
+The binding will default to creating a silent AAC audio track which should be used until you have a working setup.
++ For cameras that do not auto detect the H.264 stream which is done for ONVIF cameras, you will need to use the `FFMPEG_INPUT` and provide a HTTP or RTSP link.
++ For ONVIF cameras the `ONVIF_MEDIA_PROFILE` needs to match a stream number you have setup for H.264.
+For non ONVIF cameras you just need to check the URL in the last step works and is provided to the binding.
++ If streaming to a Chromecast that is not 4k capable, you need to ensure the stream 1080p or lower otherwise your Chromecast wont handle the stream.
+Cameras with 3 streams are handy as you can have a 4k stream going to a NVR whilst a 720p stream can be cast to your TV whilst a 3rd can be for MJPEG format.
++ Consider using a SSD, HDD or a tmpfs (ram drive) if using SD/flash cards as the HLS streams are written to the FFMPEG_OUTPUT folder.
+Only a small amount of storage is needed.
+I only use a micro SD cards with a ramdrive and have excellent performance.
++ Ensure FFmpeg is installed.
+
+
+### Ram Drive Setup
+
+To create a tmpfs of 20mb at /tmpfs/ run this command to open the file for editing. 
+Recommend using 20Mb per camera that uses this location although it could use less than half that amount if carefully streamlined for less ram.
+If using the FFmpeg `-hls_wrap wrap` option (causes issues for my Home Hub), you can get away with 5Mb per camera. 
+
+```
+nano /etc/fstab
+```
+
+Enter and save this at the bottom of the file using ctrl X when done.
+
+```
+tmpfs /tmpfs tmpfs defaults,nosuid,nodev,noatime,size=20m 0 0
+```
+
+
+### FFmpeg HLS Settings
+
+Please get the default settings working first before playing with the advanced settings.
+
+To get audio working you need to have the camera include audio in the stream and in a format that is supported by Chromecast or your browser, I suggest using `AAC` as MP3 is not supported by Google/Nest.
+Then you need to change the HLS settings to what you need, some are suggestions below.
+
+
+
+Less delay behind realtime (no audio) if your cameras iFrames are 1 second apart (-hls_time 1):
+
+```bash
+-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 1 -hls_list_size 4
+```
+
+
+For cameras with no audio in the stream (default setting).
+
+```bash
+-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
+```
+
+
+For cameras with audio in the stream.
+Note: will break Chromecast if the camera does not send audio which is why this is not the default.
+
+```bash
+-strict -2 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
+```
+
+
+Some browsers require larger segment sizes to prevent choppy playback, this can be done with this setting to create 10 second segment files which increases the time before you can get playback working.
+
+```bash
+-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 10 -hls_list_size 4
+
+```
+
+
+### HLS Sitemap Examples
+
+The webview version allows you to zoom in on the video when using the iOS app, the Video element version does not zoom, but it will pass through myopenHAB.
+
+```
+
+Text label="HLS Video Stream" icon="camera"{Video url="http://192.168.1.9:54321/ipcamera.m3u8" encoding="hls"}
+
+Text label="HLS Webview Stream" icon="camera"{Webview url="http://192.168.1.9:54321/ipcamera.m3u8" height=15}
+
+```
+
+
+**Display multiple HLS streams side by side**
+
+In order to display camera hls streams side by side you can also create a webView item and link it to a HTML file in the conf/html directory as follows:
+The webView URL is that of your openHAB installation.
+
+
+```
+Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
+
+```
+
+
+```html
+<!DOCTYPE html>
+<html>
+    <body>
+        <div style="width: 50%; float: left;">
+            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50001/ipcamera.m3u8" />
+        </div>
+        <div style="width: 50%; float: left;">
+            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50002/ipcamera.m3u8" />
+        </div>
+        <div style="width: 50%; float: left;">
+            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50003/ipcamera.m3u8" />
+        </div>
+        <div style="width: 50%; float: left;">
+            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50004/ipcamera.m3u8" />
+        </div>
+    </body>
+</html> 
+
+```
+
+
+## How to Cast a Camera
+
+There are two ways to cast a camera.
+
+1. openHAB Cloud Connector and using metadata tags.
+2. Chromecast Bindings `playuri` channel.
+
+The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
+By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
+This must use the HLS format and use the metadata tag shown below with the openHAB Cloud Connector setup.
+Don't forget to ask google to 'sync my devices' after adding the metadata. 
+The synonyms in the tag allows Google to understand multiple names that the camera may be called by different people in your family.
+
+Example of how this is done in an items file.
+
+```
+String FrontDoorCamHlsUrl "Front Door" { channel="ipcamera:ONVIF:FrontDoor:hlsUrl", synonyms="door bell, front camera", ga="Camera" [ protocols="hls" ] }
+
+```
+
+The second method is by using the Chromecast Binding and sending the URL you wish to cast to the `playuri` channel.
+You can cast the ipcamera.jpg (static picture), ipcamera.gif (looping moving picture) and HLS for a non stop stream that uses low CPU and can also contain audio.
+
+How to cast the camera from inside a rule using the Chromecast binding:
+
+items
+
+```
+String KitchenHomeHubPlayURI { channel="chromecast:chromecast:KitchenHomeHub:playuri" }
+
+```
+
+
+In a rule...
+
+```
+KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
+
+```
+
+
+## Animated GIF
+
+This binding has a channel called `updateGif` and when this switch is turned 'ON' (either by a rule or manually) the binding will create an animated GIF called ipcamera.gif in the FFmpeg output folder.
+You can change the filename using the channel that is called `gifFilename` and an example of how to use this in a rule can be seen under the MP4 recording section.
+Both features are very similar.
+Once the file is created the switch will turn 'OFF' and this can be used to trigger a rule to send the picture via email, pushover or telegram messages.
+The channel `gifHistory` keeps a string of the last 50 filenames (separated by commas) until you reset the history.
+The channel `gifHistoryLength` keeps track of how many filenames are in the gifHistory String.
+You can send the '0' command to this channel to clear the gifHistory string at the same time as setting this channel back to 0.
+
+The `updateGif` switch can be turned on with a rule triggered by an external zwave PIR sensor or the cameras own motion alarm, the choice and the logic can be created by yourself.
+The feature has two options called preroll and postroll to be aware of.
+When preroll is 0 (the default) the binding will use the RTSP stream to fetch the amount of seconds specified in the postroll config to create the GIF from.
+By changing to a preroll value above 0 the binding will change to using snapshots as the source.
+The time between the snapshots then becomes the polling time of the camera (1 seconds by default) and can be raised if you desire.
+The snapshots are saved to disk and can be used as a feature that is described in the snapshot section above in more detail.
+
+You can request the gif by using this URL, or by the path to where the file is stored:
+
+<http://openHABIP:ServerPort/ipcamera.gif>
+
+
+.items
+
+```java
+Switch DoorCamCreateGif "Create animated GIF" { channel="ipcamera:DAHUA:DoorCam:updateGif" }
+
+```
+
+.rules
+
+```java
+rule "Create front door camera GIF when front doorbell button pushed"
+when
+    Item FrontDoorbellButton changed to ON
+then
+    //Start creating the GIF
+    DoorCamCreateGif.sendCommand(ON)
+    //Cast a doorbell sound using the Chromecast binding.
+    KitchenHomeHubPlayURI.sendCommand("http://192.168.1.8:8080/static/doorbell.mp3")
+end
+
+rule "Send doorbell GIF via Pushover"
+when
+    Item DoorCamCreateGif changed to OFF
+then
+    sendPushoverMessage(pushoverBuilder("Sending GIF from backyard").withApiKey("dsfhghj6546fghfg").withUser("qwerty54657").withDevice("Phone1").withAttachment("/tmpfs/DoorCam/ipcamera.gif"))
+end
+```
+
+
+## MP4 Recordings
+
+The binding can use FFmpeg to create a recording to a file.
+
+To do this:
+
++ Consider setting the String channel that is called `mp4Filename` to a date and time stamp in a format that you like, or leave the channel empty for the filename to default to `ipcamera.mp4`.
++ Change the Number channel called `recordMp4` to a number of how many seconds that you wish to record for.
+The recording will then start.
++ Once the file is created the channel `recordMp4` will change itself back to 0 which can be used to trigger a rule to send the file, or you could use this event to change a counter variable that is used in the filename to create `visitor1.mp4 visitor2.mp4`.
++ The channel `mp4History` keeps a string of the last 50 recording filenames (separated by commas) until you reset the history.
+The channel mp4Filename is where this channel gets the names from when a recording is triggered.
++ The channel `mp4HistoryLength` keeps track of how many filenames are in the mp4History String.
+You can send the `0` command to this channel to clear the mp4History string at the same time as setting this channel back to 0.
++ You can use the `FFMPEG_MP4_OUT_ARGUMENTS` config to apply any FFmpeg filters to the output file.
+
+
+There is also a HABpanel Widget worth checking out as the thread has an example on how to use the bindings MP4 filename history feature to track the filenames of recent recordings.
+<https://community.openhab.org/t/custom-widget-camera-history-and-live-popup/103082>
+
+**NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space.
+I use a rule to move the files out of the tmpfs as they are created.
+
+
+*.items
+
+```java
+Switch BackyardCamExternalMotion "External Motion" { channel="ipcamera:HIKVISION:BackyardCam:externalMotion" }
+String BackyardCamMp4Filename "Backyard MP4 Filename" { channel="ipcamera:HIKVISION:BackyardCam:mp4Filename" }
+Number BackyardCamRecordMp4 "Backyard seconds to Record" { channel="ipcamera:HIKVISION:BackyardCam:recordMp4" }
+
+```
+
+*.rules
+
+```java
+
+rule "Record MP4 on External Zwave PIR"
+    when
+    Item BackyardCamExternalMotion changed to ON
+    then
+        BackyardCamMp4Filename.sendCommand( new DateTimeType().toString ) //create a file with the timestamp as the filename.
+        BackyardCamRecordMp4.sendCommand(5) // record 5 seconds    
+end
+
+rule "Do something when recording finished"
+    when
+    Item BackyardCamRecordMp4 changed to 0
+    then
+    var TimeStamp = BackyardCamMp4Filename.state
+    logInfo("camera.rules", "Mp4 recording "+ TimeStamp.toString +".mp4 is ready to be used.")
+end
+
+```
+
+
+## HABpanel
+
+This section is about how to get things working in HABpanel.
+
+I highly recommend you check out the easy to use WIDGETS of which there are now 3 ready made ones that are discussed on the forum here.
+<https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
+
+The widgets in the link above are the easiest way to get an advanced stream working in openHAB and you are welcome to open them up, look at how they work and change them to something even better that suits your needs.
+If you don't like doing things the easy way with a ready made widget, below are how it can be done without a widget.
+
+**How to manually display MJPEG based streams without using the above WIDGETS:**
+
++ Add a FRAME widget
++ Set URL Source to be 'openHAB String Item'
++ Select the item that is bound to the `streamUrl` channel of your camera that is setup with this binding and ONLINE.
++ Alternatively you can set a static URL like `http://192.168.1.2:50001/snapshots.mjpeg` to have the binding create a high resolution MJPEG stream out of your snapshots or the cameras URL to fetch the stream directly.
+
+
+**How to manually display HLS without using the above WIDGETS:**
+
++ Add a template widget with the following code using an openHAB item to link to your cameras `hlsUrl` channel.
+
+
+```
+
+<video width="100%" height="100%" autoplay src="{{itemValue('Camera_hlsUrl')}}"</video>
+
+```
+
+
+## Group Displays
+
+The [Full Example](#full-example) section shows how to setup a group display.
+
+Some additional things to check to get it working are:
+
++ Currently the poll time of the group must be the same or less than the total time contained in each cameras m3u8 files.
+If you have 3 seconds worth of video segments in the cameras HLS stream, this is the max time you can set to be the Poll time of the group to.
+If your not using HLS and are just using ipcamera.jpg to display the groups picture, then the poll time can be set to a wider range.
++ All cameras should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
+
+
+This is still a very new feature and if you have any issues please send some TRACE level log output of when the problem occurs.
+
+
+## Using the Logs for DEBUG and TRACE
+
+Any issues from FFmpeg will only get seen in DEBUG level (and TRACE).
+Without enabling DEBUG you will be missing key feedback that is telling you what may be causing your issues which may be as simple as a folder is missing, or there is a permission issue.
+
+There are two log files discussed here, openhab.log and events.log please take the time to consider both logs if a fast and stable setup is something you care about. 
+On some systems with slow disk access like SD cards, the writing of a log file can greatly impact on performance. 
+We can turn on/up logs to fault find issues, and then disable them to get the performance back when everything is working.
+
+
+To watch the logs in realtime with Linux based setups, you can use this linux command which can be done via SSH with a program called putty from a pc or mac.
+
+```
+
+tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log
+
+```
+
+CTRL+C will close the stream. 
+You can also use SAMBA/network shares to open or copy the file directly, but my favorite way to view the logs is with "Frontail".
+
+
+### openhab.log 
+
+This file displays the information from all bindings and can have the amount of information turned up or down on a per binding basis. 
+The default level is INFO and is the middle level of 5 settings you can use. 
+The openHAB documentation goes into this in more detail and is kept up to date. 
+Using the KARAF console you can use these commands to turn the logging up and down to suit your needs. 
+If you are having issues with the binding not working with your camera, then TRACE will show everything that DEBUG level does but with the additional reply packets back from the camera. 
+Because the TRACE shows the cameras replies, it often shows you in plain english what the camera is telling you is wrong greatly speeding up the diagnosis of any issues. 
+Please use this to find what is wrong before asking for help.
+
+
+```
+
+log:set WARN org.openhab.binding.ipcamera
+
+log:set INFO org.openhab.binding.ipcamera
+
+log:set DEBUG org.openhab.binding.ipcamera
+
+log:set TRACE org.openhab.binding.ipcamera
+
+```
+
+TIP: If your in the Karaf console you can type in `log:tail` to watch the logs.
+CTRL+C will exit watching the logs.
+
+
+### events.log
+
+By default openHAB will log all image channel updates as an event into a file called events.log, this file can quickly grow if you have multiple cameras all updating the image channel every second. 
+
+I believe it is possible for enough high resolution cameras to flood and swamp the event bus with more incoming data then the system can process, even if the logs are disabled.
+So I highly recommend to not use the Image channel and instead use another method outlined in the snapshot and streaming sections of this readme file.
+If the data is coming in faster then it can be processed it will result in an Out Off Memory Error (OOME) that can halt your openHAB server, so if your reading this to shut down the logging, reconsider the need to use the Image channel.
+
+If you still wish to use the image channel, the following is how to deal with the log output that is created as the raw picture data in text format is ugly and makes the log very hard to read.
+
++ You can switch to only updating the image channel on events like motion alarms.
++ Turn off (disable) all events from being logged. 
++ Filter out only the events caused by the image changing before they reach the log file.
+
+The openHAB event.log does not allow normal filtering at a binding level due to the log being a pure output from the event bus.
+
+To disable the event.log you can use this command in Karaf console.
+
+
+```
+
+log:set WARN smarthome.event
+
+```
+
+To re-enable just use the same command with INFO instead of WARN.
+
+
+To filter out only the image events, leaving the rest you can do the following:
+
+```
+sudo nano /var/lib/openhab2/etc/org.ops4j.pax.logging.cfg
+```
+
+Inside that file paste the following, save and then reboot.
+
+```
+############ CUSTOM FILTERS START HERE #################
+# event log filter
+log4j2.appender.event.filter.myfilter1.type = RegexFilter
+log4j2.appender.event.filter.myfilter1.regex = .*changed from raw type.*
+log4j2.appender.event.filter.myfilter1.onMatch = DENY
+log4j2.appender.event.filter.myfilter1.onMisMatch = ACCEPT
+################# END OF FILTERS ######################
+
+```
+
+You can specify the item name in the filter to remove just 1 camera, or you can use the above without the item name to remove all events from images updating, which will be for other bindings as well.
+
+
 ## Full Example
 
 Use the following examples to base your setup on to save some time if you wish to use textual config.
@@ -525,555 +1177,6 @@ end
 ```
 
 
-## Moving PTZ Cameras
-
-To move a camera with this binding you need an ONVIF camera that supports one of the following:
-
-+ Absolute movements
-+ Relative movements
-+ Continuous movements  
-+ Presets
-
-
-To test your cameras compatibility and also to create some preset locations, use a free program called `ONVIF Device Manager` (ODM for short).
-Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets can not be created with the binding, only loaded after they are already created.
-After creating new or changing existing presets, it may be necessary to restart the binding before they can be used. 
-You can create names using the mappings feature of the selection element.
-See docs here <https://www.openhab.org/docs/configuration/sitemaps.html#mappings>
-
-Moving the camera using Relative or Continuous (the config `PTZ_CONTINUOUS` must be true) movements can be done by sending the INCREASE and DECREASE commands to the Pan, Tilt and Zoom channels.
-When the config is set to false (the default if not specified) the binding will send Relative movements. 
-There are some widgets created in the HABpanel widget gallery that you can download and use right away saving you time if your camera supports either presets, relative or continuous modes.
-For sitemaps the below example can be used.
-The OFF command (can be sent to any of the PTZ channels) will stop the cameras movements in the case of continuous being selected in the things config setup.
-
-
-
-
-item:
-
-```java
-
-Number BabyCamGotoPreset "Goto Preset" { channel="ipcamera:DAHUA:BabyCamera:gotoPreset" }
-Dimmer BabyCamPan "Pan [%d] left/right" { channel="ipcamera:DAHUA:BabyCamera:pan" }
-Dimmer BabyCamTilt "Tilt [%d] up/down" { channel="ipcamera:DAHUA:BabyCamera:tilt" }
-Dimmer BabyCamZoom "Zoom [%d] in/out" { channel="ipcamera:DAHUA:BabyCamera:zoom" }
-
-```
-
-sitemap:
-
-```java
-
-Selection item=BabyCamGotoPreset
-Switch item=BabyCamPan mappings=[INCREASE="Left",OFF="STOP",DECREASE="Right"]
-Switch item=BabyCamTilt mappings=[INCREASE="Down",OFF="STOP",DECREASE="Up"]
-Switch item=BabyCamZoom mappings=[INCREASE="Zoom In",OFF="STOP",DECREASE="Zoom Out"]
-Slider item=BabyCamPan icon=movecontrol
-Slider item=BabyCamTilt icon=movecontrol
-Slider item=BabyCamZoom icon=zoom
-
-```
-
-
-Moving the camera to an EXACT repeatable location (Preset 1 saved location) with a rule:
-
-```java
-BabyCamGotoPreset.sendCommand(1)
-```
-
-
-Moving the camera to an EXACT repeatable location using Absolute movement with a rule:
-
-```java
-BabyCamPan.sendCommand(22)
-BabyCamTilt.sendCommand(60)
-BabyCamZoom.sendCommand(0)
-```
-
-
-## FFmpeg Motion and Audio Alarms
-
-Any camera with a RTSP feed can use FFmpeg to create either a `ffmpegMotionAlarm` or `audioAlarm`.
-Even if your camera has a motion alarm, you may find that it does not provide enough flexibility to ignore moving trees, or have its sensitivity adjusted on the fly to reduce its sensitivity during rain. 
-This is where this feature can come in handy as you can even add your own FFmpeg arguments (options) to use the Crop or any other FFmpeg filter, as this wont effect the video feeds you watch.
-<https://ffmpeg.org/ffmpeg-filters.html#Examples-52>
-
-
-To get this working:
-
-+ Provide a RTSP URL to the bindings config `FFMPEG_MOTION_INPUT`, or you can leave it blank to use the auto detected URL if your camera has ONVIF.
-The advantage of using a separate feed for this is that you can provide a low resolution and low frame rate feed to keep the CPU load on your server to a minimum without having to sacrifice the feeds quality that you record or use to view the camera with.
-+ Have FFmpeg installed and the binding knows the location of where to find it.
-+ You have the resolution and FPS at realistic settings for your CPU. You need to reach 1.x speed otherwise the alarm will lag further behind realtime the longer you have this running.
-1080p and 10 fps maximum for an ARM processor is probably a good place to start testing or even lower if you can.
-+ Set the `ffmpegMotionControl` channel to 16 with a slider control and if the alarm stays on increase the value until it works as desired.
-If it will not trigger, lower the control until it does.
-+ Set the `ffmpegMotionControl` to OFF or 0 and it stops using your CPU.
-You can link this same channel to BOTH a switch and a slider at the same time if you like to have both types of controls.
-+ The output of the alarm will go to a channel called `ffmpegMotionAlarm` and you can use the `lastMotionType` channel to determine which alarm was last tripped if your camera has multiple alarm types.
-
-**audioAlarm**
-
-This works in much the same way, just with different channels. 
-If you setup a lower resolution URL in the config `FFMPEG_MOTION_INPUT` you need to ensure it contains audio otherwise this feature wont work.
-
-
-## Image / Snapshots
-
-There are a number of ways to use snapshots with this binding.
-There are multiple advantages to using these methods from the binding instead of directly from the camera. 
-
-**Ways to use snapshots are:**
-
-+ Use the cameras URL so it passes from the camera to your end device ie a tablet, without passing any data through the openHAB server. This is always the best option if it works.
-+ Request a snapshot with the URL `http://192.168.xxx.xxx:54321/ipcamera.jpg`.
-The IP is for your openHAB server not the camera, and 54321 is the SERVER_PORT number that you specified in the bindings setup. If you find the snapshot is old you can set the gif preroll to a number above 0 and this forces the camera to keep updating the stored JPG in ram.
-This file does not exist on disk and is served out of ram to keep disk writes to a minimum with this binding. 
-The binding can serve a JPG file much faster than a camera can directly, as a camera waits for a keyframe, then has to compress the data, before it can finally be sent.
-All of this takes time giving you a delay compared to serving the file from Ram and can make a sitemap or HABpanel UI feel slow to respond if the pictures take time to appear.
-The ipcamera.jpg can also be cast, as most cameras can not cast their snapshots without using the binding.
-+ Use the `http://192.168.xxx.xxx:54321/snapshots.mjpeg` to request a stream of snapshots to be delivered in MJPEG format. 
-See the streaming section for more info.
-+ Use the update GIF feature and use a preroll value >0. 
-This creates a number of snapshots in the FFmpeg output folder called snapshotXXX.jpg where XXX starts at 0 and increases each poll amount of time. 
-This means you can get a snapshot from an exact amount of time before, on, or after triggering the GIF to be created. 
-Handy for cameras which lag due to slow processors and buffering, or if you do not want a hand blocking the image when the door bell was pushed.
-These snapshots can be fetched either directly as they exist on disk, or via this URL format. 
-`http://192.168.xxx.xxx:54321/snapshot0.jpg` Where the IP is your openHAB server and the port is what is setup in the binding as the SERVER_PORT.
-+ The Image channel can be used but is not recommended unless the poll time is above 8 seconds as the image data passes through the event bus of openHAB that can create bottlenecks.
-+ Also worth a mention is that you can off load cameras to a software package running on a separate hardware server such as, Motion, Shinobi and Zoneminder.
-
-
-See this forum thread for examples of how to use snapshots and streams in a sitemap.
-<https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
-
-If you use HABpanel, then these widgets are worth checking out.
-<https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
-
-## Video Streams
-
-To get some of the video formats working, you need to install the FFmpeg program. 
-Visit their site here to learn how <https://ffmpeg.org/>
-
-Under Linux, FFmpeg can be installed very easily with this one command.
-
-```
-sudo apt update && sudo apt install ffmpeg
-```
-
-**IMPORTANT:**
-The binding has its own file server that works by allowing access to the snapshot and video streams with no user/password for requests that come from an IP located in the `IP_WHITELIST`. 
-Requests from external IPs or internal requests that are not on the `IP_WHITELIST` will fail to get any answer. 
-If you prefer to use your own firewall instead, you can also choose to make the `IP_WHITELIST` equal "DISABLE" (the default since the feature also needs a valid SERVER_PORT set) to turn this feature off and then all internal IPs will have access.
-
-There are multiple ways to get a moving picture, to use them just enter the URL into any browser using `http://192.168.xxx.xxx:SERVER_PORT/name.format` replacing the name.format with one of the options that are listed below:
-
-+ **ipcamera.m3u8** HLS (HTTP Live Streaming) which uses H.264 compression. 
-This can be used to cast to Chromecast devices, or can display video in many browsers (some browsers require a plugin to be installed).
-Please understand that this format due to the way it works will give you lag behind realtime, more on this below.
-+ **ipcamera.mjpeg** whilst needing more bandwidth, it is far more compatible for displaying in a wider range of UIs and browsers.
-It is normally 1 second or less behind real-time.
-FFmpeg can be used to create this stream if your camera does not create one for you, but this uses more CPU. 
-A lot of cameras limit the resolution in this format, so consider using HLS, autofps.mjpeg, or snapshots.mjpeg instead which will be in a higher resolution.
-+ **snapshots.mjpeg** is a special MJPEG stream created from the cameras snapshots that are taken at the polling rate.
-+ **autofps.mjpeg** This requires a camera that has a motion alarm to be turned on or it will only send a picture every 8 seconds.
-You can also use the `externalMotion` channel to change the framerate.
-This feature is designed to keep data traffic to your mobile devices as low as possible by automatically sending 1fps when motion is occurring, but only 1 picture every 8 seconds when the picture has no motion.
-The idea is to not send lots of pictures if the picture has not changed as doing so only eats up your data plan.
-+ **ipcamera.gif** This is small in size and very compatible and handy to use in push notifications, Pushover, Telegram, or emails.
-You can cast it which can be handy to show a moving picture that keeps repeating on a Google/Nest home hub or your wall mounted tablet. 
-+ MP4 recordings can be created by the binding and FFmpeg, more on this below.
-
-This forum thread has examples of how to use snapshots and streams in a sitemap.
-<https://community.openhab.org/t/ip-camera-how-to-clickable-thumbnail-overview-in-sitemaps-that-opens-up-to-a-larger-view/77990>
-
-If you use HABpanel, then these widgets are worth checking out.
-<https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
-
-
-
-## MP4 Recordings
-
-The binding can use FFmpeg to create a recording to a file.
-
-To do this:
-
-+ Consider setting the String channel that is called `mp4Filename` to a date and time stamp in a format that you like, or leave the channel empty for the filename to default to `ipcamera.mp4`.
-+ Change the Number channel called `recordMp4` to a number of how many seconds that you wish to record for.
-The recording will then start.
-+ Once the file is created the channel `recordMp4` will change itself back to 0 which can be used to trigger a rule to send the file, or you could use this event to change a counter variable that is used in the filename to create `visitor1.mp4 visitor2.mp4`.
-+ The channel `mp4History` keeps a string of the last 50 recording filenames (separated by commas) until you reset the history.
-The channel mp4Filename is where this channel gets the names from when a recording is triggered.
-+ The channel `mp4HistoryLength` keeps track of how many filenames are in the mp4History String.
-You can send the `0` command to this channel to clear the mp4History string at the same time as setting this channel back to 0.
-+ You can use the `FFMPEG_MP4_OUT_ARGUMENTS` config to apply any FFmpeg filters to the output file.
-
-
-There is also a HABpanel Widget worth checking out as the thread has an example on how to use the bindings MP4 filename history feature to track the filenames of recent recordings.
-<https://community.openhab.org/t/custom-widget-camera-history-and-live-popup/103082>
-
-**NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space.
-I use a rule to move the files out of the tmpfs as they are created.
-
-
-*.items
-
-```java
-Switch BackyardCamExternalMotion "External Motion" { channel="ipcamera:HIKVISION:BackyardCam:externalMotion" }
-String BackyardCamMp4Filename "Backyard MP4 Filename" { channel="ipcamera:HIKVISION:BackyardCam:mp4Filename" }
-Number BackyardCamRecordMp4 "Backyard seconds to Record" { channel="ipcamera:HIKVISION:BackyardCam:recordMp4" }
-
-```
-
-*.rules
-
-```java
-
-rule "Record MP4 on External Zwave PIR"
-    when
-    Item BackyardCamExternalMotion changed to ON
-    then
-        BackyardCamMp4Filename.sendCommand( new DateTimeType().toString ) //create a file with the timestamp as the filename.
-        BackyardCamRecordMp4.sendCommand(5) // record 5 seconds    
-end
-
-rule "Do something when recording finished"
-    when
-    Item BackyardCamRecordMp4 changed to 0
-    then
-    var TimeStamp = BackyardCamMp4Filename.state
-    logInfo("camera.rules", "Mp4 recording "+ TimeStamp.toString +".mp4 is ready to be used.")
-end
-
-```
-
-
-## MJPEG Streams
-
-Cameras that have built in MJPEG abilities can stream to openHAB with the MJPEG format with next to no CPU load, less than 1 second lag, and FFmpeg does not need to be installed.
-Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion. 
-The alternative HLS format does not need the conversion and does not use any CPU to speak of, however due to HLS needing to buffer the files to disk, the HLS will result in lag (delay) behind real time.
-For video without a delay, you need MJPEG and without a camera that can create it, you will need to use a lot of CPU power. This could be done in a dedicated video server which will be the only way with lots of cameras unless you purchase cameras that have the ability built in.
-
-An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
-This is limited to 1 frame a second but often results in far greater picture quality, so be sure to try the different ways and choose what you prefer.
-
-The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, Hikvision, Foscam HD and Instar HD.
-To set this up, see the special setup steps for each brand in this readme.
-The binding can then distribute this stream to many devices around your home whilst the camera only sees a single open stream.
-
-To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the SERVER_PORT to match the settings in the bindings setup for that camera. 
-ipcamera.mjpeg is not changed and stays the same for all of your cameras, it is the port that changes between multiple cameras, the rest stays the same. 
-
-<http://openHABIP:SERVER_PORT/ipcamera.mjpeg>
-
-
-To use this feature, all you need to do is set the config as follows `STREAM_URL_OVERRIDE="ffmpeg"` to use your CPU to generate the MJPEG stream with FFmpeg.
-If you leave the option blank the binding will warn you in the logs and still use FFmpeg, so by adding this line it will remove the warning from your logs. 
-For cameras that have an API you can opt to not use the cameras stream and use FFmpeg instead by doing this as well should you need the streams for other reasons.
-
-FFmpeg may require you to lower the resolution and/or the FPS to lower the CPU load down enough to run, you may need to experiment.
-To change the settings used by this feature the binding exposes the config `FFMPEG_MJPEG_ARGUMENTS` which the default is currently `-q:v 5 -r 2 -vf scale=640:-2 -update 1` where 5 is the JPG quality/compression setting, and -r 2 is how many frames per second to try and create.
-In this case it will create 2 frames every second. 
-`-vf scale=640:-2` will lower the resolution down to make the video 640 pixels wide.
-You can remove this to use the same resolution as the camera is set to use, however it may become a trade off and you may get less frames per second if you raise the resolution.
-Always try to get the default settings working first before you begin to experiment and if your stream is above 1080p and 10 frames per second, consider lowering it if you have issues on an ARM based server like a Raspberry PIx.
- 
-
-## snapshots.mjpeg and autofps.mjpeg
-
-These similar features allow you to request a MJPEG stream created by the binding with low CPU usage from the cameras snapshots.
-Snapshots are usually high resolution and look great, however they are limited to a max of 1 frame per second (1 FPS).
-The reason this is more useful than snapshots on their own, is some UIs will flash white or black when a snapshot is refreshing, this does not happen with snapshots.mjpeg and is the same bandwidth and CPU load as just using snapshots!
-
-The autofps.mjpeg feature will display a snapshot that updates every 8 seconds to keep network traffic low, then when motion is detected it will automatically increase the frames to every second until the motion stops.
-This means lower traffic unless the picture is actually changing. 
-
-Request the stream to be sent to an item with this URL. 
-NOTE: The IP is openHAB's not your cameras IP and the 54321 is what you have set as the SERVER_PORT.
-
-`http://192.168.xxx.xxx:54321/snapshots.mjpeg`
-
-Use the following to display it in your sitemap.
-
-```
-Video url="http://192.168.0.32:54321/autofps.mjpeg" encoding="mjpeg"
-
-Video url="http://192.168.0.32:54321/snapshots.mjpeg" encoding="mjpeg"
-```
-
-
-
-
-## HLS (HTTP Live Streaming)
-
-HLS is a way of splitting the live stream up into small H.264 based files so it can be played in many browsers without using much CPU power and it can also contain audio. 
-Because the files need to be created and are not streamed live, this creates a lag/delay behind real time that can be lowered (more on that below). 
-
-The channel called 'startStream' can be used to create HLS non stop and remove the startup delay that comes with using this type of stream. 
-The startup delay and the lag are two different things with the startup delay easily solved by turning this switch ON.
-If the channel is OFF, the stream will start and stop automatically as required, but you will get a delay before the stream is fully running and this may cause you to need to ask twice for the stream.
-With a fast server running openHAB it should only need to be requested once, but on slower ARM systems it takes a while for FFmpeg to get running at full speed.
-
-It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://192.168.0.2:54321/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
-This 64 second delay before the stream is stopped helps when you are moving back and forth in a UI, as the stream does not keep stopping and needing to start each time you move around the UI.
-Cameras with H.264 format streams (most cameras except ESP32 based Cameras) can use the HLS format to stream to Chromecasts and Nest Home Hubs.
-Browsers that support this format can also display HLS using the webview or HABpanel items. 
-Apple devices have excellent support for HLS due to the standard being invented by Apple so they work out of the box. 
-Some browsers like Chrome may require a plugin or an update to be installed before they are able to display the video.
-
-To use the HLS streaming features, you need to:
-
-+ Set a valid `SERVER_PORT` as the default value of -1 will turn the feature off.
-+ The audio format in the cameras settings must be AAC and not missing for Chromecast to work.
-The binding will default to creating a silent AAC audio track which should be used until you have a working setup.
-+ For cameras that do not auto detect the H.264 stream which is done for ONVIF cameras, you will need to use the `FFMPEG_INPUT` and provide a HTTP or RTSP link.
-+ For ONVIF cameras the `ONVIF_MEDIA_PROFILE` needs to match a stream number you have setup for H.264.
-For non ONVIF cameras you just need to check the URL in the last step works and is provided to the binding.
-+ If streaming to a Chromecast that is not 4k capable, you need to ensure the stream 1080p or lower otherwise your Chromecast wont handle the stream.
-Cameras with 3 streams are handy as you can have a 4k stream going to a NVR whilst a 720p stream can be cast to your TV whilst a 3rd can be for MJPEG format.
-+ Consider using a SSD, HDD or a tmpfs (ram drive) if using SD/flash cards as the HLS streams are written to the FFMPEG_OUTPUT folder.
-Only a small amount of storage is needed.
-I only use a micro SD cards with a ramdrive and have excellent performance.
-+ Ensure FFmpeg is installed.
-
-
-### Ram Drive Setup
-
-To create a tmpfs of 20mb at /tmpfs/ run this command to open the file for editing. 
-Recommend using 20Mb per camera that uses this location although it could use less than half that amount if carefully streamlined for less ram.
-If using the FFmpeg `-hls_wrap wrap` option (causes issues for my Home Hub), you can get away with 5Mb per camera. 
-
-```
-nano /etc/fstab
-```
-
-Enter and save this at the bottom of the file using ctrl X when done.
-
-```
-tmpfs /tmpfs tmpfs defaults,nosuid,nodev,noatime,size=20m 0 0
-```
-
-
-### FFmpeg HLS Settings
-
-Please get the default settings working first before playing with the advanced settings.
-
-To get audio working you need to have the camera include audio in the stream and in a format that is supported by Chromecast or your browser, I suggest using `AAC` as MP3 is not supported by Google/Nest.
-Then you need to change the HLS settings to what you need, some are suggestions below.
-
-
-
-Less delay behind realtime (no audio) if your cameras iFrames are 1 second apart (-hls_time 1):
-
-```bash
--strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 1 -hls_list_size 4
-```
-
-
-For cameras with no audio in the stream (default setting).
-
-```bash
--strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
-```
-
-
-For cameras with audio in the stream.
-Note: will break Chromecast if the camera does not send audio which is why this is not the default.
-
-```bash
--strict -2 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4
-```
-
-
-Some browsers require larger segment sizes to prevent choppy playback, this can be done with this setting to create 10 second segment files which increases the time before you can get playback working.
-
-```bash
--strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 10 -hls_list_size 4
-
-```
-
-
-### HLS Sitemap Examples
-
-The webview version allows you to zoom in on the video when using the iOS app, the Video element version does not zoom, but it will pass through myopenHAB.
-
-```
-
-Text label="HLS Video Stream" icon="camera"{Video url="http://192.168.1.9:54321/ipcamera.m3u8" encoding="hls"}
-
-Text label="HLS Webview Stream" icon="camera"{Webview url="http://192.168.1.9:54321/ipcamera.m3u8" height=15}
-
-```
-
-
-**Display multiple HLS streams side by side**
-
-In order to display camera hls streams side by side you can also create a webView item and link it to a HTML file in the conf/html directory as follows:
-The webView URL is that of your openHAB installation.
-
-
-```
-Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
-
-```
-
-
-```html
-<!DOCTYPE html>
-<html>
-    <body>
-        <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50001/ipcamera.m3u8" />
-        </div>
-        <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50002/ipcamera.m3u8" />
-        </div>
-        <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width:100%; " src="http://192.168.6.4:50003/ipcamera.m3u8" />
-        </div>
-        <div style="width: 50%; float: left;">
-            <video playsinline autoplay muted controls style="width: 100%; " src="http://192.168.6.4:50004/ipcamera.m3u8" />
-        </div>
-    </body>
-</html> 
-
-```
-
-
-## How to Cast with HLS
-
-There are two ways to cast a camera.
-
-1. Asking Google to "show X camera" after you have tagged the metadata shown below for the openHAB Cloud Connector.
-Must be the HLS format.
-2. Using the Chromecast Binding and sending the URL to the `playuri` channel. You can cast the ipcamera.jpg (static picture), ipcamera.gif (looping moving picture) and HLS for a non stop stream that uses low CPU and can also contain audio.
- 
-Don't forget to ask google to 'sync my devices' after adding the metadata shown below. 
-You can also ask for any of the synonyms that you tag to ensure Google understands multiple names that the camera may be called by different people in your family.
-
-Example of how this is done in your items file.
-
-```
-
-String FrontDoorCamHlsUrl "Front Door" { channel="ipcamera:ONVIF:FrontDoor:hlsUrl", synonyms="door bell, front camera", ga="Camera" [ protocols="hls" ] }
-
-```
-
-How to cast the camera from inside a rule using the Chromecast binding:
-
-items
-
-```
-String KitchenHomeHubPlayURI { channel="chromecast:chromecast:KitchenHomeHub:playuri" }
-
-```
-
-
-In a rule...
-
-```
-
-KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
-
-```
-
-
-## HABpanel
-
-This section is about how to get things working in HABpanel.
-
-I highly recommend you check out the easy to use WIDGETS of which there are now 3 ready made ones that are discussed on the forum here.
-<https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
-
-The widgets in the link above are the easiest way to get an advanced stream working in openHAB and you are welcome to open them up, look at how they work and change them to something even better that suits your needs.
-If you don't like doing things the easy way with a ready made widget, below are how it can be done without a widget.
-
-**How to manually display MJPEG based streams without using the above WIDGETS:**
-
-+ Add a FRAME widget
-+ Set URL Source to be 'openHAB String Item'
-+ Select the item that is bound to the `streamUrl` channel of your camera that is setup with this binding and ONLINE.
-+ Alternatively you can set a static URL like `http://192.168.1.2:50001/snapshots.mjpeg` to have the binding create a high resolution MJPEG stream out of your snapshots or the cameras URL to fetch the stream directly.
-
-
-**How to manually display HLS without using the above WIDGETS:**
-
-+ Add a template widget with the following code using an openHAB item to link to your cameras `hlsUrl` channel.
-
-
-```
-
-<video width="100%" height="100%" autoplay src="{{itemValue('Camera_hlsUrl')}}"</video>
-
-```
-
-
-## Animated GIF
-
-This binding has a channel called `updateGif` and when this switch is turned 'ON' (either by a rule or manually) the binding will create an animated GIF called ipcamera.gif in the FFmpeg output folder.
-You can change the filename using the channel that is called `gifFilename` and an example of how to use this in a rule can be seen under the MP4 recording section.
-Both features are very similar.
-Once the file is created the switch will turn 'OFF' and this can be used to trigger a rule to send the picture via email, pushover or telegram messages.
-The channel `gifHistory` keeps a string of the last 50 filenames (separated by commas) until you reset the history.
-The channel `gifHistoryLength` keeps track of how many filenames are in the gifHistory String.
-You can send the '0' command to this channel to clear the gifHistory string at the same time as setting this channel back to 0.
-
-The `updateGif` switch can be turned on with a rule triggered by an external zwave PIR sensor or the cameras own motion alarm, the choice and the logic can be created by yourself.
-The feature has two options called preroll and postroll to be aware of.
-When preroll is 0 (the default) the binding will use the RTSP stream to fetch the amount of seconds specified in the postroll config to create the GIF from.
-By changing to a preroll value above 0 the binding will change to using snapshots as the source.
-The time between the snapshots then becomes the polling time of the camera (1 seconds by default) and can be raised if you desire.
-The snapshots are saved to disk and can be used as a feature that is described in the snapshot section above in more detail.
-
-You can request the gif by using this URL, or by the path to where the file is stored:
-
-<http://openHABIP:ServerPort/ipcamera.gif>
-
-
-.items
-
-```java
-Switch DoorCamCreateGif "Create animated GIF" { channel="ipcamera:DAHUA:DoorCam:updateGif" }
-
-```
-
-.rules
-
-```java
-rule "Create front door camera GIF when front doorbell button pushed"
-when
-    Item FrontDoorbellButton changed to ON
-then
-    //Start creating the GIF
-    DoorCamCreateGif.sendCommand(ON)
-    //Cast a doorbell sound using the Chromecast binding.
-    KitchenHomeHubPlayURI.sendCommand("http://192.168.1.8:8080/static/doorbell.mp3")
-end
-
-rule "Send doorbell GIF via Pushover"
-when
-    Item DoorCamCreateGif changed to OFF
-then
-    sendPushoverMessage(pushoverBuilder("Sending GIF from backyard").withApiKey("dsfhghj6546fghfg").withUser("qwerty54657").withDevice("Phone1").withAttachment("/tmpfs/DoorCam/ipcamera.gif"))
-end
-```
-
-## Group Displays
-
-The [Full Example](#full-example) section shows how to setup a group display.
-
-Some additional things to check to get it working are:
-
-+ Currently the poll time of the group must be the same or less than the total time contained in each cameras m3u8 files.
-If you have 3 seconds worth of video segments in the cameras HLS stream, this is the max time you can set to be the Poll time of the group to.
-If your not using HLS and are just using ipcamera.jpg to display the groups picture, then the poll time can be set to a wider range.
-+ All cameras should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
-
-
-This is still a very new feature and if you have any issues please send some TRACE level log output of when the problem occurs.
-
 ## Batch Motion Detection Rules
 
 In case you have more than one camera to manage, you might want to create a general rule that would react on the events.
@@ -1176,110 +1279,11 @@ end
 Note that the example above also implies that you use the same naming convention (`[Room]_Camera_[Action]`) and the folders where your GIF files are stored are called `/camera-[room]/` where `[room]` is simply `[Room]` but in lowercase.
 
 
-## Using the Logs for DEBUG and TRACE
-
-Any issues from FFmpeg will only get seen in DEBUG level (and TRACE).
-Without enabling DEBUG you will be missing key feedback that is telling you what may be causing your issues which may be as simple as a folder is missing, or there is a permission issue.
-
-There are two log files discussed here, openhab.log and events.log please take the time to consider both logs if a fast and stable setup is something you care about. 
-On some systems with slow disk access like SD cards, the writing of a log file can greatly impact on performance. 
-We can turn on/up logs to fault find issues, and then disable them to get the performance back when everything is working.
-
-
-To watch the logs in realtime with Linux based setups, you can use this linux command which can be done via SSH with a program called putty from a pc or mac.
-
-```
-
-tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log
-
-```
-
-CTRL+C will close the stream. 
-You can also use SAMBA/network shares to open or copy the file directly, but my favorite way to view the logs is with "Frontail".
-
-
-### openhab.log 
-
-This file displays the information from all bindings and can have the amount of information turned up or down on a per binding basis. 
-The default level is INFO and is the middle level of 5 settings you can use. 
-The openHAB documentation goes into this in more detail and is kept up to date. 
-Using the KARAF console you can use these commands to turn the logging up and down to suit your needs. 
-If you are having issues with the binding not working with your camera, then TRACE will show everything that DEBUG level does but with the additional reply packets back from the camera. 
-Because the TRACE shows the cameras replies, it often shows you in plain english what the camera is telling you is wrong greatly speeding up the diagnosis of any issues. 
-Please use this to find what is wrong before asking for help.
-
-
-```
-
-log:set WARN org.openhab.binding.ipcamera
-
-log:set INFO org.openhab.binding.ipcamera
-
-log:set DEBUG org.openhab.binding.ipcamera
-
-log:set TRACE org.openhab.binding.ipcamera
-
-```
-
-TIP: If your in the Karaf console you can type in `log:tail` to watch the logs.
-CTRL+C will exit watching the logs.
-
-
-### events.log
-
-By default openHAB will log all image channel updates as an event into a file called events.log, this file can quickly grow if you have multiple cameras all updating the image channel every second. 
-
-I believe it is possible for enough high resolution cameras to flood and swamp the event bus with more incoming data then the system can process, even if the logs are disabled.
-So I highly recommend to not use the Image channel and instead use another method outlined in the snapshot and streaming sections of this readme file.
-If the data is coming in faster then it can be processed it will result in an Out Off Memory Error (OOME) that can halt your openHAB server, so if your reading this to shut down the logging, reconsider the need to use the Image channel.
-
-If you still wish to use the image channel, the following is how to deal with the log output that is created as the raw picture data in text format is ugly and makes the log very hard to read.
-
-+ You can switch to only updating the image channel on events like motion alarms.
-+ Turn off (disable) all events from being logged. 
-+ Filter out only the events caused by the image changing before they reach the log file.
-
-The openHAB event.log does not allow normal filtering at a binding level due to the log being a pure output from the event bus.
-
-To disable the event.log you can use this command in Karaf console.
-
-
-```
-
-log:set WARN smarthome.event
-
-```
-
-To re-enable just use the same command with INFO instead of WARN.
-
-
-To filter out only the image events, leaving the rest you can do the following:
-
-```
-sudo nano /var/lib/openhab2/etc/org.ops4j.pax.logging.cfg
-```
-
-Inside that file paste the following, save and then reboot.
-
-```
-############ CUSTOM FILTERS START HERE #################
-# event log filter
-log4j2.appender.event.filter.myfilter1.type = RegexFilter
-log4j2.appender.event.filter.myfilter1.regex = .*changed from raw type.*
-log4j2.appender.event.filter.myfilter1.onMatch = DENY
-log4j2.appender.event.filter.myfilter1.onMisMatch = ACCEPT
-################# END OF FILTERS ######################
-
-```
-
-You can specify the item name in the filter to remove just 1 camera, or you can use the above without the item name to remove all events from images updating, which will be for other bindings as well.
-
-
 ## Roadmap for Further Development
 
 Currently the focus is on creating a stable framework that allows all brands to be used in a consistent way, additional features can be added over time.
 
-If you wish to contribute, these are the areas the binding can be improved:
+If you wish to contribute, these are some areas that the binding can be improved:
 
 + Fixing any text that may be confusing in this readme.md, any log output or in the user interfaces.
 + Automate the fetching of names for ONVIF presets.
