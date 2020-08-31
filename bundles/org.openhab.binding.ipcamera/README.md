@@ -154,17 +154,17 @@ These are listed in CAPS below. Example: The thing type for a generic ONVIF came
 | `ONVIF` | Use for all ONVIF Cameras from any brand that does not have an API. |
 | `GROUPDISPLAY` | Used to display or cast multiple cameras like they are a single camera. This is an advanced feature that may require some tweaking of the cameras settings to fully work. |
 
-## Binding Configuration
+## Thing Configuration
 
 After the camera is added, the first thing you need to configure is the login details for your camera.
-If your camera is not ONVIF, you will need to provide the binding with the cameras URLs to the URL override fields.
-For cameras that auto detect the wrong URL, these same fields can be used.
+If your camera is not ONVIF, you will also need to provide the binding with the cameras URLs to the relevant URL override field/s.
+For ONVIF cameras that auto detect the wrong URL, the override configs can be used to force a URL of your choosing.
 
 Leave any `user:pass@` out of any URLs, as the binding will handle this for you.
 Not only does this hide your login details, it will also make changing your password much easier if it is only located in 1 field.
 
 Below are a list of the configuration parameters that can be used in textual configuration. 
-If you do not specify any of these, the binding will use the default which should work in most cases. 
+If you do not specify any of these, the binding will use the default which should work in most cases and should be tried first. 
 Very few of them are needed in order to get a working camera and examples are shown in the [Full Example](#full-example) section.
 
 | Parameter | Description |
