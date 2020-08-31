@@ -271,9 +271,9 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
 
                 // Thermostat
-                if (Device.DEVICE_TYPE_RST.equals(device.getType())
-                        || Device.DEVICE_TYPE_RST2.equals(device.getType())
-                        || Device.DEVICE_TYPE_WRT.equals(device.getType())) {
+                if (DEVICE_RST.equals(device.getType())
+                        || DEVICE_RST2.equals(device.getType())
+                        || DEVICE_WRT.equals(device.getType())) {
                     properties.put(PROPERTY_DISPLAY_CURRENT_TEMPERATURE,
                             device.getConfig().getDisplayCurrentTemperature());
                 }
