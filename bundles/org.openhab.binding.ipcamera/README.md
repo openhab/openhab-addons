@@ -445,7 +445,7 @@ An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` feat
 This is limited to 1 frame a second but often results in far greater picture quality, so be sure to try the different ways and choose what you prefer.
 
 The main cameras that can do MJPEG with very low CPU load are Amcrest, Dahua, Hikvision, Foscam HD and Instar HD.
-To set this up, see the special setup steps for each brand in this readme.
+To set this up, see [Special Notes for Different Brands](#special-notes-for-different-brands).
 The binding can then distribute this stream to many devices around your home whilst the camera only sees a single open stream.
 
 To request the MJPEG stream from the binding, all you need to do is use this link changing the IP to that of your openHAB server and the SERVER_PORT to match the settings in the bindings setup for that camera. 
