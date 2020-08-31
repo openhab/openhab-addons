@@ -438,7 +438,7 @@ If you use HABpanel, then these widgets are worth checking out.
 
 Cameras that have built in MJPEG abilities can stream to openHAB with the MJPEG format with next to no CPU load, less than 1 second lag, and FFmpeg does not need to be installed.
 Cameras without this ability can still use this binding to convert their RTSP H.264 format to MJPEG (keep reading for more on this below) and this will take a lot of CPU power to handle the conversion. 
-The alternative HLS format does not need the conversion and does not use any CPU to speak of, however due to HLS needing to buffer the files to disk, the HLS will result in lag (delay) behind real time.
+The alternative HLS format does not need the conversion and does not use any CPU to speak of.
 For video without a delay, you need MJPEG and without a camera that can create it, you will need to use a lot of CPU power. This could be done in a dedicated video server which will be the only way with lots of cameras unless you purchase cameras that have the ability built in.
 
 An alternative way to keep the CPU load low is to use the `snapshots.mjpeg` feature of the binding to create a stream from the cameras snapshots instead of the RTSP stream.
@@ -498,7 +498,7 @@ With a fast server running openHAB it should only need to be requested once, but
 
 It can be helpful sometimes to use this line in a rule to start the stream before it is needed further on in the rule `sendHttpGetRequest("http://192.168.0.2:54321/ipcamera.m3u8")` as the stream will stay running for 64 seconds.
 This 64 second delay before the stream is stopped helps when you are moving back and forth in a UI, as the stream does not keep stopping and needing to start each time you move around the UI.
-Cameras with H.264 format streams (most cameras except ESP32 based Cameras) can use the HLS format to stream to Chromecasts and Nest Home Hubs.
+Cameras with H.264 format streams (most cameras except ESP32 based Cameras) can use the HLS format to stream to Chromecasts and Google/Nest devices.
 Browsers that support this format can also display HLS using the webview or HABpanel items. 
 Apple devices have excellent support for HLS due to the standard being invented by Apple so they work out of the box. 
 Some browsers like Chrome may require a plugin or an update to be installed before they are able to display the video.
