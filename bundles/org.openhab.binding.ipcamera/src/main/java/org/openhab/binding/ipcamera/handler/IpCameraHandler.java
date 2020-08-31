@@ -1266,7 +1266,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void noAudioDetected() {
-        setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.valueOf("OFF"));
+        setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.OFF);
         firstAudioAlarm = false;
         audioAlarmUpdateSnapshot = false;
     }
