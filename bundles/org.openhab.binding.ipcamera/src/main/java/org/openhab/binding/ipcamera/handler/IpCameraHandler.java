@@ -1251,7 +1251,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void audioDetected() {
-        updateState(CHANNEL_AUDIO_ALARM, OnOffType.valueOf("ON"));
+        updateState(CHANNEL_AUDIO_ALARM, OnOffType.ON);
         if (updateImageEvents.contains("3")) {
             if (!firstAudioAlarm) {
                 if (!snapshotUri.isEmpty()) {
