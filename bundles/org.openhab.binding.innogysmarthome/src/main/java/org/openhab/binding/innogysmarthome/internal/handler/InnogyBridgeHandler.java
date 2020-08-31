@@ -479,7 +479,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
             logger.trace("DeviceId {} relevant for this handler.", device.getId());
 
-            if (event.isLinkedtoDevice() && Device.DEVICE_TYPE_SHCA.equals(device.getType())) {
+            if (event.isLinkedtoDevice() && DEVICE_SHCA.equals(device.getType())) {
                 device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
                 device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
                 device.getDeviceState().getState().getMemoryUsage().setValue(event.getProperties().getMemoryUsage());

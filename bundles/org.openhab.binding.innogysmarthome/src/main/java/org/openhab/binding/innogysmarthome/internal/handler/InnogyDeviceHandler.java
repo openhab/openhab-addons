@@ -279,10 +279,10 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
 
                 // Meter
-                if (Device.DEVICE_TYPE_ANALOG_METER.equals(device.getType())
-                        || Device.DEVICE_TYPE_GENERATION_METER.equals(device.getType())
-                        || Device.DEVICE_TYPE_SMARTMETER.equals(device.getType())
-                        || Device.DEVICE_TYPE_TWO_WAY_METER.equals(device.getType())) {
+                if (DEVICE_ANALOG_METER.equals(device.getType())
+                        || DEVICE_GENERATION_METER.equals(device.getType())
+                        || DEVICE_SMART_METER.equals(device.getType())
+                        || DEVICE_TWO_WAY_METER.equals(device.getType())) {
                     properties.put(PROPERTY_METER_ID, device.getConfig().getMeterId());
                     properties.put(PROPERTY_METER_FIRMWARE_VERSION, device.getConfig().getMeterFirmwareVersion());
                 }
@@ -366,7 +366,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
                     return;
                 } else if ((reachable != null && reachable)
-                        || Device.DEVICE_TYPE_VARIABLE_ACTUATOR.equals(device.getType())) {
+                        || DEVICE_VARIABLE_ACTUATOR.equals(device.getType())) {
                     if (device.getDeviceState().deviceIsIncluded()) {
                         updateStatus(ThingStatus.ONLINE);
                     } else {

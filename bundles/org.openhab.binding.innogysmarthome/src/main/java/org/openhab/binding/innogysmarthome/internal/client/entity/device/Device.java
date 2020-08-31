@@ -22,20 +22,14 @@ import org.openhab.binding.innogysmarthome.internal.client.entity.message.Messag
 
 import com.google.gson.annotations.SerializedName;
 
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
+
 /**
  * Defines the structure of a {@link Device}.
  *
  * @author Oliver Kuhl - Initial contribution
  */
 public class Device {
-
-    public static final String DEVICE_TYPE_SHC = "SHC";
-    public static final String DEVICE_TYPE_SHCA = "SHCA";
-    public static final String DEVICE_TYPE_ANALOG_METER = "AnalogMeter";
-    public static final String DEVICE_TYPE_GENERATION_METER = "GenerationMeter";
-    public static final String DEVICE_TYPE_SMARTMETER = "SmartMeter";
-    public static final String DEVICE_TYPE_TWO_WAY_METER = "TwoWayMeter";
-    public static final String DEVICE_TYPE_VARIABLE_ACTUATOR = "VariableActuator";
 
     public static final String DEVICE_MANUFACTURER_RWE = "RWE";
     public static final String DEVICE_MANUFACTURER_INNOGY = "innogy";
@@ -458,7 +452,7 @@ public class Device {
      * @return
      */
     public boolean isController() {
-        return DEVICE_TYPE_SHC.equals(type) || DEVICE_TYPE_SHCA.equals(type);
+        return DEVICE_SHC.equals(type) || DEVICE_SHCA.equals(type);
     }
 
     /**
