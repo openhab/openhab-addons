@@ -118,30 +118,6 @@ public class YIOremoteHandler extends BaseThingHandler {
         }
 
         /*
-         * try {
-         * URI uri;
-         * uri = new URI("ws://" + config.yiodockhostip + ":946");
-         *
-         * try {
-         * logger.debug("Starting websocket Client");
-         * YIOremote_DockwebSocketClient.start();
-         * } catch (Exception e) {
-         * logger.warn("Web socket start failed", e);
-         * // throw new IOException("Web socket start failed");
-         * }
-         *
-         * try {
-         * logger.debug("Connecting to: {}...", uri);
-         * YIOremote_DockwebSocketClientSession = YIOremote_DockwebSocketClient
-         * .connect(this, uri, new ClientUpgradeRequest()).get();
-         * } catch (Exception e) {
-         * logger.warn("Web socket connect failed " + e.toString(), e);
-         * // throw new IOException("Web socket start failed");
-         * }
-         *
-         * } catch (URISyntaxException e) {
-         * logger.debug("Initialize web socket failed", e);
-         * }
          * if (YIOremote_DockwebSocketClientSession != null) {
          * updateStatus(ThingStatus.ONLINE);
          * } else {
