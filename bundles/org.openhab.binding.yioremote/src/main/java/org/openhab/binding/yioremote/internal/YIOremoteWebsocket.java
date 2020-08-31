@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 public class YIOremoteWebsocket {
 
     private Session session;
+    private yesy;
 
     CountDownLatch latch = new CountDownLatch(1);
 
