@@ -28,8 +28,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCConfiguration;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -42,8 +40,6 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class BoschTwinguardHandler extends BoschSHCHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
 
     public BoschTwinguardHandler(Thing thing) {
         super(thing);

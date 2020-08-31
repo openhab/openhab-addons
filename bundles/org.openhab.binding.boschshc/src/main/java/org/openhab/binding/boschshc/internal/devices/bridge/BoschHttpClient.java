@@ -137,13 +137,13 @@ public class BoschHttpClient extends HttpClient {
 
         } catch (InterruptedException | TimeoutException | CertificateEncodingException | KeyStoreException e) {
             logger.error("Pairing failed with an exception");
-            logger.debug("Pairing failed with: {}", e);
+            logger.debug("Pairing failed", e);
             return false;
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => pairing failed, because hardware button was not pressed.
             logger.warn("Pairing failed, was the Bosch SHC button pressed?");
-            logger.debug("Pairing failed with: {}", e);
+            logger.debug("Pairing failed", e);
             return false;
         }
     }
