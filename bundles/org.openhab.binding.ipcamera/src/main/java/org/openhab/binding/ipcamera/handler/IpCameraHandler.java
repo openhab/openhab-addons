@@ -1299,22 +1299,15 @@ public class IpCameraHandler extends BaseThingHandler {
                 index = result.indexOf('"');
                 if (index == -1) {
                     index = result.indexOf('}');
-                    if (index == -1) {
-                        return result;
-                    } else {
-                        return result.substring(0, index);
-                    }
-                } else {
-                    return result.substring(0, index);
                 }
             } else {
                 result = result.substring(0, index);
                 index = result.indexOf('"');
-                if (index == -1) {
-                    return result;
-                } else {
-                    return result.substring(0, index);
-                }
+            }
+            if (index == -1) {
+                return result;
+            } else {
+                return result.substring(0, index);
             }
         }
         return "";
