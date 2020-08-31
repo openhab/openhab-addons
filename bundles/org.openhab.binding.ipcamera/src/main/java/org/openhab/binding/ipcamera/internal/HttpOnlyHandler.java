@@ -74,9 +74,8 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
     }
 
     // If a camera does not need to poll a request as often as snapshots, it can be
-    // added here. Binding steps through the list.
+    // added here. Binding steps through the list and sends 1 every 8 seconds.
     public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(1);
-        return lowPriorityRequests;
+        return new ArrayList<String>(0);
     }
 }
