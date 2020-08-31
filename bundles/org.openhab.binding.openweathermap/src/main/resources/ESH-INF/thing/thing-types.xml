@@ -186,6 +186,7 @@
 			<channel-group id="forecastMinutes59" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes60" typeId="oneCallMinutely"/>
 
+
 			<channel-group id="forecastHours01" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours02" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours03" typeId="oneCallHourly"/>
