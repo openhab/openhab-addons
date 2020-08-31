@@ -271,17 +271,16 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 }
 
                 // Thermostat
-                if (Device.DEVICE_TYPE_RST.equals(device.getType())
-                        || Device.DEVICE_TYPE_WRT.equals(device.getType())) {
+                if (DEVICE_RST.equals(device.getType()) || DEVICE_RST2.equals(device.getType())
+                        || DEVICE_WRT.equals(device.getType())) {
                     properties.put(PROPERTY_DISPLAY_CURRENT_TEMPERATURE,
                             device.getConfig().getDisplayCurrentTemperature());
                 }
 
                 // Meter
-                if (Device.DEVICE_TYPE_ANALOG_METER.equals(device.getType())
-                        || Device.DEVICE_TYPE_GENERATION_METER.equals(device.getType())
-                        || Device.DEVICE_TYPE_SMARTMETER.equals(device.getType())
-                        || Device.DEVICE_TYPE_TWO_WAY_METER.equals(device.getType())) {
+                if (DEVICE_ANALOG_METER.equals(device.getType()) || DEVICE_GENERATION_METER.equals(device.getType())
+                        || DEVICE_SMART_METER.equals(device.getType())
+                        || DEVICE_TWO_WAY_METER.equals(device.getType())) {
                     properties.put(PROPERTY_METER_ID, device.getConfig().getMeterId());
                     properties.put(PROPERTY_METER_FIRMWARE_VERSION, device.getConfig().getMeterFirmwareVersion());
                 }
@@ -364,8 +363,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 if (reachable != null && !reachable) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Device not reachable.");
                     return;
-                } else if ((reachable != null && reachable)
-                        || Device.DEVICE_TYPE_VARIABLE_ACTUATOR.equals(device.getType())) {
+                } else if ((reachable != null && reachable) || DEVICE_VARIABLE_ACTUATOR.equals(device.getType())) {
                     if (device.getDeviceState().deviceIsIncluded()) {
                         updateStatus(ThingStatus.ONLINE);
                     } else {
