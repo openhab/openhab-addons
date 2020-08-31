@@ -195,9 +195,11 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_LINE_CROSSING_ALARM:
                 if ("ON".equals(command.toString())) {
-
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule[0][1].Enable=true");
                 } else {
-
+                    ipCameraHandler.sendHttpGET(
+                            "/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule[0][1].Enable=false");
                 }
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
