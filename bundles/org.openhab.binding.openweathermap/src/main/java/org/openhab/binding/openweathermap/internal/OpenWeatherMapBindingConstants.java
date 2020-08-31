@@ -36,6 +36,10 @@ public class OpenWeatherMapBindingConstants {
     public static final ThingTypeUID THING_TYPE_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID,
             "weather-and-forecast");
     public static final ThingTypeUID THING_TYPE_UVINDEX = new ThingTypeUID(BINDING_ID, "uvindex");
+    // Onecall API forecast
+    public static final ThingTypeUID THING_TYPE_ONECALL_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID, "onecall");
+    // Onecall API historical data
+    public static final ThingTypeUID THING_TYPE_ONECALL_HISTORY = new ThingTypeUID(BINDING_ID, "onecall-history");
 
     // List of all properties
     public static final String CONFIG_API_KEY = "apikey";
@@ -49,6 +53,8 @@ public class OpenWeatherMapBindingConstants {
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_UVINDEX = new ChannelGroupTypeUID(BINDING_ID, "uvindex");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL = new ChannelGroupTypeUID(BINDING_ID, "onecall");
+    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_HISTORY = new ChannelGroupTypeUID(BINDING_ID, "onecall-history");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_STATION = "station";
@@ -56,31 +62,57 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
     public static final String CHANNEL_GROUP_CURRENT_UVINDEX = "current";
+    public static final String CHANNEL_GROUP_ONECALL_CURRENT = "current";
+    public static final String CHANNEL_GROUP_ONECALL_HISTORY = "history";
+    public static final String CHANNEL_GROUP_ONECALL_MINUTES = "forecastMinutes";
+    public static final String CHANNEL_GROUP_ONECALL_HOURS = "forecastHours";
+    public static final String CHANNEL_GROUP_ONECALL_DAYS = "forecastDays";
+    public static final String CHANNEL_GROUP_ONECALL_TODAY = "forecastToday";
+    public static final String CHANNEL_GROUP_ONECALL_TOMORROW = "forecastTomorrow";
+    public static final String CHANNEL_GROUP_ONECALL_HISTORY_HOURS= "historyHours";
+
+
 
     // List of all channels
     public static final String CHANNEL_STATION_ID = "id";
     public static final String CHANNEL_STATION_NAME = "name";
     public static final String CHANNEL_STATION_LOCATION = "location";
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
+    public static final String CHANNEL_SUNRISE = "sunrise";
+    public static final String CHANNEL_SUNSET = "sunset";
     public static final String CHANNEL_CONDITION = "condition";
     public static final String CHANNEL_CONDITION_ID = "condition-id";
     public static final String CHANNEL_CONDITION_ICON = "icon";
     public static final String CHANNEL_CONDITION_ICON_ID = "icon-id";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_APPARENT_TEMPERATURE = "apparent-temperature";
+    public static final String CHANNEL_APPARENT_MORNING = "apparent-morning";
+    public static final String CHANNEL_APPARENT_DAY = "apparent-day";
+    public static final String CHANNEL_APPARENT_EVENING = "apparent-evening";
+    public static final String CHANNEL_APPARENT_NIGHT = "apparent-night";
     public static final String CHANNEL_MIN_TEMPERATURE = "min-temperature";
     public static final String CHANNEL_MAX_TEMPERATURE = "max-temperature";
+    public static final String CHANNEL_MORNING_TEMPERATURE = "morning-temperature";
+    public static final String CHANNEL_DAY_TEMPERATURE = "day-temperature";
+    public static final String CHANNEL_EVENING_TEMPERATURE = "evening-temperature";
+    public static final String CHANNEL_NIGHT_TEMPERATURE = "night-temperature";
+    public static final String CHANNEL_DEW_POINT = "dew-point";
     public static final String CHANNEL_PRESSURE = "pressure";
     public static final String CHANNEL_HUMIDITY = "humidity";
     public static final String CHANNEL_WIND_SPEED = "wind-speed";
     public static final String CHANNEL_WIND_DIRECTION = "wind-direction";
     public static final String CHANNEL_GUST_SPEED = "gust-speed";
     public static final String CHANNEL_CLOUDINESS = "cloudiness";
+    public static final String CHANNEL_PROBABILITY = "probability";
     public static final String CHANNEL_RAIN = "rain";
     public static final String CHANNEL_SNOW = "snow";
     public static final String CHANNEL_VISIBILITY = "visibility";
     public static final String CHANNEL_UVINDEX = "uvindex";
+    public static final String CHANNEL_PRECIPITATION = "precipitation";
 
     // List of all configuration
     public static final String CONFIG_FORECAST_DAYS = "forecastDays";
+
+    // relative number of days in history
+    public static final String CONFIG_HISTORY_DAYS = "historyDays";
 }

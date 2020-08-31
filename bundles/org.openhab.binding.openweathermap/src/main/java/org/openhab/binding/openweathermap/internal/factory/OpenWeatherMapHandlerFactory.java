@@ -39,14 +39,13 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.openweathermap.internal.discovery.OpenWeatherMapDiscoveryService;
-import org.openhab.binding.openweathermap.internal.handler.AbstractOpenWeatherMapHandler;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapUVIndexHandler;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapWeatherAndForecastHandler;
+import org.openhab.binding.openweathermap.internal.handler.*;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link OpenWeatherMapHandlerFactory} is responsible for creating things and thing handlers.
@@ -67,6 +66,8 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
     private final LocationProvider locationProvider;
     private final TranslationProvider i18nProvider;
     private final TimeZoneProvider timeZoneProvider;
+
+    private final Logger logger = LoggerFactory.getLogger(OpenWeatherMapHandlerFactory.class);
 
     @Activate
     public OpenWeatherMapHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
@@ -100,8 +101,12 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
             return new OpenWeatherMapWeatherAndForecastHandler(thing, timeZoneProvider);
         } else if (THING_TYPE_UVINDEX.equals(thingTypeUID)) {
             return new OpenWeatherMapUVIndexHandler(thing, timeZoneProvider);
+        } else if (THING_TYPE_ONECALL_WEATHER_AND_FORECAST.equals(thingTypeUID)) {
+            return new OpenWeatherMapOneCallHandler(thing, timeZoneProvider);
+        } else if (THING_TYPE_ONECALL_HISTORY.equals(thingTypeUID)) {
+            return new OpenWeatherMapOneCallHistoryHandler(thing, timeZoneProvider);
         }
-
+        logger.error("Could not create handler for thing {}, UID {}",thing,thingTypeUID);
         return null;
     }
 
