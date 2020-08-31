@@ -17,10 +17,11 @@ import static org.junit.Assert.*;
 import java.time.LocalDate;
 import java.util.Locale;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 import com.google.gson.Gson;
@@ -31,6 +32,7 @@ import com.google.gson.Gson;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class LocaleTest {
     private static final Gson GSON = new Gson();
 
@@ -54,9 +56,15 @@ public class LocaleTest {
     @Test
     public void testServiceDatePattern() {
         String pattern = "2021-11-01";
-        LocalDate ldt = LocalDate.parse(pattern, Converter.serviceDateInputPattern);
+        LocalDate ldt = LocalDate.parse(pattern, Converter.SERVICE_DATE_INPUT_PATTERN);
         assertEquals("Parsed Date", "2021-11-01", ldt.toString());
-        System.out.println();
-        assertEquals("Parsed Date", "Nov 2021", ldt.format(Converter.serviceDateOutputPattern));
+        assertEquals("Parsed Date", "Nov 2021", ldt.format(Converter.SERVICE_DATE_OUTPUT_PATTERN));
     }
+
+    @Test
+    public void testTimeZoneDateTime() {
+        String pattern = "2018-07-16T21:47:46+0000";
+        assertEquals("ZonedDateTime", "16.07.2018 23:47", Converter.getZonedDateTime(pattern));
+    }
+
 }

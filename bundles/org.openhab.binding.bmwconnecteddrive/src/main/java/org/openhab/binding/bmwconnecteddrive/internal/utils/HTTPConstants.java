@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.handler;
+package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -32,6 +32,7 @@ public class HTTPConstants {
     public static final String CREDENTIALS = "Credentials";
     public static final String USERNAME = "username";
     public static final String PASSWORD = "password";
+    public static final String CONTENT_LENGTH = "Content-Length";
 
     public static final String ACCESS_TOKEN = "access_token";
     public static final String TOKEN_TYPE = "token_type";

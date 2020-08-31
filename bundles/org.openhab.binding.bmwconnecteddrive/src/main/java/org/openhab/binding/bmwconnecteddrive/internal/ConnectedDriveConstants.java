@@ -29,6 +29,13 @@ public class ConnectedDriveConstants {
 
     private static final String BINDING_ID = "bmwconnecteddrive";
 
+    public static final String ANONYMOUS = "ANONYMOUS";
+
+    // Units
+    public static final String UNITS_AUTODETECT = "AUTODETECT";
+    public static final String UNITS_IMPERIAL = "IMPERIAL";
+    public static final String UNITS_METRIC = "METRIC";
+
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
     public enum CarType {
@@ -94,7 +101,6 @@ public class ConnectedDriveConstants {
     public static final String CARDATA_FINGERPRINT = "cardata-fingerprint";
 
     // Thing Group definitions
-    public static final String CHANNEL_GROUP_PROPERTIES = "properties";
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
@@ -103,6 +109,9 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
+    public static final String CHANNEL_GROUP_CHARGE_PROFILE = "charge-profile";
+    public static final String CHANNEL_GROUP_RANGE_MAP = "range-map";
+    public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
 
     public static final String PROPERTIES_BRAND = "brand";
     public static final String PROPERTIES_MODEL = "model";

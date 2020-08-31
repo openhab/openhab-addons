@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.handler;
+package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -10,17 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
+package org.openhab.binding.bmwconnecteddrive.internal.handler;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CBSMessage} Data Transfer Object
+ * The {@link ResponseCallback} Marker Interface for all callbacks
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class CBSMessage {
-    public String cbsType;// ": "BRAKE_FLUID",
-    public String cbsState;// ": "OK",
-    public String cbsDueDate;// ": "2021-11",
-    public String cbsDescription;// ": "Next change due at the latest by the stated date."
-    public int cbsRemainingMileage; // 46000
+@NonNullByDefault
+public interface ResponseCallback {
+    public void onError(String reason);
 }
