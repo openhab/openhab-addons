@@ -14,6 +14,7 @@
 package org.openhab.binding.ipcamera.internal;
 
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,8 +43,8 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     private String username, password;
     private String httpMethod = "", httpUrl = "";
     private byte ncCounter = 0;
-    String nonce = "", opaque = "", qop = "";
-    String realm = "";
+    private String nonce = "", opaque = "", qop = "";
+    private String realm = "";
 
     public MyNettyAuthHandler(String user, String pass, String method, String url, ThingHandler handle) {
         myHandler = (IpCameraHandler) handle;
