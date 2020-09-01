@@ -23,9 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.ConnectedDriveUserInfo;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.Vehicle;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,12 +50,11 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        // nothing to start - wait until first results of ConnectedDriveBridgeHandler results
+        bridgeHandler.requestVehicles();
     }
 
-    public void scan(ConnectedDriveUserInfo cdui) {
-        List<Vehicle> vehicles = cdui.getVehicles();
-        logger.info("Discovered {} Vehicles", vehicles.size());
+    public void onResponse(VehiclesContainer container) {
+        List<Vehicle> vehicles = container.vehicles;
         vehicles.forEach(vehicle -> {
             ThingUID bridgeUID = bridgeHandler.getThing().getUID();
             // the DriveTrain field in the delivered json is defining the Vehicle Type
@@ -63,34 +63,44 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                 if (entry.getId().equals(vehicleType)) {
                     ThingUID uid = new ThingUID(entry, vehicle.vin);
                     Map<String, Object> properties = new HashMap<>();
-                    properties.put("vin", vehicle.vin);
-                    properties.put("refreshInterval", 5);
-                    properties.put("model", vehicle.model);
-                    properties.put("statisticsCommunityEnabled", vehicle.color);
-                    properties.put("driveTrain", vehicle.driveTrain);
-                    properties.put("brand", vehicle.brand);
-                    properties.put("yearOfConstruction", vehicle.yearOfConstruction);
-                    properties.put("bodytype", vehicle.bodytype);
-                    properties.put("statisticsCommunityEnabled", vehicle.color);
+                    // Dealer
                     if (vehicle.dealer != null) {
-                        properties.put("dealerName", vehicle.dealer.name);
-                        properties.put("dealerAddress", vehicle.dealer.street + " " + vehicle.dealer.country + " "
+                        properties.put("Dealer", vehicle.dealer.name);
+                        properties.put("Dealer Address", vehicle.dealer.street + " " + vehicle.dealer.country + " "
                                 + vehicle.dealer.postalCode + " " + vehicle.dealer.city);
-                        properties.put("dealerPhone", vehicle.dealer.phone);
-                    }
-                    properties.put("breakdownNumber", vehicle.breakdownNumber);
-                    StringBuffer chargingModes = new StringBuffer();
-                    if (vehicle.supportedChargingModes != null) {
-                        vehicle.supportedChargingModes.forEach(e -> {
-                            chargingModes.append(e + " ");
-                        });
+                        properties.put("Dealer Phone", vehicle.dealer.phone);
                     }
 
-                    properties.put("activatedServcies", getObject(vehicle, Vehicle.ACTIVATED));
-                    properties.put("supportedServices", getObject(vehicle, Vehicle.SUPPORTED));
-                    properties.put("activatedServcies", getObject(vehicle, Vehicle.NOT_SUPPORTED));
+                    // Services & Support
+                    properties.put("Services Activated", getObject(vehicle, Constants.ACTIVATED));
+                    properties.put("Services Supported", getObject(vehicle, Constants.SUPPORTED));
+                    properties.put("Services Not Supported", getObject(vehicle, Constants.NOT_SUPPORTED));
+                    properties.put("Support Breakdown Number", vehicle.breakdownNumber);
+
+                    // Vehicle Properties
+                    if (vehicle.supportedChargingModes != null) {
+                        StringBuffer chargingModes = new StringBuffer();
+                        vehicle.supportedChargingModes.forEach(e -> {
+                            chargingModes.append(e).append(Constants.SPACE);
+                        });
+                        properties.put("Vehicle Charge Modes", chargingModes.toString());
+                    }
+                    properties.put("Vehicle Brand", vehicle.brand);
+                    properties.put("Vehicle Bodytype", vehicle.bodytype);
+                    properties.put("Vehicle Color", vehicle.color);
+                    properties.put("Vehicle Construction Year", vehicle.yearOfConstruction);
+                    properties.put("Vehicle Drive Train", vehicle.driveTrain);
+                    properties.put("Vehicle Model", vehicle.model);
+
+                    // Properties needed for functional THing
+                    properties.put("vin", vehicle.vin);
+                    properties.put("refreshInterval", 15);
+                    properties.put("units", "AUTODETECT");
+                    properties.put("imageSize", 500);
+                    properties.put("imageViewport", "FRONT");
+
                     String carLabel = vehicle.brand + " " + vehicle.model;
-                    logger.info("Thing {} discovered", carLabel);
+                    logger.debug("Thing {} discovered", carLabel);
                     thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
                             .withRepresentationProperty("vin").withLabel(carLabel).withProperties(properties).build());
                 }
@@ -105,7 +115,7 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
             try {
                 if (field.get(obj) != null) {
                     if (field.get(obj).equals(compare)) {
-                        buf.append(field.getName());
+                        buf.append(field.getName() + Constants.SPACE);
                     }
                 }
             } catch (IllegalArgumentException e) {

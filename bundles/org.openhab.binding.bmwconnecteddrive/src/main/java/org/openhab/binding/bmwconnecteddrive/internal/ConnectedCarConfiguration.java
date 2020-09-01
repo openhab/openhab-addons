@@ -13,6 +13,7 @@
 package org.openhab.binding.bmwconnecteddrive.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 
 /**
  * The {@link ConnectedCarConfiguration} class contains fields mapping thing configuration parameters.
@@ -24,7 +25,7 @@ public class ConnectedCarConfiguration {
     /**
      * Vehilce Identification Number (VIN)
      */
-    public String vin = "";
+    public String vin = Constants.EMPTY;
 
     /**
      * Data refresh rate in minutes

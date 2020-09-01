@@ -10,18 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.charge;
+
+import java.util.List;
 
 /**
- * The {@link Dealer} Data Transfer Object
+ * The {@link Timer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class Dealer {
-    public String name;
-    public String street;
-    public String postalCode;
-    public String city;
-    public String country;
-    public String phone;
+public class Timer {
+    public String departureTime;// ": "05:00",
+    public boolean timerEnabled;// ": false,
+    public List<String> weekdays;
+    /**
+     * "MONDAY",
+     * "TUESDAY",
+     * "WEDNESDAY",
+     * "THURSDAY",
+     * "FRIDAY"
+     * ] '
+     */
 }

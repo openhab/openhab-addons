@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.*;
+
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,16 +28,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Bernd Weymann - Initial contribution
  */
 public class VehicleStatus {
-    public static final String OK = "Ok";
-    public static final String OPEN = "OPEN";
-    public static final String INVALID = "INVALID";
-    public static final String CLOSED = "CLOSED";
-    public static final String UNKNOWN = "UNKOWN";
-    public static final String NO_SERVICE_REQUEST = "No Service Requests";
-    public static final String APPENDIX_DAY = "-01"; // needed to complete Service Date
-    public static final String MILES_SHORT = "mi";
-    public static final String KM_SHORT = "km";
-
     public int mileage;// ": 17273,
     public float remainingFuel;// ": 4,
     public float remainingRangeElectric;// ": 148,

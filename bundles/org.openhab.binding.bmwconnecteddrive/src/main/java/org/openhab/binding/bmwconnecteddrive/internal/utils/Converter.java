@@ -18,7 +18,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 
 /**
  * The {@link Converter} Data Transfer Object
@@ -30,15 +29,10 @@ public class Converter {
     public static final DateTimeFormatter SERVICE_DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter SERVICE_DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("MMM yyyy");
 
-    public static final String SPACE = " ";
-    public static final String UNDERLINE = "_";
-
     public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     public static final DateTimeFormatter DATE_TIMEZONE_INPUT_PATTERN = DateTimeFormatter
             .ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
     private static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-
-    public static final int MILES_TO_FEET_FACTOR = 5280;
 
     public static double round(double value) {
         double scale = Math.pow(10, 1);
@@ -47,7 +41,7 @@ public class Converter {
 
     public static String getLocalDateTime(String input) {
         if (input == null) {
-            return Converter.toTitleCase(VehicleStatus.UNKNOWN);
+            return Converter.toTitleCase(Constants.UNKNOWN);
         }
 
         LocalDateTime ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
@@ -58,7 +52,7 @@ public class Converter {
 
     public static String getZonedDateTime(String input) {
         if (input == null) {
-            return Converter.toTitleCase(VehicleStatus.UNKNOWN);
+            return Converter.toTitleCase(Constants.UNKNOWN);
         }
 
         ZonedDateTime zdt = ZonedDateTime.parse(input, Converter.DATE_TIMEZONE_INPUT_PATTERN);
@@ -68,10 +62,10 @@ public class Converter {
 
     public static String toTitleCase(String input) {
         if (input == null) {
-            return Converter.toTitleCase(VehicleStatus.UNKNOWN);
+            return Converter.toTitleCase(Constants.UNKNOWN);
         } else {
-            String lower = input.replaceAll(UNDERLINE, SPACE).toLowerCase();
-            String[] arr = lower.split(SPACE);
+            String lower = input.replaceAll(Constants.UNDERLINE, Constants.SPACE).toLowerCase();
+            String[] arr = lower.split(Constants.SPACE);
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < arr.length; i++) {
                 sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1)).append(" ");

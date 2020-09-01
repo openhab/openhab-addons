@@ -157,15 +157,18 @@ public class RemoteServiceHandler {
     }
 
     public void getState() {
-        if (serviceExecuting == null) {
+        if (!serviceExecuting.isPresent()) {
             logger.warn("No Service executed to get state");
             return;
         }
         if (counter >= giveUpCounter) {
             logger.warn("Giving up updating state for {} after {} times", serviceExecuting, giveUpCounter);
+            reset();
+            // immediately refresh data
+            handler.getData();
         }
         counter++;
-        Request req = httpClient.newRequest(serviceExecutionStateAPI + serviceExecuting);
+        Request req = httpClient.newRequest(serviceExecutionStateAPI + serviceExecuting.get());
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
         req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
 

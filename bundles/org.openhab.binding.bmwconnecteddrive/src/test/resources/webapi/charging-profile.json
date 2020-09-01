@@ -1,6 +1,6 @@
 {
 	"weeklyPlanner": {
-		"climatizationEnabled": false,
+		"climatizationEnabled": true,
 		"chargingMode": "IMMEDIATE_CHARGING",
 		"chargingPreferences": "CHARGING_WINDOW",
 		"timer1": {
@@ -16,7 +16,7 @@
 		},
 		"timer2": {
 			"departureTime": "12:00",
-			"timerEnabled": false,
+			"timerEnabled": true,
 			"weekdays": [
 				"SATURDAY"
 			]
@@ -26,9 +26,16 @@
 			"timerEnabled": false,
 			"weekdays": []
 		},
+		"overrideTimer": {
+			"departureTime": "12:00",
+			"timerEnabled": false,
+			"weekdays": [
+				"SATURDAY"
+			]
+		},
 		"preferredChargingWindow": {
-			"startTime": "00:00",
-			"endTime": "00:00"
+			"startTime": "11:00",
+			"endTime": "17:00"
 		}
 	}
 }

@@ -12,23 +12,21 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import java.util.List;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 
 /**
- * The {@link ConnectedDriveUserInfo} Data Transfer Object
+ * The {@link NetworkError} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-public class ConnectedDriveUserInfo {
-    // @SerializedName("sampling_rate")
-    // private int samplingRate;
-    private List<Vehicle> vehicles;
+public class NetworkError {
+    public String url;
+    public int status;
+    public String reason;
 
-    public List<Vehicle> getVehicles() {
-        return vehicles;
-    }
-
-    public void setVehicles(List<Vehicle> vehicles) {
-        this.vehicles = vehicles;
+    @Override
+    public String toString() {
+        return new StringBuffer(url).append(Constants.HYPHEN).append(status).append(Constants.HYPHEN).append(reason)
+                .toString();
     }
 }

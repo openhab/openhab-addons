@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.ConnectedDriveUserInfo;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import org.slf4j.Logger;
@@ -44,6 +44,28 @@ public class DiscoveryTest {
 
     @Test
     public void testDiscovery() {
+        String content = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
+        ConnectedDriveBridgeHandler bh = mock(ConnectedDriveBridgeHandler.class);
+        Bridge b = mock(Bridge.class);
+        when(bh.getThing()).thenReturn(b);
+        when(b.getUID()).thenReturn(new ThingUID("testbinding", "test"));
+        ConnectedCarDiscovery discovery = new ConnectedCarDiscovery(bh);
+        DiscoveryListener listener = mock(DiscoveryListener.class);
+        discovery.addDiscoveryListener(listener);
+        VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
+        ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
+        ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
+
+        discovery.onResponse(container);
+        verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
+        List<DiscoveryResult> results = discoveries.getAllValues();
+        results.forEach(entry -> {
+            logger.info("{}", entry.toString());
+        });
+    }
+
+    @Test
+    public void testBimmerDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/responses/vehicles.json");
         ConnectedDriveBridgeHandler bh = mock(ConnectedDriveBridgeHandler.class);
         Bridge b = mock(Bridge.class);
@@ -52,16 +74,15 @@ public class DiscoveryTest {
         ConnectedCarDiscovery discovery = new ConnectedCarDiscovery(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
-        ConnectedDriveUserInfo cdui = GSON.fromJson(content, ConnectedDriveUserInfo.class);
+        VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
         ArgumentCaptor<DiscoveryResult> discoveries = ArgumentCaptor.forClass(DiscoveryResult.class);
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
 
-        discovery.scan(cdui);
+        discovery.onResponse(container);
         verify(listener, times(8)).thingDiscovered(services.capture(), discoveries.capture());
         List<DiscoveryResult> results = discoveries.getAllValues();
         results.forEach(entry -> {
             logger.info("{}", entry.toString());
         });
     }
-
 }
