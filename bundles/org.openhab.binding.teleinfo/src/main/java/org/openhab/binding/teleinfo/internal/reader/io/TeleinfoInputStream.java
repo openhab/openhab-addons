@@ -153,8 +153,9 @@ public class TeleinfoInputStream extends InputStream {
     public void close() throws IOException {
         logger.debug("close() [start]");
         bufferedReader.close();
-        if (!useOpenhabScheduler)
+        if (!useOpenhabScheduler) {
             executorService.shutdownNow();
+        }
         super.close();
         logger.debug("close() [end]");
     }
