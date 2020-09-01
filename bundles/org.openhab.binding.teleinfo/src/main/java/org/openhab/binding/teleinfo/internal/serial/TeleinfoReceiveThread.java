@@ -81,7 +81,7 @@ public class TeleinfoReceiveThread extends Thread {
                 }
             }
         } catch (IOException e) {
-            logger.error("An error occurred during serial port input stream opening", e);
+            logger.warn("An error occurred during serial port input stream opening", e);
         }
 
         serialPort.removeEventListener();
