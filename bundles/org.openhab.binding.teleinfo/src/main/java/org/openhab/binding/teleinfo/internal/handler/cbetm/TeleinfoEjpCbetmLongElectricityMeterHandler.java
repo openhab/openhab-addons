@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.teleinfo.internal.handler.cbetm;
 
-import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.THING_EJP_CBETM_ELECTRICITY_METER_PROPERTY_ADCO;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
@@ -39,7 +37,7 @@ public class TeleinfoEjpCbetmLongElectricityMeterHandler extends TeleinfoAbstrac
     public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
         final FrameCbetm frameCbetm = (FrameCbetm) frame;
 
-        String adco = (String) getThing().getConfiguration().get(THING_EJP_CBETM_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = configuration.getAdco();
         if (frameCbetm.getAdco().equalsIgnoreCase(adco)) {
             updateStatesForCommonCbetmChannels(frameCbetm);
             if (frameCbetm instanceof FrameCbetmLongEjpOption) {

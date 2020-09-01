@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingHandler
         implements TeleinfoControllerHandlerListener {
     private final Logger logger = LoggerFactory.getLogger(TeleinfoAbstractElectricityMeterHandler.class);
+    protected TeleinfoElectricityMeterConfiguration configuration = new TeleinfoElectricityMeterConfiguration();
 
     public TeleinfoAbstractElectricityMeterHandler(Thing thing) {
         super(thing);
@@ -59,6 +60,7 @@ public abstract class TeleinfoAbstractElectricityMeterHandler extends BaseThingH
         if (bridge != null) {
             bridgeStatusChanged(bridge.getStatusInfo());
         }
+        configuration = getConfigAs(TeleinfoElectricityMeterConfiguration.class);
     }
 
     @Override

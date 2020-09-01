@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.teleinfo.internal.handler.cbemm.evoicc;
 
-import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
@@ -38,8 +36,7 @@ public class TeleinfoBaseCbemmEvoIccElectricityMeterHandler extends TeleinfoAbst
     public void onFrameReceived(TeleinfoAbstractControllerHandler controllerHandler, Frame frame) {
         final FrameCbemmEvolutionIccBaseOption frameCbemmEvoIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
 
-        String adco = (String) getThing().getConfiguration()
-                .get(THING_BASE_CBEMM_EVO_ICC_ELECTRICITY_METER_PROPERTY_ADCO);
+        String adco = configuration.getAdco();
         if (frameCbemmEvoIccBaseOption.getAdco().equalsIgnoreCase(adco)) {
             updateStatesForCommonCbemmEvolutionIccChannels(frameCbemmEvoIccBaseOption);
             updateStatesForBaseFrameOption(frameCbemmEvoIccBaseOption);
