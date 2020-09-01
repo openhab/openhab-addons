@@ -1163,7 +1163,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (!input.contains("rtsp")) {
                     inOptions = "";
                 }
-                if (audioAlarmEnabled == false) {
+                if (!audioAlarmEnabled) {
                     filterOptions = "-an";
                 } else if (audioAlarmEnabled == true) {
                     filterOptions = "-af silencedetect=n=-" + audioThreshold + "dB:d=2";
