@@ -23,13 +23,23 @@ import org.openhab.binding.teleinfo.internal.dto.Frame;
 @NonNullByDefault
 public interface TeleinfoReaderListener {
 
-    void onFrameReceived(final TeleinfoReader reader, final Frame frame);
+    default void onFrameReceived(final TeleinfoReader reader, final Frame frame) {
+        // NOP
+    }
 
-    void onOpening(final TeleinfoReader reader);
+    default void onOpening(final TeleinfoReader reader) {
+        // NOP
+    }
 
-    void onOpened(final TeleinfoReader reader);
+    default void onOpened(final TeleinfoReader reader) {
+        // NOP
+    }
 
-    void onClosing(final TeleinfoReader reader);
+    default void onClosing(final TeleinfoReader reader) {
+        // NOP
+    }
 
-    void onClosed(final TeleinfoReader reader);
+    default void onClosed(final TeleinfoReader reader) {
+        // NOP
+    }
 }
