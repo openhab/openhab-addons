@@ -99,7 +99,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         config = thing.getConfiguration();
     }
 
-    // @SuppressWarnings("null")
     public String getWhiteList() {
         return (config.get(CONFIG_IP_WHITELIST) == null) ? "" : config.get(CONFIG_IP_WHITELIST).toString();
     }
