@@ -117,23 +117,11 @@ public class TeleinfoInputStream extends InputStream {
 
     public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
             long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine) {
-        if (teleinfoInputStream == null) {
-            throw new IllegalArgumentException("Teleinfo inputStream is null");
-        }
-
-        this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
-        this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
-        this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
-
-        this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
-        this.executorService = Executors.newFixedThreadPool(2);
-        this.useOpenhabScheduler = false;
-
-        groupLine = null;
+        this(teleinfoInputStream, waitNextHeaderFrameTimeoutInUs, readingFrameTimeoutInUs, autoRepairInvalidADPSgroupLine, null);
     }
 
     public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
-            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine, ExecutorService executorService) {
+            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine, @Nullable ExecutorService executorService) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
@@ -141,8 +129,13 @@ public class TeleinfoInputStream extends InputStream {
         this.waitNextHeaderFrameTimeoutInUs = waitNextHeaderFrameTimeoutInUs;
         this.readingFrameTimeoutInUs = readingFrameTimeoutInUs;
         this.autoRepairInvalidADPSgroupLine = autoRepairInvalidADPSgroupLine;
-        this.executorService = executorService;
-        this.useOpenhabScheduler = true;
+        if (executorService == null) {
+            this.executorService = Executors.newFixedThreadPool(2);
+            this.useOwnScheduler = true;
+        } else {
+            this.executorService = executorService;
+            this.useOwnScheduler = false;
+       }
 
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
 
