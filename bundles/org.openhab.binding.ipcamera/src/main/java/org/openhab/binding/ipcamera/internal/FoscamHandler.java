@@ -56,9 +56,8 @@ public class FoscamHandler extends ChannelDuplexHandler {
         if (msg == null || ctx == null) {
             return;
         }
-        String content = null;
+        String content = msg.toString();
         try {
-            content = msg.toString();
             if (!content.isEmpty()) {
                 ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             } else {
@@ -118,7 +117,6 @@ public class FoscamHandler extends ChannelDuplexHandler {
 
         } finally {
             ReferenceCountUtil.release(msg);
-            content = null;
         }
     }
 

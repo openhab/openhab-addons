@@ -73,8 +73,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             for (int i = 0; i < array.length; ++i) {
                 stringBuffer.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
             }
-            messageDigest = null;
-            array = null;
             return stringBuffer.toString();
         } catch (NoSuchAlgorithmException e) {
             logger.warn("NoSuchAlgorithmException error when calculating MD5 hash");
@@ -165,7 +163,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         ha1 = calcMD5Hash(ha1);
         Random random = new Random();
         String cnonce = Integer.toHexString(random.nextInt());
-        random = null;
         ncCounter = (ncCounter > 125) ? 1 : ++ncCounter;
         String nc = String.format("%08X", ncCounter); // 8 digit hex number
         String ha2 = httpMethod + ":" + requestURI;

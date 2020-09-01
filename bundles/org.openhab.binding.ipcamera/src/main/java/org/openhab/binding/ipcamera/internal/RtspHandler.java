@@ -42,9 +42,9 @@ import io.netty.handler.codec.rtsp.RtspVersions;
 import io.netty.util.CharsetUtil;
 
 /**
- * The {@link RtspHandler} is a WIP and is currently not used. Soon will be able to report what format the stream is in
- * mjpeg
- * or H.264/5.
+ * The {@link RtspHandler} This class is a WIP and is currently not used. Can be used to check what format the stream is
+ * in
+ * mjpeg or H.264/5, check audio formats and frame rates.
  *
  *
  * @author Matthew Skinner - Initial contribution
@@ -105,8 +105,6 @@ public class RtspHandler extends ChannelDuplexHandler {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
-                    // socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(18,
-                    // 0, 0));
                     socketChannel.pipeline().addLast("RtspDecoder", new RtspDecoder());
                     socketChannel.pipeline().addLast("RtspEncoder", new RtspEncoder());
                     socketChannel.pipeline().addLast("myRTSPHandler", new RtspHandler());
@@ -143,9 +141,6 @@ public class RtspHandler extends ChannelDuplexHandler {
 
         // ch.writeAndFlush(getRTSPsetup(rtspUri));
         // ch.writeAndFlush(getRTSPplay(rtspUri));
-
-        // Cleanup
-        chFuture = null;
     }
 
     @Override
@@ -153,13 +148,11 @@ public class RtspHandler extends ChannelDuplexHandler {
         if (msg == null) {
             return;
         }
-
-        logger.info("{}", msg.toString());
-
+        // logger.debug("{}", msg.toString());
         if (msg instanceof HttpContent) {
             HttpContent content = (HttpContent) msg;
             String detail = content.content().toString(CharsetUtil.UTF_8);
-            logger.info("detail is {}", detail);
+            logger.trace("detail is {}", detail);
         }
     }
 
@@ -169,12 +162,10 @@ public class RtspHandler extends ChannelDuplexHandler {
 
     @Override
     public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-        logger.debug("RTSP handler just created now");
     }
 
     @Override
     public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
-        logger.debug("RTSP handler removed just now");
     }
 
     @Override

@@ -82,8 +82,6 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
             return;
         }
 
-        @Nullable
-        HttpContent content = null;
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest httpRequest = (HttpRequest) msg;
@@ -185,7 +183,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
             if (msg instanceof HttpContent) {
-                content = (HttpContent) msg;
+                HttpContent content = (HttpContent) msg;
                 int index = 0;
 
                 if (recievedBytes == 0) {

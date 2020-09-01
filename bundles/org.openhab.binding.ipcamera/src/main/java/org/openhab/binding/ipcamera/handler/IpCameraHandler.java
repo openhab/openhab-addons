@@ -246,7 +246,6 @@ public class IpCameraHandler extends BaseThingHandler {
             } finally {
                 if (byteBuf != null) {
                     byteBuf.release();
-                    byteBuf = null;
                 }
             }
             return true;

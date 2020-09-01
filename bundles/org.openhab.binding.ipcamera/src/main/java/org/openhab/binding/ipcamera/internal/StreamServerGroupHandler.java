@@ -57,7 +57,6 @@ import io.netty.util.ReferenceCountUtil;
 public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IpCameraGroupHandler ipCameraGroupHandler;
-    byte @Nullable [] incomingJpeg = null;
     String whiteList = "";
     int recievedBytes = 0;
     int count = 0;
