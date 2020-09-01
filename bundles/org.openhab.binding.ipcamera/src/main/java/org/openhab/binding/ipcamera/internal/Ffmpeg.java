@@ -65,9 +65,9 @@ public class Ffmpeg {
         return;
     }
 
-    public Ffmpeg(IpCameraHandler handle, String format, String ffmpegLocation, String inputArguments, String input,
-            String outArguments, String output, String username, String password) {
-        this.format = format;
+    public Ffmpeg(IpCameraHandler handle, IpCameraHandler.ffmpegFormat format, String ffmpegLocation,
+            String inputArguments, String input, String outArguments, String output, String username, String password) {
+        this.format = format.toString();
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http

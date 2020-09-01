@@ -68,7 +68,7 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
                     ipCameraHandler.audioAlarmEnabled = true;
                     ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
                 }
-                ipCameraHandler.setupFfmpegFormat("RTSPHELPER");
+                ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.RTSPHELPER);
                 return;
         }
     }

@@ -261,7 +261,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
                     ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
                 }
-                ipCameraHandler.setupFfmpegFormat("RTSPHELPER");
+                ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.RTSPHELPER);
                 return;
         }
     }

@@ -217,6 +217,15 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
 
+    public static enum ffmpegFormat {
+        HLS,
+        GIF,
+        RECORD,
+        RTSPHELPER,
+        MJPEG,
+        SNAPSHOT
+    }
+
     Runnable runnableMovePTZ = new Runnable() {
         @Override
         public void run() {
@@ -967,7 +976,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 mjpegChannelGroup.add(ctx.channel());
                 if (mjpegUri.equals("") || mjpegUri.equals("ffmpeg")) {
                     sendMjpegFirstPacket(ctx);
-                    setupFfmpegFormat("MJPEG");
+                    setupFfmpegFormat(ffmpegFormat.MJPEG);
                 } else {
                     try {
                         // fix Dahua reboots when refreshing a mjpeg stream.
@@ -1059,7 +1068,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    public void setupFfmpegFormat(String format) {
+    public void setupFfmpegFormat(ffmpegFormat format) {
         String inOptions = "";
         if (ffmpegOutputFolder.equals("")) {
             logger.warn("The camera tried to use a FFmpeg feature when the output folder is not set.");
@@ -1077,7 +1086,7 @@ public class IpCameraHandler extends BaseThingHandler {
         // Make sure the folder exists, if not create it.
         new File(ffmpegOutputFolder).mkdirs();
         switch (format) {
-            case "HLS":
+            case HLS:
                 if (ffmpegHLS == null) {
                     if (rtspUri.contains(":554")) {
                         ffmpegHLS = new Ffmpeg(this, format, config.get(CONFIG_FFMPEG_LOCATION).toString(),
@@ -1095,7 +1104,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     ffmpegHLS.startConverting();
                 }
                 break;
-            case "GIF":
+            case GIF:
                 if (preroll > 0) {
                     ffmpegGIF = new Ffmpeg(this, format, config.get(CONFIG_FFMPEG_LOCATION).toString(),
                             "-y -r 1 -hide_banner -loglevel warning", ffmpegOutputFolder + "snapshot%d.jpg",
@@ -1128,7 +1137,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     setChannelState(CHANNEL_GIF_HISTORY, new StringType(gifHistory));
                 }
                 break;
-            case "RECORD":
+            case RECORD:
                 inOptions = "-y -t " + mp4RecordTime + " -rtsp_transport tcp -hide_banner -loglevel warning";
                 if (!rtspUri.contains("rtsp")) {
                     inOptions = "-y -t " + mp4RecordTime;
@@ -1153,7 +1162,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     setChannelState(CHANNEL_MP4_HISTORY, new StringType(mp4History));
                 }
                 break;
-            case "RTSPHELPER":
+            case RTSPHELPER:
                 if (ffmpegRtspHelper != null) {
                     ffmpegRtspHelper.stopConverting();
                     if (!audioAlarmEnabled && !motionAlarmEnabled) {
@@ -1187,7 +1196,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         password);
                 ffmpegRtspHelper.startConverting();
                 break;
-            case "MJPEG":
+            case MJPEG:
                 if (ffmpegMjpeg == null) {
                     inOptions = "-rtsp_transport tcp -hide_banner -loglevel warning";
                     if (!rtspUri.contains("rtsp")) {
@@ -1201,7 +1210,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     ffmpegMjpeg.startConverting();
                 }
                 break;
-            case "SNAPSHOT":
+            case SNAPSHOT:
                 // if mjpeg stream you can use ffmpeg -i input.h264 -codec:v copy -bsf:v mjpeg2jpeg output%03d.jpg
                 if (ffmpegSnapshot == null) {
                     inOptions = "-rtsp_transport tcp -threads 1 -skip_frame nokey -hide_banner -loglevel warning";// iFrames
@@ -1345,7 +1354,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         motionThreshold = Double.valueOf(command.toString());
                         motionThreshold = motionThreshold / 10000;
                     }
-                    setupFfmpegFormat("RTSPHELPER");
+                    setupFfmpegFormat(ffmpegFormat.RTSPHELPER);
                     return;
                 case CHANNEL_GIF_FILENAME:
                     logger.debug("Changing the gif filename to {}.", command);
@@ -1364,11 +1373,11 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_RECORD_MP4:
                     logger.debug("Recording {} Seconds to MP4 format.", command);
                     mp4RecordTime = Integer.parseInt(command.toString());
-                    setupFfmpegFormat("RECORD");
+                    setupFfmpegFormat(ffmpegFormat.RECORD);
                     return;
                 case CHANNEL_START_STREAM:
                     if ("ON".equals(command.toString())) {
-                        setupFfmpegFormat("HLS");
+                        setupFfmpegFormat(ffmpegFormat.HLS);
                         if (ffmpegHLS != null) {
                             ffmpegHLS.setKeepAlive(-1);// will keep running till manually stopped.
                         }
@@ -1394,7 +1403,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     if ("ON".equals(command.toString())) {
                         if (snapshotUri.equals("")) {
                             ffmpegSnapshotGeneration = true;
-                            setupFfmpegFormat("SNAPSHOT");
+                            setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
                             updateImageChannel = false;
                         } else {
                             updateImageChannel = true;
@@ -1413,7 +1422,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (preroll > 0) {
                             snapCount = postroll;
                         } else {
-                            setupFfmpegFormat("GIF");
+                            setupFfmpegFormat(ffmpegFormat.GIF);
                         }
                     }
                     return;
@@ -1602,7 +1611,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (!rtspUri.equals("")) {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
-            setupFfmpegFormat("SNAPSHOT");
+            setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
             updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.valueOf("ON"));
         } else {
             cameraConfigError(
@@ -1684,7 +1693,7 @@ public class IpCameraHandler extends BaseThingHandler {
             sendHttpGET(snapshotUri);
             if (snapCount > 0) {
                 if (--snapCount == 0) {
-                    setupFfmpegFormat("GIF");
+                    setupFfmpegFormat(ffmpegFormat.GIF);
                 }
             }
         }

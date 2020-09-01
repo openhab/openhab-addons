@@ -108,7 +108,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                                     }
                                 }
                             } else {
-                                ipCameraHandler.setupFfmpegFormat("HLS");
+                                ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.HLS);
                             }
                             if (ipCameraHandler.ffmpegHLS != null) {
                                 ipCameraHandler.ffmpegHLS.setKeepAlive(8);
