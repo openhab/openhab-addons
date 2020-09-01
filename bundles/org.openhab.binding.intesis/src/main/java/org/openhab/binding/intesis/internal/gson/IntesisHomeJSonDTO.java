@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.intesis.internal.gson;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,6 +22,33 @@ import com.google.gson.annotations.SerializedName;
  * @author Hans-Jörg Merk - Initial contribution
  */
 public class IntesisHomeJSonDTO {
+
+    public static class response {
+        @SerializedName("success")
+        public boolean success;
+        @SerializedName("data")
+        public JsonElement data;
+    }
+
+    public static class data {
+        @SerializedName("id")
+        public JsonElement id;
+        @SerializedName("info")
+        public JsonElement info;
+        @SerializedName("userinfo")
+        public JsonElement userinfo;
+        @SerializedName("config")
+        public JsonElement config;
+        @SerializedName("dp")
+        public JsonElement dp;
+        @SerializedName("dpval")
+        public JsonElement dpval;
+    }
+
+    public static class id {
+        @SerializedName("sessionID")
+        public String sessionID; // Session ID
+    }
 
     // Device Information used for thing properties
     public static class info {
@@ -58,45 +84,102 @@ public class IntesisHomeJSonDTO {
         public String lastError;
     }
 
-    // Session ID for authentication
-    public static class AuthenticateData {
-        @SerializedName("id")
-        public String id; // ID
-        @SerializedName("sessionID")
-        public String sessionID; // Session ID
+    public static class userinfo {
+        @SerializedName("username")
+        public String username;
+        @SerializedName("servicelist")
+        public JsonElement servicelist;
+    }
+
+    // List of available services
+    public static class servicelist {
+        @SerializedName("setconfig")
+        public String setconfig;
+        @SerializedName("getconfig")
+        public String getconfig;
+        @SerializedName("getcurrentconfig")
+        public String getcurrentconfig;
+        @SerializedName("getinfo")
+        public String getinfo;
+        @SerializedName("login")
+        public String login;
+        @SerializedName("logout")
+        public String logout;
+        @SerializedName("passchange")
+        public String passchange;
+        @SerializedName("getavailabledatapoints")
+        public String getavailabledatapoints;
+        @SerializedName("setdatapointvalue")
+        public String setdatapointvalue;
+        @SerializedName("getdatapointvalue")
+        public String getdatapointvalue;
+        @SerializedName("getavailableservices")
+        public String getavailableservices;
+        @SerializedName("reboot")
+        public String reboot;
+        @SerializedName("setdefaults")
+        public String setdefaults;
+        @SerializedName("getdefaultconfig")
+        public String getdefaultconfig;
+    }
+
+    public static class config {
+        @SerializedName("deviceModel")
+        public String deviceModel; // Device Model
+        @SerializedName("ip")
+        public String ip; // Device IP Address
+        @SerializedName("netmask")
+        public String netmask; // Device IP Address
+        @SerializedName("dfltgw")
+        public String dfltgw; // Default gateway
+        @SerializedName("dhcp")
+        public boolean dhcp; // DHCP enabled
+        @SerializedName("ssid")
+        public String ssid; // WLAN Access Point
+        @SerializedName("security")
+        public int security; // Security Type
+        @SerializedName("regdomain")
+        public int regdomain;
+        @SerializedName("lastconfigdatetime")
+        public int lastconfigdatetime;
+    }
+
+    public static class dp {
+        @SerializedName("datapoints")
+        public JsonArray datapoints; // dataPoints
+    }
+
+    // Array of UIDs with corresponding description for dynamic channel creation
+    public static class datapoints {
+        @SerializedName("uid")
+        public int uid; // dataPoint
+        @SerializedName("rw")
+        public String rw; // read/write status
+        @SerializedName("type")
+        public int type;
+        @SerializedName("descr")
+        public JsonElement descr;
+    }
+
+    // Descriptor of dataPoint values
+    public static class descr {
+        @SerializedName("numStates")
+        public int numStates;
+        @SerializedName("states")
+        public String[] states;
+        @SerializedName("maxValue")
+        public String maxValue;
+        @SerializedName("minValue")
+        public String minValue;
     }
 
     // Array of UIDs with corresponding values, mapped into channel
     public static class dpval {
         @SerializedName("uid")
-        public String uid; // ID
+        public int uid; // ID
         @SerializedName("value")
         public int value;
         @SerializedName("status")
         public int status;
-    }
-
-    // Due to a malformed JSon response, we need to extract the DATA JSonElement for serialization
-    public static JsonObject getData(String response) {
-        JsonParser parser = new JsonParser();
-        JsonElement rootNode = parser.parse(response);
-        JsonObject details = rootNode.getAsJsonObject();
-        JsonElement dataNode = details.get("data");
-        JsonObject data = dataNode.getAsJsonObject();
-        return data;
-    }
-
-    /**
-     * Used to determine if a post request was successful
-     *
-     * @param JSON response string
-     * @return boolean success
-     */
-    public static boolean getSuccess(String response) {
-        JsonParser parser = new JsonParser();
-        JsonElement rootNode = parser.parse(response);
-        JsonObject details = rootNode.getAsJsonObject();
-        boolean success = details.get("success").getAsBoolean();
-        return success;
     }
 }

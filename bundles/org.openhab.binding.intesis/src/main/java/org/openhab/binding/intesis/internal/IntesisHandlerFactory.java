@@ -46,14 +46,17 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(IntesisHandlerFactory.class);
     private final HttpClient httpClient;
+    private final IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_INTESISHOME);
 
     @Activate
-    public IntesisHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+    public IntesisHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext,
+            final @Reference IntesisDynamicStateDescriptionProvider dynamicStateDescriptionProvider) {
         super.activate(componentContext);
 
         this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.intesisStateDescriptionProvider = dynamicStateDescriptionProvider;
     }
 
     @Override
@@ -66,7 +69,8 @@ public class IntesisHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_INTESISHOME.equals(thingTypeUID)) {
-            return new IntesisHomeHandler(thing, httpClient);
+            logger.debug("Creating a IntesisHomeHandler for thing '{}'", thing.getUID());
+            return new IntesisHomeHandler(thing, httpClient, intesisStateDescriptionProvider);
         }
 
         return null;

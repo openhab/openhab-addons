@@ -35,12 +35,13 @@ The binding needs two configuration parameters, passwort and IP-Address.
 
 
 
-Note that individual A/C units may not support all channels, or all possible values for those channels.
+###Note that individual A/C units may not support all channels, or all possible values for those channels.
+The binding will add all supported channels and possible values on first thing initialization and list them as thing properties.
+If new channels or values might be supported after firmware upgrades, deleting the thing and reading is necessary.
 For example, not all A/C units have controllable vanes. Or fan speed may be limited to 1-4, instead of all of 1-9.
 The set point temperature is also limited to a device specific range. For set point temperature, sending an invalid value
 will cause it to choose the minimum/maximum allowable value as appropriate. The device will also round it to
-whatever step size it supports. For all other channels, invalid values
-are ignored.
+whatever step size it supports. For all other channels, invalid values are ignored.
 
 ## Full Example
 

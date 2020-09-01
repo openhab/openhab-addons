@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="intesis"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>@text/channel-type.intesis.mode.label</label>
+		<description>@text/channel-type.intesis.mode.description</description>
+	</channel-type>
+	<channel-type id="fanSpeed">
+		<item-type>String</item-type>
+		<label>@text/channel-type.intesis.fanSpeed.label</label>
+		<description>@text/channel-type.intesis.fanSpeed.description</description>
+	</channel-type>
+	<channel-type id="vanesUpDown">
+		<item-type>String</item-type>
+		<label>@text/channel-type.intesis.vanesUpDown.label</label>
+		<description>@text/channel-type.intesis.vanesUpDown.description</description>
+	</channel-type>
+	<channel-type id="vanesLeftRight">
+		<item-type>String</item-type>
+		<label>@text/channel-type.intesis.vanesLeftRight.label</label>
+		<description>@text/channel-type.intesis.vanesLeftRight.description</description>
+	</channel-type>
+	<channel-type id="targetTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.intesis.targetTemperature.label</label>
+		<description>@text/channel-type.intesis.targetTemperature.description</description>
+		<state pattern="%d %unit%"></state>
+	</channel-type>
+	<channel-type id="ambientTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.intesis.ambientTemperature.label</label>
+		<description>@text/channel-type.intesis.ambientTemperature.description</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="outdoorTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.intesis.outdoorTemperature.label</label>
+		<description>@text/channel-type.intesis.outdoorTemperature.description</description>
+		<state pattern="%d %unit%" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

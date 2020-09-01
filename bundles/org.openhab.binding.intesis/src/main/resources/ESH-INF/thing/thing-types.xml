@@ -7,18 +7,9 @@
 	<thing-type id="intesisHome">
 		<label>IntesisHome WiFi Adapter</label>
 		<description>IntesisHome WiFi Adapter</description>
-
 		<channels>
 			<channel id="power" typeId="system.power"/>
-			<channel id="mode" typeId="mode"/>
-			<channel id="fanSpeed" typeId="fanSpeed"/>
-			<channel id="vanesUpDown" typeId="vanesUpDown"/>
-			<channel id="vanesLeftRight" typeId="vanesLeftRight"/>
-			<channel id="setTemperature" typeId="setTemperature"/>
-			<channel id="ambientTemperature" typeId="ambientTemperature"/>
-			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
 		</channels>
-
 		<config-description>
 			<parameter name="ipAddress" type="text" required="true">
 				<label>@text/thing-type.config.intesis.ipAddress.label</label>
@@ -31,104 +22,5 @@
 				<context>password</context>
 			</parameter>
 		</config-description>
-
 	</thing-type>
-
-	<channel-type id="mode">
-		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.mode.label</label>
-		<description>@text/channel-type.intesis.mode.description</description>
-		<state>
-			<options>
-				<option value="AUTO">@text/channel-type.intesis.mode.state.option.auto</option>
-				<option value="HEAT">@text/channel-type.intesis.mode.state.option.heat</option>
-				<option value="DRY">@text/channel-type.intesis.mode.state.option.dry</option>
-				<option value="FAN">@text/channel-type.intesis.mode.state.option.fan</option>
-				<option value="COOL">@text/channel-type.intesis.mode.state.option.cool</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="fanSpeed">
-		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.fanSpeed.label</label>
-		<description>@text/channel-type.intesis.fanSpeed.description</description>
-		<state>
-			<options>
-				<option value="AUTO">@text/channel-type.intesis.fanSpeed.state.option.auto</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
-				<option value="6">6</option>
-				<option value="7">7</option>
-				<option value="8">8</option>
-				<option value="9">9</option>
-				<option value="10">10</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="vanesUpDown">
-		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.vanesUpDown.label</label>
-		<description>@text/channel-type.intesis.vanesUpDown.description</description>
-		<state>
-			<options>
-				<option value="AUTO">@text/channel-type.intesis.vanes.option.auto</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
-				<option value="6">6</option>
-				<option value="7">7</option>
-				<option value="8">8</option>
-				<option value="9">9</option>
-				<option value="SWING">@text/channel-type.intesis.vanes.option.swing</option>
-				<option value="SWIRL">@text/channel-type.intesis.vanes.option.swirl</option>
-				<option value="WIDE">@text/channel-type.intesis.vanes.option.wide</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="vanesLeftRight">
-		<item-type>String</item-type>
-		<label>@text/channel-type.intesis.vanesLeftRight.label</label>
-		<description>@text/channel-type.intesis.vanesLeftRight.description</description>
-		<state>
-			<options>
-				<option value="AUTO">@text/channel-type.intesis.vanes.option.auto</option>
-				<option value="1">1</option>
-				<option value="2">2</option>
-				<option value="3">3</option>
-				<option value="4">4</option>
-				<option value="5">5</option>
-				<option value="6">6</option>
-				<option value="7">7</option>
-				<option value="8">8</option>
-				<option value="9">9</option>
-				<option value="SWING">@text/channel-type.intesis.vanes.option.swing</option>
-				<option value="SWIRL">@text/channel-type.intesis.vanes.option.swirl</option>
-				<option value="WIDE">@text/channel-type.intesis.vanes.option.wide</option>
-			</options>
-		</state>
-	</channel-type>
-	<channel-type id="setTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.intesis.targetTemperature.label</label>
-		<description>@text/channel-type.intesis.targetTemperature.description</description>
-		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
-	</channel-type>
-	<channel-type id="ambientTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.intesis.ambientTemperature.label</label>
-		<description>@text/channel-type.intesis.ambientTemperature.description</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="outdoorTemperature">
-		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.intesis.outdoorTemperature.label</label>
-		<description>@text/channel-type.intesis.outdoorTemperature.description</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
-	</channel-type>
-
 </thing:thing-descriptions>
