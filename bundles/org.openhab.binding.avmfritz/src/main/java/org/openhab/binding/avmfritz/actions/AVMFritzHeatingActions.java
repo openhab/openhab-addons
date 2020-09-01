@@ -20,7 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.avmfritz.internal.actions.AVMFritzHeatingActionsHandler;
+import org.openhab.binding.avmfritz.internal.actions.IAVMFritzHeatingActions;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingActionsHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "avmfritz")
 @NonNullByDefault
-public class AVMFritzHeatingActions implements ThingActions {
+public class AVMFritzHeatingActions implements ThingActions, IAVMFritzHeatingActions {
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzHeatingActions.class);
 
@@ -49,54 +50,58 @@ public class AVMFritzHeatingActions implements ThingActions {
         return handler;
     }
 
+    @Override
     @RuleAction(label = "@text/setBoostModeModeActionLabel", description = "@text/setBoostModeActionDescription")
     public void setBoostMode(
-            @ActionInput(name = "Duration", label = "@text/setBoostModeDurationInputLabel", description = "@text/setBoostModeDurationInputDescription", type = "java.lang.Long", required = true) Long duration) {
+            @ActionInput(name = "Duration", label = "@text/setBoostModeDurationInputLabel", description = "@text/setBoostModeDurationInputDescription", type = "java.lang.Long", required = true) @Nullable Long duration) {
         AVMFritzHeatingActionsHandler actionsHandler = handler;
         if (actionsHandler == null) {
-            logger.warn("AVMFritzHeatingActions ThingHandler is null!");
-            return;
+            throw new IllegalArgumentException("AVMFritzHeatingActions ThingHandler is null!");
+        }
+        if (duration == null) {
+            throw new IllegalArgumentException("Cannot set Boost mode as 'duration' is null!");
         }
         actionsHandler.setBoostMode(duration.longValue());
     }
 
-    public static void setBoostMode(@Nullable ThingActions actions, Long duration) {
+    public static void setBoostMode(@Nullable ThingActions actions, @Nullable Long duration) {
         invokeMethodOf(actions).setBoostMode(duration);
     }
 
+    @Override
     @RuleAction(label = "@text/setWindowOpenModeActionLabel", description = "@text/setWindowOpenModeActionDescription")
     public void setWindowOpenMode(
-            @ActionInput(name = "Duration", label = "@text/setWindowOpenModeDurationInputLabel", description = "@text/setWindowOpenModeDurationInputDescription", type = "java.lang.Long", required = true) Long duration) {
+            @ActionInput(name = "Duration", label = "@text/setWindowOpenModeDurationInputLabel", description = "@text/setWindowOpenModeDurationInputDescription", type = "java.lang.Long", required = true) @Nullable Long duration) {
         AVMFritzHeatingActionsHandler actionsHandler = handler;
         if (actionsHandler == null) {
-            logger.warn("AVMFritzHeatingActions ThingHandler is null!");
-            return;
+            throw new IllegalArgumentException("AVMFritzHeatingActions ThingHandler is null!");
+        }
+        if (duration == null) {
+            throw new IllegalArgumentException("Cannot set Window Open mode as 'duration' is null!");
         }
         actionsHandler.setWindowOpenMode(duration.longValue());
     }
 
-    public static void setWindowOpenMode(@Nullable ThingActions actions, Long duration) {
+    public static void setWindowOpenMode(@Nullable ThingActions actions, @Nullable Long duration) {
         invokeMethodOf(actions).setWindowOpenMode(duration);
     }
 
-    private static AVMFritzHeatingActionsHandler invokeMethodOf(@Nullable ThingActions actions) {
+    private static IAVMFritzHeatingActions invokeMethodOf(@Nullable ThingActions actions) {
         if (actions == null) {
-            throw new IllegalArgumentException("Actions cannot be null");
+            throw new IllegalArgumentException("actions cannot be null");
         }
-        if (actions.getClass().getName().equals(AVMFritzHeatingActionsHandler.class.getName())) {
-            if (actions instanceof AVMFritzHeatingActionsHandler) {
-                return (AVMFritzHeatingActionsHandler) actions;
+        if (actions.getClass().getName().equals(AVMFritzHeatingActions.class.getName())) {
+            if (actions instanceof IAVMFritzHeatingActions) {
+                return (IAVMFritzHeatingActions) actions;
             } else {
-                return (AVMFritzHeatingActionsHandler) Proxy.newProxyInstance(
-                        AVMFritzHeatingActionsHandler.class.getClassLoader(),
-                        new Class[] { AVMFritzHeatingActionsHandler.class },
-                        (Object proxy, Method method, Object[] args) -> {
+                return (IAVMFritzHeatingActions) Proxy.newProxyInstance(IAVMFritzHeatingActions.class.getClassLoader(),
+                        new Class[] { IAVMFritzHeatingActions.class }, (Object proxy, Method method, Object[] args) -> {
                             Method m = actions.getClass().getDeclaredMethod(method.getName(),
                                     method.getParameterTypes());
                             return m.invoke(actions, args);
                         });
             }
         }
-        throw new IllegalArgumentException("Actions is not an instance of AVMFritzHeatingActionsHandler");
+        throw new IllegalArgumentException("Actions is not an instance of AVMFritzHeatingActions");
     }
 }
