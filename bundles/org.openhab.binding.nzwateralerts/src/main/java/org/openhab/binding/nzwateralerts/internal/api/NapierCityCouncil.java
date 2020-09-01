@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link NapierCityCouncil} class contains the logic to get data the
  * www.napier.govt.nz website.
+ * 
+ * Napier City Council
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -32,8 +34,8 @@ public class NapierCityCouncil implements WaterWebService {
     private static final String HOSTNAME = "https://www.napier.govt.nz";
     private static final String REGION_NAPIER = "/services/water/water-restrictions/";
 
-    private final String pattern = "\"waterstat\".*?<p>.*?at (.*?) Restrictions.*?</div>";
-    private final Pattern regex = Pattern.compile(pattern,
+    private static final String pattern = "\"waterstat\".*?<p>.*?at (.*?) Restrictions.*?</div>";
+    private static final Pattern regex = Pattern.compile(pattern,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override

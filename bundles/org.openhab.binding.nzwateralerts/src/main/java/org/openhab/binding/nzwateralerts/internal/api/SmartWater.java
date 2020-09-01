@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link SmartWater} class contains the logic to get data the
  * SmartWater.org.nz website.
+ * 
+ * Waikato Regional Council
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -34,8 +36,8 @@ public class SmartWater implements WaterWebService {
     private static final String REGION_WAIKATO = "/alert-levels/waikato-district-council";
     private static final String REGION_WAIPA = "/alert-levels/waipa-district-council";
 
-    private final String pattern = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
-    private final Pattern regex = Pattern.compile(pattern,
+    private static final String pattern = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
+    private static final Pattern regex = Pattern.compile(pattern,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override

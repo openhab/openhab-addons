@@ -21,7 +21,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BeWaterWise} class contains the logic to get data the
- * SmartWater.org.nz website.
+ * bewaterwise.org.nz website.
+ * 
+ * Northland Regional Council
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -34,8 +36,8 @@ public class BeWaterWise implements WaterWebService {
     private static final String REGION_WHANGAREI = "/current-water-levels_whangarei/";
     private static final String REGION_KAIPARA = "/current-water-levels_kaipara/";
 
-    private final String pattern = "vc_text_separator.*?<span>(.*?)<\\/span>.*?water-level-([0-4]).*?";
-    private final Pattern regex = Pattern.compile(pattern,
+    private static final String pattern = "vc_text_separator.*?<span>(.*?)<\\/span>.*?water-level-([0-4]).*?";
+    private static final Pattern regex = Pattern.compile(pattern,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
