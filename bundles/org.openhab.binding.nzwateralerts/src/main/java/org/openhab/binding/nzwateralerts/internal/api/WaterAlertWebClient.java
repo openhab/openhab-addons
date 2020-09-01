@@ -35,20 +35,20 @@ public class WaterAlertWebClient {
 
     private @Nullable HttpClient httpClient = null;
     private @Nullable WaterWebService service = null;
-    
-    private String webService = "";
-    private String region = "";
-    private String area = "";
 
-    public WaterAlertWebClient(HttpClient httpClient, String location) {
+    private final String webService;
+    private final String region;
+    private final String area;
+
+    public WaterAlertWebClient(final HttpClient httpClient, final String location) {
         this.httpClient = httpClient;
 
-        String[] locationSegmented = location.split(":", 3);
+        final String[] locationSegmented = location.split(":", 3);
         webService = locationSegmented[0];
         region = locationSegmented[1];
         area = locationSegmented[2];
 
-        for (WaterWebService srv : WATER_WEB_SERVICES) {
+        for (final WaterWebService srv : WATER_WEB_SERVICES) {
             logger.trace("Checking service {}", srv.service());
             if (locationSegmented[0].equalsIgnoreCase(srv.service())) {
                 logger.trace("Found service {}", srv.service());
@@ -65,13 +65,12 @@ public class WaterAlertWebClient {
         ContentResponse response;
         try {
             if (service != null) {
-                logger.debug("Getting Water Level from service {} region {} area {}", webService,
-                region, area);
-                String endpoint = service.endpoint(region);
+                logger.debug("Getting Water Level from service {} region {} area {}", webService, region, area);
+                final String endpoint = service.endpoint(region);
                 logger.trace("Getting data from endpoint {}", endpoint);
                 response = httpClient.GET(endpoint);
 
-                int waterLevel = service.findWaterLevel(response.getContentAsString(), area);
+                final int waterLevel = service.findWaterLevel(response.getContentAsString(), area);
                 logger.debug("Got water level {}", waterLevel);
                 return waterLevel;
             } else {

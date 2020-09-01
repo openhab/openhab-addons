@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link NapierCityCouncil} class contains the logic to get data the www.napier.govt.nz website.
+ * The {@link NapierCityCouncil} class contains the logic to get data the
+ * www.napier.govt.nz website.
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -31,8 +32,9 @@ public class NapierCityCouncil implements WaterWebService {
     private static final String HOSTNAME = "https://www.napier.govt.nz";
     private static final String REGION_NAPIER = "/services/water/water-restrictions/";
 
-    private String pattern = "\"waterstat\".*?<p>.*?at (.*?) Restrictions.*?</div>";
-    private Pattern regex = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private final String pattern = "\"waterstat\".*?<p>.*?at (.*?) Restrictions.*?</div>";
+    private final Pattern regex = Pattern.compile(pattern,
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
     public String service() {
@@ -40,24 +42,24 @@ public class NapierCityCouncil implements WaterWebService {
     }
 
     @Override
-    public String endpoint(String region) {
+    public String endpoint(final String region) {
         switch (region.toLowerCase()) {
             case "napier":
                 return HOSTNAME + REGION_NAPIER;
-            
+
         }
         return "";
     }
 
     @Override
-    public int findWaterLevel(String data, String area) {
-        Matcher matches = regex.matcher(data);
-        
+    public int findWaterLevel(final String data, final String area) {
+        final Matcher matches = regex.matcher(data);
+
         while (matches.find()) {
-            String level = matches.group(1);
+            final String level = matches.group(1);
             logger.debug("Data Level {}", level);
 
-            switch(level.toLowerCase()) {
+            switch (level.toLowerCase()) {
                 case "no":
                     return 0;
 

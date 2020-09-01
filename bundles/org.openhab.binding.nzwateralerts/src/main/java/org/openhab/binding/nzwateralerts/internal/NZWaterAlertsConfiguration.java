@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.nzwateralerts.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link NZWaterAlertsConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Stewart Cossey - Initial contribution
  */
+@NonNullByDefault
 public class NZWaterAlertsConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
-    public String location;
+    public @Nullable String location;
     public int refreshInterval;
 }

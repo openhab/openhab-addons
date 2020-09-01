@@ -15,13 +15,16 @@ package org.openhab.binding.nzwateralerts.internal.api;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link WebService} class contains the common interfaces for the different services.
+ * The {@link WebService} class contains the common interfaces for the different
+ * services.
  *
  * @author Stewart Cossey - Initial contribution
  */
 @NonNullByDefault
 public interface WaterWebService {
     String service();
+
     String endpoint(String region);
+
     int findWaterLevel(String data, String area);
 }

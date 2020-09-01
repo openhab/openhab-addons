@@ -48,10 +48,17 @@ public class NZWaterAlertsBinder {
 
     public NZWaterAlertsBinder(@Nullable HttpClient httpClient, @Nullable NZWaterAlertsConfiguration config, @Nullable
             ScheduledExecutorService scheduler) {
+
         if (httpClient != null && config != null && scheduler != null) {
-            this.webClient = new WaterAlertWebClient(httpClient, config.location);
-            this.scheduler = scheduler;
-            refreshInterval = config.refreshInterval;
+            if (config.location == null) {
+                for (NZWaterAlertsBinderListener listener : listeners) {
+                    listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Location is not set.");
+                }
+            } else {
+                this.webClient = new WaterAlertWebClient(httpClient, config.location);
+                this.scheduler = scheduler;
+                refreshInterval = config.refreshInterval;
+            }
         } else {
             for (NZWaterAlertsBinderListener listener : listeners) {
                 listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Could not create webClient, a parameter is null");

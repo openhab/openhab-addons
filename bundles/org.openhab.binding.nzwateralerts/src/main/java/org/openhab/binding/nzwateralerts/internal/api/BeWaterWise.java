@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link BeWaterWise} class contains the logic to get data the SmartWater.org.nz website.
+ * The {@link BeWaterWise} class contains the logic to get data the
+ * SmartWater.org.nz website.
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -33,8 +34,9 @@ public class BeWaterWise implements WaterWebService {
     private static final String REGION_WHANGAREI = "/current-water-levels_whangarei/";
     private static final String REGION_KAIPARA = "/current-water-levels_kaipara/";
 
-    private String pattern = "vc_text_separator.*?<span>(.*?)<\\/span>.*?water-level-([0-4]).*?";
-    private Pattern regex = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private final String pattern = "vc_text_separator.*?<span>(.*?)<\\/span>.*?water-level-([0-4]).*?";
+    private final Pattern regex = Pattern.compile(pattern,
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
     public String service() {
@@ -42,11 +44,11 @@ public class BeWaterWise implements WaterWebService {
     }
 
     @Override
-    public String endpoint(String region) {
+    public String endpoint(final String region) {
         switch (region.toLowerCase()) {
             case "farnorth":
                 return HOSTNAME + REGION_FARNORTH;
-            
+
             case "whangarei":
                 return HOSTNAME + REGION_WHANGAREI;
 
@@ -57,12 +59,12 @@ public class BeWaterWise implements WaterWebService {
     }
 
     @Override
-    public int findWaterLevel(String data, String area) {
-        Matcher matches = regex.matcher(data);
-        
+    public int findWaterLevel(final String data, final String area) {
+        final Matcher matches = regex.matcher(data);
+
         while (matches.find()) {
-            String dataArea = matches.group(1).replaceAll("\\W", "");
-            String level = matches.group(2);
+            final String dataArea = matches.group(1).replaceAll("\\W", "");
+            final String level = matches.group(2);
             logger.debug("Data Area {} Level {}", dataArea, level);
             if (dataArea.equalsIgnoreCase(area)) {
                 return Integer.valueOf(level);

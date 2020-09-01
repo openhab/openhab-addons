@@ -20,7 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SmartWater} class contains the logic to get data the SmartWater.org.nz website.
+ * The {@link SmartWater} class contains the logic to get data the
+ * SmartWater.org.nz website.
  *
  * @author Stewart Cossey - Initial contribution
  */
@@ -33,8 +34,9 @@ public class SmartWater implements WaterWebService {
     private static final String REGION_WAIKATO = "/alert-levels/waikato-district-council";
     private static final String REGION_WAIPA = "/alert-levels/waipa-district-council";
 
-    private String pattern = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
-    private Pattern regex = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+    private final String pattern = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
+    private final Pattern regex = Pattern.compile(pattern,
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
     public String service() {
@@ -42,11 +44,11 @@ public class SmartWater implements WaterWebService {
     }
 
     @Override
-    public String endpoint(String region) {
+    public String endpoint(final String region) {
         switch (region.toLowerCase()) {
             case "hamilton":
                 return HOSTNAME + REGION_HAMILTON;
-            
+
             case "waikato":
                 return HOSTNAME + REGION_WAIKATO;
 
@@ -57,9 +59,9 @@ public class SmartWater implements WaterWebService {
     }
 
     @Override
-    public int findWaterLevel(String data, String area) {
-        Matcher matches = regex.matcher(data);
-        
+    public int findWaterLevel(final String data, final String area) {
+        final Matcher matches = regex.matcher(data);
+
         while (matches.find()) {
             String level = matches.group(1);
             logger.debug("Data Level {}", level);
