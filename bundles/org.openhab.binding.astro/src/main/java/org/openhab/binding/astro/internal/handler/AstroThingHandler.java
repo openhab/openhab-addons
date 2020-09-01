@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -269,9 +270,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns {@code true}, if at least one positional channel is linked.
      */
     private boolean isPositionalChannelLinked() {
+        List<String> positionalChannels = Arrays.asList(getPositionalChannelIds());
         for (Channel channel : getThing().getChannels()) {
             String id = channel.getUID().getId();
-            if (Arrays.asList(getPositionalChannelIds()).contains(id) && isLinked(id)) {
+            if (isLinked(id) && positionalChannels.contains(id)) {
                 return true;
             }
         }
