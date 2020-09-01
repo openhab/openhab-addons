@@ -1575,9 +1575,9 @@ public class IpCameraHandler extends BaseThingHandler {
             updateState(CHANNEL_RTSP_URL, new StringType(rtspUri));
         }
         if (updateImageChannel) {
-            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.valueOf("ON"));
+            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.ON);
         } else {
-            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.valueOf("OFF"));
+            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.OFF);
         }
         if (!listOfGroupHandlers.isEmpty()) {
             for (IpCameraGroupHandler handle : listOfGroupHandlers) {
@@ -1595,7 +1595,7 @@ public class IpCameraHandler extends BaseThingHandler {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
             setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
-            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.valueOf("ON"));
+            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.ON);
         } else {
             cameraConfigError(
                     "Binding can not find a RTSP url for this camera, please OVERRIDE the url as per the readme.");

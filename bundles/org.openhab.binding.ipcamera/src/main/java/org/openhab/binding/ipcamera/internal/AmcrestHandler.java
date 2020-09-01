@@ -79,15 +79,15 @@ public class AmcrestHandler extends ChannelDuplexHandler {
             }
 
             if (content.contains("table.MotionDetect[0].Enable=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
             } else if (content.contains("table.MotionDetect[0].Enable=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
             }
             // determine if the audio alarm is turned on or off.
             if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
             } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
             }
             // Handle AudioMutationThreshold alarm
             if (content.contains("table.AudioDetect[0].MutationThreold=")) {
@@ -135,7 +135,7 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_LED:
-                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if ("0".equals(command.toString()) || "OFF".equals(command.toString())) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off");
                 } else if ("ON".equals(command.toString())) {
@@ -149,7 +149,7 @@ public class AmcrestHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_AUTO_LED:
                 if ("ON".equals(command.toString())) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.valueOf("UNDEF"));
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Auto");
                 }
                 return;

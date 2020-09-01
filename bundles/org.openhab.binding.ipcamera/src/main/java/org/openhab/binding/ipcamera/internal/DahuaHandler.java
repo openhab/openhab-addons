@@ -61,9 +61,9 @@ public class DahuaHandler extends ChannelDuplexHandler {
             }
             // determine if the motion detection is turned on or off.
             if (content.contains("table.MotionDetect[0].Enable=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
             } else if (content.contains("table.MotionDetect[" + nvrChannel + "].Enable=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
             }
             // Handle motion alarm
             if (content.contains("Code=VideoMotion;action=Start;index=0")) {
@@ -91,9 +91,9 @@ public class DahuaHandler extends ChannelDuplexHandler {
             }
             // determine if the audio alarm is turned on or off.
             if (content.contains("table.AudioDetect[0].MutationDetect=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
             } else if (content.contains("table.AudioDetect[0].MutationDetect=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
             }
             // Handle AudioMutation alarm
             if (content.contains("Code=AudioMutation;action=Start;index=0")) {
@@ -126,21 +126,21 @@ public class DahuaHandler extends ChannelDuplexHandler {
             }
             // Handle External Input alarm
             if (content.contains("Code=AlarmLocal;action=Start;index=0")) {
-                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
             } else if (content.contains("Code=AlarmLocal;action=Stop;index=0")) {
-                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
             }
             // Handle External Input alarm2
             if (content.contains("Code=AlarmLocal;action=Start;index=1")) {
-                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.ON);
             } else if (content.contains("Code=AlarmLocal;action=Stop;index=1")) {
-                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT2, OnOffType.OFF);
             }
             // CrossLineDetection alarm on/off
             if (content.contains("table.VideoAnalyseRule[0][1].Enable=true")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
             } else if (content.contains("table.VideoAnalyseRule[0][1].Enable=false")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
             }
         } finally {
             ReferenceCountUtil.release(msg);
@@ -180,7 +180,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_LED:
-                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if ("0".equals(command.toString()) || "OFF".equals(command.toString())) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off");
                 } else if ("ON".equals(command.toString())) {
@@ -194,7 +194,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_AUTO_LED:
                 if ("ON".equals(command.toString())) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.valueOf("UNDEF"));
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Auto");
                 }
                 return;

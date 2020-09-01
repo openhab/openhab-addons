@@ -67,27 +67,27 @@ public class FoscamHandler extends ChannelDuplexHandler {
             ////////////// Motion Alarm //////////////
             if (content.contains("<motionDetectAlarm>")) {
                 if (content.contains("<motionDetectAlarm>0</motionDetectAlarm>")) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("OFF"));
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
                 } else if (content.contains("<motionDetectAlarm>1</motionDetectAlarm>")) { // Enabled but no alarm
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("ON"));
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else if (content.contains("<motionDetectAlarm>2</motionDetectAlarm>")) {// Enabled, alarm on
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("ON"));
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
                     ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
                 }
             }
 
             ////////////// Sound Alarm //////////////
             if (content.contains("<soundAlarm>0</soundAlarm>")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("OFF"));
-                ipCameraHandler.setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
+                ipCameraHandler.setChannelState(CHANNEL_AUDIO_ALARM, OnOffType.OFF);
             }
             if (content.contains("<soundAlarm>1</soundAlarm>")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                 ipCameraHandler.noAudioDetected();
             }
             if (content.contains("<soundAlarm>2</soundAlarm>")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                 ipCameraHandler.audioDetected();
             }
 
@@ -104,10 +104,10 @@ public class FoscamHandler extends ChannelDuplexHandler {
 
             //////////////// Infrared LED /////////////////////
             if (content.contains("<infraLedState>0</infraLedState>")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.OFF);
             }
             if (content.contains("<infraLedState>1</infraLedState>")) {
-                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, OnOffType.ON);
             }
 
             if (content.contains("</CGI_Result>")) {
@@ -145,7 +145,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 // Disable the auto mode first
                 ipCameraHandler.sendHttpGET(
                         "/cgi-bin/CGIProxy.fcgi?cmd=setInfraLedConfig&mode=1&usr=" + username + "&pwd=" + password);
-                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
                 if ("0".equals(command.toString()) || "OFF".equals(command.toString())) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/CGIProxy.fcgi?cmd=closeInfraLed&usr=" + username + "&pwd=" + password);
@@ -156,7 +156,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_AUTO_LED:
                 if ("ON".equals(command.toString())) {
-                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.valueOf("UNDEF"));
+                    ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/CGIProxy.fcgi?cmd=setInfraLedConfig&mode=0&usr=" + username + "&pwd=" + password);
                 } else {

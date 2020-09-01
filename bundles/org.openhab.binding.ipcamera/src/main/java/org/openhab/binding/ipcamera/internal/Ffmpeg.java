@@ -131,7 +131,7 @@ public class Ffmpeg {
                         } catch (InterruptedException e) {
                         }
                         logger.debug("Animated GIF has been created and is ready for use.");
-                        ipCameraHandler.setChannelState(CHANNEL_UPDATE_GIF, OnOffType.valueOf("OFF"));
+                        ipCameraHandler.setChannelState(CHANNEL_UPDATE_GIF, OnOffType.OFF);
                         ipCameraHandler.setChannelState(CHANNEL_GIF_HISTORY_LENGTH,
                                 new DecimalType(++ipCameraHandler.gifHistoryLength));
                         break;
@@ -157,7 +157,7 @@ public class Ffmpeg {
             streamRunning.start();
             running = true;
             if (format.equals("HLS")) {
-                ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
                 if (keepAlive > -1) {
                     try {
                         Thread.sleep(7000); // Used for on demand HLS to give ffmpeg time to produce the files needed.
@@ -188,7 +188,7 @@ public class Ffmpeg {
                     startConverting();
                     return;
                 } else {
-                    ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.valueOf("OFF"));
+                    ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.OFF);
                 }
             }
             keepAlive = 8;

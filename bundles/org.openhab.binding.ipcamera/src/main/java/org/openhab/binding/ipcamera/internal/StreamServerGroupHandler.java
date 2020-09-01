@@ -110,7 +110,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                                 String channelPrefix = "ipcamera:" + ipCameraGroupHandler.getThing().getThingTypeUID()
                                         + ":" + ipCameraGroupHandler.getThing().getUID().getId() + ":";
                                 ipCameraGroupHandler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM),
-                                        OnOffType.valueOf("ON"));
+                                        OnOffType.ON);
                             }
                             break;
                         case "/ipcamera.jpg":

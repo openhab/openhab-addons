@@ -268,8 +268,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                             logger.info("Starting HLS for the new camera.");
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"
                                     + handler.getThing().getUID().getId() + ":";
-                            handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM),
-                                    OnOffType.valueOf("ON"));
+                            handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
                         }
                         cameraOrder.add(handler);
                     }
@@ -363,7 +362,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_START_STREAM:
                     if (OnOffType.ON.equals(command)) {
-                        logger.debug("Starting HLS generation for all cameras in a group.");
                         hlsTurnedOn = true;
                         for (IpCameraHandler handler : cameraOrder) {
                             String channelPrefix = "ipcamera:" + handler.getThing().getThingTypeUID() + ":"

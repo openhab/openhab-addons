@@ -59,10 +59,10 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
                 return;
             }
             if (content.contains("doorbell:H")) {
-                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.valueOf("ON"));
+                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.ON);
             }
             if (content.contains("doorbell:L")) {
-                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.valueOf("OFF"));
+                ipCameraHandler.setChannelState(CHANNEL_DOORBELL, OnOffType.OFF);
             }
             if (content.contains("motionsensor:L")) {
                 ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);

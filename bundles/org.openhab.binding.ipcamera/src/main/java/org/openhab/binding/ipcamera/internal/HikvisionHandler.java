@@ -93,15 +93,15 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             vmdCount = debounce;
                         }
                         if (content.contains("<eventType>facedetection</eventType>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.ON);
                             faceCount = debounce;
                         }
                         if (content.contains("<eventType>unattendedBaggage</eventType>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ITEM_LEFT, OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ITEM_LEFT, OnOffType.ON);
                             leftCount = debounce;
                         }
                         if (content.contains("<eventType>attendedBaggage</eventType>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ITEM_TAKEN, OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ITEM_TAKEN, OnOffType.ON);
                             takenCount = debounce;
                         }
                         if (content.contains("<eventType>PIR</eventType>")) {
@@ -142,9 +142,9 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             ipCameraHandler.lock.unlock();
                         }
                         if (content.contains("<enabled>true</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.OFF);
                         }
                         break;
                     case "IOInputPort version=":
@@ -159,18 +159,14 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             ipCameraHandler.lock.unlock();
                         }
                         if (content.contains("<enabled>true</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT,
-                                    OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT,
-                                    OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
                         }
                         if (content.contains("<triggering>low</triggering>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT,
-                                    OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
                         } else if (content.contains("<triggering>high</triggering>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT,
-                                    OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT, OnOffType.ON);
                         }
                         break;
                     case "LineDetection":
@@ -185,11 +181,9 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             ipCameraHandler.lock.unlock();
                         }
                         if (content.contains("<enabled>true</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM,
-                                    OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM,
-                                    OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.OFF);
                         }
                         break;
                     case "TextOverlay version=":
@@ -218,16 +212,16 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             ipCameraHandler.lock.unlock();
                         }
                         if (content.contains("<enabled>true</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.OFF);
                         }
                         break;
                     case "IOPortStatus version=":
                         if (content.contains("<ioState>active</ioState>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.ON);
                         } else if (content.contains("<ioState>inactive</ioState>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_EXTERNAL_ALARM_INPUT, OnOffType.OFF);
                         }
                         break;
                     case "FieldDetection version=":
@@ -242,11 +236,9 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                             ipCameraHandler.lock.unlock();
                         }
                         if (content.contains("<enabled>true</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM,
-                                    OnOffType.valueOf("ON"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
-                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM,
-                                    OnOffType.valueOf("OFF"));
+                            ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.OFF);
                         }
                         break;
                     case "ResponseStatus version=":
@@ -293,43 +285,43 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         if (lineCount > 1) {
             lineCount--;
         } else if (lineCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_LINE_CROSSING_ALARM, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_LINE_CROSSING_ALARM, OnOffType.OFF);
             lineCount--;
         }
         if (vmdCount > 1) {
             vmdCount--;
         } else if (vmdCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_MOTION_ALARM, OnOffType.OFF);
             vmdCount--;
         }
         if (leftCount > 1) {
             leftCount--;
         } else if (leftCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_ITEM_LEFT, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_ITEM_LEFT, OnOffType.OFF);
             leftCount--;
         }
         if (takenCount > 1) {
             takenCount--;
         } else if (takenCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_ITEM_TAKEN, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_ITEM_TAKEN, OnOffType.OFF);
             takenCount--;
         }
         if (faceCount > 1) {
             faceCount--;
         } else if (faceCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_FACE_DETECTED, OnOffType.OFF);
             faceCount--;
         }
         if (pirCount > 1) {
             pirCount--;
         } else if (pirCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_PIR_ALARM, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_PIR_ALARM, OnOffType.OFF);
             pirCount--;
         }
         if (fieldCount > 1) {
             fieldCount--;
         } else if (fieldCount == 1) {
-            ipCameraHandler.setChannelState(CHANNEL_FIELD_DETECTION_ALARM, OnOffType.valueOf("OFF"));
+            ipCameraHandler.setChannelState(CHANNEL_FIELD_DETECTION_ALARM, OnOffType.OFF);
             fieldCount--;
         }
         if (fieldCount == 0 && pirCount == 0 && faceCount == 0 && takenCount == 0 && leftCount == 0 && vmdCount == 0
