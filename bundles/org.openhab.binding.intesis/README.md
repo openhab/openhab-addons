@@ -29,7 +29,8 @@ The binding needs two configuration parameters, passwort and IP-Address.
 | mode       | String             | The heating/cooling mode.                                             | AUTO,HEAT,DRY,FAN,COOL|
 | fanSpeed   | String             | Fan speed (if applicable)                                             | AUTO,1-10 |
 | vanesUpDown | String             | Control of up/down vanes (if applicable)                              | AUTO,1-9,SWING,SWIRL,WIDE |
-| setTemperature | Number:Temperature | The currently set target temperature.                                 | |
+| vanesUpDown | String             | Control of left/right vanes (if applicable)                              | AUTO,1-9,SWING,SWIRL,WIDE |
+| targetTemperature | Number:Temperature | The currently set target temperature.                                 | |
 | ambientTemperature | Number:Temperature | (Readonly) The ambient air temperature.                               | |
 | outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature.                               | |
 
@@ -60,6 +61,7 @@ Switch              ac              "Power"                                 { ch
 String              acMode          "Mode"                                  { channel="intesis:intesisHome:acOffice:mode" }
 String              acFanSpeed      "Fan Speed"             <fan>           { channel="intesis:intesisHome:acOffice:fanSpeed" }
 String              acVanesUpDown   "Vanes Up/Ddown Position"               { channel="intesis:intesisHome:acOffice:vanesUpDown" }
+String              acVanesLeftRight "Vanes Left/Right Position"            { channel="intesis:intesisHome:acOffice:vanesLeftRight" }
 Number:Temperature  acSetPoint      "Target Temperature"    <heating>       { channel="intesis:intesisHome:acOffice:targetTemperature" }
 Number:Temperature  acAmbientTemp   "Ambient Temperature"   <temperature>   { channel="intesis:intesisHome:acOffice:ambientTemperature" }
 Number:Temperature  acOutdoorTemp   "Outdoor Temperature"   <temperature>   { channel="intesis:intesisHome:acOffice:outdoorTemperature" }
@@ -75,6 +77,7 @@ sitemap intesishome label="My AC control" {
           Switch item=acMode        icon="heating"          mappings=[AUTO="Auto", HEAT="Heat", DRY="Dry", FAN="Fan", COOL="Cool"]
           Switch item=acFanSpeed    icon="qualityofservice" mappings=[AUTO="Auto", 1="Low", 2="Med", 3="MedHigh", 4="High"]
           Switch item=acVanesUpDown icon="movecontrol"      mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
+          Switch item=acVanesLeftRight icon="movecontrol"   mappings=[AUTO="Stop", 1="1", 2="2", 3="3", 4="4", 5="5", SWING="Swing"]
           Setpoint item=acSetPoint  icon="temperature"      minValue=16 maxValue=28 step=1
           Text item=acAmbientTemp   icon="temperature" 
           Text item=acOutdoorTemp   icon="temperature" 
