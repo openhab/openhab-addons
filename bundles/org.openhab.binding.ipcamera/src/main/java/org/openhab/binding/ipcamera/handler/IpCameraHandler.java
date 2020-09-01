@@ -437,18 +437,12 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         FullHttpRequest request;
-        if ("PUT".equals(httpMethod)) {
-            if (useDigestAuth && digestString == null) {
-                request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
-                request.headers().set(HttpHeaderNames.HOST, ipAddress);
-                request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-            } else {
-                request = putRequestWithBody;
-            }
-        } else {
+        if (!"PUT".equals(httpMethod) || (useDigestAuth && digestString == null)) {
             request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod(httpMethod), httpRequestURL);
             request.headers().set(HttpHeaderNames.HOST, ipAddress);
             request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+        } else {
+            request = putRequestWithBody;
         }
 
         if (!basicAuth.equals("")) {
