@@ -13,21 +13,21 @@
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 
 /**
- * The {@link Token} class contains fields mapping thing configuration parameters.
+ * The {@link Token} BMW ConnectedDrive Token storage
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public class Token {
-    private static final String EMPTY = "";
-    private String token = EMPTY;
-    private String tokenType = EMPTY;
+    private String token = Constants.EMPTY;
+    private String tokenType = Constants.EMPTY;
     private long expiration = 0;
 
     public String getBearerToken() {
-        return tokenType + " " + token;
+        return new StringBuffer(tokenType).append(Constants.SPACE).append(token).toString();
     }
 
     public void setToken(String token) {
@@ -47,6 +47,6 @@ public class Token {
     }
 
     public boolean isValid() {
-        return (!token.equals(EMPTY) && !tokenType.equals(EMPTY) && expiration > 0);
+        return (!token.equals(Constants.EMPTY) && !tokenType.equals(Constants.EMPTY) && expiration > 0);
     }
 }

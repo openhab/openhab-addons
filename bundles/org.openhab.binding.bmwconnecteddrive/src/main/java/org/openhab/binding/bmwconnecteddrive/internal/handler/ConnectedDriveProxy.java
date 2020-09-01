@@ -34,6 +34,7 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,12 +109,13 @@ public class ConnectedDriveProxy {
                 @Override
                 public void onComplete(org.eclipse.jetty.client.api.Result result) {
                     if (result.getResponse().getStatus() != 200) {
-                        logger.warn("Call URL {}", url.toString());
-                        logger.warn("Return Status {}", result.getResponse().getStatus());
-                        logger.warn("Reason {}", result.getResponse().getReason());
-                        callback.onError(result.getResponse().getReason());
+                        NetworkError error = new NetworkError();
+                        error.url = url;
+                        error.status = result.getResponse().getStatus();
+                        error.reason = result.getResponse().getReason();
+                        logger.warn("{}", error.toString());
+                        callback.onError(error);
                     } else {
-                        logger.warn("Call URL {} success", url.toString());
                         if (callback instanceof StringResponseCallback) {
                             ((StringResponseCallback) callback).onResponse(Optional.of(getContentAsString()));
                         } else {
@@ -203,12 +205,12 @@ public class ConnectedDriveProxy {
     }
 
     /**
-     * Authorize at BMW Connected Drive Portal and re
+     * Authorize at BMW Connected Drive Portal and get Token
      *
      * @return
      */
     public Token getNewToken() {
-        http.setFollowRedirects(false);
+        // http.setFollowRedirects(false);
         Request req = http.POST(authUri);
 
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
@@ -244,11 +246,9 @@ public class ConnectedDriveProxy {
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final Token token = new Token();
         tokenMap.forEach((key, value) -> {
-            logger.info("Key {} Value {}", key, value);
             if (key.endsWith(ACCESS_TOKEN)) {
                 token.setToken(value.get(0).toString());
             } else if (key.equals(EXPIRES_IN)) {
-                logger.info("Expires {}", value.get(0).toString());
                 token.setExpiration(Integer.parseInt(value.get(0).toString()));
             } else if (key.equals(TOKEN_TYPE)) {
                 token.setType(value.get(0).toString());

@@ -13,13 +13,14 @@
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 
 /**
- * The {@link ResponseCallback} Marker Interface for all callbacks
+ * The {@link ResponseCallback} Marker Interface for all ASYNC REST API callbacks
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 public interface ResponseCallback {
-    public void onError(String reason);
+    public void onError(NetworkError error);
 }
