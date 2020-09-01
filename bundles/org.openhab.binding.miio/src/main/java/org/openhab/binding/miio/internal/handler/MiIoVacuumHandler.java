@@ -86,6 +86,7 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final String MAP_PATH = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID
             + File.separator;
+    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
     private ExpiringCache<String> status;
@@ -100,7 +101,6 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private boolean hasChannelStructure;
     private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
     private ChannelTypeRegistry channelTypeRegistry;
-    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
             CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
@@ -295,31 +295,19 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 case ZONE:
                 case ROOM:
                 case CLEANING:
+                case RETURNING:
                     control = "vacuum";
                     vacuum = OnOffType.ON;
                     break;
                 case CHARGING:
-                    control = "dock";
-                    break;
                 case CHARGING_ERROR:
-                    control = "dock";
-                    break;
                 case DOCKING:
-                    control = "dock";
-                    break;
                 case FULL:
                     control = "dock";
                     break;
-                case IDLE:
-                    control = "pause";
-                    break;
-                case PAUSED:
-                    control = "pause";
-                    break;
-                case RETURNING:
-                    control = "dock";
-                    break;
                 case SLEEPING:
+                case PAUSED:
+                case IDLE:
                     control = "pause";
                     break;
                 case SPOTCLEAN:
@@ -558,20 +546,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         for (Entry<RobotCababilities, Boolean> robotCapability : deviceCapabilities.entrySet()) {
             RobotCababilities capability = robotCapability.getKey();
             Boolean channelCreated = robotCapability.getValue();
-            boolean channelfound = false;
             if (!channelCreated) {
-                for (Channel ch : thing.getChannels()) {
-                    logger.debug("Channel :{}, Channeltype UID: {}", ch.getUID(), ch.getChannelTypeUID());
-                    if (ch.getUID().getId().equalsIgnoreCase(capability.getChannel())) {
-                        logger.debug("Channel already available...skip creation of channel '{}'.",
-                                capability.getChannel());
-                        deviceCapabilities.replace(capability, true);
-                        channelfound = true;
-                        break;
-                    }
-                }
-                if (channelfound) {
-                    break;
+                if (thing.getChannels().stream()
+                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(capability.getChannel()))) {
+                    logger.debug("Channel already available...skip creation of channel '{}'.", capability.getChannel());
+                    deviceCapabilities.replace(capability, true);
+                    continue;
                 }
                 logger.debug("Creating dynamic channel for capability {}", capability);
                 ChannelType channelType = channelTypeRegistry.getChannelType(capability.getChannelType());
