@@ -244,7 +244,7 @@ public class IpCameraHandler extends BaseThingHandler {
             logger.debug("Clearing out the stored BASIC auth now.");
             basicAuth = "";
             return false;
-        } else if (!basicAuth.equals("")) {
+        } else if (!basicAuth.isEmpty()) {
             // due to camera may have been sent multiple requests before the auth was set, this may trigger falsely.
             logger.warn("Camera is reporting your username and/or password is wrong.");
             return false;
