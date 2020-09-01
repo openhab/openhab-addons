@@ -122,7 +122,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 @NonNullByDefault
 public class IpCameraHandler extends BaseThingHandler {
-    public final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_ONVIF, THING_TYPE_HTTPONLY, THING_TYPE_AMCREST, THING_TYPE_DAHUA,
                     THING_TYPE_INSTAR, THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION));
     public static ArrayList<IpCameraHandler> listOfOnlineCameraHandlers = new ArrayList<IpCameraHandler>(1);
