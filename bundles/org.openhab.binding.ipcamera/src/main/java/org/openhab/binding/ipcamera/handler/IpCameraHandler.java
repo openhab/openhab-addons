@@ -20,7 +20,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -28,7 +27,6 @@ import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +62,7 @@ import org.openhab.binding.ipcamera.internal.DahuaHandler;
 import org.openhab.binding.ipcamera.internal.DoorBirdHandler;
 import org.openhab.binding.ipcamera.internal.Ffmpeg;
 import org.openhab.binding.ipcamera.internal.FoscamHandler;
+import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.HikvisionHandler;
 import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
@@ -131,9 +130,6 @@ public class IpCameraHandler extends BaseThingHandler {
     public static ArrayList<String> listOfOnlineCameraUID = new ArrayList<String>(1);
     public final Logger logger = LoggerFactory.getLogger(getClass());
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(4);
-    // private ScheduledExecutorService scheduledMovePTZ = Executors.newScheduledThreadPool(1);
-    // private ScheduledExecutorService pollCamera = Executors.newScheduledThreadPool(1);
-    // private ScheduledExecutorService snapshot = Executors.newScheduledThreadPool(1);
     public Configuration config;
 
     // ChannelGroup is thread safe
@@ -492,8 +488,9 @@ public class IpCameraHandler extends BaseThingHandler {
                                     case 2: // Open and ok to reuse
                                         Channel ch = listOfChannels.get(index);
                                         if (ch.isOpen()) {
-                                            logger.debug("Using the already open channel:{} \t{}:{}", index, httpMethod,
-                                                    httpRequestURL);
+                                            // logger.debug("Using the already open channel:{} \t{}:{}", index,
+                                            // httpMethod,
+                                            // httpRequestURL);
                                             CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline()
                                                     .get(COMMON_HANDLER);
                                             commonHandler.setURL(httpRequestURLFull);
@@ -708,7 +705,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                 // testing next line and if works need to do a full cleanup of this function.
                                 closeConnection = true;
                                 if (closeConnection) {
-                                    // logger.trace("Snapshot recieved: Binding will now close the channel.");
                                     ctx.close();
                                 } else {
                                     lock.lock();
@@ -1357,21 +1353,18 @@ public class IpCameraHandler extends BaseThingHandler {
                     setupFfmpegFormat(ffmpegFormat.RTSPHELPER);
                     return;
                 case CHANNEL_GIF_FILENAME:
-                    logger.debug("Changing the gif filename to {}.", command);
                     gifFilename = command.toString();
                     if (gifFilename.isEmpty()) {
                         gifFilename = "ipcamera";
                     }
                     return;
                 case CHANNEL_MP4_FILENAME:
-                    logger.debug("Changing the mp4 filename to {}.", command);
                     mp4Filename = command.toString();
                     if (mp4Filename.isEmpty()) {
                         mp4Filename = "ipcamera";
                     }
                     return;
                 case CHANNEL_RECORD_MP4:
-                    logger.debug("Recording {} Seconds to MP4 format.", command);
                     mp4RecordTime = Integer.parseInt(command.toString());
                     setupFfmpegFormat(ffmpegFormat.RECORD);
                     return;
@@ -1559,16 +1552,6 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void setChannelState(String channelToUpdate, State valueOf) {
         updateState(channelToUpdate, valueOf);
-    }
-
-    public String encodeSpecialChars(String text) {
-        String encodedString = "";
-        try {
-            encodedString = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            logger.warn("Failed to encode special characters for URL. {}", e.getMessage());
-        }
-        return encodedString;
     }
 
     void bringCameraOnline() {
@@ -1857,8 +1840,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case "FOSCAM":
                 // Foscam needs any special char like spaces (%20) to be encoded for URLs.
-                username = encodeSpecialChars(username);
-                password = encodeSpecialChars(password);
+                username = Helper.encodeSpecialChars(username);
+                password = Helper.encodeSpecialChars(password);
                 if (mjpegUri.equals("")) {
                     mjpegUri = "/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=" + username + "&pwd=" + password;
                 }

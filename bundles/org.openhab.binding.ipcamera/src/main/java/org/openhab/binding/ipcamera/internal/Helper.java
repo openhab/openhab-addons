@@ -66,6 +66,11 @@ public class Helper {
         return "";
     }
 
+    /**
+     * The {@link encodeSpecialChars} Is used to replace spaces with %20 in Strings meant for URL queries.
+     *
+     * @author Matthew Skinner - Initial contribution
+     */
     public static String encodeSpecialChars(String text) {
         String processed = text;
         try {
