@@ -17,6 +17,7 @@ import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConst
 import java.util.Hashtable;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -59,7 +60,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
 
-    private ChannelUID discoveryTrigger;
     private ChannelUID discoveryfingerPrint;
 
     public ConnectedDriveBridgeHandler(Bridge bridge, HttpClient hc, BundleContext bc) {
@@ -69,7 +69,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         discoveryService = new ConnectedCarDiscovery(this);
         discoveryServiceRegstration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
-        discoveryTrigger = new ChannelUID(thing.getUID(), DISCOVERY_TRIGGER);
         discoveryfingerPrint = new ChannelUID(thing.getUID(), DISCOVERY_FINGERPRINT);
     }
 
@@ -88,14 +87,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                     }
                     // Switch back to off immediately
                     updateState(discoveryfingerPrint, OnOffType.OFF);
-                } else if (channelUID.getIdWithoutGroup().equals(DISCOVERY_TRIGGER)) {
-                    // trigger discovery again - helpful after the user performed some changes in the ConnectedDrive
-                    // Portal and wants to get the changes
-                    if (proxy.isPresent()) {
-                        proxy.get().requestVehicles(this);
-                    }
-                    // Switch back to off immediately
-                    updateState(discoveryTrigger, OnOffType.OFF);
                 }
             }
         }
@@ -107,11 +98,11 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         configuration = Optional.of(getConfigAs(ConnectedDriveConfiguration.class));
         if (configuration.isPresent()) {
             proxy = Optional.of(new ConnectedDriveProxy(httpClient, configuration.get()));
-            proxy.get().requestVehicles(this);
+            // give the system some time to create all predefined Vehicles
+            scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-        updateState(discoveryTrigger, OnOffType.OFF);
         updateState(discoveryfingerPrint, OnOffType.OFF);
     }
 

@@ -110,7 +110,7 @@ public class ConnectedDriveProxy {
                 public void onComplete(org.eclipse.jetty.client.api.Result result) {
                     if (result.getResponse().getStatus() != 200) {
                         NetworkError error = new NetworkError();
-                        error.url = url;
+                        error.url = completeUrl.toString();
                         error.status = result.getResponse().getStatus();
                         error.reason = result.getResponse().getReason();
                         logger.warn("{}", error.toString());
@@ -155,10 +155,9 @@ public class ConnectedDriveProxy {
                 callback);
     }
 
-    public void requestRangeMap(ConnectedCarConfiguration config, MultiMap<String> params,
+    public void requestRangeMap(ConnectedCarConfiguration config, Optional<MultiMap<String>> params,
             StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), Optional.of(params),
-                callback);
+        request(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
     }
 
     public void requestImage(ConnectedCarConfiguration config, ByteResponseCallback callback) {
@@ -210,7 +209,7 @@ public class ConnectedDriveProxy {
      * @return
      */
     public Token getNewToken() {
-        // http.setFollowRedirects(false);
+        http.setFollowRedirects(false);
         Request req = http.POST(authUri);
 
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
@@ -234,10 +233,12 @@ public class ConnectedDriveProxy {
             logger.info("Status {} ", contentResponse.getStatus());
             HttpFields fields = contentResponse.getHeaders();
             HttpField field = fields.getField(HttpHeader.LOCATION);
+            http.setFollowRedirects(true);
             return getTokenFromUrl(field.getValue());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.warn("Auth Exception: {}", e.getMessage());
         }
+        http.setFollowRedirects(true);
         return new Token();
     }
 

@@ -10,7 +10,6 @@
 		<description>Access to BMW ConnectedDrive Portal for a specific user</description>
 
 		<channels>
-			<channel id="discovery-trigger" typeId="discovery-trigger-channel"/>
 			<channel id="discovery-fingerprint" typeId="discovery-fingerprint-channel"/>
 		</channels>
 

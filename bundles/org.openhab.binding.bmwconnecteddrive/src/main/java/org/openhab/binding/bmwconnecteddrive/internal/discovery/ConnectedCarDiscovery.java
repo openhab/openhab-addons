@@ -18,15 +18,21 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveHandlerFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedCarHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +68,7 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
             SUPPORTED_THING_SET.forEach(entry -> {
                 if (entry.getId().equals(vehicleType)) {
                     ThingUID uid = new ThingUID(entry, vehicle.vin);
-                    Map<String, Object> properties = new HashMap<>();
+                    Map<String, String> properties = new HashMap<>();
                     // Dealer
                     if (vehicle.dealer != null) {
                         properties.put("Dealer", vehicle.dealer.name);
@@ -88,25 +94,49 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                     properties.put("Vehicle Brand", vehicle.brand);
                     properties.put("Vehicle Bodytype", vehicle.bodytype);
                     properties.put("Vehicle Color", vehicle.color);
-                    properties.put("Vehicle Construction Year", vehicle.yearOfConstruction);
+                    properties.put("Vehicle Construction Year", Short.toString(vehicle.yearOfConstruction));
                     properties.put("Vehicle Drive Train", vehicle.driveTrain);
                     properties.put("Vehicle Model", vehicle.model);
 
-                    // Properties needed for functional THing
-                    properties.put("vin", vehicle.vin);
-                    properties.put("refreshInterval", 15);
-                    properties.put("units", "AUTODETECT");
-                    properties.put("imageSize", 500);
-                    properties.put("imageViewport", "FRONT");
+                    // Check now if a thing with the same VIN exists
+                    final AtomicBoolean foundVehicle = new AtomicBoolean(false);
+                    List<ConnectedCarHandler> l = ConnectedDriveHandlerFactory.getHandlerRegistry();
+                    logger.debug("Handler regsitry has {} entries", l.size());
+                    l.forEach(handler -> {
+                        Thing vehicleThing = handler.getThing();
+                        Configuration c = vehicleThing.getConfiguration();
+                        if (c.containsKey("vin")) {
+                            String thingVIN = c.get("vin").toString();
+                            logger.debug("Found VIN {} ", thingVIN);
+                            if (vehicle.vin.equals(thingVIN)) {
+                                vehicleThing.setProperties(properties);
+                                logger.debug("Car {} updated", thingVIN);
+                                foundVehicle.set(true);
+                            }
+                        }
+                    });
 
-                    String carLabel = vehicle.brand + " " + vehicle.model;
-                    logger.debug("Thing {} discovered", carLabel);
-                    thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                            .withRepresentationProperty("vin").withLabel(carLabel).withProperties(properties).build());
+                    // Vehicle not found -> trigger discovery
+                    if (!foundVehicle.get()) {
+                        // Properties needed for functional THing
+                        properties.put("vin", vehicle.vin);
+                        properties.put("refreshInterval", Integer.toString(15));
+                        properties.put("units", "AUTODETECT");
+                        properties.put("imageSize", Integer.toString(500));
+                        properties.put("imageViewport", "FRONT");
+
+                        String carLabel = vehicle.brand + " " + vehicle.model;
+                        logger.debug("Thing {} discovered", carLabel);
+                        Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
+                        thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
+                                .withRepresentationProperty("vin").withLabel(carLabel)
+                                .withProperties(convertedProperties).build());
+                    }
                 }
             });
 
         });
+
     }
 
     public String getObject(Object obj, String compare) {
@@ -115,7 +145,7 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
             try {
                 if (field.get(obj) != null) {
                     if (field.get(obj).equals(compare)) {
-                        buf.append(field.getName() + Constants.SPACE);
+                        buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
                     }
                 }
             } catch (IllegalArgumentException e) {

@@ -184,7 +184,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                             VehicleStatusContainer container = GSON.fromJson(vehicleStatusCache.get(),
                                     VehicleStatusContainer.class);
                             VehicleStatus status = container.vehicleStatus;
-                            status.vin = ANONYMOUS;
+                            status.vin = Constants.ANONYMOUS;
                             if (status.position != null) {
                                 status.position.lat = -1;
                                 status.position.lon = -1;
@@ -196,27 +196,31 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         }
                         if (lastTripCache.isPresent()) {
                             logger.warn("### Last Trip ###");
-                            logger.warn("{}", lastTripCache.get());
+                            logger.warn("{}",
+                                    lastTripCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
                         } else {
                             logger.warn("### Last Trip Empty ###");
                         }
                         if (allTripsCache.isPresent()) {
                             logger.warn("### All Trips ###");
-                            logger.warn("{}", allTripsCache.get());
+                            logger.warn("{}",
+                                    allTripsCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
                         } else {
                             logger.warn("### All Trips Empty ###");
                         }
                         if (isElectric) {
                             if (chargeProfileCache.isPresent()) {
                                 logger.warn("### Charge Profile ###");
-                                logger.warn("{}", chargeProfileCache.get());
+                                logger.warn("{}", chargeProfileCache.get().replaceAll(configuration.get().vin,
+                                        Constants.ANONYMOUS));
                             } else {
                                 logger.warn("### Charge Profile Empty ###");
                             }
                         }
                         if (rangeMapCache.isPresent()) {
                             logger.warn("### Range Map ###");
-                            logger.warn("{}", rangeMapCache.get());
+                            logger.warn("{}",
+                                    rangeMapCache.get().replaceAll(configuration.get().vin, Constants.ANONYMOUS));
                         } else {
                             logger.warn("### Range Map Empty ###");
                         }
@@ -348,7 +352,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             dataMap.add("dlat", Float.toString(p.lat));
             dataMap.add("dlon", Float.toString(p.lon));
             if (configuration.isPresent()) {
-                proxy.get().requestRangeMap(configuration.get(), dataMap, rangeMapCallback);
+                proxy.get().requestRangeMap(configuration.get(), Optional.empty(), rangeMapCallback);
             }
         }
         currentPosition = p;
