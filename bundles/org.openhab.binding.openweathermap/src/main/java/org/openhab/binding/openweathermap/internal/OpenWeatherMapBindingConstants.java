@@ -53,8 +53,6 @@ public class OpenWeatherMapBindingConstants {
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_UVINDEX = new ChannelGroupTypeUID(BINDING_ID, "uvindex");
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL = new ChannelGroupTypeUID(BINDING_ID, "onecall");
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_HISTORY = new ChannelGroupTypeUID(BINDING_ID, "onecall-history");
 
     // List of all channel groups
     public static final String CHANNEL_GROUP_STATION = "station";
@@ -64,12 +62,9 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_GROUP_CURRENT_UVINDEX = "current";
     public static final String CHANNEL_GROUP_ONECALL_CURRENT = "current";
     public static final String CHANNEL_GROUP_ONECALL_HISTORY = "history";
-    public static final String CHANNEL_GROUP_ONECALL_MINUTES = "forecastMinutes";
-    public static final String CHANNEL_GROUP_ONECALL_HOURS = "forecastHours";
-    public static final String CHANNEL_GROUP_ONECALL_DAYS = "forecastDays";
     public static final String CHANNEL_GROUP_ONECALL_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_ONECALL_TOMORROW = "forecastTomorrow";
-    public static final String CHANNEL_GROUP_ONECALL_HISTORY_HOURS= "historyHours";
+
 
 
 

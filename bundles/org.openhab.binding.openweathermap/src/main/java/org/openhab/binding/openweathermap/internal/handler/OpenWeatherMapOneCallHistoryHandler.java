@@ -22,7 +22,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOnecallHistoryConfiguration;
-import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapWeatherAndForecastConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
@@ -68,11 +67,11 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     @Override
     public void initialize() {
         super.initialize();
-        boolean configValid = true;
         OpenWeatherMapOnecallHistoryConfiguration config = getConfigAs(
                 OpenWeatherMapOnecallHistoryConfiguration.class);
-        if (config.historyDay == 0) {
-            configValid = false;
+        if (config.historyDay <= 0) {
+            logger.error("historyDay value of {} is not supported", config.historyDay);
+            return;
         }
         /* As of now, only 5 days in history are supported by the one call API. As this may change in the future,
            we allow any value here and only log a warning if the value exceeds 5.
