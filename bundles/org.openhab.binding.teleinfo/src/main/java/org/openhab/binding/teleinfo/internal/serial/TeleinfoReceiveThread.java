@@ -40,9 +40,9 @@ public class TeleinfoReceiveThread extends Thread {
     private boolean autoRepairInvalidADPSgroupLine;
     private ExecutorService executorService;
 
-    public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoReceiveThreadListener listener,
+    public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoSerialControllerHandler listener,
             boolean autoRepairInvalidADPSgroupLine, ExecutorService scheduler) {
-        super("TeleinfoReceiveThread");
+        super("OH-binding-TeleinfoReceiveThread-"+listener.getThing().getUID().getId());
         setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;
