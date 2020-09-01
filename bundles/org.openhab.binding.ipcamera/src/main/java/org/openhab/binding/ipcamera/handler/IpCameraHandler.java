@@ -175,7 +175,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public String hostIp = "0.0.0.0";
     private String ffmpegOutputFolder = "";
 
-    public ArrayList<String> listOfRequests = new ArrayList<String>(18);
+    public List<String> listOfRequests = new ArrayList<>(18);
     public ArrayList<Channel> listOfChannels = new ArrayList<Channel>(18);
     // Status can be -2=storing a reply, -1=closed, 0=closing (do not re-use
     // channel), 1=open, 2=open and ok to reuse
