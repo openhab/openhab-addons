@@ -488,9 +488,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                     case 2: // Open and ok to reuse
                                         Channel ch = listOfChannels.get(index);
                                         if (ch.isOpen()) {
-                                            // logger.debug("Using the already open channel:{} \t{}:{}", index,
-                                            // httpMethod,
-                                            // httpRequestURL);
                                             CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline()
                                                     .get(COMMON_HANDLER);
                                             commonHandler.setURL(httpRequestURLFull);
@@ -531,7 +528,6 @@ public class IpCameraHandler extends BaseThingHandler {
                             instarHandler.setURL(httpRequestURL);
                             break;
                     }
-
                     if (indexInLists >= 0) {
                         lock.lock();
                         try {
@@ -539,8 +535,6 @@ public class IpCameraHandler extends BaseThingHandler {
                         } finally {
                             lock.unlock();
                         }
-                        // logger.debug("Have re-opened the closed channel:{} \t{}:{}", indexInLists, httpMethod,
-                        // httpRequestURL);
                     } else {
                         lock.lock();
                         try {
@@ -551,8 +545,6 @@ public class IpCameraHandler extends BaseThingHandler {
                         } finally {
                             lock.unlock();
                         }
-                        // logger.debug("Have opened a brand NEW channel:{} \t{}:{}", listOfRequests.size() - 1,
-                        // httpMethod, httpRequestURL);
                     }
                     ch.writeAndFlush(request);
                     if (!isOnline) {
@@ -752,7 +744,6 @@ public class IpCameraHandler extends BaseThingHandler {
                         }
                     }
                 } else { // msg is not HttpContent
-                    // logger.debug("Packet back from camera is not matching HttpContent");
                     // Foscam and Amcrest cameras need this
                     if (!contentType.contains("image/jp") && bytesAlreadyRecieved != 0) {
                         reply = incomingMessage;
@@ -782,7 +773,6 @@ public class IpCameraHandler extends BaseThingHandler {
             try {
                 byte indexInLists = (byte) listOfChannels.indexOf(ctx.channel());
                 if (indexInLists >= 0) {
-                    // logger.debug("commonCameraHandler closed channel:{} \tURL:{}", indexInLists, requestUrl);
                     listOfChStatus.set(indexInLists, (byte) -1);
                 } else {
                     if (listOfChannels.size() > 0) {
