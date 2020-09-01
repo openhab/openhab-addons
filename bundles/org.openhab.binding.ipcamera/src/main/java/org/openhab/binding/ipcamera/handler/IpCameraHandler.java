@@ -216,7 +216,13 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean ffmpegSnapshotGeneration = false;
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
-    final static String authorizationHandler = "authorizationHandler";
+
+    Runnable runnableMovePTZ = new Runnable() {
+        @Override
+        public void run() {
+            onvifCamera.sendPTZRequest("AbsoluteMove");
+        }
+    };
 
     public IpCameraHandler(Thing thing) {
         super(thing);
@@ -402,35 +408,33 @@ public class IpCameraHandler extends BaseThingHandler {
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
                     // HIK Alarm stream needs > 9sec idle to stop stream closing
-                    socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(18, 0, 0));
-                    socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
-                    socketChannel.pipeline().addLast(authorizationHandler,
+                    socketChannel.pipeline().addLast(new IdleStateHandler(18, 0, 0));
+                    socketChannel.pipeline().addLast(new HttpClientCodec());
+                    socketChannel.pipeline().addLast(AUTH_HANDLER,
                             new MyNettyAuthHandler(username, password, getHandle()));
-                    socketChannel.pipeline().addLast("commonHandler", new CommonCameraHandler());
+                    socketChannel.pipeline().addLast(COMMON_HANDLER, new CommonCameraHandler());
 
                     switch (thing.getThingTypeUID().getId()) {
                         case "AMCREST":
-                            socketChannel.pipeline().addLast("amcrestHandler", new AmcrestHandler(getHandle()));
+                            socketChannel.pipeline().addLast(AMCREST_HANDLER, new AmcrestHandler(getHandle()));
                             break;
                         case "DAHUA":
-                            socketChannel.pipeline().addLast("brandHandler", new DahuaHandler(getHandle(), nvrChannel));
+                            socketChannel.pipeline().addLast(new DahuaHandler(getHandle(), nvrChannel));
                             break;
                         case "DOORBIRD":
-                            socketChannel.pipeline().addLast("brandHandler", new DoorBirdHandler(getHandle()));
+                            socketChannel.pipeline().addLast(new DoorBirdHandler(getHandle()));
                             break;
                         case "FOSCAM":
-                            socketChannel.pipeline().addLast("brandHandler",
-                                    new FoscamHandler(getHandle(), username, password));
+                            socketChannel.pipeline().addLast(new FoscamHandler(getHandle(), username, password));
                             break;
                         case "HIKVISION":
-                            socketChannel.pipeline().addLast("brandHandler",
-                                    new HikvisionHandler(getHandle(), nvrChannel));
+                            socketChannel.pipeline().addLast(new HikvisionHandler(getHandle(), nvrChannel));
                             break;
                         case "INSTAR":
-                            socketChannel.pipeline().addLast("instarHandler", new InstarHandler(getHandle()));
+                            socketChannel.pipeline().addLast(INSTAR_HANDLER, new InstarHandler(getHandle()));
                             break;
                         default:
-                            socketChannel.pipeline().addLast("brandHandler", new HttpOnlyHandler(getHandle()));
+                            socketChannel.pipeline().addLast(new HttpOnlyHandler(getHandle()));
                             break;
                     }
                 }
@@ -482,10 +486,10 @@ public class IpCameraHandler extends BaseThingHandler {
                                             logger.debug("Using the already open channel:{} \t{}:{}", index, httpMethod,
                                                     httpRequestURL);
                                             CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline()
-                                                    .get("commonHandler");
+                                                    .get(COMMON_HANDLER);
                                             commonHandler.setURL(httpRequestURLFull);
                                             MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline()
-                                                    .get(authorizationHandler);
+                                                    .get(AUTH_HANDLER);
                                             authHandler.setURL(httpMethod, httpRequestURL);
                                             ch.writeAndFlush(request);
                                             return;
@@ -506,18 +510,18 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
 
                     Channel ch = future.channel();
-                    CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get("commonHandler");
-                    MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(authorizationHandler);
+                    CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get(COMMON_HANDLER);
+                    MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
                     commonHandler.setURL(httpRequestURL);
                     authHandler.setURL(httpMethod, httpRequestURL);
 
                     switch (thing.getThingTypeUID().getId()) {
                         case "AMCREST":
-                            AmcrestHandler amcrestHandler = (AmcrestHandler) ch.pipeline().get("amcrestHandler");
+                            AmcrestHandler amcrestHandler = (AmcrestHandler) ch.pipeline().get(AMCREST_HANDLER);
                             amcrestHandler.setURL(httpRequestURL);
                             break;
                         case "INSTAR":
-                            InstarHandler instarHandler = (InstarHandler) ch.pipeline().get("instarHandler");
+                            InstarHandler instarHandler = (InstarHandler) ch.pipeline().get(INSTAR_HANDLER);
                             instarHandler.setURL(httpRequestURL);
                             break;
                     }
@@ -1543,14 +1547,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
         }
     }
-
-    Runnable runnableMovePTZ = new Runnable() {
-        @Override
-        public void run() {
-            logger.debug("Trying to move with new PTZ Absolute move.");
-            onvifCamera.sendPTZRequest("AbsoluteMove");
-        }
-    };
 
     public void setChannelState(String channelToUpdate, State valueOf) {
         updateState(channelToUpdate, valueOf);

@@ -26,6 +26,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class IpCameraBindingConstants {
 
     private static final String BINDING_ID = "ipcamera";
+    public final static String AUTH_HANDLER = "authorizationHandler";
+    public final static String AMCREST_HANDLER = "amcrestHandler";
+    public final static String COMMON_HANDLER = "commonHandler";
+    public final static String INSTAR_HANDLER = "instarHandler";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GROUPDISPLAY = new ThingTypeUID(BINDING_ID, "GROUPDISPLAY");
