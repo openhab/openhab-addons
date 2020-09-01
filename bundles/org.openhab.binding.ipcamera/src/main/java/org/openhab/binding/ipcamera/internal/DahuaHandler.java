@@ -15,8 +15,6 @@ package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -149,16 +147,6 @@ public class DahuaHandler extends ChannelDuplexHandler {
         }
     }
 
-    public String encodeSpecialChars(String text) {
-        String processed = text;
-        try {
-            processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-
-        }
-        return processed;
-    }
-
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -181,7 +169,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
         } // end of "REFRESH"
         switch (channelUID.getId()) {
             case CHANNEL_TEXT_OVERLAY:
-                String text = encodeSpecialChars(command.toString());
+                String text = Helper.encodeSpecialChars(command.toString());
                 if ("".contentEquals(text)) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");

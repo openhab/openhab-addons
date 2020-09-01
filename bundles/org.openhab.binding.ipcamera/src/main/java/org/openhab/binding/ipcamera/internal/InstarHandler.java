@@ -15,8 +15,6 @@ package org.openhab.binding.ipcamera.internal;
 
 import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -80,7 +78,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     if (content.contains("var show_1=\"0\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(""));
                     } else {
-                        value1 = searchString(content, "var name_1=\"");
+                        value1 = Helper.searchString(content, "var name_1=\"");
                         if (!value1.isEmpty()) {
                             ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(value1));
                         }
@@ -97,7 +95,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                 case "/cgi-bin/hi3510/param.cgi?cmd=getaudioalarmattr":// Audio Alarm
                     if (content.contains("var aa_enable=\"1\"")) {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.valueOf("ON"));
-                        value1 = searchString(content, "var aa_value=\"");
+                        value1 = Helper.searchString(content, "var aa_value=\"");
                         if (!value1.isEmpty()) {
                             // ipCameraHandler.logger.debug("Threshold is changing to {}", value1);
                             ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value1));
@@ -126,55 +124,6 @@ public class InstarHandler extends ChannelDuplexHandler {
         } finally {
             ReferenceCountUtil.release(msg);
         }
-    }
-
-    /**
-     * The {@link searchString} Used to grab values out of JSON or other quote encapsulated structures without needing
-     * an external lib. String may be terminated by ," or }.
-     *
-     * @author Matthew Skinner - Initial contribution
-     */
-    String searchString(String rawString, String searchedString) {
-        String result = "";
-        int index = 0;
-        index = rawString.indexOf(searchedString);
-        if (index != -1) // -1 means "not found"
-        {
-            result = rawString.substring(index + searchedString.length(), rawString.length());
-            index = result.indexOf(',');
-            if (index == -1) {
-                index = result.indexOf('"');
-                if (index == -1) {
-                    index = result.indexOf('}');
-                    if (index == -1) {
-                        return result;
-                    } else {
-                        return result.substring(0, index);
-                    }
-                } else {
-                    return result.substring(0, index);
-                }
-            } else {
-                result = result.substring(0, index);
-                index = result.indexOf('"');
-                if (index == -1) {
-                    return result;
-                } else {
-                    return result.substring(0, index);
-                }
-            }
-        }
-        return "";
-    }
-
-    public String encodeSpecialChars(String text) {
-        String processed = text;
-        try {
-            processed = URLEncoder.encode(text, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-
-        }
-        return processed;
     }
 
     // This handles the commands that come from the Openhab event bus.
@@ -222,7 +171,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_TEXT_OVERLAY:
-                String text = encodeSpecialChars(command.toString());
+                String text = Helper.encodeSpecialChars(command.toString());
                 if ("".contentEquals(text)) {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setoverlayattr&-region=1&-show=0");
                 } else {
