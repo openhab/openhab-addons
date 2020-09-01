@@ -14,9 +14,8 @@ To see what features each brand has implemented from their APIs, please see this
 + Check to see if the camera is offline. 
 If so there will be a reason listed on what needs to be done.
 + Always look at the log files with TRACE enabled.
-This readme has a section on logs that explains how to do this.
 To keep your log file clean, the binding holds back a lot of useful fault finding information out of the logs unless you turn on DEBUG or TRACE logging.
-+ Search the forum using any error messages to help you find how others with the same problem have already solved it.
++ Search the forum using any warning messages to help you find how others with the same problem have already solved it.
 + Only after doing the above ask for help in the forum and create a new thread, then when it is fixed post how and mark the thread as solved to help others.
 
 ## Special Notes for Different Brands
@@ -790,97 +789,6 @@ If your not using HLS and are just using ipcamera.jpg to display the groups pict
 + All cameras should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
 
 This is still a very new feature and if you have any issues please send some TRACE level log output of when the problem occurs.
-
-## Using the Logs for DEBUG and TRACE
-
-Any issues from FFmpeg will only get seen in DEBUG level (and TRACE).
-Without enabling DEBUG you will be missing key feedback that is telling you what may be causing your issues which may be as simple as a folder is missing, or there is a permission issue.
-
-There are two log files discussed here, openhab.log and events.log please take the time to consider both logs if a fast and stable setup is something you care about. 
-On some systems with slow disk access like SD cards, the writing of a log file can greatly impact on performance. 
-We can turn on/up logs to fault find issues, and then disable them to get the performance back when everything is working.
-
-To watch the logs in realtime with Linux based setups, you can use this linux command which can be done via SSH with a program called putty from a pc or mac.
-
-```
-
-tail -f /var/log/openhab2/openhab.log -f /var/log/openhab2/events.log
-
-```
-
-CTRL+C will close the stream. 
-You can also use SAMBA/network shares to open or copy the file directly, but my favorite way to view the logs is with "Frontail".
-
-### openhab.log 
-
-This file displays the information from all bindings and can have the amount of information turned up or down on a per binding basis. 
-The default level is INFO and is the middle level of 5 settings you can use. 
-The openHAB documentation goes into this in more detail and is kept up to date. 
-Using the KARAF console you can use these commands to turn the logging up and down to suit your needs. 
-If you are having issues with the binding not working with your camera, then TRACE will show everything that DEBUG level does but with the additional reply packets back from the camera. 
-Because the TRACE shows the cameras replies, it often shows you in plain english what the camera is telling you is wrong greatly speeding up the diagnosis of any issues. 
-Please use this to find what is wrong before asking for help.
-
-```
-
-log:set WARN org.openhab.binding.ipcamera
-
-log:set INFO org.openhab.binding.ipcamera
-
-log:set DEBUG org.openhab.binding.ipcamera
-
-log:set TRACE org.openhab.binding.ipcamera
-
-```
-
-TIP: If your in the Karaf console you can type in `log:tail` to watch the logs.
-CTRL+C will exit watching the logs.
-
-### events.log
-
-By default openHAB will log all image channel updates as an event into a file called events.log, this file can quickly grow if you have multiple cameras all updating the image channel every second. 
-
-I believe it is possible for enough high resolution cameras to flood and swamp the event bus with more incoming data then the system can process, even if the logs are disabled.
-So I highly recommend to not use the Image channel and instead use another method outlined in the snapshot and streaming sections of this readme file.
-If the data is coming in faster then it can be processed it will result in an Out Off Memory Error (OOME) that can halt your openHAB server, so if your reading this to shut down the logging, reconsider the need to use the Image channel.
-
-If you still wish to use the image channel, the following is how to deal with the log output that is created as the raw picture data in text format is ugly and makes the log very hard to read.
-
-+ You can switch to only updating the image channel on events like motion alarms.
-+ Turn off (disable) all events from being logged. 
-+ Filter out only the events caused by the image changing before they reach the log file.
-
-The openHAB event.log does not allow normal filtering at a binding level due to the log being a pure output from the event bus.
-
-To disable the event.log you can use this command in Karaf console.
-
-```
-log:set WARN smarthome.event
-
-```
-
-To re-enable just use the same command with INFO instead of WARN.
-
-To filter out only the image events, leaving the rest you can do the following:
-
-```
-sudo nano /var/lib/openhab2/etc/org.ops4j.pax.logging.cfg
-```
-
-Inside that file paste the following, save and then reboot.
-
-```
-############ CUSTOM FILTERS START HERE #################
-# event log filter
-log4j2.appender.event.filter.myfilter1.type = RegexFilter
-log4j2.appender.event.filter.myfilter1.regex = .*changed from raw type.*
-log4j2.appender.event.filter.myfilter1.onMatch = DENY
-log4j2.appender.event.filter.myfilter1.onMisMatch = ACCEPT
-################# END OF FILTERS ######################
-
-```
-
-You can specify the item name in the filter to remove just 1 camera, or you can use the above without the item name to remove all events from images updating, which will be for other bindings as well.
 
 ## Full Example
 
