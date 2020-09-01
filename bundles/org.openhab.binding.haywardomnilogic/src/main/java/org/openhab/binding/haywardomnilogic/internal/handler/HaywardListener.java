@@ -28,5 +28,4 @@ public interface HaywardListener {
 
     void onDeviceDiscovered(HaywardTypeToRequest type, Integer systemID, String label, String bowID, String bowName,
             String property1, String property2, String property3, String property4);
-
 }

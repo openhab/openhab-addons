@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 public class HaywardHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(HaywardHandlerFactory.class);
-    private static Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static Set<ThingTypeUID> supportedThingTypes = new HashSet<ThingTypeUID>(
             Arrays.asList(HaywardBindingConstants.THING_TYPE_BACKYARD, HaywardBindingConstants.THING_TYPE_BOW,
                     HaywardBindingConstants.THING_TYPE_BRIDGE, HaywardBindingConstants.THING_TYPE_CHLORINATOR,
                     HaywardBindingConstants.THING_TYPE_COLORLOGIC, HaywardBindingConstants.THING_TYPE_FILTER,
@@ -77,7 +77,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return supportedThingTypes.contains(thingTypeUID);
     }
 
     /**
@@ -144,5 +144,4 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         }
         super.removeHandler(thingHandler);
     }
-
 }

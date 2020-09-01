@@ -1,4 +1,4 @@
-# <bindingName> Binding
+# Hayward Omnilogic Binding
 
 The Hayward Omnilogic binding integrates the Omnilogic pool controller using the Hayward API.
 
@@ -6,7 +6,7 @@ The Hayward Omnilogic API interacts with Hayward's cloud server requiring a conn
 
 ## Supported Things
 
-The table below lists the Nest binding thing types:
+The table below lists the Hayward OmniLogic binding thing types:
 
 | Things                                  | Description                                                                                                                                    | Thing Type     |
 |-----------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
@@ -25,9 +25,16 @@ The binding will automatically discover the Omnilogic pool things from the cloud
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the (Paper) UI or via a thing-file. This should be mainly about its mandatory and optional configuration parameters. A short example entry for a thing file can help!_
+Hayward OmniLogic Connection Parameters:
 
-_Note that it is planned to generate some part of this based on the XML files within ```ESH-INF/thing``` of your binding._
+| Property			    | Default															| Required 	| Description 								|
+|-----------------------|-------------------------------------------------------------------|-----------|:-----------------------------------------:|
+| Host Name      		| https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx	| Yes		| Host name of the Hayward API server 		|
+| User Name       		| None    															| Yes		| Your Hayward User Name (not email address)|
+| Password 				| None																| Yes		| Your Hayward User Password				|
+| Telemetry Poll Delay  | 12    															| Yes		| Telemetry Poll Delay (seconds)			|
+| Alarm Poll Delay    	| 60    															| Yes		| Alarm Poll Delay (seconds)				|
+| Command Poll Delay	| 12    															| Yes		| Command Poll Delay (seconds)				|
 
 ## Channels
 
@@ -163,160 +170,6 @@ Number   PoolVirtualHeaterTemp "Temp [%1.0f °F]"                               
 Switch   PoolRelay1 "Deck Jets"                                                 { channel = "haywardomnilogic:relay:2ee76053:37:relayState"}
 Switch   PoolRelay2 "Vacuum"                                                    { channel = "haywardomnilogic:relay:2ee76053:36:relayState"}
 ```
-
-### transforms:
-
-These transform will decode the integers provided from Hayward into text descriptions.  Please note this is a work in progress.
-If you have any descriptions to add, please email to the code owner for updates to this page.
-
-### transforms:haywardChlorinatorAlert.js
-
-...
-(function(i) {
-    var state = ""
-    var value = parseInt(i)
-    
-    if (value == 16){
-        state = "Low T-Cell Temperature"; 
-     
-    } else {
-        state = i + " (Unkown State)";
-    }
-    return state;
-})(input)
-...
-
-### transforms:haywardFilterState.js
-
-...
-(function(i) {
-    var state = ""
-    var value = parseInt(i)
-    
-    if(value == 0) {
-        state = "Off";
-   
-    } else if (value == 16){
-        state = "Heater Cooldoown"; 
-     
-    } else {
-        state = i + " (Unkown State)";
-    }
-    return state;
-})(input)
-...
-
-### transforms:haywardFilterWhyRunning.js
-
-...
-(function(i) {
-    var state = ""
-    var value = parseInt(i)
-    
-    if(value == 0) {
-        state = "Off";
-        
-    } else if (value == 1){
-        state = "Off"; 
-        
-    } else if (value == 2){
-        state = "Heater Cooldoown"; 
-     
-    } else if (value == 11){
-        state = "On High (Priming)"; 
-
-    } else if (value == 15){
-        state = "Freeze Protection"; 
- 
-     } else {
-        state = i + " (Unkown State)";
-    }
-    return state;
-})(input)
-
-...
-
-### transforms:haywardFlow.js
-
-...
-(function(i) {
-    var state = ""
-    var value = parseInt(i)
-    
-    if(value == 0) {
-        state = "Off";
-        
-    } else if (value == 1){
-        state = "On"; 
-
-    } else {
-        state = i + " (Unkown State)";
-    }
-    return state;
-})(input)
-...
-
-### transforms:haywardLightShow.map
-
-...
-NULL NULL
-0 = Voodoo Lounge
-1 = Deep Blue Sea
-2 = Royal Blue
-3 = Afternoon Sky
-4 = Aqua Green
-5 = Emerald
-6 = Cloud White
-7 = Warm Red
-8 = Flamingo
-9 = Vivid Violet
-10 = Sangria
-11 = Twilight
-12 = Tranquility
-13 = Gemstone
-14 = USA
-15 = Mardi Gras
-16 = Cool Cabaret   
-...
-
-### transforms:haywardLightState.js
-
-...
-(function(i) {
-    var state = ""
-    var value = parseInt(i)
-    
-    if(value == 0) {
-        state = "Off";
-        
-    }else if(value == 4) {
-        state = "15 Sec White Light";
- 
-    }else if(value == 4) {
-            state = "15 Sec White Light";
-            
-    }else if(value == 6) {
-            state = "On";
-
-    }else if(value == 7) {
-        state = "Powering Off";
-       
-    } else {
-        state = i;
-    }
-    return state;
-})(input) 
-...
-
-### transforms:haywardLightState.map
-
-...
-NULL NULL
-0 = Off
-4 = Turning On
-6 = On
-7 = Turning Off
-...
 
 
 ### demo.sitemap:

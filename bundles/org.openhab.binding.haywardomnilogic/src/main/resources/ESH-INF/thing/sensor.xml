@@ -2,17 +2,17 @@
 <thing:thing-descriptions bindingId="haywardomnilogic"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="sensor" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Sensor</label>
 		<description>Sensor</description>
 		<channels>
-			<channel id="sensorData" typeId="data" />
+			<channel id="sensorData" typeId="data"/>
 		</channels>
 
 		<properties>
@@ -26,14 +26,14 @@
 		<item-type>Number</item-type>
 		<label>Body of Water</label>
 		<description>The Body of Water</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="data">
 		<item-type>Number</item-type>
 		<label>Data</label>
 		<description>Sensor Data</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

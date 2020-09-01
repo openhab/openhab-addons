@@ -2,7 +2,7 @@
 <thing:thing-descriptions bindingId="haywardomnilogic"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- The bridge to communicate with Hayward's server -->
 	<bridge-type id="bridge">
@@ -11,6 +11,7 @@
 
 		<config-description>
 			<parameter name="hostname" type="text">
+			    <context>url</context>
 				<label>Host Name</label>
 				<!-- API Hostname -->
 				<default>https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
@@ -25,11 +26,12 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="password" type="text">
+			    <context>password</context>
 				<label>Password</label>
 				<description>The password to connect to the server.</description>
 				<required>true</required>
 			</parameter>
-			<parameter name="telemetryPollTime" type="integer" min="0" max="60">
+			<parameter name="telemetryPollTime" type="integer" min="10" max="60">
 				<label>Telemetry Poll Delay</label>
 				<default>12</default>
 				<description>How often to request telemetry data. Enter 0 to disable.</description>
@@ -44,7 +46,9 @@
 			<parameter name="commandPollDelay" type="integer" min="0" max="60">
 				<label>Command Poll Delay</label>
 				<default>12</default>
-				<description>Delay to poll server after a command.  This allows time for the command to propagate to the Omnilogic and back to the cloud server. If items toggle after a command, increase the delay.  Enter 0 to disable/suppress all outgoing commands.</description>
+				<description>Delay to poll server after a command. This allows time for the command to propagate to the Omnilogic
+					and back to the cloud server. If items toggle after a command, increase the delay. Enter 0 to disable/suppress all
+					outgoing commands.</description>
 				<required>true</required>
 			</parameter>
 		</config-description>

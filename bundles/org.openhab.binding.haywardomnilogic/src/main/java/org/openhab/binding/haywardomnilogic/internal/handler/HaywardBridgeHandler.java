@@ -492,7 +492,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             }
 
             // Find Sensors
-            // Flow and water temp sensor aren't showing up in telemetry. Need example to detemine how to differentiate
+            // Flow and water temp sensor aren't showing up in telemetry. Need example to determine how to differentiate
             // "system" sensors
             // that are reported in the BOW water temp, Filter flow switch, ORP, etc.
             systemIDs = (evaluateXPath("//Sensor/System-Id/text()", xmlResponse));

@@ -239,5 +239,4 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 .withLabel("Hayward " + label).withProperties(properties).build();
         thingDiscovered(result);
     }
-
 }

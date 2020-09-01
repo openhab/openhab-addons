@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="haywardomnilogic"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="backyard" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Backyard</label>
 		<description>The Hayward Backyard</description>
 		<channels>
-			<channel id="backyardAirTemp" typeId="airTemp" />
-			<channel id="backyardStatus" typeId="status" />
-			<channel id="backyardState" typeId="state" />
-			<channel id="backyardAlarm1" typeId="alarm" />
-			<channel id="backyardAlarm2" typeId="alarm" />
-			<channel id="backyardAlarm3" typeId="alarm" />
-			<channel id="backyardAlarm4" typeId="alarm" />
-			<channel id="backyardAlarm5" typeId="alarm" />
+			<channel id="backyardAirTemp" typeId="airTemp"/>
+			<channel id="backyardStatus" typeId="backyardstatus"/>
+			<channel id="backyardState" typeId="backyardstate"/>
+			<channel id="backyardAlarm1" typeId="alarm"/>
+			<channel id="backyardAlarm2" typeId="alarm"/>
+			<channel id="backyardAlarm3" typeId="alarm"/>
+			<channel id="backyardAlarm4" typeId="alarm"/>
+			<channel id="backyardAlarm5" typeId="alarm"/>
 		</channels>
 
 		<properties>
@@ -33,27 +33,44 @@
 		<item-type>Number</item-type>
 		<label>Air Temp</label>
 		<description>Air Temp</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="status">
-		<item-type>Number</item-type>
+	<channel-type id="backyardstatus">
+		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status</description>
-		<state readOnly="true" />
-	</channel-type>
-	<channel-type id="state">
-		<item-type>Number</item-type>
+        <state readOnly="true">
+            <options>
+                <option value="1">Normal</option>
+                <option value="2">Alarm</option>
+                <option value="3">Expired</option>
+                <option value="4">Lost Link</option>
+                <option value="5">Service Mode</option>
+            </options>      
+        </state>
+    </channel-type>
+	
+	<channel-type id="backyardstate">
+		<item-type>String</item-type>
 		<label>State</label>
 		<description>State</description>
-		<state readOnly="true" />
+		<state readOnly="true">
+            <options>
+                <option value="0">0</option>
+                <option value="1">Normal</option>
+                <option value="2">Service Mode</option>
+                <option value="3">Config Mode</option>
+                <option value="4">Timed Service Mode</option>
+            </options>      
+        </state>
 	</channel-type>
 
 	<channel-type id="alarm">
 		<item-type>String</item-type>
 		<label>Alarm</label>
 		<description>Alarm</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

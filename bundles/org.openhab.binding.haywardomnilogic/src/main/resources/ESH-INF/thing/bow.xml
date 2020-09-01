@@ -2,18 +2,18 @@
 <thing:thing-descriptions bindingId="haywardomnilogic"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0 http://eclipse.org/smarthome/schemas/thing-description-1.0.0.xsd">
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="bow" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Body of Water</label>
 		<description>The Hayward Body of Water</description>
 		<channels>
-			<channel id="bowFlow" typeId="flow" />
-			<channel id="bowWaterTemp" typeId="waterTemp" />
+			<channel id="bowFlow" typeId="flow"/>
+			<channel id="bowWaterTemp" typeId="waterTemp"/>
 		</channels>
 
 		<properties>
@@ -24,18 +24,23 @@
 	</thing-type>
 
 	<channel-type id="flow">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Flow Sensor</label>
 		<description>Flow Sensor</description>
-		<state readOnly="true" />
-	</channel-type>
+        <state readOnly="true">
+            <options>
+                <option value="0">Off</option>
+                <option value="1">On</option>
+            </options>      
+        </state>
+    </channel-type>
 
 
 	<channel-type id="waterTemp">
 		<item-type>Number</item-type>
 		<label>Water Temp</label>
 		<description>Water Temp</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 

@@ -47,5 +47,4 @@ public interface HaywardHandlerListener {
     void onSensorDiscovered(int systemID, String label, String bowID, String bowName);
 
     void onVirtualHeaterDiscovered(int systemID, String label, String bowID, String bowName);
-
 }
