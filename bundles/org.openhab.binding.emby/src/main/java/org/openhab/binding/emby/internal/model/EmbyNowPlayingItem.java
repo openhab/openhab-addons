@@ -14,6 +14,9 @@ package org.openhab.binding.emby.internal.model;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -38,6 +41,9 @@ public class EmbyNowPlayingItem {
     private String seasonId;
     @SerializedName("Type")
     private String nowPlayingType;
+    @SerializedName("CurrentProgram")
+    private EmbyNowPlayingCurrentProgram currentProgram;
+    private final Logger logger = LoggerFactory.getLogger(EmbyNowPlayingItem.class);
 
     String getName() {
         return name;
@@ -54,8 +60,11 @@ public class EmbyNowPlayingItem {
     }
 
     String getOriginalTitle() {
-        return originalTitle;
-
+        if (originalTitle.isEmpty()) {
+            return name;
+        } else {
+            return originalTitle;
+        }
     }
 
     /**
@@ -70,8 +79,12 @@ public class EmbyNowPlayingItem {
      * @return the total runtime ticks of the currently playing item
      */
     BigDecimal getRunTimeTicks() {
-        return runTimeTicks;
-
+        logger.debug("the media type is {}", nowPlayingType);
+        if (nowPlayingType.contains("TvChannel")) {
+            return currentProgram.getRunTimeTicks();
+        } else {
+            return runTimeTicks;
+        }
     }
 
     String getOverview() {

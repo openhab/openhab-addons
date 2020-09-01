@@ -31,7 +31,7 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-	<thing-type id="device" extensible="generalCommand">
+	<thing-type id="device" extensible="generalCommand,generalCommand_withArguments">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="controller" />
 		</supported-bridge-type-refs>

@@ -46,6 +46,8 @@ import org.openhab.binding.emby.internal.model.EmbyPlayStateModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonParser;
+
 /**
  * The {@link EmbyDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -56,6 +58,7 @@ import org.slf4j.LoggerFactory;
 public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(EmbyDeviceHandler.class);
+    private final JsonParser parser = new JsonParser();
 
     private EmbyDeviceConfiguration config;
     private @Nullable EmbyPlayStateModel currentPlayState = null;
@@ -73,17 +76,19 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
         String commandName;
         if (!(bridgeHandler == null)) {
             EmbyBridgeHandler handler = bridgeHandler;
+            logger.debug("The channel ID of the received command is: {}", channelUID.getId());
             if (!(currentPlayState == null)) {
-                String currentPlayStateID = currentPlayState.getId();
+                String currentSessionID = currentPlayState.getId();
+                logger.debug("The device Id is: {}, the received deviceID is: {} ", currentSessionID, config.deviceID);
                 switch (channelUID.getId()) {
                     case CHANNEL_CONTROL:
                         if (command instanceof PlayPauseType) {
                             // if we are unpause
                             if (PlayPauseType.PLAY.equals(command)) {
-                                handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_PLAY);
+                                handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PLAY);
                                 // send the pause command
                             } else {
-                                handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_PAUSE);
+                                handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_PAUSE);
                             }
                         } else {
                             logger.debug("The channel {} receceived a command {}, this command not supported",
@@ -92,42 +97,40 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
                         break;
                     case CHANNEL_MUTE:
                         if (OnOffType.ON.equals(command)) {
-                            handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_MUTE);
+                            handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_MUTE);
                         } else {
-                            handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_UNMUTE);
+                            handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_UNMUTE);
                         }
                         break;
                     case CHANNEL_STOP:
                         if (OnOffType.ON.equals(command)) {
-                            handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_STOP);
+                            handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_STOP);
                         }
                         break;
 
                     case CHANNEL_SENDPLAYCOMMAND:
                         logger.debug("Sending the following payload: {} for device: {}", command.toString(),
-                                currentPlayStateID);
-                        handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_SENDPLAY,
-                                command.toString());
+                                currentSessionID);
+                        handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_SENDPLAY, command.toString());
                         break;
 
                     case CHANNEL_GENERALCOMMAND:
                         commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                        logger.debug("Sending the following command {} for device: {}", commandName,
-                                currentPlayStateID);
+                        logger.debug("Sending the following command {} for device: {}", commandName, currentSessionID);
                         if (OnOffType.ON.equals(command)) {
                             handler.sendCommand(
-                                    CONTROL_SESSION + currentPlayStateID + CONTROL_GENERALCOMMAND + commandName);
+                                    CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName);
                         }
                         break;
                     case CHANNEL_GENERALCOMMANDWITHARGS:
                         commandName = channel.getConfiguration().get(CHANNEL_GENERALCOMMAND_NAME).toString();
-                        logger.debug("Sending the following command {} for device: {}", commandName,
-                                currentPlayStateID);
-                        handler.sendCommand(CONTROL_SESSION + currentPlayStateID + CONTROL_GENERALCOMMAND + commandName,
+                        logger.debug("Sending the following command {} for device: {}", commandName, currentSessionID);
+                        handler.sendCommand(CONTROL_SESSION + currentSessionID + CONTROL_GENERALCOMMAND + commandName,
                                 "Arguments:" + command + "}");
                         break;
                 }
             }
+
         } else {
             updateStatus(OFFLINE, CONFIGURATION_ERROR,
                     "Unable to handle command, You must choose a Emby Server for this Device.");
@@ -284,7 +287,6 @@ public class EmbyDeviceHandler extends BaseThingHandler implements EmbyEventList
             updatePrimaryImageURL("");
             updateMediaType("");
             updateDuration(-1);
-            this.currentPlayState = null;
             updateCurrentTime(-1);
         }
     }

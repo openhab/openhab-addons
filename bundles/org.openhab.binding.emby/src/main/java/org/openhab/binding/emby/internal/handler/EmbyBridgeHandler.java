@@ -75,6 +75,16 @@ public class EmbyBridgeHandler extends BaseBridgeHandler implements EmbyBridgeLi
         }
     }
 
+    @Nullable
+    public String sendCommandWithReturn(String commandURL) {
+        try {
+            return httputils.doPost(commandURL, "", 2);
+        } catch (EmbyHttpRetryExceeded e) {
+            logger.debug("The number of retry attempts was exceeded", e.getCause());
+            return null;
+        }
+    }
+
     private String getServerAddress() {
         String host = getConfig().get(HOST_PARAMETER).toString();
         String port = Integer.toString(getIntConfigParameter(WS_PORT_PARAMETER, 8096));

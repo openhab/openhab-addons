@@ -96,8 +96,13 @@ public class EmbyPlayStateModel {
      *         mathmatical representation of the percentage played
      */
     public BigDecimal getPercentPlayed() {
-        return (playState.getPositionTicks().divide(nowPlayingItem.getRunTimeTicks(), 2, RoundingMode.HALF_UP));
-
+        // check for zero position ticks if zero return 0% played
+        logger.debug("The play state position is {}", playState.getPositionTicks().toString());
+        if (playState.getPositionTicks().equals(BigDecimal.ZERO)) {
+            return BigDecimal.ZERO;
+        } else {
+            return (playState.getPositionTicks().divide(nowPlayingItem.getRunTimeTicks(), 2, RoundingMode.HALF_UP));
+        }
     }
 
     public EmbyNowPlayingItem getNowPlayingItem() {
@@ -161,11 +166,13 @@ public class EmbyPlayStateModel {
                 imagePath = "/emby/items/" + this.nowPlayingItem.getSeasonId() + "/Images/" + embyType;
             } else {
                 imagePath = "/emby/items/" + this.nowPlayingItem.getId() + "/Images/" + embyType;
+
             }
 
             String query = "";
 
             if (percentPlayed) {
+                logger.debug("The percent Played equals:{}", getPercentPlayed());
                 BigDecimal percentPlayedRounded = getPercentPlayed();
                 double percent = percentPlayedRounded.doubleValue();
                 percent = percent * 100;
