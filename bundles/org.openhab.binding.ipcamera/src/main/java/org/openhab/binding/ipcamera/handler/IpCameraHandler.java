@@ -379,8 +379,8 @@ public class IpCameraHandler extends BaseThingHandler {
         return httpRequestURL;
     }
 
-    // Always use this as sendHttpGET(GET/POST/PUT/DELETE, "/foo/bar",null,false)//
-    // The authHandler will use the url inside a digest string as needed.
+    // Always use this as sendHttpGET(GET/POST/PUT/DELETE, "/foo/bar",null)//
+    // The authHandler will generate a digest string and re-send using this same function when needed.
     @SuppressWarnings("null")
     public void sendHttpRequest(String httpMethod, String httpRequestURLFull, @Nullable String digestString) {
 
