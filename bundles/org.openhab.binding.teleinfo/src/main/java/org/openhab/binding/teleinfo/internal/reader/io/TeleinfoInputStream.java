@@ -94,7 +94,7 @@ public class TeleinfoInputStream extends InputStream {
     private long waitNextHeaderFrameTimeoutInUs;
     private long readingFrameTimeoutInUs;
     private boolean autoRepairInvalidADPSgroupLine;
-    private boolean useOpenhabScheduler;
+    private boolean useOwnScheduler;
 
     static {
         LABEL_VALUE_CONVERTERS = new HashMap<>();
@@ -117,11 +117,13 @@ public class TeleinfoInputStream extends InputStream {
 
     public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
             long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine) {
-        this(teleinfoInputStream, waitNextHeaderFrameTimeoutInUs, readingFrameTimeoutInUs, autoRepairInvalidADPSgroupLine, null);
+        this(teleinfoInputStream, waitNextHeaderFrameTimeoutInUs, readingFrameTimeoutInUs,
+                autoRepairInvalidADPSgroupLine, null);
     }
 
     public TeleinfoInputStream(final @Nullable InputStream teleinfoInputStream, long waitNextHeaderFrameTimeoutInUs,
-            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine, @Nullable ExecutorService executorService) {
+            long readingFrameTimeoutInUs, boolean autoRepairInvalidADPSgroupLine,
+            @Nullable ExecutorService executorService) {
         if (teleinfoInputStream == null) {
             throw new IllegalArgumentException("Teleinfo inputStream is null");
         }
@@ -135,7 +137,7 @@ public class TeleinfoInputStream extends InputStream {
         } else {
             this.executorService = executorService;
             this.useOwnScheduler = false;
-       }
+        }
 
         this.bufferedReader = new BufferedReader(new InputStreamReader(teleinfoInputStream, StandardCharsets.US_ASCII));
 
@@ -146,7 +148,7 @@ public class TeleinfoInputStream extends InputStream {
     public void close() throws IOException {
         logger.debug("close() [start]");
         bufferedReader.close();
-        if (!useOpenhabScheduler) {
+        if (useOwnScheduler) {
             executorService.shutdownNow();
         }
         super.close();
