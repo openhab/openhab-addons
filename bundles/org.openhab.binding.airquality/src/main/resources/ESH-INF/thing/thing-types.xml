@@ -205,10 +205,10 @@
 	</channel-type>
 	
 	<channel-type id="aqiColor" advanced="true">
-        <item-type>Color</item-type>
-        <label>AQI Color</label>
-        <description>Color associated to given AQI Index.</description>
-        <state readOnly="true"/>
-    </channel-type>
+		<item-type>Color</item-type>
+		<label>AQI Color</label>
+		<description>Color associated to given AQI Index.</description>
+		<state readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>
