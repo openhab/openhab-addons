@@ -133,7 +133,7 @@ public class OnvifDiscovery {
         } else {// // http://192.168.0.1/onvif/device_service
             ipAddress = temp.substring(beginIndex, endIndex);
         }
-        logger.debug("Camera IP:{} and ONVIF PORT:{}", ipAddress, onvifPort);
+        // logger.debug("Camera IP:{} and ONVIF PORT:{}", ipAddress, onvifPort);
         String brand = checkForBrand(xml);
         if (brand.equals("ONVIF")) {
             try {

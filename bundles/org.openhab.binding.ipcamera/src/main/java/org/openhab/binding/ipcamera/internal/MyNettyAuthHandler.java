@@ -80,39 +80,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         return "";
     }
 
-    private String searchString(String rawString, String searchedString) {
-        String result = "";
-        int index = 0;
-        index = rawString.indexOf(searchedString);
-        if (index != -1) // -1 means "not found"
-        {
-            result = rawString.substring(index + searchedString.length(), rawString.length());
-            index = result.indexOf(',');
-            if (index == -1) {
-                index = result.indexOf('"');
-                if (index == -1) {
-                    index = result.indexOf('}');
-                    if (index == -1) {
-                        return result;
-                    } else {
-                        return result.substring(0, index);
-                    }
-                } else {
-                    return result.substring(0, index);
-                }
-            } else {
-                result = result.substring(0, index);
-                index = result.indexOf('"');
-                if (index == -1) {
-                    return result;
-                } else {
-                    return result.substring(0, index);
-                }
-            }
-        }
-        return "";
-    }
-
     // Method can be used a few ways. processAuth(null, string,string, false) to return the digest on demand, and
     // processAuth(challString, string,string, true) to auto send new packet
     // First run it should not have authenticate as null
@@ -131,14 +98,14 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
-        realm = searchString(authenticate, "realm=\"");
+        realm = Helper.searchString(authenticate, "realm=\"");
         if (realm == "") {
             logger.warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
             return;
         }
-        nonce = searchString(authenticate, "nonce=\"");
-        opaque = searchString(authenticate, "opaque=\"");
-        qop = searchString(authenticate, "qop=\"");
+        nonce = Helper.searchString(authenticate, "nonce=\"");
+        opaque = Helper.searchString(authenticate, "opaque=\"");
+        qop = Helper.searchString(authenticate, "qop=\"");
 
         if (!qop.isEmpty() && !realm.isEmpty()) {
             myHandler.useDigestAuth = true;
@@ -148,7 +115,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     qop, realm);
         }
 
-        String stale = searchString(authenticate, "stale=\"");
+        String stale = Helper.searchString(authenticate, "stale=\"");
         if (stale == "") {
         } else if (stale.equalsIgnoreCase("true")) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");

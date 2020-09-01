@@ -16,12 +16,15 @@ package org.openhab.binding.ipcamera.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link Helper} class has static functions that help the IpCamera binding not need as many external libs.
  *
  *
  * @author Matthew Skinner - Initial contribution
  */
+@NonNullByDefault
 public class Helper {
 
     /**

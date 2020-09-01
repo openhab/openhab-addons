@@ -87,8 +87,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest httpRequest = (HttpRequest) msg;
-                // logger.debug("{}", httpRequest);
-                logger.debug("Stream Server recieved request \t{}:{}", httpRequest.method(), httpRequest.uri());
+                // logger.debug("Stream Server recieved request \t{}:{}", httpRequest.method(), httpRequest.uri());
                 String requestIP = "("
                         + ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress() + ")";
                 if (!whiteList.contains(requestIP) && !whiteList.equals("DISABLE")) {
@@ -103,6 +102,8 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                                 String debugMe = ipCameraGroupHandler.getPlayList();
                                 logger.debug("playlist is:{}", debugMe);
                                 sendString(ctx, debugMe, "application/x-mpegurl");
+                                ctx.close();
+                                return;
                             } else {
                                 logger.warn(
                                         "HLS requires the groups startStream channel to be turned on first. Just starting it now.");
@@ -114,33 +115,15 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                             break;
                         case "/ipcamera.jpg":
                             sendSnapshotImage(ctx, "image/jpg");
-                            break;
-                        case "/snapshots.mjpeg":
-                            logger.warn("snapshots.mjpeg is not yet implemented, use ipcamera.jpg or HLS.");
-                            // ipCameraGroupHandler.setupSnapshotStreaming(true, ctx, false);
-                            // handlingSnapshotStream = true;
-                            break;
-                        case "/ipcamera.mjpeg":
-                            logger.warn("ipcamera.mjpeg is not yet implemented, use ipcamera.jpg or HLS.");
-                            // ipCameraGroupHandler.setupMjpegStreaming(true, ctx);
-                            // handlingMjpeg = true;
-                            break;
-                        case "/autofps.mjpeg":
-                            logger.warn("autofps.mjpeg is not yet implemented, use ipcamera.jpg or HLS.");
-                            // ipCameraGroupHandler.setupSnapshotStreaming(true, ctx, true);
-                            // handlingSnapshotStream = true;
-                            break;
+                            ctx.close();
+                            return;
                         default:
                             if (httpRequest.uri().contains(".ts")) {
-                                // String path = resolveIndexToPath(httpRequest.uri());
                                 sendFile(ctx, resolveIndexToPath(httpRequest.uri()) + httpRequest.uri().substring(2),
                                         "video/MP2T");
                             } else if (httpRequest.uri().contains(".jpg")) {
-                                // Allow access to the preroll and postroll jpg files
                                 sendFile(ctx, httpRequest.uri(), "image/jpg");
-                            } else if (httpRequest.uri().contains(".m4s")) {
-                                sendFile(ctx, httpRequest.uri(), "video/mp4");
-                            } else if (httpRequest.uri().contains(".mp4")) {
+                            } else if (httpRequest.uri().contains(".m4s") || httpRequest.uri().contains(".mp4")) {
                                 sendFile(ctx, httpRequest.uri(), "video/mp4");
                             }
                     }
@@ -177,7 +160,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void sendFile(ChannelHandlerContext ctx, String fileUri, String contentType) throws IOException {
-        logger.debug("file is :{}", fileUri);
+        logger.trace("file is :{}", fileUri);
         File file = new File(fileUri);
         ChunkedFile chunkedFile = new ChunkedFile(file);
         ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
@@ -248,5 +231,9 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
+        if (ctx == null) {
+            return;
+        }
+        ctx.close();
     }
 }

@@ -61,7 +61,7 @@ public class RtspHandler extends ChannelDuplexHandler {
 
     RtspHandler() {
         // todo may need to pass in IP of camera plus a few others to make this code
-        // work again.
+        // work again after it was moved to its own class.
     }
 
     public HttpRequest getRTSPoptions(String rtspURL) {

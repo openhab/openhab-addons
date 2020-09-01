@@ -130,10 +130,10 @@ public class IpCameraHandler extends BaseThingHandler {
     public static ArrayList<IpCameraGroupHandler> listOfGroupHandlers = new ArrayList<IpCameraGroupHandler>(0);
     public static ArrayList<String> listOfOnlineCameraUID = new ArrayList<String>(1);
     public final Logger logger = LoggerFactory.getLogger(getClass());
-    private ScheduledExecutorService cameraConnection = Executors.newScheduledThreadPool(1);
-    private ScheduledExecutorService scheduledMovePTZ = Executors.newScheduledThreadPool(1);
-    private ScheduledExecutorService pollCamera = Executors.newScheduledThreadPool(1);
-    private ScheduledExecutorService snapshot = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(4);
+    // private ScheduledExecutorService scheduledMovePTZ = Executors.newScheduledThreadPool(1);
+    // private ScheduledExecutorService pollCamera = Executors.newScheduledThreadPool(1);
+    // private ScheduledExecutorService snapshot = Executors.newScheduledThreadPool(1);
     public Configuration config;
 
     // ChannelGroup is thread safe
@@ -1448,7 +1448,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsolutePan(Float.valueOf(command.toString()));
-                        scheduledMovePTZ.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_TILT:
@@ -1473,7 +1473,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsoluteTilt(Float.valueOf(command.toString()));
-                        scheduledMovePTZ.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_ZOOM:
@@ -1498,7 +1498,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsoluteZoom(Float.valueOf(command.toString()));
-                        scheduledMovePTZ.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
             }
@@ -1582,11 +1582,11 @@ public class IpCameraHandler extends BaseThingHandler {
 
         if (preroll > 0 || updateImageEvents.contains("1")) {
             snapshotPolling = true;
-            snapshotJob = snapshot.scheduleAtFixedRate(snapshotRunnable, 1000,
+            snapshotJob = threadPool.scheduleAtFixedRate(snapshotRunnable, 1000,
                     Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
         }
 
-        pollCameraJob = pollCamera.scheduleWithFixedDelay(pollCameraRunnable, 1000, 8000, TimeUnit.MILLISECONDS);
+        pollCameraJob = threadPool.scheduleWithFixedDelay(pollCameraRunnable, 1000, 8000, TimeUnit.MILLISECONDS);
 
         if (!rtspUri.equals("")) {
             updateState(CHANNEL_RTSP_URL, new StringType(rtspUri));
@@ -1719,11 +1719,11 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         if (streamingSnapshotMjpeg || streamingAutoFps) {
             snapshotPolling = true;
-            snapshotJob = snapshot.scheduleAtFixedRate(snapshotRunnable, 200,
+            snapshotJob = threadPool.scheduleAtFixedRate(snapshotRunnable, 200,
                     Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
         } else if (updateImageEvents.contains("4")) { // During Motion Alarms
             snapshotPolling = true;
-            snapshotJob = snapshot.scheduleAtFixedRate(snapshotRunnable, 200,
+            snapshotJob = threadPool.scheduleAtFixedRate(snapshotRunnable, 200,
                     Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
         }
     }
@@ -1902,7 +1902,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     "The Image channel is set to update more often than 8 seconds. This is not recommended. The Image channel is best used only for higher poll times. See the readme file on how to display the cameras picture for best results or use a higher poll time.");
         }
         // Waiting 3 seconds for ONVIF to discover the urls before running.
-        cameraConnectionJob = cameraConnection.scheduleWithFixedDelay(pollingCameraConnection, 6, 30, TimeUnit.SECONDS);
+        cameraConnectionJob = threadPool.scheduleWithFixedDelay(pollingCameraConnection, 6, 30, TimeUnit.SECONDS);
     }
 
     // What the camera needs to re-connect if the initialize() is not called.
@@ -1918,22 +1918,18 @@ public class IpCameraHandler extends BaseThingHandler {
         onvifCamera.disconnect();
         if (pollCameraJob != null) {
             pollCameraJob.cancel(true);
-            pollCamera.shutdown();
-            pollCamera = Executors.newScheduledThreadPool(1);
             pollCameraJob = null;
         }
         if (snapshotJob != null) {
             snapshotJob.cancel(true);
-            snapshot.shutdown();
-            snapshot = Executors.newScheduledThreadPool(1);
             snapshotJob = null;
         }
         if (cameraConnectionJob != null) {
             cameraConnectionJob.cancel(true);
-            cameraConnection.shutdown();
-            cameraConnection = Executors.newScheduledThreadPool(1);
             cameraConnectionJob = null;
         }
+        threadPool.shutdown();
+        threadPool = Executors.newScheduledThreadPool(4);
 
         listOfOnlineCameraHandlers.remove(this);
         listOfOnlineCameraUID.remove(getThing().getUID().getId());

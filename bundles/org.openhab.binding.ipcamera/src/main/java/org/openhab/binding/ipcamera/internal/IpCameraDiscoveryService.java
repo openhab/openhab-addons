@@ -69,11 +69,11 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
         removeOlderResults(getTimestampOfLastScan());
         OnvifDiscovery onvifDiscovery = new OnvifDiscovery(this);
         try {
-            onvifDiscovery.discoverCameras(3702);
-            onvifDiscovery.discoverCameras(1900);
+            onvifDiscovery.discoverCameras(3702);// WS discovery
+            onvifDiscovery.discoverCameras(1900);// SSDP
         } catch (UnknownHostException | InterruptedException e) {
             logger.warn(
-                    "IpCamera Discovery has an issue discovering the network setting to find cameras with. Try setting up the camera manually.");
+                    "IpCamera Discovery has an issue discovering the network settings to find cameras with. Try setting up the camera manually.");
         }
     }
 }

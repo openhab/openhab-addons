@@ -73,7 +73,6 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-        // logger.trace("Opening a StreamServerHandler.");
     }
 
     @Override
@@ -283,7 +282,6 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
         if (ctx == null) {
             return;
         }
-        // logger.trace("Stream server:{}.", evt);
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent e = (IdleStateEvent) evt;
             if (e.state() == IdleState.WRITER_IDLE) {
@@ -299,7 +297,6 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
             return;
         }
         ctx.close();
-        // logger.trace("Closing a StreamServerHandler.");
         if (handlingMjpeg) {
             ipCameraHandler.setupMjpegStreaming(false, ctx);
         } else if (handlingSnapshotStream) {

@@ -673,8 +673,6 @@ public class OnvifConnection {
                     results.add(temp);
                     ++startLookingFromIndex;
                 }
-            } else {
-                logger.trace("no more to find");
             }
         }
         return results;
