@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.discovery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +21,6 @@ import java.util.List;
  * @author Bernd Weymann - Initial contribution
  */
 public class Vehicle {
-    public static final String ACTIVATED = "ACTIVATED";
-    public static final String SUPPORTED = "SUPPORTED";
-    public static final String NOT_SUPPORTED = "NOT_SUPPORTED";
-
     public String vin;
     public String model;
     public String driveTrain;

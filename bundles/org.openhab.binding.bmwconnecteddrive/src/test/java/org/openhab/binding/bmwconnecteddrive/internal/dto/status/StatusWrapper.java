@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 import com.google.gson.Gson;
@@ -222,10 +223,10 @@ public class StatusWrapper {
                 int totalRange = 0;
                 if (imperial) {
                     if (isElectric) {
-                        totalRange += vStatus.remainingRangeElectricMls * Converter.MILES_TO_FEET_FACTOR;
+                        totalRange += vStatus.remainingRangeElectricMls * Constants.MILES_TO_FEET_FACTOR;
                     }
                     if (hasFuel) {
-                        totalRange += vStatus.remainingRangeFuelMls * Converter.MILES_TO_FEET_FACTOR;
+                        totalRange += vStatus.remainingRangeFuelMls * Constants.MILES_TO_FEET_FACTOR;
                     }
                 } else {
                     if (isElectric) {

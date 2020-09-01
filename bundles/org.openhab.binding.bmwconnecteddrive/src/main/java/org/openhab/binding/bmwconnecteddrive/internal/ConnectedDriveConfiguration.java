@@ -13,6 +13,7 @@
 package org.openhab.binding.bmwconnecteddrive.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 
 /**
  * The {@link ConnectedDriveConfiguration} class contains fields mapping thing configuration parameters.
@@ -25,15 +26,15 @@ public class ConnectedDriveConfiguration {
     /**
      * Depending on the location the correct server needs to be called
      */
-    public String region = "";
+    public String region = Constants.EMPTY;
 
     /**
      * BMW Connected Drive Username
      */
-    public String userName = "";
+    public String userName = Constants.EMPTY;
 
     /**
      * BMW Connected Drive Password
      */
-    public String password = "";
+    public String password = Constants.EMPTY;
 }

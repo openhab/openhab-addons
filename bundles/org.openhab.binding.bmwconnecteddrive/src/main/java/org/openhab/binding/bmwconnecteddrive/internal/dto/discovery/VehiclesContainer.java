@@ -10,20 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.handler;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.discovery;
 
-import java.util.Optional;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.List;
 
 /**
- * The {@link StringResponseCallback} Interface for all String results from ASYNC REST API
+ * The {@link VehiclesContainer} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-@NonNullByDefault
-public interface StringResponseCallback extends ResponseCallback {
-
-    public void onResponse(Optional<String> result);
-
+public class VehiclesContainer {
+    public List<Vehicle> vehicles;
 }

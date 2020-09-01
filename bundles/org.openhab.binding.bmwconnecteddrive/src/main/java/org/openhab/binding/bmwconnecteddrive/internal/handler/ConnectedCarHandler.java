@@ -43,6 +43,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
@@ -54,6 +55,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusCo
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +109,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         isElectric = type.equals(CarType.PLUGIN_HYBRID.toString()) || type.equals(CarType.ELECTRIC_REX.toString())
                 || type.equals(CarType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
-        logger.info("DriveTrain {} isElectric {} hasFuel {} Imperial {}", type, isElectric, hasFuel, imperial);
+        logger.debug("DriveTrain {} isElectric {} hasFuel {} Imperial {}", type, isElectric, hasFuel, imperial);
     }
 
     @Override
@@ -371,10 +373,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     /**
      * Callbacks for ConnectedDrive Portal
      *
-     * @author bernd
+     * @author Bernd Weymann
      *
      */
-
     @NonNullByDefault
     public class ChargeProfilesCallback implements StringResponseCallback {
         @Override
@@ -382,9 +383,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             chargeProfileCache = content;
         }
 
+        /**
+         * Store Error Report in cache variable. Via Fingerprint Channel error is logged and Issue can be raised
+         */
         @Override
-        public void onError(String reason) {
-            logger.debug("Unable to retrieve Charging Profile: {}", reason);
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            chargeProfileCache = Optional.of(GSON.toJson(error));
         }
     }
 
@@ -395,9 +400,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             rangeMapCache = content;
         }
 
+        /**
+         * Store Error Report in cache variable. Via Fingerprint Channel error is logged and Issue can be raised
+         */
         @Override
-        public void onError(String reason) {
-            logger.debug("Unable to retrieve RangeMap: {}", reason);
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            rangeMapCache = Optional.of(GSON.toJson(error));
         }
     }
 
@@ -406,18 +415,17 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onResponse(Optional<byte[]> content) {
             if (content.isPresent()) {
-                // byte[] image = content.get().getBytes();
-                logger.info("Content {} {} {} {}", content.get()[0], content.get()[1], content.get()[2],
-                        content.get()[3]);
                 String contentType = HttpUtil.guessContentTypeFromData(content.get());
-                logger.info("Image Content Type {} Size {}", contentType, content.get().length);
                 updateState(imageChannel, new RawType(content.get(), contentType));
             }
         }
 
+        /**
+         * Store Error Report in cache variable. Via Fingerprint Channel error is logged and Issue can be raised
+         */
         @Override
-        public void onError(String reason) {
-            logger.debug("Unable to retrieve Image: {}", reason);
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
         }
     }
 
@@ -445,11 +453,14 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             }
         }
 
+        /**
+         * Store Error Report in cache variable. Via Fingerprint Channel error is logged and Issue can be raised
+         */
         @Override
-        public void onError(String reason) {
-            logger.debug("Unable to retrieve All Trips: {}", reason);
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            allTripsCache = Optional.of(GSON.toJson(error));
         }
-
     }
 
     @NonNullByDefault
@@ -474,9 +485,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             }
         }
 
+        /**
+         * Store Error Report in cache variable. Via Fingerprint Channel error is logged and Issue can be raised
+         */
         @Override
-        public void onError(String reason) {
-            logger.debug("Unable to retrieve Last Trip: {}", reason);
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            lastTripCache = Optional.of(GSON.toJson(error));
         }
     }
 
@@ -487,9 +502,16 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     public class VehicleStatusCallback implements StringResponseCallback {
         private ThingStatus thingStatus = ThingStatus.UNKNOWN;
 
+        /**
+         * Vehicle Satus is supported by all cars so callback result is used to report Thing Status.
+         * If valid content is delivered in onResponse Thing goes online while onError Thing goes offline
+         *
+         * @param status
+         * @param detail
+         * @param reason
+         */
         private void setThingStatus(ThingStatus status, ThingStatusDetail detail, String reason) {
             if (thingStatus != status) {
-                // STatus is supported by all cars so callback is used to report ONLINE state
                 updateStatus(status, detail, reason);
             }
         }
@@ -497,8 +519,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onResponse(Optional<String> content) {
             if (content.isPresent()) {
+                setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, Constants.EMPTY);
                 vehicleStatusCache = content;
-                logger.info("Content: {}", content.get());
                 VehicleStatusContainer status = GSON.fromJson(content.get(), VehicleStatusContainer.class);
                 VehicleStatus vStatus = status.vehicleStatus;
                 if (vStatus == null) {
@@ -524,17 +546,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         totalRange += vStatus.remainingRangeElectric;
                         updateState(remainingRangeElectric,
                                 QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
-                        logger.info("updated {} {}", remainingRangeElectric, vStatus.remainingRangeElectric);
-                    } else {
-                        logger.info("{} not updated", remainingRangeElectric);
                     }
                     if (hasFuel) {
                         totalRange += vStatus.remainingRangeFuel;
                         updateState(remainingRangeFuel,
                                 QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
-                        logger.info("updated {} {}", remainingRangeFuel, vStatus.remainingRangeFuel);
-                    } else {
-                        logger.info("{} not updated", remainingRangeFuel);
                     }
                     if (isHybrid) {
                         updateState(remainingRangeHybrid,
@@ -558,7 +574,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         updateState(remainingRangeHybrid,
                                 QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
                     }
-                    updateState(rangeRadius, new DecimalType((totalRange) * Converter.MILES_TO_FEET_FACTOR));
+                    updateState(rangeRadius, new DecimalType((totalRange) * Constants.MILES_TO_FEET_FACTOR));
                 }
                 if (isElectric) {
                     updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
@@ -583,10 +599,10 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
 
         @Override
-        public void onError(String reason) {
-            logger.debug("Unable to retrieve Vehicle Status {}", reason);
-            setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            vehicleStatusCache = Optional.of(GSON.toJson(error));
+            setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
         }
-
     }
 }

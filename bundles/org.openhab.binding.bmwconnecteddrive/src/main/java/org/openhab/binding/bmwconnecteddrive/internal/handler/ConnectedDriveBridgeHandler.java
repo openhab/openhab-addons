@@ -30,8 +30,9 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.discovery.ConnectedCarDiscovery;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.ConnectedDriveUserInfo;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.Dealer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Dealer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
@@ -51,8 +52,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private static final Gson GSON = new Gson();
     private HttpClient httpClient;
     private BundleContext bundleContext;
-    private ServiceRegistration<?> discoveryServiceRegstration;
     private ConnectedCarDiscovery discoveryService;
+    private ServiceRegistration<?> discoveryServiceRegstration;
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
@@ -74,9 +75,9 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getIdWithoutGroup().equals(DISCOVERY_FINGERPRINT)) {
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
+        if (command instanceof OnOffType) {
+            if (command.equals(OnOffType.ON)) {
+                if (channelUID.getIdWithoutGroup().equals(DISCOVERY_FINGERPRINT)) {
                     if (troubleshootFingerprint.isPresent()) {
                         logger.warn("BMW ConnectedDrive Binding - Discovery Troubleshoot fingerprint - BEGIN");
                         logger.warn("{}", troubleshootFingerprint.get());
@@ -85,21 +86,17 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                         logger.warn(
                                 "BMW ConnectedDrive Binding - No Discovery Troubleshoot fingerprint available. Please check for valid username and password Settings for proper connection towards ConnectDrive");
                     }
-                }
-                // Switch back to off immediately
-                updateState(discoveryfingerPrint, OnOffType.OFF);
-            }
-        } else if (channelUID.getIdWithoutGroup().equals(DISCOVERY_TRIGGER)) {
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
+                    // Switch back to off immediately
+                    updateState(discoveryfingerPrint, OnOffType.OFF);
+                } else if (channelUID.getIdWithoutGroup().equals(DISCOVERY_TRIGGER)) {
                     // trigger discovery again - helpful after the user performed some changes in the ConnectedDrive
                     // Portal and wants to get the changes
                     if (proxy.isPresent()) {
                         proxy.get().requestVehicles(this);
                     }
+                    // Switch back to off immediately
+                    updateState(discoveryTrigger, OnOffType.OFF);
                 }
-                // Switch back to off immediately
-                updateState(discoveryTrigger, OnOffType.OFF);
             }
         }
     }
@@ -110,9 +107,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         configuration = Optional.of(getConfigAs(ConnectedDriveConfiguration.class));
         if (configuration.isPresent()) {
             proxy = Optional.of(new ConnectedDriveProxy(httpClient, configuration.get()));
-            if (proxy.isPresent()) {
-                proxy.get().requestVehicles(this);
-            }
+            proxy.get().requestVehicles(this);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
@@ -127,20 +122,26 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         }
     }
 
+    public void requestVehicles() {
+        if (proxy.isPresent()) {
+            proxy.get().requestVehicles(this);
+        }
+    }
+
     /**
      * There's only the Vehicles response available
      */
     @Override
     public void onResponse(Optional<String> response) {
         if (response.isPresent()) {
-            ConnectedDriveUserInfo userInfo = GSON.fromJson(response.get(), ConnectedDriveUserInfo.class);
-            discoveryService.scan(userInfo);
+            VehiclesContainer container = GSON.fromJson(response.get(), VehiclesContainer.class);
+            discoveryService.onResponse(container);
             updateStatus(ThingStatus.ONLINE);
-            if (userInfo.getVehicles() != null) {
-                if (userInfo.getVehicles().isEmpty()) {
+            if (container.vehicles != null) {
+                if (container.vehicles.isEmpty()) {
                     troubleshootFingerprint = Optional.of("No Cars found in your ConnectedDrive Account");
                 } else {
-                    userInfo.getVehicles().forEach(entry -> {
+                    container.vehicles.forEach(entry -> {
                         entry.vin = ANONYMOUS;
                         entry.breakdownNumber = ANONYMOUS;
                         if (entry.dealer != null) {
@@ -153,7 +154,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                             d.street = ANONYMOUS;
                         }
                     });
-                    troubleshootFingerprint = Optional.of(GSON.toJson(userInfo));
+                    troubleshootFingerprint = Optional.of(GSON.toJson(container));
                 }
             }
         } else {
@@ -162,8 +163,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     }
 
     @Override
-    public void onError(String reason) {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
+    public void onError(NetworkError error) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
     }
 
     public Optional<ConnectedDriveProxy> getProxy() {

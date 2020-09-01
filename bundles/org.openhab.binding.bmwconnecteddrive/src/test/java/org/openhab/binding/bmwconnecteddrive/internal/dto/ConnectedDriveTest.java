@@ -19,6 +19,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.junit.Test;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 
 import com.google.gson.Gson;
@@ -35,8 +37,8 @@ public class ConnectedDriveTest {
     @Test
     public void testUserInfo() {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
-        ConnectedDriveUserInfo userInfo = GSON.fromJson(resource1, ConnectedDriveUserInfo.class);
-        List<Vehicle> vehicles = userInfo.getVehicles();
+        VehiclesContainer container = GSON.fromJson(resource1, VehiclesContainer.class);
+        List<Vehicle> vehicles = container.vehicles;
         assertEquals("Number of Vehicles", 1, vehicles.size());
         Vehicle v = vehicles.get(0);
         // assertEquals("VIN", "WBY1Z81040V905639", v.getVin());

@@ -17,7 +17,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ByteResponseCallback} Interface for all Callbacks from async REST API results
+ * The {@link ByteResponseCallback} Interface for all raw byte results from ASYNC REST API
  *
  * @author Bernd Weymann - Initial contribution
  */

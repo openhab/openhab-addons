@@ -10,20 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.handler;
-
-import java.util.Optional;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.bmwconnecteddrive.internal.dto.charge;
 
 /**
- * The {@link StringResponseCallback} Interface for all String results from ASYNC REST API
+ * The {@link ChargingWindow} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
-@NonNullByDefault
-public interface StringResponseCallback extends ResponseCallback {
-
-    public void onResponse(Optional<String> result);
-
+public class ChargingWindow {
+    public String startTime;// ":"11:00",
+    public String endTime;// ":"17:00"}}
 }
