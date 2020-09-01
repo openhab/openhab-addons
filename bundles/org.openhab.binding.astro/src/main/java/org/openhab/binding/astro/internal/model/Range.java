@@ -18,8 +18,6 @@ import java.util.Calendar;
 
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -82,11 +80,5 @@ public class Range {
                 : DateTimeUtils.truncateToMidnight(cal).getTimeInMillis();
         long matchEnd = end != null ? end.getTimeInMillis() : DateTimeUtils.endOfDayDate(cal).getTimeInMillis();
         return cal.getTimeInMillis() >= matchStart && cal.getTimeInMillis() < matchEnd;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("start", DateTimeUtils.getDate(start))
-                .append("end", DateTimeUtils.getDate(end)).toString();
     }
 }

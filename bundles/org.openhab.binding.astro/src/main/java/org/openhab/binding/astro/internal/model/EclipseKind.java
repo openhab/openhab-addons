@@ -12,25 +12,16 @@
  */
 package org.openhab.binding.astro.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
- * Holds the calculated sun phase informations.
+ * All kind of eclipses.
  *
- * @author Gerhard Riegler - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
  */
-public class SunPhase {
-    private SunPhaseName name;
-
-    /**
-     * Returns the sun phase.
-     */
-    public SunPhaseName getName() {
-        return name;
-    }
-
-    /**
-     * Sets the sun phase.
-     */
-    public void setName(SunPhaseName name) {
-        this.name = name;
-    }
+@NonNullByDefault
+public enum EclipseKind {
+    PARTIAL,
+    TOTAL,
+    RING;
 }
