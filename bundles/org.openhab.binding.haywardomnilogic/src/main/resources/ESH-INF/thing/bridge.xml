@@ -11,7 +11,7 @@
 
 		<config-description>
 			<parameter name="hostname" type="text">
-			    <context>url</context>
+				<context>url</context>
 				<label>Host Name</label>
 				<!-- API Hostname -->
 				<default>https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
@@ -26,7 +26,7 @@
 				<required>true</required>
 			</parameter>
 			<parameter name="password" type="text">
-			    <context>password</context>
+				<context>password</context>
 				<label>Password</label>
 				<description>The password to connect to the server.</description>
 				<required>true</required>

@@ -30,12 +30,12 @@
 		<description>Light State</description>
 		<state readOnly="true">
 			<options>
-			    <option value="0">Off</option>
-			    <option value="1">On</option>
-			    <option value="4">15 Sec White Light</option>
-			    <option value="7">Powering Off</option>
+				<option value="0">Off</option>
+				<option value="1">On</option>
+				<option value="4">15 Sec White Light</option>
+				<option value="7">Powering Off</option>
 			</options>  
-	   </state>
+		</state>
 	</channel-type>
 
 	<channel-type id="currentShow">
@@ -43,26 +43,25 @@
 		<label>Current Show</label>
 		<description>Current Show</description>
 		<state readOnly="false">
-            <options>
-                <option value="0">Voodoo Lounge</option>
-                <option value="1">Deep Blue Sea</option>
-                <option value="2">Royal Blue</option>
-                <option value="3">Afternoon Sky</option>
-                <option value="4">Aqua Green</option>
-                <option value="5">Emerald</option>                
-                <option value="6">Cloud White</option>
-                <option value="7">Warm Red</option>
-                <option value="8">Flamingo</option>
-                <option value="9">Vivid Violet</option>
-                <option value="10">Sangria</option>
-                <option value="11">Twilight</option> 
-                <option value="12">Tranquility</option>
-                <option value="13">Gemstone</option>
-                <option value="14">USA</option>
-                <option value="15">Mardi Gras</option>
-                <option value="16">Cool Cabaret</option>
-            </options>		
-        </state>
+			<options>
+				<option value="0">Voodoo Lounge</option>
+				<option value="1">Deep Blue Sea</option>
+				<option value="2">Royal Blue</option>
+				<option value="3">Afternoon Sky</option>
+				<option value="4">Aqua Green</option>
+				<option value="5">Emerald</option>                
+				<option value="6">Cloud White</option>
+				<option value="7">Warm Red</option>
+				<option value="8">Flamingo</option>
+				<option value="9">Vivid Violet</option>
+				<option value="10">Sangria</option>
+				<option value="11">Twilight</option> 
+				<option value="12">Tranquility</option>
+				<option value="13">Gemstone</option>
+				<option value="14">USA</option>
+				<option value="15">Mardi Gras</option>
+				<option value="16">Cool Cabaret</option>
+			</options>		
+		</state>
 	</channel-type>
-    
 </thing:thing-descriptions>

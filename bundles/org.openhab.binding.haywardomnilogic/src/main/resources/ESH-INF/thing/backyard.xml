@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="haywardomnilogic"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="backyard" listed="false">
 		<supported-bridge-type-refs>
@@ -40,30 +40,30 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Status</description>
-        <state readOnly="true">
-            <options>
-                <option value="1">Normal</option>
-                <option value="2">Alarm</option>
-                <option value="3">Expired</option>
-                <option value="4">Lost Link</option>
-                <option value="5">Service Mode</option>
-            </options>      
-        </state>
-    </channel-type>
+		<state readOnly="true">
+			<options>
+				<option value="1">Normal</option>
+				<option value="2">Alarm</option>
+				<option value="3">Expired</option>
+				<option value="4">Lost Link</option>
+				<option value="5">Service Mode</option>
+			</options>      
+		</state>
+	</channel-type>
 	
 	<channel-type id="backyardstate">
 		<item-type>String</item-type>
 		<label>State</label>
 		<description>State</description>
 		<state readOnly="true">
-            <options>
-                <option value="0">0</option>
-                <option value="1">Normal</option>
-                <option value="2">Service Mode</option>
-                <option value="3">Config Mode</option>
-                <option value="4">Timed Service Mode</option>
-            </options>      
-        </state>
+			<options>
+				<option value="0">0</option>
+				<option value="1">Normal</option>
+				<option value="2">Service Mode</option>
+				<option value="3">Config Mode</option>
+				<option value="4">Timed Service Mode</option>
+			</options>      
+		</state>
 	</channel-type>
 
 	<channel-type id="alarm">

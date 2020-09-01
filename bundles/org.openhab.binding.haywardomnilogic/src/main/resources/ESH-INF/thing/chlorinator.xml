@@ -34,14 +34,14 @@
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
 		<description>Operating Mode</description>
-        <state readOnly="true">
-            <options>
-                <option value="0">Off</option>
-                <option value="1">Timed Percent</option>
-                <option value="2">ORP Autosense</option>
-            </options>      
-        </state>
-    </channel-type>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Timed Percent</option>
+				<option value="2">ORP Autosense</option>
+			</options>      
+		</state>
+	</channel-type>
 
 	<channel-type id="timedPercent">
 		<item-type>Number</item-type>
@@ -54,13 +54,13 @@
 		<item-type>String</item-type>
 		<label>scMode</label>
 		<description>scMode</description>
-        <state readOnly="true">
-            <options>
-                <option value="0">Off</option>
-                <option value="1">Super Chlorinating</option>
-            </options>      
-        </state>
-    </channel-type>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Super Chlorinating</option>
+			</options>      
+		</state>
+	</channel-type>
 
 	<channel-type id="chlorError">
 		<item-type>Number</item-type>
@@ -72,13 +72,13 @@
 		<item-type>String</item-type>
 		<label>Chlorinator Alert</label>
 		<description>Chlorinator Alert</description>
-        <state readOnly="true">
-            <options>
-                <option value="0">None</option>
-                <option value="16">Low T-Cell Temperature</option>
-            </options>      
-        </state>
-    </channel-type>
+		<state readOnly="true">
+			<options>
+				<option value="0">None</option>
+				<option value="16">Low T-Cell Temperature</option>
+			</options>      
+		</state>
+	</channel-type>
 
 	<channel-type id="avgSaltLevel">
 		<item-type>Number</item-type>
