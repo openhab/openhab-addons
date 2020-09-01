@@ -13,13 +13,12 @@
 
 package org.openhab.binding.wlanthermo.internal.api.nano.data;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
+
 import java.awt.Color;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
@@ -34,9 +33,8 @@ import org.openhab.binding.wlanthermo.internal.WlanThermoNanoHandler;
 import org.openhab.binding.wlanthermo.internal.api.nano.UtilNano;
 import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
 
-import javax.measure.Quantity;
-
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This DTO is used to parse the JSON
@@ -120,11 +118,11 @@ public class Data {
                     break;
                 case SYSTEM_RSSI_SIGNALSTRENGTH:
                     int dbm = system.getRssi();
-                    if (dbm >= -80){
+                    if (dbm >= -80) {
                         state = new DecimalType(4);
-                    } else if (dbm >= -95){
+                    } else if (dbm >= -95) {
                         state = new DecimalType(3);
-                    } else if (dbm >= -105){
+                    } else if (dbm >= -105) {
                         state = new DecimalType(2);
                     } else {
                         state = new DecimalType(1);
@@ -173,7 +171,8 @@ public class Data {
                         }
                         break;
                     case CHANNEL_ALARM_OPENHAB_LOW:
-                        if (channel.get(channelId).getTemp() != 999 && channel.get(channelId).getTemp() < channel.get(channelId).getMin()) {
+                        if (channel.get(channelId).getTemp() != 999
+                                && channel.get(channelId).getTemp() < channel.get(channelId).getMin()) {
                             state = OnOffType.ON;
                         } else {
                             state = OnOffType.OFF;
@@ -270,8 +269,7 @@ public class Data {
                         break;
                     case CHANNEL_COLOR_NAME:
                         if (command instanceof StringType) {
-                            channel.get(channelId)
-                                    .setColor(UtilNano.toHex(((StringType)command).toString()));
+                            channel.get(channelId).setColor(UtilNano.toHex(((StringType) command).toString()));
                             success = true;
                         }
                         break;
@@ -295,9 +293,8 @@ public class Data {
                         break;
                     case CHANNEL_PITMASTER_STATE:
                         String state = ((StringType) command).toString();
-                        if (state.equalsIgnoreCase("off") ||
-                                state.equalsIgnoreCase("manual") ||
-                                state.equalsIgnoreCase("auto")) {
+                        if (state.equalsIgnoreCase("off") || state.equalsIgnoreCase("manual")
+                                || state.equalsIgnoreCase("auto")) {
                             pm.setTyp(state);
                             success = true;
                         }
@@ -325,5 +322,4 @@ public class Data {
         }
         return trigger;
     }
-
 }

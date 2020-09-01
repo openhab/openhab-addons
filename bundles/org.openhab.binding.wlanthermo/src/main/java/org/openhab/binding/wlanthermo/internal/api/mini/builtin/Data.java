@@ -65,7 +65,8 @@ public class Data {
      * @param state
      * @param tempMin
      */
-    public Data(Double temp, String color, String state, Double tempMin, Double tempMax, String name, Boolean alert, Boolean show) {
+    public Data(Double temp, String color, String state, Double tempMin, Double tempMax, String name, Boolean alert,
+            Boolean show) {
         super();
         this.temp = temp;
         this.color = color;
@@ -180,5 +181,4 @@ public class Data {
         this.show = show;
         return this;
     }
-
 }

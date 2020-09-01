@@ -23,11 +23,11 @@ import java.util.Map;
 public class UtilNano {
 
     private static final Map<String, String> colorMappings = createColorMap();
-    private static final String DEFAULT_HEX =  "#ffffff";
+    private static final String DEFAULT_HEX = "#ffffff";
     private static final String DEFAULT_COLORNAME = "niagara";
 
     private UtilNano() {
-        //hidden
+        // hidden
     }
 
     private static Map<String, String> createColorMap() {
@@ -44,9 +44,10 @@ public class UtilNano {
         map.put("brown", "#804000");
         return map;
     }
-    
+
     /**
      * Convert WlanThermo Color Name to Hex
+     * 
      * @param colorName the WlanThermo color name
      * @return The color as Hex String
      */
@@ -57,7 +58,7 @@ public class UtilNano {
     public static String toColorName(String colorHex) {
         String colorName = null;
         if (!colorHex.startsWith("#")) {
-            colorHex = "#"+colorHex;
+            colorHex = "#" + colorHex;
         }
         for (Map.Entry<String, String> entry : colorMappings.entrySet()) {
             if (entry.getValue().equalsIgnoreCase(colorHex)) {

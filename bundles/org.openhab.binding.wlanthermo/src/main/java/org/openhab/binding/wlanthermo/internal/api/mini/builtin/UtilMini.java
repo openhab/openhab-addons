@@ -21,11 +21,11 @@ import java.util.Map;
  * @author Christian Schlipp - Initial contribution
  */
 public class UtilMini {
-    private static final Map<String, String> colorMappings= createColorMap();
+    private static final Map<String, String> colorMappings = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";
 
     private UtilMini() {
-        //hidden
+        // hidden
     }
 
     private static Map<String, String> createColorMap() {
@@ -65,9 +65,10 @@ public class UtilMini {
         map.put("slategrey", "#708090");
         return map;
     }
-    
+
     /**
      * Convert WlanThermo Color Name to Hex
+     * 
      * @param colorName the WlanThermo color name
      * @return The color as Hex String
      */

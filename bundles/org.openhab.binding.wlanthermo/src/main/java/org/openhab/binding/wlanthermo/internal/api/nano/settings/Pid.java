@@ -55,5 +55,4 @@ public class Pid {
     @SerializedName("jp")
     @Expose
     public Integer jp;
-
 }

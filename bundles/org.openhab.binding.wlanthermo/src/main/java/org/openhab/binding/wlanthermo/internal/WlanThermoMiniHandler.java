@@ -19,8 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -40,6 +38,8 @@ import org.openhab.binding.wlanthermo.internal.api.mini.builtin.App;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link WlanThermoMiniHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -54,7 +54,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
     private WlanThermoMiniConfiguration config = new WlanThermoMiniConfiguration();
     private HttpClient httpClient = new HttpClient();
     private @Nullable ScheduledFuture<?> pollingScheduler;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private Gson gson = new Gson();
     private App app = new App();
 
@@ -87,7 +88,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 if (pollingScheduler != null) {
                     pollingScheduler.cancel(true);
                 }
-                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(), TimeUnit.SECONDS);
+                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
+                        TimeUnit.SECONDS);
                 updateState(SYSTEM + "#" + SYSTEM_ONLINE, OnOffType.ON);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -95,14 +97,15 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             }
         } catch (Exception e) {
             logger.debug("Failed to connect.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to WlanThermo at "+config.getIpAddress());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not connect to WlanThermo at " + config.getIpAddress());
             if (pollingScheduler != null) {
                 pollingScheduler.cancel(true);
             }
             pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
     }
-    
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -110,18 +113,17 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             if (s != null)
                 updateState(channelUID, s);
         }
-        //Mini is read only!
+        // Mini is read only!
     }
 
     private void update() {
         try {
-            //Update objects with data from device
+            // Update objects with data from device
             String json = httpClient.GET(config.getUri("/app.php")).getContentAsString();
             app = gson.fromJson(json, App.class);
             logger.debug("Received at /app.php: {}", json);
-            
-            
-            //Update channels
+
+            // Update channels
             for (Channel channel : thing.getChannels()) {
                 State state = app.getState(channel.getUID(), this);
                 if (state != null) {
@@ -134,7 +136,6 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
                 }
 
             }
-            
 
         } catch (Exception e) {
             logger.debug("Update failed, checking connection", e);
@@ -152,7 +153,6 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             checkConnection();
         }
     }
-    
 
     @Override
     public void handleRemoval() {
@@ -165,7 +165,7 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             logger.debug("HTTP client stopped");
         } catch (Exception e) {
             logger.error("Failed to stop HttpClient", e);
-        } 
+        }
         updateStatus(ThingStatus.REMOVED);
     }
 

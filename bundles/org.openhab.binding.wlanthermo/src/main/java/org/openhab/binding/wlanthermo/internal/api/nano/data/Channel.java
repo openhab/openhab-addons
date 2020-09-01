@@ -66,7 +66,8 @@ public class Channel {
      * @param alarm
      * @param typ
      */
-    public Channel(Integer number, String name, Integer typ, Double temp, Double min, Double max, Integer alarm, String color) {
+    public Channel(Integer number, String name, Integer typ, Double temp, Double min, Double max, Integer alarm,
+            String color) {
         super();
         this.number = number;
         this.name = name;
@@ -181,5 +182,4 @@ public class Channel {
         this.color = color;
         return this;
     }
-
 }

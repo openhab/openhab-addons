@@ -52,5 +52,4 @@ public class Settings {
     @SerializedName("notes")
     @Expose
     public Notes notes;
-
 }

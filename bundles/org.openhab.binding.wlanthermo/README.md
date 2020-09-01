@@ -1,9 +1,10 @@
 # WlanThermo Binding
 
 This binding add support for the WlanThermo BBQ Thermometer.  
-| Nano | Mini |
-|---|---|
-| ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg)
+| Nano                                 | Mini                                |
+|--------------------------------------|-------------------------------------|
+| ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg) |
+
 
 ## Supported Things
 
@@ -25,7 +26,9 @@ Things must be created manually, e.g. via PaperUI.
 ## Thing Configuration
 
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
-The configuration of username/password is optional. If ommitted, the binding data will be read-only for all channels. WlanThermo Mini things do not require a username/password and will always be read-only!
+The configuration of username/password is optional. 
+If ommitted, the binding data will be read-only for all channels. 
+WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
 
@@ -37,41 +40,43 @@ If username/password is given in the thing, most channels are writeable.
 
 #### The device itself provides the following channels:  
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| online | Switch | Indicates if device is online |
-| soc | Number:Dimensionless | Battery Level in % |
-| charging | Switch | On, if device is charging, off otherwise | 
-| rssi_signalstrength | Number | Signal Strength in range [0 ... 4] |
-| rssi | Number | Signal Strength in dBm |
+| channel             | type                 | description                              |
+|---------------------|----------------------|------------------------------------------|
+| online              | Switch               | Indicates if device is online            |
+| soc                 | Number:Dimensionless | Battery Level in %                       |
+| charging            | Switch               | On, if device is charging, off otherwise |
+| rssi_signalstrength | Number               | Signal Strength in range [0 ... 4]       |
+| rssi                | Number               | Signal Strength in dBm                   |
 
 
 #### The following channels apply for all 8 probes of the WlanThermo Nano:  
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| name | String | The name of this probe |
-| type | String | The type of this probe |
-| temp | Number:Temperature | The current temperature |
-| min |  Number:Temperature | The minimum temperature threshold for this probe to trigger an alarm |
-| max |  Number:Temperature | The maximum temperature threshold for this probe to trigger an alarm |
-| alarm_device | Switch | Turn on/off the buzzer alarm on the device for this probe |
-| alarm_push | Switch | Turn on/off the push alarm for this probe |
-| alarm_openhab_low | Switch | Will turn on if current temp is below minimum temperature threshold |
-| alarm_openhab_high | Switch | Will turn on if current temp is above maximum temperature threshold |
-| color | Color | The color of this probe. Read only.
-| color_name | String | The color name of the probe.
+| channel            | type               | description                                                          |
+|--------------------|--------------------|----------------------------------------------------------------------|
+| name               | String             | The name of this probe                                               |
+| type               | String             | The type of this probe                                               |
+| temp               | Number:Temperature | The current temperature                                              |
+| min                | Number:Temperature | The minimum temperature threshold for this probe to trigger an alarm |
+| max                | Number:Temperature | The maximum temperature threshold for this probe to trigger an alarm |
+| alarm_device       | Switch             | Turn on/off the buzzer alarm on the device for this probe            |
+| alarm_push         | Switch             | Turn on/off the push alarm for this probe                            |
+| alarm_openhab_low  | Switch             | Will turn on if current temp is below minimum temperature threshold  |
+| alarm_openhab_high | Switch             | Will turn on if current temp is above maximum temperature threshold  |
+| color              | Color              | The color of this probe. Read only.                                  |
+| color_name         | String             | The color name of the probe.                                         |
+
 
 
 #### The following channels are available for the Pitmaster
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| state | String | Indicates type of the Pitmaster channel. Value can be "off", "manual", "auto" or "autotune"
-| setpoint | Number:Temperature | the target temperature of the probe assigned to the pitmaster channel
-| duty_cycle | Number:Dimensionless | The current duty cycle of the pitmaster channel
-| channel_id | Number | The channel id of the probe assigned to the pitmaster channel
-| pid_id | Number | The number of the PID profile to be used. Check the WlanThermo WebUI for available IDs!
+| channel    | type                 | description                                                                                 |
+|------------|----------------------|---------------------------------------------------------------------------------------------|
+| state      | String               | Indicates type of the Pitmaster channel. Value can be "off", "manual", "auto" or "autotune" |
+| setpoint   | Number:Temperature   | the target temperature of the probe assigned to the pitmaster channel                       |
+| duty_cycle | Number:Dimensionless | The current duty cycle of the pitmaster channel                                             |
+| channel_id | Number               | The channel id of the probe assigned to the pitmaster channel                               |
+| pid_id     | Number               | The number of the PID profile to be used. Check the WlanThermo WebUI for available IDs!     |
+
 
 
 ### WlanThermo Mini
@@ -79,53 +84,58 @@ If username/password is given in the thing, most channels are writeable.
 All channels are read only!
 #### The device itself provides the following channels:
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| online | Switch | Indicates if device is online |
-| cpu_load | Number:Dimensionless | CPU Load in % |
-| cpu_temp | Number:Temperature | CPU Temperature | 
+| channel  | type                 | description                   |
+|----------|----------------------|-------------------------------|
+| online   | Switch               | Indicates if device is online |
+| cpu_load | Number:Dimensionless | CPU Load in %                 |
+| cpu_temp | Number:Temperature   | CPU Temperature               |
+
 
 #### The following channels apply for all 10 probes of the WlanThermo Mini:
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| name | String | The name of this probe |
-| temp | Number:Temperature | The current temperature |
-| min |  Number:Temperature | The minimum temperature threshold for this probe to trigger an alarm |
-| max |  Number:Temperature | The maximum temperature threshold for this probe to trigger an alarm |
-| alarm_device | Switch | Turn on/off the buzzer alarm on the device for this probe |
-| alarm_openhab_low | Switch | Will turn on if current temp is below minimum temperature threshold |
-| alarm_openhab_high | Switch | Will turn on if current temp is above maximum temperature threshold |
-| color | Color | The color of this probe
-| color_name | String | The color name of this probe 
+| channel            | type               | description                                                          |
+|--------------------|--------------------|----------------------------------------------------------------------|
+| name               | String             | The name of this probe                                               |
+| temp               | Number:Temperature | The current temperature                                              |
+| min                | Number:Temperature | The minimum temperature threshold for this probe to trigger an alarm |
+| max                | Number:Temperature | The maximum temperature threshold for this probe to trigger an alarm |
+| alarm_device       | Switch             | Turn on/off the buzzer alarm on the device for this probe            |
+| alarm_openhab_low  | Switch             | Will turn on if current temp is below minimum temperature threshold  |
+| alarm_openhab_high | Switch             | Will turn on if current temp is above maximum temperature threshold  |
+| color              | Color              | The color of this probe                                              |
+| color_name         | String             | The color name of this probe                                         |
+
 
 #### The following channels apply for both Pitmaster channels of the WlanThermo Mini:
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| enabled | Switch | Indicates if this pitmaster channel is active
-| current | Number:Temperature | The current temperature of the probe assigned to this pitmaster channel
-| setpoint | Number:Temperature | the target temperature of the probe assigned to this pitmaster channel
-| duty_cycle | Number:Dimensionless | The current duty cycle of this pitmaster channel
-| lid_open | Switch | Indicates if Lid-open detection is active
-| channel_id | Number | The channel id of the probe assigned to this pitmaster channel
+| channel    | type                 | description                                                             |
+|------------|----------------------|-------------------------------------------------------------------------|
+| enabled    | Switch               | Indicates if this pitmaster channel is active                           |
+| current    | Number:Temperature   | The current temperature of the probe assigned to this pitmaster channel |
+| setpoint   | Number:Temperature   | the target temperature of the probe assigned to this pitmaster channel  |
+| duty_cycle | Number:Dimensionless | The current duty cycle of this pitmaster channel                        |
+| lid_open   | Switch               | Indicates if Lid-open detection is active                               |
+| channel_id | Number               | The channel id of the probe assigned to this pitmaster channel          |
+
 
 
 ## Triggers
 
 The following trigger apply for all channels of Nano and Mini:
 
-| trigger | values | description |
-|--|--|--|
-| alarm_openhab | MIN | Triggers repeatedly if current temp is below minimum temperature threshold |
-| alarm_openhab | MAX | Triggers repeatedly if current temp is above maximum temperature threshold |
+| trigger       | values | description                                                                |
+|---------------|--------|----------------------------------------------------------------------------|
+| alarm_openhab | MIN    | Triggers repeatedly if current temp is below minimum temperature threshold |
+| alarm_openhab | MAX    | Triggers repeatedly if current temp is above maximum temperature threshold |
+
 
 
 ## Full Example
 
 ### Items
 
-Example .items file for WlanThermo Nano and Mini. Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
+Example .items file for WlanThermo Nano and Mini. 
+Make sure to replace <nano_thing_id> or <mini_thing_id> with your individual thing id!
 
 ```
 Group                   gWlanThermoNano         "WlanThermo Nano"

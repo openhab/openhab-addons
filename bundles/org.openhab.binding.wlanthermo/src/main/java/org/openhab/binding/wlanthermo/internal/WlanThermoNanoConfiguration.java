@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link WlanThermoConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link WlanThermoNanoConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Christian Schlipp - Initial contribution
  */
@@ -29,20 +29,18 @@ public class WlanThermoNanoConfiguration {
     /**
      * IP Address of WlanThermo.
      */
-    @NonNullByDefault({})
-    private String ipAddress;
+    private String ipAddress = "";
 
     /**
      * Username of WlanThermo user.
      */
-    @Nullable
-    private String username;
+    private @Nullable String username;
 
     /**
      * Password of WlanThermo user.
      */
-    @Nullable
-    private String password;
+
+    private @Nullable String password;
 
     /**
      * Polling interval
@@ -70,7 +68,7 @@ public class WlanThermoNanoConfiguration {
     public URI getUri() throws URISyntaxException {
         return getUri("");
     }
-    
+
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
@@ -100,6 +98,4 @@ public class WlanThermoNanoConfiguration {
     public void setPollingInterval(int pollingInterval) {
         this.pollingInterval = pollingInterval;
     }
-
-    
 }

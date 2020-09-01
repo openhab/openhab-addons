@@ -43,5 +43,4 @@ public class Device {
     @SerializedName("language")
     @Expose
     public String language;
-
 }

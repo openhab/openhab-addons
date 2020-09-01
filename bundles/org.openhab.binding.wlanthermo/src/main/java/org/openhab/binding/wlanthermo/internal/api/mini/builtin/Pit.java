@@ -65,7 +65,8 @@ public class Pit {
      * @param enabled
      * @param timestamp
      */
-    public Pit(Boolean enabled, String timestamp, Double setpoint, Double current, Integer controlOut, Integer ch, String type, String openLid) {
+    public Pit(Boolean enabled, String timestamp, Double setpoint, Double current, Integer controlOut, Integer ch,
+            String type, String openLid) {
         super();
         this.enabled = enabled;
         this.timestamp = timestamp;
@@ -180,5 +181,4 @@ public class Pit {
         this.openLid = openLid;
         return this;
     }
-
 }

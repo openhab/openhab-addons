@@ -73,7 +73,16 @@ public class Channel {
      * @param _8
      * @param _9
      */
-    public Channel(org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _0, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _1, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _2, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _3, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _4, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _5, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _6, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _7, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _8, org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _9) {
+    public Channel(org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _0,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _1,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _2,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _3,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _4,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _5,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _6,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _7,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _8,
+            org.openhab.binding.wlanthermo.internal.api.mini.builtin.Data _9) {
         super();
         this._0 = _0;
         this._1 = _1;
@@ -243,5 +252,4 @@ public class Channel {
                 return null;
         }
     }
-
 }

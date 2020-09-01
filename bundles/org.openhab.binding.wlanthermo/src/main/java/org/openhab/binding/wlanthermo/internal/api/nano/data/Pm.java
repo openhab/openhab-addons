@@ -66,7 +66,8 @@ public class Pm {
      * @param value
      * @param valueColor
      */
-    public Pm(Integer id, Integer channel, Integer pid, Integer value, Double set, String typ, String setColor, String valueColor) {
+    public Pm(Integer id, Integer channel, Integer pid, Integer value, Double set, String typ, String setColor,
+            String valueColor) {
         super();
         this.id = id;
         this.channel = channel;
@@ -181,5 +182,4 @@ public class Pm {
         this.valueColor = valueColor;
         return this;
     }
-
 }

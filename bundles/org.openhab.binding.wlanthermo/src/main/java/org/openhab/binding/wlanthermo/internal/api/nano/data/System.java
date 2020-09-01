@@ -132,7 +132,6 @@ public class System {
         this.rssi = rssi;
         return this;
     }
-    
 
     public Integer getOnline() {
         return online;
@@ -146,5 +145,4 @@ public class System {
         this.online = online;
         return this;
     }
-
 }

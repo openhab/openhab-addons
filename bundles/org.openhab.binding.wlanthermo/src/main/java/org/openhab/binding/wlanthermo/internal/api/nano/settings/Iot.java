@@ -55,5 +55,4 @@ public class Iot {
     @SerializedName("CLurl")
     @Expose
     public String cLurl;
-
 }

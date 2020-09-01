@@ -25,5 +25,4 @@ public class Api {
     @SerializedName("version")
     @Expose
     public String version;
-
 }

@@ -52,5 +52,4 @@ public class System {
     @SerializedName("god")
     @Expose
     public Integer god;
-
 }

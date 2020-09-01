@@ -34,9 +34,6 @@ import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants
 
 import java.awt.Color;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -45,6 +42,9 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.WlanThermoMiniHandler;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This DTO is used to parse the JSON
@@ -324,5 +324,4 @@ public class App {
         }
         return trigger;
     }
-
 }

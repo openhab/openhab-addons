@@ -76,5 +76,4 @@ public class Pitmaster {
         this.pm = pm;
         return this;
     }
-
 }

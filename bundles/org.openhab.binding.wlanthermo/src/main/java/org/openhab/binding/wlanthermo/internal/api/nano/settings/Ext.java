@@ -43,5 +43,4 @@ public class Ext {
     @SerializedName("services")
     @Expose
     public List<String> services = new ArrayList<String>();
-
 }

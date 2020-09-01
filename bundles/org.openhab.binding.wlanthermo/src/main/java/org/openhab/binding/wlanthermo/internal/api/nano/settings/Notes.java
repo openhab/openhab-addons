@@ -31,5 +31,4 @@ public class Notes {
     @SerializedName("ext")
     @Expose
     public Ext ext;
-
 }

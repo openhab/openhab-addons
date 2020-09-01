@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
@@ -35,7 +36,9 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.wlanthermo", service = ThingHandlerFactory.class)
 public class WlanThermoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(Arrays.asList(WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_NANO, WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_MINI));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+            Arrays.asList(WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_NANO,
+                    WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_MINI));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -45,7 +48,7 @@ public class WlanThermoHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        
+
         if (WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_NANO.equals(thingTypeUID)) {
             return new WlanThermoNanoHandler(thing);
         } else if (WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_MINI.equals(thingTypeUID)) {

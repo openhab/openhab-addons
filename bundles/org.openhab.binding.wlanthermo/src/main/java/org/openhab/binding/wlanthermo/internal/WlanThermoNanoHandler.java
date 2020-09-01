@@ -23,8 +23,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.google.gson.Gson;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -49,6 +47,8 @@ import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link WlanThermoNanoHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -63,7 +63,8 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     private WlanThermoNanoConfiguration config = new WlanThermoNanoConfiguration();
     private HttpClient httpClient = new HttpClient();
     private @Nullable ScheduledFuture<?> pollingScheduler;
-    private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool(WlanThermoBindingConstants.WLANTHERMO_THREAD_POOL);
     private Gson gson = new Gson();
     private Data data = new Data();
     private Settings settings = new Settings();
@@ -103,7 +104,8 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 if (pollingScheduler != null) {
                     pollingScheduler.cancel(true);
                 }
-                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(), TimeUnit.SECONDS);
+                pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
+                        TimeUnit.SECONDS);
                 updateState(SYSTEM + "#" + SYSTEM_ONLINE, OnOffType.ON);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -111,14 +113,15 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             }
         } catch (Exception e) {
             logger.debug("Failed to connect.", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not connect to WlanThermo at "+config.getIpAddress());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Could not connect to WlanThermo at " + config.getIpAddress());
             if (pollingScheduler != null) {
                 pollingScheduler.cancel(true);
             }
             pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
     }
-    
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -130,37 +133,35 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
-                logger.error("Could not handle command of type {} for channel {}!",command.getClass().toGenericString() , channelUID.getId());
+                logger.error("Could not handle command of type {} for channel {}!",
+                        command.getClass().toGenericString(), channelUID.getId());
             }
         }
     }
 
     private void update() {
         try {
-            //Update objects with data from device
+            // Update objects with data from device
             String json = httpClient.GET(config.getUri("/data")).getContentAsString();
             data = gson.fromJson(json, Data.class);
             logger.debug("Received at /data: {}", json);
             json = httpClient.GET(config.getUri("/settings")).getContentAsString();
             settings = gson.fromJson(json, Settings.class);
             logger.debug("Received at /settings: {}", json);
-            
-            
-            //Update channels
+
+            // Update channels
             for (Channel channel : thing.getChannels()) {
                 State state = data.getState(channel.getUID(), this);
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
-                    //if we could not obtain a state, try trigger instead
+                    // if we could not obtain a state, try trigger instead
                     String trigger = data.getTrigger(channel.getUID());
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
                     }
                 }
-
             }
-            
 
         } catch (Exception e) {
             logger.debug("Update failed, checking connection", e);
@@ -178,43 +179,26 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             checkConnection();
         }
     }
-    
+
     private void push() {
         for (org.openhab.binding.wlanthermo.internal.api.nano.data.Channel c : data.getChannel()) {
             try {
                 String json = gson.toJson(c);
                 logger.debug("Pushing: {}", json);
                 URI uri = config.getUri("/setchannels");
-                int status = httpClient.POST(uri)
-                                .content(new StringContentProvider(json), "application/json")
-                                .timeout(5, TimeUnit.SECONDS)
-                                .send()
-                                .getStatus();
+                int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
+                        .timeout(5, TimeUnit.SECONDS).send().getStatus();
                 if (status == 401) {
                     logger.error(
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                 } else if (status != 200) {
-                    logger.error("Failed to update channel {} on device, Statuscode {} on URI {}", c.getName(), status, uri.toString());
+                    logger.error("Failed to update channel {} on device, Statuscode {} on URI {}", c.getName(), status,
+                            uri.toString());
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
                 logger.error("Failed to update channel {} on device", c.getName(), e);
             }
         }
-    }
-
-    @Override
-    public void handleRemoval() {
-        if (pollingScheduler != null) {
-            boolean stopped = pollingScheduler.cancel(true);
-            logger.debug("Stopped polling: {}", stopped);
-        }
-        try {
-            httpClient.stop();
-            logger.debug("HTTP client stopped");
-        } catch (Exception e) {
-            logger.error("Failed to stop HttpClient", e);
-        } 
-        updateStatus(ThingStatus.REMOVED);
     }
 
     @Override
@@ -229,14 +213,6 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
         } catch (Exception e) {
             logger.error("Failed to stop HttpClient", e);
         }
-        for (Channel channel : thing.getChannels()) {
-            if (channel.getUID().getId().equals(SYSTEM + "#" + SYSTEM_ONLINE)) {
-                updateState(channel.getUID(), OnOffType.OFF);
-            } else {
-                updateState(channel.getUID(), UnDefType.UNDEF);
-            }
-        }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE);
     }
 
     public Settings getSettings() {
