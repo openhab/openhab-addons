@@ -36,6 +36,12 @@ public class MiIoDeviceAction {
     @SerializedName("parameters")
     @Expose
     private @Nullable JsonArray parameters;
+    @SerializedName("siid")
+    @Expose
+    private @Nullable Integer siid;
+    @SerializedName("aiid")
+    @Expose
+    private @Nullable Integer aiid;
     @SerializedName("condition")
     @Expose
     private @Nullable MiIoDeviceActionCondition condition;
@@ -68,6 +74,40 @@ public class MiIoDeviceAction {
 
     public void setparameterType(String type) {
         this.commandParameterType = org.openhab.binding.miio.internal.basic.CommandParameterType.fromString(type);
+    }
+
+    public int getSiid() {
+        final Integer siid = this.siid;
+        if (siid != null) {
+            return siid.intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    public void setSiid(Integer siid) {
+        this.siid = siid;
+    }
+
+    public int getAiid() {
+        final Integer aiid = this.aiid;
+        if (aiid != null) {
+            return aiid.intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    public void setAiid(Integer aiid) {
+        this.aiid = aiid;
+    }
+
+    public boolean isMiOtAction() {
+        if (aiid != null && siid != null && (getAiid() != 0 || getSiid() != 0)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public @Nullable MiIoDeviceActionCondition getCondition() {
