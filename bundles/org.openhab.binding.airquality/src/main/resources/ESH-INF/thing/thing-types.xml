@@ -16,6 +16,7 @@
 
 		<channels>
 			<channel id="aqiLevel" typeId="aqiLevel"/>
+			<channel id="aqiColor" typeId="aqiColor"/>
 			<channel id="aqiDescription" typeId="aqiDescription"/>
 			<channel id="pm25" typeId="pm25"/>
 			<channel id="pm10" typeId="pm10"/>
@@ -202,5 +203,12 @@
 			</options>
 		</state>
 	</channel-type>
+	
+	<channel-type id="aqiColor" advanced="true">
+        <item-type>Color</item-type>
+        <label>AQI Color</label>
+        <description>Color associated to given AQI Index.</description>
+        <state readOnly="true"/>
+    </channel-type>
 
 </thing:thing-descriptions>

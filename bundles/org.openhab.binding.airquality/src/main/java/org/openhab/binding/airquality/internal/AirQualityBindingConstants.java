@@ -49,6 +49,7 @@ public class AirQualityBindingConstants {
 
     // List of all Channel id's
     public static final String AQI = "aqiLevel";
+    public static final String AQI_COLOR = "aqiColor";
     public static final String AQIDESCRIPTION = "aqiDescription";
     public static final String PM25 = "pm25";
     public static final String PM10 = "pm10";

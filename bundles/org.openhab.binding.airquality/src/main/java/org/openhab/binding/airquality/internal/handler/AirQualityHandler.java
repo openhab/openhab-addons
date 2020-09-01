@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -239,6 +240,8 @@ public class AirQualityHandler extends BaseThingHandler {
                         aqiResponse.getTime().getObservationTime().withZoneSameLocal(timeZoneProvider.getTimeZone()));
             case DOMINENTPOL:
                 return new StringType(aqiResponse.getDominentPol());
+            case AQI_COLOR:
+                return getAsHSB(aqiResponse.getAqi());
             default:
                 return UnDefType.UNDEF;
         }
@@ -263,6 +266,24 @@ public class AirQualityHandler extends BaseThingHandler {
             return MODERATE;
         } else if (index > 0) {
             return GOOD;
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private State getAsHSB(int index) {
+        State state = getAqiDescription(index);
+        if (state == HAZARDOUS) {
+            return HSBType.fromRGB(343, 100, 49);
+        } else if (state == VERY_UNHEALTHY) {
+            return HSBType.fromRGB(280, 100, 60);
+        } else if (state == UNHEALTHY) {
+            return HSBType.fromRGB(345, 100, 80);
+        } else if (state == UNHEALTHY_FOR_SENSITIVE) {
+            return HSBType.fromRGB(30, 80, 100);
+        } else if (state == MODERATE) {
+            return HSBType.fromRGB(50, 80, 100);
+        } else if (state == GOOD) {
+            return HSBType.fromRGB(160, 100, 60);
         }
         return UnDefType.UNDEF;
     }
