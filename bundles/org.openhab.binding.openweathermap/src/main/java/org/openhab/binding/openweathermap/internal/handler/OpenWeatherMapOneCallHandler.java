@@ -15,27 +15,20 @@ package org.openhab.binding.openweathermap.internal.handler;
 import com.google.gson.JsonSyntaxException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpResponseException;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeTemp;
 import org.openhab.binding.openweathermap.internal.dto.onecall.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
