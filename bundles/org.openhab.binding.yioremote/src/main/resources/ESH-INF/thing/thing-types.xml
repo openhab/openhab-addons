@@ -1,69 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="yioremote"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
-	<!-- Sample Thing Type -->
-	<thing-type id="yioremote">
-		<label>YIOremote Binding Thing</label>
-		<description>Sample thing for YIOremote Binding</description>
-
-        <channel-groups>
-            <channel-group id="input" typeId="input"/>
-            <channel-group id="output" typeId="output"/>
-        </channel-groups>
-        
-		<config-description>
-			<parameter name="yiodockhostip" type="text" required="true">
-				<label>IP Address of the YIO Dock</label>
-				<description>IP Address of the YIO Dock</description>
-			</parameter>
-			<parameter name="yiodockaccesstoken" type="text" required="true">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+    <!-- Sample Thing Type -->
+    <thing-type id="yioremote">
+        <label>YIOremote Binding Thing</label>
+        <description>Sample thing for YIOremote Binding</description>
+        <channels>
+            <channel id="channel1" typeId="sample-channel" />
+        </channels>
+        <config-description>
+            <parameter name="yiodockhostip" type="text" required="true">
+                <label>IP Address of the YIO Dock</label>
+                <description>IP Address of the YIO Dock</description>
+            </parameter>
+            <parameter name="yiodockaccesstoken" type="text" required="true">
                 <label>Access token for the YIO Dock</label>
                 <description>Access token for the YIO Dock</description>
             </parameter>
-		</config-description>
+        </config-description>
 
-	</thing-type>
-
-    <channel-group-type id="input">
-        <label>Inputs</label>
-        <description>The channel used to send out the IR command</description>
-        <channels>
-            <channel id="yiodockirsendcode" typeId="yiodockirsendcode"/>
-            <channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch"/>
-         </channels>
-    </channel-group-type>   
-    
-    <channel-group-type id="output">
-        <label>Results</label>
-        <description>Results of the received ir code</description>
-        <channels>
-            <channel id="yiodockreceivedircode" typeId="yiodockreceivedircode"/>
-         </channels>
-    </channel-group-type>
-        
-        
-	<!-- Channel Types -->
-	<channel-type id="yiodockreceiverswitch">
-		<item-type>Switch</item-type>
-		<label>YIOremote Binding Channel</label>
-		<description>Sample channel for YIOremote Binding</description>
-	</channel-type>
-	
-	<channel-type id="yiodockreceivedircode">
-        <item-type>String</item-type>
-        <label>yiodockreceivedircode</label>
-        <state readOnly="true" pattern="%s" />
-	</channel-type>
-	
-	<channel-type id="yiodockirsendcode">
-        <item-type>String</item-type>
-        <label>yiodockirsendcode</label>
-        <description>yiodockirsendcode</description>
-        <state readOnly="false" pattern="%s" />
+    </thing-type>
+    <!-- Sample Channel Type -->
+    <channel-type id="sample-channel">
+        <item-type>Switch</item-type>
+        <label>YIOremote Binding Channel</label>
+        <description>Sample channel for YIOremote Binding</description>
     </channel-type>
-	
-
 </thing:thing-descriptions>

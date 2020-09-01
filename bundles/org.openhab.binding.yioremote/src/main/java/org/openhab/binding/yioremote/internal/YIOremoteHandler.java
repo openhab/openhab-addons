@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yioremote.internal;
 
-import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_YIODOCKRECEIVERSWITCH;
+import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_1;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -55,24 +55,6 @@ public class YIOremoteHandler extends BaseThingHandler {
 
     public YIOremoteHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_YIODOCKRECEIVERSWITCH.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-                logger.debug("switch");
-
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
-        }
     }
 
     @Override
@@ -190,6 +172,27 @@ public class YIOremoteHandler extends BaseThingHandler {
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        if (CHANNEL_1.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                // TODO: handle data refresh
+                logger.debug("switch");
+
+            }
+            logger.debug("switch");
+
+            System.out.println("test");
+            logger.debug("switch not" + channelUID.getId().toString());
+            // TODO: handle command
+
+            // Note: if communication with thing fails for some reason,
+            // indicate that by setting the status with detail information:
+            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            // "Could not control device at IP address x.x.x.x");
+        }
     }
 
     private JsonObject StringtoJsonObject(String jsonString) {
