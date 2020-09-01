@@ -43,5 +43,6 @@ public class Constants {
     public static final String HYPHEN = " - ";
     public static final String EMPTY = "";
 
+    public static final String ANONYMOUS = "ANONYMOUS";
     public static final int MILES_TO_FEET_FACTOR = 5280;
 }

@@ -74,6 +74,10 @@ public class Converter {
         }
     }
 
+    public static String capitalizeFirst(String str) {
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
+
     public static double measure(float lat1, float lon1, float lat2, float lon2) {
         double earthRadius = 6378.137; // Radius of earth in KM
         double dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
