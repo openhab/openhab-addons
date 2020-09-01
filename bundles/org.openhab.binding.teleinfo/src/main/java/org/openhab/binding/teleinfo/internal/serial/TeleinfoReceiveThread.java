@@ -42,7 +42,7 @@ public class TeleinfoReceiveThread extends Thread {
 
     public TeleinfoReceiveThread(SerialPort serialPort, final TeleinfoSerialControllerHandler listener,
             boolean autoRepairInvalidADPSgroupLine, ExecutorService scheduler) {
-        super("OH-binding-TeleinfoReceiveThread-"+listener.getThing().getUID().getId());
+        super("OH-binding-TeleinfoReceiveThread-" + listener.getThing().getUID().getId());
         setDaemon(true);
         this.serialPort = serialPort;
         this.listener = listener;

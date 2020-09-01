@@ -13,12 +13,15 @@
 package org.openhab.binding.teleinfo.internal.handler;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.teleinfo.internal.TeleinfoDiscoveryService;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 
 /**
@@ -45,5 +48,10 @@ public abstract class TeleinfoAbstractControllerHandler extends BaseBridgeHandle
 
     protected void fireOnFrameReceivedEvent(final Frame frame) {
         listeners.forEach(l -> l.onFrameReceived(this, frame));
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(TeleinfoDiscoveryService.class);
     }
 }

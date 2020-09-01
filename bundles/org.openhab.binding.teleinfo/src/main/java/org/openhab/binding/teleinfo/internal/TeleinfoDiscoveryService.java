@@ -21,11 +21,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmBaseOption;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.FrameCbemmEjpOption;
@@ -51,7 +54,8 @@ import org.slf4j.LoggerFactory;
  * @author Nicolas SIBERIL - Initial contribution
  */
 @NonNullByDefault
-public class TeleinfoDiscoveryService extends AbstractDiscoveryService implements TeleinfoControllerHandlerListener {
+public class TeleinfoDiscoveryService extends AbstractDiscoveryService
+        implements TeleinfoControllerHandlerListener, ThingHandlerService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
@@ -62,7 +66,7 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
             THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
 
     private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
-    private final TeleinfoAbstractControllerHandler controllerHandler;
+    private TeleinfoAbstractControllerHandler controllerHandler;
 
     public TeleinfoDiscoveryService(TeleinfoAbstractControllerHandler controllerHandler, int timeout) {
         super(timeout);
@@ -174,5 +178,17 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService implement
         }
 
         throw new IllegalStateException("Teleinfo frame type not supported: " + teleinfoFrame.getClass());
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof TeleinfoAbstractControllerHandler) {
+            controllerHandler = (TeleinfoAbstractControllerHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return controllerHandler;
     }
 }
