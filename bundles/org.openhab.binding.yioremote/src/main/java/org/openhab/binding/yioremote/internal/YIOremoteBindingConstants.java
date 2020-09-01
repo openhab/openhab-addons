@@ -29,9 +29,22 @@ public class YIOremoteBindingConstants {
     // List of all used global variables
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "sample");
+    public static final ThingTypeUID THING_TYPE_YIOREMOTE = new ThingTypeUID(BINDING_ID, "yioremote");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
+    // Configuration elements
+    public static final String CONFIG_YIODOCKHOSTIP = "yiodockhostip";
+    public static final String CONFIG_YIODOCKACCESSTOKEN = "yiodockaccesstoken";
+
+    // List of all Channel Groups Group Channel ids
+    public static final String GROUP_INPUT = "input";
+    public static final String GROUP_OUTPUT = "output";
+
+    // Output channel ids
+    public static final String CHANNEL_YIODOCKRECEIVEDIRCODE = "yiodockreceivedircode";
+
+    // Input channel ids
+    public static final String CHANNEL_YIODOCKRECEIVERSWITCH = "yiodockreceiverswitch";
+    public static final String CHANNEL_YIODOCKIRSENDCODE = "yiodockirsendcode";
+    //
 
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yioremote.internal;
 
-import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_1;
+import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_YIODOCKRECEIVERSWITCH;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -58,9 +59,11 @@ public class YIOremoteHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
+        if (CHANNEL_YIODOCKRECEIVERSWITCH.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
+                logger.debug("switch");
+
             }
 
             // TODO: handle command
@@ -202,5 +205,14 @@ public class YIOremoteHandler extends BaseThingHandler {
             throw new IllegalArgumentException(jsonString + " is not valid JSON stirng");
         }
         return result;
+    }
+
+    protected void updateChannelString(String group, String channelId, String value) {
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+
+        if (isLinked(id)) {
+            updateState(id, new StringType(value));
+        }
+
     }
 }
