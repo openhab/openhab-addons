@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link TeleinfoElectricityMeterConfiguration} class stores electricity meter thing configuration
  *
- * @author Olivier MARCEAU - Creation
+ * @author Olivier MARCEAU - Initial contribution
  */
 @NonNullByDefault
 public class TeleinfoElectricityMeterConfiguration {
