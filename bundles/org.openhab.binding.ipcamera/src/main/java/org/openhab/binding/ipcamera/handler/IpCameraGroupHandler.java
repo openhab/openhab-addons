@@ -72,7 +72,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 @NonNullByDefault
 public class IpCameraGroupHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+    public final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
             Arrays.asList(THING_TYPE_GROUPDISPLAY));
     private Configuration config;
     BigDecimal pollTimeInSeconds = new BigDecimal(2);
