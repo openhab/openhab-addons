@@ -29,8 +29,6 @@ public class ConnectedDriveConstants {
 
     private static final String BINDING_ID = "bmwconnecteddrive";
 
-    public static final String ANONYMOUS = "ANONYMOUS";
-
     // Units
     public static final String UNITS_AUTODETECT = "AUTODETECT";
     public static final String UNITS_IMPERIAL = "IMPERIAL";
@@ -95,10 +93,8 @@ public class ConnectedDriveConstants {
         }
     };
 
-    // Bridge Channels
-    public static final String DISCOVERY_TRIGGER = "discovery-trigger";
+    // Bridge Channel
     public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
-    public static final String CARDATA_FINGERPRINT = "cardata-fingerprint";
 
     // Thing Group definitions
     public static final String CHANNEL_GROUP_STATUS = "status";
@@ -176,4 +172,8 @@ public class ConnectedDriveConstants {
     public static final String REMOTE_SERVICE_HORN = "horn";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
     public static final String REMOTE_STATE = "state";
+
+    // Troubleshoot
+    public static final String CARDATA_FINGERPRINT = "cardata-fingerprint";
+
 }

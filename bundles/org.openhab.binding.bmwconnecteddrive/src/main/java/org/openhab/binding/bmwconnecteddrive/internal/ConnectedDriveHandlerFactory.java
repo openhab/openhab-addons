@@ -14,6 +14,9 @@ package org.openhab.binding.bmwconnecteddrive.internal;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
@@ -41,6 +44,7 @@ import org.osgi.service.component.annotations.Reference;
 public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
+    private static final List<ConnectedCarHandler> CARHANDLER_REGISTRY = new ArrayList<ConnectedCarHandler>();
     private boolean imperial = false;
 
     @Activate
@@ -61,8 +65,10 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
             return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     bundleContext);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            return new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient(), thingTypeUID.getId(),
-                    imperial);
+            ConnectedCarHandler cch = new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient(),
+                    thingTypeUID.getId(), imperial);
+            CARHANDLER_REGISTRY.add(cch);
+            return cch;
         }
         return null;
     }
@@ -72,6 +78,12 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof ConnectedDriveBridgeHandler) {
             // close Handler and remove Discovery Service
             ((ConnectedDriveBridgeHandler) thingHandler).close();
+        } else {
+            CARHANDLER_REGISTRY.remove(thingHandler);
         }
+    }
+
+    public static List<ConnectedCarHandler> getHandlerRegistry() {
+        return CARHANDLER_REGISTRY;
     }
 }
