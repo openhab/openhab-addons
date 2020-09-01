@@ -16,7 +16,6 @@ import static org.openhab.binding.mystrom.internal.MyStromBindingConstants.DEFAU
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-
 /**
  * The {@link MyStromConfiguration} class contains fields mapping thing configuration parameters.
  *
@@ -32,6 +31,5 @@ public class MyStromConfiguration {
     /**
      * Number of seconds in between refreshes from the myStrom device.
      */
-    public int refresh = DEFAULT_REFRESH_RATE_SECONDS;    
-
+    public int refresh = DEFAULT_REFRESH_RATE_SECONDS;
 }

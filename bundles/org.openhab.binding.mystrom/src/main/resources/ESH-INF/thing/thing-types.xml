@@ -9,23 +9,24 @@
 		<description>Controls the myStrom smart plug</description>
 
 		<channels>
-			<channel id="switch" typeId="switch-channel" />
-			<channel id="power" typeId="power-channel" />
-			<channel id="temperature" typeId="temperature-channel" />
+			<channel id="switch" typeId="switch-channel"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
 		</channels>
 
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
 				<description>The host name or IP address of the mystrom plug. It may or may not start with the
-					protocol, e.g. in order to use https:// instead of the default http://.</description>
+					protocol, e.g. in
+					order to use https:// instead of the default http://.</description>
 				<default>localhost</default>
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>10</default>
-			</parameter>			
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -48,5 +49,5 @@
 		<label>Temperature</label>
 		<description>The current temperature at the plug</description>
 		<state readOnly="true"/>
-	</channel-type>	
+	</channel-type>
 </thing:thing-descriptions>

@@ -24,8 +24,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.google.gson.Gson;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -44,6 +42,8 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link MyStromHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -58,7 +58,7 @@ public class MyStromHandler extends BaseThingHandler {
         public float power;
         public boolean relay;
         public float temperature;
-    }    
+    }
 
     private static final int HTTP_OK_CODE = 200;
     private static final String COMMUNICATION_ERROR = "Error while communicating to myStrom: ";
@@ -70,16 +70,13 @@ public class MyStromHandler extends BaseThingHandler {
     private String hostname = "";
 
     private @Nullable ScheduledFuture<?> pollingJob;
-    private ExpiringCache<MyStromReport> cache = new ExpiringCache<>(Duration.ofSeconds(3),
-    this::getReport);
+    private ExpiringCache<MyStromReport> cache = new ExpiringCache<>(Duration.ofSeconds(3), this::getReport);
     private final Gson gson = new Gson();
 
     public MyStromHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }
-
-
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -98,7 +95,7 @@ public class MyStromHandler extends BaseThingHandler {
         }
     }
 
-    private @Nullable  MyStromReport getReport() {
+    private @Nullable MyStromReport getReport() {
         try {
             String returnContent = sendHttpGet("report");
             MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
@@ -130,8 +127,7 @@ public class MyStromHandler extends BaseThingHandler {
         hostname = config.hostname;
 
         updateStatus(ThingStatus.UNKNOWN);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0,
-                config.refresh, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.refresh, TimeUnit.SECONDS);
 
         logger.debug("Finished initializing!");
     }
