@@ -216,6 +216,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean ffmpegSnapshotGeneration = false;
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
+    final static String authorizationHandler = "authorizationHandler";
 
     public IpCameraHandler(Thing thing) {
         super(thing);
@@ -403,7 +404,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     // HIK Alarm stream needs > 9sec idle to stop stream closing
                     socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(18, 0, 0));
                     socketChannel.pipeline().addLast("HttpClientCodec", new HttpClientCodec());
-                    socketChannel.pipeline().addLast("authHandler",
+                    socketChannel.pipeline().addLast(authorizationHandler,
                             new MyNettyAuthHandler(username, password, getHandle()));
                     socketChannel.pipeline().addLast("commonHandler", new CommonCameraHandler());
 
@@ -484,7 +485,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                                     .get("commonHandler");
                                             commonHandler.setURL(httpRequestURLFull);
                                             MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline()
-                                                    .get("authHandler");
+                                                    .get(authorizationHandler);
                                             authHandler.setURL(httpMethod, httpRequestURL);
                                             ch.writeAndFlush(request);
                                             return;
@@ -506,7 +507,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
                     Channel ch = future.channel();
                     CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get("commonHandler");
-                    MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get("authHandler");
+                    MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(authorizationHandler);
                     commonHandler.setURL(httpRequestURL);
                     authHandler.setURL(httpMethod, httpRequestURL);
 
