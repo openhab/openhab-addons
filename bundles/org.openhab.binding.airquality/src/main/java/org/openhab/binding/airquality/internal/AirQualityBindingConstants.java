@@ -25,9 +25,11 @@ import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.types.State;
 
 /**
  * The {@link AirQualityBinding} class defines common constants, which are
@@ -63,7 +65,14 @@ public class AirQualityBindingConstants {
     public static final String HUMIDITY = "humidity";
     public static final String DOMINENTPOL = "dominentpol";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_AQI);
+    public static final State GOOD = new StringType("GOOD");
+    public static final State MODERATE = new StringType("MODERATE");
+    public static final State UNHEALTHY_FOR_SENSITIVE = new StringType("UNHEALTHY_FOR_SENSITIVE");
+    public static final State UNHEALTHY = new StringType("UNHEALTHY");
+    public static final State VERY_UNHEALTHY = new StringType("VERY_UNHEALTHY");
+    public static final State HAZARDOUS = new StringType("HAZARDOUS");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AQI);
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(AQI, AQIDESCRIPTION, PM25, PM10, O3, NO2, CO, SO2,
             LOCATIONNAME, STATIONLOCATION, STATIONID, OBSERVATIONTIME, TEMPERATURE, PRESSURE, HUMIDITY)
             .collect(Collectors.toSet());

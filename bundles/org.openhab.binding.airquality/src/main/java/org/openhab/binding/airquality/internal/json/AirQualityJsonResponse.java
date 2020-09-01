@@ -24,9 +24,6 @@ public class AirQualityJsonResponse {
 
     private AirQualityJsonData data;
 
-    public AirQualityJsonResponse() {
-    }
-
     public String getStatus() {
         return status;
     }
