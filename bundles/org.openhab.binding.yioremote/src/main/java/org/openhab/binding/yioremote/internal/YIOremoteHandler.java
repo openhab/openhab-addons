@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -128,7 +129,7 @@ public class YIOremoteHandler extends BaseThingHandler {
 
                                 } else {
                                     logger.debug("authentication to YIO dock not ok");
-
+                                    YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATED_FAILED;
                                 }
                             } else {
                                 logger.debug("json string has no type member");
@@ -156,9 +157,43 @@ public class YIOremoteHandler extends BaseThingHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    YIOremote_DockwebSocketClientSocket
-                            .sendMessage("{\"type\":\"dock\", \"command\":\"ir_receie_on\"}");
+                    if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
+                        YIOremote_DockwebSocketClientSocket.sendMessage(
+                                "{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                        JsonObject_recievedJsonObject = StringtoJsonObject(
+                                YIOremote_DockwebSocketClientSocket.get_string_receivedmessage());
+                        if (JsonObject_recievedJsonObject.has("type") && JsonObject_recievedJsonObject.has("message")
+                                && JsonObject_recievedJsonObject.has("success")) {
+                            logger.debug("heartbeat ok has members");
 
+                            if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"dock\"")
+                                    && JsonObject_recievedJsonObject.get("message").toString()
+                                            .equalsIgnoreCase("\"ir_send\"")
+                                    && JsonObject_recievedJsonObject.get("success").toString()
+                                            .equalsIgnoreCase("false")) {
+                                logger.debug("heartbeat ok right message");
+                            } else {
+                                YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "Connection lost no ping from YIO DOCK");
+                            }
+                        } else {
+                            logger.debug("heartbeat not ok2");
+                            YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                    "Connection lost no ping from YIO DOCK");
+                        }
+                    } else {
+                        YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Connection lost no ping from YIO DOCK");
+                    }
                 }
             };
             pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);

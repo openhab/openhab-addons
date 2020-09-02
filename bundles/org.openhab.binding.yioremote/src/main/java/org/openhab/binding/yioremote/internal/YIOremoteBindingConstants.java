@@ -32,7 +32,9 @@ public class YIOremoteBindingConstants {
         AUTHENTICATION_PROCESS,
         AUTHENTICATION_PROCESS_FAILED,
         AUTHENTICATED,
-        AUTHENTICATED_FAILED; // Enumerationskonstanten
+        AUTHENTICATED_FAILED,
+        CONNECTION_FAILED,
+        CONNECTION_ESTABLISHED;
     }
 
     // List of all Thing Type UIDs
