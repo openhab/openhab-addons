@@ -42,7 +42,6 @@ public class InnogyBindingConstants {
     public static final String CONFIG_AUTH_CODE = "authcode";
 
     public static final long REINITIALIZE_DELAY_SECONDS = 30;
-    public static final long REINITIALIZE_RETRY_SECONDS = 60;
 
     // API URLs
     public static final String API_VERSION = "1.1";
