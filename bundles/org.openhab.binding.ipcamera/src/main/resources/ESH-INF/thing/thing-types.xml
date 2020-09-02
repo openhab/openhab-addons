@@ -2767,10 +2767,10 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</channel-type>
 
 	<channel-type id="gotoPreset">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>gotoPreset</label>
 		<description>Move a ptz camera to this Onvif preset.</description>
-		<state>
+		<state readOnly="false">
 			<options>
 				<option value="1">Preset 1</option>
 				<option value="2">Preset 2</option>
@@ -2800,5 +2800,4 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</options>
 		</state>
 	</channel-type>
-
 </thing:thing-descriptions>
