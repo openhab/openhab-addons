@@ -33,14 +33,14 @@ import java.util.concurrent.TimeoutException;
 public class WaterAlertWebClient {
     private final Logger logger = LoggerFactory.getLogger(WaterAlertWebClient.class);
 
-    private @Nullable HttpClient httpClient = null;
-    private @Nullable WaterWebService service = null;
-
+    private final HttpClient httpClient;
     private final String webService;
     private final String region;
     private final String area;
 
-    public WaterAlertWebClient(final HttpClient httpClient, final String location) {
+    private @Nullable WaterWebService service = null;
+
+    public WaterAlertWebClient(final HttpClient httpClient, @Nullable final String location) {
         this.httpClient = httpClient;
 
         final String[] locationSegmented = location.split(":", 3);

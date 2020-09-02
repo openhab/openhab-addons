@@ -40,10 +40,10 @@ import org.openhab.binding.nzwateralerts.internal.binder.NZWaterAlertsBinderList
 public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAlertsBinderListener {
 
     private @Nullable NZWaterAlertsConfiguration config = null;
-    private @Nullable HttpClient httpClient = null;
+    private HttpClient httpClient;
     private @Nullable NZWaterAlertsBinder binder = null;
 
-    public NZWaterAlertsHandler(Thing thing, @Nullable HttpClient httpClient) {
+    public NZWaterAlertsHandler(Thing thing, HttpClient httpClient) {
         super(thing);
 
         this.httpClient = httpClient;
