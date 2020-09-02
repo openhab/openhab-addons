@@ -36,7 +36,7 @@ public class TemperatureLevelServiceState extends BoschSHCServiceState {
     /**
      * Current temperature (in degree celsius)
      */
-    public double temperature;
+    private double temperature;
 
     /**
      * Current temperature state to set for a thing.

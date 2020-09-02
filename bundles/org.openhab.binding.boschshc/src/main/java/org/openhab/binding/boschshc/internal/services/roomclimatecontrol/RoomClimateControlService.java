@@ -22,9 +22,6 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCService;
  */
 @NonNullByDefault
 public class RoomClimateControlService extends BoschSHCService<RoomClimateControlServiceState> {
-    /**
-     * Constructor.
-     */
     public RoomClimateControlService() {
         super("RoomClimateControl", RoomClimateControlServiceState.class);
     }
