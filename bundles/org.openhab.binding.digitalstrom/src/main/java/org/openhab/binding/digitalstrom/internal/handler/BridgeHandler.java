@@ -549,13 +549,13 @@ public class BridgeHandler extends BaseBridgeHandler
                 return;
             case CONNECTION_RESUMED:
                 if (connectionTimeoutCounter > 0) {
+                    // reset connection timeout counter
+                    connectionTimeoutCounter = 0;
                     if (connMan.checkConnection()) {
                         restartServices();
                         setStatus(ThingStatus.ONLINE);
                     }
                 }
-                // reset connection timeout counter
-                connectionTimeoutCounter = 0;
                 return;
             case APPLICATION_TOKEN_GENERATED:
                 if (connMan != null) {
@@ -668,7 +668,16 @@ public class BridgeHandler extends BaseBridgeHandler
                 case INVALID_URL:
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid URL is set.");
                     break;
+                case CONNECTION_LOST:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "IOException / Connection lost.");
+                    break;
+                case SSL_HANDSHAKE_ERROR:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "SSL Handshake error / Connection lost.");
+                    break;
                 default:
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, reason);
             }
             // reset connection timeout counter
             connectionTimeoutCounter = 0;

@@ -16,11 +16,13 @@ import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.internal.job.Job.*;
 import static org.openhab.binding.astro.internal.model.SunPhaseName.*;
 
+import java.util.Calendar;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.model.Eclipse;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunEclipse;
 
 /**
  * Daily scheduled jobs For Sun planet
@@ -72,10 +74,13 @@ public final class DailyJobSun extends AbstractJob {
         scheduleRange(thingUID, handler, sun.getEveningNight(), EVENT_CHANNEL_ID_EVENING_NIGHT);
         scheduleRange(thingUID, handler, sun.getDaylight(), EVENT_CHANNEL_ID_DAYLIGHT);
 
-        SunEclipse eclipse = sun.getEclipse();
-        scheduleEvent(thingUID, handler, eclipse.getPartial(), EVENT_ECLIPSE_PARTIAL, EVENT_CHANNEL_ID_ECLIPSE, false);
-        scheduleEvent(thingUID, handler, eclipse.getTotal(), EVENT_ECLIPSE_TOTAL, EVENT_CHANNEL_ID_ECLIPSE, false);
-        scheduleEvent(thingUID, handler, eclipse.getRing(), EVENT_ECLIPSE_RING, EVENT_CHANNEL_ID_ECLIPSE, false);
+        Eclipse eclipse = sun.getEclipse();
+        eclipse.getKinds().forEach(eclipseKind -> {
+            Calendar eclipseDate = eclipse.getDate(eclipseKind);
+            if (eclipseDate != null) {
+                scheduleEvent(thingUID, handler, eclipseDate, eclipseKind.toString(), EVENT_CHANNEL_ID_ECLIPSE, false);
+            }
+        });
 
         // schedule republish jobs
         schedulePublishPlanet(thingUID, handler, sun.getZodiac().getEnd());

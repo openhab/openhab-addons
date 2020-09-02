@@ -10,21 +10,22 @@ Because Samsung does not publish any documentation about the TV's UPnP interface
 
 Tested TV models:
 
-| Model       | State   | Notes                                                                                                                                                  |
-|-------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| UE48J5670SU | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
-| UE40J6300AU | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                           |
-| UE46E5505   | OK      | Initial contribution is done by this model                                                                                                             |
-| UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
-| UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
-| UN50J5200   | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
-| LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
-| LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
-| UE55LS003   | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
-| UE50MU6179  | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url` |
-| UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
-| UE46F6510SS  | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                |
-| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least) |
+| Model          | State   | Notes                                                                                                                                                  |
+|----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| KU6519         | PARTIAL | Supported channels: `volume`, `mute`, `power`,  `keyCode` (at least)                                                                                   |
+| LE40D579       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
+| LE40C650       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
+| UE40F6500      | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
+| UE40J6300AU    | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                            |
+| UE43MU6199     | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                                               |
+| UE46D5700      | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
+| UE46E5505      | OK      | Initial contribution is done by this model                                                                                                             |
+| UE46F6510SS    | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                                             |
+| UE48J5670SU    | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
+| UE50MU6179     | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url`                                                                |
+| UE55LS003      | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
+| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least)                                                                                    |
+| UN50J5200      | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
 
 ## Discovery
 
