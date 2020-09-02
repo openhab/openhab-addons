@@ -25,6 +25,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingGroupHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
@@ -76,8 +78,12 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
             return new Powerline546EHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AVMFritzButtonHandler(thing);
+        } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzHeatingDeviceHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
+        } else if (GROUP_HEATING_THING_TYPE.equals(thingTypeUID)) {
+            return new AVMFritzHeatingGroupHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {

@@ -403,6 +403,41 @@ public abstract class AVMFritzBaseThingHandler extends BaseThingHandler implemen
     }
 
     /**
+     * Handles a command for a given action.
+     *
+     * @param action
+     * @param duration
+     */
+    protected void handleAction(String action, long duration) {
+        FritzAhaWebInterface fritzBox = getWebInterface();
+        if (fritzBox == null) {
+            logger.debug("Cannot handle action '{}' because connection is missing", action);
+            return;
+        }
+        String ain = getIdentifier();
+        if (ain == null) {
+            logger.debug("Cannot handle action '{}' because AIN is missing", action);
+            return;
+        }
+        if (duration < 0 || 86400 < duration) {
+            throw new IllegalArgumentException("Duration must not be less than zero or greater than 86400");
+        }
+        switch (action) {
+            case MODE_BOOST:
+                fritzBox.setBoostMode(ain,
+                        duration > 0 ? ZonedDateTime.now().plusSeconds(duration).toEpochSecond() : 0);
+                break;
+            case MODE_WINDOW_OPEN:
+                fritzBox.setWindowOpenMode(ain,
+                        duration > 0 ? ZonedDateTime.now().plusSeconds(duration).toEpochSecond() : 0);
+                break;
+            default:
+                logger.debug("Received unknown action '{}'", action);
+                break;
+        }
+    }
+
+    /**
      * Provides the web interface object.
      *
      * @return The web interface object
