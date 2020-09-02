@@ -293,7 +293,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     // Event based. This is called as each camera comes online after the group handler is registered.
     public void cameraOffline(IpCameraHandler handle) {
         if (cameraOrder.remove(handle)) {
-            logger.info("Camera {} is now offline, now removed from this group.", handle.getThing().getUID().getId());
+            logger.info("Camera {} went offline and was removed from a group.", handle.getThing().getUID().getId());
         }
     }
 
@@ -322,7 +322,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         int checked = 0;
         for (int index = nextCamerasIndex; checked < cameraOrder.size(); checked++) {
             if (cameraOrder.get(index).motionDetected) {
-                // logger.trace("Motion detected on a camera in a group, the display order has changed.");
                 return index;
             }
             if (++index >= cameraOrder.size()) {
@@ -347,10 +346,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             if (hlsTurnedOn) {
                 discontinuitySequence++;
                 createPlayList();
-                if (mediaSequence > 2147000000) {
-                    mediaSequence = 0;
-                    discontinuitySequence = 0;
-                }
             }
         }
     };
@@ -369,7 +364,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                             handler.handleCommand(new ChannelUID(channelPrefix + CHANNEL_START_STREAM), OnOffType.ON);
                         }
                     } else {
-                        // do we turn all off or do we remember the state before we turned them all on?
+                        // TODO: Do we turn all controls OFF or do we remember the state before we turned them all on?
                         hlsTurnedOn = false;
                     }
             }
