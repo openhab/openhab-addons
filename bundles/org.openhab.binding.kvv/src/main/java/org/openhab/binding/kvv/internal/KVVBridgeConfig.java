@@ -22,9 +22,14 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class KVVStationConfig {
+public class KVVBridgeConfig {
 
-    /** the id of the station */
-    public @Nullable String stationId;
+    /** maximum number of traines being queried */
+    public int maxTrains;
 
+    /** the update interval */
+    public int updateInterval;
+
+    /** API key of the KVV API */
+    public @Nullable String apiKey;
 }

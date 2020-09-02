@@ -54,9 +54,9 @@ public class KVVStationHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
-        if (config == null) {
-            logger.warn("Failed to get config (is null)");
+        final KVVStationConfig stationConfig = getConfigAs(KVVStationConfig.class);
+        if (stationConfig == null) {
+            logger.warn("Failed to get station config (is null)");
             updateStatus(ThingStatus.OFFLINE);
             return;
         }
@@ -77,7 +77,7 @@ public class KVVStationHandler extends BaseThingHandler {
 
         // creating channels
         final List<Channel> channels = new ArrayList<Channel>();
-        for (int i = 0; i < config.maxTrains; i++) {
+        for (int i = 0; i < handler.getBridgeConfig().maxTrains; i++) {
             channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
                     .build());
             channels.add(ChannelBuilder
@@ -86,8 +86,9 @@ public class KVVStationHandler extends BaseThingHandler {
                     ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
         }
         this.updateThing(this.editThing().withChannels(channels).build());
-        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, config), 0,
-                config.updateInterval, TimeUnit.SECONDS);
+        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, stationConfig), 0,
+                handler.getBridgeConfig().updateInterval, TimeUnit.SECONDS);
+
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -131,18 +132,18 @@ public class KVVStationHandler extends BaseThingHandler {
 
         private final KVVBridgeHandler handler;
 
-        private final KVVStationConfig config;
+        private final KVVStationConfig stationConfig;
 
-        public UpdateTask(final KVVBridgeHandler handler, KVVStationConfig config) {
+        public UpdateTask(final KVVBridgeHandler handler, final KVVStationConfig stationConfig) {
             this.handler = handler;
-            this.config = config;
+            this.stationConfig = stationConfig;
         }
 
         @Override
         public void run() {
-            final DepartureResult departures = this.handler.queryKVV(config);
+            final DepartureResult departures = this.handler.queryKVV(this.stationConfig);
             if (departures != null) {
-                setDepartures(departures, this.config.maxTrains);
+                setDepartures(departures, this.handler.getBridgeConfig().maxTrains);
             }
         }
     }

@@ -37,17 +37,34 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KVVBridgeHandler.class);
 
+    @Nullable
+    private KVVBridgeConfig config;
+
     public KVVBridgeHandler(final Bridge bridge) {
         super(bridge);
     }
 
+    @Nullable
+    public KVVBridgeConfig getBridgeConfig() {
+        return this.config;
+    }
+
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
+        this.config = getConfigAs(KVVBridgeConfig.class);
+        if (this.config == null) {
+            logger.warn("Failed to get bridge config (is null)");
+            updateStatus(ThingStatus.OFFLINE);
+            return;
+        }
         updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // There is nothing to handle in the bridge handler
     }
 
     /**
@@ -55,8 +72,8 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      *
      * @return the latest {@link DepartureResult}.
      */
-    public @Nullable DepartureResult queryKVV(final KVVStationConfig config) {
-        final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + config.stationId + "?key="
+    public @Nullable DepartureResult queryKVV(final KVVStationConfig stationConfig) {
+        final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + stationConfig.stationId + "?key="
                 + config.apiKey + "&maxInfos=" + config.maxTrains;
 
         String data;
@@ -67,7 +84,15 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        final DepartureResult result = new Gson().fromJson(data, DepartureResult.class);
+        DepartureResult result;
+        try {
+            result = new Gson().fromJson(data, DepartureResult.class);
+        } catch (Exception e) {
+            logger.warn("Failed to parse departure data", e);
+            logger.debug("Server returned '{}'", data);
+            return null;
+        }
+
         if (result.departures.size() != config.maxTrains) {
             logger.warn("Result size (={}) differs from maxTrain setting (={})", result.departures.size(),
                     config.maxTrains);
