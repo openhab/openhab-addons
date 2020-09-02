@@ -42,6 +42,7 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.airquality.internal.AirQualityConfiguration;
 import org.openhab.binding.airquality.internal.json.AirQualityJsonData;
 import org.openhab.binding.airquality.internal.json.AirQualityJsonResponse;
+import org.openhab.binding.airquality.internal.json.AirQualityJsonResponse.ResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,7 @@ public class AirQualityHandler extends BaseThingHandler {
                         TimeUnit.MINUTES);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.join("\n", errorMsg));
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.join(", ", errorMsg));
         }
     }
 
@@ -153,13 +154,7 @@ public class AirQualityHandler extends BaseThingHandler {
 
         String urlStr = URL.replace("%apikey%", config.apikey.trim());
 
-        if (stationId == null) {
-            urlStr = urlStr.replace("%QUERY%", geoStr);
-        } else {
-            urlStr = urlStr.replace("%QUERY%", "@" + stationId);
-        }
-
-        return urlStr;
+        return urlStr.replace("%QUERY%", stationId == null ? geoStr : "@" + stationId);
     }
 
     /**
@@ -170,8 +165,7 @@ public class AirQualityHandler extends BaseThingHandler {
      * @return the air quality data object mapping the JSON response or null in case of error
      */
     private @Nullable AirQualityJsonData getAirQualityData() {
-        AirQualityJsonResponse result = null;
-        String errorMsg = null;
+        String errorMsg;
 
         String urlStr = buildRequestURL();
         logger.debug("URL = {}", urlStr);
@@ -179,25 +173,26 @@ public class AirQualityHandler extends BaseThingHandler {
         try {
             String response = HttpUtil.executeUrl("GET", urlStr, null, null, null, REQUEST_TIMEOUT_MS);
             logger.debug("aqiResponse = {}", response);
-            result = gson.fromJson(response, AirQualityJsonResponse.class);
-            if (result.getData() != null && result.getStatus() != "error") {
-                String attributions = result.getData().getAttributions();
+            AirQualityJsonResponse result = gson.fromJson(response, AirQualityJsonResponse.class);
+            if (result.getStatus() == ResponseStatus.OK) {
+                AirQualityJsonData data = result.getData();
+                String attributions = data.getAttributions();
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, attributions);
-                return result.getData();
+                return data;
             } else {
                 retryCounter++;
                 if (retryCounter == 1) {
-                    logger.warn("Error in aqicn.org (Air Quality), retrying once");
+                    logger.warn("Error in aqicn.org, retrying once");
                     return getAirQualityData();
                 }
-                errorMsg = "missing data sub-object";
-                logger.warn("Error in aqicn.org (Air Quality) response: {}", errorMsg);
+                errorMsg = "Missing data sub-object";
+                logger.warn("Error in aqicn.org response: {}", errorMsg);
             }
         } catch (IOException e) {
             errorMsg = e.getMessage();
         } catch (JsonSyntaxException e) {
             errorMsg = "Configuration is incorrect";
-            logger.warn("Error running aqicn.org (Air Quality) request: {}", errorMsg);
+            logger.warn("Error running aqicn.org request: {}", errorMsg);
         }
 
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, errorMsg);
