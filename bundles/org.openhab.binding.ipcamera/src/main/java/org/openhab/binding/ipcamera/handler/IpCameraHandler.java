@@ -1558,11 +1558,11 @@ public class IpCameraHandler extends BaseThingHandler {
 
         if (preroll > 0 || updateImageEvents.contains("1")) {
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleAtFixedRate(snapshotRunnable, 1000,
+            snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 1000,
                     Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
         }
 
-        pollCameraJob = threadPool.scheduleWithFixedDelay(pollCameraRunnable, 1000, 8000, TimeUnit.MILLISECONDS);
+        pollCameraJob = threadPool.scheduleWithFixedDelay(this::pollCameraRunnable, 1000, 8000, TimeUnit.MILLISECONDS);
 
         if (!rtspUri.equals("")) {
             updateState(CHANNEL_RTSP_URL, new StringType(rtspUri));
@@ -1595,37 +1595,34 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    Runnable pollingCameraConnection = new Runnable() {
-        @Override
-        public void run() {
-            if (thing.getThingTypeUID().getId().equals("HTTPONLY")) {
-                if (rtspUri.equals("")) {
-                    logger.warn("Binding has not been supplied with a RTSP URL so some features will not work.");
-                }
-                if (snapshotUri.equals("") || snapshotUri.equals("ffmpeg")) {
-                    snapshotIsFfmpeg();
-                } else {
-                    sendHttpRequest("GET", snapshotUri, null);
-                }
-                return;
+    void pollingCameraConnection() {
+        if (thing.getThingTypeUID().getId().equals("HTTPONLY")) {
+            if (rtspUri.equals("")) {
+                logger.warn("Binding has not been supplied with a RTSP URL so some features will not work.");
             }
-            if (!onvifCamera.isConnected()) {
-                logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", ipAddress,
-                        config.get(CONFIG_ONVIF_PORT).toString());
-                onvifCamera.connect(thing.getThingTypeUID().getId().equals("ONVIF"));
-            }
-            if (snapshotUri.equals("ffmpeg")) {
-                snapshotIsFfmpeg();
-            } else if (!snapshotUri.equals("")) {
-                sendHttpRequest("GET", snapshotUri, null);
-            } else if (!rtspUri.equals("")) {
+            if (snapshotUri.equals("") || snapshotUri.equals("ffmpeg")) {
                 snapshotIsFfmpeg();
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Camera failed to report a valid Snaphot and/or RTSP URL. See readme on how to use the SNAPSHOT_URL_OVERRIDE feature.");
+                sendHttpRequest("GET", snapshotUri, null);
             }
+            return;
         }
-    };
+        if (!onvifCamera.isConnected()) {
+            logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", ipAddress,
+                    config.get(CONFIG_ONVIF_PORT).toString());
+            onvifCamera.connect(thing.getThingTypeUID().getId().equals("ONVIF"));
+        }
+        if (snapshotUri.equals("ffmpeg")) {
+            snapshotIsFfmpeg();
+        } else if (!snapshotUri.equals("")) {
+            sendHttpRequest("GET", snapshotUri, null);
+        } else if (!rtspUri.equals("")) {
+            snapshotIsFfmpeg();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Camera failed to report a valid Snaphot and/or RTSP URL. See readme on how to use the SNAPSHOT_URL_OVERRIDE feature.");
+        }
+    }
 
     public void cameraConfigError(String reason) {
         // wont try to reconnect again due to a config error being the cause.
@@ -1662,18 +1659,15 @@ public class IpCameraHandler extends BaseThingHandler {
         return false; // Stream is still open
     }
 
-    Runnable snapshotRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // Snapshot should be first to keep consistent time between shots
-            sendHttpGET(snapshotUri);
-            if (snapCount > 0) {
-                if (--snapCount == 0) {
-                    setupFfmpegFormat(ffmpegFormat.GIF);
-                }
+    void snapshotRunnable() {
+        // Snapshot should be first to keep consistent time between shots
+        sendHttpGET(snapshotUri);
+        if (snapCount > 0) {
+            if (--snapCount == 0) {
+                setupFfmpegFormat(ffmpegFormat.GIF);
             }
         }
-    };
+    }
 
     public void stopSnapshotPolling() {
         if (!streamingSnapshotMjpeg && preroll == 0 && !updateImageEvents.contains("1")) {
@@ -1695,88 +1689,85 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         if (streamingSnapshotMjpeg || streamingAutoFps) {
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleAtFixedRate(snapshotRunnable, 200,
+            snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 200,
                     Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
         } else if (updateImageEvents.contains("4")) { // During Motion Alarms
             snapshotPolling = true;
-            snapshotJob = threadPool.scheduleAtFixedRate(snapshotRunnable, 200,
+            snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 200,
                     Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
         }
     }
 
     // runs every 8 seconds due to mjpeg streams not staying open unless they update this often.
-    Runnable pollCameraRunnable = new Runnable() {
-        @Override
-        public void run() {
-            // Snapshot should be first to keep consistent time between shots
-            if (!snapshotUri.equals("")) {
-                if (updateImageChannel) {
-                    sendHttpGET(snapshotUri);
-                }
-            }
-            if (streamingAutoFps) {
-                updateAutoFps = true;
-                if (!snapshotPolling) {
-                    sendHttpGET(snapshotUri);
-                }
-            }
-            // NOTE: Use lowPriorityRequests if get request is not needed every poll.
-            if (!lowPriorityRequests.isEmpty()) {
-                if (lowPriorityCounter >= lowPriorityRequests.size()) {
-                    lowPriorityCounter = 0;
-                }
-                sendHttpGET(lowPriorityRequests.get(lowPriorityCounter++));
-            }
-            // what needs to be done every poll//
-            switch (thing.getThingTypeUID().getId()) {
-                case "HTTPONLY":
-                    break;
-                case "ONVIF":
-                    if (!onvifCamera.isConnected()) {
-                        onvifCamera.connect(true);
-                    }
-                    break;
-                case "INSTAR":
-                    noMotionDetected(CHANNEL_MOTION_ALARM);
-                    noMotionDetected(CHANNEL_PIR_ALARM);
-                    noAudioDetected();
-                    break;
-                case "HIKVISION":
-                    if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
-                        logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
-                        sendHttpGET("/ISAPI/Event/notification/alertStream");
-                    }
-                    break;
-                case "AMCREST":
-                    sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion");
-                    sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
-                    break;
-                case "DAHUA":
-                    // Check for alarms, channel for NVRs appears not to work at filtering.
-                    if (streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
-                        logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
-                        sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
-                    }
-                    break;
-                case "DOORBIRD":
-                    // Check for alarms, channel for NVRs appears not to work at filtering.
-                    if (streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
-                        logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
-                        sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
-                    }
-                    break;
-            }
-            if (ffmpegHLS != null) {
-                ffmpegHLS.checkKeepAlive();
-            }
-            if (listOfRequests.size() > 12) {
-                logger.debug(
-                        "There are {} channels being tracked, cleaning out old channels now to try and reduce this to 12 or below.",
-                        listOfRequests.size());
-                cleanChannels();
+    void pollCameraRunnable() {
+        // Snapshot should be first to keep consistent time between shots
+        if (!snapshotUri.equals("")) {
+            if (updateImageChannel) {
+                sendHttpGET(snapshotUri);
             }
         }
-    };
+        if (streamingAutoFps) {
+            updateAutoFps = true;
+            if (!snapshotPolling) {
+                sendHttpGET(snapshotUri);
+            }
+        }
+        // NOTE: Use lowPriorityRequests if get request is not needed every poll.
+        if (!lowPriorityRequests.isEmpty()) {
+            if (lowPriorityCounter >= lowPriorityRequests.size()) {
+                lowPriorityCounter = 0;
+            }
+            sendHttpGET(lowPriorityRequests.get(lowPriorityCounter++));
+        }
+        // what needs to be done every poll//
+        switch (thing.getThingTypeUID().getId()) {
+            case "HTTPONLY":
+                break;
+            case "ONVIF":
+                if (!onvifCamera.isConnected()) {
+                    onvifCamera.connect(true);
+                }
+                break;
+            case "INSTAR":
+                noMotionDetected(CHANNEL_MOTION_ALARM);
+                noMotionDetected(CHANNEL_PIR_ALARM);
+                noAudioDetected();
+                break;
+            case "HIKVISION":
+                if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
+                    sendHttpGET("/ISAPI/Event/notification/alertStream");
+                }
+                break;
+            case "AMCREST":
+                sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion");
+                sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
+                break;
+            case "DAHUA":
+                // Check for alarms, channel for NVRs appears not to work at filtering.
+                if (streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
+                    sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
+                }
+                break;
+            case "DOORBIRD":
+                // Check for alarms, channel for NVRs appears not to work at filtering.
+                if (streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
+                    logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
+                    sendHttpGET("/bha-api/monitor.cgi?ring=doorbell,motionsensor");
+                }
+                break;
+        }
+        if (ffmpegHLS != null) {
+            ffmpegHLS.checkKeepAlive();
+        }
+        if (listOfRequests.size() > 12) {
+            logger.debug(
+                    "There are {} channels being tracked, cleaning out old channels now to try and reduce this to 12 or below.",
+                    listOfRequests.size());
+            cleanChannels();
+        }
+    }
 
     @Override
     public void initialize() {
@@ -1878,7 +1869,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     "The Image channel is set to update more often than 8 seconds. This is not recommended. The Image channel is best used only for higher poll times. See the readme file on how to display the cameras picture for best results or use a higher poll time.");
         }
         // Waiting 3 seconds for ONVIF to discover the urls before running.
-        cameraConnectionJob = threadPool.scheduleWithFixedDelay(pollingCameraConnection, 6, 30, TimeUnit.SECONDS);
+        cameraConnectionJob = threadPool.scheduleWithFixedDelay(this::pollingCameraConnection, 6, 30, TimeUnit.SECONDS);
     }
 
     // What the camera needs to re-connect if the initialize() is not called.
