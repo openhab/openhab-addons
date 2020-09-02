@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
@@ -56,22 +57,19 @@ public class KVVStationHandler extends BaseThingHandler {
 
         final KVVStationConfig stationConfig = getConfigAs(KVVStationConfig.class);
         if (stationConfig == null) {
-            logger.warn("Failed to get station config (is null)");
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get station configuration");
             return;
         }
 
         final Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.warn("Failed to get bridge (is null)");
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Failed to get bridge");
             return;
         }
 
         final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
         if (handler == null) {
-            logger.warn("Failed to get bridge handler (is null)");
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
             return;
         }
 

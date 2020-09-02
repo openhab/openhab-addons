@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -55,8 +56,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
         this.config = getConfigAs(KVVBridgeConfig.class);
         if (this.config == null) {
-            logger.warn("Failed to get bridge config (is null)");
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get bridge configuration");
             return;
         }
         updateStatus(ThingStatus.ONLINE);
