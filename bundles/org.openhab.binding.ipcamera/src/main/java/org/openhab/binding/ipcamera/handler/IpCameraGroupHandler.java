@@ -331,24 +331,21 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         return nextCamerasIndex;
     }
 
-    Runnable pollingCameraGroup = new Runnable() {
-        @Override
-        public void run() {
-            if (cameraOrder.isEmpty()) {
-                createCameraOrder();
-            }
-            if (++cameraIndex >= cameraOrder.size()) {
-                cameraIndex = 0;
-            }
-            if (motionChangesOrder) {
-                cameraIndex = checkForMotion(cameraIndex);
-            }
-            if (hlsTurnedOn) {
-                discontinuitySequence++;
-                createPlayList();
-            }
+    void pollCameraGroup() {
+        if (cameraOrder.isEmpty()) {
+            createCameraOrder();
         }
-    };
+        if (++cameraIndex >= cameraOrder.size()) {
+            cameraIndex = 0;
+        }
+        if (motionChangesOrder) {
+            cameraIndex = checkForMotion(cameraIndex);
+        }
+        if (hlsTurnedOn) {
+            discontinuitySequence++;
+            createPlayList();
+        }
+    }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
@@ -389,7 +386,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             logger.warn("SERVER_PORT is -1 which disables all serving features of the camera group.");
         }
         updateStatus(ThingStatus.ONLINE);
-        pollCameraGroupJob = pollCameraGroup.scheduleAtFixedRate(pollingCameraGroup, 10000,
+        pollCameraGroupJob = pollCameraGroup.scheduleAtFixedRate(this::pollCameraGroup, 10000,
                 Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
     }
 
