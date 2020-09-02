@@ -1165,7 +1165,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 if (!audioAlarmEnabled) {
                     filterOptions = "-an";
-                } else if (audioAlarmEnabled == true) {
+                } else {
                     filterOptions = "-af silencedetect=n=-" + audioThreshold + "dB:d=2";
                 }
                 if (motionAlarmEnabled == false && ffmpegSnapshotGeneration == false) {
