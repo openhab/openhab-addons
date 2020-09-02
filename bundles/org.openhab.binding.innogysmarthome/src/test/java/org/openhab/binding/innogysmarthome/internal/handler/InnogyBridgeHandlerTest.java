@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.Before;
 import org.junit.Test;
+import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
 import org.openhab.binding.innogysmarthome.internal.client.entity.device.Device;
@@ -182,7 +183,7 @@ public class InnogyBridgeHandlerTest {
 
             Device bridgeDevice = new Device();
             bridgeDevice.setId("bridgeId");
-            bridgeDevice.setType(Device.DEVICE_TYPE_SHC);
+            bridgeDevice.setType(InnogyBindingConstants.DEVICE_SHC);
             bridgeDevice.setConfig(new DeviceConfig());
 
             innogyClientMock = mock(InnogyClient.class);
