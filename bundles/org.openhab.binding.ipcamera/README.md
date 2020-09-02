@@ -10,13 +10,12 @@ To see what features each brand has implemented from their APIs, please see this
 
 ## How to Get Help
 
-+ Check this readme to see if there are any special setup steps that are needed for your brand of camera, and if the topic is covered by the readme.
-+ Check to see if the camera is offline. 
-If so there will be a reason listed on what needs to be done.
++ Check this readme to see if there are any special setup steps for your brand of camera.
++ Check to see if the camera is offline, if so there will be a reason listed.
 + Always look at the log files with TRACE enabled.
-To keep your log file clean, the binding holds back a lot of useful fault finding information out of the logs unless you turn on DEBUG or TRACE logging.
-+ Search the forum using any warning messages to help you find how others with the same problem have already solved it.
-+ Only after doing the above ask for help in the forum and create a new thread, then when it is fixed post how and mark the thread as solved to help others.
+To enable TRACE logging, enter this in the openHAB console ``log:set TRACE org.openhab.binding.ipcamera``.
++ Search the forum using any messages to find how others with the same problem have already solved it.
++ Only after doing the above ask for help in the forum and create a new thread.
 
 ## Special Notes for Different Brands
 
@@ -132,7 +131,7 @@ Another example is:
 ## Discovery
 
 The discovery feature of openHAB can be used to find any ONVIF cameras. 
-This method should be preferred as it will discover the ports and URLs for you making the setup much easier.
+This method should be preferred as it will discover the ports and URLs for you, making the setup much easier.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
 After the camera is discovered and added as a thing, you will need to provide the username and password for any cameras that require a login to work.
 
@@ -613,13 +612,13 @@ Webview url="http://192.168.6.4:8080/static/html/file.html" height=5
 
 There are two ways to cast a camera.
 
-1. openHAB Cloud Connector and using metadata tags.
+1. openHAB Cloud Connector and using metadata/tags.
 2. Chromecast Bindings `playuri` channel.
 
 The first method once setup allows you to ask "OK Google show X camera", or "OK Google show X camera on Y display".
 By optionally naming the display that you wish to use, it can be cast directly to your Chromecast (connected to your TV) by speaking to a Google Nest Mini.
 This must use the HLS format and use the metadata tag shown below with the openHAB Cloud Connector setup.
-Don't forget to ask google to 'sync my devices' after adding the metadata. 
+Don't forget to ask Google to 'sync my devices' after adding the metadata. 
 The synonyms in the tag allows Google to understand multiple names that the camera may be called by different people in your family.
 
 Example of how this is done in an items file.
@@ -629,10 +628,10 @@ String FrontDoorCamHlsUrl "Front Door" { channel="ipcamera:ONVIF:FrontDoor:hlsUr
 
 ```
 
-The second method is by using the Chromecast Binding and sending the URL you wish to cast to the `playuri` channel.
-You can cast the ipcamera.jpg (static picture), ipcamera.gif (looping moving picture) and HLS for a non stop stream that uses low CPU and can also contain audio.
+The second method is by using the Chromecast Binding and by sending the URL you wish to cast to the `playuri` channel.
+You can cast the ipcamera.jpg (static picture), ipcamera.gif (looping moving picture), and ipcamera.m3u8 (aka HLS) for a non stop stream that uses low CPU and can also contain audio.
 
-How to cast the camera from inside a rule using the Chromecast binding:
+Example:
 
 items
 
@@ -758,24 +757,6 @@ I highly recommend you check out the easy to use WIDGETS of which there are now 
 <https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
 
 The widgets in the link above are the easiest way to get an advanced stream working in openHAB and you are welcome to open them up, look at how they work and change them to something even better that suits your needs.
-If you don't like doing things the easy way with a ready made widget, below are how it can be done without a widget.
-
-**How to manually display MJPEG based streams without using the above WIDGETS:**
-
-+ Add a FRAME widget
-+ Set URL Source to be 'openHAB String Item'
-+ Select the item that is bound to the `streamUrl` channel of your camera that is setup with this binding and ONLINE.
-+ Alternatively you can set a static URL like `http://192.168.1.2:50001/snapshots.mjpeg` to have the binding create a high resolution MJPEG stream out of your snapshots or the cameras URL to fetch the stream directly.
-
-**How to manually display HLS without using the above WIDGETS:**
-
-+ Add a template widget with the following code using an openHAB item to link to your cameras `hlsUrl` channel.
-
-```
-
-<video width="100%" height="100%" autoplay src="{{itemValue('Camera_hlsUrl')}}"</video>
-
-```
 
 ## Group Displays
 
@@ -783,7 +764,7 @@ The [Full Example](#full-example) section shows how to setup a group display.
 
 Some additional things to check to get it working are:
 
-+ Currently the poll time of the group must be the same or less than the total time contained in each cameras m3u8 files.
++ Currently the poll time of the group must be the same or less than the total time contained in each cameras m3u8 file.
 If you have 3 seconds worth of video segments in the cameras HLS stream, this is the max time you can set to be the Poll time of the group to.
 If your not using HLS and are just using ipcamera.jpg to display the groups picture, then the poll time can be set to a wider range.
 + All cameras should have the same HLS segment size setting, 1 and 2 second long segments have been tested to work.
