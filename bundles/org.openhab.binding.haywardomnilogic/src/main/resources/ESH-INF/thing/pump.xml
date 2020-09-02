@@ -13,7 +13,7 @@
 		<description>Pump</description>
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
-			<channel id="pumpSpeed" typeId="filterSpeed"/>
+			<channel id="pumpSpeed" typeId="pumpSpeed"/>
 
 		</channels>
 
