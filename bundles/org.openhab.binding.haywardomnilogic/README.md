@@ -43,24 +43,24 @@ Hayward OmniLogic Connection Parameters:
 
 ### Backyard Channels
 
-| Channel Type ID       		| Item Type | Description                                                               | Read Write |
-|-------------------------------|-----------|---------------------------------------------------------------------------|:----------:|
-| backyardAirTemp       		| Number    | Backyard air temp sensor reading											|      R     |
-| backyardStatus       			| String    | Backyard status															|      R     |
-| backyardState 				| String	| Backyard state								                            |      R     |
-| backyardAlarm1        		| String    | Backyard alarm #1															|      R     |
-| backyardAlarm2    			| String    | Backyard alarm #2															|      R     |
-| backyardAlarm3     			| String    | Backyard alarm #3															|      R     |
-| backyardAlarm4        		| String    | Backyard alarm #4															|      R     |
-| backyardAlarm5        		| String    | Backyard alarm #5															|      R     |
+| Channel Type ID       		| Item Type 			| Description                                                   | Read Write |
+|-------------------------------|-----------------------|---------------------------------------------------------------|:----------:|
+| backyardAirTemp       		| Number:Temperature	| Backyard air temp sensor reading								|      R     |
+| backyardStatus       			| String    			| Backyard status												|      R     |
+| backyardState 				| String				| Backyard state								                |      R     |
+| backyardAlarm1        		| String    			| Backyard alarm #1												|      R     |
+| backyardAlarm2    			| String    			| Backyard alarm #2												|      R     |
+| backyardAlarm3     			| String    			| Backyard alarm #3												|      R     |
+| backyardAlarm4        		| String    			| Backyard alarm #4												|      R     |
+| backyardAlarm5        		| String    			| Backyard alarm #5												|      R     |
 
 
 ### Body of Water Channels
 
-| Channel Type ID       		| Item Type | Description                                                               | Read Write |
-|-------------------------------|-----------|---------------------------------------------------------------------------|:----------:|
-| bowFlow       				| Number    | Body of Water flow sensor feedback										|      R     |
-| bowWaterTemp       			| Number    | Body of Water temperature  												|      R     |
+| Channel Type ID       		| Item Type 			| Description                                                    | Read Write |
+|-------------------------------|-----------------------|----------------------------------------------------------------|:----------:|
+| bowFlow       				| Number    			| Body of Water flow sensor feedback							 |      R     |
+| bowWaterTemp       			| Number:Temperature    | Body of Water temperature  									 |      R     |
 
 
 ### Chlorinator Channels
@@ -85,8 +85,6 @@ Hayward OmniLogic Connection Parameters:
 | colorLogicLightEnable       	| Switch    | Colorlogic Light enable													|     R/W    |
 | colorLogicLightState    		| Number    | Colorlogic Light state													|      R     |
 | colorLogicLightCurrentShow 	| Number	| Colorlogic Light current show					                            |     R/W    |
-| colorLogicLightSpeed   		| Number    | Colorlogic Light speed													|      R     |
-| colorLogicLightBrightness		| Number    | Colorlogic Light brightness												|      R     |
 
 ### Chlorine Sense and Dispense (CSAD/ORP) Channels
 
@@ -104,13 +102,13 @@ To be developed
 
 ### Heater Channels
 
-| Channel Type ID               | Item Type | Description                                                               | Read Write |
-|-------------------------------|-----------|---------------------------------------------------------------------------|:----------:|
-| heaterState                   | Number    | Heater state                                                              |      R     |
-| heaterTemp                    | Number    | Heater temperature                                                        |      R     |
-| heaterEnable                  | Number    | Heater enable                                                             |      R     |
-| heaterPriority                | Number    | Heater priority                                                           |      R     |
-| heaterMaintainFor             | Number    | Heater maintain for                                                       |      R     |
+| Channel Type ID               | Item Type 			| Description                                                   | Read Write |
+|-------------------------------|-----------------------|---------------------------------------------------------------|:----------:|
+| heaterState                   | Number    			| Heater state                                                  |      R     |
+| heaterTemp                    | Number:Temperature	| Heater temperature                                            |      R     |
+| heaterEnable                  | Number    			| Heater enable                                                 |      R     |
+| heaterPriority                | Number    			| Heater priority                                               |      R     |
+| heaterMaintainFor             | Number    			| Heater maintain for                                           |      R     |
 
 ### Pump Channels
 
@@ -141,7 +139,7 @@ Goto the inbox and add the things.
 ### demo.items:
 
 ```
-Number   PoolBackyardAirTemp "Air Temp [%1.0f °F]"                              { channel = "haywardomnilogic:backyard:2ee76053:35940:backyardAirTemp"}
+Number:Temperature   PoolBackyardAirTemp "Air Temp [%1.0f °F]"                  { channel = "haywardomnilogic:backyard:2ee76053:35940:backyardAirTemp"}
 String   PoolBackyardStatus "Status [%s]"                                       { channel = "haywardomnilogic:backyard:2ee76053:35940:backyardStatus"}
 String   PoolBackyardState "State [%s]"                                         { channel = "haywardomnilogic:backyard:2ee76053:35940:backyardState"}
 String   PoolBackyardAlarm1 "Alarm #1 [%s]"                                     { channel = "haywardomnilogic:backyard:2ee76053:35940:backyardAlarm1"}
@@ -151,7 +149,7 @@ String   PoolBackyardAlarm4 "Alarm #4 [%s]"                                     
 String   PoolBackyardAlarm5 "Alarm #5 [%s]"                                     { channel = "haywardomnilogic:backyard:2ee76053:35940:backyardAlarm5"}
   
 Number   PoolBOWFlow "Flow Switch"                      						{ channel = "haywardomnilogic:bow:2ee76053:30:bowFlow"}
-Number   PoolBOWWaterTemp "Water Temp [%1.0f °F]"                               { channel = "haywardomnilogic:bow:2ee76053:30:bowWaterTemp"}
+Number:Temperature   PoolBOWWaterTemp "Water Temp [%1.0f °F]"                   { channel = "haywardomnilogic:bow:2ee76053:30:bowWaterTemp"}
  
 Switch   PoolChlorEnable "Enable"                                               { channel = "haywardomnilogic:chlorinator:2ee76053:34:chlorEnable"}
 String   PoolChlorOperatingMode "Operating Mode [%s]"                           { channel = "haywardomnilogic:chlorinator:2ee76053:34:chlorOperatingMode"}
@@ -178,7 +176,7 @@ Number   PoolFilterState "State"                 								{ channel = "haywardomn
 Number   PoolFilterLastSpeed "Speed[%1.0f %%]"                                  { channel = "haywardomnilogic:filter:2ee76053:31:filterLastSpeed"}
 
 Switch   PoolVirtualHeaterEnable "Power"                                        { channel = "haywardomnilogic:virtualHeater:2ee76053:32:virtualHeaterEnable"}
-Number   PoolVirtualHeaterTemp "Temp [%1.0f °F]"                                { channel = "haywardomnilogic:virtualHeater:2ee76053:32:virtualHeaterCurrentSetpoint"}
+Number:Temperature   PoolVirtualHeaterTemp "Temp [%1.0f °F]"                    { channel = "haywardomnilogic:virtualHeater:2ee76053:32:virtualHeaterCurrentSetpoint"}
   
 Switch   PoolRelay1 "Deck Jets"                                                 { channel = "haywardomnilogic:relay:2ee76053:37:relayState"}
 Switch   PoolRelay2 "Vacuum"                                                    { channel = "haywardomnilogic:relay:2ee76053:36:relayState"}
