@@ -775,7 +775,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (indexInLists >= 0) {
                     listOfChStatus.set(indexInLists, (byte) -1);
                 } else {
-                    if (listOfChannels.size() > 0) {
+                    if (!listOfChannels.isEmpty()) {
                         logger.warn("Can't find ch when removing handler \t\tURL:{}", requestUrl);
                     }
                 }
