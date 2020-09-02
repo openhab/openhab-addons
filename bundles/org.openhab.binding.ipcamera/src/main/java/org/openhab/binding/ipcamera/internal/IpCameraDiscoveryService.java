@@ -24,7 +24,6 @@ import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.ipcamera.handler.IpCameraHandler;
 import org.openhab.binding.ipcamera.onvif.OnvifDiscovery;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(IpCameraDiscoveryService.class);
 
     public IpCameraDiscoveryService() {
-        super(IpCameraHandler.SUPPORTED_THING_TYPES, 30, false);
+        super(SUPPORTED_THING_TYPES, 30, false);
     }
 
     @Override

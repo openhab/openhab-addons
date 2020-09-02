@@ -13,6 +13,8 @@
 
 package org.openhab.binding.ipcamera.internal;
 
+import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -36,9 +38,7 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        if (IpCameraHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return true;
-        } else if (IpCameraGroupHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+        if (SUPPORTED_THING_TYPES.contains(thingTypeUID) || GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return true;
         }
         return false;
@@ -48,9 +48,9 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (IpCameraHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+        if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new IpCameraHandler(thing);
-        } else if (IpCameraGroupHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+        } else if (GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new IpCameraGroupHandler(thing);
         }
         return null;
