@@ -170,5 +170,4 @@ public class VehicleStatus {
             return Converter.toTitleCase(UNKNOWN);
         }
     }
-
 }

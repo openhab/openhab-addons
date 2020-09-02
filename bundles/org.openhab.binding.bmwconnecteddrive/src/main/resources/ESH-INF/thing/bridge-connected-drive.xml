@@ -35,16 +35,10 @@
 		</config-description>
 	</bridge-type>
 
-	<channel-type id="discovery-trigger-channel">
-		<item-type>Switch</item-type>
-		<label>Start ConnectedDrive Discovery</label>
-		<description>Forcing an update of the ConnectedDrive data. Useful if e.g. user has a new car connected / removed from
-			his Account</description>
-	</channel-type>
 	<channel-type id="discovery-fingerprint-channel">
 		<item-type>Switch</item-type>
-		<label>Logging Troubleshooting Fingerprint Data</label>
-		<description>Forcing a log entry with needed data needed for problem analysis</description>
+		<label>Log Discovery Fingerprint</label>
+		<description>Forcing a log entry to analyze Discovery Problems</description>
 	</channel-type>
 
 </thing:thing-descriptions>

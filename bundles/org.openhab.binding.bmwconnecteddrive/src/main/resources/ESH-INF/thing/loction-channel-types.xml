@@ -11,16 +11,8 @@
 		<item-type>Number</item-type>
 		<label>Vehicle Latitude Location</label>
 	</channel-type>
-	<channel-type id="latlong-channel">
-		<item-type>String</item-type>
-		<label>Latitude,Longitude as String for usage in e.g. Map Widget</label>
-	</channel-type>
 	<channel-type id="heading-channel">
 		<item-type>Number:Angle</item-type>
 		<label>Vehicle Heading Angle</label>
-	</channel-type>
-	<channel-type id="range-radius-channel">
-		<item-type>Number</item-type>
-		<label>Range Radius in Meter without unit as pure Number</label>
 	</channel-type>
 </thing:thing-descriptions>

@@ -3,11 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="troubleshoot-control">
-		<label>Troubleshooting</label>
-		<description>Generating Debug Data if a Problem Report shall be raised</description>
-		<channels>
-			<channel id="cardata-fingerprint" typeId="cardata-fingerprint-channel"/>
-		</channels>
-	</channel-group-type>
+	<channel-type id="charging-status-channel">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+	</channel-type>
 </thing:thing-descriptions>

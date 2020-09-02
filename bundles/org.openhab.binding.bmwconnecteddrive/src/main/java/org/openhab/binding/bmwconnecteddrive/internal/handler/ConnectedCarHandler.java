@@ -128,10 +128,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 lastTripCallback.onResponse(lastTripCache);
             } else if (CHANNEL_GROUP_STATUS.equals(group)) {
                 vehicleStatusCallback.onResponse(vehicleStatusCache);
-            } else if (CHANNEL_GROUP_CHARGE_PROFILE.equals(group)) {
+            } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 vehicleStatusCallback.onResponse(chargeProfileCache);
-            } else if (CHANNEL_GROUP_RANGE_MAP.equals(group)) {
-                vehicleStatusCallback.onResponse(rangeMapCache);
             }
         } else {
             // Executing Remote Services
@@ -167,14 +165,14 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                                     break;
                             }
                         }
-                        updateState(carDataFingerprint, OnOffType.OFF);
+                        updateState(vehicleFingerPrint, OnOffType.OFF);
                     }
                 }
             }
 
             // Log Troubleshoot data
-            if (channelUID.getIdWithoutGroup().equals(CARDATA_FINGERPRINT)) {
-                logger.info("Trigger CarData Fingerprint");
+            if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
+                logger.info("Trigger Vehicle Fingerprint");
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
                         logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - BEGIN");
@@ -276,7 +274,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
                 // Switch all Remote Service Channels Off
                 switchRemoteServicesOff();
-                updateState(carDataFingerprint, OnOffType.OFF);
+                updateState(vehicleFingerPrint, OnOffType.OFF);
 
                 // get Car Image one time at the beginning
                 proxy.get().requestImage(configuration.get(), imageCallback);
@@ -352,7 +350,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             dataMap.add("dlat", Float.toString(p.lat));
             dataMap.add("dlon", Float.toString(p.lon));
             if (configuration.isPresent()) {
-                proxy.get().requestRangeMap(configuration.get(), Optional.empty(), rangeMapCallback);
+                proxy.get().requestRangeMap(configuration.get(), Optional.of(dataMap), rangeMapCallback);
             }
         }
         currentPosition = p;
@@ -560,7 +558,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         updateState(remainingRangeHybrid,
                                 QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
                     }
-                    updateState(rangeRadius, new DecimalType((totalRange) * 1000));
+                    updateState(rangeRadius,
+                            QuantityType.valueOf(Converter.guessRange(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
                 } else {
                     updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
                     float totalRange = 0;
@@ -578,7 +577,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         updateState(remainingRangeHybrid,
                                 QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
                     }
-                    updateState(rangeRadius, new DecimalType((totalRange) * Constants.MILES_TO_FEET_FACTOR));
+                    updateState(rangeRadius,
+                            QuantityType.valueOf(Converter.guessRange(totalRange), ImperialUnits.MILE));
                 }
                 if (isElectric) {
                     updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));

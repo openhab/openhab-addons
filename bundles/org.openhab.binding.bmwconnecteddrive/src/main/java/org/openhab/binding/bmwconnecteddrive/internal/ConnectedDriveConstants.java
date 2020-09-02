@@ -105,27 +105,8 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
-    public static final String CHANNEL_GROUP_CHARGE_PROFILE = "charge-profile";
-    public static final String CHANNEL_GROUP_RANGE_MAP = "range-map";
+    public static final String CHANNEL_GROUP_CHARGE = "charge";
     public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
-
-    public static final String PROPERTIES_BRAND = "brand";
-    public static final String PROPERTIES_MODEL = "model";
-    public static final String PROPERTIES_DRIVETRAIN = "drivetrain";
-    public static final String PROPERTIES_BODYTYPE = "body";
-    public static final String PROPERTIES_COLOR = "color";
-    public static final String PROPERTIES_CONSTRUCTION_YEAR = "construction-year";
-    public static final String PROPERTIES_COMMUNITY = "community-statistics";
-    public static final String PROPERTIES_ALARM = "alarm";
-    public static final String PROPERTIES_DEALER_NAME = "dealer-name";
-    public static final String PROPERTIES_DEALER_ADDRESS = "dealer-address";
-    public static final String PROPERTIES_DEALER_PHONE = "dealer-phone";
-    public static final String PROPERTIES_BREAKDOWN_PHONE = "breakdown-phone";
-    public static final String PROPERTIES_ACTIVATED_SERVICES = "activated-services";
-    public static final String PROPERTIES_DEACTIVATED_SERVICES = "deactivated-services";
-    public static final String PROPERTIES_SUPPORTED_SERVICES = "supported-services";
-    public static final String PROPERTIES_NOT_SUPPORTED_SERVICES = "not-supported-services";
-    public static final String PROPERTIES_CHARGING_MODES = "charging-modes";
 
     // Status
     public static final String DOORS = "doors";
@@ -133,16 +114,17 @@ public class ConnectedDriveConstants {
     public static final String LOCK = "lock";
     public static final String SERVICE = "service";
     public static final String CHECK_CONTROL = "check-control";
+    public static final String LAST_UPDATE = "last-update";
+
     public static final String CHARGING_STATUS = "charging-status";
 
     // Range
     public static final String MILEAGE = "mileage";
-    public static final String REMAINING_RANGE_HYBRID = "remaining-range-hybrid";
-    public static final String REMAINING_RANGE_ELECTRIC = "remaining-range-electric";
-    public static final String REMAINING_SOC = "remaining-soc";
-    public static final String REMAINING_RANGE_FUEL = "remaining-range-fuel";
+    public static final String RANGE_HYBRID = "hybrid";
+    public static final String RANGE_ELECTRIC = "electric";
+    public static final String SOC = "soc";
+    public static final String RANGE_FUEL = "fuel";
     public static final String REMAINING_FUEL = "remaining-fuel";
-    public static final String LAST_UPDATE = "last-update";
 
     // Lifetime
     public static final String AVG_CONSUMPTION = "average-consumption";
@@ -159,10 +141,10 @@ public class ConnectedDriveConstants {
     public static final String LATITUDE = "latitude";
     public static final String LATLONG = "latlong";
     public static final String HEADING = "heading";
-    public static final String RANGE_RADIUS = "range-radius";
+    public static final String RANGE_RADIUS = "radius";
 
     // Image
-    public static final String IMAGE = "rendered";
+    public static final String IMAGE = "png";
 
     // Remote Services
     public static final String REMOTE_SERVICE_LIGHT_FLASH = "light";
@@ -174,6 +156,5 @@ public class ConnectedDriveConstants {
     public static final String REMOTE_STATE = "state";
 
     // Troubleshoot
-    public static final String CARDATA_FINGERPRINT = "cardata-fingerprint";
-
+    public static final String VEHICLE_FINGERPRINT = "vehicle-fingerprint";
 }

@@ -25,5 +25,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface StringResponseCallback extends ResponseCallback {
 
     public void onResponse(Optional<String> result);
-
 }

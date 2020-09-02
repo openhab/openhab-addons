@@ -9,7 +9,7 @@
 	</channel-type>
 	<channel-type id="remote-finder-channel">
 		<item-type>Switch</item-type>
-		<label>Find Vahicle</label>
+		<label>Find Vehicle</label>
 	</channel-type>
 	<channel-type id="remote-lock-channel">
 		<item-type>Switch</item-type>
@@ -29,6 +29,6 @@
 	</channel-type>
 	<channel-type id="remote-state-channel">
 		<item-type>String</item-type>
-		<label>Actual Service Execution State</label>
+		<label>Service Execution State</label>
 	</channel-type>
 </thing:thing-descriptions>

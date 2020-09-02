@@ -28,24 +28,6 @@ import org.eclipse.smarthome.core.types.Command;
  */
 @NonNullByDefault
 public class ConnectedCarChannelHandler extends BaseThingHandler {
-    // Property Channels
-    // protected ChannelUID brandChannel;
-    // protected ChannelUID modelChannel;
-    // protected ChannelUID drivetrainChannel;
-    // protected ChannelUID bodyChannel;
-    // protected ChannelUID colorChannel;
-    // protected ChannelUID constructionYearChannel;
-    // protected ChannelUID communityStatisticsChannel;
-    // protected ChannelUID alarmChannel;
-    // protected ChannelUID dealerNameChannel;
-    // protected ChannelUID dealerAddressChannel;
-    // protected ChannelUID dealerPhoneChannel;
-    // protected ChannelUID breakdownPhoneChannel;
-    // protected ChannelUID activatedServicesChannel;
-    // protected ChannelUID deactivatedServicesChannel;
-    // protected ChannelUID supportedServicesChannel;
-    // protected ChannelUID notSupportedServicesChannel;
-    // protected ChannelUID chargingModesChannel;
 
     // Vahicle Status Channels
     protected ChannelUID doors;
@@ -96,34 +78,10 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID remoteStateChannel;
 
     // Troubleshooting
-    protected ChannelUID carDataFingerprint;
+    protected ChannelUID vehicleFingerPrint;
 
     public ConnectedCarChannelHandler(Thing thing) {
         super(thing);
-
-        // create properties channels
-        // brandChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BRAND);
-        // modelChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_MODEL);
-        // drivetrainChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DRIVETRAIN);
-        // bodyChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BODYTYPE);
-        // colorChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_COLOR);
-        // constructionYearChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-        // PROPERTIES_CONSTRUCTION_YEAR);
-        // communityStatisticsChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_COMMUNITY);
-        // alarmChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_ALARM);
-        // dealerNameChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_NAME);
-        // dealerAddressChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_ADDRESS);
-        // dealerPhoneChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_DEALER_PHONE);
-        // breakdownPhoneChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_BREAKDOWN_PHONE);
-        // activatedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-        // PROPERTIES_ACTIVATED_SERVICES);
-        // deactivatedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-        // PROPERTIES_DEACTIVATED_SERVICES);
-        // supportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-        // PROPERTIES_SUPPORTED_SERVICES);
-        // notSupportedServicesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES,
-        // PROPERTIES_NOT_SUPPORTED_SERVICES);
-        // chargingModesChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_PROPERTIES, PROPERTIES_CHARGING_MODES);
 
         // Vehicle Status channels
         doors = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, DOORS);
@@ -131,16 +89,19 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         lock = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LOCK);
         service = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE);
         checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
-        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGING_STATUS);
+        lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
+
+        // Charge Channels
+        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGING_STATUS);
 
         // range Channels
         mileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, MILEAGE);
-        remainingRangeHybrid = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_HYBRID);
-        remainingRangeElectric = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_ELECTRIC);
-        remainingSoc = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_SOC);
-        remainingRangeFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_RANGE_FUEL);
+        remainingRangeHybrid = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_HYBRID);
+        remainingRangeElectric = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_ELECTRIC);
+        remainingSoc = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, SOC);
+        remainingRangeFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_FUEL);
         remainingFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_FUEL);
-        lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, LAST_UPDATE);
+        rangeRadius = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_RADIUS);
 
         // Last Trip Channels
         tripDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, DISTANCE);
@@ -160,7 +121,6 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         latitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATITUDE);
         latlong = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATLONG);
         heading = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, HEADING);
-        rangeRadius = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, RANGE_RADIUS);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
 
@@ -172,7 +132,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         remoteClimateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_AIR_CONDITIONING);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
 
-        carDataFingerprint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, CARDATA_FINGERPRINT);
+        vehicleFingerPrint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, VEHICLE_FINGERPRINT);
     }
 
     @Override

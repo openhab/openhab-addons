@@ -31,7 +31,6 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 import com.google.gson.Gson;
@@ -63,7 +62,6 @@ public class StatusWrapper {
         assertNotNull(container);
         assertNotNull(container.vehicleStatus);
         vStatus = container.vehicleStatus;
-
     }
 
     public boolean checkResults(@Nullable List<ChannelUID> channels, @Nullable List<State> states) {
@@ -92,7 +90,7 @@ public class StatusWrapper {
                 }
                 assertEquals("Mileage", qt.intValue(), vStatus.mileage);
                 break;
-            case REMAINING_RANGE_ELECTRIC:
+            case RANGE_ELECTRIC:
                 assertTrue("Is Eelctric", isElectric);
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
@@ -106,7 +104,7 @@ public class StatusWrapper {
                             Converter.round(vStatus.remainingRangeElectric), 0.01);
                 }
                 break;
-            case REMAINING_RANGE_FUEL:
+            case RANGE_FUEL:
                 assertTrue("Has Fuel", hasFuel);
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
@@ -120,7 +118,7 @@ public class StatusWrapper {
                             Converter.round(vStatus.remainingRangeFuel), 0.01);
                 }
                 break;
-            case REMAINING_RANGE_HYBRID:
+            case RANGE_HYBRID:
                 assertTrue("Is Hybrid", isHybrid);
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
@@ -141,7 +139,7 @@ public class StatusWrapper {
                 assertEquals("Percent", SmartHomeUnits.LITRE, qt.getUnit());
                 assertEquals("Percent", Converter.round(vStatus.remainingFuel), Converter.round(qt.floatValue()), 0.01);
                 break;
-            case REMAINING_SOC:
+            case SOC:
                 assertTrue("Is Eelctric", isElectric);
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
@@ -218,25 +216,25 @@ public class StatusWrapper {
                 assertEquals("Lat/Long", vStatus.position.lat + "," + vStatus.position.lon, st.toString());
                 break;
             case RANGE_RADIUS:
-                assertTrue(state instanceof DecimalType);
-                dt = (DecimalType) state;
+                assertTrue(state instanceof QuantityType);
+                qt = (QuantityType) state;
                 int totalRange = 0;
                 if (imperial) {
                     if (isElectric) {
-                        totalRange += vStatus.remainingRangeElectricMls * Constants.MILES_TO_FEET_FACTOR;
+                        totalRange += vStatus.remainingRangeElectricMls;
                     }
                     if (hasFuel) {
-                        totalRange += vStatus.remainingRangeFuelMls * Constants.MILES_TO_FEET_FACTOR;
+                        totalRange += vStatus.remainingRangeFuelMls;
                     }
                 } else {
                     if (isElectric) {
-                        totalRange += vStatus.remainingRangeElectric * 1000;
+                        totalRange += vStatus.remainingRangeElectric;
                     }
                     if (hasFuel) {
-                        totalRange += vStatus.remainingRangeFuel * 1000;
+                        totalRange += vStatus.remainingRangeFuel;
                     }
                 }
-                assertEquals("Range Circle", totalRange, dt.intValue());
+                assertEquals("Range Circle", Converter.guessRange(totalRange), qt.floatValue(), 0.1);
                 break;
             default:
                 // fail in case of unknown update
@@ -244,5 +242,4 @@ public class StatusWrapper {
                 break;
         }
     }
-
 }

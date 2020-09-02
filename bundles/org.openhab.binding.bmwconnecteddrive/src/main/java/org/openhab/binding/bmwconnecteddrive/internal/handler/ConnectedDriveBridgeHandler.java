@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
+import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.DISCOVERY_FINGERPRINT;
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.ANONYMOUS;
 
 import java.util.Hashtable;
 import java.util.Optional;
