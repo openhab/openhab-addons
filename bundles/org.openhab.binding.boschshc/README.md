@@ -1,6 +1,6 @@
 # BoschSHC Binding
 
-Binding for the Bosch Smart Home Controller:
+Binding for the Bosch Smart Home Controller.
 
 ## Supported Things
 
@@ -20,13 +20,16 @@ Binding for the Bosch Smart Home Controller:
 
 ## Discovery
 
-Not yet implemented. Configuration via configuration files or Paper UI (see below).
+Configuration via configuration files or UI (see below).
 
 ## Binding Configuration
 
-You need to provide the IP address and the system password of your Bosch Smart Home Controller. The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI. The system password is set by you during your initial registration steps in the _Bosch Smart Home App_. 
+You need to provide the IP address and the system password of your Bosch Smart Home Controller. 
+The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI. 
+The system password is set by you during your initial registration steps in the _Bosch Smart Home App_. 
 
-A keystore file with a self signed certificate is created automatically. This certificate is used for pairing between the Bridge and the Bosch SHC. 
+A keystore file with a self signed certificate is created automatically. 
+This certificate is used for pairing between the Bridge and the Bosch SHC. 
 
 *Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
         
@@ -74,9 +77,7 @@ Bridge boschshc:shc:1 [ ipAddress="192.168.x.y" ] {
 }
 ```
 
-Or by adding them via Paper UI -> Configuration -> Things -> "+" -> Bosch Smart Home Binding.
-
-For more details see https://www.openhab.org/docs/configuration/things.html.
+Or by adding them via PaperUI -> Configuration -> Things -> "+" -> Bosch Smart Home Binding.
 
 ## Item Configuration
 
@@ -92,6 +93,4 @@ Switch Bosch_Living_Room "Living Room"  { channel="boschshc:in-wall-switch:1:liv
 Switch Bosch_Lelit       "Lelit"        { channel="boschshc:in-wall-switch:1:coffeemachine:power-switch" }
 ```
 
-Or by adding them via Paper UI -> Configuration -> Items -> "+".
-
-For more details see https://www.openhab.org/docs/configuration/items.html.
+Or by adding them via PaperUI -> Configuration -> Items -> "+".
