@@ -59,6 +59,16 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get bridge configuration");
             return;
         }
+
+        // test API by doing a dummy request to ensure it is available
+        final KVVStationConfig stationConfig = new KVVStationConfig();
+        stationConfig.stationId = "de:8212:6";
+        final DepartureResult departures = this.queryKVV(stationConfig);
+        if (departures == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
+            return;
+        }
+
         updateStatus(ThingStatus.ONLINE);
     }
 
