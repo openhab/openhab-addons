@@ -1,22 +1,25 @@
 # NZ Water Alerts Binding
 
-Get Water Alert Levels for cities in New Zealand. Getting this alert level can help you script and automate smarter tasks. 
+Get Water Alert Levels for cities in New Zealand. Getting this alert level can help you script and automate smarter tasks for water and avoid getting penalized from your distract or local council. 
 
 > Example: Disable automated spinklers based on a level 3 or 4 water alert level
 
-_This Binding scrapes the [Smart Water](http://www.smartwater.org.nz/) and [Be Water Wise](https://bewaterwise.org.nz/) websites for Water Alert Levels._
+This Binding scrapes multiple websites for Water Levels:
+* Northland's [BeWaterWise Website](https://bewaterwise.org.nz/)
+* Waikato's [Smart Water Website](https://www.smartwater.org.nz/)
+* Napier's [Council Website](https://www.napier.govt.nz)
 
 ## Thing Configuration
 
 You can configure this Binding through _PaperUI_ or manually.
 
-```
-Thing nzwateralerts:wateralert "HCC" [ location="smartwater:hamilton:hamilton", refreshInterval="4" ]
-```
+### Configuration Values
+| Value           | Type         | Description                            |
+| --------------- | ------------ | -------------------------------------- |
+| location        | string       | The location to get water data from. Refer to the list below for values. |
+| refreshInterval | number       | The time interval (in hours) to refresh the data.
 
-The above gets the Water Alert level for Hamilton and refreshes this data every 4 hours.
-
-Supported city/area list:
+### Supported city/area list
 
 | City                     | Config Value                               |
 | ------------------------ | ------------------------------------------ |
@@ -43,11 +46,19 @@ Supported city/area list:
 | Waitangi / Paihia / Opua | bewaterwise:farnorth:waitangipaihiaopua    |
 | Whangarei                | bewaterwise:whangarei:whangarei            |
 
+### Example
+
+```
+Thing nzwateralerts:wateralert "HCC" [ location="smartwater:hamilton:hamilton", refreshInterval="4" ]
+```
+
+The above gets the Water Alert level for Hamilton and refreshes this data every 4 hours.
+
 ## Channels
 
 There is only one channel with this binding labelled `alertlevel` which contains a Number 0-4 to represent the alert level.
 
-> Water Alert Level 0 represents _No Water Restrictions_ in some cities.
+Depending on your region, either Alert Level 0 or 1 can represent _No Water Restrictions_. Check with your regional council for further details.
 
 ## Other Cities
 
