@@ -178,9 +178,9 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                         if (indexInLists >= 0) {
                             if (closeConnection) {
                                 // Need to mark the channel as closing so the digest gets a new ch
-                                myHandler.listOfChStatus.set(indexInLists, (byte) 0);
+                                myHandler.listOfChStatus.set(indexInLists, 0);
                             } else {
-                                myHandler.listOfChStatus.set(indexInLists, (byte) 2);
+                                myHandler.listOfChStatus.set(indexInLists, 2);
                             }
                         } else {
                             logger.warn("!!!! 401: Could not find the channel to mark as closing or reusable");

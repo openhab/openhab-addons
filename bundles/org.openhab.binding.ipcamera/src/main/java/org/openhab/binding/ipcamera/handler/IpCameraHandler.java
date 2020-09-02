@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -175,13 +176,13 @@ public class IpCameraHandler extends BaseThingHandler {
     public String hostIp = "0.0.0.0";
     private String ffmpegOutputFolder = "";
 
-    public ArrayList<String> listOfRequests = new ArrayList<String>(18);
-    public ArrayList<Channel> listOfChannels = new ArrayList<Channel>(18);
+    public List<String> listOfRequests = new ArrayList<>(18);
+    public List<Channel> listOfChannels = new ArrayList<>(18);
     // Status can be -2=storing a reply, -1=closed, 0=closing (do not re-use
     // channel), 1=open, 2=open and ok to reuse
-    public ArrayList<Byte> listOfChStatus = new ArrayList<Byte>(18);
-    public ArrayList<String> listOfReplies = new ArrayList<String>(18);
-    public ArrayList<String> lowPriorityRequests = new ArrayList<String>(0);
+    public List<Integer> listOfChStatus = new ArrayList<>(18);
+    public List<String> listOfReplies = new ArrayList<>(18);
+    public List<String> lowPriorityRequests = new ArrayList<>(0);
     public ReentrantLock lock = new ReentrantLock();
 
     // basicAuth MUST remain private as it holds the password
@@ -220,6 +221,258 @@ public class IpCameraHandler extends BaseThingHandler {
         RTSPHELPER,
         MJPEG,
         SNAPSHOT
+    }
+
+    // These methods handle the response from all camera brands, nothing specific to
+    // any brand should be in here //
+    private class CommonCameraHandler extends ChannelDuplexHandler {
+        private int bytesToRecieve = 0;
+        private int bytesAlreadyRecieved = 0;
+        private byte[] incomingJpeg = new byte[0];
+        private String incomingMessage = "";
+        private String contentType = "empty";
+        private Object reply = new Object();
+        private String requestUrl = "";
+        private boolean closeConnection = true;
+        private boolean isChunked = false;
+
+        public void setURL(String url) {
+            requestUrl = url;
+        }
+
+        @Override
+        public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
+            if (msg == null || ctx == null) {
+                return;
+            }
+            try {
+                // logger.trace("{}", msg.toString());
+                if (msg instanceof HttpResponse) {
+                    HttpResponse response = (HttpResponse) msg;
+                    if (response.status().code() != 401) {
+                        if (!response.headers().isEmpty()) {
+                            for (String name : response.headers().names()) {
+                                // Some cameras use first letter uppercase and others dont.
+                                switch (name.toLowerCase()) { // Possible localization issues doing this
+                                    case "content-type":
+                                        contentType = response.headers().getAsString(name);
+                                        break;
+                                    case "content-length":
+                                        bytesToRecieve = Integer.parseInt(response.headers().getAsString(name));
+                                        break;
+                                    case "connection":
+                                        if (response.headers().getAsString(name).contains("keep-alive")) {
+                                            closeConnection = false;
+                                        }
+                                        break;
+                                    case "transfer-encoding":
+                                        if (response.headers().getAsString(name).contains("chunked")) {
+                                            isChunked = true;
+                                        }
+                                        break;
+                                }
+                            }
+                            if (contentType.contains("multipart")) {
+                                closeConnection = false;
+                                if (mjpegUri.contains(requestUrl)) {
+                                    if (msg instanceof HttpMessage) {
+                                        // very start of stream only
+                                        ReferenceCountUtil.retain(msg, 1);
+                                        firstStreamedMsg = msg;
+                                        streamToGroup(firstStreamedMsg, mjpegChannelGroup, true);
+                                    }
+                                }
+                            } else if (contentType.contains("image/jp")) {
+                                if (bytesToRecieve == 0) {
+                                    bytesToRecieve = 768000; // 0.768 Mbyte when no Content-Length is sent
+                                    logger.debug("Camera has no Content-Length header, we have to guess how much RAM.");
+                                }
+                                incomingJpeg = new byte[bytesToRecieve];
+                            }
+                            if (closeConnection) {
+                                lock.lock();
+                                try {
+                                    int indexInLists = listOfChannels.indexOf(ctx.channel());
+                                    if (indexInLists >= 0) {
+                                        listOfChStatus.set(indexInLists, 0);
+                                    } else {
+                                        logger.debug("!!!! Could not find the ch for a Connection: close URL:{}",
+                                                requestUrl);
+                                    }
+                                } finally {
+                                    lock.unlock();
+                                }
+                            }
+                        }
+                    }
+                }
+                if (msg instanceof HttpContent) {
+                    if (mjpegUri.contains(requestUrl)) {
+                        // multiple MJPEG stream packets come back as this.
+                        ReferenceCountUtil.retain(msg, 1);
+                        streamToGroup(msg, mjpegChannelGroup, true);
+                    } else {
+                        HttpContent content = (HttpContent) msg;
+                        // Found some cameras uses Content-Type: image/jpg instead of image/jpeg
+                        if (contentType.contains("image/jp")) {
+                            for (int i = 0; i < content.content().capacity(); i++) {
+                                incomingJpeg[bytesAlreadyRecieved++] = content.content().getByte(i);
+                            }
+                            if (content instanceof LastHttpContent) {
+                                processSnapshot(incomingJpeg);
+                                // testing next line and if works need to do a full cleanup of this function.
+                                closeConnection = true;
+                                if (closeConnection) {
+                                    ctx.close();
+                                } else {
+                                    lock.lock();
+                                    try {
+                                        int indexInLists = listOfChannels.indexOf(ctx.channel());
+                                        if (indexInLists >= 0) {
+                                            listOfChStatus.set(indexInLists, 2);
+                                        }
+                                    } finally {
+                                        lock.unlock();
+                                        bytesToRecieve = 0;
+                                        bytesAlreadyRecieved = 0;
+                                    }
+                                }
+                            }
+                        } else { // incomingMessage that is not an IMAGE
+                            if (incomingMessage.equals("")) {
+                                incomingMessage = content.content().toString(CharsetUtil.UTF_8);
+                            } else {
+                                incomingMessage += content.content().toString(CharsetUtil.UTF_8);
+                            }
+                            bytesAlreadyRecieved = incomingMessage.length();
+                            if (content instanceof LastHttpContent) {
+                                // If it is not an image send it on to the next handler//
+                                if (bytesAlreadyRecieved != 0) {
+                                    reply = incomingMessage;
+                                    super.channelRead(ctx, reply);
+                                }
+                            }
+                            // HIKVISION alertStream never has a LastHttpContent as it always stays open//
+                            if (contentType.contains("multipart")) {
+                                if (bytesAlreadyRecieved != 0) {
+                                    reply = incomingMessage;
+                                    incomingMessage = "";
+                                    bytesToRecieve = 0;
+                                    bytesAlreadyRecieved = 0;
+                                    super.channelRead(ctx, reply);
+                                }
+                            }
+                            // Foscam needs this as will other cameras with chunks//
+                            if (isChunked && bytesAlreadyRecieved != 0) {
+                                reply = incomingMessage;
+                                super.channelRead(ctx, reply);
+                            }
+                        }
+                    }
+                } else { // msg is not HttpContent
+                    // Foscam and Amcrest cameras need this
+                    if (!contentType.contains("image/jp") && bytesAlreadyRecieved != 0) {
+                        reply = incomingMessage;
+                        logger.debug("Packet back from camera is {}", incomingMessage);
+                        super.channelRead(ctx, reply);
+                    }
+                }
+            } finally {
+                ReferenceCountUtil.release(msg);
+            }
+        }
+
+        @Override
+        public void channelReadComplete(@Nullable ChannelHandlerContext ctx) {
+        }
+
+        @Override
+        public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
+        }
+
+        @Override
+        public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
+            if (ctx == null) {
+                return;
+            }
+            lock.lock();
+            try {
+                int indexInLists = listOfChannels.indexOf(ctx.channel());
+                if (indexInLists >= 0) {
+                    listOfChStatus.set(indexInLists, -1);
+                } else {
+                    if (!listOfChannels.isEmpty()) {
+                        logger.warn("Can't find ch when removing handler \t\tURL:{}", requestUrl);
+                    }
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        @Override
+        public void exceptionCaught(@Nullable ChannelHandlerContext ctx, @Nullable Throwable cause) {
+            if (cause == null || ctx == null) {
+                return;
+            }
+            if (cause instanceof ArrayIndexOutOfBoundsException) {
+                logger.debug("Camera sent {} bytes when the content-length header was {}.", bytesAlreadyRecieved,
+                        bytesToRecieve);
+            } else {
+                logger.warn("!!!! Camera possibly closed the channel on the binding, cause reported is: {}",
+                        cause.getMessage());
+            }
+            ctx.close();
+        }
+
+        @Override
+        public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
+            if (ctx == null) {
+                return;
+            }
+            if (evt instanceof IdleStateEvent) {
+                IdleStateEvent e = (IdleStateEvent) evt;
+                // If camera does not use the channel for X amount of time it will close.
+                if (e.state() == IdleState.READER_IDLE) {
+                    lock.lock();
+                    try {
+                        int indexInLists = listOfChannels.indexOf(ctx.channel());
+                        if (indexInLists >= 0) {
+                            String urlToKeepOpen;
+                            switch (thing.getThingTypeUID().getId()) {
+                                case "DAHUA":
+                                    urlToKeepOpen = listOfRequests.get(indexInLists);
+                                    if ("/cgi-bin/eventManager.cgi?action=attach&codes=[All]"
+                                            .contentEquals(urlToKeepOpen)) {
+                                        return;
+                                    }
+                                    break;
+                                case "HIKVISION":
+                                    urlToKeepOpen = listOfRequests.get(indexInLists);
+                                    if ("/ISAPI/Event/notification/alertStream".contentEquals(urlToKeepOpen)) {
+                                        return;
+                                    }
+                                    break;
+                                case "DOORBIRD":
+                                    urlToKeepOpen = listOfRequests.get(indexInLists);
+                                    if ("/bha-api/monitor.cgi?ring=doorbell,motionsensor"
+                                            .contentEquals(urlToKeepOpen)) {
+                                        return;
+                                    }
+                                    break;
+                            }
+                            logger.debug("! Channel was found idle for more than 15 seconds so closing it down. !");
+                            listOfChStatus.set(indexInLists, 0);
+                        } else {
+                            logger.warn("!?! Channel that was found idle could not be located in our tracking. !?!");
+                        }
+                    } finally {
+                        lock.unlock();
+                    }
+                    ctx.close();
+                }
+            }
+        }
     }
 
     Runnable runnableMovePTZ = new Runnable() {
@@ -300,7 +553,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private void cleanChannels() {
         lock.lock();
         try {
-            for (byte index = 0; index < listOfRequests.size(); index++) {
+            for (int index = 0; index < listOfRequests.size(); index++) {
                 logger.debug("Channel status is {} for URL:{}", listOfChStatus.get(index), listOfRequests.get(index));
                 switch (listOfChStatus.get(index)) {
                     case 2: // Open and OK to reuse
@@ -310,7 +563,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (channel.isOpen()) {
                             break;
                         } else {
-                            listOfChStatus.set(index, (byte) -1);
+                            listOfChStatus.set(index, -1);
                             logger.warn("Cleaning the channels has just found a connection with wrong open state.");
                         }
                     case -1: // closed
@@ -471,6 +724,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         mainBootstrap.connect(new InetSocketAddress(ipAddress, port)).addListener(new ChannelFutureListener() {
+
             @Override
             public void operationComplete(@Nullable ChannelFuture future) {
                 if (future == null) {
@@ -499,7 +753,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                         }
                                     case -1: // Closed
                                         indexInLists = index;
-                                        listOfChStatus.set(indexInLists, (byte) 1);
+                                        listOfChStatus.set(indexInLists, 1);
                                         done = true;
                                         break;
                                 }
@@ -540,7 +794,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         try {
                             listOfRequests.add(httpRequestURL);
                             listOfChannels.add(ch);
-                            listOfChStatus.add((byte) 1);
+                            listOfChStatus.add(1);
                             listOfReplies.add("");
                         } finally {
                             lock.unlock();
@@ -556,6 +810,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
                 }
             }
+
         });
     }
 
@@ -594,258 +849,6 @@ public class IpCameraHandler extends BaseThingHandler {
         } else if (firstAudioAlarm || audioAlarmUpdateSnapshot) {
             updateState(CHANNEL_IMAGE, new RawType(incommingSnapshot, "image/jpeg"));
             firstAudioAlarm = audioAlarmUpdateSnapshot = false;
-        }
-    }
-
-    // These methods handle the response from all camera brands, nothing specific to
-    // any brand should be in here //
-    private class CommonCameraHandler extends ChannelDuplexHandler {
-        private int bytesToRecieve = 0;
-        private int bytesAlreadyRecieved = 0;
-        private byte[] incomingJpeg = new byte[0];
-        private String incomingMessage = "";
-        private String contentType = "empty";
-        private Object reply = new Object();
-        private String requestUrl = "";
-        private boolean closeConnection = true;
-        private boolean isChunked = false;
-
-        public void setURL(String url) {
-            requestUrl = url;
-        }
-
-        @Override
-        public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
-            if (msg == null || ctx == null) {
-                return;
-            }
-            try {
-                // logger.trace("{}", msg.toString());
-                if (msg instanceof HttpResponse) {
-                    HttpResponse response = (HttpResponse) msg;
-                    if (response.status().code() != 401) {
-                        if (!response.headers().isEmpty()) {
-                            for (String name : response.headers().names()) {
-                                // Some cameras use first letter uppercase and others dont.
-                                switch (name.toLowerCase()) { // Possible localization issues doing this
-                                    case "content-type":
-                                        contentType = response.headers().getAsString(name);
-                                        break;
-                                    case "content-length":
-                                        bytesToRecieve = Integer.parseInt(response.headers().getAsString(name));
-                                        break;
-                                    case "connection":
-                                        if (response.headers().getAsString(name).contains("keep-alive")) {
-                                            closeConnection = false;
-                                        }
-                                        break;
-                                    case "transfer-encoding":
-                                        if (response.headers().getAsString(name).contains("chunked")) {
-                                            isChunked = true;
-                                        }
-                                        break;
-                                }
-                            }
-                            if (contentType.contains("multipart")) {
-                                closeConnection = false;
-                                if (mjpegUri.contains(requestUrl)) {
-                                    if (msg instanceof HttpMessage) {
-                                        // very start of stream only
-                                        ReferenceCountUtil.retain(msg, 1);
-                                        firstStreamedMsg = msg;
-                                        streamToGroup(firstStreamedMsg, mjpegChannelGroup, true);
-                                    }
-                                }
-                            } else if (contentType.contains("image/jp")) {
-                                if (bytesToRecieve == 0) {
-                                    bytesToRecieve = 768000; // 0.768 Mbyte when no Content-Length is sent
-                                    logger.debug("Camera has no Content-Length header, we have to guess how much RAM.");
-                                }
-                                incomingJpeg = new byte[bytesToRecieve];
-                            }
-                            if (closeConnection) {
-                                lock.lock();
-                                try {
-                                    byte indexInLists = (byte) listOfChannels.indexOf(ctx.channel());
-                                    if (indexInLists >= 0) {
-                                        listOfChStatus.set(indexInLists, (byte) 0);
-                                    } else {
-                                        logger.debug("!!!! Could not find the ch for a Connection: close URL:{}",
-                                                requestUrl);
-                                    }
-                                } finally {
-                                    lock.unlock();
-                                }
-                            }
-                        }
-                    }
-                }
-                if (msg instanceof HttpContent) {
-                    if (mjpegUri.contains(requestUrl)) {
-                        // multiple MJPEG stream packets come back as this.
-                        ReferenceCountUtil.retain(msg, 1);
-                        streamToGroup(msg, mjpegChannelGroup, true);
-                    } else {
-                        HttpContent content = (HttpContent) msg;
-                        // Found some cameras uses Content-Type: image/jpg instead of image/jpeg
-                        if (contentType.contains("image/jp")) {
-                            for (int i = 0; i < content.content().capacity(); i++) {
-                                incomingJpeg[bytesAlreadyRecieved++] = content.content().getByte(i);
-                            }
-                            if (content instanceof LastHttpContent) {
-                                processSnapshot(incomingJpeg);
-                                // testing next line and if works need to do a full cleanup of this function.
-                                closeConnection = true;
-                                if (closeConnection) {
-                                    ctx.close();
-                                } else {
-                                    lock.lock();
-                                    try {
-                                        byte indexInLists = (byte) listOfChannels.indexOf(ctx.channel());
-                                        if (indexInLists >= 0) {
-                                            listOfChStatus.set(indexInLists, (byte) 2);
-                                        }
-                                    } finally {
-                                        lock.unlock();
-                                        bytesToRecieve = 0;
-                                        bytesAlreadyRecieved = 0;
-                                    }
-                                }
-                            }
-                        } else { // incomingMessage that is not an IMAGE
-                            if (incomingMessage.equals("")) {
-                                incomingMessage = content.content().toString(CharsetUtil.UTF_8);
-                            } else {
-                                incomingMessage += content.content().toString(CharsetUtil.UTF_8);
-                            }
-                            bytesAlreadyRecieved = incomingMessage.length();
-                            if (content instanceof LastHttpContent) {
-                                // If it is not an image send it on to the next handler//
-                                if (bytesAlreadyRecieved != 0) {
-                                    reply = incomingMessage;
-                                    super.channelRead(ctx, reply);
-                                }
-                            }
-                            // HIKVISION alertStream never has a LastHttpContent as it always stays open//
-                            if (contentType.contains("multipart")) {
-                                if (bytesAlreadyRecieved != 0) {
-                                    reply = incomingMessage;
-                                    incomingMessage = "";
-                                    bytesToRecieve = 0;
-                                    bytesAlreadyRecieved = 0;
-                                    super.channelRead(ctx, reply);
-                                }
-                            }
-                            // Foscam needs this as will other cameras with chunks//
-                            if (isChunked && bytesAlreadyRecieved != 0) {
-                                reply = incomingMessage;
-                                super.channelRead(ctx, reply);
-                            }
-                        }
-                    }
-                } else { // msg is not HttpContent
-                    // Foscam and Amcrest cameras need this
-                    if (!contentType.contains("image/jp") && bytesAlreadyRecieved != 0) {
-                        reply = incomingMessage;
-                        logger.debug("Packet back from camera is {}", incomingMessage);
-                        super.channelRead(ctx, reply);
-                    }
-                }
-            } finally {
-                ReferenceCountUtil.release(msg);
-            }
-        }
-
-        @Override
-        public void channelReadComplete(@Nullable ChannelHandlerContext ctx) {
-        }
-
-        @Override
-        public void handlerAdded(@Nullable ChannelHandlerContext ctx) {
-        }
-
-        @Override
-        public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
-            if (ctx == null) {
-                return;
-            }
-            lock.lock();
-            try {
-                byte indexInLists = (byte) listOfChannels.indexOf(ctx.channel());
-                if (indexInLists >= 0) {
-                    listOfChStatus.set(indexInLists, (byte) -1);
-                } else {
-                    if (!listOfChannels.isEmpty()) {
-                        logger.warn("Can't find ch when removing handler \t\tURL:{}", requestUrl);
-                    }
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-
-        @Override
-        public void exceptionCaught(@Nullable ChannelHandlerContext ctx, @Nullable Throwable cause) {
-            if (cause == null || ctx == null) {
-                return;
-            }
-            if (cause instanceof ArrayIndexOutOfBoundsException) {
-                logger.debug("Camera sent {} bytes when the content-length header was {}.", bytesAlreadyRecieved,
-                        bytesToRecieve);
-            } else {
-                logger.warn("!!!! Camera possibly closed the channel on the binding, cause reported is: {}",
-                        cause.getMessage());
-            }
-            ctx.close();
-        }
-
-        @Override
-        public void userEventTriggered(@Nullable ChannelHandlerContext ctx, @Nullable Object evt) throws Exception {
-            if (ctx == null) {
-                return;
-            }
-            if (evt instanceof IdleStateEvent) {
-                IdleStateEvent e = (IdleStateEvent) evt;
-                // If camera does not use the channel for X amount of time it will close.
-                if (e.state() == IdleState.READER_IDLE) {
-                    lock.lock();
-                    try {
-                        byte indexInLists = (byte) listOfChannels.indexOf(ctx.channel());
-                        if (indexInLists >= 0) {
-                            String urlToKeepOpen;
-                            switch (thing.getThingTypeUID().getId()) {
-                                case "DAHUA":
-                                    urlToKeepOpen = listOfRequests.get(indexInLists);
-                                    if ("/cgi-bin/eventManager.cgi?action=attach&codes=[All]"
-                                            .contentEquals(urlToKeepOpen)) {
-                                        return;
-                                    }
-                                    break;
-                                case "HIKVISION":
-                                    urlToKeepOpen = listOfRequests.get(indexInLists);
-                                    if ("/ISAPI/Event/notification/alertStream".contentEquals(urlToKeepOpen)) {
-                                        return;
-                                    }
-                                    break;
-                                case "DOORBIRD":
-                                    urlToKeepOpen = listOfRequests.get(indexInLists);
-                                    if ("/bha-api/monitor.cgi?ring=doorbell,motionsensor"
-                                            .contentEquals(urlToKeepOpen)) {
-                                        return;
-                                    }
-                                    break;
-                            }
-                            logger.debug("! Channel was found idle for more than 15 seconds so closing it down. !");
-                            listOfChStatus.set(indexInLists, (byte) 0);
-                        } else {
-                            logger.warn("!?! Channel that was found idle could not be located in our tracking. !?!");
-                        }
-                    } finally {
-                        lock.unlock();
-                    }
-                    ctx.close();
-                }
-            }
         }
     }
 
@@ -1639,10 +1642,10 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     boolean streamIsStopped(String url) {
-        byte indexInLists = 0;
+        int indexInLists = 0;
         lock.lock();
         try {
-            indexInLists = (byte) listOfRequests.lastIndexOf(url);
+            indexInLists = listOfRequests.lastIndexOf(url);
             if (indexInLists < 0) {
                 return true; // Stream not found, probably first run.
             }
