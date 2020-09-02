@@ -299,7 +299,7 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 onDeviceStateChanged(device);
                 return true;
             } else {
-                logger.warn("initializeProperties: device is null");
+                logger.warn("initializeProperties: The device with id {} isn't found", deviceId);
                 return false;
             }
         }
