@@ -12,7 +12,14 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_CLIMATE_CONTROL;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHC;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_THERMOSTAT;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_TWINGUARD;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,10 +103,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
 
         else if (THING_TYPE_CLIMATE_CONTROL.equals(thingTypeUID)) {
             return new ClimateControlHandler(thing);
-        }
-
-        else {
-            logger.warn("Failed to find handler for device: {}", thingTypeUID);
         }
 
         return null;

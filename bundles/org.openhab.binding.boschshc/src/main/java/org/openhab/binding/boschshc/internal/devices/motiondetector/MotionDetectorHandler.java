@@ -75,7 +75,6 @@ public class MotionDetectorHandler extends BoschSHCHandler {
 
     void updateLatestMotionState(LatestMotionState state) {
         DateTimeType date = new DateTimeType(state.latestMotionDetected);
-        logger.debug("Parsed date of latest motion to {}: {} as date {}", this.getBoschID(), state, date);
         updateState(CHANNEL_LATEST_MOTION, date);
     }
 

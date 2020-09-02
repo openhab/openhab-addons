@@ -39,15 +39,14 @@ import com.google.gson.JsonElement;
  * inherits from this abstract thing handler.
  *
  * @author Stefan Kästle - Initial contribution
+ * @author Christian Oeing - refactorings of e.g. server registration
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
+
     /**
      * Service State for a Bosch device.
-     *
-     * @author Christian Oeing - refactorings of e.g. server registration
      */
-    @NonNullByDefault
     class DeviceService<TState extends BoschSHCServiceState> {
         /**
          * Constructor.

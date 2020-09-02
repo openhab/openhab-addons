@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
-import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LEVEL;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,8 +39,6 @@ import com.google.gson.JsonSyntaxException;
 public class ShutterControlHandler extends BoschSHCHandler {
     /**
      * Utility functions to convert data between Bosch things and openHAB items
-     * 
-     * @author Christian Oeing - Initial contribution
      */
     static final class DataConversion {
         public static int levelToOpenPercentage(double level) {
@@ -52,7 +50,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
         }
     }
 
-    final String ShutterControlServiceName = "ShutterControl";
+    static final String ShutterControlServiceName = "ShutterControl";
 
     public ShutterControlHandler(Thing thing) {
         super(thing);

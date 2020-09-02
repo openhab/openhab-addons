@@ -31,9 +31,6 @@ public class RoomClimateControlServiceState extends BoschSHCServiceState {
 
     private static final String Type = "climateControlState";
 
-    /**
-     * Constructor.
-     */
     public RoomClimateControlServiceState() {
         super(Type);
     }
@@ -54,7 +51,7 @@ public class RoomClimateControlServiceState extends BoschSHCServiceState {
      * @apiNote Min: 5.0, Max: 30.0.
      * @apiNote Can be set in 0.5 steps.
      */
-    public double setpointTemperature;
+    private double setpointTemperature;
 
     /**
      * Desired temperature state to set for a thing.

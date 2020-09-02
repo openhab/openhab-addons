@@ -31,7 +31,7 @@ public class ValveTappetServiceState extends BoschSHCServiceState {
     /**
      * Current open percentage of valve tappet (0 [closed] - 100 [open]).
      */
-    public int position;
+    private int position;
 
     /**
      * Current position state of valve tappet.
