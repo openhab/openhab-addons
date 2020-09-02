@@ -66,5 +66,4 @@ public class LocaleTest {
         String pattern = "2018-07-16T21:47:46+0000";
         assertEquals("ZonedDateTime", "16.07.2018 23:47", Converter.getZonedDateTime(pattern));
     }
-
 }

@@ -99,8 +99,11 @@ public class ConnectedDriveProxy {
                 // req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
                 // req.content(new StringContentProvider(urlEncodedData));
                 // logger.info("URL has parameters {}", urlEncodedData);
-                // logger.info("Complete URL {}", completeUrl.toString());
+                logger.info("Params for request: {}", urlEncodedData);
+            } else {
+                logger.info("No Params for request: {}", url);
             }
+            logger.info("Complete URL {}", completeUrl.toString());
             Request req = http.newRequest(completeUrl.toString());
             req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
             req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());

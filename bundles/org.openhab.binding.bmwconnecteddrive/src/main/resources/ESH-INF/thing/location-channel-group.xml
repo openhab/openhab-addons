@@ -9,9 +9,7 @@
 		<channels>
 			<channel id="longitude" typeId="longitude-channel"/>
 			<channel id="latitude" typeId="latitude-channel"/>
-			<channel id="latlong" typeId="latlong-channel"/>
 			<channel id="heading" typeId="heading-channel"/>
-			<channel id="range-radius" typeId="range-radius-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

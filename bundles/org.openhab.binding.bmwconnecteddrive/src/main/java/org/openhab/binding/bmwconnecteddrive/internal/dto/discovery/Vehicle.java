@@ -29,6 +29,7 @@ public class Vehicle {
     public String bodytype;
     public String color;
     public boolean statisticsCommunityEnabled;
+    public boolean statisticsAvailable;
     public boolean hasAlarmSystem;
     public Dealer dealer;
     public String breakdownNumber;

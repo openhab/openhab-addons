@@ -8,12 +8,12 @@
 		<description>Provides Mileage, remaining range and fuel and charge level values</description>
 		<channels>
 			<channel id="mileage" typeId="mileage-channel"/>
-			<channel id="remaining-range-hybrid" typeId="remaining-range-hybrid-channel"/>
-			<channel id="remaining-range-electric" typeId="remaining-range-electric-channel"/>
-			<channel id="remaining-soc" typeId="remaining-soc-channel"/>
-			<channel id="remaining-range-fuel" typeId="remaining-range-fuel-channel"/>
+			<channel id="hybrid" typeId="range-hybrid-channel"/>
+			<channel id="electric" typeId="range-electric-channel"/>
+			<channel id="soc" typeId="soc-channel"/>
+			<channel id="fuel" typeId="range-fuel-channel"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
-			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="radius" typeId="range-radius-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
