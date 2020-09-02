@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yioremote.internal;
 
-import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.CHANNEL_1;
+import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEHANDLESTATUS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,7 @@ public class YIOremoteHandler extends BaseThingHandler {
     private ClientUpgradeRequest YIOremote_DockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI URI_yiodockwebsocketaddress;
     private @Nullable JsonObject JsonObject_recievedJsonObject;
+    private YIOREMOTEHANDLESTATUS YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.UNINITIALIZED;
 
     public YIOremoteHandler(Thing thing) {
         super(thing);
@@ -78,7 +80,7 @@ public class YIOremoteHandler extends BaseThingHandler {
             logger.debug("Starting generating URI_yiodockwebsocketaddress");
             URI_yiodockwebsocketaddress = new URI("ws://" + config.yiodockhostip + ":946");
             logger.debug("Finished generating URI_yiodockwebsocketaddress");
-
+            YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATION_PROCESS;
             try {
 
                 logger.debug("Starting websocket Client");
@@ -119,11 +121,11 @@ public class YIOremoteHandler extends BaseThingHandler {
                                 if (JsonObject_recievedJsonObject.get("type").toString()
                                         .equalsIgnoreCase("\"auth_ok\"")) {
                                     logger.debug("authentication to YIO dock ok");
-                                    updateStatus(ThingStatus.ONLINE);
+                                    YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATED;
 
                                 } else {
                                     logger.debug("authentication to YIO dock not ok");
-                                    updateStatus(ThingStatus.OFFLINE);
+
                                 }
                             } else {
                                 logger.debug("json string has no type member");
@@ -146,6 +148,11 @@ public class YIOremoteHandler extends BaseThingHandler {
             logger.debug("Initialize web socket failed", e);
         }
 
+        if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE);
+        }
         /*
          * if (YIOremote_DockwebSocketClientSession != null) {
          * updateStatus(ThingStatus.ONLINE);
@@ -176,22 +183,42 @@ public class YIOremoteHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-                logger.debug("switch");
+        if (YIODOCKRECEIVERSWITCH.equals(channelUID.getId())) {
+            if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
+                if (command instanceof RefreshType) {
+                    // TODO: handle data refresh
 
+                }
+
+                if (command.toString().equals("ON")) {
+                    logger.debug("YIODOCKRECEIVERSWITCH ON procedure: Switching IR Receiver on");
+                    YIOremote_DockwebSocketClientSocket
+                            .sendMessage("{\"type\":\"dock\", \"command\":\"ir_receive_on\"}");
+
+                } else if (command.toString().equals("OFF")) {
+                    logger.debug("YIODOCKRECEIVERSWITCH OFF procedure: Switching IR Receiver off");
+                    YIOremote_DockwebSocketClientSocket
+                            .sendMessage("{\"type\":\"dock\", \"command\":\"ir_receive_off\"}");
+                } else {
+                    logger.debug("YIODOCKRECEIVERSWITCH no procedure");
+                }
+
+            } else {
+                logger.debug("YIOremoteHandler not authenticated");
             }
-            logger.debug("switch");
 
-            System.out.println("test");
-            logger.debug("switch not" + channelUID.getId().toString());
             // TODO: handle command
 
             // Note: if communication with thing fails for some reason,
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
+        } else if (YIODOCKSENDIRCODE.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                // TODO: handle data refresh
+                logger.debug("YIOremoteHandler not authenticated");
+            }
+            logger.debug("YIOremoteHandler not authenticated");
         }
     }
 

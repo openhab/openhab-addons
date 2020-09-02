@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketError;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.slf4j.Logger;
@@ -24,7 +25,6 @@ public class YIOremoteWebsocket {
     public void onText(Session session, String message) throws IOException {
         logger.debug("Message received from server:" + message);
         string_receivedmessage = message;
-        System.out.println("Message received from server:" + message + string_receivedmessage);
     }
 
     public String get_string_receivedmessage() {
@@ -33,9 +33,19 @@ public class YIOremoteWebsocket {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        System.out.println("Connected to server");
         this.session = session;
         latch.countDown();
+    }
+
+    @OnWebSocketError
+    public void onError(Throwable cause) {
+        try {
+            /* this.handleTransportError(this.session, cause); */
+            logger.debug(cause.toString());
+        } catch (Throwable ex) {
+            logger.debug(cause.toString());
+            /* ExceptionWebSocketHandlerDecorator.tryCloseWithError(this.session, ex, logger); */
+        }
     }
 
     public void sendMessage(String str) {

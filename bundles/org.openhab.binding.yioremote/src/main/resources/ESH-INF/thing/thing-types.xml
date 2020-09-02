@@ -6,9 +6,10 @@
     <!-- Sample Thing Type -->
     <thing-type id="yioremote">
         <label>YIOremote Binding Thing</label>
-        <description>Sample thing for YIOremote Binding</description>
+        <description>YIOremote Binding Thing</description>
         <channels>
-            <channel id="channel1" typeId="sample-channel" />
+            <channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch" />
+            <channel id="yiodocksendircode" typeId="yiodocksendircode" />
         </channels>
         <config-description>
             <parameter name="yiodockhostip" type="text" required="true">
@@ -23,9 +24,15 @@
 
     </thing-type>
     <!-- Sample Channel Type -->
-    <channel-type id="sample-channel">
+    <channel-type id="yiodockreceiverswitch">
         <item-type>Switch</item-type>
-        <label>YIOremote Binding Channel</label>
-        <description>Sample channel for YIOremote Binding</description>
+        <label>yiodockreceiverswitch</label>
+        <description>yiodockreceiverswitch</description>
+    </channel-type>
+    
+     <channel-type id="yiodocksendircode">
+        <item-type>String</item-type>
+        <label>yiodocksendircode</label>
+        <description>yiodocksendircode</description>
     </channel-type>
 </thing:thing-descriptions>
