@@ -77,7 +77,7 @@ public class BoschHttpClient extends HttpClient {
             // Timeout after max tries with an exception that pairing failed
             if (counter >= MAX_PAIR_TRIES) {
                 // all tries during the last MAX_PAIR_TRIES*1500 milliseconds failed
-                throw new PairingFailedException("Pairing abourted, because it failed too many times!");
+                throw new PairingFailedException("Pairing aborted, because it failed too many times!");
             }
             // try to pair if no access is possible
             counter++;
@@ -87,7 +87,7 @@ public class BoschHttpClient extends HttpClient {
         }
     }
 
-    public Boolean isAccessPossible() {
+    public boolean isAccessPossible() {
         try {
             ContentResponse contentResponse = newRequest("https://" + ipAddress + ":8444/smarthome/devices")
                     .header("Content-Type", "application/json").header("Accept", "application/json").method(GET).send();
@@ -101,7 +101,7 @@ public class BoschHttpClient extends HttpClient {
     }
 
     public boolean doPairing() {
-        logger.info("Starting pairing OpenHab Client with Bosch SmartHomeController!");
+        logger.info("Starting pairing openHAB Client with Bosch SmartHomeController!");
         logger.info("Please press the Bosch SHC button until LED starts blinking");
 
         ContentResponse contentResponse;

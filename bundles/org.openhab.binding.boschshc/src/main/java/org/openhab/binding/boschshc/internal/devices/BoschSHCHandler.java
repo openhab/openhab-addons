@@ -71,13 +71,13 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         public Collection<String> affectedChannels;
     }
 
-    protected final Logger logger = LoggerFactory.getLogger(BoschSHCHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     private @Nullable BoschSHCConfiguration config;
 
     /**
      * Services of the device.
      */
-    private List<DeviceService<? extends BoschSHCServiceState>> services = new ArrayList<DeviceService<? extends BoschSHCServiceState>>();
+    private List<DeviceService<? extends BoschSHCServiceState>> services = new ArrayList<>();
 
     public BoschSHCHandler(Thing thing) {
         super(thing);
