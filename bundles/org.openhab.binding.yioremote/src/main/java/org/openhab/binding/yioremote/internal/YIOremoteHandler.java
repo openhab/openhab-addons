@@ -16,6 +16,8 @@ import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.*
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -54,6 +56,7 @@ public class YIOremoteHandler extends BaseThingHandler {
     private @Nullable URI URI_yiodockwebsocketaddress;
     private @Nullable JsonObject JsonObject_recievedJsonObject;
     private YIOREMOTEHANDLESTATUS YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.UNINITIALIZED;
+    private @Nullable Future<?> pollingJob;
 
     public YIOremoteHandler(Thing thing) {
         super(thing);
@@ -150,6 +153,15 @@ public class YIOremoteHandler extends BaseThingHandler {
 
         if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
             updateStatus(ThingStatus.ONLINE);
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    YIOremote_DockwebSocketClientSocket
+                            .sendMessage("{\"type\":\"dock\", \"command\":\"ir_receie_on\"}");
+
+                }
+            };
+            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -179,6 +191,11 @@ public class YIOremoteHandler extends BaseThingHandler {
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    @Override
+    public void dispose() {
+        pollingJob.cancel(true);
     }
 
     @Override
