@@ -79,8 +79,15 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
 
                     // Services & Support
                     properties.put("Services Activated", getObject(vehicle, Constants.ACTIVATED));
-                    properties.put("Services Supported", getObject(vehicle, Constants.SUPPORTED));
-                    properties.put("Services Not Supported", getObject(vehicle, Constants.NOT_SUPPORTED));
+                    String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
+                    String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
+                    if (vehicle.statisticsAvailable) {
+                        servicesSupported += "Statistics";
+                    } else {
+                        servicesNotSupported += "Statistics";
+                    }
+                    properties.put("Services Supported", servicesSupported);
+                    properties.put("Services Not Supported", servicesNotSupported);
                     properties.put("Support Breakdown Number", vehicle.breakdownNumber);
 
                     // Vehicle Properties
@@ -90,6 +97,11 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                             chargingModes.append(e).append(Constants.SPACE);
                         });
                         properties.put("Vehicle Charge Modes", chargingModes.toString());
+                    }
+                    if (vehicle.hasAlarmSystem) {
+                        properties.put("Vehicle Alarm System", "Available");
+                    } else {
+                        properties.put("Vehicle Alarm System", "Not Available");
                     }
                     properties.put("Vehicle Brand", vehicle.brand);
                     properties.put("Vehicle Bodytype", vehicle.bodytype);
@@ -136,7 +148,6 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
             });
 
         });
-
     }
 
     public String getObject(Object obj, String compare) {

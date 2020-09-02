@@ -3,8 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="cardata-fingerprint-channel">
+	<channel-type id="vehicle-fingerprint-channel">
 		<item-type>Switch</item-type>
-		<label>Force Fingerprint Log Entry for Troubleshooting</label>
+		<label>Log Vehicle Fingerprint</label>
 	</channel-type>
 </thing:thing-descriptions>

@@ -3,8 +3,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="rendered-channel">
+	<channel-type id="png-channel">
 		<item-type>Image</item-type>
-		<label>Rendered Image of your Car</label>
+		<label>Rendered Image of your Vehicle</label>
 	</channel-type>
 </thing:thing-descriptions>

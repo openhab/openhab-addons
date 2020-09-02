@@ -3,14 +3,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="conv-range-values">
-		<label>Range Data</label>
-		<description>Provides Mileage, remaining range and fuel level values</description>
+	<channel-group-type id="image-values">
+		<label>Car Image</label>
+		<description>Provides an Image of your Car based on the Configuration ViewPort</description>
 		<channels>
-			<channel id="mileage" typeId="mileage-channel"/>
-			<channel id="remaining-range-fuel" typeId="remaining-range-fuel-channel"/>
-			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
-			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="png" typeId="png-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

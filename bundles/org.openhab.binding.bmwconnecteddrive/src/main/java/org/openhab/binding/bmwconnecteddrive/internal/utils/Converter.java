@@ -88,4 +88,13 @@ public class Converter {
         double d = earthRadius * c;
         return d * 1000; // meters
     }
+
+    public static double guessRange(float totalRange) {
+        // Simple guess right now
+        if (totalRange < 20) {
+            return totalRange * 0.8;
+        } else {
+            return totalRange * 0.7;
+        }
+    }
 }

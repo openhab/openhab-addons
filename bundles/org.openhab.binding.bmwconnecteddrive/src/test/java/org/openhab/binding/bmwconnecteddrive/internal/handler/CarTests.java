@@ -75,7 +75,6 @@ public class CarTests {
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
         stateCaptor = ArgumentCaptor.forClass(State.class);
-
     }
 
     private boolean testCar(@Nullable String statusContent, int callbacksExpected) {
