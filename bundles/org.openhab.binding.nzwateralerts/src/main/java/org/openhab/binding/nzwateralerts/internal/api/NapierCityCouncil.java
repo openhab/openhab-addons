@@ -34,8 +34,8 @@ public class NapierCityCouncil implements WaterWebService {
     private static final String HOSTNAME = "https://www.napier.govt.nz";
     private static final String REGION_NAPIER = "/services/water/water-restrictions/";
 
-    private static final String pattern = "\"waterstat\".*?<p>.*?at (.*?) Restrictions.*?</div>";
-    private static final Pattern regex = Pattern.compile(pattern,
+    private static final String PATTERN = "\"waterstat\".*?<p>.*?at (.*?) Restrictions.*?</div>";
+    private static final Pattern REGEX = Pattern.compile(PATTERN,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
@@ -55,7 +55,7 @@ public class NapierCityCouncil implements WaterWebService {
 
     @Override
     public int findWaterLevel(final String data, final String area) {
-        final Matcher matches = regex.matcher(data);
+        final Matcher matches = REGEX.matcher(data);
 
         while (matches.find()) {
             final String level = matches.group(1);

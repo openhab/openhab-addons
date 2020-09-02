@@ -60,18 +60,20 @@ public class NZWaterAlertsBinder {
                 refreshInterval = config.refreshInterval;
             }
         } else {
-            for (NZWaterAlertsBinderListener listener : listeners) {
-                listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Could not create webClient, a parameter is null");
+            for (final NZWaterAlertsBinderListener listener : listeners) {
+                listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Could not create webClient, a parameter is null");
             }
-            logger.debug("Create Binder failed due to null item; httpClient {} config {} scheduler {}", httpClient != null, config != null, scheduler != null);
+            logger.debug("Create Binder failed due to null item; httpClient {} config {} scheduler {}",
+                    httpClient != null, config != null, scheduler != null);
         }
     }
 
     public void update() {
         if (webClient != null) {
-            Integer waterLevel = webClient.getLevel();
+            final Integer waterLevel = webClient.getLevel();
 
-            for (NZWaterAlertsBinderListener listener : listeners) {
+            for (final NZWaterAlertsBinderListener listener : listeners) {
                 if (waterLevel == null) {
                     listener.updateBindingStatus(ThingStatus.OFFLINE);
                 } else {
@@ -89,7 +91,7 @@ public class NZWaterAlertsBinder {
      * @param alertsBinderInterface The {@link NZWaterAlertsBinderListener} to be
      *                              registered.
      */
-    public void registerListener(NZWaterAlertsBinderListener alertsBinderInterface) {
+    public void registerListener(final NZWaterAlertsBinderListener alertsBinderInterface) {
         final boolean isAdded = listeners.add(alertsBinderInterface);
         if (isAdded) {
             updatePollingState();
@@ -103,7 +105,7 @@ public class NZWaterAlertsBinder {
      * @param alertsBinderInterface The {@link NZWaterAlertsBinderListener} to be
      *                              unregistered.
      */
-    public void unregisterListener(NZWaterAlertsBinderListener alertsBinderInterface) {
+    public void unregisterListener(final NZWaterAlertsBinderListener alertsBinderInterface) {
         final boolean isRemoved = listeners.remove(alertsBinderInterface);
         if (isRemoved) {
             updatePollingState();
@@ -111,7 +113,7 @@ public class NZWaterAlertsBinder {
     }
 
     private void updatePollingState() {
-        boolean isPolling = future != null;
+        final boolean isPolling = future != null;
         if (isPolling && listeners.isEmpty()) {
             if (future != null)
             future.cancel(true);

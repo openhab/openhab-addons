@@ -36,8 +36,8 @@ public class SmartWater implements WaterWebService {
     private static final String REGION_WAIKATO = "/alert-levels/waikato-district-council";
     private static final String REGION_WAIPA = "/alert-levels/waipa-district-council";
 
-    private static final String pattern = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
-    private static final Pattern regex = Pattern.compile(pattern,
+    private static final String PATTERN = "/assets/Alert-Level-Images/water-alert-([1-4]|no)-large.svg.*?";
+    private static final Pattern REGEX = Pattern.compile(PATTERN,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
@@ -62,7 +62,7 @@ public class SmartWater implements WaterWebService {
 
     @Override
     public int findWaterLevel(final String data, final String area) {
-        final Matcher matches = regex.matcher(data);
+        final Matcher matches = REGEX.matcher(data);
 
         while (matches.find()) {
             String level = matches.group(1);

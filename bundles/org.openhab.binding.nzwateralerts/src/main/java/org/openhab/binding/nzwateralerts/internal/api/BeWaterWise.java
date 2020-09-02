@@ -36,8 +36,8 @@ public class BeWaterWise implements WaterWebService {
     private static final String REGION_WHANGAREI = "/current-water-levels_whangarei/";
     private static final String REGION_KAIPARA = "/current-water-levels_kaipara/";
 
-    private static final String pattern = "vc_text_separator.*?<span>(.*?)<\\/span>.*?water-level-([0-4]).*?";
-    private static final Pattern regex = Pattern.compile(pattern,
+    private static final String PATTERN = "vc_text_separator.*?<span>(.*?)<\\/span>.*?water-level-([0-4]).*?";
+    private static final Pattern REGEX = Pattern.compile(PATTERN,
             Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
 
     @Override
@@ -62,7 +62,7 @@ public class BeWaterWise implements WaterWebService {
 
     @Override
     public int findWaterLevel(final String data, final String area) {
-        final Matcher matches = regex.matcher(data);
+        final Matcher matches = REGEX.matcher(data);
 
         while (matches.find()) {
             final String dataArea = matches.group(1).replaceAll("\\W", "");

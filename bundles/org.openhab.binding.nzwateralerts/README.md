@@ -5,6 +5,7 @@ Get Water Alert Levels for cities in New Zealand. Getting this alert level can h
 > Example: Disable automated spinklers based on a level 3 or 4 water alert level
 
 This Binding scrapes multiple websites for Water Levels:
+
 * Northland's [BeWaterWise Website](https://bewaterwise.org.nz/)
 * Waikato's [Smart Water Website](https://www.smartwater.org.nz/)
 * Napier's [Council Website](https://www.napier.govt.nz)
@@ -14,6 +15,7 @@ This Binding scrapes multiple websites for Water Levels:
 You can configure this Binding through _PaperUI_ or manually.
 
 ### Configuration Values
+
 | Value           | Type         | Description                            |
 | --------------- | ------------ | -------------------------------------- |
 | location        | string       | The location to get water data from. Refer to the list below for values. |
