@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,11 +104,6 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        if (result.departures.size() != config.maxTrains) {
-            logger.warn("Result size (={}) differs from maxTrain setting (={})", result.departures.size(),
-                    config.maxTrains);
-            return null;
-        }
         return result;
     }
 }

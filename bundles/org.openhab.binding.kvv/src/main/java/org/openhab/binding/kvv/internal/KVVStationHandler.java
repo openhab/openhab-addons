@@ -30,6 +30,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,7 +104,8 @@ public class KVVStationHandler extends BaseThingHandler {
      * @param departures the new list of departures
      */
     private synchronized void setDepartures(final DepartureResult departures, final int maxTrains) {
-        for (int i = 0; i < maxTrains; i++) {
+        int i = 0;
+        for (; i < departures.departures.size(); i++) {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"),
                     new StringType(departures.departures.get(i).route));
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"),
@@ -113,6 +115,11 @@ public class KVVStationHandler extends BaseThingHandler {
                 eta += " min";
             }
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(eta));
+        }
+        for (; i < maxTrains; i++) {
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), new StringType(""));
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), new StringType(""));
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(""));
         }
     }
 
