@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -38,9 +39,15 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.valloxmv")
 @NonNullByDefault()
 public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
-    private @Nullable WebSocketClient webSocketClient;
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_VALLOXMV);
+
+    private final WebSocketClient webSocketClient;
+
+    @Activate
+    public ValloxMVHandlerFactory(@Reference final WebSocketFactory webSocketFactory) {
+        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -52,22 +59,9 @@ public class ValloxMVHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_VALLOXMV.equals(thingTypeUID)) {
-            if (webSocketClient != null) {
-                return new ValloxMVHandler(thing, webSocketClient);
-            } else {
-                return null;
-            }
+            return new ValloxMVHandler(thing, webSocketClient);
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(WebSocketFactory webSocketFactory) {
-        this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
-    }
-
-    protected void unsetHttpClientFactory(WebSocketFactory webSocketFactory) {
-        this.webSocketClient = null;
     }
 }
