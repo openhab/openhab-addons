@@ -26,5 +26,4 @@ public class KVVStationConfig {
 
     /** the id of the station */
     public @Nullable String stationId;
-
 }

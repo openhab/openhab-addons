@@ -64,7 +64,8 @@ public class KVVStationHandler extends BaseThingHandler {
 
         final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
         if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get station configuration");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Failed to get station configuration");
             return;
         }
 
@@ -136,12 +137,14 @@ public class KVVStationHandler extends BaseThingHandler {
         if (command == RefreshType.REFRESH) {
             final KVVBridgeHandler bridgeHandler = this.bridgeHandler;
             if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
+                        "Failed to get bridge handler");
                 return;
             }
             final KVVStationConfig config = this.config;
             if (config == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get station configuration");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Failed to get station configuration");
                 return;
             }
             new UpdateTask(bridgeHandler, config).run();

@@ -7,7 +7,7 @@
 		<label>KVV Bridge</label>
 		<description>The KVV bridge connects to the KVV API.</description>
 
-        <config-description>
+		<config-description>
 			<parameter name="maxTrains" type="integer" required="true" min="0" max="127">
 				<label>Maximum Trains Listed</label>
 				<description>Maximum number of trains listed.</description>
