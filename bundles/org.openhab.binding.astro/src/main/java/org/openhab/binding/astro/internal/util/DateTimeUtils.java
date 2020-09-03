@@ -16,7 +16,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Range;
@@ -218,20 +217,24 @@ public class DateTimeUtils {
      * Parses a HH:MM string and returns the minutes.
      */
     private static int getMinutesFromTime(String configTime) {
-        String time = StringUtils.trimToNull(configTime);
-        if (time != null) {
-            try {
-                if (!HHMM_PATTERN.matcher(time).matches()) {
-                    throw new NumberFormatException();
-                } else {
-                    int hour = Integer.parseInt(StringUtils.substringBefore(time, ":"));
-                    int minutes = Integer.parseInt(StringUtils.substringAfter(time, ":"));
-                    return (hour * 60) + minutes;
+        if (configTime != null) {
+            String time = configTime.trim();
+            if (!time.isEmpty()) {
+                try {
+                    if (!HHMM_PATTERN.matcher(time).matches()) {
+                        throw new NumberFormatException();
+                    } else {
+                        String[] elements = time.split(":");
+                        int hour = Integer.parseInt(elements[0]);
+                        int minutes = Integer.parseInt(elements[1]);
+                        return (hour * 60) + minutes;
+                    }
+                } catch (NumberFormatException ex) {
+                    LOGGER.warn(
+                            "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
+                            time);
                 }
-            } catch (Exception ex) {
-                LOGGER.warn(
-                        "Can not parse astro channel configuration '{}' to hour and minutes, use pattern hh:mm, ignoring!",
-                        time);
+
             }
         }
         return 0;

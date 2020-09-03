@@ -34,7 +34,7 @@ public class ShellyApiException extends Exception {
     private static final long serialVersionUID = -5809459454769761821L;
 
     private ShellyApiResult apiResult = new ShellyApiResult();
-    private static String EX_NONE = "none";
+    private static String NONE = "none";
 
     public ShellyApiException(Exception exception) {
         super(exception);
@@ -45,11 +45,11 @@ public class ShellyApiException extends Exception {
     }
 
     public ShellyApiException(ShellyApiResult res) {
-        super(EX_NONE);
+        super(NONE);
         apiResult = res;
     }
 
-    public ShellyApiException(Exception exception, String message) {
+    public ShellyApiException(String message, Exception exception) {
         super(message, exception);
     }
 
@@ -107,7 +107,7 @@ public class ShellyApiException extends Exception {
         return getCauseClass() == UnknownHostException.class;
     }
 
-    public boolean IsJSONException() {
+    public boolean isJSONException() {
         return getCauseClass() == JsonSyntaxException.class;
     }
 
@@ -116,7 +116,7 @@ public class ShellyApiException extends Exception {
     }
 
     private boolean isEmpty() {
-        return nonNullString(super.getMessage()).equals(EX_NONE);
+        return nonNullString(super.getMessage()).equals(NONE);
     }
 
     private static String nonNullString(@Nullable String s) {

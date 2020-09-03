@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client;
 
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
@@ -462,7 +464,7 @@ public class InnogyClient {
         // DEVICES
         final List<Device> deviceList = getDevices();
         for (final Device d : deviceList) {
-            if (BATTERY_POWERED_DEVICES.contains(d.getType())) {
+            if (InnogyBindingConstants.BATTERY_POWERED_DEVICES.contains(d.getType())) {
                 d.setIsBatteryPowered(true);
             }
 

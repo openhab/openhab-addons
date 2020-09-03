@@ -18,11 +18,8 @@ import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
 /**
  * Holds the calculates moon phase informations.
@@ -168,12 +165,4 @@ public class MoonPhase {
         this.agePercent = agePercent;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("firstQuarter", DateTimeUtils.getDate(firstQuarter)).append("full", DateTimeUtils.getDate(full))
-                .append("thirdQuarter", DateTimeUtils.getDate(thirdQuarter)).append("new", DateTimeUtils.getDate(_new))
-                .append("age", age).append("ageDegree", ageDegree).append("agePercent", agePercent)
-                .append("illumination", illumination).append("name", name).toString();
-    }
 }
