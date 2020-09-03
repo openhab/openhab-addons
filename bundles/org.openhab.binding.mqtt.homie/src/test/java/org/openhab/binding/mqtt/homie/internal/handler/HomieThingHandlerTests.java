@@ -162,11 +162,6 @@ public class HomieThingHandlerTests {
 
         thingHandler.initialize();
 
-        try {
-            TimeUnit.MILLISECONDS.sleep(100);
-        } catch (InterruptedException e) {
-        }
-
         // Expect a call to the bridge status changed, the start, the propertiesChanged method
         verify(thingHandler).bridgeStatusChanged(any());
         verify(thingHandler).start(any());
@@ -192,11 +187,6 @@ public class HomieThingHandlerTests {
 
         thingHandler.initialize();
 
-        try {
-            TimeUnit.MILLISECONDS.sleep(100);
-        } catch (InterruptedException e) {
-        }
-
         verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.OFFLINE)
                 && arg.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
@@ -212,11 +202,6 @@ public class HomieThingHandlerTests {
         doNothing().when(thingHandler).accept(any());
 
         thingHandler.initialize();
-
-        try {
-            TimeUnit.MILLISECONDS.sleep(100);
-        } catch (InterruptedException e) {
-        }
 
         assertThat(thingHandler.device.isInitialized(), is(true));
 
@@ -357,11 +342,6 @@ public class HomieThingHandlerTests {
         verify(thingHandler, times(0)).propertyAddedOrChanged(any());
 
         thingHandler.initialize();
-
-        try {
-            TimeUnit.MILLISECONDS.sleep(100);
-        } catch (InterruptedException e) {
-        }
 
         assertThat(thingHandler.device.isInitialized(), is(true));
 

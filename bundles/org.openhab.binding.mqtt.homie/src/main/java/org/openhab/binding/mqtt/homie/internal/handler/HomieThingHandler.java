@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.homie.internal.handler;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -105,7 +104,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             return;
         }
         device.initialize(config.basetopic, config.deviceid, thing.getChannels());
-        scheduler.schedule(() -> super.initialize(), 0, TimeUnit.SECONDS);
+        super.initialize();
     }
 
     @Override
