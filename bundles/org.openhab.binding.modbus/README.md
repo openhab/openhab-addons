@@ -179,8 +179,8 @@ When manually triggering polling, a new poll is executed as soon as possible, an
 In case the `poller` had just received a data response or an error occurred, a cached response is used instead.
 See [Refresh command](#refresh-command) section for more details.
 
-Some devices do not allow to query a range of registers that is too large or spans reserved registers.
-Eventually split your poller into multiple smaller ones to work around this problem.
+Some devices do not allow to query too many registers in a single readout action or a range that spans reserved registers.
+Split your poller into multiple smaller ones to work around this problem.
 
 ### `data` Thing
 
