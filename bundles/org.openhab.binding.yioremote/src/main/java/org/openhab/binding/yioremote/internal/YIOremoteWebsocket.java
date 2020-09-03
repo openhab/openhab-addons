@@ -85,6 +85,10 @@ public class YIOremoteWebsocket {
                 session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_receive_on\"}");
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.IRRECEIVEROFF)) {
                 session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_receive_off\"}");
+            } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.IRSEND)) {
+                session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"" + messagepyload
+                        + "\", \"format\":\"hex\"}");
+
             }
         } catch (
 
@@ -133,8 +137,13 @@ public class YIOremoteWebsocket {
                     boolean_result = false;
                 }
             } else if (JsonObject_recievedJsonObject.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
-                logger.debug("ir_receive");
-                received_ircode = JsonObject_recievedJsonObject.get("code").toString();
+                received_ircode = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
+
+                if (received_ircode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                    received_ircode = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
+                } else {
+                    received_ircode = "";
+                }
                 logger.debug("ir_receive message" + received_ircode);
                 boolean_heartbeat = true;
                 boolean_result = true;
@@ -183,6 +192,13 @@ public class YIOremoteWebsocket {
         boolean_result = boolean_authentication_required;
         boolean_authentication_required = false;
         return boolean_result;
+    }
+
+    public String get_string_received_ircode() {
+        String string_result = "";
+        string_result = received_ircode;
+        received_ircode = "";
+        return string_result;
     }
 
     public boolean get_boolean_authentication_ok() {

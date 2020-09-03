@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -31,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEHANDLESTATUS;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEMESSAGETYPE;
 import org.slf4j.Logger;
@@ -59,6 +61,7 @@ public class YIOremoteHandler extends BaseThingHandler {
     private @Nullable JsonObject JsonObject_recievedJsonObject;
     private YIOREMOTEHANDLESTATUS YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.UNINITIALIZED;
     private @Nullable Future<?> pollingJob;
+    private String send_ircode = "";
 
     public YIOremoteHandler(Thing thing) {
         super(thing);
@@ -152,6 +155,8 @@ public class YIOremoteHandler extends BaseThingHandler {
                         }
                         if (YIOremote_DockwebSocketClientSocket.get_boolean_heartbeat()) {
                             logger.debug("heartbeat ok");
+                            updateChannelString(GROUP_OUTPUT, YIODOCKRECEIVEDIRCODE,
+                                    YIOremote_DockwebSocketClientSocket.get_string_received_ircode());
                         } else {
                             YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -201,9 +206,20 @@ public class YIOremoteHandler extends BaseThingHandler {
         pollingJob.cancel(true);
     }
 
+    protected void updateThingChannelState(String channelId, State state) {
+        Channel channel = thing.getChannel(channelId);
+        if (channel != null) {
+            updateState(channel.getUID(), state);
+        } else {
+            logger.debug("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
+            // createChannel(channelId);
+        }
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (YIODOCKRECEIVERSWITCH.equals(channelUID.getId())) {
+
+        if (YIODOCKRECEIVERSWITCH.equals(channelUID.getIdWithoutGroup())) {
             if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
                 if (command instanceof RefreshType) {
                     // TODO: handle data refresh
@@ -230,11 +246,21 @@ public class YIOremoteHandler extends BaseThingHandler {
             // indicate that by setting the status with detail information:
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
-        } else if (YIODOCKSENDIRCODE.equals(channelUID.getId())) {
+        } else if (YIODOCKSENDIRCODE.equals(channelUID.getIdWithoutGroup())) {
             if (command instanceof RefreshType) {
                 // TODO: handle data refresh
                 logger.debug("YIOremoteHandler not authenticated");
             }
+            logger.debug("YIODOCKSENDIRCODE procedure: " + command.toString());
+            send_ircode = command.toString();
+            if (send_ircode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.IRSEND, send_ircode);
+            } else {
+                send_ircode = "";
+                logger.warn("Wrong IR code Format" + send_ircode);
+            }
+
+        } else {
             logger.debug("YIOremoteHandler not authenticated");
         }
     }
