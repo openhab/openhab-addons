@@ -41,10 +41,4 @@ public class MqttBindingConstants {
     public static final String DATETIME = "datetime";
     public static final String ROLLERSHUTTER = "rollershutter";
     public static final String TRIGGER = "trigger";
-
-    public static enum COLOR_MODE {
-        hsb,
-        rgb,
-        xyY
-    }
 }
