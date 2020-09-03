@@ -77,6 +77,17 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID remoteClimateChannel;
     protected ChannelUID remoteStateChannel;
 
+    // Remote Services
+    protected ChannelUID destinationName1;
+    protected ChannelUID destinationLat1;
+    protected ChannelUID destinationLon1;
+    protected ChannelUID destinationName2;
+    protected ChannelUID destinationLat2;
+    protected ChannelUID destinationLon2;
+    protected ChannelUID destinationName3;
+    protected ChannelUID destinationLat3;
+    protected ChannelUID destinationLon3;
+
     // Troubleshooting
     protected ChannelUID vehicleFingerPrint;
 
@@ -131,6 +142,16 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         remoteHornChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_HORN);
         remoteClimateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_AIR_CONDITIONING);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
+
+        destinationName1 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_1);
+        destinationLat1 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_1);
+        destinationLon1 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_1);
+        destinationName2 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_2);
+        destinationLat2 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_2);
+        destinationLon2 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_2);
+        destinationName3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_3);
+        destinationLat3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_3);
+        destinationLon3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_3);
 
         vehicleFingerPrint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, VEHICLE_FINGERPRINT);
     }

@@ -105,6 +105,7 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
+    public static final String CHANNEL_GROUP_DESTINATION = "destination";
     public static final String CHANNEL_GROUP_CHARGE = "charge";
     public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
 
@@ -154,6 +155,16 @@ public class ConnectedDriveConstants {
     public static final String REMOTE_SERVICE_HORN = "horn";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
     public static final String REMOTE_STATE = "state";
+
+    public static final String DESTINATION_NAME_1 = "name-1";
+    public static final String DESTINATION_LAT_1 = "lat-1";
+    public static final String DESTINATION_LON_1 = "lon-1";
+    public static final String DESTINATION_NAME_2 = "name-2";
+    public static final String DESTINATION_LAT_2 = "lat-2";
+    public static final String DESTINATION_LON_2 = "lon-2";
+    public static final String DESTINATION_NAME_3 = "name-3";
+    public static final String DESTINATION_LAT_3 = "lat-3";
+    public static final String DESTINATION_LON_3 = "lon-3";
 
     // Troubleshoot
     public static final String VEHICLE_FINGERPRINT = "vehicle-fingerprint";
