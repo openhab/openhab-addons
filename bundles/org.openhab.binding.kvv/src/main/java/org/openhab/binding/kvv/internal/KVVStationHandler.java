@@ -48,6 +48,12 @@ public class KVVStationHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> pollingJob;
 
+    @Nullable
+    private KVVBridgeHandler bridgeHandler;
+
+    @Nullable
+    private KVVStationConfig config;
+
     public KVVStationHandler(final Thing thing) {
         super(thing);
     }
@@ -56,8 +62,8 @@ public class KVVStationHandler extends BaseThingHandler {
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        final KVVStationConfig stationConfig = getConfigAs(KVVStationConfig.class);
-        if (stationConfig == null) {
+        final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
+        if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get station configuration");
             return;
         }
@@ -68,15 +74,15 @@ public class KVVStationHandler extends BaseThingHandler {
             return;
         }
 
-        final KVVBridgeHandler handler = (KVVBridgeHandler) bridge.getHandler();
-        if (handler == null) {
+        final KVVBridgeHandler bridgeHandler = (KVVBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
             return;
         }
 
         // creating channels
         final List<Channel> channels = new ArrayList<Channel>();
-        for (int i = 0; i < handler.getBridgeConfig().maxTrains; i++) {
+        for (int i = 0; i < bridgeHandler.getBridgeConfig().maxTrains; i++) {
             channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
                     .build());
             channels.add(ChannelBuilder
@@ -85,9 +91,11 @@ public class KVVStationHandler extends BaseThingHandler {
                     ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
         }
         this.updateThing(this.editThing().withChannels(channels).build());
-        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(handler, stationConfig), 0,
-                handler.getBridgeConfig().updateInterval, TimeUnit.SECONDS);
+        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(bridgeHandler, config), 0,
+                bridgeHandler.getBridgeConfig().updateInterval, TimeUnit.SECONDS);
 
+        this.config = config;
+        this.bridgeHandler = bridgeHandler;
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -125,6 +133,19 @@ public class KVVStationHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
+        if (command == RefreshType.REFRESH) {
+            final KVVBridgeHandler bridgeHandler = this.bridgeHandler;
+            if (bridgeHandler == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR, "Failed to get bridge handler");
+                return;
+            }
+            final KVVStationConfig config = this.config;
+            if (config == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to get station configuration");
+                return;
+            }
+            new UpdateTask(bridgeHandler, config).run();
+        }
     }
 
     /**
@@ -135,20 +156,20 @@ public class KVVStationHandler extends BaseThingHandler {
      */
     public class UpdateTask extends TimerTask {
 
-        private final KVVBridgeHandler handler;
+        private final KVVBridgeHandler bridgeHandler;
 
         private final KVVStationConfig stationConfig;
 
-        public UpdateTask(final KVVBridgeHandler handler, final KVVStationConfig stationConfig) {
-            this.handler = handler;
+        public UpdateTask(final KVVBridgeHandler bridgeHandler, final KVVStationConfig stationConfig) {
+            this.bridgeHandler = bridgeHandler;
             this.stationConfig = stationConfig;
         }
 
         @Override
         public void run() {
-            final DepartureResult departures = this.handler.queryKVV(this.stationConfig);
+            final DepartureResult departures = this.bridgeHandler.queryKVV(this.stationConfig);
             if (departures != null) {
-                setDepartures(departures, this.handler.getBridgeConfig().maxTrains);
+                setDepartures(departures, this.bridgeHandler.getBridgeConfig().maxTrains);
             }
         }
     }
