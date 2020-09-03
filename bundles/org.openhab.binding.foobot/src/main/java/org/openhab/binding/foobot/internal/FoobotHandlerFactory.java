@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -31,6 +30,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.foobot.internal.handler.FoobotAccountHandler;
 import org.openhab.binding.foobot.internal.handler.FoobotDeviceHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -52,7 +52,10 @@ public class FoobotHandlerFactory extends BaseThingHandlerFactory {
 
     private final FoobotApiConnector connector = new FoobotApiConnector();
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    @Activate
+    public FoobotHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        connector.setHttpClient(httpClientFactory.getCommonHttpClient());
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -69,16 +72,5 @@ public class FoobotHandlerFactory extends BaseThingHandlerFactory {
             return new FoobotAccountHandler((Bridge) thing, connector);
         }
         return null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-        connector.setHttpClient(httpClient);
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-        connector.setHttpClient(null);
     }
 }

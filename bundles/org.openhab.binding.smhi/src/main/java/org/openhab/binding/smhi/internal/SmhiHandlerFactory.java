@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.smhi.internal;
 
-import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
+import static org.openhab.binding.smhi.internal.SmhiBindingConstants.THING_TYPE_FORECAST;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -41,7 +42,12 @@ public class SmhiHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_FORECAST);
 
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final HttpClient httpClient;
+
+    @Activate
+    public SmhiHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -57,14 +63,5 @@ public class SmhiHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setHttpClient(HttpClientFactory clientFactory) {
-        this.httpClient = clientFactory.getCommonHttpClient();
-    }
-
-    protected void unSetHttpClient(HttpClientFactory clientFactory) {
-        this.httpClient = null;
     }
 }

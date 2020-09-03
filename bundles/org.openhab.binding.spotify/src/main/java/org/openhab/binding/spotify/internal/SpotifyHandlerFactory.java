@@ -26,6 +26,7 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.spotify.internal.handler.SpotifyBridgeHandler;
 import org.openhab.binding.spotify.internal.handler.SpotifyDeviceHandler;
 import org.openhab.binding.spotify.internal.handler.SpotifyDynamicStateDescriptionProvider;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -41,10 +42,20 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
 
-    private @NonNullByDefault({}) OAuthFactory oAuthFactory;
-    private @NonNullByDefault({}) SpotifyAuthService authService;
-    private @NonNullByDefault({}) HttpClient httpClient;
-    private @NonNullByDefault({}) SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
+    private final OAuthFactory oAuthFactory;
+    private final HttpClient httpClient;
+    private final SpotifyAuthService authService;
+    private final SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider;
+
+    @Activate
+    public SpotifyHandlerFactory(@Reference OAuthFactory oAuthFactory,
+            @Reference final HttpClientFactory httpClientFactory, @Reference SpotifyAuthService authService,
+            @Reference SpotifyDynamicStateDescriptionProvider spotifyDynamicStateDescriptionProvider) {
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.authService = authService;
+        this.spotifyDynamicStateDescriptionProvider = spotifyDynamicStateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -73,41 +84,5 @@ public class SpotifyHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof SpotifyBridgeHandler) {
             authService.removeSpotifyAccountHandler((SpotifyBridgeHandler) thingHandler);
         }
-    }
-
-    @Reference
-    protected void setOAuthFactory(OAuthFactory oAuthFactory) {
-        this.oAuthFactory = oAuthFactory;
-    }
-
-    protected void unsetOAuthFactory(OAuthFactory oAuthFactory) {
-        this.oAuthFactory = null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setAuthService(SpotifyAuthService service) {
-        this.authService = service;
-    }
-
-    protected void unsetAuthService(SpotifyAuthService service) {
-        this.authService = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(SpotifyDynamicStateDescriptionProvider provider) {
-        this.spotifyDynamicStateDescriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(SpotifyDynamicStateDescriptionProvider provider) {
-        this.spotifyDynamicStateDescriptionProvider = null;
     }
 }
