@@ -19,6 +19,7 @@
 			<channel-group id="last-trip" typeId="ev-last-trip-values"/>
 			<channel-group id="lifetime" typeId="ev-lifetime-values"/>
 			<channel-group id="location" typeId="location-values"/>
+			<channel-group id="destination" typeId="destination-values"/>
 			<channel-group id="remote" typeId="remote-services"/>
 			<channel-group id="image" typeId="image-values"/>
 			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>

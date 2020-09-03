@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="charge-values">
-		<label>Vehicle Status</label>
-		<description>Provides Status of Doors, Lock State, Service and Check Control Messages</description>
+		<label>Charging</label>
+		<description>Charge Status and Charge Profiles of Vehicle</description>
 		<channels>
 			<channel id="charging-status" typeId="charging-status-channel"/>
 		</channels>

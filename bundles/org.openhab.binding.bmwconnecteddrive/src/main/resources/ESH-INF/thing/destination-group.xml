@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="destination-values">
+		<label>Destinations</label>
+		<description>Show the Last 3 Destinations</description>
+		<channels>
+			<channel id="name-1" typeId="name-1-channel"/>
+			<channel id="lat-1" typeId="lat-1-channel"/>
+			<channel id="lon-1" typeId="lon-1-channel"/>
+			<channel id="name-2" typeId="name-2-channel"/>
+			<channel id="lat-2" typeId="lat-2-channel"/>
+			<channel id="lon-2" typeId="lon-2-channel"/>
+			<channel id="name-3" typeId="name-3-channel"/>
+			<channel id="lat-3" typeId="lat-3-channel"/>
+			<channel id="lon-3" typeId="lon-3-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

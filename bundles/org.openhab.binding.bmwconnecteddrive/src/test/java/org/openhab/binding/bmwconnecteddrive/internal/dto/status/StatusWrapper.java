@@ -31,6 +31,7 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 import com.google.gson.Gson;
@@ -178,7 +179,11 @@ public class StatusWrapper {
                 assertTrue("Is Eelctric", isElectric);
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals("Charge Status", Converter.toTitleCase(vStatus.chargingStatus), st.toString());
+                if (vStatus.chargingStatus.contentEquals(Constants.INVALID)) {
+                    assertEquals("Charge Status", Converter.toTitleCase(vStatus.lastChargingEndReason), st.toString());
+                } else {
+                    assertEquals("Charge Status", Converter.toTitleCase(vStatus.chargingStatus), st.toString());
+                }
                 break;
             case LAST_UPDATE:
                 assertTrue(state instanceof StringType);

@@ -43,6 +43,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
@@ -90,6 +91,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     StringResponseCallback allTripsCallback = new AllTripsCallback();
     StringResponseCallback chargeProfileCallback = new ChargeProfilesCallback();
     StringResponseCallback rangeMapCallback = new RangeMapCallback();
+    StringResponseCallback destinationCallback = new DestinationsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
     private Optional<String> vehicleStatusCache = Optional.empty();
@@ -97,6 +99,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private Optional<String> allTripsCache = Optional.empty();
     private Optional<String> chargeProfileCache = Optional.empty();
     private Optional<String> rangeMapCache = Optional.empty();
+    private Optional<String> destinationCache = Optional.empty();
 
     private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
     protected Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
@@ -327,6 +330,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 proxy.get().requestAllTrips(configuration.get(), allTripsCallback);
                 proxy.get().requestChargingProfile(configuration.get(), chargeProfileCallback);
             }
+            proxy.get().requestDestinations(configuration.get(), destinationCallback);
         } else {
             logger.warn("ConnectedDrive Proxy isn't present");
         }
@@ -409,6 +413,44 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
             rangeMapCache = Optional.of(GSON.toJson(error));
+        }
+    }
+
+    @NonNullByDefault
+    public class DestinationsCallback implements StringResponseCallback {
+        @Override
+        public void onResponse(Optional<String> content) {
+            destinationCache = content;
+            if (content.isPresent()) {
+                DestinationContainer dc = GSON.fromJson(content.get(), DestinationContainer.class);
+
+                if (dc.destinations != null) {
+                    if (!dc.destinations.isEmpty()) {
+                        updateState(destinationName1, StringType.valueOf(dc.destinations.get(0).getAddress()));
+                        updateState(destinationLat1, new DecimalType(dc.destinations.get(0).lat));
+                        updateState(destinationLon1, new DecimalType(dc.destinations.get(0).lon));
+                    }
+                    if (dc.destinations.size() > 1) {
+                        updateState(destinationName2, StringType.valueOf(dc.destinations.get(1).getAddress()));
+                        updateState(destinationLat2, new DecimalType(dc.destinations.get(1).lat));
+                        updateState(destinationLon2, new DecimalType(dc.destinations.get(1).lon));
+                    }
+                    if (dc.destinations.size() > 2) {
+                        updateState(destinationName3, StringType.valueOf(dc.destinations.get(2).getAddress()));
+                        updateState(destinationLat3, new DecimalType(dc.destinations.get(2).lat));
+                        updateState(destinationLon3, new DecimalType(dc.destinations.get(2).lon));
+                    }
+                }
+            }
+        }
+
+        /**
+         * Store Error Report in cache variable. Via Fingerprint Channel error is logged and Issue can be raised
+         */
+        @Override
+        public void onError(NetworkError error) {
+            logger.debug("{}", error.toString());
+            destinationCache = Optional.of(GSON.toJson(error));
         }
     }
 
@@ -528,6 +570,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 if (vStatus == null) {
                     return;
                 }
+
+                // Vehilce Status
                 updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
                 Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
                 updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
@@ -535,9 +579,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
                 updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
                 updateState(service, StringType.valueOf(vStatus.getNextService(imperial)));
-                if (isElectric) {
-                    updateState(chargingStatus, StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
-                }
 
                 // Range values
                 // based on unit of length decide if range shall be reported in km or miles
@@ -591,6 +632,20 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                     updateState(lastUpdate, new StringType(Converter.getLocalDateTime(vStatus.internalDataTimeUTC)));
                 } else {
                     updateState(lastUpdate, new StringType(Converter.getZonedDateTime(vStatus.updateTime)));
+                }
+
+                // Charge Values
+                if (isElectric) {
+                    if (vStatus.chargingStatus != null) {
+                        if (Constants.INVALID.equals(vStatus.chargingStatus)) {
+                            updateState(chargingStatus,
+                                    StringType.valueOf(Converter.toTitleCase(vStatus.lastChargingEndReason)));
+                        } else {
+                            // State INVALID is somehow misleading. Instead show the Last Charging End Reason
+                            updateState(chargingStatus,
+                                    StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
+                        }
+                    }
                 }
 
                 Position p = vStatus.position;
