@@ -17,7 +17,6 @@ import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 import java.io.IOException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +49,6 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     private final Logger logger = LoggerFactory.getLogger(TeleinfoSerialControllerHandler.class);
 
     private static final int SERIAL_RECEIVE_TIMEOUT_MS = 250;
-    private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
     private static final int RECEIVER_THREAD_JOIN_DELAY_MS = 500;
 
     private SerialPortManager serialPortManager;
@@ -122,15 +120,8 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
     }
 
     @Override
-    public boolean continueOnReadNextFrameTimeoutException(TeleinfoReceiveThread receiveThread, TimeoutException e) {
-        logger.warn("Retry in progress. Next retry in {} seconds...", SERIAL_PORT_DELAY_RETRY_IN_SECONDS);
+    public void continueOnReadNextFrameTimeoutException() {
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, ERROR_UNKNOWN_RETRY_IN_PROGRESS);
-        try {
-            Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
-            return true;
-        } catch (InterruptedException e1) {
-            return false;
-        }
     }
 
     private void openSerialPortAndStartReceiving() {

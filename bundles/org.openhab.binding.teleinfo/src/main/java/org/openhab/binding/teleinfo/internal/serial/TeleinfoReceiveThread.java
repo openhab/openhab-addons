@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class TeleinfoReceiveThread extends Thread {
 
+    private static final int SERIAL_PORT_DELAY_RETRY_IN_SECONDS = 60;
+
     private final Logger logger = LoggerFactory.getLogger(TeleinfoReceiveThread.class);
 
     private SerialPort serialPort;
@@ -68,9 +70,15 @@ public class TeleinfoReceiveThread extends Thread {
                         listener.onInvalidFrameReceived(this, e);
                     } catch (TimeoutException e) {
                         logger.warn("Got timeout during frame reading", e);
-                        if (!listener.continueOnReadNextFrameTimeoutException(this, e)) {
+                        logger.warn("Retry in progress. Next retry in {} seconds...",
+                                SERIAL_PORT_DELAY_RETRY_IN_SECONDS);
+                        listener.continueOnReadNextFrameTimeoutException();
+                        try {
+                            Thread.sleep(SERIAL_PORT_DELAY_RETRY_IN_SECONDS * 1000);
+                        } catch (InterruptedException e1) {
                             break;
                         }
+
                     } catch (IOException e) {
                         logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                         listener.onSerialPortInputStreamIOException(this, e);

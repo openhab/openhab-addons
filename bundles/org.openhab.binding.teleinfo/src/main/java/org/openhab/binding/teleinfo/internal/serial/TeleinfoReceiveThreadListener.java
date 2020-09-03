@@ -13,7 +13,6 @@
 package org.openhab.binding.teleinfo.internal.serial;
 
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
@@ -33,6 +32,5 @@ public interface TeleinfoReceiveThreadListener {
 
     void onSerialPortInputStreamIOException(final TeleinfoReceiveThread receiveThread, final IOException e);
 
-    boolean continueOnReadNextFrameTimeoutException(final TeleinfoReceiveThread receiveThread,
-            final TimeoutException e);
+    void continueOnReadNextFrameTimeoutException();
 }
