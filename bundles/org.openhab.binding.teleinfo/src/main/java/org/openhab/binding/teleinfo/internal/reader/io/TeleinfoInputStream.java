@@ -159,9 +159,12 @@ public class TeleinfoInputStream extends InputStream {
      * Returns the next frame.
      *
      * @return the next frame or null if end of stream
+     * @throws TimeoutException
+     * @throws IOException
+     * @throws InvalidFrameException
      * @throws Exception
      */
-    public synchronized @Nullable Frame readNextFrame() throws Exception {
+    public synchronized @Nullable Frame readNextFrame() throws TimeoutException, InvalidFrameException, IOException {
         // seek the next header frame
         Future<@Nullable Void> seekNextHeaderFrameTask = executorService.submit(() -> {
             while (!isHeaderFrame(groupLine)) {
@@ -190,7 +193,7 @@ public class TeleinfoInputStream extends InputStream {
             logger.debug("Got interrupted exception", e);
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
-            throw rethrowTaskExecutionException(e);
+            rethrowTaskExecutionException(e);
         }
 
         Future<Map<Label, Object>> nextFrameFuture = executorService.submit(new Callable<Map<Label, Object>>() {
@@ -273,8 +276,9 @@ public class TeleinfoInputStream extends InputStream {
             Thread.currentThread().interrupt();
             throw new IllegalStateException(e);
         } catch (ExecutionException e) {
-            throw rethrowTaskExecutionException(e);
+            rethrowTaskExecutionException(e);
         }
+        return null;
     }
 
     public long getWaitNextHeaderFrameTimeoutInUs() {
@@ -670,16 +674,17 @@ public class TeleinfoInputStream extends InputStream {
         return String.format("%8s", Integer.toBinaryString(value)).replace(' ', '0');
     }
 
-    private Exception rethrowTaskExecutionException(ExecutionException e) {
+    private void rethrowTaskExecutionException(ExecutionException e)
+            throws InvalidFrameException, IOException, TimeoutException {
         Throwable cause = e.getCause();
         if (cause instanceof InvalidFrameException) {
-            return (InvalidFrameException) cause;
+            throw (InvalidFrameException) cause;
         } else if (cause instanceof IOException) {
-            return (IOException) cause;
+            throw (IOException) cause;
         } else if (cause instanceof TimeoutException) {
-            return (TimeoutException) cause;
+            throw (TimeoutException) cause;
         } else {
-            return new IllegalStateException(e);
+            throw new IllegalStateException(e);
         }
     }
 }

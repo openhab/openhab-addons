@@ -75,8 +75,8 @@ public class TeleinfoReceiveThread extends Thread {
                         logger.warn("Got I/O exception. Detail: \"{}\"", e.getLocalizedMessage(), e);
                         listener.onSerialPortInputStreamIOException(this, e);
                         break;
-                    } catch (Exception e) {
-                        logger.warn("Got exception", e);
+                    } catch (IllegalStateException e) {
+                        logger.warn("Got illegal state exception", e);
                     }
                 }
             }
