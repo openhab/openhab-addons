@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="info-values">
+		<label>Information</label>
+		<description>Basic Information of your E3DC Device like Model Name, Serial Number and Software Versions</description>
+		<channels>
+			<channel id="modbus-id" typeId="modbus-id-channel"/>
+			<channel id="modbus-firmware" typeId="modbus-firmware-channel"/>
+			<channel id="supported-registers" typeId="supported-registers-channel"/>
+			<channel id="manufacturer-name" typeId="manufacturer-name-channel"/>
+			<channel id="model-name" typeId="model-name-channel"/>
+			<channel id="serial-number" typeId="serial-number-channel"/>
+			<channel id="firmware-release" typeId="firmware-release-channel"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

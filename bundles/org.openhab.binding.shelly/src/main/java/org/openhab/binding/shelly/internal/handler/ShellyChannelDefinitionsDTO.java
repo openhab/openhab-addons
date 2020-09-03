@@ -37,7 +37,7 @@ import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
 
 /**
- * The {@link ShellyChannelDefinitionsDTO} defines channel information for dynamically created channels. Those will be
+ * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
  * added on the first thing status update
  *
  * @author Markus Michels - Initial contribution
@@ -45,14 +45,20 @@ import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
 @NonNullByDefault
 public class ShellyChannelDefinitionsDTO {
 
-    private static final ChannelMap channelDefinitions = new ChannelMap();
+    private static final ChannelMap CHANNEL_DEFINITIONS = new ChannelMap();
 
+    // shortcuts to avoid line breaks (make code more readable)
+    private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
+    private static final String CHGR_ROLLER = CHANNEL_GROUP_ROL_CONTROL;
+    private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
     private static final String CHGR_SENSOR = CHANNEL_GROUP_SENSOR;
     private static final String CHGR_BAT = CHANNEL_GROUP_BATTERY;
 
     public static final String ITEM_TYPE_NUMBER = "Number";
     public static final String ITEM_TYPE_STRING = "String";
+    public static final String ITEM_TYPE_SWITCH = "Switch";
+    public static final String ITEM_TYPE_CONTACT = "Contact";
     public static final String ITEM_TYPE_DATETIME = "DateTime";
     public static final String ITEM_TYPE_TEMP = "Number:Temperature";
     public static final String ITEM_TYPE_LUX = "Number:Illuminance";
@@ -61,8 +67,7 @@ public class ShellyChannelDefinitionsDTO {
     public static final String ITEM_TYPE_VOLT = "Number:ElectricPotential";
     public static final String ITEM_TYPE_AMP = "Number:ElectricPotential";
     public static final String ITEM_TYPE_PERCENT = "Number:Dimensionless";
-    public static final String ITEM_TYPE_SWITCH = "Switch";
-    public static final String ITEM_TYPE_CONTACT = "Contact";
+    public static final String ITEM_TYPE_ANGLE = "Number:Angle";
 
     public static final String PREFIX_GROUP = "definitions.shelly.group.";
     public static final String PREFIX_CHANNEL = "channel-type.shelly.";
@@ -71,20 +76,23 @@ public class ShellyChannelDefinitionsDTO {
 
     public ShellyChannelDefinitionsDTO(ShellyTranslationProvider m) {
         // Device: Internal Temp
-        channelDefinitions
+        CHANNEL_DEFINITIONS
                 // Device
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEM_TYPE_TEMP))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP, "sensorWakeup",
-                        ITEM_TYPE_STRING))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts",
-                        ITEM_TYPE_POWER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal",
-                        ITEM_TYPE_POWER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned",
-                        ITEM_TYPE_POWER))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER, "charger", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE, "updateAvailable",
-                        ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEM_TYPE_TEMP))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEM_TYPE_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL, "meterAccuTotal", ITEM_TYPE_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED, "meterAccuReturned", ITEM_TYPE_POWER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_CHARGER, "charger", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE, "ledStatusDisable", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE, "ledPowerDisable", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_SELFTTEST, "selfTest", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPTIME, "uptime", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEM_TYPE_DATETIME))
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEM_TYPE_SWITCH))
+
+                // Roller
+                .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE, "rollerState", ITEM_TYPE_STRING))
 
                 // RGBW2
                 .add(new ShellyChannel(m, CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_INPUT, "inputState", ITEM_TYPE_SWITCH))
@@ -93,8 +101,6 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_CURRENTWATTS, "meterWatts", ITEM_TYPE_POWER))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_TOTALKWH, "meterTotal", ITEM_TYPE_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN1, "lastPower1", ITEM_TYPE_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN2, "lastPower2", ITEM_TYPE_ENERGY))
-                .add(new ShellyChannel(m, CHGR_METER, CHANNEL_METER_LASTMIN3, "lastPower3", ITEM_TYPE_ENERGY))
                 .add(new ShellyChannel(m, CHGR_METER, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
 
                 // EMeter
@@ -109,14 +115,25 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_HUM, "sensorHumidity", ITEM_TYPE_PERCENT))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_LUX, "sensorLux", ITEM_TYPE_LUX))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ILLUM, "sensorIllumination", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_CONTACT, "sensorContact", ITEM_TYPE_CONTACT))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SSTATE, "sensorState", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VIBRATION, "sensorVibration", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_TILT, "sensorTilt", ITEM_TYPE_ANGLE))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_FLOOD, "sensorFlood", ITEM_TYPE_SWITCH))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_SMOKE, "sensorSmoke", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_STATE, "sensorState", ITEM_TYPE_CONTACT))
-                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_MOTION, "sensorMotion", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_PPM, "sensorPPM", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_VALVE, "sensorValve", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ALARM_STATE, "alarmState", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_SENSOR_ERROR, "sensorError", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
+
+                // Button/ix3
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_INPUT, "inputState", ITEM_TYPE_SWITCH))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTTYPE, "eventType", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_STATUS_EVENTCOUNT, "eventCount", ITEM_TYPE_NUMBER))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_BUTTON_TRIGGER, "system.button", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_STATUS, CHANNEL_LAST_UPDATE, "lastUpdate", ITEM_TYPE_DATETIME))
 
                 // Addon with external sensors
                 .add(new ShellyChannel(m, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1, "sensorExtTemp", ITEM_TYPE_TEMP))
@@ -127,8 +144,7 @@ public class ShellyChannelDefinitionsDTO {
                 // Battery
                 .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LEVEL, "system:battery-level",
                         ITEM_TYPE_PERCENT))
-                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEM_TYPE_SWITCH))
-                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_VOLT, "batVoltage", ITEM_TYPE_VOLT));
+                .add(new ShellyChannel(m, CHGR_BAT, CHANNEL_SENSOR_BAT_LOW, "system:low-battery", ITEM_TYPE_SWITCH));
     }
 
     public static ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
@@ -140,9 +156,11 @@ public class ShellyChannelDefinitionsDTO {
             group = CHANNEL_GROUP_RELAY_CONTROL; // map meter1..n to meter
         } else if (group.contains(CHANNEL_GROUP_LIGHT_CHANNEL)) {
             group = CHANNEL_GROUP_LIGHT_CHANNEL;
+        } else if (group.contains(CHANNEL_GROUP_STATUS)) {
+            group = CHANNEL_GROUP_STATUS; // map status1..n to meter
         }
         String channelId = group + "#" + channel;
-        return channelDefinitions.get(channelId);
+        return CHANNEL_DEFINITIONS.get(channelId);
     }
 
     /**
@@ -155,7 +173,7 @@ public class ShellyChannelDefinitionsDTO {
         Map<String, Channel> add = new LinkedHashMap<>();
         if (!profile.isSensor) {
             // Only some devices report the internal device temp
-            addChannel(thing, add, (status.tmp != null) || (status.temperature != null), CHANNEL_GROUP_DEV_STATUS,
+            addChannel(thing, add, (status.tmp != null) || (status.temperature != null), CHGR_DEVST,
                     CHANNEL_DEVST_ITEMP);
         }
 
@@ -165,11 +183,19 @@ public class ShellyChannelDefinitionsDTO {
         // If device has more than 1 meter the channel accumulatedWatts receives the accumulated value
         boolean accuChannel = (((status.meters != null) && (status.meters.size() > 1) && !profile.isRoller
                 && !profile.isRGBW2) || ((status.emeters != null && status.emeters.size() > 1)));
-        addChannel(thing, add, accuChannel, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUWATTS);
-        addChannel(thing, add, accuChannel, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ACCUTOTAL);
-        addChannel(thing, add, accuChannel && (status.emeters != null), CHANNEL_GROUP_DEV_STATUS,
-                CHANNEL_DEVST_ACCURETURNED);
-        addChannel(thing, add, true, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE);
+        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS);
+        addChannel(thing, add, accuChannel, CHGR_DEVST, CHANNEL_DEVST_ACCUTOTAL);
+        addChannel(thing, add, accuChannel && (status.emeters != null), CHGR_DEVST, CHANNEL_DEVST_ACCURETURNED);
+        addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPDATE);
+        addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_UPTIME);
+        addChannel(thing, add, true, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT);
+
+        if (profile.settings.ledPowerDisable != null) {
+            addChannel(thing, add, true, CHGR_DEVST, CHANNEL_LED_POWER_DISABLE);
+        }
+        if (profile.settings.ledStatusDisable != null) {
+            addChannel(thing, add, true, CHGR_DEVST, CHANNEL_LED_STATUS_DISABLE); // WiFi status LED
+        }
         return add;
     }
 
@@ -190,14 +216,13 @@ public class ShellyChannelDefinitionsDTO {
         if (relays.extHumidity != null) {
             addChannel(thing, add, relays.extHumidity.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
         }
+
         return add;
     }
 
     public static Map<String, Channel> createRollerChannels(Thing thing, final ShellyControlRoller roller) {
         Map<String, Channel> add = new LinkedHashMap<>();
-
-        // No dynamic channels so far, maybe added in the future
-
+        addChannel(thing, add, roller.state != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE);
         return add;
     }
 
@@ -207,8 +232,6 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, newChannels, meter.total != null, group, CHANNEL_METER_TOTALKWH);
         if (meter.counters != null) {
             addChannel(thing, newChannels, meter.counters[0] != null, group, CHANNEL_METER_LASTMIN1);
-            addChannel(thing, newChannels, meter.counters[1] != null, group, CHANNEL_METER_LASTMIN2);
-            addChannel(thing, newChannels, meter.counters[2] != null, group, CHANNEL_METER_LASTMIN3);
         }
         addChannel(thing, newChannels, meter.timestamp != null, group, CHANNEL_LAST_UPDATE);
         return newChannels;
@@ -230,6 +253,8 @@ public class ShellyChannelDefinitionsDTO {
 
     public static Map<String, Channel> createSensorChannels(final Thing thing, final ShellyStatusSensor sdata) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
+        ShellyDeviceProfile profile = ((ShellyBaseHandler) thing.getHandler()).getProfile();
+
         // Sensor data
         addChannel(thing, newChannels, sdata.tmp != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP);
         addChannel(thing, newChannels, sdata.hum != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_HUM);
@@ -244,20 +269,31 @@ public class ShellyChannelDefinitionsDTO {
         addChannel(thing, newChannels, sdata.lux != null && sdata.lux.illumination != null, CHANNEL_GROUP_SENSOR,
                 CHANNEL_SENSOR_ILLUM);
         addChannel(thing, newChannels, sdata.contact != null && sdata.contact.state != null, CHANNEL_GROUP_SENSOR,
-                CHANNEL_SENSOR_STATE);
+                CHANNEL_SENSOR_CONTACT);
         addChannel(thing, newChannels, sdata.motion != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_MOTION);
-        addChannel(thing, newChannels, sdata.charger != null, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER);
+        addChannel(thing, newChannels, sdata.charger != null, CHGR_DEVST, CHANNEL_DEVST_CHARGER);
         addChannel(thing, newChannels, sdata.sensorError != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR);
-        addChannel(thing, newChannels, sdata.actReasons != null, CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP);
+        addChannel(thing, newChannels, sdata.actReasons != null, CHGR_DEVST, CHANNEL_DEVST_WAKEUP);
+
+        // Gas
+        if (sdata.gasSensor != null) {
+            addChannel(thing, newChannels, sdata.gasSensor.selfTestState != null, CHGR_DEVST, CHANNEL_DEVST_SELFTTEST);
+            addChannel(thing, newChannels, sdata.gasSensor.sensorState != null, CHANNEL_GROUP_SENSOR,
+                    CHANNEL_SENSOR_SSTATE);
+            addChannel(thing, newChannels, sdata.concentration != null && sdata.concentration.ppm != null,
+                    CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM);
+            addChannel(thing, newChannels, sdata.valves != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VALVE);
+            addChannel(thing, newChannels, sdata.gasSensor.sensorState != null, CHANNEL_GROUP_SENSOR,
+                    CHANNEL_SENSOR_ALARM_STATE);
+        }
 
         // Battery
         if (sdata.bat != null) {
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL);
             addChannel(thing, newChannels, sdata.bat.value != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW);
-            addChannel(thing, newChannels, sdata.bat.voltage != null, CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT);
         }
 
-        addChannel(thing, newChannels, true, CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE);
+        addChannel(thing, newChannels, true, profile.getControlGroup(0), CHANNEL_LAST_UPDATE);
         return newChannels;
     }
 
@@ -270,9 +306,6 @@ public class ShellyChannelDefinitionsDTO {
             final ChannelTypeUID channelTypeUID = channelDef.typeId.contains("system:")
                     ? new ChannelTypeUID(channelDef.typeId)
                     : new ChannelTypeUID(BINDING_ID, channelDef.typeId);
-
-            // Channel channel = ChannelBuilder.create(channelUID, channelId).withType(channelTypeUID)
-            // .withLabel(channelDef.label).withDescription(channelDef.description).build();
             Channel channel = ChannelBuilder.create(channelUID, channelDef.itemType).withType(channelTypeUID).build();
             newChannels.put(channelId, channel);
         }

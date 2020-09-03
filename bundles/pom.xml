@@ -67,6 +67,7 @@
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
+    <module>org.openhab.binding.comfoair</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.coronastats</module>
     <module>org.openhab.binding.daikin</module>
@@ -161,7 +162,10 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
+    <module>org.openhab.binding.modbus.e3dc</module>
     <module>org.openhab.binding.modbus.sunspec</module>
+    <module>org.openhab.binding.modbus.stiebeleltron</module>
+    <module>org.openhab.binding.monopriceaudio</module>
     <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
@@ -182,6 +186,7 @@
     <module>org.openhab.binding.novafinedust</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
+    <module>org.openhab.binding.nuvo</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>

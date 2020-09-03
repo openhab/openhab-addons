@@ -126,6 +126,7 @@ public class CChannel {
         private @Nullable String state_topic;
         private @Nullable String command_topic;
         private boolean retain;
+        private boolean trigger;
         private @Nullable Integer qos;
         private ChannelStateUpdateListener channelStateUpdateListener;
 
@@ -179,6 +180,11 @@ public class CChannel {
             return this;
         }
 
+        public Builder trigger(boolean trigger) {
+            this.trigger = trigger;
+            return this;
+        }
+
         public CChannel build() {
             return build(true);
         }
@@ -195,10 +201,10 @@ public class CChannel {
                     channelUID.getGroupId() + "_" + channelID);
             channelState = new ChannelState(
                     ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(state_topic)
-                            .withCommandTopic(command_topic).build(),
+                            .withCommandTopic(command_topic).makeTrigger(trigger).build(),
                     channelUID, valueState, channelStateUpdateListener);
 
-            if (StringUtils.isBlank(state_topic)) {
+            if (StringUtils.isBlank(state_topic) || this.trigger) {
                 type = ChannelTypeBuilder.trigger(channelTypeUID, label)
                         .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL)).build();
             } else {

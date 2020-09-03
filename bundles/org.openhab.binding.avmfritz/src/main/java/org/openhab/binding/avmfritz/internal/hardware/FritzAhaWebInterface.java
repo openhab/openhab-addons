@@ -35,6 +35,7 @@ import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzBaseBridgeHandler;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaApplyTemplateCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaCallback;
+import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingModeCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetHeatingTemperatureCallback;
 import org.openhab.binding.avmfritz.internal.hardware.callbacks.FritzAhaSetSwitchCallback;
 import org.slf4j.Logger;
@@ -299,6 +300,19 @@ public class FritzAhaWebInterface {
     public FritzAhaContentExchange setSetTemp(String ain, BigDecimal temperature) {
         FritzAhaSetHeatingTemperatureCallback callback = new FritzAhaSetHeatingTemperatureCallback(this, ain,
                 temperature);
+        return asyncGet(callback);
+    }
+
+    public FritzAhaContentExchange setBoostMode(String ain, long endTime) {
+        return setHeatingMode(ain, FritzAhaSetHeatingModeCallback.BOOST_COMMAND, endTime);
+    }
+
+    public FritzAhaContentExchange setWindowOpenMode(String ain, long endTime) {
+        return setHeatingMode(ain, FritzAhaSetHeatingModeCallback.WINDOW_OPEN_COMMAND, endTime);
+    }
+
+    private FritzAhaContentExchange setHeatingMode(String ain, String command, long endTime) {
+        FritzAhaSetHeatingModeCallback callback = new FritzAhaSetHeatingModeCallback(this, ain, command, endTime);
         return asyncGet(callback);
     }
 }

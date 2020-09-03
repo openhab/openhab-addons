@@ -15,7 +15,7 @@ package org.openhab.binding.miio.internal.robot;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * List of Errors
+ * List of available states
  *
  * @author Marcel Verpaalen - Initial contribution
  */
