@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEHANDLESTATUS;
+import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEMESSAGETYPE;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,46 +106,30 @@ public class YIOremoteHandler extends BaseThingHandler {
                 Thread.sleep(1000);
 
                 try {
-                    JsonObject_recievedJsonObject = StringtoJsonObject(
-                            YIOremote_DockwebSocketClientSocket.get_string_receivedmessage());
+                    if (YIOremote_DockwebSocketClientSocket.get_boolean_authentication_required()) {
+                        logger.debug("send authentication to YIO dock");
+                        YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.AUTHENTICATE,
+                                config.yiodockaccesstoken);
+                        Thread.sleep(1000);
 
-                    if (JsonObject_recievedJsonObject.has("type")) {
-                        logger.debug("json string has type member");
+                        if (YIOremote_DockwebSocketClientSocket.get_boolean_authentication_ok()) {
+                            YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATED;
 
-                        if (JsonObject_recievedJsonObject.get("type").toString()
-                                .equalsIgnoreCase("\"auth_required\"")) {
-                            logger.debug("send authentication to YIO dock");
-                            YIOremote_DockwebSocketClientSocket.sendMessage(
-                                    "{\"type\":\"auth\", \"token\":\"" + config.yiodockaccesstoken + "\"}");
-                            Thread.sleep(1000);
-
-                            JsonObject_recievedJsonObject = StringtoJsonObject(
-                                    YIOremote_DockwebSocketClientSocket.get_string_receivedmessage());
-                            if (JsonObject_recievedJsonObject.has("type")) {
-                                logger.debug("json string has type member");
-                                if (JsonObject_recievedJsonObject.get("type").toString()
-                                        .equalsIgnoreCase("\"auth_ok\"")) {
-                                    logger.debug("authentication to YIO dock ok");
-                                    YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATED;
-
-                                } else {
-                                    logger.debug("authentication to YIO dock not ok");
-                                    YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATED_FAILED;
-                                }
-                            } else {
-                                logger.debug("json string has no type member");
-                            }
+                        } else {
+                            logger.debug("authentication to YIO dock not ok");
+                            YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.AUTHENTICATED_FAILED;
                         }
-
                     } else {
-                        logger.debug("json string has no type member");
+                        logger.debug("authentication error YIO dock");
                     }
 
                 } catch (IllegalArgumentException e) {
                     logger.warn("JSON convertion failure " + e.toString(), e);
                 }
 
-            } catch (Exception e) {
+            } catch (
+
+            Exception e) {
                 logger.warn("Web socket connect failed " + e.toString(), e);
                 // throw new IOException("Web socket start failed");
             }
@@ -154,37 +139,20 @@ public class YIOremoteHandler extends BaseThingHandler {
 
         if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
             updateStatus(ThingStatus.ONLINE);
-            Runnable runnable = new Runnable() {
+            Runnable heartbeatpolling = new Runnable() {
                 @Override
                 public void run() {
                     if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
-                        YIOremote_DockwebSocketClientSocket.sendMessage(
-                                "{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
+                        YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
-                        JsonObject_recievedJsonObject = StringtoJsonObject(
-                                YIOremote_DockwebSocketClientSocket.get_string_receivedmessage());
-                        if (JsonObject_recievedJsonObject.has("type") && JsonObject_recievedJsonObject.has("message")
-                                && JsonObject_recievedJsonObject.has("success")) {
-                            logger.debug("heartbeat ok has members");
-
-                            if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"dock\"")
-                                    && JsonObject_recievedJsonObject.get("message").toString()
-                                            .equalsIgnoreCase("\"ir_send\"")
-                                    && JsonObject_recievedJsonObject.get("success").toString()
-                                            .equalsIgnoreCase("false")) {
-                                logger.debug("heartbeat ok right message");
-                            } else {
-                                YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                        "Connection lost no ping from YIO DOCK");
-                            }
+                        if (YIOremote_DockwebSocketClientSocket.get_boolean_heartbeat()) {
+                            logger.debug("heartbeat ok");
                         } else {
-                            logger.debug("heartbeat not ok2");
                             YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Connection lost no ping from YIO DOCK");
@@ -196,7 +164,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                     }
                 }
             };
-            pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, 30, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
@@ -244,13 +212,10 @@ public class YIOremoteHandler extends BaseThingHandler {
 
                 if (command.toString().equals("ON")) {
                     logger.debug("YIODOCKRECEIVERSWITCH ON procedure: Switching IR Receiver on");
-                    YIOremote_DockwebSocketClientSocket
-                            .sendMessage("{\"type\":\"dock\", \"command\":\"ir_receive_on\"}");
-
+                    YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.IRRECEIVERON, "");
                 } else if (command.toString().equals("OFF")) {
                     logger.debug("YIODOCKRECEIVERSWITCH OFF procedure: Switching IR Receiver off");
-                    YIOremote_DockwebSocketClientSocket
-                            .sendMessage("{\"type\":\"dock\", \"command\":\"ir_receive_off\"}");
+                    YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.IRRECEIVEROFF, "");
                 } else {
                     logger.debug("YIODOCKRECEIVERSWITCH no procedure");
                 }

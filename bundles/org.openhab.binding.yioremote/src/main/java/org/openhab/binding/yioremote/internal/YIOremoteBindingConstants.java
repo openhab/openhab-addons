@@ -37,6 +37,14 @@ public class YIOremoteBindingConstants {
         CONNECTION_ESTABLISHED;
     }
 
+    public static enum YIOREMOTEMESSAGETYPE {
+        IRSEND,
+        AUTHENTICATE,
+        HEARTBEAT,
+        IRRECEIVERON,
+        IRRECEIVEROFF;
+    }
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_YIOREMOTE = new ThingTypeUID(BINDING_ID, "yioremote");
 
