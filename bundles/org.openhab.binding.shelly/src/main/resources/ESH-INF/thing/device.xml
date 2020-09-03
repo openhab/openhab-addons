@@ -11,7 +11,6 @@
 			<channel id="alarm" typeId="alarmTrigger"/>
 			<channel id="wifiSignal" typeId="system.signal-strength"/>
 			<channel id="uptime" typeId="uptime"/>
-			<channel id="updateAvailable" typeId="updateAvailable"/>
 		</channels>
 	</channel-group-type>
 
@@ -36,7 +35,23 @@
 			</options>
 		</event>
 	</channel-type>
-	<channel-type id="charger">
+	<channel-type id="sensorWakeup" advanced="true">
+		<item-type>String</item-type>
+		<label>Wakeup Reason</label>
+		<description>Last reason, which woke up the device</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="button">Button</option>
+				<option value="battery">Battery</option>
+				<option value="periodic">Periodic</option>
+				<option value="poweron">Power-On</option>
+				<option value="sensor">Sensor</option>
+				<option value="alarm">Alarm</option>
+				<option value="ext_power">Charger connected</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Charger Connected</label>
 		<description>ON: Device is charging, OFF: No charger connected</description>
@@ -57,6 +72,14 @@
 		<state readOnly="true" pattern="%d %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="heartBeat" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Last Heartbeat</label>
+		<description>Last time we received a signal from the device (API result or sensor report), This indicates that device
+			communication works on the network layer (WiFi + IP).</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="updateAvailable" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Update available</label>
@@ -75,4 +98,18 @@
 		<state readOnly="true" pattern="%f %unit%">
 		</state>
 	</channel-type>
+	<channel-type id="selfTest">
+		<item-type>String</item-type>
+		<label>Self Test</label>
+		<description>Self Test Status/Result</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="not_completed">Not completed</option>
+				<option value="completed">Completed</option>
+				<option value="running">Running</option>
+				<option value="pending">Pending</option>
+			</options>
+		</state>
+	</channel-type>
+
 </thing:thing-descriptions>

@@ -52,7 +52,6 @@ public class ShellyCoapServer {
     private final Set<ShellyCoapListener> coapListeners = new ConcurrentHashSet<>();
 
     protected class ShellyStatusListener extends CoapResource {
-
         private ShellyCoapServer listener;
 
         public ShellyStatusListener(String uri, ShellyCoapServer listener) {

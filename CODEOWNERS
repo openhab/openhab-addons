@@ -34,6 +34,7 @@
 /bundles/org.openhab.binding.caddx/ @jossuar
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
+/bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.coronastats/ @DerOetzi
 /bundles/org.openhab.binding.daikin/ @caffineehacker
@@ -128,7 +129,10 @@
 /bundles/org.openhab.binding.milight/ @davidgraeff
 /bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.modbus/ @ssalonen
+/bundles/org.openhab.binding.modbus.e3dc/ @weymann
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
+/bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
+/bundles/org.openhab.binding.monopriceaudio/ @mlobstein
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
@@ -148,6 +152,7 @@
 /bundles/org.openhab.binding.novafinedust/ @t2000
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
+/bundles/org.openhab.binding.nuvo/ @mlobstein
 /bundles/org.openhab.binding.oceanic/ @kgoderis
 /bundles/org.openhab.binding.ojelectronics/ @EvilPingu
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert

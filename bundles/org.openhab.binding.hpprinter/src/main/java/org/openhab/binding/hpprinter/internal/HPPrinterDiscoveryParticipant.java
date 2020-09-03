@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
+import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.THING_PRINTER;
 
 import java.net.InetAddress;
 import java.util.HashMap;
@@ -52,13 +52,14 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
         }
 
         // We only care about HP Printers
-        if (service.getPropertyString("ty").toLowerCase().startsWith("hp")) {
+        String ty = service.getPropertyString("ty");
+        if (ty != null && ty.toLowerCase().startsWith("hp")) {
             String rp = service.getPropertyString("rp");
             if (rp == null) {
                 return null;
             }
 
-            logger.debug("Found HP Printer ID: {}", service.getPropertyString("ty"));
+            logger.debug("Found HP Printer ID: {}", ty);
             ThingUID uid = getThingUID(service);
             if (uid != null) {
                 Map<String, Object> properties = new HashMap<>(2);
@@ -76,10 +77,10 @@ public class HPPrinterDiscoveryParticipant implements MDNSDiscoveryParticipant {
                         label);
                 return result;
             } else {
-                logger.debug("Found unsupported HP Printer ID: {}", service.getPropertyString("ty"));
+                logger.debug("Found unsupported HP Printer ID: {}", ty);
             }
         } else {
-            logger.trace("Ignore non HP device {}", service.getPropertyString("ty"));
+            logger.trace("Ignore non HP device {}", ty);
         }
 
         return null;

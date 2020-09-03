@@ -139,7 +139,7 @@ public enum MiIoDevices {
     VACUUME2("roborock.vacuum.e2", "Rockrobo Xiaowa Vacuum v2", THING_TYPE_UNSUPPORTED),
     VACUUME_V6("viomi.vacuum.v6", "Xiaomi Mijia vacuum V-RVCLM21B", THING_TYPE_UNSUPPORTED),
     VACUUME_V7("viomi.vacuum.v7", "Xiaomi Mijia vacuum mop STYJ02YM", THING_TYPE_UNSUPPORTED),
-    VACUUME_V8("viomi.vacuum.v8", "Xiaomi Mijia vacuum mop STYJ02YM", THING_TYPE_UNSUPPORTED),
+    VACUUME_V8("viomi.vacuum.v8", "Xiaomi Mijia vacuum mop STYJ02YM", THING_TYPE_BASIC),
     VACUUM_MC1808("dreame.vacuum.mc1808", "Vacuum 1C STYTJ01ZHM", THING_TYPE_BASIC),
     ROBOROCK_VACUUM_C1("roborock.vacuum.c1", "roborock.vacuum.c1", THING_TYPE_UNSUPPORTED),
     SWEEPER2("roborock.sweeper.e2v2", "Rockrobo Xiaowa Sweeper v2", THING_TYPE_UNSUPPORTED),
