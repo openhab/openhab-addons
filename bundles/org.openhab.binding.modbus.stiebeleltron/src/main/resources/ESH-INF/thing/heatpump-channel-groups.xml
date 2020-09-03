@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="system-state">
+		<label>System State</label>
+		<channels>
+			<channel id="is-heating" typeId="is-heating-type"/>
+			<channel id="is-heating-water" typeId="is-heating-water-type"/>
+			<channel id="is-cooling" typeId="is-cooling-type"/>
+			<channel id="is-pumping" typeId="is-pumping-type"/>
+			<channel id="is-summer" typeId="is-summer-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system-parameter">
+		<label>System Parameters</label>
+		<channels>
+			<channel id="operation-mode" typeId="operation-mode-type"/>
+			<channel id="comfort-temperature-heating" typeId="comfort-temperature-heating-type"/>
+			<channel id="eco-temperature-heating" typeId="eco-temperature-heating-type"/>
+			<channel id="comfort-temperature-water" typeId="comfort-temperature-water-type"/>
+			<channel id="eco-temperature-water" typeId="eco-temperature-water-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="system-information">
+		<label>System Information</label>
+		<channels>
+			<channel id="fek-temperature" typeId="fek-temperature-type"/>
+			<channel id="fek-temperature-setpoint" typeId="fek-temperature-setpoint-type"/>
+			<channel id="fek-humidity" typeId="fek-humidity-type"/>
+			<channel id="fek-dewpoint" typeId="fek-dewpoint-type"/>
+			<channel id="outdoor-temperature" typeId="outdoor-temperature-type"/>
+			<channel id="hk1-temperature" typeId="hk1-temperature-type"/>
+			<channel id="hk1-temperature-setpoint" typeId="hk1-temperature-setpoint-type"/>
+			<channel id="supply-temperature" typeId="supply-temperature-type"/>
+			<channel id="return-temperature" typeId="return-temperature-type"/>
+			<channel id="source-temperature" typeId="source-temperature-type"/>
+			<channel id="water-temperature" typeId="water-temperature-type"/>
+			<channel id="water-temperature-setpoint" typeId="water-temperature-setpoint-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="energy-information">
+		<label>Energy Information</label>
+		<channels>
+			<channel id="production-heat-today" typeId="production-heat-today-type"/>
+			<channel id="production-heat-total" typeId="production-heat-total-type"/>
+			<channel id="production-water-today" typeId="production-water-today-type"/>
+			<channel id="production-water-total" typeId="production-water-total-type"/>
+			<channel id="consumption-heat-today" typeId="consumption-heat-today-type"/>
+			<channel id="consumption-heat-total" typeId="consumption-heat-total-type"/>
+			<channel id="consumption-water-today" typeId="consumption-water-today-type"/>
+			<channel id="consumption-water-total" typeId="consumption-water-total-type"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

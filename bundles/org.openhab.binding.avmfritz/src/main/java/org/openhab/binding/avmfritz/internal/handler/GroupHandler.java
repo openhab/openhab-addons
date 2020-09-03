@@ -29,11 +29,6 @@ import org.openhab.binding.avmfritz.internal.dto.GroupModel;
 @NonNullByDefault
 public class GroupHandler extends AVMFritzBaseThingHandler {
 
-    /**
-     * Constructor
-     *
-     * @param thing Thing object representing a FRITZ! group
-     */
     public GroupHandler(Thing thing) {
         super(thing);
     }

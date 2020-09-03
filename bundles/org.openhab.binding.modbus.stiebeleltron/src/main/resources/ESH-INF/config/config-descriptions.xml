@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:stiebeleltron:modbusconfig">
+
+		<parameter name="refresh" type="integer" min="1" unit="s">
+			<label>Polling Interval</label>
+			<description>Poll interval in seconds. Use zero to disable automatic polling.</description>
+			<default>5</default>
+			<unitLabel>s</unitLabel>
+		</parameter>
+
+		<parameter name="maxTries" type="integer" min="1">
+			<label>Maximum Tries When Reading</label>
+			<default>3</default>
+			<description>Number of tries when reading data, if some of the reading fail. For single try, enter 1.</description>
+			<advanced>true</advanced>
+		</parameter>
+
+	</config-description>
+
+</config-description:config-descriptions>

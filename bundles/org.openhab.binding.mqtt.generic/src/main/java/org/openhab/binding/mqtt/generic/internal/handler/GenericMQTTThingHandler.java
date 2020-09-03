@@ -91,6 +91,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     @Override
     protected void stop() {
         channelStateByChannelUID.values().forEach(c -> c.getCache().resetState());
+        super.stop();
     }
 
     @Override

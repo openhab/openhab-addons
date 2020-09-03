@@ -49,7 +49,11 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
+After succesfull Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
+For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
+
+![Binding Config](doc/miioBindingConfig.jpg)
 
 ## Thing Configuration
 
@@ -193,7 +197,7 @@ or in case of unknown models include the model information e.g.:
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
 | Xiaomi Mijia vacuum V-RVCLM21B | miio:unsupported | viomi.vacuum.v6        | No        |            |
 | Xiaomi Mijia vacuum mop STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
-| Xiaomi Mijia vacuum mop STYJ02YM | miio:unsupported | viomi.vacuum.v8        | No        |            |
+| Xiaomi Mijia vacuum mop STYJ02YM | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
 | Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
@@ -1299,6 +1303,26 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | current          | Number  | Current                             |
 | temperature      | Number  | Temperature                         |
 
+### Xiaomi Mijia vacuum mop STYJ02YM (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| vacuumaction     | Number  | Vacuum Action                       |
+| state            | Number  | State                               |
+| mode             | Number  | Mode                                |
+| err_state        | Number  | Error                               |
+| battary_life     | Number  | Battery                             |
+| box_type         | Number  | Box type                            |
+| mop_type         | Number  | mop_type                            |
+| s_time           | Number  | Clean time                          |
+| s_area           | Number  | Clean Area                          |
+| suction_grade    | Number  | suction_grade                       |
+| water_grade      | Number  | water_grade                         |
+| remember_map     | Number  | remember_map                        |
+| has_map          | Number  | has_map                             |
+| is_mop           | Number  | is_mop                              |
+| has_newmap       | Number  | has_newmap                          |
+
 ### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
 
 | Channel          | Type    | Description                         |
@@ -1830,11 +1854,24 @@ Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel=
 Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_error" }
 Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_finish" }
 
-
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
 Note: cleaning map is only available with cloud access.
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+
+
 
 ### Mi Air Monitor v1 (zhimi.airmonitor.v1) item file lines
 
@@ -3032,6 +3069,29 @@ Switch led "wifi LED" (G_powerstrip) {channel="miio:basic:powerstrip:led"}
 Number power_price "power_price" (G_powerstrip) {channel="miio:basic:powerstrip:power_price"}
 Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"}
 Number temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
+```
+
+### Xiaomi Mijia vacuum mop STYJ02YM (viomi.vacuum.v8) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Mijia vacuum mop STYJ02YM" <status>
+Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number battary_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battary_life"}
+Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
+Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
+Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
+Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
 ```
 
 ### Vacuum 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines

@@ -24,11 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -82,7 +78,7 @@ import com.google.gson.Gson;
  * The {@link InnogyBridgeHandler} is responsible for handling the innogy SmartHome controller including the connection
  * to the innogy backend for all communications with the innogy {@link Device}s.
  * <p/>
- * It implements the {@link CredentialRefreshListener} to handle updates of the oauth2 tokens and the
+ * It implements the {@link AccessTokenRefreshListener} to handle updates of the oauth2 tokens and the
  * {@link EventListener} to handle {@link Event}s, that are received by the {@link InnogyWebSocket}.
  * <p/>
  * The {@link Device}s are organized by the {@link DeviceStructureManager}, which is also responsible for the connection
@@ -96,8 +92,6 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         implements AccessTokenRefreshListener, EventListener, DeviceStatusListener {
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
-
-    private static final long WEBSOCKET_TIMEOUT_RETRY_SECONDS = 5;
 
     private final Logger logger = LoggerFactory.getLogger(InnogyBridgeHandler.class);
     private final Gson gson = new Gson();
@@ -143,7 +137,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         final InnogyBridgeConfiguration bridgeConfiguration = getConfigAs(InnogyBridgeConfiguration.class);
         if (checkConfig(bridgeConfiguration)) {
             this.bridgeConfiguration = bridgeConfiguration;
-            scheduler.execute(this::initializeClient);
+            getScheduler().execute(this::initializeClient);
         }
     }
 
@@ -174,12 +168,12 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         this.oAuthService = oAuthService;
 
         if (checkOnAuthCode()) {
-            final InnogyClient localClient = new InnogyClient(oAuthService, httpClient);
+            final InnogyClient localClient = createInnogyClient(oAuthService, httpClient);
             client = localClient;
             deviceStructMan = new DeviceStructureManager(localClient);
             oAuthService.addAccessTokenRefreshListener(this);
             registerDeviceStatusListener(InnogyBridgeHandler.this);
-            scheduleRestartClient(0);
+            scheduleRestartClient(false);
         }
     }
 
@@ -242,10 +236,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                 return;
             }
         }
-        setBridgeProperties(deviceStructMan.getBridgeDevice());
-        bridgeId = deviceStructMan.getBridgeDevice().getId();
+
+        Device bridgeDevice = deviceStructMan.getBridgeDevice();
+        setBridgeProperties(bridgeDevice);
+        bridgeId = bridgeDevice.getId();
         startWebsocket();
-        cancelReinitJob();
     }
 
     /**
@@ -253,20 +248,13 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      */
     private void startWebsocket() {
         try {
-            final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
-            final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}",
-                    accessTokenResponse.getAccessToken());
+            InnogyWebSocket localWebSocket = createWebSocket();
 
-            logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
-                    webSocketUrl.substring(webSocketUrl.length() - 10));
-            InnogyWebSocket localWebSocket = this.webSocket;
-
-            if (localWebSocket != null && localWebSocket.isRunning()) {
-                localWebSocket.stop();
+            if (this.webSocket != null && this.webSocket.isRunning()) {
+                this.webSocket.stop();
                 this.webSocket = null;
             }
-            localWebSocket = new InnogyWebSocket(this, URI.create(webSocketUrl),
-                    bridgeConfiguration.websocketidletimeout * 1000);
+
             logger.debug("Starting innogy websocket.");
             this.webSocket = localWebSocket;
             localWebSocket.start();
@@ -277,27 +265,42 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    InnogyWebSocket createWebSocket() throws IOException, AuthenticationException {
+        final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
+        final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}",
+                accessTokenResponse.getAccessToken());
+
+        logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
+                webSocketUrl.substring(webSocketUrl.length() - 10));
+
+        return new InnogyWebSocket(this, URI.create(webSocketUrl),
+                bridgeConfiguration.websocketidletimeout * 1000);
+    }
+
     @Override
     public void onAccessTokenResponse(final AccessTokenResponse credential) {
-        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+        scheduleRestartClient(true);
     }
 
     /**
      * Schedules a re-initialization in the given future.
      *
-     * @param seconds
+     * @param delayed when it is scheduled delayed, it starts with a delay of
+     * {@link org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants#REINITIALIZE_DELAY_SECONDS} seconds,
+     * otherwise it starts directly
      */
-    private synchronized void scheduleRestartClient(final long seconds) {
-        final ScheduledFuture<?> localReinitJob = reinitJob;
+    private synchronized void scheduleRestartClient(final boolean delayed) {
+        @Nullable final ScheduledFuture<?> localReinitJob = reinitJob;
 
-        if (localReinitJob != null && !localReinitJob.isDone()) {
-            logger.debug("Scheduling reinitialize in {} seconds - ignored: already triggered in {} seconds.", seconds,
+        if (localReinitJob != null && isAlreadyScheduled(localReinitJob)) {
+            logger.debug("Scheduling reinitialize - ignored: already triggered in {} seconds.",
                     localReinitJob.getDelay(TimeUnit.SECONDS));
             return;
         }
+
+        final long seconds = delayed ? REINITIALIZE_DELAY_SECONDS : 0;
         logger.debug("Scheduling reinitialize in {} seconds.", seconds);
-        reinitJob = scheduler.scheduleWithFixedDelay(this::startClient, seconds, REINITIALIZE_RETRY_SECONDS,
-                TimeUnit.SECONDS);
+        reinitJob = getScheduler().schedule(this::startClient, seconds, TimeUnit.SECONDS);
     }
 
     private void setBridgeProperties(final Device bridgeDevice) {
@@ -479,7 +482,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
             logger.trace("DeviceId {} relevant for this handler.", device.getId());
 
-            if (event.isLinkedtoDevice() && Device.DEVICE_TYPE_SHCA.equals(device.getType())) {
+            if (event.isLinkedtoDevice() && DEVICE_SHCA.equals(device.getType())) {
                 device.getDeviceState().getState().getCpuUsage().setValue(event.getProperties().getCpuUsage());
                 device.getDeviceState().getState().getDiskUsage().setValue(event.getProperties().getDiskUsage());
                 device.getDeviceState().getState().getMemoryUsage().setValue(event.getProperties().getMemoryUsage());
@@ -508,7 +511,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
                     case BaseEvent.TYPE_DISCONNECT:
                         logger.debug("Websocket disconnected.");
-                        scheduleRestartClient(0);
+                        scheduleRestartClient(true);
                         break;
 
                     case BaseEvent.TYPE_CONFIGURATION_CHANGED:
@@ -519,7 +522,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
                         } else {
                             logger.info("Configuration changed from version {} to {}. Restarting innogy binding...",
                                     client.getConfigVersion(), event.getConfigurationVersion());
-                            scheduleRestartClient(0);
+                            scheduleRestartClient(false);
                         }
                         break;
 
@@ -705,7 +708,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void connectionClosed() {
-        scheduleRestartClient(REINITIALIZE_DELAY_SECONDS);
+        scheduleRestartClient(true);
     }
 
     /**
@@ -883,6 +886,14 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         }
     }
 
+    ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    InnogyClient createInnogyClient(final OAuthClientService oAuthService, final HttpClient httpClient) {
+        return new InnogyClient(oAuthService, httpClient);
+    }
+
     /**
      * Handles all Exceptions of the client communication. For minor "errors" like an already existing session, it
      * returns true to inform the binding to continue running. In other cases it may e.g. schedule a reinitialization of
@@ -892,18 +903,17 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * @return boolean true, if binding should continue.
      */
     private boolean handleClientException(final Exception e) {
-        long reinitialize = REINITIALIZE_DELAY_SECONDS;
+        boolean isReinitialize = true;
         if (e instanceof SessionExistsException) {
             logger.debug("Session already exists. Continuing...");
-            reinitialize = -1;
+            isReinitialize = false;
         } else if (e instanceof InvalidActionTriggeredException) {
             logger.debug("Error triggering action: {}", e.getMessage());
-            reinitialize = -1;
+            isReinitialize = false;
         } else if (e instanceof RemoteAccessNotAllowedException) {
             // Remote access not allowed (usually by IP address change)
             logger.debug("Remote access not allowed. Dropping access token and reinitializing binding...");
             refreshAccessToken();
-            reinitialize = 0;
         } else if (e instanceof ControllerOfflineException) {
             logger.debug("innogy SmartHome Controller is offline.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, e.getMessage());
@@ -919,12 +929,11 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof TimeoutException) {
             logger.debug("WebSocket timeout: {}", e.getMessage());
-            reinitialize = WEBSOCKET_TIMEOUT_RETRY_SECONDS;
         } else if (e instanceof SocketTimeoutException) {
             logger.debug("Socket timeout: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } else if (e instanceof InterruptedException) {
-            reinitialize = -1;
+            isReinitialize = false;
             Thread.currentThread().interrupt();
         } else if (e instanceof ExecutionException) {
             logger.debug("ExecutionException: {}", ExceptionUtils.getRootCauseMessage(e));
@@ -933,8 +942,8 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
             logger.debug("Unknown exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, e.getMessage());
         }
-        if (reinitialize >= 0) {
-            scheduleRestartClient(reinitialize);
+        if (isReinitialize) {
+            scheduleRestartClient(true);
             return true;
         }
         return false;
@@ -950,5 +959,14 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
         } catch (IOException | OAuthResponseException | OAuthException e) {
             logger.debug("Could not refresh tokens", e);
         }
+    }
+
+    /**
+     * Checks if the job is already (re-)scheduled.
+     * @param job job to check
+     * @return true, when the job is already (re-)scheduled, otherwise false
+     */
+    private static boolean isAlreadyScheduled(ScheduledFuture<?> job) {
+        return job.getDelay(TimeUnit.SECONDS) > 0;
     }
 }
