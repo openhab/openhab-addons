@@ -38,10 +38,12 @@ public class Constants {
     public static final String NOT_SUPPORTED = "NOT_SUPPORTED";
 
     // General Constants for String concatenation
+    public static final String NULL = "null";
     public static final String SPACE = " ";
     public static final String UNDERLINE = "_";
     public static final String HYPHEN = " - ";
     public static final String EMPTY = "";
+    public static final String COMMA = ",";
 
     public static final String ANONYMOUS = "ANONYMOUS";
     public static final int MILES_TO_FEET_FACTOR = 5280;

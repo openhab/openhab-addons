@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="name-1-channel">
+		<item-type>String</item-type>
+		<label>Last Destination Name</label>
+	</channel-type>
+	<channel-type id="lat-1-channel">
+		<item-type>Number</item-type>
+		<label>Last Destination Latitude</label>
+	</channel-type>
+	<channel-type id="lon-1-channel">
+		<item-type>Number</item-type>
+		<label>Last Destination Longitude </label>
+	</channel-type>
+	<channel-type id="name-2-channel">
+		<item-type>String</item-type>
+		<label>Second Last Destination Name</label>
+	</channel-type>
+	<channel-type id="lat-2-channel">
+		<item-type>Number</item-type>
+		<label>Second Last Destination Latitude</label>
+	</channel-type>
+	<channel-type id="lon-2-channel">
+		<item-type>Number</item-type>
+		<label>Second Last Destination Longitude </label>
+	</channel-type>
+	<channel-type id="name-3-channel">
+		<item-type>String</item-type>
+		<label>Third Last Destination Name</label>
+	</channel-type>
+	<channel-type id="lat-3-channel">
+		<item-type>Number</item-type>
+		<label>Third Last Destination Latitude</label>
+	</channel-type>
+	<channel-type id="lon-3-channel">
+		<item-type>Number</item-type>
+		<label>Third Last Destination Longitude </label>
+	</channel-type>
+</thing:thing-descriptions>

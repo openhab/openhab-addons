@@ -9,16 +9,16 @@ The Discovery Service recognizes your Car with the correct type
 * Conventional Fuel Vehicle
 * Plugin-Hybrid Electrical Vehicle 
 * Battery Electric Vehicle with Range Extender
-* Batterie Electric Vehicle 
+* Battery Electric Vehicle 
 
-In addition Properties are attached to the Vehcile Thing to obeserve the Suppoerted & Activated Services.
+In addition Properties are attached to the Vehicle Thing to observe the Supported & Activated Services.
 Different Channel Groups are available so you are able to cross-check which group is supported by your Car.  
 
 ## Supported Things
 
 ### Bridge
 
-The Bridge establishes the Connection between BMW ConnectedDrive Portal and opanHAB.
+The Bridge establishes the Connection between BMW ConnectedDrive Portal and openHAB.
 
 | Name                       | Bridge Type ID | Description                                                |
 |----------------------------|----------------|------------------------------------------------------------|
@@ -82,13 +82,13 @@ The region Configuration has 3 different possibilities
 
 All Things are needing the same Configuration Data
 
-| Parameter       | Type    | Description                                                             |           
-|-----------------|---------|-------------------------------------------------------------------------|
-| vin             | text    | Vehicle Identification Number (VIN)               |
-| refreshInterval | integer | Refresh Interval in Minutes             |
-| units           | text    | Unit Selection   |
-| imageSize       | integer | Image Picture Size<  |
-| imageViewport   | text    | Image Viewport  |
+| Parameter       | Type    | Description                           |           
+|-----------------|---------|---------------------------------------|
+| vin             | text    | Vehicle Identification Number (VIN)   |
+| refreshInterval | integer | Refresh Interval in Minutes           |
+| units           | text    | Unit Selection                        |
+| imageSize       | integer | Image Picture Size                    |
+| imageViewport   | text    | Image Viewport                        |
 
 The units can be configured in 3 ways
 
@@ -118,13 +118,13 @@ This means also the Construction Year is relevant if some Channels are supported
 
 Available for all Vehicles.
 
-| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                       |
-|-----------------------|------------------|---------------------|--------|---------------------------------------------------|
-| Door Status           | status           | doors               | String | Closed if all closed, else reports the Door which is still open |
-| Window Status         | status           | windows             | String | Closed if all closed, else reports the Window which is still open |
-| Doors Locked          | status           | lock                | String | Status if Doors are locked or unlocked |
-| Upcoming Service      | status           | service             | String | Upcoming Service either after certain Mileage, Date, or both  |
-| Check Control         | status           | check-control       | String | Description of actual Check Control message, Ok if none is activae   |
+| Channel Label         | Channel Group ID | Channel ID          | Type   | Description                                                          |
+|-----------------------|------------------|---------------------|--------|----------------------------------------------------------------------|
+| Door Status           | status           | doors               | String | Closed if all closed, else reports the Door which is still open      |
+| Window Status         | status           | windows             | String | Closed if all closed, else reports the Window which is still open    |
+| Doors Locked          | status           | lock                | String | Status if Doors are locked or unlocked                               |
+| Upcoming Service      | status           | service             | String | Upcoming Service either after certain Mileage, Date, or both         |
+| Check Control         | status           | check-control       | String | Description of actual Check Control message, Ok if none is activated |
 
 
 #### Channel Group _Range Data_
@@ -135,22 +135,22 @@ Hybrid Vehicles have both and in addition _Hybrid Range_
 
 | Channel Label         | Channel Group ID | Channel ID          | Type                 | Valid for               | Description                                       |
 |-----------------------|------------------|---------------------|----------------------|-------------------------|----------------------------------------|
-| Mileage               | range            | mileage             | Number:Length        | All                     | Total Distance Driven                   |
-| Hybrid Range          | range            | range-hybrid        | Number:Length        | PHEV BEV_REX            | Electric Range + Fuel Range                   |
-| Battery Range         | range            | range-electric      | Number:Length        | PHEV BEV_REX BEV        | Electric Range                   |
-| Battery Charge Level  | range            | soc                 | Number:Dimensionless | PHEV BEV_REX BEV        | Battery State of Charge                   |
-| Fuel Range            | range            | range-fuel          | Number:Length        | CONV PHEV BEV_REX       | Fuel Range                   |
-| Remaining Fuel        | range            | remaining-fuel      | Number:Volume        | CONV PHEV BEV_REX       | Remaining Fuel in Liters                   |
+| Mileage               | range            | mileage             | Number:Length        | All                     | Total Distance Driven                  |
+| Hybrid Range          | range            | range-hybrid        | Number:Length        | PHEV BEV_REX            | Electric Range + Fuel Range            |
+| Battery Range         | range            | range-electric      | Number:Length        | PHEV BEV_REX BEV        | Electric Range                         |
+| Battery Charge Level  | range            | soc                 | Number:Dimensionless | PHEV BEV_REX BEV        | Battery State of Charge                |
+| Fuel Range            | range            | range-fuel          | Number:Length        | CONV PHEV BEV_REX       | Fuel Range                             |
+| Remaining Fuel        | range            | remaining-fuel      | Number:Volume        | CONV PHEV BEV_REX       | Remaining Fuel in Liters               |
 
 #### Channel Group _Vehicle Location_
 
 Available for all Vehicles.
 
-| Channel Label  | Channel Group ID | Channel ID          | Type         | Description                                       |
-|----------------|------------------|---------------------|--------------|---------------------------------------------------|
-| Latitude       | location         | latitude            | Number       | Vehicle Location Longitude                    |
-| Longitude      | location         | longitude           | Number       | Vehicle Location Latitude                    |
-| Heading        | location         | heading             | Number:Angle | Vehicle Heading                    |
+| Channel Label  | Channel Group ID | Channel ID          | Type         | 
+|----------------|------------------|---------------------|--------------|
+| Latitude       | location         | latitude            | Number       | 
+| Longitude      | location         | longitude           | Number       |
+| Heading        | location         | heading             | Number:Angle | 
 
 #### Channel Group _Last Trip_
 
@@ -184,8 +184,8 @@ Parallel execution isn't supported.
 The _Service Execution State_ Channel is reporting the state.
 State _Executed_ is the final State when Execution is finished.
 
-| Channel Label           | Channel Group ID | Channel ID          | Type   | 
-|-------------------------|------------------|---------------------|--------|
+| Channel Label           | Channel Group ID | Channel ID          | Type    | 
+|-------------------------|------------------|---------------------|---------|
 | Activate Flash Lights   | remote           | light               | Switch  |
 | Find Vehicle            | remote           | finder              | Switch  |
 | Lock Doors              | remote           | lock                | Switch  |
@@ -193,6 +193,22 @@ State _Executed_ is the final State when Execution is finished.
 | Horn Blow               | remote           | horn                | Switch  |
 | Active Air Conditioning | remote           | climate             | Switch  |
 | Service Execution State | remote           | state               | STring  |
+
+#### Channel Group _Destinations_
+
+Check in your Vehicle Thing Properties if _LastDestinations_ is present in _Services Supported_
+
+| Channel Label                        | Channel Group ID | Channel ID          | Type    | 
+|--------------------------------------|------------------|---------------------|---------|
+| Last Destination Name                | destination      | name-1              | String  |
+| Last Destination Latitude            | destination      | lat-1               | Number  |
+| Last Destination Longitude           | destination      | lon-1               | Number  |
+| Second Last Destination Name         | destination      | name-2              | String  |
+| Second Last Destination Latitude     | destination      | lat-2               | Number  |
+| Second Last Destination Longitude    | destination      | lon-2               | Number  |
+| Third Last Destination Name          | destination      | name-3              | String  |
+| Third Last Destination Latitude      | destination      | lat-3               | Number  |
+| Third Last Destination Longitude     | destination      | lon-3               | Number  |
 
 
 #### Channel Group _Image_
