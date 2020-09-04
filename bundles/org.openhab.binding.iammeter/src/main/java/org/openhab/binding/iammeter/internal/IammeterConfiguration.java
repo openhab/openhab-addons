@@ -25,4 +25,6 @@ public class IammeterConfiguration {
     public String host = "127.0.0.1";
     public int port = 80;
     public int refreshInterval = 30;
+    public String username = "admin";
+    public String password = "admin";
 }

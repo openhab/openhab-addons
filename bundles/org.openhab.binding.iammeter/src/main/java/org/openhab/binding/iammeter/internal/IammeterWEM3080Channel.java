@@ -24,28 +24,22 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
  */
 public enum IammeterWEM3080Channel {
 
-    CHANNEL_VOLTAGE("voltage_a", 0, SmartHomeUnits.VOLT),
-    CHANNEL_CURRENT("current_a", 1, SmartHomeUnits.AMPERE),
-    CHANNEL_POWER("power_a", 2, SmartHomeUnits.WATT),
-    CHANNEL_IMPORTENERGY("importenergy_a", 3, SmartHomeUnits.KILOWATT_HOUR),
-    CHANNEL_EXPORTGRID("exportgrid_a", 4, SmartHomeUnits.KILOWATT_HOUR);
+    CHANNEL_VOLTAGE("voltage", SmartHomeUnits.VOLT),
+    CHANNEL_CURRENT("current", SmartHomeUnits.AMPERE),
+    CHANNEL_POWER("power", SmartHomeUnits.WATT),
+    CHANNEL_IMPORTENERGY("importenergy", SmartHomeUnits.KILOWATT_HOUR),
+    CHANNEL_EXPORTGRID("exportgrid", SmartHomeUnits.KILOWATT_HOUR);
 
     private final String id;
-    private final int index;
     private final Unit<?> unit;
 
-    IammeterWEM3080Channel(String id, int index, Unit<?> unit) {
+    IammeterWEM3080Channel(String id, Unit<?> unit) {
         this.id = id;
-        this.index = index;
         this.unit = unit;
     }
 
     public String getId() {
         return id;
-    }
-
-    public int getIndex() {
-        return index;
     }
 
     public Unit<?> getUnit() {

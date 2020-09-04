@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.iammeter.internal;
 
-import static org.openhab.binding.iammeter.internal.IammeterBindingConstants.THING_TYPE_POWERMETER;
+import static org.openhab.binding.iammeter.internal.IammeterBindingConstants.*;
 
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,13 +30,17 @@ import org.osgi.service.component.annotations.Component;
  * The {@link IammeterHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
- * @author yangbo - Initial contribution
+ * @author Yang Bo - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.iammeter", service = ThingHandlerFactory.class)
 public class IammeterHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_POWERMETER);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
+    static {
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_POWERMETER);
+        SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_POWERMETER_3080T);
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,6 +53,8 @@ public class IammeterHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_POWERMETER.equals(thingTypeUID)) {
             return new IammeterHandler(thing);
+        } else if (THING_TYPE_POWERMETER_3080T.equals(thingTypeUID)) {
+            return new Iammeter3080THandler(thing);
         }
 
         return null;
