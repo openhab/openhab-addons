@@ -31,8 +31,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * KVVStationHandler represents a station and holds information about the trains
@@ -42,8 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class KVVStationHandler extends BaseThingHandler {
-
-    private final Logger logger = LoggerFactory.getLogger(KVVStationHandler.class);
 
     @Nullable
     private ScheduledFuture<?> pollingJob;
@@ -66,6 +62,10 @@ public class KVVStationHandler extends BaseThingHandler {
         if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to get station configuration");
+            return;
+        }
+        if (config.stationId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "stationId is not set");
             return;
         }
 
@@ -157,6 +157,7 @@ public class KVVStationHandler extends BaseThingHandler {
      * @author Maximilian Hess - Initial contribution
      *
      */
+    @NonNullByDefault
     public class UpdateTask extends TimerTask {
 
         private final KVVBridgeHandler bridgeHandler;

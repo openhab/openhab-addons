@@ -13,6 +13,9 @@
 package org.openhab.binding.kvv.internal;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,11 +41,15 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KVVBridgeHandler.class);
 
+    private final Cache cache;
+
     @Nullable
     private KVVBridgeConfig config;
 
     public KVVBridgeHandler(final Bridge bridge) {
         super(bridge);
+        // the cache is created with a default value for the updateInterval to avoid null handling
+        this.cache = new Cache(KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL);
     }
 
     @Nullable
@@ -83,7 +90,18 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      *
      * @return the latest {@link DepartureResult}.
      */
-    public @Nullable DepartureResult queryKVV(final KVVStationConfig stationConfig) {
+    public synchronized @Nullable DepartureResult queryKVV(final KVVStationConfig stationConfig) {
+        if (stationConfig.stationId == null) {
+            return null;
+        }
+        final String stationId = stationConfig.stationId;
+
+        // is there an up-to-date value in the cache?
+        final DepartureResult cr = this.cache.get(stationId);
+        if (cr != null) {
+            return cr;
+        }
+
         final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + stationConfig.stationId + "?key="
                 + config.apiKey + "&maxInfos=" + config.maxTrains;
 
@@ -104,6 +122,94 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
+        this.cache.update(stationId, result);
         return result;
+    }
+
+    @NonNullByDefault
+    public static class Cache {
+
+        private int updateInterval;
+
+        private final Map<String, CacheLine> cache;
+
+        /**
+         * Creates a new @{link Cache}.
+         *
+         * @param updateInterval the @{code updateInterval}
+         */
+        public Cache(final int updateInterval) {
+            this.updateInterval = updateInterval;
+            this.cache = new HashMap<String, CacheLine>();
+        }
+
+        /*
+         * Updates the @{code updateInterval}.
+         *
+         * @param updateInterval the new @{code updateInterval}
+         */
+        public void setUpdateInterval(final int updateInterval) {
+            this.updateInterval = updateInterval;
+        }
+
+        /**
+         * Returns the result of the latest API call for a given station. Returns @{code null} if the latest result is
+         * out dated or the @{link CacheLine} does not exist. Not distinguishing between those two cases is sufficient,
+         * because it leads to the same handling of @{link KVVBridgeHandler}.
+         * 
+         * @param stationId
+         * @return the result of the latest API call for a given station.
+         */
+        @Nullable
+        public DepartureResult get(final String stationId) {
+            if (!this.cache.containsKey(stationId)) {
+                return null;
+            }
+
+            final CacheLine cl = this.cache.get(stationId);
+            if (cl.getEvictAfter().before(new Date())) {
+                return null;
+            }
+
+            return cl.getPayload();
+        }
+
+        public void update(final String stationId, final DepartureResult payload) {
+            if (!this.cache.containsKey(stationId)) {
+                this.cache.put(stationId, new CacheLine(payload, new Date()));
+            }
+
+            final CacheLine cl = this.cache.get(stationId);
+
+            // the eviction time is calculated by adding an offset of 60 percent of the regular update interval of
+            // the bridge handler
+            cl.update(payload, new Date(System.currentTimeMillis() + (long) (0.6 * this.updateInterval * 1000)));
+        }
+    }
+
+    @NonNullByDefault
+    public static class CacheLine {
+
+        private Date evictAfter;
+
+        private DepartureResult payload;
+
+        public CacheLine(final DepartureResult payload, final Date evictAfter) {
+            this.payload = payload;
+            this.evictAfter = evictAfter;
+        }
+
+        public Date getEvictAfter() {
+            return this.evictAfter;
+        }
+
+        public DepartureResult getPayload() {
+            return this.payload;
+        }
+
+        public void update(final DepartureResult payload, final Date evictAfter) {
+            this.payload = payload;
+            this.evictAfter = evictAfter;
+        }
     }
 }
