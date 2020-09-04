@@ -35,6 +35,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupDefinition;
 import org.eclipse.smarthome.core.thing.type.ChannelGroupType;
 import org.eclipse.smarthome.core.thing.type.ThingType;
+import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
 import org.eclipse.smarthome.core.thing.util.ThingHelper;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -297,7 +298,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
 
     @Override
     protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
-        if (!started) {
+        if (!ThingHandlerHelper.isHandlerInitialized(this)) {
             return;
         }
         if (!messageReceived || availabilityTopicsSeen) {
