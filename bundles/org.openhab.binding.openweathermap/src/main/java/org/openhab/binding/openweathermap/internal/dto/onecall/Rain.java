@@ -11,6 +11,10 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.openweathermap.internal.dto.onecall;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
  * Settings:
@@ -21,9 +25,6 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
  *
  * @author Wolfgang Klimt - Initial contribution
  */
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class Rain {
 
     @SerializedName("1h")
