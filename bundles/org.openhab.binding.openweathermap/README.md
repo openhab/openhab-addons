@@ -304,6 +304,7 @@ DateTime localForecastTomorrowUVIndexTimestamp "Timestamp of forecast [%1$tY-%1$
 Number localForecastTomorrowUVIndex "UV Index for tomorrow [%d]" { channel="openweathermap:uvindex:api:local:forecastTomorrow#uvindex" }
 ...
 ```
+
 #### One Call API version
 
 ```java
@@ -586,6 +587,7 @@ sitemap demo label="OpenWeatherMap" {
     }
 }
 ```
+
 #### One Call API version
 
 Please not that this sitemap does not cover all items of the example above.

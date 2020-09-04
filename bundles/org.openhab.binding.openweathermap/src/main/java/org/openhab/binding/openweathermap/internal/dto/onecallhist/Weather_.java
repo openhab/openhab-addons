@@ -14,7 +14,16 @@ package org.openhab.binding.openweathermap.internal.dto.onecallhist;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
+/**
+ * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
+ * Settings:
+ *   Annotation Style: GSON
+ *   Use primitive types
+ *   Use double numbers
+ *   allow additional properties
+ *
+ * @author Wolfgang Klimt - Initial contribution
+ */
 public class Weather_ {
 
     @SerializedName("id")
