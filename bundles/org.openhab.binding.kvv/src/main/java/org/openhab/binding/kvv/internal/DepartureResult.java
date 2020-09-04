@@ -26,9 +26,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class DepartureResult {
 
-    public String stopName = "";
+    public String stopName;
 
-    public List<Departure> departures = new ArrayList<Departure>();
+    public List<Departure> departures;
+
+    public DepartureResult() {
+        this.stopName = "";
+        this.departures = new ArrayList<Departure>();
+    }
 
     @Override
     public String toString() {

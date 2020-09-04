@@ -47,25 +47,21 @@ public class KVVStationHandler extends BaseThingHandler {
     @Nullable
     private KVVBridgeHandler bridgeHandler;
 
-    @Nullable
     private KVVStationConfig config;
 
     public KVVStationHandler(final Thing thing) {
         super(thing);
+        this.config = new KVVStationConfig();
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        final KVVStationConfig config = getConfigAs(KVVStationConfig.class);
-        if (config == null) {
+        this.config = getConfigAs(KVVStationConfig.class);
+        if (config.stationId == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to get station configuration");
-            return;
-        }
-        if (config.stationId == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "stationId is not set");
             return;
         }
 
@@ -92,10 +88,9 @@ public class KVVStationHandler extends BaseThingHandler {
                     ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
         }
         this.updateThing(this.editThing().withChannels(channels).build());
-        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(bridgeHandler, config), 0,
+        this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(bridgeHandler, this.config), 0,
                 bridgeHandler.getBridgeConfig().updateInterval, TimeUnit.SECONDS);
 
-        this.config = config;
         this.bridgeHandler = bridgeHandler;
         updateStatus(ThingStatus.ONLINE);
     }
@@ -141,13 +136,7 @@ public class KVVStationHandler extends BaseThingHandler {
                         "Failed to get bridge handler");
                 return;
             }
-            final KVVStationConfig config = this.config;
-            if (config == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Failed to get station configuration");
-                return;
-            }
-            new UpdateTask(bridgeHandler, config).run();
+            new UpdateTask(bridgeHandler, this.config).run();
         }
     }
 

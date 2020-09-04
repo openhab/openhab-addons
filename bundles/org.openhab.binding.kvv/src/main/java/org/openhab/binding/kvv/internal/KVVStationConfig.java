@@ -13,7 +13,6 @@
 package org.openhab.binding.kvv.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Holds information parameters.
@@ -25,5 +24,9 @@ import org.eclipse.jdt.annotation.Nullable;
 public class KVVStationConfig {
 
     /** the id of the station */
-    public @Nullable String stationId;
+    public String stationId;
+
+    public KVVStationConfig() {
+        this.stationId = "";
+    }
 }

@@ -13,7 +13,6 @@
 package org.openhab.binding.kvv.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Holds information parameters.
@@ -27,9 +26,15 @@ public class KVVBridgeConfig {
     /** maximum number of traines being queried */
     public int maxTrains;
 
-    /** the update interval */
+    /** the update interval in seconds */
     public int updateInterval;
 
     /** API key of the KVV API */
-    public @Nullable String apiKey;
+    public String apiKey;
+
+    public KVVBridgeConfig() {
+        this.maxTrains = 0;
+        this.updateInterval = 10;
+        this.apiKey = "";
+    }
 }

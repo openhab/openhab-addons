@@ -43,16 +43,14 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     private final Cache cache;
 
-    @Nullable
     private KVVBridgeConfig config;
 
     public KVVBridgeHandler(final Bridge bridge) {
         super(bridge);
-        // the cache is created with a default value for the updateInterval to avoid null handling
-        this.cache = new Cache(KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL);
+        this.config = new KVVBridgeConfig();
+        this.cache = new Cache();
     }
 
-    @Nullable
     public KVVBridgeConfig getBridgeConfig() {
         return this.config;
     }
@@ -62,7 +60,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         this.config = getConfigAs(KVVBridgeConfig.class);
-        if (this.config == null) {
+        if (this.config.apiKey == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to get bridge configuration");
             return;
@@ -91,13 +89,9 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      * @return the latest {@link DepartureResult}.
      */
     public synchronized @Nullable DepartureResult queryKVV(final KVVStationConfig stationConfig) {
-        if (stationConfig.stationId == null) {
-            return null;
-        }
-        final String stationId = stationConfig.stationId;
 
         // is there an up-to-date value in the cache?
-        final DepartureResult cr = this.cache.get(stationId);
+        final DepartureResult cr = this.cache.get(stationConfig.stationId);
         if (cr != null) {
             return cr;
         }
@@ -122,7 +116,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        this.cache.update(stationId, result);
+        this.cache.update(stationConfig.stationId, result);
         return result;
     }
 
@@ -138,8 +132,8 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
          *
          * @param updateInterval the @{code updateInterval}
          */
-        public Cache(final int updateInterval) {
-            this.updateInterval = updateInterval;
+        public Cache() {
+            this.updateInterval = KVVBindingConstants.CACHE_DEFAULT_UPDATEINTERVAL;
             this.cache = new HashMap<String, CacheLine>();
         }
 
