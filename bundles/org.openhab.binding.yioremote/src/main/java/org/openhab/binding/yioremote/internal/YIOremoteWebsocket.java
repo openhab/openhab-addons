@@ -34,7 +34,7 @@ public class YIOremoteWebsocket {
 
     @OnWebSocketMessage
     public void onText(Session session, String message) throws IOException {
-        logger.debug("Message received from server:" + message);
+        logger.debug("Message received from server: {}", message);
         string_receivedmessage = message;
         JsonObject_recievedJsonObject = convert_StringtoJsonObject(message);
         if (decode_receivedMessage(JsonObject_recievedJsonObject)) {
@@ -132,7 +132,7 @@ public class YIOremoteWebsocket {
                         boolean_result = true;
                     }
                 } else {
-                    logger.debug("No known message1");
+                    logger.debug("No known message {}", string_receivedmessage);
                     boolean_heartbeat = false;
                     boolean_result = false;
                 }
@@ -144,17 +144,17 @@ public class YIOremoteWebsocket {
                 } else {
                     received_ircode = "";
                 }
-                logger.debug("ir_receive message" + received_ircode);
+                logger.debug("ir_receive message {}", received_ircode);
                 boolean_heartbeat = true;
                 boolean_result = true;
             } else {
-                logger.debug("No known message2");
+                logger.debug("No known message {}", string_receivedmessage);
                 boolean_heartbeat = false;
                 boolean_result = false;
             }
 
         } else {
-            logger.debug("No known message1");
+            logger.debug("No known message {}", string_receivedmessage);
             boolean_heartbeat = false;
             boolean_result = false;
         }
@@ -170,8 +170,8 @@ public class YIOremoteWebsocket {
         if (jsonElement instanceof JsonObject) {
             result = jsonElement.getAsJsonObject();
         } else {
-            logger.debug(jsonString + " is not valid JSON stirng");
-            throw new IllegalArgumentException(jsonString + " is not valid JSON stirng");
+            logger.debug("{} is not valid JSON stirng", jsonString);
+            throw new IllegalArgumentException(jsonString + "{} is not valid JSON stirng");
         }
         return result;
     }

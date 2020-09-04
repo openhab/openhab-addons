@@ -24,7 +24,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -32,7 +31,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEHANDLESTATUS;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEMESSAGETYPE;
 import org.slf4j.Logger;
@@ -95,7 +93,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                 YIOremote_DockwebSocketClient.start();
                 logger.debug("Started websocket Client");
             } catch (Exception e) {
-                logger.warn("Web socket start failed", e);
+                logger.warn("Web socket start failed {}", e);
                 // throw new IOException("Web socket start failed");
             }
             try {
@@ -127,17 +125,17 @@ public class YIOremoteHandler extends BaseThingHandler {
                     }
 
                 } catch (IllegalArgumentException e) {
-                    logger.warn("JSON convertion failure " + e.toString(), e);
+                    logger.warn("JSON convertion failure {}", e);
                 }
 
             } catch (
 
             Exception e) {
-                logger.warn("Web socket connect failed " + e.toString(), e);
+                logger.warn("Web socket connect failed {}", e);
                 // throw new IOException("Web socket start failed");
             }
         } catch (URISyntaxException e) {
-            logger.debug("Initialize web socket failed", e);
+            logger.debug("Initialize web socket failed {}", e);
         }
 
         if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
@@ -158,14 +156,18 @@ public class YIOremoteHandler extends BaseThingHandler {
                             updateChannelString(GROUP_OUTPUT, YIODOCKRECEIVEDIRCODE,
                                     YIOremote_DockwebSocketClientSocket.get_string_received_ircode());
                         } else {
+                            logger.warn("Connection lost no ping from YIO DOCK");
                             YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Connection lost no ping from YIO DOCK");
+                            pollingJob.cancel(true);
                         }
                     } else {
+                        logger.warn("Connection lost no ping from YIO DOCK");
                         YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                 "Connection lost no ping from YIO DOCK");
+                        pollingJob.cancel(true);
                     }
                 }
             };
@@ -206,16 +208,6 @@ public class YIOremoteHandler extends BaseThingHandler {
         pollingJob.cancel(true);
     }
 
-    protected void updateThingChannelState(String channelId, State state) {
-        Channel channel = thing.getChannel(channelId);
-        if (channel != null) {
-            updateState(channel.getUID(), state);
-        } else {
-            logger.debug("Channel '{}' in thing '{}' does not exist, recreating thing.", channelId, thing.getUID());
-            // createChannel(channelId);
-        }
-    }
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
 
@@ -237,7 +229,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                 }
 
             } else {
-                logger.debug("YIOremoteHandler not authenticated");
+                logger.warn("YIOremoteHandler not authenticated");
             }
 
             // TODO: handle command
@@ -247,21 +239,22 @@ public class YIOremoteHandler extends BaseThingHandler {
             // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
             // "Could not control device at IP address x.x.x.x");
         } else if (YIODOCKSENDIRCODE.equals(channelUID.getIdWithoutGroup())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-                logger.debug("YIOremoteHandler not authenticated");
-            }
-            logger.debug("YIODOCKSENDIRCODE procedure: " + command.toString());
-            send_ircode = command.toString();
-            if (send_ircode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
-                YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.IRSEND, send_ircode);
+            if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
+                if (command instanceof RefreshType) {
+                    // TODO: handle data refresh
+                    // logger.warn("YIOremoteHandler not authenticated");
+                }
+                logger.debug("YIODOCKSENDIRCODE procedure: {}", command.toString());
+                send_ircode = command.toString();
+                if (send_ircode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                    YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.IRSEND, send_ircode);
+                } else {
+                    logger.warn("Wrong IR code Format {}", send_ircode);
+                    send_ircode = "";
+                }
             } else {
-                send_ircode = "";
-                logger.warn("Wrong IR code Format" + send_ircode);
+                logger.warn("YIOremoteHandler not authenticated");
             }
-
-        } else {
-            logger.debug("YIOremoteHandler not authenticated");
         }
     }
 
@@ -274,7 +267,7 @@ public class YIOremoteHandler extends BaseThingHandler {
         if (jsonElement instanceof JsonObject) {
             result = jsonElement.getAsJsonObject();
         } else {
-            logger.debug(jsonString + " is not valid JSON stirng");
+            logger.debug("{} is not valid JSON stirng", jsonString);
             throw new IllegalArgumentException(jsonString + " is not valid JSON stirng");
         }
         return result;
