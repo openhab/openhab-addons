@@ -33,13 +33,13 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
- * KVVStationHandler represents a station and holds information about the trains
+ * KVVStopHandler represents a stop and holds information about the trains
  * which will arrive soon.
  *
  * @author Maximilian Hess - Initial contribution
  */
 @NonNullByDefault
-public class KVVStationHandler extends BaseThingHandler {
+public class KVVStopHandler extends BaseThingHandler {
 
     @Nullable
     private ScheduledFuture<?> pollingJob;
@@ -47,21 +47,21 @@ public class KVVStationHandler extends BaseThingHandler {
     @Nullable
     private KVVBridgeHandler bridgeHandler;
 
-    private KVVStationConfig config;
+    private KVVStopConfig config;
 
-    public KVVStationHandler(final Thing thing) {
+    public KVVStopHandler(final Thing thing) {
         super(thing);
-        this.config = new KVVStationConfig();
+        this.config = new KVVStopConfig();
     }
 
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        this.config = getConfigAs(KVVStationConfig.class);
-        if (config.stationId == "") {
+        this.config = getConfigAs(KVVStopConfig.class);
+        if (config.stopId == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Failed to get station configuration");
+                    "Failed to get stop configuration");
             return;
         }
 
@@ -151,16 +151,16 @@ public class KVVStationHandler extends BaseThingHandler {
 
         private final KVVBridgeHandler bridgeHandler;
 
-        private final KVVStationConfig stationConfig;
+        private final KVVStopConfig stopConfig;
 
-        public UpdateTask(final KVVBridgeHandler bridgeHandler, final KVVStationConfig stationConfig) {
+        public UpdateTask(final KVVBridgeHandler bridgeHandler, final KVVStopConfig stopConfig) {
             this.bridgeHandler = bridgeHandler;
-            this.stationConfig = stationConfig;
+            this.stopConfig = stopConfig;
         }
 
         @Override
         public void run() {
-            final DepartureResult departures = this.bridgeHandler.queryKVV(this.stationConfig);
+            final DepartureResult departures = this.bridgeHandler.queryKVV(this.stopConfig);
             if (departures != null) {
                 setDepartures(departures, this.bridgeHandler.getBridgeConfig().maxTrains);
             }

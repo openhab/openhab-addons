@@ -47,7 +47,7 @@ public class KVVHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new KVVBridgeHandler((Bridge) thing);
         } else if (THING_TYPE_STATION.equals(thingTypeUID)) {
-            return new KVVStationHandler(thing);
+            return new KVVStopHandler(thing);
         }
 
         return null;

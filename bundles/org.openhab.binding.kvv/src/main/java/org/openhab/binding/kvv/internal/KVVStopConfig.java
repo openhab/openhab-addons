@@ -21,12 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class KVVStationConfig {
+public class KVVStopConfig {
 
-    /** the id of the station */
-    public String stationId;
+    /** the id of the stop */
+    public String stopId;
 
-    public KVVStationConfig() {
-        this.stationId = "";
+    public KVVStopConfig() {
+        this.stopId = "";
     }
 }

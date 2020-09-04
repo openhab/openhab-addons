@@ -32,8 +32,8 @@ public class KVVBindingConstants {
     /** the thing type of the bridges */
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    /** the thing type of the stations */
-    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "station");
+    /** the thing type of the stop */
+    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "stop");
 
     /** all of the supported types */
     public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STATION);

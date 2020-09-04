@@ -67,9 +67,9 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         }
 
         // test API by doing a dummy request to ensure it is available
-        final KVVStationConfig stationConfig = new KVVStationConfig();
-        stationConfig.stationId = "de:8212:6";
-        final DepartureResult departures = this.queryKVV(stationConfig);
+        final KVVStopConfig stopConfig = new KVVStopConfig();
+        stopConfig.stopId = "de:8212:6";
+        final DepartureResult departures = this.queryKVV(stopConfig);
         if (departures == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
             return;
@@ -88,15 +88,15 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
      *
      * @return the latest {@link DepartureResult}.
      */
-    public synchronized @Nullable DepartureResult queryKVV(final KVVStationConfig stationConfig) {
+    public synchronized @Nullable DepartureResult queryKVV(final KVVStopConfig stopConfig) {
 
         // is there an up-to-date value in the cache?
-        final DepartureResult cr = this.cache.get(stationConfig.stationId);
+        final DepartureResult cr = this.cache.get(stopConfig.stopId);
         if (cr != null) {
             return cr;
         }
 
-        final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + stationConfig.stationId + "?key="
+        final String url = KVVBindingConstants.API_URL + "/departures/bystop/" + stopConfig.stopId + "?key="
                 + config.apiKey + "&maxInfos=" + config.maxTrains;
 
         String data;
@@ -116,7 +116,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        this.cache.update(stationConfig.stationId, result);
+        this.cache.update(stopConfig.stopId, result);
         return result;
     }
 
@@ -147,20 +147,20 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         }
 
         /**
-         * Returns the result of the latest API call for a given station. Returns @{code null} if the latest result is
+         * Returns the result of the latest API call for a given stop. Returns @{code null} if the latest result is
          * out dated or the @{link CacheLine} does not exist. Not distinguishing between those two cases is sufficient,
          * because it leads to the same handling of @{link KVVBridgeHandler}.
          * 
-         * @param stationId
-         * @return the result of the latest API call for a given station.
+         * @param stopId
+         * @return the result of the latest API call for a given stop.
          */
         @Nullable
-        public DepartureResult get(final String stationId) {
-            if (!this.cache.containsKey(stationId)) {
+        public DepartureResult get(final String stopId) {
+            if (!this.cache.containsKey(stopId)) {
                 return null;
             }
 
-            final CacheLine cl = this.cache.get(stationId);
+            final CacheLine cl = this.cache.get(stopId);
             if (cl.getEvictAfter().before(new Date())) {
                 return null;
             }
@@ -168,12 +168,12 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
             return cl.getPayload();
         }
 
-        public void update(final String stationId, final DepartureResult payload) {
-            if (!this.cache.containsKey(stationId)) {
-                this.cache.put(stationId, new CacheLine(payload, new Date()));
+        public void update(final String stopId, final DepartureResult payload) {
+            if (!this.cache.containsKey(stopId)) {
+                this.cache.put(stopId, new CacheLine(payload, new Date()));
             }
 
-            final CacheLine cl = this.cache.get(stationId);
+            final CacheLine cl = this.cache.get(stopId);
 
             // the eviction time is calculated by adding an offset of 60 percent of the regular update interval of
             // the bridge handler
