@@ -447,6 +447,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |state        |String   |yes      |Roller state: open/close/stop                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
+|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                      |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
@@ -479,6 +480,7 @@ For this the binding aggregates the power consumption of both relays and include
 |          |state        |String   |yes      |Roller state: open/close/stop                                                        |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                 |
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
+|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
 |meter     |             |         |         |See group meter1 for Shelly 2                                                        |
 
 The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
