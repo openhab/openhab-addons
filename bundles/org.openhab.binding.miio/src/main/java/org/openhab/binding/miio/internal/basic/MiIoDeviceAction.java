@@ -103,11 +103,7 @@ public class MiIoDeviceAction {
     }
 
     public boolean isMiOtAction() {
-        if (aiid != null && siid != null && (getAiid() != 0 || getSiid() != 0)) {
-            return true;
-        } else {
-            return false;
-        }
+        return aiid != null && siid != null && (getAiid() != 0 || getSiid() != 0);
     }
 
     public @Nullable MiIoDeviceActionCondition getCondition() {

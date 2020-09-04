@@ -127,7 +127,7 @@ public class ActionConditions {
                     JsonObject matchCondition = conditionArray.get(i).getAsJsonObject();
                     String matchvalue = matchCondition.get("matchValue").getAsString();
                     boolean matching = command.toString().matches(matchvalue);
-                    LOGGER.trace("Matching '{}' with '{}': {}", matchvalue, command.toString(), matching);
+                    LOGGER.trace("Matching '{}' with '{}': {}", matchvalue, command, matching);
                     if (matching) {
                         if (matchCondition.has("returnValue")) {
                             return matchCondition.get("returnValue");
