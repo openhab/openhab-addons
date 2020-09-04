@@ -65,7 +65,8 @@ public class JablotronHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            JablotronBridgeHandler handler = new JablotronBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient());
+            JablotronBridgeHandler handler = new JablotronBridgeHandler((Bridge) thing,
+                    httpClientFactory.getCommonHttpClient());
             registerItemDiscoveryService(handler);
             return handler;
         }
@@ -102,6 +103,5 @@ public class JablotronHandlerFactory extends BaseThingHandlerFactory {
         discoveryService.activate(null);
         this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
                 .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-
     }
 }

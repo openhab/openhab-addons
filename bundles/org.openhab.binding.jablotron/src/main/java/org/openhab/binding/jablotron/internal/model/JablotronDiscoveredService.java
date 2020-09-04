@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.jablotron.internal.model;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link JablotronDiscoveredService} class defines the discovered service

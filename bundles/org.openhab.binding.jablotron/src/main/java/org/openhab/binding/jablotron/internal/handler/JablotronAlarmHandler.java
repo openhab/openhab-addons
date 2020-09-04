@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -37,6 +36,8 @@ import org.openhab.binding.jablotron.internal.config.JablotronDeviceConfig;
 import org.openhab.binding.jablotron.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link JablotronAlarmHandler} is responsible for handling commands, which are
@@ -173,14 +174,15 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         updateState(CHANNEL_LAST_EVENT_CLASS, new StringType(event.getIconType()));
         updateState(CHANNEL_LAST_EVENT_INVOKER, new StringType(event.getInvokerName()));
 
-        //oasis does not have sections
+        // oasis does not have sections
         if (getThing().getChannel(CHANNEL_LAST_EVENT_SECTION) != null) {
             updateState(CHANNEL_LAST_EVENT_SECTION, new StringType(event.getSectionName()));
         }
     }
 
     public ZonedDateTime getZonedDateTime(String date) {
-        return ZonedDateTime.parse(date.substring(0, 22) + ":" + date.substring(22, 24), DateTimeFormatter.ISO_DATE_TIME);
+        return ZonedDateTime.parse(date.substring(0, 22) + ":" + date.substring(22, 24),
+                DateTimeFormatter.ISO_DATE_TIME);
     }
 
     protected @Nullable JablotronControlResponse sendUserCode(String section, String key, String status, String code) {

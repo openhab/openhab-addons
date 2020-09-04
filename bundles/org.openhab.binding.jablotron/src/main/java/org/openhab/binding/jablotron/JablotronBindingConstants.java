@@ -63,6 +63,6 @@ public class JablotronBindingConstants {
     public static final String AUTHENTICATION_CHALLENGE = "Authentication challenge without WWW-Authenticate header";
 
     // supported thing types for discovery
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(Arrays.asList(THING_TYPE_OASIS,
-            THING_TYPE_JA100, THING_TYPE_JA100F));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
+            Arrays.asList(THING_TYPE_OASIS, THING_TYPE_JA100, THING_TYPE_JA100F));
 }

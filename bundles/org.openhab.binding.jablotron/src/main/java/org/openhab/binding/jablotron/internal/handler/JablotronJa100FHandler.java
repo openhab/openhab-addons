@@ -86,7 +86,8 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
     private void createPGChannel(String name, String label) {
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label)
+                .build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -94,7 +95,8 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
     private void createStateChannel(String name, String label) {
         ChannelTypeUID alarmStatus = new ChannelTypeUID("jablotron", "ja100f_alarm_state");
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label).withType(alarmStatus).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label)
+                .withType(alarmStatus).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -177,5 +179,4 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             }
         }
     }
-
 }

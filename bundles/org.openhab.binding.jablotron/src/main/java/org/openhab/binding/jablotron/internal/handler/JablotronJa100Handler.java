@@ -73,7 +73,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     private void createTempChannel(String name, String label) {
         ChannelTypeUID temperature = new ChannelTypeUID("jablotron", "temperature");
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature").withLabel(label).withType(temperature).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature")
+                .withLabel(label).withType(temperature).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -81,14 +82,16 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     private void createThermostatChannel(String name, String label) {
         ChannelTypeUID temperature = new ChannelTypeUID("jablotron", "thermostat");
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature").withLabel(label).withType(temperature).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Number:Temperature")
+                .withLabel(label).withType(temperature).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
 
     private void createPGMChannel(String name, String label) {
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "Switch").withLabel(label)
+                .build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -96,7 +99,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     private void createStateChannel(String name, String label) {
         ChannelTypeUID alarmStatus = new ChannelTypeUID("jablotron", "alarm_state");
         ThingBuilder thingBuilder = editThing();
-        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label).withType(alarmStatus).build();
+        Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), name), "String").withLabel(label)
+                .withType(alarmStatus).build();
         thingBuilder.withChannel(channel);
         updateThing(thingBuilder.build());
     }
@@ -112,9 +116,9 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
             processThermometer(segment);
         } else if (segmentId.startsWith("THERMOSTAT_")) {
             processThermostat(segment);
-        }
-        else {
-            logger.debug("Unknown segment received: {} with state: {}", segment.getSegmentId(), segment.getSegmentState());
+        } else {
+            logger.debug("Unknown segment received: {} with state: {}", segment.getSegmentId(),
+                    segment.getSegmentState());
         }
     }
 
@@ -188,7 +192,8 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
 
     public synchronized void controlSTATESection(String section, String status) {
         logger.debug("Controlling section: {} with status: {}", section, status);
-        JablotronControlResponse response = sendUserCode(section, section.toLowerCase().replace("state", "section"), status, thingConfig.getCode());
+        JablotronControlResponse response = sendUserCode(section, section.toLowerCase().replace("state", "section"),
+                status, thingConfig.getCode());
 
         updateAlarmStatus();
         if (response == null) {

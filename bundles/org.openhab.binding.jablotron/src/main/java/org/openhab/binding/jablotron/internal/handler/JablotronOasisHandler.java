@@ -86,7 +86,8 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
                 updateState(CHANNEL_STATUS_PGY, newState);
                 break;
             default:
-                logger.debug("Unknown segment received: {} with state: {}", segment.getSegmentId(), segment.getSegmentState());
+                logger.debug("Unknown segment received: {} with state: {}", segment.getSegmentId(),
+                        segment.getSegmentState());
         }
     }
 

@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.jablotron.internal.model.ja100f;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link JablotronState} class defines the state object for the
@@ -24,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class JablotronState {
 
-    @SerializedName(value="cloud-component-id", alternate="component-id")
+    @SerializedName(value = "cloud-component-id", alternate = "component-id")
     String cloudComponentId = "";
 
     String state = "";

@@ -15,8 +15,9 @@ package org.openhab.binding.jablotron.internal.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link JablotronData} class defines the data object

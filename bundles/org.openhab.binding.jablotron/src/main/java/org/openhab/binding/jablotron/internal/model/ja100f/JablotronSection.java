@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.jablotron.internal.model.ja100f;
 
-import com.google.gson.annotations.SerializedName;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link JablotronSection} class defines the section object for the
