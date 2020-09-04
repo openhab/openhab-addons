@@ -37,7 +37,7 @@
 
 
 	<channel-type id="waterTemp">
-		<item-type>Number:Temperature</item-type>
+		<item-type>Number</item-type>
 		<label>Water Temp</label>
 		<description>Water Temp</description>
 		<state readOnly="true"/>

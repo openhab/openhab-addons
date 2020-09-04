@@ -18,15 +18,15 @@ package org.openhab.binding.haywardomnilogic.internal.hayward;
  * @author Matt Myers - Initial Contribution
  */
 public enum HaywardTypeToRequest {
-    Backyard,
+    BACKYARD,
     BOW,
-    Chlorinator,
-    ColorLogic,
+    CHLORINATOR,
+    COLORLOGIC,
     CSAD,
-    Filter,
-    Heater,
-    Pump,
-    Relay,
-    Sensor,
-    VirtualHeater
+    FILTER,
+    HEATER,
+    PUMP,
+    RELAY,
+    SENSOR,
+    VIRTUALHEATER
 }

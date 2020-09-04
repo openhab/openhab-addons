@@ -44,22 +44,18 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
 
     @Override
     public void activate(Map<String, Object> configProperties) {
-        logger.debug("Hayward OmniLogix Binding Activated");
         super.activate(configProperties);
         this.bridge.addListener(this);
     }
 
     @Override
     public void deactivate() {
-        logger.debug("Hayward OmniLogix Binding Deactivated");
         super.deactivate();
         this.bridge.removeListener(this);
     }
 
-    // Paper UI manual scan triggers this routine
     @Override
     protected void startScan() {
-        this.bridge.startScan();
     }
 
     @Override
@@ -75,9 +71,10 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Backyard.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BACKYARD.toString());
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -90,7 +87,8 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.BOW.toString());
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -101,11 +99,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Chlorinator.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.CHLORINATOR.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -116,11 +115,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.ColorLogic.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.COLORLOGIC.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -132,11 +132,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Filter.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -148,7 +149,7 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Filter.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, property1);
@@ -156,7 +157,8 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
         properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, property3);
         properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPRPM, property4);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -167,11 +169,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Heater.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.HEATER.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -183,7 +186,7 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Pump.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.PUMP.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         properties.put(HaywardBindingConstants.PROPERTY_PUMP_MINPUMPSPEED, property1);
@@ -191,7 +194,8 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
         properties.put(HaywardBindingConstants.PROPERTY_PUMP_MINPUMPRPM, property3);
         properties.put(HaywardBindingConstants.PROPERTY_PUMP_MAXPUMPRPM, property4);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -202,11 +206,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Relay.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.RELAY.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -217,11 +222,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.Sensor.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.SENSOR.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 
@@ -232,11 +238,12 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
                 Integer.toString(systemID));
         Map<String, Object> properties = new HashMap<>();
         properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.VirtualHeater.toString());
+        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.VIRTUALHEATER.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withLabel("Hayward " + label).withProperties(properties).build();
+                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
+                .withProperties(properties).build();
         thingDiscovered(result);
     }
 }

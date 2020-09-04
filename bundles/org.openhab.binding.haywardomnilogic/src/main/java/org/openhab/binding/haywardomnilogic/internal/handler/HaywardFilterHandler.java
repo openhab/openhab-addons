@@ -70,8 +70,6 @@ public class HaywardFilterHandler extends BaseThingHandler {
         Channel chan = getThing().getChannel(channelID);
         if (chan != null) {
             Map<String, String> properties = editProperties();
-            // properties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceInfo.getSerialNumber());
-            // properties.put(Thing.PROPERTY_FIRMWARE_VERSION, deviceInfo.getFirmwareVersion());
             updateProperties(properties);
             logger.trace("Updated Hayward Filter {} {} to: {}", systemID, channelID, data);
         }

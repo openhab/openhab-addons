@@ -44,7 +44,7 @@
 	</channel-type>
 
 	<channel-type id="timedPercent">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Salt Output (%)</label>
 		<description>Current salt output setting for the chlorinator (%).</description>
 		<state min="0" max="100" step="1.0" pattern="%1f" readOnly="false"/>
