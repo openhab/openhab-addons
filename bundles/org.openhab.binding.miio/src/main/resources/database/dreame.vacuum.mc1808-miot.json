@@ -9,10 +9,53 @@
             {
                 "property": "",
                 "friendlyName": "Vacuum Action",
-                "channel": "VacuumAction",
+                "channel": "vacuumaction",
                 "type": "String",
                 "refresh": false,
                 "actions": [
+                    {
+                        "command": "action",
+                        "parameterType": "EMPTY",
+                        "siid": 18,
+                        "aiid": 1,
+                        "condition": {
+                            "name": "matchValue",
+                            "parameters": [
+                                {
+                                    "matchValue": "vacuum",
+                                    "returnValue": [
+                                        {
+                                            "piid": 1,
+                                            "value": 2
+                                        }
+                                    ]
+                                },
+                                {
+                                    "matchValue": "start",
+                                    "returnValue": [
+                                        {
+                                            "piid": 1,
+                                            "value": 2
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "command": "action",
+                        "parameterType": "EMPTY",
+                        "siid": 18,
+                        "aiid": 2,
+                        "condition": {
+                            "name": "matchValue",
+                            "parameters": [
+                                {
+                                    "matchValue": "stop"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "command": "action",
                         "parameterType": "EMPTY",
@@ -22,10 +65,7 @@
                             "name": "matchValue",
                             "parameters": [
                                 {
-                                    "matchValue": "vacuum"
-                                },
-                                {
-                                    "matchValue": "start"
+                                    "matchValue": "sweep"
                                 }
                             ]
                         }
@@ -39,7 +79,21 @@
                             "name": "matchValue",
                             "parameters": [
                                 {
-                                    "matchValue": "stop"
+                                    "matchValue": "stopsweep"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "command": "action",
+                        "parameterType": "EMPTY",
+                        "siid": 2,
+                        "aiid": 1,
+                        "condition": {
+                            "name": "matchValue",
+                            "parameters": [
+                                {
+                                    "matchValue": "home"
                                 }
                             ]
                         }
