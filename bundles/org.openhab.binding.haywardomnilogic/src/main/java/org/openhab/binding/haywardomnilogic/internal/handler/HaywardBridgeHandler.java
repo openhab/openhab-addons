@@ -703,8 +703,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             // Enable
             data = evaluateXPath("//Heater/@enable", xmlResponse);
 
-            handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_HEATER_ENABLE, data.get(0));
+            if (data.get(0).equals("yes")) {
+                handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
+                        HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
+            } else if (data.get(0).equals("no")) {
+                handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
+                        HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
+            }
 
             // ******************
             // ***Relays***
@@ -749,8 +754,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             // Enable
             data = evaluateXPath("//VirtualHeater/@enable", xmlResponse);
 
-            handleHaywardTelemetry(HaywardTypeToRequest.VIRTUALHEATER, systemIDs.get(0),
-                    HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, data.get(0));
+            if (data.get(0).equals("yes")) {
+                handleHaywardTelemetry(HaywardTypeToRequest.VIRTUALHEATER, systemIDs.get(0),
+                        HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "1");
+            } else if (data.get(0).equals("no")) {
+                handleHaywardTelemetry(HaywardTypeToRequest.VIRTUALHEATER, systemIDs.get(0),
+                        HaywardBindingConstants.CHANNEL_VIRTUALHEATER_ENABLE, "0");
+            }
         } catch (Exception e) {
             logger.error("Unable to getTelemetry from Hayward's server: {} with username: {}", config.hostname,
                     config.username, e);
@@ -839,42 +849,42 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             if (type == HaywardTypeToRequest.BACKYARD) {
                 HaywardBackyardHandler handler = (HaywardBackyardHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateBackyardData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.BOW) {
                 HaywardBowHandler handler = (HaywardBowHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateBowData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.FILTER) {
                 HaywardFilterHandler handler = (HaywardFilterHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateFilterData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.HEATER) {
                 HaywardHeaterHandler handler = (HaywardHeaterHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateHeaterData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.COLORLOGIC) {
                 HaywardColorLogicHandler handler = (HaywardColorLogicHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateColorLogicData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.CHLORINATOR) {
                 HaywardChlorinatorHandler handler = (HaywardChlorinatorHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateChlorinatorData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.RELAY) {
                 HaywardRelayHandler handler = (HaywardRelayHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateRelayData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             } else if (type == HaywardTypeToRequest.VIRTUALHEATER) {
                 HaywardVirtualHeaterHandler handler = (HaywardVirtualHeaterHandler) thing.getHandler();
                 if (handler != null) {
-                    handler.updateVirtualHeaterData(systemID, channelID, data);
+                    handler.updateData(systemID, channelID, data);
                 }
             }
         }

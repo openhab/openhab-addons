@@ -15,16 +15,10 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.haywardomnilogic.internal.HaywardBindingConstants;
+import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,36 +28,11 @@ import org.slf4j.LoggerFactory;
  * @author Matt Myers - Initial Contribution
  */
 @NonNullByDefault
-public class HaywardFilterHandler extends BaseThingHandler {
+public class HaywardFilterHandler extends HaywardThingHandler {
     private final Logger logger = LoggerFactory.getLogger(HaywardFilterHandler.class);
 
     public HaywardFilterHandler(Thing thing) {
         super(thing);
-    }
-
-    @Override
-    public void initialize() {
-        updateStatus(ThingStatus.ONLINE);
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        if (!(command instanceof RefreshType)) {
-            String systemID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_SYSTEM_ID);
-            String poolID = getThing().getProperties().get(HaywardBindingConstants.PROPERTY_BOWID);
-            HaywardBridgeHandler haywardOmniLogixBridgeHandler = getHaywardOmniLogixBridgeHandler();
-            if (haywardOmniLogixBridgeHandler != null) {
-                haywardOmniLogixBridgeHandler.haywardCommand(channelUID, command, systemID, poolID);
-            }
-        }
-    }
-
-    public void updateFilterData(String systemID, String channelID, String data) {
-        Channel chan = getThing().getChannel(channelID);
-        if (chan != null) {
-            updateState(chan.getUID(), new DecimalType(data));
-            logger.trace("Updated Hayward Filter {} {} to: {}", systemID, channelID, data);
-        }
     }
 
     public void setFilterProperty(String systemID, String channelID, String data) {
@@ -81,10 +50,5 @@ public class HaywardFilterHandler extends BaseThingHandler {
             updateState(chan.getUID(), new DecimalType(data));
             logger.trace("Updated Hayward Filter {} {} to: {}", systemID, channelID, data);
         }
-    }
-
-    @SuppressWarnings("null")
-    private @Nullable HaywardBridgeHandler getHaywardOmniLogixBridgeHandler() {
-        return (HaywardBridgeHandler) getBridge().getHandler();
     }
 }
