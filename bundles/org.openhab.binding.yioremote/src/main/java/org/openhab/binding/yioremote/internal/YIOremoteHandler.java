@@ -67,16 +67,8 @@ public class YIOremoteHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
+        logger.debug("Start initializing!");
         config = getConfigAs(YIOremoteConfiguration.class);
-
-        // TODO: Initialize the handler.
-        // The framework requires you to return from this method quickly. Also, before leaving this method a thing
-        // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
-        // case you can decide it directly.
-        // In case you can not decide the thing status directly (e.g. for long running connection handshake using WAN
-        // access or similar) you should set status UNKNOWN here and then decide the real status asynchronously in the
-        // background.
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
         // the framework is then able to reuse the resources from the thing handler initialization.
@@ -143,18 +135,23 @@ public class YIOremoteHandler extends BaseThingHandler {
             Runnable heartbeatpolling = new Runnable() {
                 @Override
                 public void run() {
-                    if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
-                        YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
-                        try {
+                    try {
+                        if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
+                            YIOremote_DockwebSocketClientSocket.sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
+
                             Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-                        if (YIOremote_DockwebSocketClientSocket.get_boolean_heartbeat()) {
-                            logger.debug("heartbeat ok");
-                            updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
-                                    YIOremote_DockwebSocketClientSocket.get_string_receivedstatus());
+
+                            if (YIOremote_DockwebSocketClientSocket.get_boolean_heartbeat()) {
+                                logger.debug("heartbeat ok");
+                                updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
+                                        YIOremote_DockwebSocketClientSocket.get_string_receivedstatus());
+                            } else {
+                                logger.warn("Connection lost no ping from YIO DOCK");
+                                YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                        "Connection lost no ping from YIO DOCK");
+                                pollingJob.cancel(true);
+                            }
                         } else {
                             logger.warn("Connection lost no ping from YIO DOCK");
                             YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
@@ -162,45 +159,22 @@ public class YIOremoteHandler extends BaseThingHandler {
                                     "Connection lost no ping from YIO DOCK");
                             pollingJob.cancel(true);
                         }
-                    } else {
-                        logger.warn("Connection lost no ping from YIO DOCK");
-                        YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Connection lost no ping from YIO DOCK");
-                        pollingJob.cancel(true);
+                    } catch (InterruptedException e) {
+                        logger.warn("Error during initializing the WebSocket polling Thread {}", e);
                     }
                 }
             };
-            pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30, TimeUnit.SECONDS);
+            try {
+                pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30, TimeUnit.SECONDS);
+            } catch (Exception e) {
+                logger.warn("Error during starting the WebSocket polling Thread {}", e);
+            }
         } else {
             updateStatus(ThingStatus.OFFLINE);
         }
-        /*
-         * if (YIOremote_DockwebSocketClientSession != null) {
-         * updateStatus(ThingStatus.ONLINE);
-         * } else {
-         * updateStatus(ThingStatus.OFFLINE);
-         * }
-         * // Example for background initialization:
-         * /*
-         * scheduler.execute(() -> {
-         * boolean thingReachable = true; // <background task with long running initialization here>
-         * // when done do:
-         * if (thingReachable) {
-         * updateStatus(ThingStatus.ONLINE);
-         * } else {
-         * updateStatus(ThingStatus.OFFLINE);
-         * }
-         * });
-         */
 
         logger.debug("Finished initializing!");
 
-        // Note: When initialization can NOT be done set the status with more details for further
-        // analysis. See also class ThingStatusDetail for all available status details.
-        // Add a description to give user information to understand why thing does not work as expected. E.g.
-        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-        // "Can not access device as username and/or password are invalid");
     }
 
     @Override
@@ -232,12 +206,6 @@ public class YIOremoteHandler extends BaseThingHandler {
                 logger.warn("YIOremoteHandler not authenticated");
             }
 
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
         } else if (YIODOCKSENDIRCODE.equals(channelUID.getIdWithoutGroup())) {
             if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
                 if (command instanceof RefreshType) {
