@@ -21,14 +21,14 @@ import com.google.gson.JsonParser;
 public class YIOremoteWebsocket {
 
     private Session session;
-    private @Nullable String string_receivedmessage;
+    private String string_receivedmessage = "";
     private final Logger logger = LoggerFactory.getLogger(YIOremoteHandler.class);
     private @Nullable JsonObject JsonObject_recievedJsonObject;
     private boolean boolean_authentication_required = false;
     private boolean boolean_heartbeat = false;
     private boolean boolean_authentication_ok = false;
     private boolean boolean_sendir_status = false;
-    private String received_ircode = "";
+    private String string_receivedstatus = "";
 
     CountDownLatch latch = new CountDownLatch(1);
 
@@ -36,11 +36,11 @@ public class YIOremoteWebsocket {
     public void onText(Session session, String message) throws IOException {
         logger.debug("Message received from server: {}", message);
         string_receivedmessage = message;
-        JsonObject_recievedJsonObject = convert_StringtoJsonObject(message);
+        JsonObject_recievedJsonObject = convert_StringtoJsonObject(string_receivedmessage);
         if (decode_receivedMessage(JsonObject_recievedJsonObject)) {
-            logger.debug("Message decoded");
+            logger.debug("Message {} decoded", string_receivedmessage);
         } else {
-            logger.debug("Error during message decoding");
+            logger.debug("Error during message {} decoding", string_receivedmessage);
         }
     }
 
@@ -122,11 +122,13 @@ public class YIOremoteWebsocket {
                     logger.debug("ir send message");
                     if (JsonObject_recievedJsonObject.get("success").toString().equalsIgnoreCase("true")) {
                         logger.debug("ir send message true");
+                        string_receivedstatus = "Send IR Code successfully";
                         boolean_sendir_status = true;
                         boolean_heartbeat = true;
                         boolean_result = true;
                     } else {
                         logger.debug("ir send message failed");
+                        // string_receivedstatus = "Send IR Code failure";
                         boolean_sendir_status = true;
                         boolean_heartbeat = true;
                         boolean_result = true;
@@ -137,14 +139,14 @@ public class YIOremoteWebsocket {
                     boolean_result = false;
                 }
             } else if (JsonObject_recievedJsonObject.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
-                received_ircode = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
+                string_receivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
 
-                if (received_ircode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
-                    received_ircode = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
+                if (string_receivedstatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                    string_receivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
                 } else {
-                    received_ircode = "";
+                    string_receivedstatus = "";
                 }
-                logger.debug("ir_receive message {}", received_ircode);
+                logger.debug("ir_receive message {}", string_receivedstatus);
                 boolean_heartbeat = true;
                 boolean_result = true;
             } else {
@@ -194,10 +196,10 @@ public class YIOremoteWebsocket {
         return boolean_result;
     }
 
-    public String get_string_received_ircode() {
+    public String get_string_receivedstatus() {
         String string_result = "";
-        string_result = received_ircode;
-        received_ircode = "";
+        string_result = string_receivedstatus;
+        string_receivedstatus = "";
         return string_result;
     }
 

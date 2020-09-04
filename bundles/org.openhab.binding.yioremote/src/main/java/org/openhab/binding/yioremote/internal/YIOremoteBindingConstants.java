@@ -55,7 +55,7 @@ public class YIOremoteBindingConstants {
     // List of all Channel ids
     public static final String YIODOCKRECEIVERSWITCH = "yiodockreceiverswitch";
     public static final String YIODOCKSENDIRCODE = "yiodocksendircode";
-    public static final String YIODOCKRECEIVEDIRCODE = "yiodockreceivedircode";
+    public static final String YIODOCKSTATUS = "yiodockstatus";
 
     // Configuration elements
     public static final String CONFIG_YIODOCKHOSTIP = "yiodockhostip";

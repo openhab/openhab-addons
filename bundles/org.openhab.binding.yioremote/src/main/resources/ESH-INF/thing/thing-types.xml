@@ -28,7 +28,7 @@
     
     <channel-group-type id="input">
         <label>Inputs</label>
-        <description>The channels used to to send the ir code</description>
+        <description>The channels used for Input</description>
        
     <channels>
             <channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch" />
@@ -38,9 +38,9 @@
     
     <channel-group-type id="output">
         <label>Results</label>
-        <description>Results of ir code</description>
+        <description>The channels used for Input</description>
         <channels>
-    <channel id="yiodockreceivedircode" typeId="yiodockreceivedircode" />
+    <channel id="yiodockstatus" typeId="yiodockstatus" />
     </channels>
     </channel-group-type>
     
@@ -50,10 +50,10 @@
         <description>yiodockreceiverswitch</description>
     </channel-type>
     
-    <channel-type id="yiodockreceivedircode">
+    <channel-type id="yiodockstatus">
         <item-type>String</item-type>
-        <label>yiodockreceivedircode</label>
-        <description>yiodockreceivedircode</description>
+        <label>yiodockstatus</label>
+        <description>yiodockstatus</description>
     </channel-type>
     
      <channel-type id="yiodocksendircode">

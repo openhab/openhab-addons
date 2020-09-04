@@ -153,8 +153,8 @@ public class YIOremoteHandler extends BaseThingHandler {
                         }
                         if (YIOremote_DockwebSocketClientSocket.get_boolean_heartbeat()) {
                             logger.debug("heartbeat ok");
-                            updateChannelString(GROUP_OUTPUT, YIODOCKRECEIVEDIRCODE,
-                                    YIOremote_DockwebSocketClientSocket.get_string_received_ircode());
+                            updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
+                                    YIOremote_DockwebSocketClientSocket.get_string_receivedstatus());
                         } else {
                             logger.warn("Connection lost no ping from YIO DOCK");
                             YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
