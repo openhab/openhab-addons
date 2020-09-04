@@ -121,11 +121,12 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                 for (MiIoDeviceAction action : miIoBasicChannel.getActions()) {
                     @Nullable
                     JsonElement value = null;
-                    JsonArray parameters = action.getParameters();
+                    JsonArray parameters = action.getParameters().deepCopy();
                     for (int i = 0; i < action.getParameters().size(); i++) {
                         JsonElement p = action.getParameters().get(i);
                         if (p.isJsonPrimitive() && p.getAsString().toLowerCase().contains("$value$")) {
                             valuePos = i;
+                            continue;
                         }
                     }
                     String cmd = action.getCommand();
