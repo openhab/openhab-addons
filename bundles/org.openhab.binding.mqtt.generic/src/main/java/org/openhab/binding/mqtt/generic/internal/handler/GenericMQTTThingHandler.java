@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
+import org.eclipse.smarthome.core.thing.util.ThingHandlerHelper;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
@@ -187,6 +188,9 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
     @Override
     protected void updateThingStatus(boolean messageReceived, boolean availibilityTopicsSeen) {
+        if (!ThingHandlerHelper.isHandlerInitialized(this)) {
+            return;
+        }
         if (messageReceived || availibilityTopicsSeen) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
