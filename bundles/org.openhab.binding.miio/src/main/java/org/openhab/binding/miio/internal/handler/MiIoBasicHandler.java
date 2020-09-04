@@ -126,7 +126,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                         JsonElement p = action.getParameters().get(i);
                         if (p.isJsonPrimitive() && p.getAsString().toLowerCase().contains("$value$")) {
                             valuePos = i;
-                            continue;
+                            break;
                         }
                     }
                     String cmd = action.getCommand();
