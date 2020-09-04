@@ -8,9 +8,9 @@
 		<label>Device Status</label>
 		<description>Information about the device status</description>
 		<channels>
-			<channel id="alarm" typeId="alarmTrigger"/>
-			<channel id="wifiSignal" typeId="system.signal-strength"/>
-			<channel id="uptime" typeId="uptime"/>
+			<channel id="alarm" typeId="alarmTrigger" />
+			<channel id="wifiSignal" typeId="system.signal-strength" />
+			<channel id="uptime" typeId="uptime" />
 		</channels>
 	</channel-group-type>
 
@@ -49,6 +49,13 @@
 				<option value="alarm">Alarm</option>
 				<option value="ext_power">Charger connected</option>
 			</options>
+		</state>
+	</channel-type>
+	<channel-type id="deviceName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.deviceName.label</label>
+		<description>@text/channel-type.shelly.deviceName.description</description>
+		<state readOnly="true">
 		</state>
 	</channel-type>
 	<channel-type id="charger" advanced="true">

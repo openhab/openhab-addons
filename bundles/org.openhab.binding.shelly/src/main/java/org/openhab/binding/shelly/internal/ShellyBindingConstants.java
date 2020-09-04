@@ -182,6 +182,7 @@ public class ShellyBindingConstants {
 
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
+    public static final String CHANNEL_NAME = "channelName";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUT1 = "input1";
@@ -272,6 +273,7 @@ public class ShellyBindingConstants {
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
+    public static final String CHANNEL_DEVST_NAME = "deviceName";
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
     public static final String CHANNEL_DEVST_HEARTBEAT = "heartBeat";
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";

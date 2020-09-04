@@ -26,7 +26,6 @@ import java.util.TreeMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -60,6 +59,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.discovery.ShellyThingCreator;
 import org.openhab.binding.shelly.internal.util.ShellyChannelCache;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -233,7 +233,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
             return false; // force re-initialization
         }
         // Validate device mode
-        String reqMode = thingType.contains("-") ? StringUtils.substringAfter(thingType, "-") : "";
+        String reqMode = thingType.contains("-") ? ShellyUtils.substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !tmpPrf.mode.equals(reqMode)) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode");
             return false;
@@ -244,13 +244,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 tmpPrf.fwDate, tmpPrf.fwId);
         logger.debug("{}: Shelly settings info for {}: {}", thingName, tmpPrf.hostname, tmpPrf.settingsJson);
         logger.debug("{}: Device "
-                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},isPlugS:{},numMeter={},isEMeter:{})"
-                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{},hasLEDs:{}"
+                + "hasRelays:{} (numRelays={}),isRoller:{} (numRoller={}),isDimmer:{},numMeter={},isEMeter:{})"
+                + ",isSensor:{},isDS:{},hasBattery:{}{},isSense:{},isLight:{},isBulb:{},isDuo:{},isRGBW2:{},inColor:{}"
                 + ",updatePeriod:{}sec", thingName, tmpPrf.hasRelays, tmpPrf.numRelays, tmpPrf.isRoller,
-                tmpPrf.numRollers, tmpPrf.isDimmer, tmpPrf.isPlugS, tmpPrf.numMeters, tmpPrf.isEMeter, tmpPrf.isSensor,
-                tmpPrf.isDW, tmpPrf.hasBattery,
-                tmpPrf.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "", tmpPrf.isSense,
-                tmpPrf.isLight, profile.isBulb, tmpPrf.isDuo, tmpPrf.isRGBW2, tmpPrf.inColor, tmpPrf.hasLed,
+                tmpPrf.numRollers, tmpPrf.isDimmer, tmpPrf.numMeters, tmpPrf.isEMeter, tmpPrf.isSensor, tmpPrf.isDW,
+                tmpPrf.hasBattery, tmpPrf.hasBattery ? " (low battery threshold=" + config.lowBattery + "%)" : "",
+                tmpPrf.isSense, tmpPrf.isLight, profile.isBulb, tmpPrf.isDuo, tmpPrf.isRGBW2, tmpPrf.inColor,
                 tmpPrf.updatePeriod);
 
         // update thing properties
@@ -369,6 +368,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 setThingOnline();
 
                 // map status to channels
+                updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_NAME, getStringType(profile.settings.name));
                 updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
                 // if (!channelsCreated || !cache.isEnabled() || (coap.getVersion() <
@@ -931,7 +931,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
 
     public void publishState(String channelId, State value) {
         if (!stopping) {
-            updateState(channelId.contains("$") ? StringUtils.substringBefore(channelId, "$") : channelId, value);
+            updateState(channelId.contains("$") ? substringBefore(channelId, "$") : channelId, value);
         }
     }
 

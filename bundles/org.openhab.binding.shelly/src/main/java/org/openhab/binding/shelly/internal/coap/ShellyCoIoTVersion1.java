@@ -19,7 +19,6 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
@@ -31,6 +30,7 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,8 +249,8 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
         // RGBW2 reports Power_0, Power_1, Power_2, Power_3; same for VSwitch and Brightness, all of them linkted to L:0
         // we break it up to Power with L:0, Power with L:1...
         if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains("brightness"))) {
-            String newDesc = StringUtils.substringBefore(sen.desc, "_");
-            String newLink = StringUtils.substringAfter(sen.desc, "_");
+            String newDesc = substringBefore(sen.desc, "_");
+            String newLink = ShellyUtils.substringAfter(sen.desc, "_");
             sen.desc = newDesc;
             sen.links = newLink;
             if (!blkMap.containsKey(sen.links)) {

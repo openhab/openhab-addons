@@ -19,7 +19,6 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -32,6 +31,7 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,8 +191,10 @@ public class ShellyCoIoTProtocol {
             // event count
             updateChannel(updates, group, CHANNEL_STATUS_EVENTCOUNT, getDecimal(count));
             if (profile.inButtonMode(idx) && ((profile.hasBattery && (count == 1)) || (count != lastEventCount[idx]))) {
+                if (profile.isButton || (lastEventCount[idx] != -1)) { // skip the first one if binding was restarted
+                    thingHandler.triggerButton(group, inputEvent[idx]);
+                }
                 lastEventCount[idx] = count;
-                thingHandler.triggerButton(group, inputEvent[idx]);
             }
         }
     }
@@ -303,16 +305,16 @@ public class ShellyCoIoTProtocol {
             if (desc.startsWith(SHELLY_CLASS_RELAY) || desc.startsWith(SHELLY_CLASS_ROLLER)
                     || desc.startsWith(SHELLY_CLASS_EMETER)) {
                 if (desc.contains("_")) { // CoAP v2
-                    idx = Integer.parseInt(StringUtils.substringAfter(desc, "_"));
+                    idx = Integer.parseInt(ShellyUtils.substringAfter(desc, "_"));
                 } else { // CoAP v1
                     if (desc.substring(0, 5).equalsIgnoreCase(SHELLY_CLASS_RELAY)) {
-                        idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_RELAY));
+                        idx = Integer.parseInt(ShellyUtils.substringAfter(desc, SHELLY_CLASS_RELAY));
                     }
                     if (desc.substring(0, 6).equalsIgnoreCase(SHELLY_CLASS_ROLLER)) {
-                        idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_ROLLER));
+                        idx = Integer.parseInt(ShellyUtils.substringAfter(desc, SHELLY_CLASS_ROLLER));
                     }
                     if (desc.substring(0, SHELLY_CLASS_EMETER.length()).equalsIgnoreCase(SHELLY_CLASS_EMETER)) {
-                        idx = Integer.parseInt(StringUtils.substringAfter(desc, SHELLY_CLASS_EMETER));
+                        idx = Integer.parseInt(ShellyUtils.substringAfter(desc, SHELLY_CLASS_EMETER));
                     }
                 }
                 idx = idx + 1; // make it 1-based (sen.L is 0-based)

@@ -26,7 +26,6 @@ import java.time.ZonedDateTime;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -53,6 +52,57 @@ public class ShellyUtils {
 
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
+    }
+
+    public static String substringBefore(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.indexOf(pattern);
+            if (pos > 0) {
+                return string.substring(0, pos);
+            }
+        }
+        return "";
+    }
+
+    public static String substringBeforeLast(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.lastIndexOf(pattern);
+            if (pos > 0) {
+                return string.substring(0, pos);
+            }
+        }
+        return "";
+    }
+
+    public static String substringAfter(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.indexOf(pattern);
+            if (pos != -1) {
+                return string.substring(pos + pattern.length());
+            }
+        }
+        return "";
+    }
+
+    public static String substringAfterLast(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.lastIndexOf(pattern);
+            if (pos != -1) {
+                return string.substring(pos + pattern.length());
+            }
+        }
+        return "";
+    }
+
+    public static String substringBetween(@Nullable String string, String begin, String end) {
+        if (string != null) {
+            int s = string.indexOf(begin);
+            int e = string.indexOf(end);
+            if ((s != -1) && (e != -1) && (e >= s)) {
+                return string.substring(s + 1, e);
+            }
+        }
+        return "";
     }
 
     public static String getMessage(Exception e) {
@@ -158,7 +208,7 @@ public class ShellyUtils {
 
     public static Integer getLightIdFromGroup(String groupName) {
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(StringUtils.substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
+            return Integer.parseInt(ShellyUtils.substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
         }
         return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
     }

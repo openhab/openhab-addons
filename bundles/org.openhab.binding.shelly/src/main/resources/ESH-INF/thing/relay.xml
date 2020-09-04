@@ -295,6 +295,14 @@
 		<label>External Sensors</label>
 		<description>Temperatures from external sensors connected to the optional Addon</description>
 	</channel-group-type>
+
+	<channel-type id="channelName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.channelName.label</label>
+		<description>@text/channel-type.shelly.channelName.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="timerAutoOn" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Auto-ON Timer</label>

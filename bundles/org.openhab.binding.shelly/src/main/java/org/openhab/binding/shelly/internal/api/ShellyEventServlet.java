@@ -25,10 +25,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
@@ -107,14 +107,14 @@ public class ShellyEventServlet extends HttpServlet {
             // <ip address>:<remote port>/shelly/event/shellyrelay-XXXXXX/relay/n?xxxxx or
             // <ip address>:<remote port>/shelly/event/shellyrelay-XXXXXX/roller/n?xxxxx or
             // <ip address>:<remote port>/shelly/event/shellyht-XXXXXX/sensordata?hum=53,temp=26.50
-            deviceName = StringUtils.substringBetween(path, "/event/", "/").toLowerCase();
+            deviceName = ShellyUtils.substringBetween(path, "/event/", "/").toLowerCase();
             if (path.contains("/" + EVENT_TYPE_RELAY + "/") || path.contains("/" + EVENT_TYPE_ROLLER + "/")
                     || path.contains("/" + EVENT_TYPE_LIGHT + "/")) {
-                index = StringUtils.substringAfterLast(path, "/").toLowerCase();
-                type = StringUtils.substringBetween(path, deviceName + "/", "/" + index);
+                index = ShellyUtils.substringAfterLast(path, "/").toLowerCase();
+                type = ShellyUtils.substringBetween(path, deviceName + "/", "/" + index);
             } else {
                 index = "";
-                type = StringUtils.substringAfterLast(path, "/").toLowerCase();
+                type = ShellyUtils.substringAfterLast(path, "/").toLowerCase();
             }
             logger.trace("{}: Process event of type type={}, index={}", deviceName, type, index);
             Map<String, String> parms = new TreeMap<>();

@@ -251,7 +251,7 @@ public class ShellyComponents {
             if (!thingHandler.areChannelsCreated()) {
                 thingHandler.logger.trace("{}: Create missing sensor channel(s)", thingHandler.thingName);
                 thingHandler.updateChannelDefinitions(
-                        ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), sdata));
+                        ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), profile, sdata));
             }
 
             updated |= thingHandler.updateWakeupReason(sdata.actReasons);

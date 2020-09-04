@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -30,11 +29,13 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyControlRoller;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsEMeter;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsMeter;
+import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
+import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 /**
  * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
@@ -49,6 +50,7 @@ public class ShellyChannelDefinitionsDTO {
 
     // shortcuts to avoid line breaks (make code more readable)
     private static final String CHGR_DEVST = CHANNEL_GROUP_DEV_STATUS;
+    private static final String CHGR_RELAY = CHANNEL_GROUP_RELAY_CONTROL;
     private static final String CHGR_ROLLER = CHANNEL_GROUP_ROL_CONTROL;
     private static final String CHGR_STATUS = CHANNEL_GROUP_STATUS;
     private static final String CHGR_METER = CHANNEL_GROUP_METER;
@@ -78,6 +80,7 @@ public class ShellyChannelDefinitionsDTO {
         // Device: Internal Temp
         CHANNEL_DEFINITIONS
                 // Device
+                .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_NAME, "deviceName", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ITEMP, "deviceTemp", ITEM_TYPE_TEMP))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_WAKEUP, "sensorWakeup", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_ACCUWATTS, "meterAccuWatts", ITEM_TYPE_POWER))
@@ -91,7 +94,11 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_HEARTBEAT, "heartBeat", ITEM_TYPE_DATETIME))
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEM_TYPE_SWITCH))
 
+                // Relay
+                .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_NAME, "channelName", ITEM_TYPE_STRING))
+
                 // Roller
+                .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_NAME, "name", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE, "rollerState", ITEM_TYPE_STRING))
 
                 // RGBW2
@@ -148,8 +155,8 @@ public class ShellyChannelDefinitionsDTO {
     }
 
     public static ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
-        String group = StringUtils.substringBefore(channelName, "#");
-        String channel = StringUtils.substringAfter(channelName, "#");
+        String group = ShellyUtils.substringBefore(channelName, "#");
+        String channel = ShellyUtils.substringAfter(channelName, "#");
         if (group.contains(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
         } else if (group.contains(CHANNEL_GROUP_RELAY_CONTROL)) {
@@ -171,6 +178,9 @@ public class ShellyChannelDefinitionsDTO {
     public static Map<String, Channel> createDeviceChannels(final Thing thing, final ShellyDeviceProfile profile,
             final ShellySettingsStatus status) {
         Map<String, Channel> add = new LinkedHashMap<>();
+
+        addChannel(thing, add, profile.settings.name != null, CHGR_DEVST, CHANNEL_DEVST_NAME);
+
         if (!profile.isSensor) {
             // Only some devices report the internal device temp
             addChannel(thing, add, (status.tmp != null) || (status.temperature != null), CHGR_DEVST,
@@ -204,17 +214,22 @@ public class ShellyChannelDefinitionsDTO {
      *
      * @return ArrayList<Channel> of channels to be added to the thing
      */
-    public static Map<String, Channel> createRelayChannels(final Thing thing, final ShellyStatusRelay relays) {
+    public static Map<String, Channel> createRelayChannels(final Thing thing, final ShellyDeviceProfile profile,
+            final ShellyStatusRelay relay, int idx) {
         Map<String, Channel> add = new LinkedHashMap<>();
+        String group = profile.getControlGroup(idx);
+
+        ShellySettingsRelay rs = profile.settings.relays.get(idx);
+        addChannel(thing, add, rs.name != null, group, CHANNEL_NAME);
 
         // Shelly 1/1PM Addon
-        if (relays.extTemperature != null) {
-            addChannel(thing, add, relays.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
-            addChannel(thing, add, relays.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
-            addChannel(thing, add, relays.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
+        if (relay.extTemperature != null) {
+            addChannel(thing, add, relay.extTemperature.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP1);
+            addChannel(thing, add, relay.extTemperature.sensor2 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP2);
+            addChannel(thing, add, relay.extTemperature.sensor3 != null, CHGR_SENSOR, CHANNEL_ESENDOR_TEMP3);
         }
-        if (relays.extHumidity != null) {
-            addChannel(thing, add, relays.extHumidity.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
+        if (relay.extHumidity != null) {
+            addChannel(thing, add, relay.extHumidity.sensor1 != null, CHGR_SENSOR, CHANNEL_ESENDOR_HUMIDITY);
         }
 
         return add;
@@ -222,6 +237,7 @@ public class ShellyChannelDefinitionsDTO {
 
     public static Map<String, Channel> createRollerChannels(Thing thing, final ShellyControlRoller roller) {
         Map<String, Channel> add = new LinkedHashMap<>();
+        addChannel(thing, add, roller.name != null, CHGR_ROLLER, CHANNEL_NAME);
         addChannel(thing, add, roller.state != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE);
         return add;
     }
@@ -251,9 +267,9 @@ public class ShellyChannelDefinitionsDTO {
         return newChannels;
     }
 
-    public static Map<String, Channel> createSensorChannels(final Thing thing, final ShellyStatusSensor sdata) {
+    public static Map<String, Channel> createSensorChannels(final Thing thing, final ShellyDeviceProfile profile,
+            final ShellyStatusSensor sdata) {
         Map<String, Channel> newChannels = new LinkedHashMap<>();
-        ShellyDeviceProfile profile = ((ShellyBaseHandler) thing.getHandler()).getProfile();
 
         // Sensor data
         addChannel(thing, newChannels, sdata.tmp != null, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP);

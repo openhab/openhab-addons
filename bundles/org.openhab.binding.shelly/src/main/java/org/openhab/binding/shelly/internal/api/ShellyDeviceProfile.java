@@ -19,9 +19,7 @@ import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.shelly.internal.ShellyBindingConstants;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsDimmer;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGlobal;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsInput;
@@ -70,8 +68,6 @@ public class ShellyDeviceProfile {
     public int numRollers = 0; // number of Rollers, usually 1
     public boolean isRoller = false; // true for Shelly2 in roller mode
     public boolean isDimmer = false; // true for a Shelly Dimmer (SHDM-1)
-    public boolean isPlugS = false; // true if it is a Shelly Plug S
-    public int numHumSensors = 0; // number of external humidity sensors
 
     public int numMeters = 0;
     public boolean isEMeter = false; // true for ShellyEM/3EM
@@ -81,7 +77,6 @@ public class ShellyDeviceProfile {
     public boolean isDuo = false; // true only if it is a Duo
     public boolean isRGBW2 = false; // true only if it a a RGBW2
     public boolean inColor = false; // true if bulb/rgbw2 is in color mode
-    public boolean hasLed = false; // true if battery device
 
     public boolean isSensor = false; // true for HT & Smoke
     public boolean hasBattery = false; // true if battery device
@@ -124,9 +119,9 @@ public class ShellyDeviceProfile {
         mode = !getString(settings.mode).isEmpty() ? getString(settings.mode).toLowerCase() : "";
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
-        fwDate = getString(StringUtils.substringBefore(settings.fw, "/"));
-        fwVersion = getString(StringUtils.substringBetween(settings.fw, "/", "@"));
-        fwId = getString(StringUtils.substringAfter(settings.fw, "@"));
+        fwDate = ShellyUtils.substringBefore(settings.fw, "/");
+        fwVersion = ShellyUtils.substringBetween(settings.fw, "/", "@");
+        fwId = ShellyUtils.substringAfter(settings.fw, "@");
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);
@@ -177,17 +172,14 @@ public class ShellyDeviceProfile {
     }
 
     public void initFromThingType(String name) {
-        String thingType = (name.contains("-") ? StringUtils.substringBefore(name, "-") : name).toLowerCase().trim();
+        String thingType = (name.contains("-") ? substringBefore(name, "-") : name).toLowerCase().trim();
         if (thingType.isEmpty()) {
             return;
         }
 
-        isPlugS = thingType.equals(ShellyBindingConstants.THING_TYPE_SHELLYPLUGS_STR);
-
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR);
         isRGBW2 = thingType.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX);
-        hasLed = isPlugS;
         isLight = isBulb || isDuo || isRGBW2;
         if (isLight) {
             minTemp = isBulb ? MIN_COLOR_TEMP_BULB : MIN_COLOR_TEMP_DUO;
