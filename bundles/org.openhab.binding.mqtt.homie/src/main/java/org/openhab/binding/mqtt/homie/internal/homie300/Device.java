@@ -64,7 +64,6 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
     private String topic = "";
     public String deviceID = "";
     private boolean initialized = false;
-    private boolean startingChannels = false;
 
     /**
      * Creates a Homie Device structure. It consists of device attributes, device statistics and nodes.
@@ -141,23 +140,14 @@ public class Device implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> startChannels(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout, HomieThingHandler handler) {
-        if (startingChannels) {
-            CompletableFuture<@Nullable Void> c = new CompletableFuture<>();
-            c.complete(null);
-            return c;
-        }
-
         if (!isInitialized() || deviceID.isEmpty()) {
             CompletableFuture<@Nullable Void> c = new CompletableFuture<>();
             c.completeExceptionally(new Exception("Homie Device Tree not inialized yet."));
             return c;
         }
 
-        startingChannels = true;
-        return CompletableFuture
-                .allOf(nodes.stream().flatMap(node -> node.properties.stream())
-                        .map(p -> p.startChannel(connection, scheduler, timeout)).toArray(CompletableFuture[]::new))
-                .thenRun(() -> startingChannels = false);
+        return CompletableFuture.allOf(nodes.stream().flatMap(node -> node.properties.stream())
+                .map(p -> p.startChannel(connection, scheduler, timeout)).toArray(CompletableFuture[]::new));
     }
 
     /**

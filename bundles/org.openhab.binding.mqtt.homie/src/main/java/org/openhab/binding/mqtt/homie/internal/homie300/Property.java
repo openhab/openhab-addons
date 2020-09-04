@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,6 +73,7 @@ public class Property implements AttributeChanged {
     private final String topic;
     private final DeviceCallback callback;
     protected boolean initialized = false;
+    private AtomicBoolean started = new AtomicBoolean(false);
 
     /**
      * Creates a Homie Property.
@@ -247,9 +249,9 @@ public class Property implements AttributeChanged {
     public CompletableFuture<@Nullable Void> stop() {
         final ChannelState channelState = this.channelState;
         if (channelState != null) {
-            return channelState.stop().thenCompose(b -> attributes.unsubscribe());
+            return channelState.stop().thenCompose(b -> attributes.unsubscribe()).thenRun(() -> started.set(false));
         }
-        return attributes.unsubscribe();
+        return attributes.unsubscribe().thenRun(() -> started.set(false));
     }
 
     /**
@@ -272,6 +274,12 @@ public class Property implements AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> startChannel(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
+        if (started.get()) {
+            CompletableFuture<@Nullable Void> c = new CompletableFuture<>();
+            c.complete(null);
+            return c;
+        }
+
         final ChannelState channelState = this.channelState;
         if (channelState == null) {
             CompletableFuture<@Nullable Void> f = new CompletableFuture<>();
@@ -280,7 +288,7 @@ public class Property implements AttributeChanged {
         }
         // Make sure we set the callback again which might have been nulled during an stop
         channelState.setChannelStateUpdateListener(this.callback);
-        return channelState.start(connection, scheduler, timeout);
+        return channelState.start(connection, scheduler, timeout).thenRun(() -> started.set(true));
     }
 
     /**
