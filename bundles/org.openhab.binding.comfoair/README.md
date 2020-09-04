@@ -200,8 +200,8 @@ Number	comfoairFilterReset			"Filter reset"					<service>	(ComfoAir)			{channel=
 Number	comfoairFilterPeriod			"Filter period [%d weeks]"			<clock>		(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP2#filterWeeks"}
 
 // Messages
-String		comfoairError			"Error: [%s]"			(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:errors#errorMessage"}
-Number:Time	comfoairFilterRuntime		"Filter runtime [%.0f h]"		(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:times#filterHours"}
+String		comfoairError			"Error: [%s]"			(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:errors#errorsCurrent"}
+Number:Time	comfoairFilterRuntime		"Filter runtime [%.0f h]"	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:times#filterHours"}
 
 // State
 Number:Temperature	comfoairTargetTemperature		"Comfort temperature [%.1f °C]"			<temperature>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:temperatures#targetTemperature"}
