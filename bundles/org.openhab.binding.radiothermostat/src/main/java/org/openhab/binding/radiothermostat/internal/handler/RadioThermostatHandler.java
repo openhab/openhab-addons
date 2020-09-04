@@ -189,6 +189,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         connector.sendCommand(null, null, rawCommand);
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -248,10 +249,18 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 case SET_POINT:
                     String cmdKey = null;
                     if (rthermData.getThermostatData().getMode() == 1) {
-                        cmdKey = "t_heat";
+                        if (config.absolute) {
+                            cmdKey = "a_heat";
+                        } else {
+                            cmdKey = "t_heat";
+                        }
                         rthermData.getThermostatData().setHeatTarget(cmdInt);
                     } else if (rthermData.getThermostatData().getMode() == 2) {
-                        cmdKey = "t_cool";
+                        if (config.absolute) {
+                            cmdKey = "a_cool";
+                        } else {
+                            cmdKey = "t_cool";
+                        }
                         rthermData.getThermostatData().setCoolTarget(cmdInt);
                     } else {
                         // don't do anything if we are not in heat or cool mode
