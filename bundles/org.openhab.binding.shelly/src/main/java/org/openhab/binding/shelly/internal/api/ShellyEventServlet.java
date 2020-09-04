@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.shelly.internal.ShellyHandlerFactory;
@@ -77,7 +76,6 @@ public class ShellyEventServlet extends HttpServlet {
     @Override
     protected void service(@Nullable HttpServletRequest request, @Nullable HttpServletResponse resp)
             throws ServletException, IOException, IllegalArgumentException {
-        String data = "";
         String path = "";
         String deviceName = "";
         String index = "";
@@ -90,7 +88,6 @@ public class ShellyEventServlet extends HttpServlet {
 
         try {
             path = request.getRequestURI().toLowerCase();
-            data = IOUtils.toString(request.getInputStream(), "UTF-8");
             String ipAddress = request.getHeader("HTTP_X_FORWARDED_FOR");
             if (ipAddress == null) {
                 ipAddress = request.getRemoteAddr();
@@ -99,7 +96,7 @@ public class ShellyEventServlet extends HttpServlet {
             logger.debug("CallbackServlet: {} Request from {}:{}{}?{}", request.getProtocol(), ipAddress,
                     request.getRemotePort(), path, parameters.toString());
             if (!path.toLowerCase().startsWith(SHELLY_CALLBACK_URI) || !path.contains("/event/shelly")) {
-                logger.warn("CallbackServlet received unknown request: path = {}, data={}", path, data);
+                logger.warn("CallbackServlet received unknown request: path = {}", path);
                 return;
             }
 
@@ -125,8 +122,8 @@ public class ShellyEventServlet extends HttpServlet {
             }
             handlerFactory.onEvent(ipAddress, deviceName, index, type, parms);
         } catch (IllegalArgumentException e) {
-            logger.debug("{}: Exception processing callback: {path={}, data='{}'; index={}, type={}, parameters={}",
-                    deviceName, path, data, index, type, request.getParameterMap().toString());
+            logger.debug("{}: Exception processing callback: path={}; index={}, type={}, parameters={}", deviceName,
+                    path, index, type, request.getParameterMap().toString());
         } finally {
             resp.setCharacterEncoding(StandardCharsets.UTF_8.toString());
             resp.getWriter().write("");
