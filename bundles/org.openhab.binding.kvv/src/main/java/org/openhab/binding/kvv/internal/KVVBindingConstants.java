@@ -33,10 +33,10 @@ public class KVVBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
     /** the thing type of the stop */
-    public static final ThingTypeUID THING_TYPE_STATION = new ThingTypeUID(BINDING_ID, "stop");
+    public static final ThingTypeUID THING_TYPE_STOP = new ThingTypeUID(BINDING_ID, "stop");
 
     /** all of the supported types */
-    public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STATION);
+    public static final List<ThingTypeUID> SUPPORTED_THING_TYPES = Arrays.asList(THING_TYPE_BRIDGE, THING_TYPE_STOP);
 
     /** URL of the KVV API */
     public static final String API_URL = "https://live.kvv.de/webapp";

@@ -1,18 +1,18 @@
 # KVV Binding
 
 Adds support for the public API of Karlsruher Verkehrsverbund (public transport system in Karlsruhe, Germany).
-Enables the user to show the latest departure times for specific street car stations in openHAB.
+Enables the user to show the latest departure times for specific street car stops in openHAB.
 
 ## Supported Things
 
-Every street car station is represented by one thing. Each thing contains channels for the information referred to the next n trains.
+Every street car stop is represented by one thing. Each thing contains channels for the information referred to the next n trains.
 This includes the name of the train, the final destination and the estimated time available (eta).
 
 ## Thing Configuration
 
-Since every station is represented by a KVV-provided id, this id has to be figured out via an API call.
+Since every stop is represented by a KVV-provided id, this id has to be figured out via an API call.
 
-### Example Call for Station 'Karlsruhe Volkswohnung'
+### Example Call for Stop 'Karlsruhe Volkswohnung'
 
 ```bash
 # Request
@@ -27,25 +27,25 @@ curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
 ### demo.things
 
 ```things
-Bridge kvv:bridge:1 "Bridge" @ "Wohnzimmer" {
-	station gottesauerplatz		"Gottesauer Platz/BGV"		[ commonName="Gottesauer Platz/BGV", stationId="de:8212:6", maxTrains="3", updateInterval="10" ]
+Bridge kvv:bridge:1 "Bridge" @ "Wohnzimmer" [ maxTrains="3", updateInterval="10", apiKey="" ] {
+    stop gottesauerplatz        "Gottesauer Platz/BGV"      [ stopId="de:8212:6" ]
 }
 ```
 
 ### demo.items
 
 ```items
-String kvv_gottesauerplatz_train0_name      	{channel="kvv:station:1:gottesauerplatz:train0-name"}
-String kvv_gottesauerplatz_train0_destination	{channel="kvv:station:1:gottesauerplatz:train0-destination"}
-String kvv_gottesauerplatz_train0_eta      		{channel="kvv:station:1:gottesauerplatz:train0-eta"}
+String kvv_gottesauerplatz_train0_name          {channel="kvv:stop:1:gottesauerplatz:train0-name"}
+String kvv_gottesauerplatz_train0_destination   {channel="kvv:stop:1:gottesauerplatz:train0-destination"}
+String kvv_gottesauerplatz_train0_eta           {channel="kvv:stop:1:gottesauerplatz:train0-eta"}
 
-String kvv_gottesauerplatz_train1_name      	{channel="kvv:station:1:gottesauerplatz:train1-name"}
-String kvv_gottesauerplatz_train1_destination   {channel="kvv:station:1:gottesauerplatz:train1-destination"}
-String kvv_gottesauerplatz_train1_eta      		{channel="kvv:station:1:gottesauerplatz:train1-eta"}
+String kvv_gottesauerplatz_train1_name          {channel="kvv:stop:1:gottesauerplatz:train1-name"}
+String kvv_gottesauerplatz_train1_destination   {channel="kvv:stop:1:gottesauerplatz:train1-destination"}
+String kvv_gottesauerplatz_train1_eta           {channel="kvv:stop:1:gottesauerplatz:train1-eta"}
 
-String kvv_gottesauerplatz_train2_name      	{channel="kvv:station:1:gottesauerplatz:train2-name"}
-String kvv_gottesauerplatz_train2_destination   {channel="kvv:station:1:gottesauerplatz:train2-destination"}
-String kvv_gottesauerplatz_train2_eta      		{channel="kvv:station:1:gottesauerplatz:train2-eta"}
+String kvv_gottesauerplatz_train2_name          {channel="kvv:stop:1:gottesauerplatz:train2-name"}
+String kvv_gottesauerplatz_train2_destination   {channel="kvv:stop:1:gottesauerplatz:train2-destination"}
+String kvv_gottesauerplatz_train2_eta           {channel="kvv:stop:1:gottesauerplatz:train2-eta"}
 ```
 
 ### habpanel template

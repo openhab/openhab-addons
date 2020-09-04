@@ -13,7 +13,7 @@
 package org.openhab.binding.kvv.internal;
 
 import static org.openhab.binding.kvv.internal.KVVBindingConstants.THING_TYPE_BRIDGE;
-import static org.openhab.binding.kvv.internal.KVVBindingConstants.THING_TYPE_STATION;
+import static org.openhab.binding.kvv.internal.KVVBindingConstants.THING_TYPE_STOP;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -46,7 +46,7 @@ public class KVVHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new KVVBridgeHandler((Bridge) thing);
-        } else if (THING_TYPE_STATION.equals(thingTypeUID)) {
+        } else if (THING_TYPE_STOP.equals(thingTypeUID)) {
             return new KVVStopHandler(thing);
         }
 
