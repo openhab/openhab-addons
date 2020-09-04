@@ -24,6 +24,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.gson.Gson;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,8 +43,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link MyStromHandler} is responsible for handling commands, which are
@@ -99,7 +99,7 @@ public class MyStromHandler extends BaseThingHandler {
         try {
             String returnContent = sendHttpGet("report");
             MyStromReport report = gson.fromJson(returnContent, MyStromReport.class);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException e) {
             logger.debug(COMMUNICATION_ERROR, e);
