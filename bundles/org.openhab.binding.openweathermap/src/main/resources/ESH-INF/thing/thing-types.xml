@@ -307,7 +307,7 @@
 		</channel-groups>
 		<representation-property>location</representation-property>
 
-		<config-description-ref uri="thing-type:openweathermap:onecal-history"/>
+		<config-description-ref uri="thing-type:openweathermap:onecall-history"/>
 	</thing-type>
 
 </thing:thing-descriptions>
