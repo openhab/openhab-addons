@@ -172,22 +172,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                             }
                         }
                     }
-                    myHandler.lock.lock();
-                    try {
-                        byte indexInLists = (byte) myHandler.listOfChannels.indexOf(ctx.channel());
-                        if (indexInLists >= 0) {
-                            if (closeConnection) {
-                                // Need to mark the channel as closing so the digest gets a new ch
-                                myHandler.listOfChStatus.set(indexInLists, 0);
-                            } else {
-                                myHandler.listOfChStatus.set(indexInLists, 2);
-                            }
-                        } else {
-                            logger.warn("!!!! 401: Could not find the channel to mark as closing or reusable");
-                        }
-                    } finally {
-                        myHandler.lock.unlock();
-                    }
                     if (!authenticate.equals("")) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {

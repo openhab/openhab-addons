@@ -47,7 +47,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * The {@link StreamServerHandler} class is responsible for handling streams and sending any requested files to Openhabs
+ * The {@link StreamServerHandler} class is responsible for handling streams and sending any requested files to openHABs
  * features.
  *
  * @author Matthew Skinner - Initial contribution

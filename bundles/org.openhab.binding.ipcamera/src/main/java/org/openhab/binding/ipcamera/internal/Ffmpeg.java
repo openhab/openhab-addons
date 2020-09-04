@@ -160,7 +160,7 @@ public class Ffmpeg {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
                 if (keepAlive > -1) {
                     try {
-                        Thread.sleep(7000); // Used for on demand HLS to give ffmpeg time to produce the files needed.
+                        Thread.sleep(4500); // Used for on demand HLS to give ffmpeg time to produce the files needed.
                     } catch (InterruptedException e) {
                     }
                 }

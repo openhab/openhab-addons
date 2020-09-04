@@ -131,16 +131,8 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         "<");
                 switch (replyElement) {
                     case "MotionDetection version=":
-                        ipCameraHandler.lock.lock();
-                        try {
-                            byte indexInLists = (byte) ipCameraHandler.listOfRequests.indexOf(
-                                    "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection");
-                            if (indexInLists >= 0) {
-                                ipCameraHandler.listOfReplies.set(indexInLists, content);
-                            }
-                        } finally {
-                            ipCameraHandler.lock.unlock();
-                        }
+                        ipCameraHandler.storeHttpReply(
+                                "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection", content);
                         if (content.contains("<enabled>true</enabled>")) {
                             ipCameraHandler.setChannelState(CHANNEL_ENABLE_MOTION_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
@@ -148,16 +140,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         }
                         break;
                     case "IOInputPort version=":
-                        ipCameraHandler.lock.lock();
-                        try {
-                            byte indexInLists = (byte) ipCameraHandler.listOfRequests
-                                    .indexOf("/ISAPI/System/IO/inputs/" + nvrChannel);
-                            if (indexInLists >= 0) {
-                                ipCameraHandler.listOfReplies.set(indexInLists, content);
-                            }
-                        } finally {
-                            ipCameraHandler.lock.unlock();
-                        }
+                        ipCameraHandler.storeHttpReply("/ISAPI/System/IO/inputs/" + nvrChannel, content);
                         if (content.contains("<enabled>true</enabled>")) {
                             ipCameraHandler.setChannelState(CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
@@ -170,16 +153,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         }
                         break;
                     case "LineDetection":
-                        ipCameraHandler.lock.lock();
-                        try {
-                            byte indexInLists = (byte) ipCameraHandler.listOfRequests
-                                    .indexOf("/ISAPI/Smart/LineDetection/" + nvrChannel + "01");
-                            if (indexInLists >= 0) {
-                                ipCameraHandler.listOfReplies.set(indexInLists, content);
-                            }
-                        } finally {
-                            ipCameraHandler.lock.unlock();
-                        }
+                        ipCameraHandler.storeHttpReply("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", content);
                         if (content.contains("<enabled>true</enabled>")) {
                             ipCameraHandler.setChannelState(CHANNEL_ENABLE_LINE_CROSSING_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
@@ -187,30 +161,14 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         }
                         break;
                     case "TextOverlay version=":
-                        ipCameraHandler.lock.lock();
-                        try {
-                            byte indexInLists = (byte) ipCameraHandler.listOfRequests
-                                    .indexOf("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1");
-                            if (indexInLists >= 0) {
-                                ipCameraHandler.listOfReplies.set(indexInLists, content);
-                            }
-                        } finally {
-                            ipCameraHandler.lock.unlock();
-                        }
+                        ipCameraHandler.storeHttpReply(
+                                "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1", content);
                         String text = OnvifConnection.fetchXML(content, "<enabled>true</enabled>", "<displayText>");
                         ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(text));
                         break;
                     case "AudioDetection version=":
-                        ipCameraHandler.lock.lock();
-                        try {
-                            byte indexInLists = (byte) ipCameraHandler.listOfRequests
-                                    .indexOf("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01");
-                            if (indexInLists >= 0) {
-                                ipCameraHandler.listOfReplies.set(indexInLists, content);
-                            }
-                        } finally {
-                            ipCameraHandler.lock.unlock();
-                        }
+                        ipCameraHandler.storeHttpReply("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01",
+                                content);
                         if (content.contains("<enabled>true</enabled>")) {
                             ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
@@ -225,16 +183,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                         }
                         break;
                     case "FieldDetection version=":
-                        ipCameraHandler.lock.lock();
-                        try {
-                            byte indexInLists = (byte) ipCameraHandler.listOfRequests
-                                    .indexOf("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01");
-                            if (indexInLists >= 0) {
-                                ipCameraHandler.listOfReplies.set(indexInLists, content);
-                            }
-                        } finally {
-                            ipCameraHandler.lock.unlock();
-                        }
+                        ipCameraHandler.storeHttpReply("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", content);
                         if (content.contains("<enabled>true</enabled>")) {
                             ipCameraHandler.setChannelState(CHANNEL_ENABLE_FIELD_DETECTION_ALARM, OnOffType.ON);
                         } else if (content.contains("<enabled>false</enabled>")) {
@@ -343,41 +292,51 @@ public class HikvisionHandler extends ChannelDuplexHandler {
     }
 
     public void hikChangeSetting(String httpGetPutURL, String removeElement, String replaceRemovedElementWith) {
-        String body;
-        byte indexInLists;
+        String body = "";
+        ChannelTracking localTracker = null;
         ipCameraHandler.lock.lock();
         try {
-            indexInLists = (byte) ipCameraHandler.listOfRequests.indexOf(httpGetPutURL);
-            if (indexInLists >= 0) {
-                if (!"".contains(ipCameraHandler.listOfReplies.get(indexInLists))) {
-                    body = ipCameraHandler.listOfReplies.get(indexInLists);
-                    logger.trace("An OLD reply from the camera was:{}", body);
-                    if (body.contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
-                        body = body.substring("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".length());
-                    }
-                    int elementIndexStart = body.indexOf("<" + removeElement + ">");
-                    int elementIndexEnd = body.indexOf("</" + removeElement + ">");
-                    body = body.substring(0, elementIndexStart) + replaceRemovedElementWith
-                            + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
-                    logger.trace("Body for this PUT is going to be:{}", body);
-                    ipCameraHandler.listOfReplies.set(indexInLists, body);
-                    FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
-                            httpGetPutURL);
-                    request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.ipAddress);
-                    request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
-                    request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
-                    ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
-                    request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
-                    request.content().clear().writeBytes(bbuf);
-                    ipCameraHandler.sendHttpPUT(httpGetPutURL, request);
-                } else {
-                    logger.warn(
-                            "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
-                    ipCameraHandler.sendHttpGET(httpGetPutURL);
+            for (ChannelTracking channelTracking : ipCameraHandler.channelTracker) {
+                if (channelTracking.getRequestUrl().equals(httpGetPutURL)) {
+                    body = channelTracking.getReply();
+                    localTracker = channelTracking;
                 }
             }
         } finally {
             ipCameraHandler.lock.unlock();
+        }
+
+        if (body.isEmpty()) {
+            logger.debug(
+                    "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
+            ipCameraHandler.sendHttpGET(httpGetPutURL);
+        } else {
+            logger.trace("An OLD reply from the camera was:{}", body);
+            if (body.contains("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")) {
+                body = body.substring("<?xml version=\"1.0\" encoding=\"UTF-8\"?>".length());
+            }
+            int elementIndexStart = body.indexOf("<" + removeElement + ">");
+            int elementIndexEnd = body.indexOf("</" + removeElement + ">");
+            body = body.substring(0, elementIndexStart) + replaceRemovedElementWith
+                    + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
+            logger.trace("Body for this PUT is going to be:{}", body);
+            ipCameraHandler.lock.lock();
+            try {
+                if (localTracker != null) {
+                    localTracker.setReply(body);
+                }
+            } finally {
+                ipCameraHandler.lock.unlock();
+            }
+            FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
+                    httpGetPutURL);
+            request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.ipAddress);
+            request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
+            request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
+            ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);
+            request.headers().set(HttpHeaderNames.CONTENT_LENGTH, bbuf.readableBytes());
+            request.content().clear().writeBytes(bbuf);
+            ipCameraHandler.sendHttpPUT(httpGetPutURL, request);
         }
     }
 

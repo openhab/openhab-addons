@@ -55,6 +55,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.ipcamera.internal.AmcrestHandler;
+import org.openhab.binding.ipcamera.internal.ChannelTracking;
 import org.openhab.binding.ipcamera.internal.DahuaHandler;
 import org.openhab.binding.ipcamera.internal.DoorBirdHandler;
 import org.openhab.binding.ipcamera.internal.Ffmpeg;
@@ -131,6 +132,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     final ChannelGroup snapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     final ChannelGroup autoSnapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public @Nullable Ffmpeg ffmpegHLS = null;
     public @Nullable Ffmpeg ffmpegRecord = null;
     public @Nullable Ffmpeg ffmpegGIF = null;
@@ -169,15 +171,9 @@ public class IpCameraHandler extends BaseThingHandler {
     private byte lowPriorityCounter = 0;
     public String hostIp = "0.0.0.0";
     private String ffmpegOutputFolder = "";
-
-    public List<String> listOfRequests = new ArrayList<>(18);
-    public List<Channel> listOfChannels = new ArrayList<>(18);
-    // Status can be -2=storing a reply, -1=closed, 0=closing (do not re-use
-    // channel), 1=open, 2=open and ok to reuse
-    public List<Integer> listOfChStatus = new ArrayList<>(18);
-    public List<String> listOfReplies = new ArrayList<>(18);
-    public List<String> lowPriorityRequests = new ArrayList<>(0);
     public ReentrantLock lock = new ReentrantLock();
+    public List<ChannelTracking> channelTracker = new ArrayList<>(18);
+    public List<String> lowPriorityRequests = new ArrayList<>(0);
 
     // basicAuth MUST remain private as it holds the password
     private String basicAuth = "";
@@ -283,20 +279,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                                 incomingJpeg = new byte[bytesToRecieve];
                             }
-                            if (closeConnection) {
-                                lock.lock();
-                                try {
-                                    int indexInLists = listOfChannels.indexOf(ctx.channel());
-                                    if (indexInLists >= 0) {
-                                        listOfChStatus.set(indexInLists, 0);
-                                    } else {
-                                        logger.debug("!!!! Could not find the ch for a Connection: close URL:{}",
-                                                requestUrl);
-                                    }
-                                } finally {
-                                    lock.unlock();
-                                }
-                            }
                         }
                     }
                 }
@@ -319,17 +301,8 @@ public class IpCameraHandler extends BaseThingHandler {
                                 if (closeConnection) {
                                     ctx.close();
                                 } else {
-                                    lock.lock();
-                                    try {
-                                        int indexInLists = listOfChannels.indexOf(ctx.channel());
-                                        if (indexInLists >= 0) {
-                                            listOfChStatus.set(indexInLists, 2);
-                                        }
-                                    } finally {
-                                        lock.unlock();
-                                        bytesToRecieve = 0;
-                                        bytesAlreadyRecieved = 0;
-                                    }
+                                    bytesToRecieve = 0;
+                                    bytesAlreadyRecieved = 0;
                                 }
                             }
                         } else { // incomingMessage that is not an IMAGE
@@ -386,22 +359,6 @@ public class IpCameraHandler extends BaseThingHandler {
 
         @Override
         public void handlerRemoved(@Nullable ChannelHandlerContext ctx) {
-            if (ctx == null) {
-                return;
-            }
-            lock.lock();
-            try {
-                int indexInLists = listOfChannels.indexOf(ctx.channel());
-                if (indexInLists >= 0) {
-                    listOfChStatus.set(indexInLists, -1);
-                } else {
-                    if (!listOfChannels.isEmpty()) {
-                        logger.warn("Can't find ch when removing handler \t\tURL:{}", requestUrl);
-                    }
-                }
-            } finally {
-                lock.unlock();
-            }
         }
 
         @Override
@@ -430,35 +387,25 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (e.state() == IdleState.READER_IDLE) {
                     lock.lock();
                     try {
-                        int indexInLists = listOfChannels.indexOf(ctx.channel());
-                        if (indexInLists >= 0) {
-                            String urlToKeepOpen;
-                            switch (thing.getThingTypeUID().getId()) {
-                                case "DAHUA":
-                                    urlToKeepOpen = listOfRequests.get(indexInLists);
-                                    if ("/cgi-bin/eventManager.cgi?action=attach&codes=[All]"
-                                            .contentEquals(urlToKeepOpen)) {
-                                        return;
-                                    }
-                                    break;
-                                case "HIKVISION":
-                                    urlToKeepOpen = listOfRequests.get(indexInLists);
-                                    if ("/ISAPI/Event/notification/alertStream".contentEquals(urlToKeepOpen)) {
-                                        return;
-                                    }
-                                    break;
-                                case "DOORBIRD":
-                                    urlToKeepOpen = listOfRequests.get(indexInLists);
-                                    if ("/bha-api/monitor.cgi?ring=doorbell,motionsensor"
-                                            .contentEquals(urlToKeepOpen)) {
-                                        return;
-                                    }
-                                    break;
+                        String urlToKeepOpen = "";
+                        switch (thing.getThingTypeUID().getId()) {
+                            case "DAHUA":
+                                urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
+                                break;
+                            case "HIKVISION":
+                                urlToKeepOpen = "/ISAPI/Event/notification/alertStream";
+                                break;
+                            case "DOORBIRD":
+                                urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
+                                break;
+                        }
+
+                        for (ChannelTracking channelTracking : channelTracker) {
+                            if (channelTracking.getChannel().equals(ctx.channel())) {
+                                if (channelTracking.getRequestUrl().equals(urlToKeepOpen)) {
+                                    return; // don't auto close this as it is for the alarms.
+                                }
                             }
-                            logger.debug("! Channel was found idle for more than 15 seconds so closing it down. !");
-                            listOfChStatus.set(indexInLists, 0);
-                        } else {
-                            logger.warn("!?! Channel that was found idle could not be located in our tracking. !?!");
                         }
                     } finally {
                         lock.unlock();
@@ -542,75 +489,6 @@ public class IpCameraHandler extends BaseThingHandler {
             }
         }
         return temp;
-    }
-
-    private void cleanChannels() {
-        lock.lock();
-        try {
-            for (int index = 0; index < listOfRequests.size(); index++) {
-                logger.debug("Channel status is {} for URL:{}", listOfChStatus.get(index), listOfRequests.get(index));
-                switch (listOfChStatus.get(index)) {
-                    case 2: // Open and OK to reuse
-                    case 1: // Open
-                    case 0: // Closing but still open
-                        Channel channel = listOfChannels.get(index);
-                        if (channel.isOpen()) {
-                            break;
-                        } else {
-                            listOfChStatus.set(index, -1);
-                            logger.warn("Cleaning the channels has just found a connection with wrong open state.");
-                        }
-                    case -1: // closed
-                        listOfRequests.remove(index);
-                        listOfChStatus.remove(index);
-                        listOfChannels.remove(index);
-                        listOfReplies.remove(index);
-                        index--;
-                        break;
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void closeChannel(String url) {
-        lock.lock();
-        try {
-            for (byte index = 0; index < listOfRequests.size(); index++) {
-                if (listOfRequests.get(index).equals(url)) {
-                    switch (listOfChStatus.get(index)) {
-                        case 2: // Still open and OK to reuse
-                        case 1: // Still open
-                        case 0: // Marked as closing but channel still needs to be closed.
-                            Channel chan = listOfChannels.get(index);
-                            chan.close();// We can't wait as OH kills any handler that takes >5 seconds.
-                    }
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    private void closeAllChannels() {
-        lock.lock();
-        try {
-            for (byte index = 0; index < listOfRequests.size(); index++) {
-                logger.debug("Channel status is {} for URL:{}", listOfChStatus.get(index), listOfRequests.get(index));
-                switch (listOfChStatus.get(index)) {
-                    case 2: // Still open and ok to reuse
-                    case 1: // Still open
-                    case 0: // Marked as closing but channel still needs to be closed.
-                        Channel chan = listOfChannels.get(index);
-                        chan.close();
-                        // Handlers may get shutdown by Openhab if total delay >5 secs so no wait.
-                        break;
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
     }
 
     public void sendHttpPUT(String httpRequestURL, FullHttpRequest request) {
@@ -725,45 +603,31 @@ public class IpCameraHandler extends BaseThingHandler {
                     return;
                 }
                 if (future.isDone() && future.isSuccess()) {
+                    Channel ch = future.channel();
+                    boolean chTracked = false;
+                    openChannels.add(ch);
+                    if (!isOnline) {
+                        bringCameraOnline();
+                    }
                     logger.trace("Sending camera: {}: http://{}{}", httpMethod, ipAddress, httpRequestURL);
                     lock.lock();
-                    byte indexInLists = -1;
                     try {
-                        for (byte index = 0; index < listOfRequests.size(); index++) {
-                            boolean done = false;
-                            if (listOfRequests.get(index).equals(httpRequestURL)) {
-                                switch (listOfChStatus.get(index)) {
-                                    case 2: // Open and ok to reuse
-                                        Channel ch = listOfChannels.get(index);
-                                        if (ch.isOpen()) {
-                                            CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline()
-                                                    .get(COMMON_HANDLER);
-                                            commonHandler.setURL(httpRequestURLFull);
-                                            MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline()
-                                                    .get(AUTH_HANDLER);
-                                            authHandler.setURL(httpMethod, httpRequestURL);
-                                            ch.writeAndFlush(request);
-                                            return;
-                                        }
-                                    case -1: // Closed
-                                        indexInLists = index;
-                                        listOfChStatus.set(indexInLists, 1);
-                                        done = true;
-                                        break;
-                                }
-                                if (done) {
-                                    break;
-                                }
+                        for (ChannelTracking channelTracking : channelTracker) {
+                            if (channelTracking.getRequestUrl().equals(httpRequestURL)) {
+                                channelTracking.setChannel(ch);
+                                chTracked = true;
+                                break;
                             }
+                        }
+                        if (!chTracked) {
+                            channelTracker.add(new ChannelTracking(ch, httpRequestURL));
                         }
                     } finally {
                         lock.unlock();
                     }
-
-                    Channel ch = future.channel();
                     CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get(COMMON_HANDLER);
+                    commonHandler.setURL(httpRequestURLFull);
                     MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
-                    commonHandler.setURL(httpRequestURL);
                     authHandler.setURL(httpMethod, httpRequestURL);
 
                     switch (thing.getThingTypeUID().getId()) {
@@ -776,35 +640,12 @@ public class IpCameraHandler extends BaseThingHandler {
                             instarHandler.setURL(httpRequestURL);
                             break;
                     }
-                    if (indexInLists >= 0) {
-                        lock.lock();
-                        try {
-                            listOfChannels.set(indexInLists, ch);
-                        } finally {
-                            lock.unlock();
-                        }
-                    } else {
-                        lock.lock();
-                        try {
-                            listOfRequests.add(httpRequestURL);
-                            listOfChannels.add(ch);
-                            listOfChStatus.add(1);
-                            listOfReplies.add("");
-                        } finally {
-                            lock.unlock();
-                        }
-                    }
                     ch.writeAndFlush(request);
-                    if (!isOnline) {
-                        bringCameraOnline();
-                    }
-                    return;
                 } else { // an error occured
                     cameraCommunicationError(
                             "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
                 }
             }
-
         });
     }
 
@@ -886,7 +727,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 25, 0));
+                            socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 60, 0));
                             socketChannel.pipeline().addLast("HttpServerCodec", new HttpServerCodec());
                             socketChannel.pipeline().addLast("ChunkedWriteHandler", new ChunkedWriteHandler());
                             socketChannel.pipeline().addLast("streamServerHandler",
@@ -991,6 +832,56 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                 }
             }
+        }
+    }
+
+    void closeChannel(String url) {
+        lock.lock();
+        try {
+            for (ChannelTracking channelTracking : channelTracker) {
+                if (channelTracking.getRequestUrl().equals(url)) {
+                    if (channelTracking.getChannel().isOpen()) {
+                        channelTracking.getChannel().close();
+                        return;
+                    }
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    void cleanChannels() {
+        ChannelTracking localTracking = null;
+        lock.lock();
+        try {
+            for (ChannelTracking channelTracking : channelTracker) {
+                logger.trace("Channel is open:{}, url is {}", channelTracking.getChannel().isOpen(),
+                        channelTracking.getRequestUrl());
+                if (!channelTracking.getChannel().isOpen() && channelTracking.getReply().isEmpty()) {
+                    localTracking = channelTracking;// Seems to create a deadlock if we remove whilst in loop
+                    return;
+                }
+            }
+        } finally {
+            if (localTracking != null) {
+                channelTracker.remove(localTracking);// clean up one closed channel.
+            }
+            lock.unlock();
+        }
+    }
+
+    public void storeHttpReply(String url, String content) {
+        lock.lock();
+        try {
+            for (ChannelTracking channelTracking : channelTracker) {
+                if (channelTracking.getRequestUrl().equals(url)) {
+                    channelTracking.setReply(content);
+                    return;
+                }
+            }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -1633,24 +1524,19 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     boolean streamIsStopped(String url) {
-        int indexInLists = 0;
         lock.lock();
         try {
-            indexInLists = listOfRequests.lastIndexOf(url);
-            if (indexInLists < 0) {
-                return true; // Stream not found, probably first run.
-            }
-            // Stream was found in list now to check status
-            // Status can be -1=closed, 0=closing (do not re-use channel), 1=open , 2=open
-            // and ok to reuse
-            else if (listOfChStatus.get(indexInLists) < 1) {
-                // may need to check if more than one is in the lists.
-                return true; // Stream was open, but not now.
+            for (ChannelTracking channelTracking : channelTracker) {
+                if (channelTracking.getRequestUrl().equals(url)) {
+                    if (channelTracking.getChannel().isOpen()) {
+                        return false;// stream is running.
+                    }
+                }
             }
         } finally {
             lock.unlock();
         }
-        return false; // Stream is still open
+        return true; // Stream stopped or never started.
     }
 
     void snapshotRunnable() {
@@ -1755,10 +1641,9 @@ public class IpCameraHandler extends BaseThingHandler {
         if (ffmpegHLS != null) {
             ffmpegHLS.checkKeepAlive();
         }
-        if (listOfRequests.size() > 12) {
-            logger.debug(
-                    "There are {} channels being tracked, cleaning out old channels now to try and reduce this to 12 or below.",
-                    listOfRequests.size());
+        if (openChannels.size() > 18 || channelTracker.size() > 18) {
+            logger.debug("There are {} Channels being tracked, {} are open.", channelTracker.size(),
+                    openChannels.size());
             cleanChannels();
         }
     }
@@ -1901,7 +1786,7 @@ public class IpCameraHandler extends BaseThingHandler {
         basicAuth = ""; // clear out stored password hash
         useDigestAuth = false;
         startStreamServer(false);
-        closeAllChannels();
+        openChannels.close();
 
         if (ffmpegHLS != null) {
             ffmpegHLS.setKeepAlive(8);
@@ -1928,13 +1813,9 @@ public class IpCameraHandler extends BaseThingHandler {
             ffmpegSnapshot.stopConverting();
             ffmpegSnapshot = null;
         }
-
         lock.lock();
         try {
-            listOfRequests.clear();
-            listOfChannels.clear();
-            listOfChStatus.clear();
-            listOfReplies.clear();
+            channelTracker.clear();
         } finally {
             lock.unlock();
         }
