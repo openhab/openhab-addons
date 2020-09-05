@@ -49,5 +49,5 @@ Fragment-Host: org.openhab.binding.max
 	org.eclipse.jetty.server;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.servlet;version='[9.4.20,9.4.21)',\
 	org.eclipse.jetty.util;version='[9.4.20,9.4.21)',\
-	org.openhab.binding.max;version='[2.5.9,2.5.10)',\
-	org.openhab.binding.max.tests;version='[2.5.9,2.5.10)'
+	org.openhab.binding.max;version='[2.5.8,2.5.9)',\
+	org.openhab.binding.max.tests;version='[2.5.8,2.5.9)'

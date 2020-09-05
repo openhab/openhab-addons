@@ -76,5 +76,5 @@ Fragment-Host: org.openhab.io.hueemulation
 	org.ops4j.pax.web.pax-web-runtime;version='[7.2.11,7.2.12)',\
 	org.ops4j.pax.web.pax-web-spi;version='[7.2.11,7.2.12)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
-	org.openhab.io.hueemulation;version='[2.5.9,2.5.10)',\
-	org.openhab.io.hueemulation.tests;version='[2.5.9,2.5.10)'
+	org.openhab.io.hueemulation;version='[2.5.8,2.5.9)',\
+	org.openhab.io.hueemulation.tests;version='[2.5.8,2.5.9)'
