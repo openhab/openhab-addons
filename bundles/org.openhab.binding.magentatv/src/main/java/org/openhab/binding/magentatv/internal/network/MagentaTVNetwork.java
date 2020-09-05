@@ -151,7 +151,6 @@ public class MagentaTVNetwork {
         } catch (IOException e) {
             throw new MagentaTVException(e, "Unable to send Wake-on-LAN packet to {} / {}", ipAddr, macAddress);
         }
-
     }
 
     /**

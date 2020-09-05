@@ -304,5 +304,4 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("Unable to process SSDP message for IP {} - {}", ipAddress, e.toString());
         }
     }
-
 }

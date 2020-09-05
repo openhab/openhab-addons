@@ -13,6 +13,7 @@ The binding provides device discovery, sending keys for the remote and also rece
 * Deutsche Telekom Media Receiver MR201  - fully supported
 * Deutsche Telekom Media Receiver MR400  - supported with minor restrictions (POWER key)
 * Deutsche Telekom Media Receiver MR200  - supported with minor restrictions (POWER key)
+* Deutsche Telekom Media Receiver MR601  - should be supported (not verified)
 * Deutsche Telekom Media Receiver MR3xx  - NOT supported (different platform)
 * Deutsche Telekom Media Receiver MR1xx  - NOT supported (different platform)
 
@@ -57,12 +58,11 @@ The device can't be discovered if the openHAB system and receiver are not on the
 
 |Parameter       |Description                                                                                                     |
 |----------------|----------------------------------------------------------------------------------------------------------------|
-|udn             |UPnP Unique Device Name - a hex ID, which includes the 12 digit MAC address at the end (parsed by the binding)  |
-|modelId         |Type of Media Receiver: DMS_TPB for MR400 and MR200 ; MR401B for MR401B and MR201                               |
+|accountName     |MagentaTV AccountNname, should be the registered e-mail addressfor the Telekom Kundencenter|
+|accountPassword |T-Online password for the account                                                                               |
 |ipAddress       |IP address of the receiver, usually discovered by UPnP                                                          |
 |port            |Port to reach the remote service, usually 8081 for the MR401/MR201 or 49152 for MR400/200                       |
-|accountName     |T-Online account name, should be the registered e-mail address                                                  |
-|accountPassword |T-Online password for the account                                                                               |
+|udn             |UPnP Unique Device Name - a hex ID, which includes the 12 digit MAC address at the end (parsed by the binding)  |
 
 You need to setup your credentials while adding the media receiver thing.
 Those will be used to query the UID, which is required to pair with the receiver on the local network. 

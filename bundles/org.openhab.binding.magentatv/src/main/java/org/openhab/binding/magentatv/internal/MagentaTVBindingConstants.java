@@ -86,10 +86,10 @@ public class MagentaTVBindingConstants {
     public static final String PAIRING_NOTIFY_URI = "/magentatv/notify";
     public static final String NOTIFY_PAIRING_CODE = "X-pairingCheck:";
 
-    public static final String MODEL_MR400 = "DMS_TPB";
-    public static final String MODEL_MR401B = "MR401B";
-    public static final String MODEL_MR201 = "MR201";
-    public static final String MODEL_AUTO = "AUTO";
+    public static final String MODEL_MR400 = "DMS_TPB"; // Old DSL receiver
+    public static final String MODEL_MR401B = "MR401B"; // New DSL receiver
+    public static final String MODEL_MR601 = "MR601"; // SAT receiver
+    public static final String MODEL_MR201 = "MR201"; // sub receiver
 
     public static final String MR400_DEF_REMOTE_PORT = "49152";
     public static final String MR400_DEF_DESCRIPTION_URL = "/description.xml";

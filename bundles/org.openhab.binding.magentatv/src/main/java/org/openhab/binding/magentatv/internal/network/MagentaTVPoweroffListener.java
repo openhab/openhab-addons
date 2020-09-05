@@ -106,7 +106,6 @@ public class MagentaTVPoweroffListener extends Thread {
         } finally {
             close();
         }
-
     }
 
     public boolean isStarted() {

@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class MagentaTVDynamicConfig extends MagentaTVThingConfiguration {
+    protected String modelId = MODEL_MR400; // MR model
     protected String hardwareVersion = "";
     protected String firmwareVersion = "";
     protected String friendlyName = ""; // Receiver's Friendly Name from UPnP descriptin
@@ -46,6 +47,27 @@ public class MagentaTVDynamicConfig extends MagentaTVThingConfiguration {
         this.setLocalIP(network.getLocalIP());
         this.setLocalMAC(network.getLocalMAC());
         this.setTerminalID(network.getTerminalID());
+    }
+
+    public String getModel() {
+        return modelId.toUpperCase();
+    }
+
+    public void setPort(String port) {
+        if (modelId.contains(MODEL_MR400) && port.equals("49153")) {
+            // overwrite port returned by discovery (invalid for this model)
+            this.port = MR400_DEF_REMOTE_PORT;
+        } else {
+            this.port = port;
+        }
+    }
+
+    public boolean isMR400() {
+        return modelId.equals(MODEL_MR400);
+    }
+
+    public void setModel(String modelId) {
+        this.modelId = modelId;
     }
 
     public String getWakeOnLAN() {

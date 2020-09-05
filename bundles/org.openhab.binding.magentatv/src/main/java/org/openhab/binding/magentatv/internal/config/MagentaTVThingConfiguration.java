@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.magentatv.internal.config;
 
-import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.MR400_DEF_REMOTE_PORT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class MagentaTVThingConfiguration {
-    public String modelId = MODEL_MR400; // MR model
     public String ipAddress = ""; // IP Address of the MR
     public String port = MR400_DEF_REMOTE_PORT; // Port of the remote service
     public String udn = ""; // UPnP UDN
@@ -37,7 +36,6 @@ public class MagentaTVThingConfiguration {
                                // credentials change.
 
     public void update(MagentaTVThingConfiguration newConfig) {
-        modelId = newConfig.modelId;
         ipAddress = newConfig.ipAddress;
         port = newConfig.port;
         udn = newConfig.udn;
@@ -47,43 +45,8 @@ public class MagentaTVThingConfiguration {
         userId = newConfig.userId;
     }
 
-    public String getModel() {
-        return modelId.toUpperCase();
-    }
-
-    public boolean isMR400() {
-        return modelId.equals(MODEL_MR400);
-    }
-
-    public void setModel(String modelId) {
-        this.modelId = modelId;
-    }
-
-    /*
-     * public void setHardwareVersion(String version) {
-     *
-     * setValue(PROPERTY_HARDWARE_VERSION, version);
-     * }
-     *
-     * public String getFirmwareVersion() {
-     * return getValue(PROPERTY_FIRMWARE_VERSION, "");
-     * }
-     *
-     * public void setFirmwareVersion(String version) {
-     * setValue(PROPERTY_FIRMWARE_VERSION, version);
-     * }
-     */
     public String getPort() {
         return port;
-    }
-
-    public void setPort(String port) {
-        if (modelId.contains(MODEL_MR400) && port.equals("49153")) {
-            // overwrite port returned by discovery (invalid for this model)
-            this.port = MR400_DEF_REMOTE_PORT;
-        } else {
-            this.port = port;
-        }
     }
 
     public String getUDN() {

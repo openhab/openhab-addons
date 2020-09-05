@@ -104,8 +104,8 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
             String manufacturer = getString(device.getDetails().getManufacturerDetails().getManufacturer())
                     .toUpperCase();
             String model = device.getDetails().getModelDetails().getModelName().toUpperCase();
-            if (manufacturer.contains(OEM_VENDOR)
-                    && ((model.contains(MODEL_MR400) || model.contains(MODEL_MR401B) || model.contains(MODEL_MR201)))) {
+            if (manufacturer.contains(OEM_VENDOR) && ((model.contains(MODEL_MR400) || model.contains(MODEL_MR401B)
+                    || model.contains(MODEL_MR601) || model.contains(MODEL_MR201)))) {
                 return new ThingUID(THING_TYPE_RECEIVER, device.getIdentity().getUdn().getIdentifierString());
             }
         }
