@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>BSP Studer Thing</label>
+		<label>BSP Studer</label>
 		<description>Thing for Studer BSP Device</description>
 		<channels>
 			<channel id="batteryVoltage" typeId="Ubat"/>
@@ -22,13 +22,11 @@
 				<label>Slave Address</label>
 				<description>Slave address of BSP device</description>
 				<default>60</default>
-				<required>true</required>
 			</parameter>
 			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
-				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -38,7 +36,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>Xtender Studer Thing</label>
+		<label>Xtender Studer</label>
 		<description>Thing for Studer Xtender Device</description>
 		<channels>
 			<channel id="inputVoltage" typeId="Uin"/>
@@ -57,14 +55,12 @@
 				<label>Slave Address</label>
 				<description>Slave address of Xtender device</description>
 				<default>10</default>
-				<required>true</required>
 			</parameter>
 			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
-				<required>true</required>
-				<advanced>true</advanced>
+                <advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -73,7 +69,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>VarioTrack Studer Thing</label>
+		<label>VarioTrack Studer</label>
 		<description>Thing for Studer VarioTrack Device</description>
 		<channels>
 			<channel id="batteryVoltage" typeId="Ubat"/>
@@ -90,13 +86,11 @@
 				<label>Slave Address</label>
 				<description>Slave address of VarioTrack device</description>
 				<default>20</default>
-				<required>true</required>
 			</parameter>
 			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
-				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -106,7 +100,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="serial"/>
 		</supported-bridge-type-refs>
-		<label>VarioString Studer Thing</label>
+		<label>VarioString Studer</label>
 		<description>Thing for Studer VarioString Device</description>
 		<channels>
 			<channel id="batteryVoltage" typeId="Ubat"/>
@@ -133,13 +127,11 @@
 				<label>Slave Address</label>
 				<description>Slave address of VarioString device</description>
 				<default>40</default>
-				<required>true</required>
 			</parameter>
 			<parameter name="refreshSec" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
-				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

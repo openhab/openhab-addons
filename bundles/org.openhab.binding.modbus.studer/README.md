@@ -11,12 +11,12 @@ For a list of certified products see this page: https://www.studer-innotec.com/
 This bundle adds the following thing type to the Modbus binding.
 Note, that the things will show up under the Modbus binding.
 
-| Thing Type IDs | Description |Picture |
-| --- | --- | --- |
-| bsp | For BSP that offer a highly precise measuring for Xtender, VarioTrack and VarioString systems | ![BSP](doc/bsp.png) |
-| xtender | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png) |
-| variotrack | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp | ![VarioTrack](doc/variotrack.png) |
-| variostring | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4  | ![VarioString](doc/variostring.png) |
+| Thing Type IDs | Description                                                                                                          | Picture                             |
+|----------------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------|
+| bsp            | For BSP that offer a highly precise measuring for Xtender, VarioTrack and VarioString systems                        | ![BSP](doc/bsp.png)                 |
+| xtender        | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png)         |
+| variotrack     | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp         | ![VarioTrack](doc/variotrack.png)   |
+| variostring    | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4                | ![VarioString](doc/variostring.png) |
 
 
 ## Thing Configuration
@@ -30,10 +30,10 @@ Please refer to your device's vendor documentation how model blocks are laid for
 
 The following parameters are valid for all thing types:
 
-| Parameter | Type    | Required | Default if omitted  | Description                             |
-|-----------|---------|----------|---------------------|-----------------------------------------|
-| address   | integer | yes      | `first slave of device`       | Address of slave       |
-| refresh   | integer | yes       | 5                   | Poll interval in seconds. Increase this if you encounter connection errors |
+| Parameter | Type    | Required | Default if omitted      | Description                                                                |
+|-----------|---------|----------|-------------------------|----------------------------------------------------------------------------|
+| address   | integer | yes      | `first slave of device` | Address of slave                                                           |
+| refresh   | integer | yes      | 5                       | Poll interval in seconds. Increase this if you encounter connection errors |
 
 ## Channels
 

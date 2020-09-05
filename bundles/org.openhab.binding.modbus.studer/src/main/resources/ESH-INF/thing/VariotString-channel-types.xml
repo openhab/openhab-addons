@@ -24,7 +24,7 @@
 	<!-- Production PV in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed0">
 		<item-type>Number:Energy</item-type>
-		<label>Production PV in (kWh) for the Current Day</label>
+		<label>PV Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV operating mode Channel Type -->
@@ -68,7 +68,7 @@
 	<!-- Production PV1 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed1">
 		<item-type>Number:Energy</item-type>
-		<label>Production PV1 in (kWh) for the Current Day</label>
+		<label>PV1 Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV1 operating mode Channel Type -->
@@ -112,7 +112,7 @@
 	<!-- Production PV2 in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed2">
 		<item-type>Number:Energy</item-type>
-		<label>Production PV2 in (kWh) for the Current Day</label>
+		<label>PV2 Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- PV operating mode Channel Type -->
@@ -137,13 +137,8 @@
 	</channel-type>
 	<!-- State of the VarioString Channel Type -->
 	<channel-type id="VSstate">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>State of the VarioString</label>
-		<state readOnly="true">
-			<options>
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
-			</options>
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>

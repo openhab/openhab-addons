@@ -28,7 +28,7 @@ public class StuderConfiguration {
     /**
      * Refresh interval in seconds
      */
-    public int refreshSec = 5;
+    public int refresh = 5;
     /**
      * Max tries for one register
      */

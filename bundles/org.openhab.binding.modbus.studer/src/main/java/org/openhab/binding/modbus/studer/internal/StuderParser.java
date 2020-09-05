@@ -14,6 +14,7 @@ package org.openhab.binding.modbus.studer.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 
 /**
  * The {@link StuderParser} class with helper method
@@ -59,30 +60,14 @@ public class StuderParser {
         }
     }
 
-    public enum State {
-        OFF(0),
-        ON(1),
-        UNKNOWN(-1);
-
-        private final int code;
-
-        State(int code) {
-            this.code = code;
-        }
-
-        public int code() {
-            return this.code;
-        }
-    }
-
-    public static State getStateByCode(int code) {
+    public static OnOffType getStateByCode(int code) {
         switch (code) {
             case 0:
-                return State.OFF;
+                return OnOffType.OFF;
             case 1:
-                return State.ON;
+                return OnOffType.ON;
             default:
-                return State.UNKNOWN;
+                return OnOffType.OFF;
         }
     }
 
@@ -221,7 +206,7 @@ public class StuderParser {
      * @param hex string to convert from
      * @return the converted float
      */
-    public @Nullable Object hexToFloat(String hex) {
+    public @Nullable Float hexToFloat(String hex) {
         String t = hex.replaceAll(" ", "");
         float f = Float.intBitsToFloat((int) Long.parseLong(t, 16));
         if (Float.isNaN(f)) {

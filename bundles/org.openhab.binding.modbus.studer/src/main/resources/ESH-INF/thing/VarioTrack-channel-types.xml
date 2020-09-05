@@ -17,7 +17,7 @@
 	<!-- Voltage of the PV generator Channel Type -->
 	<channel-type id="Upv">
 		<item-type>Number:ElectricPotential</item-type>
-		<label>Voltage of the PV Generator</label>
+		<label>PV Generator Voltage</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Power of the PV generator Channel Type -->
@@ -29,7 +29,7 @@
 	<!-- Production in (kWh) for the current day Channel Type -->
 	<channel-type id="Ed">
 		<item-type>Number:Energy</item-type>
-		<label>Production in (kWh) for the Current Day</label>
+		<label>Current Day Production</label>
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<!-- Operating state Channel Type -->
@@ -54,13 +54,8 @@
 	</channel-type>
 	<!-- State of the VarioTrack Channel Type -->
 	<channel-type id="VTstate">
-		<item-type>String</item-type>
+		<item-type>Switch</item-type>
 		<label>State of the VarioTrack</label>
-		<state readOnly="true">
-			<options>
-				<option value="OFF">OFF</option>
-				<option value="ON">ON</option>
-			</options>
-		</state>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
