@@ -192,7 +192,7 @@ public class SmartyDecrypter implements TelegramParser {
         reset();
         if (plainText == null) {
             telegramListener
-            .telegramReceived(new P1Telegram(Collections.emptyList(), TelegramState.INVALID_ENCRYPTION_KEY));
+                    .telegramReceived(new P1Telegram(Collections.emptyList(), TelegramState.INVALID_ENCRYPTION_KEY));
         } else {
             parser.parse(plainText, plainText.length);
         }
