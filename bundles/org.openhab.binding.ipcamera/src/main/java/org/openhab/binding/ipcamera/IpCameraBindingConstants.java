@@ -98,7 +98,7 @@ public class IpCameraBindingConstants {
     public static final String CONFIG_MOTION_CHANGES_ORDER = "motionChangesOrder";
 
     // List of all Channel ids
-    public static final String CHANNEL_UPDATE_IMAGE_NOW = "updateImageNow";
+    public static final String CHANNEL_UPDATE_IMAGE_NOW = "pollImage";
     public static final String CHANNEL_UPDATE_GIF = "updateGif";
     public static final String CHANNEL_GIF_FILENAME = "gifFilename";
     public static final String CHANNEL_GIF_HISTORY = "gifHistory";
@@ -111,7 +111,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_RTSP_URL = "rtspUrl";
     public static final String CHANNEL_IMAGE_URL = "imageUrl";
-    public static final String CHANNEL_STREAM_URL = "streamUrl";
+    public static final String CHANNEL_STREAM_URL = "mjpegUrl";
     public static final String CHANNEL_HLS_URL = "hlsUrl";
     public static final String CHANNEL_PAN = "pan";
     public static final String CHANNEL_TILT = "tilt";

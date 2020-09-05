@@ -9,7 +9,7 @@
 		<description>experimental.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
 		</channels>
@@ -106,7 +106,7 @@
 		<description>Use when your camera is not ONVIF compatible.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -123,7 +123,7 @@
 			<channel id="externalMotion" typeId="externalMotion"/>
 			<channel id="thresholdAudioAlarm" typeId="thresholdAudioAlarm"/>
 			<channel id="audioAlarm" typeId="audioAlarm"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -158,7 +158,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -171,7 +171,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -366,7 +366,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use when the binding does not list your brand of ONVIF compatible Camera</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -401,7 +401,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
 			<channel id="gotoPreset" typeId="gotoPreset"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -436,7 +436,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -449,7 +449,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -648,7 +648,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use for all current Amcrest Cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -674,7 +674,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
 			<channel id="gotoPreset" typeId="gotoPreset"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -826,7 +826,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -839,7 +839,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -932,7 +932,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use for all current Dahua cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -970,7 +970,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
 			<channel id="gotoPreset" typeId="gotoPreset"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -1106,7 +1106,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -1119,7 +1119,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -1229,7 +1229,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use for all current Doorbird Cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -1249,7 +1249,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="activateAlarmOutput2" typeId="activateAlarmOutput2"/>
 			<channel id="doorBell" typeId="doorBell"/>
 			<channel id="externalLight" typeId="externalLight"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -1401,7 +1401,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -1414,7 +1414,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -1498,7 +1498,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use for all current HD FOSCAM Cameras as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -1524,7 +1524,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
 			<channel id="gotoPreset" typeId="gotoPreset"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -1676,7 +1676,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -1689,7 +1689,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -1788,7 +1788,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use for all current Hikvision Cameras as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -1825,7 +1825,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
 			<channel id="gotoPreset" typeId="gotoPreset"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -1977,7 +1977,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -1990,7 +1990,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -2084,7 +2084,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<description>Use for all current INSTAR HD Cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
-			<channel id="updateImageNow" typeId="updateImageNow"/>
+			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="updateGif" typeId="updateGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
@@ -2113,7 +2113,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<channel id="tilt" typeId="tilt"/>
 			<channel id="zoom" typeId="zoom"/>
 			<channel id="gotoPreset" typeId="gotoPreset"/>
-			<channel id="streamUrl" typeId="streamUrl"/>
+			<channel id="mjpegUrl" typeId="mjpegUrl"/>
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
@@ -2265,7 +2265,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 				<options>
 					<option value="0">Image channel never updates (0)</option>
-					<option value="1">Image channel follows updateImageNow (1)</option>
+					<option value="1">Image channel follows pollImage (1)</option>
 					<option value="2">Start Motion Alarm (2)</option>
 					<option value="3">Start Audio Alarm (3)</option>
 					<option value="23">Start of Motion and Audio Alarms (23)</option>
@@ -2278,7 +2278,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
 				<label>Default updateImage setting</label>
 				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the updateImageNow channel.
+					ON the pollImage channel.
 				</description>
 				<default>false</default>
 			</parameter>
@@ -2365,7 +2365,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<category>Camera</category>
 	</channel-type>
 
-	<channel-type id="updateImageNow">
+	<channel-type id="pollImage">
 		<item-type>Switch</item-type>
 		<label>Update Image</label>
 		<description>This can be used to trigger snapshot updates when an external PIR, button or other form of sensor turns
@@ -2450,7 +2450,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="streamUrl">
+	<channel-type id="mjpegUrl">
 		<item-type>String</item-type>
 		<label>MJPEG URL</label>
 		<description>A link you can use in Openhab/Habpanel to fetch a MJPEG video feed from the camera.</description>
