@@ -168,14 +168,21 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                     } else {
                         value = new JsonPrimitive(command.toString().toLowerCase());
                     }
+                    if (paramType == CommandParameterType.EMPTY) {
+                        value = new JsonArray();
+                    }
                     final MiIoDeviceActionCondition miIoDeviceActionCondition = action.getCondition();
                     if (miIoDeviceActionCondition != null) {
                         value = ActionConditions.executeAction(miIoDeviceActionCondition, deviceVariables, value,
                                 command);
                     }
                     // Check for miot channel
-                    if (miIoBasicChannel.isMiOt()) {
-                        value = miotTransform(miIoBasicChannel, value);
+                    if (value != null) {
+                        if (action.isMiOtAction()) {
+                            value = miotActionTransform(action, miIoBasicChannel, value);
+                        } else if (miIoBasicChannel.isMiOt()) {
+                            value = miotTransform(miIoBasicChannel, value);
+                        }
                     }
                     if (paramType != CommandParameterType.NONE && value != null) {
                         if (parameters.size() > 0) {
@@ -184,15 +191,13 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
                             parameters.add(value);
                         }
                     }
-                    if (paramType != CommandParameterType.EMPTY) {
-                        cmd = cmd + parameters.toString();
-                    }
+                    cmd = cmd + parameters.toString();
                     if (value != null) {
                         logger.debug("Sending command {}", cmd);
                         sendCommand(cmd);
                     } else {
                         if (miIoDeviceActionCondition != null) {
-                            logger.debug("Conditional command {} not send, condition {} not met", cmd,
+                            logger.debug("Conditional command {} not send, condition '{}' not met", cmd,
                                     miIoDeviceActionCondition.getName());
                         } else {
                             logger.debug("Command not send. Value null");
@@ -220,6 +225,18 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         json.addProperty("siid", miIoBasicChannel.getSiid());
         json.addProperty("piid", miIoBasicChannel.getPiid());
         json.add("value", value);
+        return json;
+    }
+
+    private @Nullable JsonElement miotActionTransform(MiIoDeviceAction action, MiIoBasicChannel miIoBasicChannel,
+            @Nullable JsonElement value) {
+        JsonObject json = new JsonObject();
+        json.addProperty("did", miIoBasicChannel.getChannel());
+        json.addProperty("siid", action.getSiid());
+        json.addProperty("aiid", action.getAiid());
+        if (value != null) {
+            json.add("in", value);
+        }
         return json;
     }
 
