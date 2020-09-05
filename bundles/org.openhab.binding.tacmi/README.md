@@ -41,7 +41,13 @@ Maybe this screenshot shows it best:
 The Text from the *Pre-Text* will be used to define the channel.
 The first word *tempCollector* (highlighted in the screenshot) will be used as channel name, so it has to be unique.
 Everything else till the final *:* will be used as channel description.
+Be sure to have at least 2 words in the *Pre-Text* as we need both - the channel name and a description.
+The binding will log an error otherwise.
+Also keep in mind: for the channel name we have to adhere to the OH channel name conventions - so just use letters and numbers without any special sings here.
 The type of the channel will be automatically determined by the type of the object added.
+Also don't forget the final colon - this is the separator between the label and the value.
+Without the colon the parser couldn't build up a working channel for this value.
+
 The first sample is a sensor reading, but also the 'operation mode' of a heating circuit could be added:
 
 ![screenshot-sample-with-heating-circuit](doc/images/sample-with-heating-circuit.png)
@@ -140,7 +146,7 @@ As this only restores the item states you have to write a rule issuing _postUpda
 
 Supported channels for the CoE connection are:
 
-| channel         | type        | description                                                          |
+| Channel         | Type        | Description                                                          |
 |-----------------|-------------|----------------------------------------------------------------------|
 | coe-digital-in  | Switch (RO) | Digital input channel for digital state data received from the node  |
 | coe-digital-out | Switch      | Digital output channel for digital state data sent to the node       |
