@@ -65,7 +65,7 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
     }
 
     @Override
-    protected byte[] convertWriteValue(Object value) throws Exception {
+    protected byte[] convertWriteValue(Object value) {
         ByteBuffer data = ByteBuffer.allocate(4);
         double dblVal;
         try {

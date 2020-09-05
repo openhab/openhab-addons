@@ -45,10 +45,7 @@ public class SetDatapointValueMessage {
         }
 
         ByteBuffer list = ByteBuffer.allocate(this.getLength() + 4);
-        for (int i = 0; i < this.getLength() + 4; i++) {
-            list.put(data[i]);
-        }
-
+        list.put(data, 0, this.getLength() + 4);
         this.setData(list.array());
     }
 

@@ -99,33 +99,26 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
     @Override
     public byte[] createWriteData(Object value) {
         logger.debug("Convert into byte array '{}'", value);
-        try {
-            byte[] val = this.convertWriteValue(value);
-            byte length = (byte) (val.length + 20);
-            ByteBuffer list = ByteBuffer.allocate(length);
-            list.put(KnxNetFrame.knxHeader);
-            list.put(KnxNetFrame.connectionHeader);
-            list.put((byte) 0xF0); // Main Service
-            list.put(SubServiceType.DATAPOINT_VALUE_WRITE); // Sub Service
-            byte low = (byte) (this.getId() & 0xFF);
-            byte high = (byte) ((this.getId() & 0xFF) / 256);
-            list.put(high);
-            list.put(low); // Start DataPoint
-            list.put((byte) 0x00); // Amount DataPoints (high-byte)
-            list.put((byte) 0x01); // Amount DataPoints (low-byte)
-            list.put(high);
-            list.put(low); // Write: ID of DataPoint
-            list.put((byte) 0x00); // State
-            list.put((byte) val.length); // Length of Data
-            list.put(val); // Data Value
-            list.put(5, length);
-            return list.array();
-        } catch (Exception e) {
-            logger.warn("DataPoint-CreateWriteData: Error converting value ({}) of ID {}. {}", value, this.getId(),
-                    e.getMessage(), e);
-        }
-
-        return new byte[0];
+        byte[] val = this.convertWriteValue(value);
+        byte length = (byte) (val.length + 20);
+        ByteBuffer list = ByteBuffer.allocate(length);
+        list.put(KnxNetFrame.knxHeader);
+        list.put(KnxNetFrame.connectionHeader);
+        list.put((byte) 0xF0); // Main Service
+        list.put(SubServiceType.DATAPOINT_VALUE_WRITE); // Sub Service
+        byte low = (byte) (this.getId() & 0xFF);
+        byte high = (byte) ((this.getId() & 0xFF) / 256);
+        list.put(high);
+        list.put(low); // Start DataPoint
+        list.put((byte) 0x00); // Amount DataPoints (high-byte)
+        list.put((byte) 0x01); // Amount DataPoints (low-byte)
+        list.put(high);
+        list.put(low); // Write: ID of DataPoint
+        list.put((byte) 0x00); // State
+        list.put((byte) val.length); // Length of Data
+        list.put(val); // Data Value
+        list.put(5, length);
+        return list.array();
     }
 
     @Override
@@ -137,7 +130,7 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
      * Converts the value to be written into a data array of bytes.
      *
      */
-    protected abstract byte[] convertWriteValue(Object value) throws Exception;
+    protected abstract byte[] convertWriteValue(Object value);
 
     /**
      * Checks the data to be processed.

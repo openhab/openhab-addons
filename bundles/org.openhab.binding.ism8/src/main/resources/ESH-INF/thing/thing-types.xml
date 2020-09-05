@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="device">
-		<label>Ism8 Binding</label>
-		<description>Ism8 Interface</description>
+		<label>ISM8 Binding</label>
+		<description>ISM8 Interface</description>
 
 		<config-description>
 			<parameter name="portNumber" type="integer" required="true" min="1" max="65535">

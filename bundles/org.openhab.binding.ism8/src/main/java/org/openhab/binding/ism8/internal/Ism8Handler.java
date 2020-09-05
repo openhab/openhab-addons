@@ -21,7 +21,6 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.ism8.server.DataPointChangedEvent;
@@ -72,8 +71,8 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                     try {
                         svr.sendData(dataPoint.createWriteData(command));
                     } catch (IOException e) {
-                        this.logger.warn("Writting to ISM DataPoint '{}' failed. '{}'", dataPoint.getId(),
-                                e.getMessage(), e);
+                        this.logger.debug("Writting to ISM DataPoint '{}' failed. '{}'", dataPoint.getId(),
+                                e.getMessage());
                     }
                 }
             }
@@ -91,34 +90,32 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
     @Override
     public void initialize() {
         this.config = getConfigAs(Ism8Configuration.class);
-        try {
-            Ism8Configuration cfg = this.config;
-            if (cfg != null) {
-                Server svr = new Server(cfg.getPortNumber());
-                for (Channel channel : getThing().getChannels()) {
-                    if (channel.getConfiguration().containsKey("id")
-                            && channel.getConfiguration().containsKey("type")) {
+        Ism8Configuration cfg = this.config;
+        if (cfg != null) {
+            Server svr = new Server(cfg.getPortNumber());
+            for (Channel channel : getThing().getChannels()) {
+                if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("type")) {
+                    try { 
                         int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
                         String type = channel.getConfiguration().get("type").toString();
                         String description = channel.getLabel();
                         if (type != null && description != null) {
                             svr.addDataPoint(id, type, description);
                         }
-                    } else {
-                        this.logger.warn("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
-                                channel.getConfiguration());
+                    } catch (NumberFormatException e) {
+                        this.logger.warn("Ism8 initialize: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}", channel.getLabel(), channel.getConfiguration());
                     }
-                    this.logger.debug("Ism8: Channel={}", channel.getConfiguration().toString());
+                } else {
+                    this.logger.info("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
+                            channel.getConfiguration());
                 }
-
-                this.updateStatus(ThingStatus.UNKNOWN);
-                svr.addDataPointChangeListener(this);
-                scheduler.execute(svr::start);
-                this.server = svr;
+                this.logger.debug("Ism8: Channel={}", channel.getConfiguration().toString());
             }
-        } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            this.logger.warn("Ism8 Initialize: {}", e.getMessage(), e);
+
+            this.updateStatus(ThingStatus.UNKNOWN);
+            svr.addDataPointChangeListener(this);
+            scheduler.execute(svr::start);
+            this.server = svr;
         }
     }
 
@@ -140,18 +137,20 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
 
     private void updateDataPoint(IDataPoint dataPoint) {
         this.updateStatus(ThingStatus.ONLINE);
-        for (Channel channel : getThing().getChannels()) {
-            try {
-                if (channel.getConfiguration().containsKey("id")
-                        && Integer.parseInt(channel.getConfiguration().get("id").toString()) == dataPoint.getId()) {
-                    logger.debug("Ism8 updateDataPoint ID:{} {}", dataPoint.getId(), dataPoint.getValueText());
-                    Object val = dataPoint.getValueObject();
-                    if (val != null) {
-                        updateState(channel.getUID(), new QuantityType<>(val.toString()));
+        for (Channel channel : getThing().getChannels()) {            
+            if (channel.getConfiguration().containsKey("id")) {
+                try {
+                    int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
+                    if (id == dataPoint.getId()) {
+                        this.logger.debug("Ism8 updateDataPoint ID:{} {}", dataPoint.getId(), dataPoint.getValueText());
+                        Object val = dataPoint.getValueObject();
+                        if (val != null) {
+                            updateState(channel.getUID(), new QuantityType<>(val.toString()));
+                        }
                     }
+                } catch (NumberFormatException e) {
+                    this.logger.warn("Ism8 updateDataPoint: ID couldn't be converted correctly. Check the configuration of channel {}. {}", channel.getLabel(), e.getMessage());
                 }
-            } catch (Exception e) {
-                logger.warn("Ism8 updateDataPoint: {}", e.getMessage(), e);
             }
         }
     }

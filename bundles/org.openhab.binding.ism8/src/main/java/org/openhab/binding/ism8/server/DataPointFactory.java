@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataPointFactory {
-    private final Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
     private static ArrayList<IDataPoint> dataPoints = new ArrayList<>();
 
     /**
@@ -62,13 +62,13 @@ public class DataPointFactory {
                     break;
             }
         } catch (Exception e) {
-            new DataPointFactory().logger.warn("Error creating data point {}. {}", id, e.getMessage(), e);
+            logger.warn("Error creating data point {}. {}", id, e.getMessage());
         }
 
         if (dataPoint != null) {
             for (IDataPoint dp : dataPoints) {
                 if (dp.getId() == dataPoint.getId()) {
-                    new DataPointFactory().logger.info("Data point already exists ({}).", id);
+                    logger.info("Data point already exists ({}).", id);
                     return null;
                 }
             }

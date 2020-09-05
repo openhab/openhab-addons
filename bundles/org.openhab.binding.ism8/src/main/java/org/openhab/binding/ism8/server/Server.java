@@ -88,7 +88,7 @@ public class Server extends Thread {
             } catch (InterruptedException e) {
                 logger.debug("Thread interrupted");
             } catch (Exception e) {
-                logger.warn("Error Handle Communication - restart communication. {}", e.getMessage(), e);
+                logger.warn("Error Handle Communication - restart communication. {}", e.getMessage());
                 this.startRetries++;
             }
         }
@@ -143,7 +143,7 @@ public class Server extends Thread {
     }
 
     private void stopServer() {
-        logger.info("Stop Ism8 server.");
+        logger.debug("Stop Ism8 server.");
         try {
             ServerSocket serverSock = this.serverSocket;
             if (serverSock != null) {
@@ -160,23 +160,22 @@ public class Server extends Thread {
                 this.client = null;
             }
         } catch (Exception e) {
-            logger.warn("Error stopping Communication. {}", e.getMessage(), e);
+            logger.warn("Error stopping Communication. {}", e.getMessage());
         }
     }
 
     private void handleCommunication() {
         try {
-            logger.info("Waiting for connection in port {}.", this.getPort());
+            logger.debug("Waiting for connection in port {}.", this.getPort());
             IDataPointChangeListener listener = this.changeListener;
             if (listener != null) {
                 listener.connectionStatusChanged(ThingStatus.OFFLINE);
-            }
-            
-            ServerSocket serverSock =new java.net.ServerSocket(this.getPort());
+            }            
+            ServerSocket serverSock = new ServerSocket(this.getPort());
             this.serverSocket = serverSock;
             Socket clientSocket = serverSock.accept();
             this.client = clientSocket;
-            logger.info("Connection from Partner established {}", clientSocket.getRemoteSocketAddress());
+            logger.debug("Connection from Partner established {}", clientSocket.getRemoteSocketAddress());
             if (listener != null) {
                 listener.connectionStatusChanged(ThingStatus.ONLINE);
             }
@@ -196,34 +195,34 @@ public class Server extends Thread {
                         if (answer.length > 0) {
                             this.sendData(answer);
                         }
-                        SetDatapointValueMessage[] messages = frame.getValueMessages();
-                        for (int j = 0; j < messages.length; j++) {
-                            logger.debug("Message received: {} {}", messages[j].getId(),
-                                    this.printBytes(messages[j].getData()));
+                                                
+                        for (SetDatapointValueMessage message : frame.getValueMessages()) {
+                            logger.debug("Message received: {} {}", message.getId(),
+                                    this.printBytes(message.getData()));
 
                             IDataPoint dataPoint = null;
                             for (int k = 0; k < this.dataPoints.size(); k++) {
                                 IDataPoint dp = this.dataPoints.get(k); 
-                                if (dp.getId() == messages[j].getId()) {
+                                if (dp.getId() == message.getId()) {
                                     dataPoint = dp;
                                     break;
                                 }
                             }
 
                             if (dataPoint != null) {
-                                dataPoint.processData(messages[j].getData());
+                                dataPoint.processData(message.getData());
                                 logger.debug("{} {}", dataPoint.getDescription(), dataPoint.getValueText());
                                 if (listener != null) {
                                     listener.dataPointChanged(new DataPointChangedEvent(this, dataPoint));
                                 }
                                 break;
                             }
-                        }
+                        }                   
                     }
                 }
             }
         } catch (Exception e) {
-            logger.warn("Error handle client data stream. {}", e.getMessage(), e);
+            logger.warn("Error handle client data stream. {}", e.getMessage());
             this.stopServer();
         }
     }
@@ -246,10 +245,7 @@ public class Server extends Thread {
         ArrayList<byte[]> result = new ArrayList<byte[]>();
         if (data.length >= amount) {
             ByteBuffer list = ByteBuffer.allocate(amount);
-            for (int i = 0; i < amount; i++) {
-                list.put(data[i]);
-            }
-
+            list.put(data, 0, amount);
             int start = -1;
             for (int i = 0; i < amount - 4; i++) {
                 if (list.get(i + 0) == (byte) 0x06 && list.get(i + 1) == (byte) 0x20 && list.get(i + 2) == (byte) 0xF0

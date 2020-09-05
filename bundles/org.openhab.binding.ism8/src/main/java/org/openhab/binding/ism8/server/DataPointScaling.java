@@ -51,7 +51,7 @@ public class DataPointScaling extends DataPointBase<@Nullable Double> {
     }
 
     @Override
-    protected byte[] convertWriteValue(Object value) throws Exception {
+    protected byte[] convertWriteValue(Object value) {
         this.setValue(Math.max(Math.min(Double.parseDouble(value.toString()), 100), 0));
         Object rawVal = this.getValue();
         double rawValResult = rawVal!= null ? (Double)rawVal : 0.0;

@@ -18,7 +18,7 @@ _Auto-discovery is not supported._
 
 ## Thing Configuration
 
-The intension was to have a generic ISM8 binding in order to offer the full flexibilty for the different heating systems.
+The intention was to have a generic ISM8 binding in order to offer the full flexibilty for the different heating systems.
 For this reason you need to create a Thing configuration, where basically only the port is required next to the channel configuration.
 (Thing ism8:device:heater "Wolf Heizung" [portNumber=12004])
 
@@ -26,7 +26,7 @@ For this reason you need to create a Thing configuration, where basically only t
 
 You can use any channel supported by the ISM8 as data point. Please have a look at the official manual from Wolf.
 Within this document you'll find a table containing all supported data points. The available data points are depending on your heating system configuration. 
-The Ism8 does currently support 4 different devices at the same moment of time (e.g. CGB-2, CWL Excellent, Solar, ...).
+The ISM8 does currently support 4 different devices at the same moment of time (e.g. CGB-2, CWL Excellent, Solar, ...).
 
 Once you have an overview of your heating system set you can start to create the channels accordingly.
 Each channel should be created in the following way:
@@ -183,4 +183,4 @@ _HVACContrMode.map_
     NULL=Undefiniert
 
 _Result_
-<img src="./Sitemap-Example.png" width="800" height="600">
+<img src="doc/Sitemap-Example.png" width="800" height="600">

@@ -30,7 +30,7 @@ public class KnxNetFrame {
     public static byte[] knxHeader = new byte[6];
     public static byte[] connectionHeader = new byte[4];
 
-    private final Logger logger = LoggerFactory.getLogger(KnxNetFrame.class);
+    private static final Logger logger = LoggerFactory.getLogger(KnxNetFrame.class);
     private ArrayList<SetDatapointValueMessage> valueMessages = new ArrayList<SetDatapointValueMessage>();
     private byte mainService;
     private byte subService = SubServiceType.SET_DATAPOINT_VALUE_REQUEST;
@@ -118,27 +118,27 @@ public class KnxNetFrame {
      */
     @Nullable
     public static KnxNetFrame createKnxNetPackage(byte[] data, int amount) throws Exception {
-        KnxNetFrame frame = new KnxNetFrame();
         if (data.length < 16 || amount < 16 || data.length < amount) {
-            frame.logger.warn("Length of the data too short for a KNXnet/IP package ({}).", data.length);
+            logger.warn("Length of the data too short for a KNXnet/IP package ({}).", data.length);
             return null;
         }
 
         if (data[0] != knxHeader[0] || data[1] != knxHeader[1] || data[2] != knxHeader[2] || data[3] != knxHeader[3]) {
-            frame.logger.warn("Incorrect KNXnet/IP header.");
+            logger.warn("Incorrect KNXnet/IP header.");
             return null;
         }
 
         int frameSize = Byte.toUnsignedInt(data[4]) * 256 + Byte.toUnsignedInt(data[5]);
         if (frameSize != amount) {
-            frame.logger.warn("CreateKnxNetPackage: Error TelegrammLength/FrameSize missmatch. ({}/{})", data.length,
+            logger.warn("CreateKnxNetPackage: Error TelegrammLength/FrameSize missmatch. ({}/{})", data.length,
                     frameSize);
             return null;
         }
 
+        KnxNetFrame frame = new KnxNetFrame();
         frame.setMainService(data[10]);
         if (frame.getMainService() != (byte) 0xF0) {
-            frame.logger.warn("CreateKnxNetPackage: Main-Service not supported. ({})", frame.getMainService());
+            logger.warn("CreateKnxNetPackage: Main-Service not supported. ({})", frame.getMainService());
             return null;
         }
 
@@ -151,7 +151,7 @@ public class KnxNetFrame {
         } else if (data[11] == (byte) 0xD0) {
             frame.setSubService(SubServiceType.REQUEST_ALL_DATAPOINTS);
         } else {
-            frame.logger.warn("CreateKnxNetPackage: Sub-Service not supported. ({})", frame.getSubService());
+            logger.warn("CreateKnxNetPackage: Sub-Service not supported. ({})", frame.getSubService());
             return null;
         }
 
