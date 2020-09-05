@@ -914,7 +914,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
     private void clearPolling(ScheduledFuture<?> pollJob) {
         if (pollJob != null) {
-            logger.trace("Canceling Poll Job");
             pollJob.cancel(false);
         }
     }
