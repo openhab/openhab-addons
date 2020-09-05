@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.junit.Test;
-import org.openhab.binding.mqtt.generic.internal.ColorMode;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 
 /**
  * Test cases for the value classes. They should throw exceptions if the wrong command type is used

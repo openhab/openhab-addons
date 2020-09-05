@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.mqtt.generic.internal.ColorMode;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

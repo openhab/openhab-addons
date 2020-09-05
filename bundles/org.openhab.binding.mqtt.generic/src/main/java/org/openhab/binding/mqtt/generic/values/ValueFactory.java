@@ -15,8 +15,8 @@ package org.openhab.binding.mqtt.generic.values;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
-import org.openhab.binding.mqtt.generic.internal.ColorMode;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 
 /**
  * A factory t

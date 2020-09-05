@@ -1,4 +1,4 @@
-package org.openhab.binding.mqtt.generic.internal;
+package org.openhab.binding.mqtt.generic.mapping;
 
 /**
  * Color modes supported by the binding.
