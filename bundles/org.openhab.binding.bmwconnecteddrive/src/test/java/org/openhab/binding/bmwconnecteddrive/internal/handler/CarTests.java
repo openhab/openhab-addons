@@ -29,8 +29,9 @@ import org.eclipse.smarthome.core.types.State;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.StatusWrapper;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.StatusWrapper;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class CarTests {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
-    // ConnectedCarHandler cch = new Co
+
+    private final int HYBRID_CALL_TIMES = 19;
+    private final int CONV_CALL_TIMES = 13;
+    private final int EV_CALL_TIMES = 14;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
@@ -57,8 +61,7 @@ public class CarTests {
     List<ChannelUID> allChannels;
     @Nullable
     List<State> allStates;
-    @Nullable
-    String driveTrain;
+    String driveTrain = Constants.EMPTY;
     boolean imperial;
 
     /**
@@ -77,7 +80,7 @@ public class CarTests {
         stateCaptor = ArgumentCaptor.forClass(State.class);
     }
 
-    private boolean testCar(@Nullable String statusContent, int callbacksExpected) {
+    private boolean testCar(String statusContent, int callbacksExpected) {
         assertNotNull(statusContent);
 
         cch.vehicleStatusCallback.onResponse(Optional.of(statusContent));
@@ -123,7 +126,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testCar(content, 18));
+        assertTrue(testCar(content, HYBRID_CALL_TIMES));
     }
 
     /**
@@ -151,7 +154,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testCar(content, 18));
+        assertTrue(testCar(content, HYBRID_CALL_TIMES));
     }
 
     /**
@@ -175,7 +178,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F15/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -183,7 +186,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F15/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     /**
@@ -207,7 +210,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -215,7 +218,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -223,7 +226,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -231,7 +234,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -239,7 +242,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -247,7 +250,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -255,7 +258,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -263,7 +266,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -271,7 +274,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -279,7 +282,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testCar(content, 14));
+        assertTrue(testCar(content, CONV_CALL_TIMES));
     }
 
     @Test
@@ -287,7 +290,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.ELECTRIC.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testCar(content, 15));
+        assertTrue(testCar(content, EV_CALL_TIMES));
     }
 
     @Test
@@ -295,7 +298,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.ELECTRIC.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testCar(content, 15));
+        assertTrue(testCar(content, EV_CALL_TIMES));
     }
 
     @Test
@@ -303,7 +306,7 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
-        assertTrue(testCar(content, 18));
+        assertTrue(testCar(content, HYBRID_CALL_TIMES));
     }
 
     @Test
@@ -311,6 +314,6 @@ public class CarTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(CarType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
-        assertTrue(testCar(content, 18));
+        assertTrue(testCar(content, HYBRID_CALL_TIMES));
     }
 }

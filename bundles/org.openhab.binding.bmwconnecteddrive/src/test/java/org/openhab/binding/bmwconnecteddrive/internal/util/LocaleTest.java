@@ -15,6 +15,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.util;
 import static org.junit.Assert.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -65,5 +66,12 @@ public class LocaleTest {
     public void testTimeZoneDateTime() {
         String pattern = "2018-07-16T21:47:46+0000";
         assertEquals("ZonedDateTime", "16.07.2018 23:47", Converter.getZonedDateTime(pattern));
+    }
+
+    @Test
+    public void testLocalTime() {
+        String time = "05:23";
+        LocalTime t = LocalTime.parse(time);
+        assertEquals("Time", "05:23", t.toString());
     }
 }

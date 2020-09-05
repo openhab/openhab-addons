@@ -27,8 +27,4 @@
 		<item-type>String</item-type>
 		<label>Date and Time of Last Update</label>
 	</channel-type>
-	<channel-type id="charging-status-channel">
-		<item-type>String</item-type>
-		<label>Charging Status</label>
-	</channel-type>
 </thing:thing-descriptions>

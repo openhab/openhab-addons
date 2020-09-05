@@ -10,7 +10,7 @@
 			<channel id="mileage" typeId="mileage-channel"/>
 			<channel id="fuel" typeId="range-fuel-channel"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
-			<channel id="last-update" typeId="last-update-channel"/>
+			<channel id="radius-fuel" typeId="range-radius-fuel-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

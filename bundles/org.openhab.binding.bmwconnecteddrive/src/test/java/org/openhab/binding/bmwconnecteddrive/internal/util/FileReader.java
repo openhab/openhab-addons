@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 
 /**
  * The {@link FileReader} Helper Util to read test resource files
@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class FileReader {
 
-    public static @Nullable String readFileInString(String filename) {
+    public static String readFileInString(String filename) {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "CP1252"));) {
             StringBuffer buf = new StringBuffer();
             String sCurrentLine;
@@ -43,6 +43,6 @@ public class FileReader {
             // fail if file cannot be read
             assertTrue(false);
         }
-        return null;
+        return Constants.UNKNOWN;
     }
 }

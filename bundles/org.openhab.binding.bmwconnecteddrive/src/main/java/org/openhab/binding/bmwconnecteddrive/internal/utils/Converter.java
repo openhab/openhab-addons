@@ -18,6 +18,9 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link Converter} Data Transfer Object
@@ -34,12 +37,14 @@ public class Converter {
             .ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
     private static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
+    private static final Gson GSON = new Gson();
+
     public static double round(double value) {
         double scale = Math.pow(10, 1);
         return Math.round(value * scale) / scale;
     }
 
-    public static String getLocalDateTime(String input) {
+    public static String getLocalDateTime(@Nullable String input) {
         if (input == null) {
             return Converter.toTitleCase(Constants.UNKNOWN);
         }
@@ -50,7 +55,7 @@ public class Converter {
         return zdtLZ.format(Converter.DATE_OUTPUT_PATTERN);
     }
 
-    public static String getZonedDateTime(String input) {
+    public static String getZonedDateTime(@Nullable String input) {
         if (input == null) {
             return Converter.toTitleCase(Constants.UNKNOWN);
         }
@@ -60,7 +65,7 @@ public class Converter {
         return zdtLZ.format(Converter.DATE_OUTPUT_PATTERN);
     }
 
-    public static String toTitleCase(String input) {
+    public static String toTitleCase(@Nullable String input) {
         if (input == null) {
             return Converter.toTitleCase(Constants.UNKNOWN);
         } else {
@@ -78,23 +83,48 @@ public class Converter {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
-    public static double measure(float lat1, float lon1, float lat2, float lon2) {
+    /**
+     * Measure distance between 2 coordinates
+     *
+     * @param sourceLatitude
+     * @param sourceLongitude
+     * @param destinationLatitude
+     * @param destinationLongitude
+     * @return distance
+     */
+    public static double measureDistance(float sourceLatitude, float sourceLongitude, float destinationLatitude,
+            float destinationLongitude) {
         double earthRadius = 6378.137; // Radius of earth in KM
-        double dLat = lat2 * Math.PI / 180 - lat1 * Math.PI / 180;
-        double dLon = lon2 * Math.PI / 180 - lon1 * Math.PI / 180;
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180)
-                * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double dLat = destinationLatitude * Math.PI / 180 - sourceLatitude * Math.PI / 180;
+        double dLon = destinationLongitude * Math.PI / 180 - sourceLongitude * Math.PI / 180;
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(sourceLatitude * Math.PI / 180)
+                * Math.cos(destinationLatitude * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        double d = earthRadius * c;
-        return d * 1000; // meters
+        return earthRadius * c;
     }
 
-    public static double guessRange(float totalRange) {
-        // Simple guess right now
-        if (totalRange < 20) {
-            return totalRange * 0.8;
-        } else {
-            return totalRange * 0.7;
-        }
+    /**
+     * Easy function but there's some measures behind:
+     * Guessing the range of the Vehicle on Map. If you can drive x kilometers with your car it's not feasible to
+     * project this x km Radius on Map. The roads to be taken are causing some overhead because they are not a straight
+     * line from Location A to B.
+     * I've taken some measurements to calculate the overhead factor based on Google Maps
+     * Berlin - Dresden: Road Distance: 193 air-line Distance 167 = Factor 87%
+     * Kassel - Frankfurt: Road Distance: 199 air-line Distance 143 = Factor 72%
+     * After measuring more distances you'll find out that the outcome is between 70% and 90%. So
+     *
+     * This depends also on the roads of a concrete route but this is only a guess without any Route Navigation behind
+     *
+     * In future it's foreseen to replace this with BMW RangeMap Service which isn't running at the moment.
+     *
+     * @param range
+     * @return mapping from air-line distance to "real road" distance
+     */
+    public static double guessRangeRadius(float range) {
+        return range * 0.8;
+    }
+
+    public static Gson getGson() {
+        return GSON;
     }
 }

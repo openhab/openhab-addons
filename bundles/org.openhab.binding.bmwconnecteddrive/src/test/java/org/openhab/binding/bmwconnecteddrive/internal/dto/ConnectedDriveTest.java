@@ -41,17 +41,11 @@ public class ConnectedDriveTest {
         List<Vehicle> vehicles = container.vehicles;
         assertEquals("Number of Vehicles", 1, vehicles.size());
         Vehicle v = vehicles.get(0);
-        // assertEquals("VIN", "WBY1Z81040V905639", v.getVin());
-        // assertEquals("Model", "i3 94 (+ REX)", v.getModel());
-        // assertEquals("DriveTrain", "BEV_REX", v.getDriveTrain());
-        // assertEquals("Brand", "BMW_I", v.getBrand());
-        // assertEquals("Year of Construction", 2017, v.getYearOfConstruction());
-        // System.out.println(v.getDealer());
-        // System.out.println(v.getBodytype());
-        // System.out.println(v.getSupportedServices());
-        // System.out.println(v.getNotSupportedServices());
-        // System.out.println(v.getActivatedServices());
-        // System.out.println(v.getNotActivatedServices());
+        assertEquals("VIN", "MY_REAL_VIN", v.vin);
+        assertEquals("Model", "i3 94 (+ REX)", v.model);
+        assertEquals("DriveTrain", "BEV_REX", v.driveTrain);
+        assertEquals("Brand", "BMW_I", v.brand);
+        assertEquals("Year of Construction", 2017, v.yearOfConstruction);
     }
 
     @Test

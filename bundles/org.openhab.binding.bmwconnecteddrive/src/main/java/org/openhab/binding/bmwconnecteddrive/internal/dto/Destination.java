@@ -22,14 +22,14 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
  * @author Bernd Weymann - Initial contribution
  */
 public class Destination {
-    public float lat;// ": 50.55577087402344,
-    public float lon;// ": 8.495763778686523,
-    public String country;// ": "DEUTSCHLAND",
-    public String city;// ": "WETZLAR",
-    public String street;// ": "UFERSTRASSE",
-    public String streetNumber;// ": "4",
-    public String type;// ": "DESTINATION",
-    public String createdAt;// ": "2020-08-16T12:52:58+0000"
+    public float lat;
+    public float lon;
+    public String country;
+    public String city;
+    public String street;
+    public String streetNumber;
+    public String type;
+    public String createdAt;
 
     public String getAddress() {
         StringBuffer buf = new StringBuffer();

@@ -13,6 +13,7 @@
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 /**
  * The {@link NetworkError} Data Transfer Object
@@ -28,5 +29,9 @@ public class NetworkError {
     public String toString() {
         return new StringBuffer(url).append(Constants.HYPHEN).append(status).append(Constants.HYPHEN).append(reason)
                 .toString();
+    }
+
+    public String toJson() {
+        return Converter.getGson().toJson(this);
     }
 }

@@ -82,11 +82,11 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                     String servicesSupported = getObject(vehicle, Constants.SUPPORTED);
                     String servicesNotSupported = getObject(vehicle, Constants.NOT_SUPPORTED);
                     if (vehicle.statisticsAvailable) {
-                        servicesSupported += "Statistics";
+                        servicesSupported += Constants.STATISTICS;
                     } else {
-                        servicesNotSupported += "Statistics";
+                        servicesNotSupported += Constants.STATISTICS;
                     }
-                    properties.put("Services Supported", servicesSupported);
+                    properties.put(Constants.SERVICES_SUPPORTED, servicesSupported);
                     properties.put("Services Not Supported", servicesNotSupported);
                     properties.put("Support Breakdown Number", vehicle.breakdownNumber);
 

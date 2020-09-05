@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@SuppressWarnings("serial")
 @NonNullByDefault
 public class ConnectedDriveConstants {
 
@@ -93,9 +94,6 @@ public class ConnectedDriveConstants {
         }
     };
 
-    // Bridge Channel
-    public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
-
     // Thing Group definitions
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_GROUP_RANGE = "range";
@@ -117,7 +115,20 @@ public class ConnectedDriveConstants {
     public static final String CHECK_CONTROL = "check-control";
     public static final String LAST_UPDATE = "last-update";
 
-    public static final String CHARGING_STATUS = "charging-status";
+    public static final String CHARGE_STATUS = "status";
+    public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
+    public static final String CHARGE_PROFILE_MODE = "profile-mode";
+    public static final String CHARGE_WINDOW_START = "window-start";
+    public static final String CHARGE_WINDOW_END = "window-end";
+    public static final String CHARGE_TIMER1_DEPARTURE = "timer1-departure";
+    public static final String CHARGE_TIMER1_DAYS = "timer1-days";
+    public static final String CHARGE_TIMER1_ENABLED = "timer1-enabled";
+    public static final String CHARGE_TIMER2_DEPARTURE = "timer2-departure";
+    public static final String CHARGE_TIMER2_DAYS = "timer2-days";
+    public static final String CHARGE_TIMER2_ENABLED = "timer2-enabled";
+    public static final String CHARGE_TIMER3_DEPARTURE = "timer3-departure";
+    public static final String CHARGE_TIMER3_ENABLED = "timer3-days";
+    public static final String CHARGE_TIMER3_DAYS = "timer3-enabled";
 
     // Range
     public static final String MILEAGE = "mileage";
@@ -126,6 +137,9 @@ public class ConnectedDriveConstants {
     public static final String SOC = "soc";
     public static final String RANGE_FUEL = "fuel";
     public static final String REMAINING_FUEL = "remaining-fuel";
+    public static final String RANGE_RADIUS_ELECTRIC = "radius-electric";
+    public static final String RANGE_RADIUS_FUEL = "radius-fuel";
+    public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
 
     // Lifetime
     public static final String AVG_CONSUMPTION = "average-consumption";
@@ -140,9 +154,7 @@ public class ConnectedDriveConstants {
     // Lifetime
     public static final String LONGITUDE = "longitude";
     public static final String LATITUDE = "latitude";
-    public static final String LATLONG = "latlong";
     public static final String HEADING = "heading";
-    public static final String RANGE_RADIUS = "radius";
 
     // Image
     public static final String IMAGE = "png";

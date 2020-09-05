@@ -32,6 +32,11 @@ public class Constants {
     public static final String MILES_SHORT = "mi";
     public static final String KM_SHORT = "km";
 
+    // Services to query
+    public static final String SERVICES_SUPPORTED = "Services Supported";
+    public static final String STATISTICS = "Statistics";
+    public static final String LAST_DESTINATIONS = "LastDestinations";
+
     // Services in Discovery
     public static final String ACTIVATED = "ACTIVATED";
     public static final String SUPPORTED = "SUPPORTED";
@@ -47,4 +52,5 @@ public class Constants {
 
     public static final String ANONYMOUS = "ANONYMOUS";
     public static final int MILES_TO_FEET_FACTOR = 5280;
+    public static final String EMPTY_VEHICLES = "{}";
 }
