@@ -263,10 +263,12 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             if (sb != null) {
                 sb.append(buffer, offset, len);
             }
-        } else if (this.parserState == ParserState.INIT && len == 1 && buffer[offset] == '\n') {
+        } else if (this.parserState == ParserState.INIT && ((len == 1 && buffer[offset] == '\n')
+                || (len == 2 && buffer[offset] == '\r' && buffer[offset + 1] == '\n'))) {
             // single newline - ignore/drop it...
         } else {
-            logger.info("Unexpected Text {}:{}: ({}) {} ", line, col, len, new String(buffer, offset, len));
+            String msg = new String(buffer, offset, len).replace("\n", "\\n").replace("\r", "\\r");
+            logger.info("Unexpected Text {}:{}: ParserState: {} ({}) `{}`", line, col, parserState, len, msg);
         }
     }
 
@@ -326,7 +328,12 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     try {
                         // check if we have a numeric value (either with or without unit)
                         String[] valParts = vs.split(" ");
-                        BigDecimal bd = new BigDecimal(valParts[0]);
+                        // It seems for some wired cases the C.M.I. uses different decimal separators for
+                        // different device types. It seems all 'new' X2-Devices use a dot as separator,
+                        // for the older pre-X2 devices (i.e. the UVR 1611) we get a comma. So we
+                        // we replace all ',' with '.' to check if it's a valid number...
+                        String val = valParts[0].replace(',', '.');
+                        BigDecimal bd = new BigDecimal(val);
                         if (valParts.length == 2) {
                             if ("°C".equals(valParts[1])) {
                                 channelType = "Number:Temperature";
