@@ -45,7 +45,6 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensorTypeAdapter;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,7 +169,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             break;
                         case COIOT_OPTION_GLOBAL_DEVID:
                             devId = opt.getStringValue();
-                            String sVersion = ShellyUtils.substringAfterLast(devId, "#");
+                            String sVersion = substringAfterLast(devId, "#");
                             int iVersion = Integer.parseInt(sVersion);
                             if (coiotBound && (coiotVers != iVersion)) {
                                 logger.debug(

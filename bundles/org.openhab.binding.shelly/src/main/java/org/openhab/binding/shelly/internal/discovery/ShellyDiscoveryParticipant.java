@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -42,7 +42,6 @@ import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
@@ -130,7 +129,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return null;
             }
             String thingType = service.getQualifiedName().contains(SERVICE_TYPE) && name.contains("-")
-                    ? ShellyUtils.substringBeforeLast(name, "-")
+                    ? substringBeforeLast(name, "-")
                     : name;
             logger.debug("{}: Shelly device discovered: IP-Adress={}, type={}", name, address, thingType);
 

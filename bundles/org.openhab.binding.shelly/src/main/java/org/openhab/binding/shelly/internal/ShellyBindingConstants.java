@@ -216,10 +216,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
 
-    public static final String CHANNEL_GROUP_LED_CONTROL = "led";
-    public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
-    public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
-
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
     public static final String CHANNEL_SENSOR_HUM = "humidity";
@@ -287,6 +283,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
 
+    public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
+    public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
     // Button/xi3
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_STATUS_EVENTTYPE = "lastEvent";

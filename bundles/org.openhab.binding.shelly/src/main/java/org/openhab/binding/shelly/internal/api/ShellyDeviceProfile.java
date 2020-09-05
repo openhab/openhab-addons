@@ -25,7 +25,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsGl
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsInput;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellySettingsStatus;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +110,7 @@ public class ShellyDeviceProfile {
         }
 
         // General settings
-        deviceType = ShellyUtils.getString(settings.device.type);
+        deviceType = getString(settings.device.type);
         mac = getString(settings.device.mac);
         hostname = settings.device.hostname != null && !settings.device.hostname.isEmpty()
                 ? settings.device.hostname.toLowerCase()
@@ -119,9 +118,9 @@ public class ShellyDeviceProfile {
         mode = !getString(settings.mode).isEmpty() ? getString(settings.mode).toLowerCase() : "";
         hwRev = settings.hwinfo != null ? getString(settings.hwinfo.hwRevision) : "";
         hwBatchId = settings.hwinfo != null ? getString(settings.hwinfo.batchId.toString()) : "";
-        fwDate = ShellyUtils.substringBefore(settings.fw, "/");
-        fwVersion = ShellyUtils.substringBetween(settings.fw, "/", "@");
-        fwId = ShellyUtils.substringAfter(settings.fw, "@");
+        fwDate = substringBefore(settings.fw, "/");
+        fwVersion = substringBetween(settings.fw, "/", "@");
+        fwId = substringAfter(settings.fw, "@");
         discoverable = (settings.discoverable == null) || settings.discoverable;
 
         inColor = isLight && mode.equalsIgnoreCase(SHELLY_MODE_COLOR);

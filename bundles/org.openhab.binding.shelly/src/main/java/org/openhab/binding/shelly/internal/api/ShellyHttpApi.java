@@ -43,7 +43,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusLigh
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRelay;
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -282,8 +281,8 @@ public class ShellyHttpApi {
     public Map<String, String> getIRCodeList() throws ShellyApiException {
         String result = request(SHELLY_URL_LIST_IR);
         // take pragmatic approach to make the returned JSon into named arrays for Gson parsing
-        String keyList = ShellyUtils.substringAfter(result, "[");
-        keyList = ShellyUtils.substringBeforeLast(keyList, "]");
+        String keyList = substringAfter(result, "[");
+        keyList = substringBeforeLast(keyList, "]");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("\",\""), "\", \"name\": \"");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("["), "{ \"id\":");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("]"), "} ");

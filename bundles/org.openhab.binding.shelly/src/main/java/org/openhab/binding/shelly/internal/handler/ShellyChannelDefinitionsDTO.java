@@ -13,6 +13,7 @@
 package org.openhab.binding.shelly.internal.handler;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRela
 import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusSensor;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 /**
  * The {@link ShellyCHANNEL_DEFINITIONSDTO} defines channel information for dynamically created channels. Those will be
@@ -155,8 +155,8 @@ public class ShellyChannelDefinitionsDTO {
     }
 
     public static ShellyChannel getDefinition(String channelName) throws IllegalArgumentException {
-        String group = ShellyUtils.substringBefore(channelName, "#");
-        String channel = ShellyUtils.substringAfter(channelName, "#");
+        String group = substringBefore(channelName, "#");
+        String channel = substringAfter(channelName, "#");
         if (group.contains(CHANNEL_GROUP_METER)) {
             group = CHANNEL_GROUP_METER; // map meter1..n to meter
         } else if (group.contains(CHANNEL_GROUP_RELAY_CONTROL)) {

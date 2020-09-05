@@ -43,7 +43,6 @@ import org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.ShellyStatusRela
 import org.openhab.binding.shelly.internal.coap.ShellyCoapServer;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.util.ShellyTranslationProvider;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,12 +85,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         Integer rIndex = 0;
         if (groupName.startsWith(CHANNEL_GROUP_RELAY_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_RELAY_CONTROL.length()) {
-            rIndex = Integer.parseInt(ShellyUtils.substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_RELAY_CONTROL))
-                    - 1;
+            rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_RELAY_CONTROL)) - 1;
         } else if (groupName.startsWith(CHANNEL_GROUP_ROL_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_ROL_CONTROL.length()) {
-            rIndex = Integer.parseInt(ShellyUtils.substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_ROL_CONTROL))
-                    - 1;
+            rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_ROL_CONTROL)) - 1;
         }
 
         switch (channelUID.getIdWithoutGroup()) {
@@ -457,9 +454,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     public boolean updateLed(ShellySettingsStatus status) {
         boolean updated = false;
-        updated |= updateChannel(CHANNEL_GROUP_LED_CONTROL, CHANNEL_LED_STATUS_DISABLE,
+        updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_LED_STATUS_DISABLE,
                 getOnOff(profile.settings.ledStatusDisable));
-        updated |= updateChannel(CHANNEL_GROUP_LED_CONTROL, CHANNEL_LED_POWER_DISABLE,
+        updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_LED_POWER_DISABLE,
                 getOnOff(profile.settings.ledPowerDisable));
         return updated;
     }

@@ -14,6 +14,7 @@ package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,7 +22,6 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 
 /**
  * The {@link ShellyThingCreator} maps the device id into the thing type id
@@ -75,7 +75,7 @@ public class ShellyThingCreator {
     }
 
     public static ThingUID getThingUID(String serviceName, String deviceType, String mode, boolean unknown) {
-        String devid = ShellyUtils.substringAfterLast(serviceName, "-");
+        String devid = substringAfterLast(serviceName, "-");
         if (devid.isEmpty()) {
             throw new IllegalArgumentException("serviceName has improper format: " + serviceName);
         }
@@ -93,8 +93,8 @@ public class ShellyThingCreator {
 
     public static String getThingType(String hostname, String deviceType, String mode) {
         String name = hostname.toLowerCase();
-        String type = ShellyUtils.substringBefore(name, "-").toLowerCase();
-        String devid = ShellyUtils.substringAfterLast(name, "-");
+        String type = substringBefore(name, "-").toLowerCase();
+        String devid = substringAfterLast(name, "-");
         if ((devid == null) || (type == null)) {
             throw new IllegalArgumentException("Invalid device name format: " + hostname);
         }

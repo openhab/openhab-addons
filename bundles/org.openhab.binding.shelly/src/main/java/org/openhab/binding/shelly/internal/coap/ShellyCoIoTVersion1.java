@@ -30,7 +30,6 @@ import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotDescrSen;
 import org.openhab.binding.shelly.internal.coap.ShellyCoapJSonDTO.CoIotSensor;
 import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
-import org.openhab.binding.shelly.internal.util.ShellyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -250,7 +249,7 @@ public class ShellyCoIoTVersion1 extends ShellyCoIoTProtocol implements ShellyCo
         // we break it up to Power with L:0, Power with L:1...
         if (desc.contains("_") && (desc.contains("power") || desc.contains("vswitch") || desc.contains("brightness"))) {
             String newDesc = substringBefore(sen.desc, "_");
-            String newLink = ShellyUtils.substringAfter(sen.desc, "_");
+            String newLink = substringAfter(sen.desc, "_");
             sen.desc = newDesc;
             sen.links = newLink;
             if (!blkMap.containsKey(sen.links)) {
