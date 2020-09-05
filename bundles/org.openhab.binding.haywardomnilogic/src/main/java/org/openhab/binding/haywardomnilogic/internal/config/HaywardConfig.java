@@ -27,7 +27,6 @@ public class HaywardConfig {
     public String password = "";
     public int alarmPollTime = 60;
     public int telemetryPollTime = 10;
-    public int commandPollDelay = 10;
     public String token = "";
     public String mspSystemID = "";
     public String userID = "";

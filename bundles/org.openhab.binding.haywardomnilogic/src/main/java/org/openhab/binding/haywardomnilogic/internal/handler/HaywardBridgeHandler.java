@@ -102,9 +102,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                     listener.onBackyardDiscovered(systemID, label);
                 } else if (type == HaywardTypeToRequest.BOW) {
                     listener.onBOWDiscovered(systemID, label);
-                } else if (type == HaywardTypeToRequest.CSAD) {
-                    listener.onCsadDiscovered(systemID, label, bowID, bowName, property1, property2, property3,
-                            property4);
                 } else if (type == HaywardTypeToRequest.FILTER) {
                     listener.onFilterDiscovered(systemID, label, bowID, bowName, property1, property2, property3,
                             property4);
@@ -929,10 +926,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         String xmlResponse = null;
         String status = null;
 
-        if (config.commandPollDelay == 0) {
-            logger.trace("Hayward command aborted.  Command Poll Delay is 0.");
-        }
-
         int cmdValue = 0;
         String cmdBool;
         String cmdString;
@@ -1059,7 +1052,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                         break;
                     default:
                         logger.error("haywardCommand Unsupported type {}", channelUID);
-                        initPolling(config.commandPollDelay);
+                        initPolling(config.telemetryPollTime);
                         return;
                 }
 
@@ -1072,16 +1065,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                     return;
                 }
                 // Restart Polling
-                if (config.commandPollDelay > 0) {
-                    initPolling(config.commandPollDelay);
-                }
+                initPolling(config.telemetryPollTime);
             }
         } catch (Exception e) {
             logger.error("Unable to send command to Hayward's server {}:{}", config.hostname, config.username, e);
             // Restart Polling
-            if (config.commandPollDelay != 0) {
-                initPolling(config.commandPollDelay);
-            }
+            initPolling(config.telemetryPollTime);
         }
     }
 

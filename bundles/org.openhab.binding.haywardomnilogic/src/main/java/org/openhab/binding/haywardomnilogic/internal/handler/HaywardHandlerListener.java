@@ -31,9 +31,6 @@ public interface HaywardHandlerListener {
 
     void onColorLogicDiscovered(int systemID, String label, String bowID, String bowName);
 
-    void onCsadDiscovered(int systemID, String label, String bowID, String bowName, String property1, String property2,
-            String property3, String property4);
-
     void onFilterDiscovered(int systemID, String label, String bowID, String bowName, String property1,
             String property2, String property3, String property4);
 

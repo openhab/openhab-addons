@@ -125,23 +125,6 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void onCsadDiscovered(int systemID, String label, String bowID, String bowName, String property1,
-            String property2, String property3, String property4) {
-        logger.debug("Hayward CSAD {} Discovered: {}", systemID, label);
-        ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_CSAD, bridge.getThing().getUID(),
-                Integer.toString(systemID));
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(HaywardBindingConstants.PROPERTY_SYSTEM_ID, Integer.toString(systemID));
-        properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER.toString());
-        properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
-        properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-        DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
-                .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
-                .withProperties(properties).build();
-        thingDiscovered(result);
-    }
-
-    @Override
     public void onFilterDiscovered(int systemID, String label, String bowID, String bowName, String property1,
             String property2, String property3, String property4) {
         logger.debug("Hayward Filter {} Discovered: {}", systemID, label);
