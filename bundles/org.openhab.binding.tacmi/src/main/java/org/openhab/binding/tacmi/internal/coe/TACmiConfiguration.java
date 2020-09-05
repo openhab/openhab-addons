@@ -32,5 +32,4 @@ public class TACmiConfiguration {
      * CoE / CAN node ID we are representing
      */
     public int node;
-
 }
