@@ -53,6 +53,10 @@ public class MagentaTVDynamicConfig extends MagentaTVThingConfiguration {
         return modelId.toUpperCase();
     }
 
+    public String getPort() {
+        return !port.isEmpty() ? port : isMR400() ? MR400_DEF_REMOTE_PORT : MR401B_DEF_REMOTE_PORT;
+    }
+
     public void setPort(String port) {
         if (modelId.contains(MODEL_MR400) && port.equals("49153")) {
             // overwrite port returned by discovery (invalid for this model)

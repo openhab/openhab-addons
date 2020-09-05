@@ -48,7 +48,6 @@
 			<parameter name="port" type="text">
 				<label>Receiver Port</label>
 				<description>Port address for UPnP</description>
-				<required>true</required>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="userId" type="text">

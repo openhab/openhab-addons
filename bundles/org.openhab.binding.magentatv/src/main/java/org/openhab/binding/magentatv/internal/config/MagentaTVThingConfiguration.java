@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.magentatv.internal.config;
 
-import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.MR400_DEF_REMOTE_PORT;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -26,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class MagentaTVThingConfiguration {
     public String ipAddress = ""; // IP Address of the MR
-    public String port = MR400_DEF_REMOTE_PORT; // Port of the remote service
+    public String port = ""; // Port of the remote service
     public String udn = ""; // UPnP UDN
     public String macAddress = ""; // Usually gets filled by the thing discovery (or set by .things file)
     public String accountName = ""; // Credentials: Account Name from Telekom Kundencenter (used for OAuth)
@@ -43,10 +41,6 @@ public class MagentaTVThingConfiguration {
         accountName = newConfig.accountName;
         accountPassword = newConfig.accountPassword;
         userId = newConfig.userId;
-    }
-
-    public String getPort() {
-        return port;
     }
 
     public String getUDN() {
