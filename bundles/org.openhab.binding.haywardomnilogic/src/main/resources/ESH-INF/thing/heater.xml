@@ -31,10 +31,15 @@
 	</channel-type>
 
 	<channel-type id="enable">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Heater Enable</label>
 		<description>Heater Enable</description>
-		<state readOnly="true"/>
-	</channel-type>
+        <state readOnly="true">
+            <options>
+                <option value="yes">On</option>
+                <option value="no">Off</option>
+            </options>      
+        </state>
+    </channel-type>
 
 </thing:thing-descriptions>

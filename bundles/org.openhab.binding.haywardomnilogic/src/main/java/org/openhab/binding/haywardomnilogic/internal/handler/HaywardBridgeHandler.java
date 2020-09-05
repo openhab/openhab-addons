@@ -702,14 +702,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             // Enable
             data = evaluateXPath("//Heater/@enable", xmlResponse);
-
-            if (data.get(0).equals("yes")) {
-                handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                        HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
-            } else if (data.get(0).equals("no")) {
-                handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                        HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
-            }
+            handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
+                    HaywardBindingConstants.CHANNEL_HEATER_ENABLE, data.get(0));
 
             // ******************
             // ***Relays***
