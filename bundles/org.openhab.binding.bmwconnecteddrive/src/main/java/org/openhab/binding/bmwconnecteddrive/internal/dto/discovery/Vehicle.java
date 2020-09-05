@@ -33,6 +33,7 @@ public class Vehicle {
     public Dealer dealer;
     public String breakdownNumber;
     public List<String> supportedChargingModes;
+    public String chargingControl;// ": "WEEKLY_PLANNER",
 
     // Remote Services
     public String vehicleFinder; // ACTIVATED
@@ -49,4 +50,10 @@ public class Vehicle {
     public String lastDestinations; // SUPPORTED
     public String carCloud; // SUPPORTED
     public String remoteSoftwareUpgrade; // SUPPORTED
+
+    public String climateNowRES;// ": "NOT_SUPPORTED",
+    public String climateControlRES;// ": "NOT_SUPPORTED",
+    public String smartSolution;// ": "NOT_SUPPORTED",
+    public String ipa;// ": "NOT_SUPPORTED",
+
 }
