@@ -36,57 +36,66 @@ public class IpCameraBindingConstants {
     public final static String INSTAR_HANDLER = "instarHandler";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_GROUPDISPLAY = new ThingTypeUID(BINDING_ID, "GROUPDISPLAY");
-    public static final ThingTypeUID THING_TYPE_HTTPONLY = new ThingTypeUID(BINDING_ID, "HTTPONLY");
-    public static final ThingTypeUID THING_TYPE_ONVIF = new ThingTypeUID(BINDING_ID, "ONVIF");
-    public static final ThingTypeUID THING_TYPE_AMCREST = new ThingTypeUID(BINDING_ID, "AMCREST");
-    public static final ThingTypeUID THING_TYPE_FOSCAM = new ThingTypeUID(BINDING_ID, "FOSCAM");
-    public static final ThingTypeUID THING_TYPE_HIKVISION = new ThingTypeUID(BINDING_ID, "HIKVISION");
-    public static final ThingTypeUID THING_TYPE_INSTAR = new ThingTypeUID(BINDING_ID, "INSTAR");
-    public static final ThingTypeUID THING_TYPE_DAHUA = new ThingTypeUID(BINDING_ID, "DAHUA");
-    public static final ThingTypeUID THING_TYPE_DOORBIRD = new ThingTypeUID(BINDING_ID, "DOORBIRD");
+    public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
+    public static final String GENERIC_THING = "generic";
+    public static final ThingTypeUID THING_TYPE_GENERIC = new ThingTypeUID(BINDING_ID, GENERIC_THING);
+    public static final String ONVIF_THING = "onvif";
+    public static final ThingTypeUID THING_TYPE_ONVIF = new ThingTypeUID(BINDING_ID, ONVIF_THING);
+    public static final String AMCREST_THING = "amcrest";
+    public static final ThingTypeUID THING_TYPE_AMCREST = new ThingTypeUID(BINDING_ID, AMCREST_THING);
+    public static final String FOSCAM_THING = "foscam";
+    public static final ThingTypeUID THING_TYPE_FOSCAM = new ThingTypeUID(BINDING_ID, FOSCAM_THING);
+    public static final String HIKVISION_THING = "hikvision";
+    public static final ThingTypeUID THING_TYPE_HIKVISION = new ThingTypeUID(BINDING_ID, HIKVISION_THING);
+    public static final String INSTAR_THING = "instar";
+    public static final ThingTypeUID THING_TYPE_INSTAR = new ThingTypeUID(BINDING_ID, INSTAR_THING);
+    public static final String DAHUA_THING = "dahua";
+    public static final ThingTypeUID THING_TYPE_DAHUA = new ThingTypeUID(BINDING_ID, DAHUA_THING);
+    public static final String DOORBIRD_THING = "doorbird";
+    public static final ThingTypeUID THING_TYPE_DOORBIRD = new ThingTypeUID(BINDING_ID, DOORBIRD_THING);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_ONVIF, THING_TYPE_HTTPONLY, THING_TYPE_AMCREST, THING_TYPE_DAHUA,
-                    THING_TYPE_INSTAR, THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION));
+            Arrays.asList(THING_TYPE_ONVIF, THING_TYPE_GENERIC, THING_TYPE_AMCREST, THING_TYPE_DAHUA, THING_TYPE_INSTAR,
+                    THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION));
 
     public static final Set<ThingTypeUID> GROUP_SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_GROUPDISPLAY));
+            Arrays.asList(THING_TYPE_GROUP));
 
     // List of all Thing Config items
-    public static final String CONFIG_IPADDRESS = "IPADDRESS";
-    public static final String CONFIG_PORT = "PORT";
-    public static final String CONFIG_ONVIF_PORT = "ONVIF_PORT";
-    public static final String CONFIG_SERVER_PORT = "SERVER_PORT";
-    public static final String CONFIG_USERNAME = "USERNAME";
-    public static final String CONFIG_PASSWORD = "PASSWORD";
-    public static final String CONFIG_ONVIF_PROFILE_NUMBER = "ONVIF_MEDIA_PROFILE";
-    public static final String CONFIG_POLL_CAMERA_MS = "POLL_CAMERA_MS";
-    public static final String CONFIG_SNAPSHOT_URL_OVERRIDE = "SNAPSHOT_URL_OVERRIDE";
-    public static final String CONFIG_IMAGE_UPDATE_EVENTS = "IMAGE_UPDATE_EVENTS";
-    public static final String CONFIG_UPDATE_IMAGE = "UPDATE_IMAGE";
-    public static final String CONFIG_NVR_CHANNEL = "NVR_CHANNEL";
-    public static final String CONFIG_MOTION_URL_OVERRIDE = "MOTION_URL_OVERRIDE";
-    public static final String CONFIG_AUDIO_URL_OVERRIDE = "AUDIO_URL_OVERRIDE";
-    public static final String CONFIG_STREAM_URL_OVERRIDE = "STREAM_URL_OVERRIDE";
-    public static final String CONFIG_IP_WHITELIST = "IP_WHITELIST";
-    public static final String CONFIG_FFMPEG_LOCATION = "FFMPEG_LOCATION";
-    public static final String CONFIG_FFMPEG_INPUT = "FFMPEG_INPUT";
-    public static final String CONFIG_FFMPEG_OUTPUT = "FFMPEG_OUTPUT";
-    public static final String CONFIG_FFMPEG_HLS_OUT_ARGUMENTS = "FFMPEG_HLS_OUT_ARGUMENTS";
-    public static final String CONFIG_FFMPEG_GIF_OUT_ARGUMENTS = "FFMPEG_GIF_OUT_ARGUMENTS";
-    public static final String CONFIG_FFMPEG_MP4_OUT_ARGUMENTS = "FFMPEG_MP4_OUT_ARGUMENTS";
-    public static final String CONFIG_FFMPEG_MJPEG_ARGUMENTS = "FFMPEG_MJPEG_ARGUMENTS";
-    public static final String CONFIG_FFMPEG_MOTION_ARGUMENTS = "FFMPEG_MOTION_ARGUMENTS";
-    public static final String CONFIG_FFMPEG_MOTION_INPUT = "FFMPEG_MOTION_INPUT";
-    public static final String CONFIG_GIF_PREROLL = "GIF_PREROLL";
-    public static final String CONFIG_GIF_POSTROLL = "GIF_POSTROLL";
-    public static final String CONFIG_FIRST_CAM = "FIRST_CAM";
-    public static final String CONFIG_SECOND_CAM = "SECOND_CAM";
-    public static final String CONFIG_THIRD_CAM = "THIRD_CAM";
-    public static final String CONFIG_FORTH_CAM = "FORTH_CAM";
-    public static final String CONFIG_MOTION_CHANGES_ORDER = "MOTION_CHANGES_ORDER";
-    public static final String CONFIG_PTZ_CONTINUOUS = "PTZ_CONTINUOUS";
+    public static final String CONFIG_IPADDRESS = "ipAddress";
+    public static final String CONFIG_PORT = "port";
+    public static final String CONFIG_ONVIF_PORT = "onvifPort";
+    public static final String CONFIG_SERVER_PORT = "serverPort";
+    public static final String CONFIG_USERNAME = "username";
+    public static final String CONFIG_PASSWORD = "password";
+    public static final String CONFIG_ONVIF_PROFILE_NUMBER = "onvifMediaProfile";
+    public static final String CONFIG_POLL_CAMERA_MS = "pollTime";
+    public static final String CONFIG_FFMPEG_INPUT = "ffmpegInput";
+    public static final String CONFIG_SNAPSHOT_URL_OVERRIDE = "snapshotUrl";
+    public static final String CONFIG_STREAM_URL_OVERRIDE = "mjpegUrl";
+    public static final String CONFIG_FFMPEG_MOTION_INPUT = "alarmInputUrl";
+    public static final String CONFIG_MOTION_URL_OVERRIDE = "customMotionAlarmUrl";
+    public static final String CONFIG_AUDIO_URL_OVERRIDE = "customAudioAlarmUrl";
+    public static final String CONFIG_IMAGE_UPDATE_EVENTS = "updateImageWhen";
+    public static final String CONFIG_UPDATE_IMAGE = "updateImage";
+    public static final String CONFIG_NVR_CHANNEL = "nvrChannel";
+    public static final String CONFIG_IP_WHITELIST = "ipWhitelist";
+    public static final String CONFIG_FFMPEG_LOCATION = "ffmpegLocation";
+    public static final String CONFIG_FFMPEG_OUTPUT = "ffmpegOutput";
+    public static final String CONFIG_FFMPEG_HLS_OUT_ARGUMENTS = "hlsOutOptions";
+    public static final String CONFIG_FFMPEG_GIF_OUT_ARGUMENTS = "gifOutOptions";
+    public static final String CONFIG_FFMPEG_MP4_OUT_ARGUMENTS = "mp4OutOptions";
+    public static final String CONFIG_FFMPEG_MJPEG_ARGUMENTS = "mjpegOptions";
+    public static final String CONFIG_FFMPEG_MOTION_ARGUMENTS = "motionOptions";
+    public static final String CONFIG_PTZ_CONTINUOUS = "ptzContinuous";
+    public static final String CONFIG_GIF_PREROLL = "gifPreroll";
+    public static final String CONFIG_GIF_POSTROLL = "gifPostroll";
+    // group thing configs
+    public static final String CONFIG_FIRST_CAM = "firstCamera";
+    public static final String CONFIG_SECOND_CAM = "secondCamera";
+    public static final String CONFIG_THIRD_CAM = "thirdCamera";
+    public static final String CONFIG_FORTH_CAM = "forthCamera";
+    public static final String CONFIG_MOTION_CHANGES_ORDER = "motionChangesOrder";
 
     // List of all Channel ids
     public static final String CHANNEL_UPDATE_IMAGE_NOW = "updateImageNow";

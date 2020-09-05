@@ -389,13 +389,13 @@ public class IpCameraHandler extends BaseThingHandler {
                     try {
                         String urlToKeepOpen = "";
                         switch (thing.getThingTypeUID().getId()) {
-                            case "DAHUA":
+                            case DAHUA_THING:
                                 urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
                                 break;
-                            case "HIKVISION":
+                            case HIKVISION_THING:
                                 urlToKeepOpen = "/ISAPI/Event/notification/alertStream";
                                 break;
-                            case "DOORBIRD":
+                            case DOORBIRD_THING:
                                 urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
                                 break;
                         }
@@ -545,22 +545,22 @@ public class IpCameraHandler extends BaseThingHandler {
                     socketChannel.pipeline().addLast(COMMON_HANDLER, new CommonCameraHandler());
 
                     switch (thing.getThingTypeUID().getId()) {
-                        case "AMCREST":
+                        case AMCREST_THING:
                             socketChannel.pipeline().addLast(AMCREST_HANDLER, new AmcrestHandler(getHandle()));
                             break;
-                        case "DAHUA":
+                        case DAHUA_THING:
                             socketChannel.pipeline().addLast(new DahuaHandler(getHandle(), nvrChannel));
                             break;
-                        case "DOORBIRD":
+                        case DOORBIRD_THING:
                             socketChannel.pipeline().addLast(new DoorBirdHandler(getHandle()));
                             break;
-                        case "FOSCAM":
+                        case FOSCAM_THING:
                             socketChannel.pipeline().addLast(new FoscamHandler(getHandle(), username, password));
                             break;
-                        case "HIKVISION":
+                        case HIKVISION_THING:
                             socketChannel.pipeline().addLast(new HikvisionHandler(getHandle(), nvrChannel));
                             break;
-                        case "INSTAR":
+                        case INSTAR_THING:
                             socketChannel.pipeline().addLast(INSTAR_HANDLER, new InstarHandler(getHandle()));
                             break;
                         default:
@@ -631,11 +631,11 @@ public class IpCameraHandler extends BaseThingHandler {
                     authHandler.setURL(httpMethod, httpRequestURL);
 
                     switch (thing.getThingTypeUID().getId()) {
-                        case "AMCREST":
+                        case AMCREST_THING:
                             AmcrestHandler amcrestHandler = (AmcrestHandler) ch.pipeline().get(AMCREST_HANDLER);
                             amcrestHandler.setURL(httpRequestURL);
                             break;
-                        case "INSTAR":
+                        case INSTAR_THING:
                             InstarHandler instarHandler = (InstarHandler) ch.pipeline().get(INSTAR_HANDLER);
                             instarHandler.setURL(httpRequestURL);
                             break;
@@ -1376,42 +1376,42 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         // commands and refresh now get passed to brand handlers
         switch (thing.getThingTypeUID().getId()) {
-            case "AMCREST":
+            case AMCREST_THING:
                 AmcrestHandler amcrestHandler = new AmcrestHandler(getHandle());
                 amcrestHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests = amcrestHandler.getLowPriorityRequests();
                 }
                 break;
-            case "DAHUA":
+            case DAHUA_THING:
                 DahuaHandler dahuaHandler = new DahuaHandler(getHandle(), nvrChannel);
                 dahuaHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests = dahuaHandler.getLowPriorityRequests();
                 }
                 break;
-            case "DOORBIRD":
+            case DOORBIRD_THING:
                 DoorBirdHandler doorBirdHandler = new DoorBirdHandler(getHandle());
                 doorBirdHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests = doorBirdHandler.getLowPriorityRequests();
                 }
                 break;
-            case "HIKVISION":
+            case HIKVISION_THING:
                 HikvisionHandler hikvisionHandler = new HikvisionHandler(getHandle(), nvrChannel);
                 hikvisionHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests = hikvisionHandler.getLowPriorityRequests();
                 }
                 break;
-            case "FOSCAM":
+            case FOSCAM_THING:
                 FoscamHandler foscamHandler = new FoscamHandler(getHandle(), username, password);
                 foscamHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests = foscamHandler.getLowPriorityRequests();
                 }
                 break;
-            case "INSTAR":
+            case INSTAR_THING:
                 InstarHandler instarHandler = new InstarHandler(getHandle());
                 instarHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
@@ -1481,7 +1481,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     void pollingCameraConnection() {
-        if (thing.getThingTypeUID().getId().equals("HTTPONLY")) {
+        if (thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
             if (rtspUri.equals("")) {
                 logger.warn("Binding has not been supplied with a RTSP URL so some features will not work.");
             }
@@ -1495,7 +1495,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (!onvifCamera.isConnected()) {
             logger.debug("About to connect to the IP Camera using the ONVIF PORT at IP:{}:{}", ipAddress,
                     config.get(CONFIG_ONVIF_PORT).toString());
-            onvifCamera.connect(thing.getThingTypeUID().getId().equals("ONVIF"));
+            onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
         if (snapshotUri.equals("ffmpeg")) {
             snapshotIsFfmpeg();
@@ -1601,36 +1601,36 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         // what needs to be done every poll//
         switch (thing.getThingTypeUID().getId()) {
-            case "HTTPONLY":
+            case GENERIC_THING:
                 break;
-            case "ONVIF":
+            case ONVIF_THING:
                 if (!onvifCamera.isConnected()) {
                     onvifCamera.connect(true);
                 }
                 break;
-            case "INSTAR":
+            case INSTAR_THING:
                 noMotionDetected(CHANNEL_MOTION_ALARM);
                 noMotionDetected(CHANNEL_PIR_ALARM);
                 noAudioDetected();
                 break;
-            case "HIKVISION":
+            case HIKVISION_THING:
                 if (streamIsStopped("/ISAPI/Event/notification/alertStream")) {
                     logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
                     sendHttpGET("/ISAPI/Event/notification/alertStream");
                 }
                 break;
-            case "AMCREST":
+            case AMCREST_THING:
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=VideoMotion");
                 sendHttpGET("/cgi-bin/eventManager.cgi?action=getEventIndexes&code=AudioMutation");
                 break;
-            case "DAHUA":
+            case DAHUA_THING:
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/cgi-bin/eventManager.cgi?action=attach&codes=[All]")) {
                     logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
                     sendHttpGET("/cgi-bin/eventManager.cgi?action=attach&codes=[All]");
                 }
                 break;
-            case "DOORBIRD":
+            case DOORBIRD_THING:
                 // Check for alarms, channel for NVRs appears not to work at filtering.
                 if (streamIsStopped("/bha-api/monitor.cgi?ring=doorbell,motionsensor")) {
                     logger.info("The alarm stream was not running for camera {}, re-starting it now", ipAddress);
@@ -1684,8 +1684,8 @@ public class IpCameraHandler extends BaseThingHandler {
 
         // Known cameras will connect quicker if we skip ONVIF questions.
         switch (thing.getThingTypeUID().getId()) {
-            case "AMCREST":
-            case "DAHUA":
+            case AMCREST_THING:
+            case DAHUA_THING:
                 if (mjpegUri.equals("")) {
                     mjpegUri = "/cgi-bin/mjpg/video.cgi?channel=" + nvrChannel + "&subtype=1";
                 }
@@ -1693,7 +1693,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/cgi-bin/snapshot.cgi?channel=" + nvrChannel;
                 }
                 break;
-            case "DOORBIRD":
+            case DOORBIRD_THING:
                 if (mjpegUri.equals("")) {
                     mjpegUri = "/bha-api/video.cgi";
                 }
@@ -1701,7 +1701,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/bha-api/image.cgi";
                 }
                 break;
-            case "FOSCAM":
+            case FOSCAM_THING:
                 // Foscam needs any special char like spaces (%20) to be encoded for URLs.
                 username = Helper.encodeSpecialChars(username);
                 password = Helper.encodeSpecialChars(password);
@@ -1712,7 +1712,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/cgi-bin/CGIProxy.fcgi?usr=" + username + "&pwd=" + password + "&cmd=snapPicture2";
                 }
                 break;
-            case "HIKVISION":// The 02 gives you the first sub stream which needs to be set to MJPEG
+            case HIKVISION_THING:// The 02 gives you the first sub stream which needs to be set to MJPEG
                 if (mjpegUri.equals("")) {
                     mjpegUri = "/ISAPI/Streaming/channels/" + nvrChannel + "02" + "/httppreview";
                 }
@@ -1720,7 +1720,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     snapshotUri = "/ISAPI/Streaming/channels/" + nvrChannel + "01/picture";
                 }
                 break;
-            case "INSTAR":
+            case INSTAR_THING:
                 if (snapshotUri.equals("")) {
                     snapshotUri = "/tmpfs/snap.jpg";
                 }
@@ -1735,11 +1735,11 @@ public class IpCameraHandler extends BaseThingHandler {
             startStreamServer(true);
         }
 
-        if (!thing.getThingTypeUID().getId().equals("HTTPONLY")) {
+        if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
             BigDecimal test = new BigDecimal(config.get(CONFIG_ONVIF_PORT).toString());
             onvifCamera = new OnvifConnection(this, ipAddress + ":" + test.intValue(), username, password);
             onvifCamera.setSelectedMediaProfile(selectedMediaProfile);
-            onvifCamera.connect(thing.getThingTypeUID().getId().equals("ONVIF"));
+            onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
         }
 
         // for poll times above 5 seconds don't display a warning about the Image channel.

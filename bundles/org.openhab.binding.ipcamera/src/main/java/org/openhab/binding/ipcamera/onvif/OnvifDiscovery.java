@@ -135,11 +135,11 @@ public class OnvifDiscovery {
         }
         // logger.debug("Camera IP:{} and ONVIF PORT:{}", ipAddress, onvifPort);
         String brand = checkForBrand(xml);
-        if (brand.equals("ONVIF")) {
+        if (brand.equals("onvif")) {
             try {
                 brand = getBrandFromLoginPage(ipAddress);
             } catch (IOException e) {
-                brand = "ONVIF";
+                brand = "onvif";
             }
         }
         ipCameraDiscoveryService.newCameraFound(brand, ipAddress, onvifPort);
@@ -155,33 +155,33 @@ public class OnvifDiscovery {
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {
                 logger.info("Possible ONVIF camera found at:{}", packet.sender().getHostString());
-                ipCameraDiscoveryService.newCameraFound("ONVIF", packet.sender().getHostString(), 80);
+                ipCameraDiscoveryService.newCameraFound("onvif", packet.sender().getHostString(), 80);
             }
         }
     }
 
     String checkForBrand(String response) {
         if (response.toLowerCase().contains("amcrest")) {
-            return "DAHUA";
+            return "dahua";
         } else if (response.toLowerCase().contains("dahua")) {
-            return "DAHUA";
+            return "dahua";
         } else if (response.toLowerCase().contains("foscam")) {
-            return "FOSCAM";
+            return "foscam";
         } else if (response.toLowerCase().contains("hikvision")) {
-            return "HIKVISION";
+            return "hikvision";
         } else if (response.toLowerCase().contains("instar")) {
-            return "INSTAR";
+            return "instar";
         } else if (response.toLowerCase().contains("doorbird")) {
-            return "DOORBIRD";
+            return "doorbird";
         } else if (response.toLowerCase().contains("/doc/page/login.asp")) {
-            return "HIKVISION";
+            return "hikvision";
         }
-        return "ONVIF";// generic camera
+        return "onvif";// generic camera
     }
 
     public String getBrandFromLoginPage(String hostname) throws IOException {
         URL url = new URL("http://" + hostname);
-        String brand = "ONVIF";
+        String brand = "onvif";
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setConnectTimeout(1000);
         connection.setReadTimeout(2000);
