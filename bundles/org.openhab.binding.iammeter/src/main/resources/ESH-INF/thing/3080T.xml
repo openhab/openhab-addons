@@ -7,77 +7,32 @@
 		<label>Iammeter Power Meter 3080T</label>
 		<description>3 phases PowerMeter for Iammeter 3080T Binding</description>
 		<channel-groups>
-			<channel-group id="powerPhaseA" typeId="powerPhaseGroupA" />
-			<channel-group id="powerPhaseB" typeId="powerPhaseGroupB" />
-			<channel-group id="powerPhaseC" typeId="powerPhaseGroupC" />
+			<channel-group id="powerPhaseA" typeId="powerPhaseGroup">
+				<label>Power Phase A</label>
+				<description>Power phase 1 for Iammeter device</description>
+			</channel-group>
+			<channel-group id="powerPhaseB" typeId="powerPhaseGroup">
+				<label>Power Phase B</label>
+				<description>Power phase 2 for Iammeter device</description>
+			</channel-group>
+			<channel-group id="powerPhaseC" typeId="powerPhaseGroup">
+				<label>Power Phase C</label>
+				<description>Power phase 3 for Iammeter device</description>
+			</channel-group>
 		</channel-groups>
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Device's IP Address</label>
-				<description>IP address for your device</description>
-				<context>network-address</context>
-				<default>127.0.0.1</default>
-			</parameter>
-			<parameter name="port" type="text" required="true" min="1" max="65535">
-				<label>Device's Port</label>
-				<description>Port</description>
-				<default>80</default>
-			</parameter>
-			<parameter name="username" type="text" required="false">
-				<label>User name</label>
-				<description>User name to access device</description>
-				<default>admin</default>
-			</parameter>
-			<parameter name="password" type="text" required="false">
-				<label>Password</label>
-				<description>password to access device</description>
-				<context>password</context>
-				<default>admin</default>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" unit="s">
-				<label>Refresh interval in seconds</label>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:iammeter:powermeter"/>
 	</thing-type>
-	<channel-group-type id="powerPhaseGroupA">
-		<label>Power Phase A</label>
-		<description>Power phase 1 for Iammeter device</description>
-			<channels>
-				<channel id="voltage" typeId="voltage"/>
-				<channel id="current" typeId="current"/>
-				<channel id="power" typeId="power"/>
-				<channel id="importenergy" typeId="importenergy"/>
-				<channel id="exportgrid" typeId="exportgrid"/>
-				<channel id="frequency" typeId="frequency"/>
-				<channel id="pf" typeId="pf"/>
-			</channels>
-	</channel-group-type>
-	<channel-group-type id="powerPhaseGroupB">
-		<label>Power Phase B</label>
-		<description>Power phase 2 for Iammeter device</description>
-			<channels>
-				<channel id="voltage" typeId="voltage"/>
-				<channel id="current" typeId="current"/>
-				<channel id="power" typeId="power"/>
-				<channel id="importenergy" typeId="importenergy"/>
-				<channel id="exportgrid" typeId="exportgrid"/>
-				<channel id="frequency" typeId="frequency"/>
-				<channel id="pf" typeId="pf"/>
-			</channels>
-	</channel-group-type>
-	<channel-group-type id="powerPhaseGroupC">
-		<label>Power Phase C</label>
-		<description>Power phase 3 for Iammeter device</description>
-			<channels>
-				<channel id="voltage" typeId="voltage"/>
-				<channel id="current" typeId="current"/>
-				<channel id="power" typeId="power"/>
-				<channel id="importenergy" typeId="importenergy"/>
-				<channel id="exportgrid" typeId="exportgrid"/>
-				<channel id="frequency" typeId="frequency"/>
-				<channel id="pf" typeId="pf"/>
-			</channels>
+	<channel-group-type id="powerPhaseGroup">
+		<label>Power Phase</label>
+		<channels>
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="power" typeId="power"/>
+			<channel id="importenergy" typeId="importenergy"/>
+			<channel id="exportgrid" typeId="exportgrid"/>
+			<channel id="frequency" typeId="frequency"/>
+			<channel id="pf" typeId="pf"/>
+		</channels>
 	</channel-group-type>
 	<channel-type id="voltage">
 		<item-type>Number:ElectricPotential</item-type>

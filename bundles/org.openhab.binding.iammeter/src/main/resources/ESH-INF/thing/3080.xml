@@ -6,41 +6,14 @@
 	<thing-type id="powermeter">
 		<label>Iammeter Power Meter 3162/3080</label>
 		<description>Single phase PowerMeter for Iammeter Binding</description>
-			<channels>
-				<channel id="voltage" typeId="voltage"/>
-				<channel id="current" typeId="current"/>
-				<channel id="power" typeId="power"/>
-				<channel id="importenergy" typeId="importenergy"/>
-				<channel id="exportgrid" typeId="exportgrid"/>
-			</channels>
-		<config-description>
-			<parameter name="host" type="text" required="true">
-				<label>Device's IP Address</label>
-				<description>IP address for your device</description>
-				<context>network-address</context>
-				<default>127.0.0.1</default>
-			</parameter>
-			<parameter name="port" type="text" required="true" min="1" max="65535">
-				<label>Device's Port</label>
-				<description>Port</description>
-				<default>80</default>
-			</parameter>
-			<parameter name="username" type="text" required="false">
-				<label>User name</label>
-				<description>User name to access device</description>
-				<default>admin</default>
-			</parameter>
-			<parameter name="password" type="text" required="false">
-				<label>Password</label>
-				<description>password to access device</description>
-				<context>password</context>
-				<default>admin</default>
-			</parameter>
-			<parameter name="refreshInterval" type="integer" required="false" unit="s">
-				<label>Refresh interval in seconds</label>
-				<default>60</default>
-			</parameter>
-		</config-description>
+		<channels>
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="power" typeId="power"/>
+			<channel id="importenergy" typeId="importenergy"/>
+			<channel id="exportgrid" typeId="exportgrid"/>
+		</channels>
+		<config-description-ref uri="thing-type:iammeter:powermeter"/>
 	</thing-type>
 	
 	<channel-type id="voltage">
