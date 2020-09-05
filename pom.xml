@@ -76,8 +76,7 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
-    <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
-    <spotless.version>1.31.1</spotless.version>
+    <spotless.version>2.0.3</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -564,7 +563,7 @@ Import-Package: \\
               <format>
                 <!-- feature.xml -->
                 <includes>
-                  <include>src/main/feature/feature.xml</include>
+                  <include>**/src/main/feature/feature.xml</include>
                 </includes>
                 <eclipseWtp>
                   <type>XML</type>
