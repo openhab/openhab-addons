@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="group">
-		<label>"group" Display multiple cameras that are ONLINE as a single camera.</label>
-		<description>experimental.</description>
+		<label>"group" - Display multiple cameras as a single rotating feed.</label>
+		<description>Experimental new feature.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="mjpegUrl" typeId="mjpegUrl"/>
@@ -96,13 +96,14 @@
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 		</config-description>
 	</thing-type>
 
 	<thing-type id="generic">
-		<label>"generic" Generic IP camera with only HTTP support.</label>
+		<label>"generic" - IP camera with RTSP or HTTP URLs.</label>
 		<description>Use when your camera is not ONVIF compatible.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -178,7 +179,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -250,7 +251,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -291,7 +293,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -334,10 +337,11 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -345,13 +349,13 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -362,8 +366,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="onvif">
-		<label>"onvif" Generic IP camera with ONVIF support.</label>
-		<description>Use when the binding does not list your brand of ONVIF compatible Camera</description>
+		<label>"onvif" - IP camera with ONVIF support.</label>
+		<description>Use when the binding does not list your brand of ONVIF camera.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -525,7 +529,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -539,7 +544,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -549,10 +554,11 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>This port will be used for http calls for fetching the snapshot and alarm states.
 				</description>
 				<default>80</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -560,7 +566,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -596,10 +602,11 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -644,8 +651,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="amcrest">
-		<label>"amcrest" IP camera with ONVIF and API support.</label>
-		<description>Use for all current Amcrest Cameras, as they support an API as well as ONVIF.</description>
+		<label>"amcrest" - IP camera with ONVIF and API support.</label>
+		<description>Use for older Amcrest Cameras, that wont work as dahua thing type.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
@@ -771,7 +778,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -814,6 +822,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
@@ -846,7 +855,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -887,7 +896,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -895,7 +904,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -918,7 +927,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -928,7 +937,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		</config-description>
 	</thing-type>
 	<thing-type id="dahua">
-		<label>"dahua" ONVIF and API support for Dahua cameras.</label>
+		<label>"dahua" - IP camera with ONVIF and API support.</label>
 		<description>Use for all current Dahua cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -1067,7 +1076,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -1126,7 +1136,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -1167,7 +1177,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -1175,7 +1185,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -1194,6 +1204,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
@@ -1214,7 +1225,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -1225,7 +1236,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="doorbird">
-		<label>"doorbird" IP camera with ONVIF and API support.</label>
+		<label>"doorbird" - IP camera with ONVIF and API support.</label>
 		<description>Use for all current Doorbird Cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -1346,7 +1357,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -1389,6 +1401,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
@@ -1421,7 +1434,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -1453,7 +1466,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -1461,7 +1474,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -1484,7 +1497,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -1494,7 +1507,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 		</config-description>
 	</thing-type>
 	<thing-type id="foscam">
-		<label>"foscam" IP camera with ONVIF and API support.</label>
+		<label>"foscam" - IP camera with ONVIF and API support.</label>
 		<description>Use for all current HD FOSCAM Cameras as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -1621,7 +1634,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -1664,6 +1678,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
@@ -1696,7 +1711,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -1742,7 +1757,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -1750,7 +1765,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -1773,7 +1788,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -1784,7 +1799,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="hikvision">
-		<label>"hikvision" IP camera with ONVIF and API support.</label>
+		<label>"hikvision" - IP camera with ONVIF and API support.</label>
 		<description>Use for all current Hikvision Cameras as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -1922,7 +1937,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -1965,6 +1981,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
@@ -1997,7 +2014,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -2038,7 +2055,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -2046,7 +2063,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -2069,7 +2086,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -2080,7 +2097,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="instar">
-		<label>"instar" ONVIF and API support for Instar.</label>
+		<label>"instar" - IP camera with ONVIF and API support.</label>
 		<description>Use for all current INSTAR HD Cameras, as they support an API as well as ONVIF.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -2210,7 +2227,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<context>url</context>
 				<label>alarmInputUrl</label>
 				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or RTSP URL. TIP: Using a low res source can save CPU usage.
+					or
+					RTSP URL. TIP: Using a low res source can save CPU usage.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -2253,6 +2271,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					allow all devices on your network unrestricted access.
 				</description>
 				<default>DISABLE</default>
+				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
@@ -2285,7 +2304,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
 				<context>network-address</context>
-				<label>IP Address</label>
+				<label>ipAddress</label>
 				<description>Use this format 192.168.1.2 and do not include the port number.
 				</description>
 			</parameter>
@@ -2317,7 +2336,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="username" type="text" required="false" groupName="Settings">
-				<label>User name for camera.</label>
+				<label>username</label>
 				<description>Enter the User name used to connect to your camera. Leave blank if your camera does not use login
 					details.
 				</description>
@@ -2325,7 +2344,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 
 			<parameter name="password" type="text" required="false" groupName="Settings">
 				<context>password</context>
-				<label>password for camera.</label>
+				<label>password</label>
 				<description>Enter the password for your camera. Leave blank if your camera does not use one.
 				</description>
 			</parameter>
@@ -2348,7 +2367,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label>Time in milliseconds between fetching a snapshot from the camera.</label>
+				<label>pollTime (milliseconds)</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
