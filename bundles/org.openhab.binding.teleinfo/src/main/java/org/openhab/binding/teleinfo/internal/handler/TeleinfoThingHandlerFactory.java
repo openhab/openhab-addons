@@ -15,7 +15,6 @@ package org.openhab.binding.teleinfo.internal.handler;
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -88,19 +86,10 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        TeleinfoAbstractControllerHandler controller = null;
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_SERIAL_CONTROLLER.equals(thingTypeUID)) {
-            controller = new TeleinfoSerialControllerHandler((Bridge) thing, serialPortManager);
-
-            TeleinfoDiscoveryService discoveryService = new TeleinfoDiscoveryService(controller, 60);
-            discoveryService.activate();
-
-            discoveryServiceRegs.put(controller.getThing().getUID(), bundleContext.registerService(
-                    DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
-
-            return controller;
+            return new TeleinfoSerialControllerHandler((Bridge) thing, serialPortManager);
         }
 
         if (THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID.equals(thing.getThingTypeUID())) {

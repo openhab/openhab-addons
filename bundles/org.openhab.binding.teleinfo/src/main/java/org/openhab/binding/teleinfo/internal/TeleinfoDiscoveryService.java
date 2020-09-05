@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class TeleinfoDiscoveryService extends AbstractDiscoveryService
-        implements TeleinfoControllerHandlerListener, ThingHandlerService {
+        implements TeleinfoControllerHandlerListener, ThingHandlerService, DiscoveryService {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_HC_CBEMM_ELECTRICITY_METER_TYPE_UID,
             THING_BASE_CBEMM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBEMM_ELECTRICITY_METER_TYPE_UID,
@@ -65,11 +66,17 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
             THING_BASE_CBETM_ELECTRICITY_METER_TYPE_UID, THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID,
             THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID).collect(Collectors.toSet());
 
-    private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
-    private TeleinfoAbstractControllerHandler controllerHandler;
+    private static final int SCAN_DURATION_IN_S = 60;
 
-    public TeleinfoDiscoveryService(TeleinfoAbstractControllerHandler controllerHandler, int timeout) {
-        super(timeout);
+    private final Logger logger = LoggerFactory.getLogger(TeleinfoDiscoveryService.class);
+    private @Nullable TeleinfoAbstractControllerHandler controllerHandler;
+
+    public TeleinfoDiscoveryService() {
+        super(SCAN_DURATION_IN_S);
+    }
+
+    public TeleinfoDiscoveryService(TeleinfoAbstractControllerHandler controllerHandler) {
+        super(SCAN_DURATION_IN_S);
         this.controllerHandler = controllerHandler;
     }
 
@@ -79,34 +86,59 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
     }
 
     public void activate() {
-        logger.debug("Teleinfo discovery: Active {}", controllerHandler.getThing().getUID());
+        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
+        if (controllerHandlerRef != null) {
+            logger.debug("Teleinfo discovery: Activate {}", controllerHandlerRef.getThing().getUID());
+        } else {
+            logNullControllerHandler();
+        }
     }
 
     @Override
     public void deactivate() {
-        logger.debug("Teleinfo discovery: Deactivate {}", controllerHandler.getThing().getUID());
+        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
+        if (controllerHandlerRef != null) {
+            logger.debug("Teleinfo discovery: Deactivate {}", controllerHandlerRef.getThing().getUID());
+        } else {
+            logNullControllerHandler();
+        }
     }
 
     @Override
     protected void startScan() {
-        logger.debug("Teleinfo discovery: Start {}", controllerHandler.getThing().getUID());
+        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
+        if (controllerHandlerRef != null) {
+            logger.debug("Teleinfo discovery: Start {}", controllerHandlerRef.getThing().getUID());
 
-        // Start the search for new devices
-        controllerHandler.addListener(this);
+            // Start the search for new devices
+            controllerHandlerRef.addListener(this);
+        } else {
+            logNullControllerHandler();
+        }
     }
 
     @Override
     public synchronized void abortScan() {
-        logger.debug("Teleinfo discovery: Abort {}", controllerHandler.getThing().getUID());
-        controllerHandler.removeListener(this);
-        super.abortScan();
+        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
+        if (controllerHandlerRef != null) {
+            logger.debug("Teleinfo discovery: Abort {}", controllerHandlerRef.getThing().getUID());
+            controllerHandlerRef.removeListener(this);
+            super.abortScan();
+        } else {
+            logNullControllerHandler();
+        }
     }
 
     @Override
     protected synchronized void stopScan() {
-        logger.debug("Teleinfo discovery: Stop {}", controllerHandler.getThing().getUID());
-        controllerHandler.removeListener(this);
-        super.stopScan();
+        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
+        if (controllerHandlerRef != null) {
+            logger.debug("Teleinfo discovery: Stop {}", controllerHandlerRef.getThing().getUID());
+            controllerHandlerRef.removeListener(this);
+            super.stopScan();
+        } else {
+            logNullControllerHandler();
+        }
     }
 
     @Override
@@ -115,27 +147,28 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
     }
 
     private void detectNewElectricityMeterFromReceivedFrame(final Frame frameSample) {
-        logger.debug("New eletricity meter detection from frame {}", frameSample.getId());
-        if (!(frameSample instanceof FrameAdco)) {
-            throw new IllegalStateException("Teleinfo frame type not supported: " + frameSample.getClass());
+        TeleinfoAbstractControllerHandler controllerHandlerRef = controllerHandler;
+        if (controllerHandlerRef != null) {
+            logger.debug("New eletricity meter detection from frame {}", frameSample.getId());
+            if (!(frameSample instanceof FrameAdco)) {
+                throw new IllegalStateException("Teleinfo frame type not supported: " + frameSample.getClass());
+            }
+            final FrameAdco frameAdco = (FrameAdco) frameSample;
+
+            ThingUID thingUID = new ThingUID(getThingTypeUID(frameAdco), frameAdco.getAdco(),
+                    controllerHandlerRef.getThing().getUID().getId());
+
+            final Map<String, Object> properties = getThingProperties(frameAdco);
+            final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
+                    .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
+                    .withBridge(controllerHandlerRef.getThing().getUID())
+                    .withRepresentationProperty(representationProperty).build();
+
+            thingDiscovered(discoveryResult);
+        } else {
+            logNullControllerHandler();
         }
-        final FrameAdco frameAdco = (FrameAdco) frameSample;
-
-        ThingUID thingUID = getThingUID(frameAdco);
-
-        final Map<String, Object> properties = getThingProperties(frameAdco);
-        final String representationProperty = THING_ELECTRICITY_METER_PROPERTY_ADCO;
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
-                .withLabel("Teleinfo ADCO " + frameAdco.getAdco()).withThingType(getThingTypeUID(frameAdco))
-                .withBridge(controllerHandler.getThing().getUID()).withRepresentationProperty(representationProperty)
-                .build();
-
-        thingDiscovered(discoveryResult);
-    }
-
-    private ThingUID getThingUID(final FrameAdco frameAdco) {
-        return new ThingUID(getThingTypeUID(frameAdco), frameAdco.getAdco(),
-                controllerHandler.getThing().getUID().getId());
     }
 
     private ThingTypeUID getThingTypeUID(final Frame teleinfoFrame) {
@@ -190,5 +223,9 @@ public class TeleinfoDiscoveryService extends AbstractDiscoveryService
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return controllerHandler;
+    }
+
+    private void logNullControllerHandler() {
+        logger.warn("Null controller handler");
     }
 }
