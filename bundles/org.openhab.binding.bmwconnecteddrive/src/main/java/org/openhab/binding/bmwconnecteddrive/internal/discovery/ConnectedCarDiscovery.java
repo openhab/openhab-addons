@@ -109,6 +109,9 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                     properties.put("Vehicle Construction Year", Short.toString(vehicle.yearOfConstruction));
                     properties.put("Vehicle Drive Train", vehicle.driveTrain);
                     properties.put("Vehicle Model", vehicle.model);
+                    if (vehicle.chargingControl != null) {
+                        properties.put("Vehicle Charge Control", Converter.toTitleCase(vehicle.model));
+                    }
 
                     // Check now if a thing with the same VIN exists
                     final AtomicBoolean foundVehicle = new AtomicBoolean(false);
