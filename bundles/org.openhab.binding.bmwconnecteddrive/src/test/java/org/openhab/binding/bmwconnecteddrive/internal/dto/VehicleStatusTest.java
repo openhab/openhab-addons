@@ -10,12 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
+package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 
 import com.google.gson.Gson;

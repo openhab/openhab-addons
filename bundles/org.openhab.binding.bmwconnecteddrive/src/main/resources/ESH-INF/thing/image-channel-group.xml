@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="image-values">
-		<label>Car Image</label>
-		<description>Provides an Image of your Car based on the Configuration ViewPort</description>
+		<label>Vehicle Image</label>
+		<description>Provides an Image of your Vehicle based on the Configuration ViewPort</description>
 		<channels>
 			<channel id="png" typeId="png-channel"/>
 		</channels>

@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@SuppressWarnings("serial")
 @NonNullByDefault
 public class BimmerConstants {
 

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.discovery;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,8 +34,7 @@ public class Vehicle {
     public String breakdownNumber;
     public List<String> supportedChargingModes;
 
-    public List<String> activatedServices = new ArrayList<String>();
-    public List<String> notActivatedServices = new ArrayList<String>();
+    // Remote Services
     public String vehicleFinder; // ACTIVATED
     public String hornBlow; // ACTIVATED
     public String lightFlash; // ACTIVATED
@@ -45,8 +43,6 @@ public class Vehicle {
     public String climateNow; // ACTIVATED
     public String sendPoi; // ACTIVATED
 
-    public List<String> supportedServices = new ArrayList<String>();
-    public List<String> notSupportedServices = new ArrayList<String>();
     public String remote360; // SUPPORTED
     public String climateControl; // SUPPORTED
     public String chargeNow; // SUPPORTED

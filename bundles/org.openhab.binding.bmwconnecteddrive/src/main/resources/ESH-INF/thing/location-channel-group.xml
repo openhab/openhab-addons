@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="location-values">
-		<label>Car Location and Heading</label>
-		<description>All values needed to locate your Car on a Map</description>
+		<label>Vehicle Location</label>
+		<description>Coordinates and Heading of the Vehcile</description>
 		<channels>
 			<channel id="longitude" typeId="longitude-channel"/>
 			<channel id="latitude" typeId="latitude-channel"/>

@@ -7,4 +7,56 @@
 		<item-type>String</item-type>
 		<label>Charging Status</label>
 	</channel-type>
+	<channel-type id="profile-climate-channel">
+		<item-type>Switch</item-type>
+		<label>Air Conditioning at Departure Time</label>
+	</channel-type>
+	<channel-type id="profile-mode-channel">
+		<item-type>String</item-type>
+		<label>Charging Mode for Profile</label>
+	</channel-type>
+	<channel-type id="window-start-channel">
+		<item-type>String</item-type>
+		<label>Charging Window Start Time</label>
+	</channel-type>
+	<channel-type id="window-end-channel">
+		<item-type>String</item-type>
+		<label>Charging Window End Time</label>
+	</channel-type>
+	<channel-type id="timer1-departure-channel">
+		<item-type>String</item-type>
+		<label>Timer 1: Departure Time</label>
+	</channel-type>
+	<channel-type id="timer1-days-channel">
+		<item-type>String</item-type>
+		<label>Timer 1: Scheduled Days</label>
+	</channel-type>
+	<channel-type id="timer1-enabled-channel">
+		<item-type>Switch</item-type>
+		<label>Timer 1: Enabled</label>
+	</channel-type>
+	<channel-type id="timer2-departure-channel">
+		<item-type>String</item-type>
+		<label>Timer 2: Departure Time</label>
+	</channel-type>
+	<channel-type id="timer2-days-channel">
+		<item-type>String</item-type>
+		<label>Timer 2: Scheduled Days</label>
+	</channel-type>
+	<channel-type id="timer2-enabled-channel">
+		<item-type>Switch</item-type>
+		<label>Timer 2: Enabled</label>
+	</channel-type>
+	<channel-type id="timer3-departure-channel">
+		<item-type>String</item-type>
+		<label>Timer 3: Departure Time</label>
+	</channel-type>
+	<channel-type id="timer3-days-channel">
+		<item-type>String</item-type>
+		<label>Timer 3: Scheduled Days</label>
+	</channel-type>
+	<channel-type id="timer3-enabled-channel">
+		<item-type>Switch</item-type>
+		<label>Timer 3: Enabled</label>
+	</channel-type>
 </thing:thing-descriptions>

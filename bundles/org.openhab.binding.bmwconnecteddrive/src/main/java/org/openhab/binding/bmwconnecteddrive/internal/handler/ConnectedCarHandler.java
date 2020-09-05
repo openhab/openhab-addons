@@ -15,6 +15,7 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -45,6 +46,10 @@ import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
@@ -61,8 +66,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link ConnectedCarHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -73,11 +76,11 @@ import com.google.gson.Gson;
 public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
 
-    static final Gson GSON = new Gson();
-
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
     private Optional<ConnectedCarConfiguration> configuration = Optional.empty();
+    private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
+    private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     private boolean imperial = false;
     private boolean hasFuel = false;
@@ -101,9 +104,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private Optional<String> rangeMapCache = Optional.empty();
     private Optional<String> destinationCache = Optional.empty();
 
-    private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
-    protected Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
-
     public ConnectedCarHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
         super(thing);
         this.imperial = imperial;
@@ -112,7 +112,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         isElectric = type.equals(CarType.PLUGIN_HYBRID.toString()) || type.equals(CarType.ELECTRIC_REX.toString())
                 || type.equals(CarType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
-        logger.debug("DriveTrain {} isElectric {} hasFuel {} Imperial {}", type, isElectric, hasFuel, imperial);
     }
 
     @Override
@@ -178,11 +177,15 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 logger.info("Trigger Vehicle Fingerprint");
                 if (command instanceof OnOffType) {
                     if (command.equals(OnOffType.ON)) {
-                        logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - BEGIN");
+                        logger.warn(
+                                "###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - BEGIN ######");
+                        logger.warn("### Discovery Result ###");
+                        logger.warn("{}", bridgeHandler.get().getDiscoveryFingerprint());
                         if (vehicleStatusCache.isPresent()) {
                             logger.warn("### Vehicle Status ###");
+
                             // Anonymous data for VIN and Position
-                            VehicleStatusContainer container = GSON.fromJson(vehicleStatusCache.get(),
+                            VehicleStatusContainer container = Converter.getGson().fromJson(vehicleStatusCache.get(),
                                     VehicleStatusContainer.class);
                             VehicleStatus status = container.vehicleStatus;
                             status.vin = Constants.ANONYMOUS;
@@ -190,7 +193,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                                 status.position.lat = -1;
                                 status.position.lon = -1;
                                 status.position.heading = -1;
-                                logger.warn("{}", GSON.toJson(container));
+                                logger.warn("{}", Converter.getGson().toJson(container));
                             }
                         } else {
                             logger.warn("### Vehicle Status Empty ###");
@@ -218,6 +221,26 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                                 logger.warn("### Charge Profile Empty ###");
                             }
                         }
+                        if (destinationCache.isPresent()) {
+                            logger.warn("### Charge Profile ###");
+                            DestinationContainer container = Converter.getGson().fromJson(destinationCache.get(),
+                                    DestinationContainer.class);
+                            if (container.destinations != null) {
+                                container.destinations.forEach(entry -> {
+                                    entry.lat = 0;
+                                    entry.lon = 0;
+                                    entry.city = Constants.ANONYMOUS;
+                                    entry.street = Constants.ANONYMOUS;
+                                    entry.streetNumber = Constants.ANONYMOUS;
+                                    entry.country = Constants.ANONYMOUS;
+                                });
+                                logger.warn("{}", Converter.getGson().toJson(container));
+                            } else {
+                                logger.warn("### Destinations Empty ###");
+                            }
+                        } else {
+                            logger.warn("### Charge Profile Empty ###");
+                        }
                         if (rangeMapCache.isPresent()) {
                             logger.warn("### Range Map ###");
                             logger.warn("{}",
@@ -225,7 +248,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         } else {
                             logger.warn("### Range Map Empty ###");
                         }
-                        logger.warn("BMW ConnectedDrive Binding - Car Data Troubleshoot fingerprint - END");
+                        logger.warn(
+                                "###### BMW ConnectedDrive Binding - Vehicle Troubleshoot Fingerprint Data - END ######");
                     }
                     // Switch back to off immediately
                     updateState(channelUID, OnOffType.OFF);
@@ -325,18 +349,42 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     public void getData() {
         if (proxy.isPresent() && configuration.isPresent()) {
             proxy.get().requestVehcileStatus(configuration.get(), vehicleStatusCallback);
-            if (isElectric) {
+            if (isSupported(Constants.STATISTICS)) {
                 proxy.get().requestLastTrip(configuration.get(), lastTripCallback);
                 proxy.get().requestAllTrips(configuration.get(), allTripsCallback);
+            }
+            if (isSupported(Constants.LAST_DESTINATIONS)) {
+                proxy.get().requestDestinations(configuration.get(), destinationCallback);
+            }
+            if (isElectric) {
                 proxy.get().requestChargingProfile(configuration.get(), chargeProfileCallback);
             }
-            proxy.get().requestDestinations(configuration.get(), destinationCallback);
         } else {
             logger.warn("ConnectedDrive Proxy isn't present");
         }
     }
 
-    void requestRangeMap(Position p) {
+    /**
+     * Don't stress ConnectedDrive with unnecessary requests. One call at the beginning is done to check the response.
+     * After cache has e.g. a proper error response it will be shown in the fingerprint
+     *
+     * @return
+     */
+    private boolean isSupported(String service) {
+        if (thing.getProperties().containsKey(Constants.SERVICES_SUPPORTED)) {
+            if (thing.getProperties().get(Constants.SERVICES_SUPPORTED).contains(Constants.STATISTICS)) {
+                return true;
+            }
+        }
+        // if cache is empty give it a try one time to collected Troubleshoot data
+        if (!lastTripCache.isPresent() || !allTripsCache.isPresent() || !destinationCache.isPresent()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void requestRangeMap(Position p) {
         // format_string = '%Y-%m-%dT%H:%M:%S'
         // timestamp = datetime.datetime.now().strftime(format_string)
         // params = {
@@ -344,7 +392,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         // 'dlat': self._vehicle.observer_latitude,
         // 'dlon': self._vehicle.observer_longitude,
         // }
-        double diff = Converter.measure(p.lat, p.lon, currentPosition.lat, currentPosition.lon);
+        double diff = Converter.measureDistance(p.lat, p.lon, currentPosition.lat, currentPosition.lon);
         if (diff > 1000) {
             logger.info("Difference between old {} and new Position {} = {}", currentPosition.toString(), p.toString(),
                     diff);
@@ -382,11 +430,51 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
      * @author Bernd Weymann
      *
      */
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class ChargeProfilesCallback implements StringResponseCallback {
         @Override
         public void onResponse(Optional<String> content) {
             chargeProfileCache = content;
+            if (content.isPresent()) {
+                ChargeProfile cp = Converter.getGson().fromJson(content.get(), ChargeProfile.class);
+                WeeklyPlanner planner = cp.weeklyPlanner;
+                updateState(chargeProfileClimate, OnOffType.from(planner.climatizationEnabled));
+                updateState(chargeProfileChargeMode, StringType.valueOf(planner.chargingMode));
+
+                ChargingWindow cw = planner.preferredChargingWindow;
+                updateState(chargeWindowStart, StringType.valueOf(cw.startTime));
+                updateState(chargeWindowEnd, StringType.valueOf(cw.endTime));
+
+                Timer t1 = planner.timer1;
+                updateState(timer1Departure, StringType.valueOf(t1.departureTime));
+                updateState(timer1Enabled, OnOffType.from(t1.timerEnabled));
+                updateState(timer1Days, StringType.valueOf(getDays(t1.weekdays)));
+
+                Timer t2 = planner.timer2;
+                updateState(timer2Departure, StringType.valueOf(t2.departureTime));
+                updateState(timer2Enabled, OnOffType.from(t2.timerEnabled));
+                updateState(timer2Days, StringType.valueOf(getDays(t2.weekdays)));
+
+                Timer t3 = planner.timer3;
+                updateState(timer3Departure, StringType.valueOf(t3.departureTime));
+                updateState(timer3Enabled, OnOffType.from(t3.timerEnabled));
+                updateState(timer3Days, StringType.valueOf(getDays(t3.weekdays)));
+            }
+        }
+
+        private String getDays(List<String> l) {
+            if (l == null) {
+                return Converter.toTitleCase(Constants.UNKNOWN);
+            }
+            StringBuffer days = new StringBuffer();
+            l.forEach(entry -> {
+                if (days.length() == 0) {
+                    days.append(entry);
+                } else {
+                    days.append(Constants.COMMA).append(entry);
+                }
+            });
+            return days.toString();
         }
 
         /**
@@ -395,11 +483,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            chargeProfileCache = Optional.of(GSON.toJson(error));
+            chargeProfileCache = Optional.of(Converter.getGson().toJson(error));
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class RangeMapCallback implements StringResponseCallback {
         @Override
         public void onResponse(Optional<String> content) {
@@ -412,17 +500,17 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            rangeMapCache = Optional.of(GSON.toJson(error));
+            rangeMapCache = Optional.of(Converter.getGson().toJson(error));
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class DestinationsCallback implements StringResponseCallback {
         @Override
         public void onResponse(Optional<String> content) {
             destinationCache = content;
             if (content.isPresent()) {
-                DestinationContainer dc = GSON.fromJson(content.get(), DestinationContainer.class);
+                DestinationContainer dc = Converter.getGson().fromJson(content.get(), DestinationContainer.class);
 
                 if (dc.destinations != null) {
                     if (!dc.destinations.isEmpty()) {
@@ -450,11 +538,11 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            destinationCache = Optional.of(GSON.toJson(error));
+            destinationCache = Optional.of(Converter.getGson().toJson(error));
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class ImageCallback implements ByteResponseCallback {
         @Override
         public void onResponse(Optional<byte[]> content) {
@@ -473,13 +561,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class AllTripsCallback implements StringResponseCallback {
         @Override
         public void onResponse(Optional<String> content) {
             if (content.isPresent()) {
                 allTripsCache = content;
-                AllTripsContainer at = GSON.fromJson(content.get(), AllTripsContainer.class);
+                AllTripsContainer at = Converter.getGson().fromJson(content.get(), AllTripsContainer.class);
                 AllTrips c = at.allTrips;
                 if (c == null) {
                     return;
@@ -503,17 +591,17 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            allTripsCache = Optional.of(GSON.toJson(error));
+            allTripsCache = Optional.of(Converter.getGson().toJson(error));
         }
     }
 
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class LastTripCallback implements StringResponseCallback {
         @Override
         public void onResponse(Optional<String> content) {
             if (content.isPresent()) {
                 lastTripCache = content;
-                LastTripContainer lt = GSON.fromJson(content.get(), LastTripContainer.class);
+                LastTripContainer lt = Converter.getGson().fromJson(content.get(), LastTripContainer.class);
                 LastTrip trip = lt.lastTrip;
                 if (trip == null) {
                     return;
@@ -535,14 +623,14 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            lastTripCache = Optional.of(GSON.toJson(error));
+            lastTripCache = Optional.of(Converter.getGson().toJson(error));
         }
     }
 
     /**
      * The VehicleStatus is supported by all Car Types so it's used to reflect the Thing Status
      */
-    @NonNullByDefault
+    @NonNullByDefault({})
     public class VehicleStatusCallback implements StringResponseCallback {
         private ThingStatus thingStatus = ThingStatus.UNKNOWN;
 
@@ -565,7 +653,8 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
             if (content.isPresent()) {
                 setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, Constants.EMPTY);
                 vehicleStatusCache = content;
-                VehicleStatusContainer status = GSON.fromJson(content.get(), VehicleStatusContainer.class);
+                VehicleStatusContainer status = Converter.getGson().fromJson(content.get(),
+                        VehicleStatusContainer.class);
                 VehicleStatus vStatus = status.vehicleStatus;
                 if (vStatus == null) {
                     return;
@@ -573,9 +662,9 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
 
                 // Vehilce Status
                 updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
-                Doors doorState = GSON.fromJson(GSON.toJson(vStatus), Doors.class);
+                Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
                 updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
-                Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
+                Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
                 updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
                 updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
                 updateState(service, StringType.valueOf(vStatus.getNextService(imperial)));
@@ -589,18 +678,24 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         totalRange += vStatus.remainingRangeElectric;
                         updateState(remainingRangeElectric,
                                 QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
+                        updateState(rangeRadiusElectric,
+                                QuantityType.valueOf(Converter.guessRangeRadius(vStatus.remainingRangeElectric),
+                                        MetricPrefix.KILO(SIUnits.METRE)));
                     }
                     if (hasFuel) {
                         totalRange += vStatus.remainingRangeFuel;
                         updateState(remainingRangeFuel,
                                 QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
+                        updateState(rangeRadiusFuel,
+                                QuantityType.valueOf(Converter.guessRangeRadius(vStatus.remainingRangeFuel),
+                                        MetricPrefix.KILO(SIUnits.METRE)));
                     }
                     if (isHybrid) {
                         updateState(remainingRangeHybrid,
                                 QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
+                        updateState(rangeRadiusHybrid, QuantityType.valueOf(Converter.guessRangeRadius(totalRange),
+                                MetricPrefix.KILO(SIUnits.METRE)));
                     }
-                    updateState(rangeRadius,
-                            QuantityType.valueOf(Converter.guessRange(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
                 } else {
                     updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
                     float totalRange = 0;
@@ -608,18 +703,22 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                         totalRange += vStatus.remainingRangeElectricMls;
                         updateState(remainingRangeElectric,
                                 QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
+                        updateState(rangeRadiusElectric, QuantityType.valueOf(
+                                Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), ImperialUnits.MILE));
                     }
                     if (hasFuel) {
                         totalRange += vStatus.remainingRangeFuelMls;
                         updateState(remainingRangeFuel,
                                 QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
+                        updateState(rangeRadiusFuel, QuantityType.valueOf(
+                                Converter.guessRangeRadius(vStatus.remainingRangeFuelMls), ImperialUnits.MILE));
                     }
                     if (isHybrid) {
                         updateState(remainingRangeHybrid,
                                 QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
+                        updateState(rangeRadiusHybrid,
+                                QuantityType.valueOf(Converter.guessRangeRadius(totalRange), ImperialUnits.MILE));
                     }
-                    updateState(rangeRadius,
-                            QuantityType.valueOf(Converter.guessRange(totalRange), ImperialUnits.MILE));
                 }
                 if (isElectric) {
                     updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
@@ -651,7 +750,6 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 Position p = vStatus.position;
                 updateState(latitude, new DecimalType(p.lat));
                 updateState(longitude, new DecimalType(p.lon));
-                updateState(latlong, StringType.valueOf(p.toString()));
                 updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
                 requestRangeMap(p);
             }
@@ -660,7 +758,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
-            vehicleStatusCache = Optional.of(GSON.toJson(error));
+            vehicleStatusCache = Optional.of(Converter.getGson().toJson(error));
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
         }
     }

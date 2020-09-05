@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="hybrid-range-values">
-		<label>Range Data</label>
+		<label>Hybrid Range Data</label>
 		<description>Provides Mileage, remaining range and fuel and charge level values</description>
 		<channels>
 			<channel id="mileage" typeId="mileage-channel"/>
@@ -13,7 +13,8 @@
 			<channel id="soc" typeId="soc-channel"/>
 			<channel id="fuel" typeId="range-fuel-channel"/>
 			<channel id="remaining-fuel" typeId="remaining-fuel-channel"/>
-			<channel id="radius" typeId="range-radius-channel"/>
+			<channel id="radius-electric" typeId="range-radius-electric-channel"/>
+			<channel id="radius-hybrid" typeId="range-radius-hybrid-channel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
