@@ -120,6 +120,10 @@ public class GenericThingHandlerTests {
 
         verify(connection).subscribe(eq(channelConfig.getStateTopic()), eq(channelConfig));
 
+        verify(thingHandler).updateThingStatus(eq(false), eq(true));
+
+        verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
+
         verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.ONLINE)
                 && arg.getStatusDetail().equals(ThingStatusDetail.NONE)));
     }

@@ -183,6 +183,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
                     + configErrors.stream().map(ChannelUID::getAsString).collect(Collectors.joining(",")));
             return;
         }
+        updateStatus(ThingStatus.UNKNOWN);
         super.initialize();
     }
 
