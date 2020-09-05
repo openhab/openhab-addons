@@ -28,6 +28,20 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.events.EventPublisher;
+import org.openhab.core.items.events.ItemEventFactory;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 import org.openhab.binding.icalendar.internal.config.ICalendarConfiguration;
 import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
@@ -60,7 +74,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Support for Command Tags embedded in the Event description
  */
 @NonNullByDefault
-public class ICalendarHandler extends BaseThingHandler implements CalendarUpdateListener {
+public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdateListener {
 
     private final File calendarFile;
     private @Nullable ICalendarConfiguration configuration;
@@ -72,8 +86,8 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     private @Nullable ScheduledFuture<?> updateJobFuture;
     private Instant updateStatesLastCalledTime;
 
-    public ICalendarHandler(Thing thing, HttpClient httpClient, EventPublisher eventPublisher) {
-        super(thing);
+    public ICalendarHandler(Bridge bridge, HttpClient httpClient, EventPublisher eventPublisher) {
+        super(bridge);
         this.httpClient = httpClient;
         calendarFile = new File(OpenHAB.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
@@ -165,6 +179,14 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
         } else {
             logger.trace("Calendar was updated, but loading failed.");
         }
+    }
+
+    /**
+     * @return the calendar that is used for all operations
+     */
+    @Nullable
+    public AbstractPresentableCalendar getRuntimeCalendar() {
+        return runtimeCalendar;
     }
 
     private void executeEventCommands(List<Event> events, CommandTagType execTime) {
