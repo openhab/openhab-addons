@@ -14,6 +14,8 @@ package org.openhab.binding.icalendar.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelGroupTypeUID;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link ICalendarBindingConstants} class defines common constants, which are
@@ -28,6 +30,7 @@ public class ICalendarBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CALENDAR = new ThingTypeUID(BINDING_ID, "calendar");
+    public static final ThingTypeUID THING_TYPE_FILTERED_EVENTS = new ThingTypeUID(BINDING_ID, "eventfilter");
 
     // List of all Channel ids
     public static final String CHANNEL_CURRENT_EVENT_TITLE = "current_title";
@@ -40,4 +43,19 @@ public class ICalendarBindingConstants {
 
     // additional constants
     public static final int HTTP_TIMEOUT_SECS = 60;
+    public static final String DATETIME_UNIT_MINUTE = "minute";
+    public static final String DATETIME_UNIT_HOUR = "hour";
+    public static final String DATETIME_UNIT_DAY = "day";
+    public static final String DATETIME_UNIT_WEEK = "week";
+
+    // specials for EventFilter
+    public final static String RESULT_GROUP_ID_PREFIX = "result_";
+    public final static String RESULT_BEGIN_ID = "begin";
+    public final static String RESULT_END_ID = "end";
+    public final static String RESULT_TITLE_ID = "title";
+    public final static ChannelGroupTypeUID GROUP_TYPE_UID = new ChannelGroupTypeUID(BINDING_ID, "result");
+    public final static ChannelTypeUID BEGIN_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_start");
+    public final static ChannelTypeUID END_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_end");
+    public final static ChannelTypeUID TITLE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_title");
+
 }
