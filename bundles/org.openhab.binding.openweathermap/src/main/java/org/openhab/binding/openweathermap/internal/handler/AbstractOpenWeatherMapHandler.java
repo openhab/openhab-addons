@@ -69,13 +69,9 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
-            Stream.of(
-                    THING_TYPE_WEATHER_AND_FORECAST,
-                    THING_TYPE_UVINDEX,
-                    THING_TYPE_ONECALL_WEATHER_AND_FORECAST,
-                    THING_TYPE_ONECALL_HISTORY
-            ).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_WEATHER_AND_FORECAST, THING_TYPE_UVINDEX,
+                    THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY).collect(Collectors.toSet()));
 
     private final TimeZoneProvider timeZoneProvider;
 
@@ -212,7 +208,8 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     protected List<Channel> createChannelsForGroup(String channelGroupId, ChannelGroupTypeUID channelGroupTypeUID) {
         logger.debug("Building channel group '{}' for thing '{}'.", channelGroupId, getThing().getUID());
         List<Channel> channels = new ArrayList<>();
-        @Nullable ThingHandlerCallback callback = getCallback();
+        @Nullable
+        ThingHandlerCallback callback = getCallback();
         if (callback != null) {
             for (ChannelBuilder channelBuilder : callback.createChannelBuilders(
                     new ChannelGroupUID(getThing().getUID(), channelGroupId), channelGroupTypeUID)) {

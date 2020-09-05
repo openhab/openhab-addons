@@ -12,7 +12,16 @@
  */
 package org.openhab.binding.openweathermap.internal.handler;
 
-import com.google.gson.JsonSyntaxException;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
+import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
@@ -30,15 +39,7 @@ import org.openhab.binding.openweathermap.internal.dto.onecallhist.OpenWeatherMa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
-import static org.eclipse.smarthome.core.library.unit.MetricPrefix.KILO;
-import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
-import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
-import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link OpenWeatherMapOneCallHistoryHandler} is responsible for handling commands, which are sent to one of
@@ -67,20 +68,22 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     @Override
     public void initialize() {
         super.initialize();
-        OpenWeatherMapOnecallHistoryConfiguration config = getConfigAs(
-                OpenWeatherMapOnecallHistoryConfiguration.class);
+        OpenWeatherMapOnecallHistoryConfiguration config = getConfigAs(OpenWeatherMapOnecallHistoryConfiguration.class);
         if (config.historyDay <= 0) {
-            logger.error("historyDay value of {} is not supported", config.historyDay);
+            logger.warn("historyDay value of {} is not supported", config.historyDay);
             return;
         }
-        /* As of now, only 5 days in history are supported by the one call API. As this may change in the future,
-           we allow any value here and only log a warning if the value exceeds 5.
-        */
+        /*
+         * As of now, only 5 days in history are supported by the one call API. As this may change in the future,
+         * we allow any value here and only log a warning if the value exceeds 5.
+         */
         if (config.historyDay > 5) {
-            logger.warn("History configuration of {} days may cause errors. You have been warned :-)",config.historyDay);
+            logger.warn("History configuration of {} days may cause errors. You have been warned :-)",
+                    config.historyDay);
         }
         day = config.historyDay;
-        logger.debug("Initialize OpenWeatherMapOneCallHistoryHandler handler '{}' with historyDay {}.", getThing().getUID(), day);
+        logger.debug("Initialize OpenWeatherMapOneCallHistoryHandler handler '{}' with historyDay {}.",
+                getThing().getUID(), day);
     }
 
     @Override
@@ -88,7 +91,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
             throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
         try {
-            weatherData = connection.getOneCallHistAPIData(location,day);
+            weatherData = connection.getOneCallHistAPIData(location, day);
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
@@ -129,8 +132,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_STATION_LOCATION:
-                    state = getPointTypeState(localWeatherData.getLat(),
-                            localWeatherData.getLon());
+                    state = getPointTypeState(localWeatherData.getLat(), localWeatherData.getLon());
                     break;
                 case CHANNEL_TIME_STAMP:
                     state = getDateTimeTypeState(localWeatherData.getCurrent().getDt());
@@ -148,7 +150,8 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     break;
                 case CHANNEL_CONDITION_ID:
                     if (!localWeatherData.getCurrent().getWeather().isEmpty()) {
-                        state = getStringTypeState(Integer.toString(localWeatherData.getCurrent().getWeather().get(0).getId()));
+                        state = getStringTypeState(
+                                Integer.toString(localWeatherData.getCurrent().getWeather().get(0).getId()));
                     }
                     break;
                 case CHANNEL_CONDITION_ICON:
@@ -201,12 +204,14 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     state = getQuantityTypeState(snow == null ? 0 : snow.get1h(), MILLI(METRE));
                     break;
                 case CHANNEL_VISIBILITY:
-                    @Nullable State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(),METRE).toUnit(KILO(METRE));
+                    @Nullable
+                    State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
+                            .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
                     break;
                 default:
                     // This should not happen
-                    logger.warn("Unknown channel id {} in onecall current weather data",channelId);
+                    logger.warn("Unknown channel id {} in onecall current weather data", channelId);
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -225,11 +230,11 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
     private void updateHourlyHistoryChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        logger.debug("Updating hourly history data for channel {}, group {}, count {}",channelId,channelGroupId, count);
+        logger.debug("Updating hourly history data for channel {}, group {}, count {}", channelId, channelGroupId,
+                count);
         OpenWeatherMapOneCallHistAPIData localWeatherData = weatherData;
         if (localWeatherData != null && localWeatherData.getHourly().size() > count) {
-            Hourly historyData = localWeatherData
-                    .getHourly().get(count);
+            Hourly historyData = localWeatherData.getHourly().get(count);
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:
@@ -284,7 +289,9 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     state = getQuantityTypeState(historyData.getClouds(), PERCENT);
                     break;
                 case CHANNEL_VISIBILITY:
-                    @Nullable State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(),METRE).toUnit(KILO(METRE));
+                    @Nullable
+                    State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
+                            .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
                 case CHANNEL_RAIN:
                     Rain rain = historyData.getRain();
@@ -296,7 +303,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
                     break;
                 default:
                     // This should not happen
-                    logger.warn("Unknown channel id {} in onecall hourly weather data",channelId);
+                    logger.warn("Unknown channel id {} in onecall hourly weather data", channelId);
                     break;
             }
             logger.debug("Update channel '{}' of group '{}' with new state '{}'.", channelId, channelGroupId, state);
@@ -305,5 +312,4 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
             logger.debug("No weather data available to update channel '{}' of group '{}'.", channelId, channelGroupId);
         }
     }
-
 }

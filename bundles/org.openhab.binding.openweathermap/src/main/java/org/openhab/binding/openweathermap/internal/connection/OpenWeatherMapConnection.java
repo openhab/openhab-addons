@@ -243,7 +243,9 @@ public class OpenWeatherMapConnection {
     }
 
     /**
-     * Get Weather data from the OneCall API for the given location. See https://openweathermap.org/api/one-call-api for details
+     * Get Weather data from the OneCall API for the given location. See https://openweathermap.org/api/one-call-api for
+     * details
+     * 
      * @param location location represented as {@link PointType}
      * @return
      * @throws JsonSyntaxException
@@ -259,8 +261,10 @@ public class OpenWeatherMapConnection {
     }
 
     /**
-     * Get the historical weather data from the OneCall API for the given location and the given number of days in the past.
-     * As of now, OpenWeatherMap supports this function for up to 5 days in the past. However, this may change in the future,
+     * Get the historical weather data from the OneCall API for the given location and the given number of days in the
+     * past.
+     * As of now, OpenWeatherMap supports this function for up to 5 days in the past. However, this may change in the
+     * future,
      * so we don't enforce this limit here. See https://openweathermap.org/api/one-call-api for details
      *
      * @param location location represented as {@link PointType}
@@ -270,17 +274,15 @@ public class OpenWeatherMapConnection {
      * @throws OpenWeatherMapCommunicationException
      * @throws OpenWeatherMapConfigurationException
      */
-    public synchronized @Nullable OpenWeatherMapOneCallHistAPIData getOneCallHistAPIData(@Nullable PointType location, int days)
+    public synchronized @Nullable OpenWeatherMapOneCallHistAPIData getOneCallHistAPIData(@Nullable PointType location,
+            int days)
             throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
-        Map<String,String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
+        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
         // the API requests the history as timestamp in Unix time format.
-        params.put(PARAM_HISTORY_DATE, Long.toString(new Date().getTime()/1000 - days*60*60*24));
-        return gson.fromJson(
-                getResponseFromCache(
-                        buildURL(ONECALL_HISTORY_URL, params)),
+        params.put(PARAM_HISTORY_DATE, Long.toString(new Date().getTime() / 1000 - days * 60 * 60 * 24));
+        return gson.fromJson(getResponseFromCache(buildURL(ONECALL_HISTORY_URL, params)),
                 OpenWeatherMapOneCallHistAPIData.class);
     }
-
 
     private Map<String, String> getRequestParams(OpenWeatherMapAPIConfiguration config, @Nullable PointType location) {
         if (location == null) {

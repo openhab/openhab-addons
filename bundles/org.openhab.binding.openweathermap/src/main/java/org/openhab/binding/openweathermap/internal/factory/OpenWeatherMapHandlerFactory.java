@@ -106,7 +106,6 @@ public class OpenWeatherMapHandlerFactory extends BaseThingHandlerFactory {
         } else if (THING_TYPE_ONECALL_HISTORY.equals(thingTypeUID)) {
             return new OpenWeatherMapOneCallHistoryHandler(thing, timeZoneProvider);
         }
-        logger.error("Could not create handler for thing {}, UID {}",thing,thingTypeUID);
         return null;
     }
 

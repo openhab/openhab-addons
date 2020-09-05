@@ -65,9 +65,6 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_GROUP_ONECALL_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_ONECALL_TOMORROW = "forecastTomorrow";
 
-
-
-
     // List of all channels
     public static final String CHANNEL_STATION_ID = "id";
     public static final String CHANNEL_STATION_NAME = "name";

@@ -111,7 +111,7 @@
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="sunrise" typeId="sunrise"/>
-			<channel id="sunset" typeId="sunset" />
+			<channel id="sunset" typeId="sunset"/>
 			<channel id="condition" typeId="condition"/>
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
@@ -135,7 +135,8 @@
 	<channel-group-type id="oneCallMinutely">
 		<label>One Call API Minutely Forecast</label>
 		<description>Minutely weather forecast delivered by the One Call API, where available.
-			Currently only contains precipitation data</description>
+			Currently only contains
+			precipitation data</description>
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="precipitation" typeId="precipitation"/>
@@ -173,7 +174,7 @@
 		<channels>
 			<channel id="time-stamp" typeId="daily-forecast-time-stamp"/>
 			<channel id="sunrise" typeId="sunrise"/>
-			<channel id="sunset" typeId="sunset" />
+			<channel id="sunset" typeId="sunset"/>
 			<channel id="condition" typeId="condition"/>
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
@@ -209,7 +210,7 @@
 		<channels>
 			<channel id="time-stamp" typeId="time-stamp"/>
 			<channel id="sunrise" typeId="sunrise"/>
-			<channel id="sunset" typeId="sunset" />
+			<channel id="sunset" typeId="sunset"/>
 			<channel id="condition" typeId="condition"/>
 			<channel id="condition-id" typeId="condition-id"/>
 			<channel id="icon" typeId="condition-icon"/>
@@ -444,7 +445,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="dew-point">
+	<channel-type id="dew-point" advanced="true">
 		<item-type>Number:Temperature</item-type>
 		<label>Dew-Point Temperature</label>
 		<description>Forecasted dew-point temperature.</description>

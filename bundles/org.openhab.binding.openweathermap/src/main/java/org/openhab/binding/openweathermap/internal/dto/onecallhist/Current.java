@@ -13,16 +13,17 @@
 package org.openhab.binding.openweathermap.internal.dto.onecallhist;
 
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
  * Settings:
- *   Annotation Style: GSON
- *   Use primitive types
- *   Use double numbers
- *   allow additional properties
+ * Annotation Style: GSON
+ * Use primitive types
+ * Use double numbers
+ * allow additional properties
  *
  * @author Wolfgang Klimt - Initial contribution
  */
@@ -79,7 +80,6 @@ public class Current {
     @SerializedName("snow")
     @Expose
     private Snow snow;
-
 
     public int getDt() {
         return dt;
@@ -193,7 +193,6 @@ public class Current {
         this.windGust = windGust;
     }
 
-
     public List<Weather> getWeather() {
         return weather;
     }
@@ -217,5 +216,4 @@ public class Current {
     public void setSnow(Snow snow) {
         this.snow = snow;
     }
-
 }

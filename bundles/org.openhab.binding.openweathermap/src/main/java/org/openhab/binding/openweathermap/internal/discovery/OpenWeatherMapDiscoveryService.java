@@ -128,8 +128,8 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         createWeatherAndForecastResult(locationString, bridgeUID);
         createUVIndexResult(locationString, bridgeUID);
-        createOneCallResult(locationString,bridgeUID);
-        createOneCallHistoryResult(locationString,bridgeUID);
+        createOneCallResult(locationString, bridgeUID);
+        createOneCallHistoryResult(locationString, bridgeUID);
     }
 
     private void createWeatherAndForecastResult(String location, ThingUID bridgeUID) {
@@ -145,9 +145,10 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void createOneCallResult(String location, ThingUID bridgeUID) {
-        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
-                .withLabel("One Call API weather and forecast").withProperty(CONFIG_LOCATION, location)
-                .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
+        thingDiscovered(
+                DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_ONECALL_WEATHER_AND_FORECAST, bridgeUID, LOCAL))
+                        .withLabel("One Call API weather and forecast").withProperty(CONFIG_LOCATION, location)
+                        .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
 
     private void createOneCallHistoryResult(String location, ThingUID bridgeUID) {
@@ -155,7 +156,4 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
                 .withLabel("One Call API history data").withProperty(CONFIG_LOCATION, location)
                 .withRepresentationProperty(CONFIG_LOCATION).withBridge(bridgeUID).build());
     }
-
-
-
 }

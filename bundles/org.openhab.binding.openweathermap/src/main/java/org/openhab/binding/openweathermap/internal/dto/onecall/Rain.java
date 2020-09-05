@@ -18,10 +18,10 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
  * Settings:
- *   Annotation Style: GSON
- *   Use primitive types
- *   Use double numbers
- *   allow additional properties
+ * Annotation Style: GSON
+ * Use primitive types
+ * Use double numbers
+ * allow additional properties
  *
  * @author Wolfgang Klimt - Initial contribution
  */
@@ -38,5 +38,4 @@ public class Rain {
     public void set1h(double _1h) {
         this._1h = _1h;
     }
-
 }

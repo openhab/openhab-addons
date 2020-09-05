@@ -14,13 +14,14 @@ package org.openhab.binding.openweathermap.internal.dto.onecall;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
 /**
  * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
  * Settings:
- *   Annotation Style: GSON
- *   Use primitive types
- *   Use double numbers
- *   allow additional properties
+ * Annotation Style: GSON
+ * Use primitive types
+ * Use double numbers
+ * allow additional properties
  *
  * @author Wolfgang Klimt - Initial contribution
  */
@@ -37,5 +38,4 @@ public class Snow {
     public void set1h(double _1h) {
         this._1h = _1h;
     }
-
 }
