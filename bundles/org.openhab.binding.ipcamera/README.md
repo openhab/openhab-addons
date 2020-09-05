@@ -212,19 +212,20 @@ The openHAB UI will show a full list of channels, most are easy to understand ho
 Each camera brand will have different channels depending on how much of the support for an API has been added. 
 The channels are kept consistent as much as possible from brand to brand to make upgrading to a different branded camera easier and to help when sharing rules with other users in the forum.
 
-| Channel | Description |
-|-|-|
-| `externalMotion` | A switch you can use to inform the camera has motion in its view area if you own PIR or any other kind of external sensor. If you use the autofps.mjpeg feature, this could increase the frame rate when a door that was closed is opened. Note: It will not be passed onto your camera and will not trigger any recordings. |
-| `ffmpegMotionControl` | This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB. The channel that will move is called `ffmpegMotionAlarm`. |
-| `lastMotionType` | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
-| `recordMp4` | Set this channel to a number of how many seconds that you wish to record for, then the recording will start. Once completed the channel automatically changes to 0 to indicate the file is ready to be used. |
-| `mp4Filename` | A string that can be supplied for the binding to use for the next MP4 recording. |
-| `mp4History` | This string keeps the last 50 MP4 recording filenames (separated by commas) until you reset the history. The channel `mp4Filename` is where this channel gets the names from when a recording is triggered. |
-| `mp4HistoryLength` | How many filenames are in the `mp4History`. Setting this to 0 will clear the history. |
-| `startStream` | Starts the HLS files being created, if it not manually moved it will indicate if the files are being created on demand. |
-| `thresholdAudioAlarm` | This channel can be linked to a Switch and a Slider. The value of the slider is the value in dB that is detected as noise/alarm down from digital full scale. Higher values are more sensitive and will trigger the alarm with quieter / less noise. |
-| `updateGif` | When this control is turned ON it will trigger an animated Gif to be created by FFmpeg. Once the file is created the control will auto turn itself back to OFF which can be used to trigger a rule. |
-| `updateImageNow` | This control can be used to manually start and stop updating the Image channel with a picture. The `updateImage` config sets the state this control is set to on startup/reboot of openHAB. |
+| Channel | Type | Description |
+|-|-|-|
+| `externalMotion` | Switch | Can be used to inform the camera if it has motion in its view area. Handy if you own a PIR or any other kind of external sensor. If you use the autofps.mjpeg feature, this could increase the frame rate when a door that was closed is opened. Note: It will not be passed onto your camera and will not trigger any recordings. |
+| `ffmpegMotionAlarm` | Switch (read only) | The status of the FFmpeg based motion alarm. |
+| `ffmpegMotionControl` | Dimmer | This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB. The channel that will move is called `ffmpegMotionAlarm`. |
+| `lastMotionType` | String | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
+| `recordMp4` | Number | Set this channel to a number of how many seconds that you wish to record for, then the recording will start. Once completed the channel automatically changes to 0 to indicate the file is ready to be used. |
+| `mp4Filename` | String | A string that can be supplied for the binding to use for the next MP4 recording. |
+| `mp4History` | String | This string keeps the last 50 MP4 recording filenames (separated by commas) until you reset the history. The channel `mp4Filename` is where this channel gets the names from when a recording is triggered. |
+| `mp4HistoryLength` | Number | How many filenames are in the `mp4History`. Setting this to 0 will clear the history. |
+| `startStream` | Switch | Starts the HLS files being created, if it not manually moved it will indicate if the files are being created on demand. |
+| `thresholdAudioAlarm` | Dimmer | This channel can be linked to a Switch and a Slider. The value of the slider is the value in dB that is detected as noise/alarm down from digital full scale. Higher values are more sensitive and will trigger the alarm with quieter / less noise. |
+| `updateGif` | Switch | When this control is turned ON it will trigger an animated Gif to be created by FFmpeg. Once the file is created the control will auto turn itself back to OFF which can be used to trigger a rule. |
+| `updateImageNow` | Switch | This control can be used to manually start and stop updating the Image channel with a picture. The `updateImage` config sets the state this control is set to on startup/reboot of openHAB. |
 
 ## Moving PTZ Cameras
 
