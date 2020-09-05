@@ -49,9 +49,12 @@ public class KVVStopHandler extends BaseThingHandler {
 
     private KVVStopConfig config;
 
+    private boolean wasOffline;
+
     public KVVStopHandler(final Thing thing) {
         super(thing);
         this.config = new KVVStopConfig();
+        this.wasOffline = false;
     }
 
     @Override
@@ -161,7 +164,13 @@ public class KVVStopHandler extends BaseThingHandler {
         @Override
         public void run() {
             final DepartureResult departures = this.bridgeHandler.queryKVV(this.stopConfig);
-            if (departures != null) {
+            if (departures == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to connect to KVV API");
+            } else {
+                if (wasOffline) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
                 setDepartures(departures, this.bridgeHandler.getBridgeConfig().maxTrains);
             }
         }

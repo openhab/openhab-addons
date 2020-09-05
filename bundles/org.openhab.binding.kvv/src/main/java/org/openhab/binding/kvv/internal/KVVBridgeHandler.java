@@ -45,10 +45,13 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
 
     private KVVBridgeConfig config;
 
+    private boolean wasOffline;
+
     public KVVBridgeHandler(final Bridge bridge) {
         super(bridge);
         this.config = new KVVBridgeConfig();
         this.cache = new Cache();
+        this.wasOffline = false;
     }
 
     public KVVBridgeConfig getBridgeConfig() {
@@ -103,7 +106,9 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         try {
             data = HttpUtil.executeUrl("GET", url, KVVBindingConstants.TIMEOUT_IN_SECONDS * 1000);
         } catch (IOException e) {
-            logger.warn("Failed to get departures from '{}'", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
+            logger.debug("Failed to get departures from '{}'", url, e);
+            this.wasOffline = true;
             return null;
         }
 
@@ -111,9 +116,15 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         try {
             result = new Gson().fromJson(data, DepartureResult.class);
         } catch (Exception e) {
-            logger.warn("Failed to parse departure data", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to connect to KVV API");
+            logger.debug("Failed to parse departure data", e);
             logger.debug("Server returned '{}'", data);
+            this.wasOffline = true;
             return null;
+        }
+
+        if (this.wasOffline) {
+            updateStatus(ThingStatus.ONLINE);
         }
 
         this.cache.update(stopConfig.stopId, result);
