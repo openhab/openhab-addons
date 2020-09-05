@@ -40,6 +40,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.services.JsonRestExceptionResponse;
 import org.slf4j.Logger;
@@ -181,7 +182,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 return false;
             }
         } else {
-
             return false;
         }
     }
@@ -206,6 +206,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // functions.
         logger.debug("Subscribe: Sending content: {} - using httpClient {}", str_content, this.httpClient);
 
+        @NonNullByDefault
         class SubscribeListener extends BufferingResponseListener {
             private BoschSHCBridgeHandler bridgeHandler;
 
@@ -287,6 +288,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         /**
          * TODO Move this to separate file?
          */
+        @NonNullByDefault
         class LongPollListener extends BufferingResponseListener {
 
             private BoschSHCBridgeHandler bridgeHandler;
@@ -463,7 +465,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 return this.getState(deviceId, stateName, classOfT);
             }
         }
-
         return null;
     }
 
@@ -493,7 +494,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             int statusCode = contentResponse.getStatus();
             if (statusCode != 200) {
                 JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
-                throw new Error(MessageFormatter.arrayFormat(
+                throw new BoschSHCException(MessageFormatter.arrayFormat(
                         "State request for service {} of device {} failed with status code {} and error code {}",
                         new Object[] { stateName, deviceId, errorResponse.statusCode, errorResponse.errorCode })
                         .getMessage());
@@ -502,7 +503,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             T state = gson.fromJson(content, stateClass);
             return state;
 
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
             logger.warn("refreshState: HTTP request failed", e);
             return null;
         }

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.boschshc.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception class for Bosch Smart Home controller errors.
  *
  * @author Gerd Zanker - Initial contribution
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class BoschSHCException extends Exception {
     public BoschSHCException() {
     }

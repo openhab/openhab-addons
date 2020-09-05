@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.services;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Base Bosch Smart Home Controller service state.

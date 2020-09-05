@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.boschshc.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Thrown if the pairing failed multiple times
  * 
  * @author Gerd Zanker - Initial contribution
  */
 @SuppressWarnings("serial")
+@NonNullByDefault
 public class PairingFailedException extends BoschSHCException {
     public PairingFailedException() {
     }
