@@ -31,12 +31,12 @@ public class LongPollError {
      * }
      */
 
-    public class Error {
+    public class ErrorInfo {
 
         int code;
         String message;
     }
 
     String jsonrpc;
-    Error error;
+    ErrorInfo error;
 }

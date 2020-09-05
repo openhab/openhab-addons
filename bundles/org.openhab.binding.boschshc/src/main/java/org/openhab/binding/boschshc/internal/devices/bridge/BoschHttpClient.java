@@ -147,12 +147,4 @@ public class BoschHttpClient extends HttpClient {
             return false;
         }
     }
-
-    // // TODO add request function like newBoschRequest("smarthome/devices")
-    // public ContentResponse newBoschRequest(String restData) throws InterruptedException, TimeoutException,
-    // ExecutionException {
-    // return GET("https://" + m_ipAddress + ":8444/" + restData)
-    // .header("Content-Type", "application/json").header("Accept", "application/json")
-    // .send();
-    // }
 }

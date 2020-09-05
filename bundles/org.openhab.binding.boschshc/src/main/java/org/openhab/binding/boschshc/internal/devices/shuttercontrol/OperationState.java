@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Operation State.
  * 
  * @author Christian Oeing - Initial contribution
  */
+@NonNullByDefault
 public enum OperationState {
     MOVING,
     STOPPED;

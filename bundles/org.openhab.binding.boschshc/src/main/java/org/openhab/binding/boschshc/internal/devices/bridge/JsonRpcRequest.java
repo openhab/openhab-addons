@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Payload as POST data for triggering a RPC call on the Bosch Smart Home Controller.
  *
  * @author Stefan Kästle - Initial contribution
  */
+@NonNullByDefault
 class JsonRpcRequest {
 
     public JsonRpcRequest(String jsonrpc, String method, String[] params) {
-
         this.jsonrpc = jsonrpc;
         this.method = method;
         this.params = params;

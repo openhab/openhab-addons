@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
 
-import com.google.gson.annotations.SerializedName;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * State for a shutter control device

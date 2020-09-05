@@ -47,6 +47,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Service State for a Bosch device.
      */
+    @NonNullByDefault
     class DeviceService<TState extends BoschSHCServiceState> {
         /**
          * Constructor.
