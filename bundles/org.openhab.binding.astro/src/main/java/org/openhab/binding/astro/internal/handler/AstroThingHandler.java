@@ -367,5 +367,4 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(AstroActions.class);
     }
-
 }

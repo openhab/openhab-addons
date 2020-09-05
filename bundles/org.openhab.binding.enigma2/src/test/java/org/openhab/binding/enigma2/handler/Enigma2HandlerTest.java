@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.enigma2.handler;
 
+import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -27,15 +36,6 @@ import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2Client;
 import org.openhab.binding.enigma2.internal.Enigma2Configuration;
 import org.openhab.binding.enigma2.internal.Enigma2RemoteKey;
-
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Optional;
-
-import static org.eclipse.jdt.annotation.Checks.requireNonNull;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  * The {@link Enigma2HandlerTest} class is responsible for testing {@link Enigma2Handler}.

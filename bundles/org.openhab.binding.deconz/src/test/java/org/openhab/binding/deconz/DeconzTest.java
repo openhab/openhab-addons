@@ -18,11 +18,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -104,6 +101,7 @@ public class DeconzTest {
         Assert.assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:00Z")), dateTime);
 
         dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09:47");
-        Assert.assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:47Z")).toZone(ZoneId.systemDefault()), dateTime);
+        Assert.assertEquals(
+                new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:47Z")).toZone(ZoneId.systemDefault()), dateTime);
     }
 }

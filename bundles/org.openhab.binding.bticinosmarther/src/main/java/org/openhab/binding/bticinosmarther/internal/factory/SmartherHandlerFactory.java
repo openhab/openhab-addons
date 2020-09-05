@@ -90,5 +90,4 @@ public class SmartherHandlerFactory extends BaseThingHandlerFactory {
             authService.removeSmartherAccountHandler((SmartherBridgeHandler) thingHandler);
         }
     }
-
 }

@@ -66,8 +66,7 @@ public class SmhiBindingConstants {
 
     public static final String BASE_URL = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/";
     public static final String APPROVED_TIME_URL = BASE_URL + "approvedtime.json";
-    public static final String POINT_FORECAST_URL = BASE_URL
-            + "geotype/point/lon/%.6f/lat/%.6f/data.json";
+    public static final String POINT_FORECAST_URL = BASE_URL + "geotype/point/lon/%.6f/lat/%.6f/data.json";
 
     public static final BigDecimal OCTAS_TO_PERCENT = BigDecimal.valueOf(12.5);
 }

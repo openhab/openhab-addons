@@ -52,27 +52,27 @@ public class HPUsage {
     private int inkMagentaPagesRemaining;
     private int inkYellowPagesRemaining;
 
-    //Scan
+    // Scan
     private int scanAdfCount;
     private int scanFlatbedCount;
     private int scanToEmailCount;
     private int scanToFolderCount;
     private int scanToHostCount;
 
-    //Scanner
+    // Scanner
     private int scannerAdfCount;
     private int scannerFlatbedCount;
     private int scannerJamEvents;
     private int scannerMispickEvents;
 
-    //Copy
+    // Copy
     private int copyAdfCount;
     private int copyFlatbedCount;
     private int copyTotalImpressions;
     private int copyTotalMonochromeImpressions;
     private int copyTotalColorImpressions;
-    
-    //App
+
+    // App
     private int appWindowsCount;
     private int appOsxCount;
     private int appIosCount;
@@ -80,7 +80,7 @@ public class HPUsage {
     private int appSamsungCount;
     private int appChromeCount;
 
-    //Other
+    // Other
     private int cloudPrintImpressions;
 
     public HPUsage() {
@@ -129,7 +129,8 @@ public class HPUsage {
             }
 
             if (hasPagesRemaining) {
-                pagesRemaining = Integer.parseInt(((Element) currInk).getElementsByTagName("dd:EstimatedPagesRemaining").item(0).getTextContent());
+                pagesRemaining = Integer.parseInt(((Element) currInk).getElementsByTagName("dd:EstimatedPagesRemaining")
+                        .item(0).getTextContent());
             }
 
             switch (inkName.toLowerCase()) {
@@ -196,20 +197,19 @@ public class HPUsage {
                 .getElementsByTagName("dd:TotalFrontPanelCancelPresses");
         if (frontpanelCancelCount.getLength() > 0)
             this.frontpanelCancelCount = Integer.parseInt(frontpanelCancelCount.item(0).getTextContent());
-        
-        //Print Apps
+
+        // Print Apps
         NodeList printAppsSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
         if (printAppsSubUnit.getLength() > 0) {
             Element currPrintAppsSubUnit = (Element) printAppsSubUnit.item(0);
 
-            NodeList cloudPrintImpressions = currPrintAppsSubUnit
-                .getElementsByTagName("dd:CloudPrintImpressions");
+            NodeList cloudPrintImpressions = currPrintAppsSubUnit.getElementsByTagName("dd:CloudPrintImpressions");
 
             if (cloudPrintImpressions.getLength() > 0)
                 this.cloudPrintImpressions = Integer.parseInt(cloudPrintImpressions.item(0).getTextContent());
         }
-        
-        //Scan
+
+        // Scan
         NodeList scanSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
         if (scanSubUnit.getLength() > 0) {
             Element currScanSubUnit = (Element) scanSubUnit.item(0);
@@ -223,7 +223,7 @@ public class HPUsage {
             this.scanToHostCount = setInt("dd:ScanToHostImages", currScanSubUnit);
         }
 
-        //Scanner
+        // Scanner
         NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
         if (scannerSubUnit.getLength() > 0) {
             Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
@@ -234,7 +234,7 @@ public class HPUsage {
             this.scannerMispickEvents = setInt("dd:MispickEvents", currScannerSubUnit);
         }
 
-        //Copy
+        // Copy
         NodeList copySubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
         if (copySubUnit.getLength() > 0) {
             Element currCopySubUnit = (Element) copySubUnit.item(0);
@@ -246,28 +246,37 @@ public class HPUsage {
             this.copyTotalImpressions = setInt("dd:TotalImpressions", currCopySubUnit);
         }
 
-        //App Usage
+        // App Usage
         NodeList appSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:MobileApplicationSubunit");
         if (appSubUnit.getLength() > 0) {
             Element currAppSubUnit = (Element) appSubUnit.item(0);
-            
-            this.appWindowsCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Windows", "pudyn:TotalImpressions");
-            this.appOsxCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "OSX", "pudyn:TotalImpressions");
-            this.appIosCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "iOS", "pudyn:TotalImpressions");
-            this.appAndroidCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Android", "pudyn:TotalImpressions");
-            this.appSamsungCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "samsung", "pudyn:TotalImpressions");
-            this.appChromeCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Chrome", "pudyn:TotalImpressions");
+
+            this.appWindowsCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Windows",
+                    "pudyn:TotalImpressions");
+            this.appOsxCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "OSX",
+                    "pudyn:TotalImpressions");
+            this.appIosCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "iOS",
+                    "pudyn:TotalImpressions");
+            this.appAndroidCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Android",
+                    "pudyn:TotalImpressions");
+            this.appSamsungCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "samsung",
+                    "pudyn:TotalImpressions");
+            this.appChromeCount = setIntCollateDirectChildren(currAppSubUnit, "pudyn:RemoteDeviceType", "Chrome",
+                    "pudyn:TotalImpressions");
         }
     }
 
-    private static int setIntCollateDirectChildren(Element parentNode, String collateTagName, String collateTagNameValue, String valueTagName) {
+    private static int setIntCollateDirectChildren(Element parentNode, String collateTagName,
+            String collateTagNameValue, String valueTagName) {
         int value = 0;
 
         for (Node n = parentNode.getFirstChild(); n != null; n = n.getNextSibling()) {
             if (n instanceof Element) {
                 Element nodeItem = (Element) n;
-                if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent().equalsIgnoreCase(collateTagNameValue)) {
-                    int nodeValue = Integer.parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
+                if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent()
+                        .equalsIgnoreCase(collateTagNameValue)) {
+                    int nodeValue = Integer
+                            .parseInt(nodeItem.getElementsByTagName(valueTagName).item(0).getTextContent());
 
                     value += nodeValue;
                 }
@@ -279,8 +288,8 @@ public class HPUsage {
 
     private int setInt(String tagName, Element parentNode) {
         NodeList nodeList = parentNode.getElementsByTagName(tagName);
-            if (nodeList.getLength() > 0)
-                return Integer.parseInt(nodeList.item(0).getTextContent());
+        if (nodeList.getLength() > 0)
+            return Integer.parseInt(nodeList.item(0).getTextContent());
         return 0;
     }
 
@@ -455,5 +464,4 @@ public class HPUsage {
     public int getCopyTotalMonochromeImpressions() {
         return copyTotalMonochromeImpressions;
     }
-
 }

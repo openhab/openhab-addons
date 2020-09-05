@@ -81,5 +81,4 @@ public class AggregateDataResponseTransformerPrivateApi extends AbstractDataResp
         }
         return result;
     }
-
 }

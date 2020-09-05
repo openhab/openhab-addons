@@ -124,5 +124,4 @@ public class MadokaSettings {
     public void setRemoteControllerVersion(String remoteControllerVersion) {
         this.remoteControllerVersion = remoteControllerVersion;
     }
-
 }

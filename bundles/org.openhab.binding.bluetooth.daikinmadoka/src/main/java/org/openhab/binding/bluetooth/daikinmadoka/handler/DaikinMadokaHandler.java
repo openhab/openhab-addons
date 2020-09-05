@@ -288,7 +288,6 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             default:
                 break;
         }
-
     }
 
     @Override
@@ -768,5 +767,4 @@ public class DaikinMadokaHandler extends ConnectedBluetoothHandler implements Re
             updateState(channelUID, state);
         }
     }
-
 }

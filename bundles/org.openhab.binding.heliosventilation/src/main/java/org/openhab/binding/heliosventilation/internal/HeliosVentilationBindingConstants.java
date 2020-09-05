@@ -86,5 +86,4 @@ public class HeliosVentilationBindingConstants {
 
         return result;
     }
-
 }

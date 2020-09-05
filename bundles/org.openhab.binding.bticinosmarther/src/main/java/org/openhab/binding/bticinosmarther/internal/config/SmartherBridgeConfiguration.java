@@ -197,5 +197,4 @@ public class SmartherBridgeConfiguration {
     public void setNotifications(List<String> notifications) {
         this.notifications = notifications;
     }
-
 }

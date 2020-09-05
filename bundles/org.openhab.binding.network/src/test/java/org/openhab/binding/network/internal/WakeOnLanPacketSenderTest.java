@@ -94,5 +94,4 @@ public class WakeOnLanPacketSenderTest {
     public void sendWithUnsupportedSeparatorInMacAddressThrowsException() {
         new WakeOnLanPacketSender("6f=70=65=6e=48=41").sendPacket();
     }
-
 }

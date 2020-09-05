@@ -94,7 +94,8 @@
 				<label>Turn On To Last Level</label>
 				<description>
 					If set to true, dimmer will go to the last non-zero level set when an ON command is received.
-					If the last level cannot be determined, the value of onLevel will be used instead.
+					If the
+					last level cannot be determined, the value of onLevel will be used instead.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>

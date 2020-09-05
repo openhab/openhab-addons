@@ -142,5 +142,4 @@ public class SmartherModuleConfiguration {
     public void setStatusRefreshPeriod(int statusRefreshPeriod) {
         this.statusRefreshPeriod = statusRefreshPeriod;
     }
-
 }

@@ -51,5 +51,4 @@ public class DaikinMadokaBindingConstants {
     public static final UUID SERVICE_UART_UUID = UUID.fromString("2141E110-213A-11E6-B67B-9E71128CAE77");
     public static final UUID CHAR_WRITE_WITHOUT_RESPONSE_UUID = UUID.fromString("2141E112-213A-11E6-B67B-9E71128CAE77");
     public static final UUID CHAR_NOTIF_UUID = UUID.fromString("2141E111-213A-11E6-B67B-9E71128CAE77");
-
 }

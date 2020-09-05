@@ -84,5 +84,4 @@ public class Position {
     public void setShadeLength(double shadeLength) {
         this.shadeLength = shadeLength;
     }
-
 }

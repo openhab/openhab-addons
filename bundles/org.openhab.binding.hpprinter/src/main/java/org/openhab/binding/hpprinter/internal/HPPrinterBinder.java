@@ -38,16 +38,16 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.hpprinter.internal.api.HPFeatures;
+import org.openhab.binding.hpprinter.internal.api.HPProductUsageFeatures;
+import org.openhab.binding.hpprinter.internal.api.HPProductUsageFeatures.PrinterType;
 import org.openhab.binding.hpprinter.internal.api.HPProperties;
 import org.openhab.binding.hpprinter.internal.api.HPScannerStatus;
 import org.openhab.binding.hpprinter.internal.api.HPScannerStatusFeatures;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult;
 import org.openhab.binding.hpprinter.internal.api.HPServerResult.RequestStatus;
 import org.openhab.binding.hpprinter.internal.api.HPStatus;
-import org.openhab.binding.hpprinter.internal.api.HPProductUsageFeatures;
 import org.openhab.binding.hpprinter.internal.api.HPUsage;
 import org.openhab.binding.hpprinter.internal.api.HPWebServerClient;
-import org.openhab.binding.hpprinter.internal.api.HPProductUsageFeatures.PrinterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,8 +84,7 @@ public class HPPrinterBinder {
      * @param scheduler {ScheduledExecutorService} The scheduler service object.
      * @param config {HPPrinterConfiguration} The configuration object.
      */
-    public HPPrinterBinder(HPPrinterHandler handler, HttpClient httpClient,
-                    ScheduledExecutorService scheduler,
+    public HPPrinterBinder(HPPrinterHandler handler, HttpClient httpClient, ScheduledExecutorService scheduler,
             HPPrinterConfiguration config) {
         this.handler = handler;
         this.scheduler = scheduler;
@@ -96,7 +95,6 @@ public class HPPrinterBinder {
             throw new IllegalStateException("ip-address should have been validated already and may not be empty.");
         }
         printerClient = new HPWebServerClient(httpClient, ipAddress);
-
     }
 
     public void retrieveProperties() {
@@ -128,14 +126,14 @@ public class HPPrinterBinder {
 
             if (features.getProductStatusSupported()) {
                 channels.add(ChannelBuilder
-                    .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_STATUS), CoreItemFactory.STRING)
-                    .withLabel("Status").withDescription("Printer status")
-                    .withType(chanTypeStatus).build());
+                        .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_STATUS), CoreItemFactory.STRING)
+                        .withLabel("Status").withDescription("Printer status").withType(chanTypeStatus).build());
 
                 channels.add(ChannelBuilder
-                    .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN), CoreItemFactory.SWITCH)
-                    .withLabel("Tray Empty/Open").withDescription("The tray is empty or open")
-                    .withType(chanTypeReadSwitch).build());  
+                        .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN),
+                                CoreItemFactory.SWITCH)
+                        .withLabel("Tray Empty/Open").withDescription("The tray is empty or open")
+                        .withType(chanTypeReadSwitch).build());
             }
 
             if (features.getScannerStatusSupported()) {
@@ -145,16 +143,18 @@ public class HPPrinterBinder {
 
                     if (feature.hasStatus()) {
                         channels.add(ChannelBuilder
-                            .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_SCANNER_STATUS), CoreItemFactory.STRING)
-                            .withLabel("Scanner").withDescription("Scanner status")
-                            .withType(chanTypeStatus).build());
+                                .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_SCANNER_STATUS),
+                                        CoreItemFactory.STRING)
+                                .withLabel("Scanner").withDescription("Scanner status").withType(chanTypeStatus)
+                                .build());
                     }
 
                     if (feature.hasAdf()) {
                         channels.add(ChannelBuilder
-                            .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_SCANNER_ADFLOADED), CoreItemFactory.SWITCH)
-                            .withLabel("ADF Loaded").withDescription("The automatic document feeder is loaded")
-                            .withType(chanTypeReadSwitch).build());   
+                                .create(new ChannelUID(thingUid, CGROUP_STATUS, CHANNEL_SCANNER_ADFLOADED),
+                                        CoreItemFactory.SWITCH)
+                                .withLabel("ADF Loaded").withDescription("The automatic document feeder is loaded")
+                                .withType(chanTypeReadSwitch).build());
                     }
                 }
             }
@@ -163,52 +163,58 @@ public class HPPrinterBinder {
                 HPServerResult<HPProductUsageFeatures> result = printerClient.getProductFeatures();
                 if (result.getStatus() == RequestStatus.SUCCESS) {
                     HPProductUsageFeatures feature = result.getData();
-                    
+
                     channels.add(ChannelBuilder
-                        .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_BLACK_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
-                        .withLabel("Black Level").withDescription("Shows the amount of Black Ink/Toner remaining")
-                        .withType(chanTypeInkLevel).build());
+                            .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_BLACK_LEVEL),
+                                    HPPrinterBindingConstants.ITEM_TYPE_INK)
+                            .withLabel("Black Level").withDescription("Shows the amount of Black Ink/Toner remaining")
+                            .withType(chanTypeInkLevel).build());
 
                     channels.add(ChannelBuilder
                             .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_PAGES), CoreItemFactory.NUMBER)
-                            .withLabel("Total Lifetime Pages").withDescription("The amount of pages printed over the printer lifetime")
+                            .withLabel("Total Lifetime Pages")
+                            .withDescription("The amount of pages printed over the printer lifetime")
                             .withType(chanTypeTotals).build());
 
                     if (feature.hasCumulativeMarking()) {
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_MARKING), HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
+                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_BLACK_MARKING),
+                                        HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
                                 .withLabel("Black Marking Used").withDescription("The amount of Black Marking used")
                                 .withType(chanTypeMarking).build());
                     }
-        
+
                     switch (feature.getType()) {
                         case SINGLECOLOR:
                             if (feature.hasCumulativeMarking()) {
                                 channels.add(ChannelBuilder
                                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_COLOR_MARKING),
-                                        HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
-                                        .withLabel("Colour Marking Used").withDescription("The amount of Colour Marking used")
-                                        .withType(chanTypeMarking).build());
+                                                HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
+                                        .withLabel("Colour Marking Used")
+                                        .withDescription("The amount of Colour Marking used").withType(chanTypeMarking)
+                                        .build());
                             }
-        
+
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
-                                    .withLabel("Color Level").withDescription("Shows the amount of Colour Ink/Toner remaining")
+                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_COLOR_LEVEL),
+                                            HPPrinterBindingConstants.ITEM_TYPE_INK)
+                                    .withLabel("Color Level")
+                                    .withDescription("Shows the amount of Colour Ink/Toner remaining")
                                     .withType(chanTypeInkLevel).build());
-        
+
                             channels.add(ChannelBuilder
                                     .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_COLORPAGES),
                                             CoreItemFactory.NUMBER)
-                                    .withLabel("Total Colour Pages").withDescription("The amount of colour pages printed")
-                                    .withType(chanTypeTotals).build());
-        
+                                    .withLabel("Total Colour Pages")
+                                    .withDescription("The amount of colour pages printed").withType(chanTypeTotals)
+                                    .build());
+
                             channels.add(ChannelBuilder
                                     .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_MONOPAGES),
                                             CoreItemFactory.NUMBER)
                                     .withLabel("Total Monochrome Pages")
-                                    .withDescription("The amount of monochrome pages printed")
-                                    .withType(chanTypeTotals).build());
-        
+                                    .withDescription("The amount of monochrome pages printed").withType(chanTypeTotals)
+                                    .build());
 
                             if (feature.hasPagesRemaining()) {
                                 channels.add(ChannelBuilder
@@ -227,26 +233,29 @@ public class HPPrinterBinder {
                             }
 
                             break;
-        
+
                         case MULTICOLOR:
                             if (feature.hasCumulativeMarking()) {
                                 channels.add(ChannelBuilder
                                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_CYAN_MARKING),
-                                        HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
-                                        .withLabel("Cyan Marking Used").withDescription("The amount of Cyan Marking used")
-                                        .withType(chanTypeMarking).build());
-        
+                                                HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
+                                        .withLabel("Cyan Marking Used")
+                                        .withDescription("The amount of Cyan Marking used").withType(chanTypeMarking)
+                                        .build());
+
                                 channels.add(ChannelBuilder
                                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MAGENTA_MARKING),
-                                        HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
-                                        .withLabel("Magenta Marking Used").withDescription("The amount of Magenta Marking used")
-                                        .withType(chanTypeMarking).build());
-        
+                                                HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
+                                        .withLabel("Magenta Marking Used")
+                                        .withDescription("The amount of Magenta Marking used").withType(chanTypeMarking)
+                                        .build());
+
                                 channels.add(ChannelBuilder
                                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_YELLOW_MARKING),
-                                        HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
-                                        .withLabel("Yellow Marking Used").withDescription("The amount of Yellow Marking used")
-                                        .withType(chanTypeMarking).build());
+                                                HPPrinterBindingConstants.ITEM_TYPE_CUMLMARK)
+                                        .withLabel("Yellow Marking Used")
+                                        .withDescription("The amount of Yellow Marking used").withType(chanTypeMarking)
+                                        .build());
                             }
 
                             if (feature.hasPagesRemaining()) {
@@ -270,7 +279,7 @@ public class HPPrinterBinder {
                                         .withLabel("Magenta Pages Remaining")
                                         .withDescription("Estimated Magenta pages remaining")
                                         .withType(chanTypeTotalsAdvanced).build());
-                                        
+
                                 channels.add(ChannelBuilder
                                         .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING),
                                                 CoreItemFactory.NUMBER)
@@ -278,38 +287,44 @@ public class HPPrinterBinder {
                                         .withDescription("Estimated Yellow pages remaining")
                                         .withType(chanTypeTotalsAdvanced).build());
                             }
-        
+
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_CYAN_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
-                                    .withLabel("Cyan Level").withDescription("Shows the amount of Cyan Ink/Toner remaining")
+                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_CYAN_LEVEL),
+                                            HPPrinterBindingConstants.ITEM_TYPE_INK)
+                                    .withLabel("Cyan Level")
+                                    .withDescription("Shows the amount of Cyan Ink/Toner remaining")
                                     .withType(chanTypeInkLevel).build());
-        
+
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_MAGENTA_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
+                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_MAGENTA_LEVEL),
+                                            HPPrinterBindingConstants.ITEM_TYPE_INK)
                                     .withLabel("Magenta Level")
                                     .withDescription("Shows the amount of Magenta Ink/Toner remaining")
                                     .withType(chanTypeInkLevel).build());
-        
+
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_YELLOW_LEVEL), HPPrinterBindingConstants.ITEM_TYPE_INK)
-                                    .withLabel("Yellow Level").withDescription("Shows the amount of Yellow Ink/Toner remaining")
+                                    .create(new ChannelUID(thingUid, CGROUP_INK, CHANNEL_YELLOW_LEVEL),
+                                            HPPrinterBindingConstants.ITEM_TYPE_INK)
+                                    .withLabel("Yellow Level")
+                                    .withDescription("Shows the amount of Yellow Ink/Toner remaining")
                                     .withType(chanTypeInkLevel).build());
-        
+
                             channels.add(ChannelBuilder
                                     .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_COLORPAGES),
                                             CoreItemFactory.NUMBER)
-                                    .withLabel("Total Colour Pages").withDescription("The amount of colour pages printed")
-                                    .withType(chanTypeTotals).build());
-        
+                                    .withLabel("Total Colour Pages")
+                                    .withDescription("The amount of colour pages printed").withType(chanTypeTotals)
+                                    .build());
+
                             channels.add(ChannelBuilder
                                     .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_TOTAL_MONOPAGES),
                                             CoreItemFactory.NUMBER)
                                     .withLabel("Total Monochrome Pages")
-                                    .withDescription("The amount of monochrome pages printed")
-                                    .withType(chanTypeTotals).build());
-        
+                                    .withDescription("The amount of monochrome pages printed").withType(chanTypeTotals)
+                                    .build());
+
                             break;
-        
+
                         default:
                             if (feature.hasPagesRemaining()) {
                                 channels.add(ChannelBuilder
@@ -320,30 +335,33 @@ public class HPPrinterBinder {
                                         .withType(chanTypeTotalsAdvanced).build());
                             }
                     }
-        
+
                     if (feature.hasJamEvents()) {
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_JAM_EVENTS), CoreItemFactory.NUMBER)
+                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_JAM_EVENTS),
+                                        CoreItemFactory.NUMBER)
                                 .withLabel("Jams").withDescription("The amount of times the paper has jammed")
                                 .withType(chanTypeTotalsAdvanced).build());
                     }
-        
+
                     if (feature.hasMispickEvents()) {
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MISPICK_EVENTS), CoreItemFactory.NUMBER)
+                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_MISPICK_EVENTS),
+                                        CoreItemFactory.NUMBER)
                                 .withLabel("Missed Picks")
                                 .withDescription("The amount of times the paper failed to feed into the printer")
                                 .withType(chanTypeTotalsAdvanced).build());
                     }
-        
+
                     if (feature.hasSubscriptionCount()) {
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_SUBSCRIPTION), CoreItemFactory.NUMBER)
+                                .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_SUBSCRIPTION),
+                                        CoreItemFactory.NUMBER)
                                 .withLabel("Subscription Count")
                                 .withDescription("The amount of times an item has been printed in subscription")
                                 .withType(chanTypeTotalsAdvanced).build());
                     }
-        
+
                     if (feature.hasTotalFrontPanelCancelPresses()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_USAGE, CHANNEL_FRONT_PANEL_CANCEL),
@@ -353,148 +371,166 @@ public class HPPrinterBinder {
                                 .withType(chanTypeTotalsAdvanced).build());
                     }
 
-                    //Other
+                    // Other
                     if (feature.hasCloudPrint()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_OTHER, CHANNEL_CLOUD_PRINT),
                                         CoreItemFactory.NUMBER)
                                 .withLabel("Cloud Print Count")
-                                .withDescription("The amount of times a document has been printed via Google Cloud Print")
-                                .withType(chanTypeTotalsAdvanced).build());
-                    }
-        
-                    //Scan
-                    if (feature.hasScanADF()) {
-                        channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_ADF), CoreItemFactory.NUMBER)
-                                .withLabel("Document Feeder Count").withDescription("Times scanned via the Document Feeder")
-                                .withType(chanTypeTotals).build());
-                    }
-        
-                    if (feature.hasScanFlatbed()) {
-                        channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_FLATBED), CoreItemFactory.NUMBER)
-                                .withLabel("Flatbed Count").withDescription("Times scanned via the Flatbed/Glass")
-                                .withType(chanTypeTotals).build());
-                    }
-        
-                    if (feature.hasScanToEmail()) {
-                        channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_TOEMAIL), CoreItemFactory.NUMBER)
-                                .withLabel("Scan to Email Count").withDescription("Times scanned using Scan to Email")
-                                .withType(chanTypeTotalsAdvanced).build());
-                    }
-        
-                    if (feature.hasScanToFolder()) {
-                        channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_TOFOLDER), CoreItemFactory.NUMBER)
-                                .withLabel("Scan to Folder Count").withDescription("Times scanned using Scan to Folder")
-                                .withType(chanTypeTotalsAdvanced).build());
-                    }
-        
-                    if (feature.hasScanToHost()) {
-                        channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_TOHOST), CoreItemFactory.NUMBER)
-                                .withLabel("Scan to Host Count").withDescription("Times scanned using Scan to Host Device")
+                                .withDescription(
+                                        "The amount of times a document has been printed via Google Cloud Print")
                                 .withType(chanTypeTotalsAdvanced).build());
                     }
 
-                    //Scanner Engine
+                    // Scan
+                    if (feature.hasScanADF()) {
+                        channels.add(ChannelBuilder
+                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_ADF),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Document Feeder Count")
+                                .withDescription("Times scanned via the Document Feeder").withType(chanTypeTotals)
+                                .build());
+                    }
+
+                    if (feature.hasScanFlatbed()) {
+                        channels.add(ChannelBuilder
+                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_FLATBED),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Flatbed Count").withDescription("Times scanned via the Flatbed/Glass")
+                                .withType(chanTypeTotals).build());
+                    }
+
+                    if (feature.hasScanToEmail()) {
+                        channels.add(ChannelBuilder
+                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_TOEMAIL),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Scan to Email Count").withDescription("Times scanned using Scan to Email")
+                                .withType(chanTypeTotalsAdvanced).build());
+                    }
+
+                    if (feature.hasScanToFolder()) {
+                        channels.add(ChannelBuilder
+                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_TOFOLDER),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Scan to Folder Count").withDescription("Times scanned using Scan to Folder")
+                                .withType(chanTypeTotalsAdvanced).build());
+                    }
+
+                    if (feature.hasScanToHost()) {
+                        channels.add(ChannelBuilder
+                                .create(new ChannelUID(thingUid, CGROUP_SCAN, CHANNEL_TOTAL_TOHOST),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Scan to Host Count")
+                                .withDescription("Times scanned using Scan to Host Device")
+                                .withType(chanTypeTotalsAdvanced).build());
+                    }
+
+                    // Scanner Engine
                     if (feature.hasScannerEngine()) {
                         if (feature.hasScanADF()) {
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_ADF), CoreItemFactory.NUMBER)
-                                    .withLabel("Document Feeder Count").withDescription("Times scanned via the Document Feeder")
-                                    .withType(chanTypeTotals).build());
+                                    .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_ADF),
+                                            CoreItemFactory.NUMBER)
+                                    .withLabel("Document Feeder Count")
+                                    .withDescription("Times scanned via the Document Feeder").withType(chanTypeTotals)
+                                    .build());
                         }
-            
+
                         if (feature.hasScanFlatbed()) {
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED), CoreItemFactory.NUMBER)
+                                    .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED),
+                                            CoreItemFactory.NUMBER)
                                     .withLabel("Flatbed Count").withDescription("Times scanned via the Flatbed/Glass")
                                     .withType(chanTypeTotals).build());
                         }
 
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_JAM_EVENTS), CoreItemFactory.NUMBER)
+                                .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_JAM_EVENTS),
+                                        CoreItemFactory.NUMBER)
                                 .withLabel("Jams").withDescription("The amount of times the paper has jammed")
                                 .withType(chanTypeTotalsAdvanced).build());
 
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS), CoreItemFactory.NUMBER)
-                                .withLabel("Missed Picks").withDescription("The amount of times the paper failed to feed into the printer")
+                                .create(new ChannelUID(thingUid, CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Missed Picks")
+                                .withDescription("The amount of times the paper failed to feed into the printer")
                                 .withType(chanTypeTotalsAdvanced).build());
 
                     }
 
-                    //Copy Engine
+                    // Copy Engine
                     if (feature.hasCopyApplication()) {
                         if (feature.hasScanADF()) {
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_ADF), CoreItemFactory.NUMBER)
-                                    .withLabel("Document Feeder Count").withDescription("Times scanned via the Document Feeder")
-                                    .withType(chanTypeTotals).build());
+                                    .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_ADF),
+                                            CoreItemFactory.NUMBER)
+                                    .withLabel("Document Feeder Count")
+                                    .withDescription("Times scanned via the Document Feeder").withType(chanTypeTotals)
+                                    .build());
                         }
-            
+
                         if (feature.hasScanFlatbed()) {
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_FLATBED), CoreItemFactory.NUMBER)
+                                    .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_FLATBED),
+                                            CoreItemFactory.NUMBER)
                                     .withLabel("Flatbed Count").withDescription("Times scanned via the Flatbed/Glass")
                                     .withType(chanTypeTotals).build());
                         }
 
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_PAGES), CoreItemFactory.NUMBER)
+                                .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_PAGES),
+                                        CoreItemFactory.NUMBER)
                                 .withLabel("Total Pages").withDescription("The amount of pages copied")
                                 .withType(chanTypeTotals).build());
 
-                        if (feature.getType() == PrinterType.MULTICOLOR || feature.getType() == PrinterType.SINGLECOLOR) {
+                        if (feature.getType() == PrinterType.MULTICOLOR
+                                || feature.getType() == PrinterType.SINGLECOLOR) {
                             channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_COLORPAGES),
-                                        CoreItemFactory.NUMBER)
-                                .withLabel("Total Colour Pages").withDescription("The amount of colour pages copied")
-                                .withType(chanTypeTotals).build());
+                                    .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_COLORPAGES),
+                                            CoreItemFactory.NUMBER)
+                                    .withLabel("Total Colour Pages")
+                                    .withDescription("The amount of colour pages copied").withType(chanTypeTotals)
+                                    .build());
 
                             channels.add(ChannelBuilder
                                     .create(new ChannelUID(thingUid, CGROUP_COPY, CHANNEL_TOTAL_MONOPAGES),
                                             CoreItemFactory.NUMBER)
-                                    .withLabel("Total Monochrome Pages").withDescription("The amount of monochrome pages copied")
-                                    .withType(chanTypeTotals).build());
+                                    .withLabel("Total Monochrome Pages")
+                                    .withDescription("The amount of monochrome pages copied").withType(chanTypeTotals)
+                                    .build());
                         }
                     }
 
-                    //App Usage
+                    // App Usage
                     if (feature.hasPrintApplication()) {
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_WIN), CoreItemFactory.NUMBER)
-                                .withLabel("Windows")
-                                .withType(chanTypeTotalsAdvanced).build());
-        
+                                .withLabel("Windows").withType(chanTypeTotalsAdvanced).build());
+
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_ANDROID), CoreItemFactory.NUMBER)
-                                .withLabel("Android")
-                                .withType(chanTypeTotalsAdvanced).build());
-        
+                                .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_ANDROID),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Android").withType(chanTypeTotalsAdvanced).build());
+
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_IOS), CoreItemFactory.NUMBER)
-                                .withLabel("iOS")
-                                .withType(chanTypeTotalsAdvanced).build());
-        
+                                .withLabel("iOS").withType(chanTypeTotalsAdvanced).build());
+
                         channels.add(ChannelBuilder
                                 .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_OSX), CoreItemFactory.NUMBER)
-                                .withLabel("OSX")
-                                .withType(chanTypeTotalsAdvanced).build());
-        
+                                .withLabel("OSX").withType(chanTypeTotalsAdvanced).build());
+
                         channels.add(ChannelBuilder
-                                .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_SAMSUNG), CoreItemFactory.NUMBER)
-                                .withLabel("Samsung")
-                                .withType(chanTypeTotalsAdvanced).build());
-        
+                                .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_SAMSUNG),
+                                        CoreItemFactory.NUMBER)
+                                .withLabel("Samsung").withType(chanTypeTotalsAdvanced).build());
+
                         if (feature.hasPrintApplicationChrome()) {
                             channels.add(ChannelBuilder
-                                    .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_CHROME), CoreItemFactory.NUMBER)
-                                    .withLabel("Chrome")
-                                    .withType(chanTypeTotalsAdvanced).build());
+                                    .create(new ChannelUID(thingUid, CGROUP_APP, CHANNEL_TOTAL_CHROME),
+                                            CoreItemFactory.NUMBER)
+                                    .withLabel("Chrome").withType(chanTypeTotalsAdvanced).build());
                         }
                     }
                 }
@@ -562,13 +598,15 @@ public class HPPrinterBinder {
 
         usageScheduler = scheduler.scheduleWithFixedDelay(this::checkUsage, 0, usageCheckInterval, TimeUnit.SECONDS);
 
-        //Only schedule below items when there channels are linked
-        if (handler.areStatusChannelsLinked(new String[] {CHANNEL_STATUS, CHANNEL_TRAYEMPTYOROPEN})) {
-            statusScheduler = scheduler.scheduleWithFixedDelay(this::checkStatus, 0, statusCheckInterval, TimeUnit.SECONDS);
+        // Only schedule below items when there channels are linked
+        if (handler.areStatusChannelsLinked(new String[] { CHANNEL_STATUS, CHANNEL_TRAYEMPTYOROPEN })) {
+            statusScheduler = scheduler.scheduleWithFixedDelay(this::checkStatus, 0, statusCheckInterval,
+                    TimeUnit.SECONDS);
         }
 
-        if (handler.areStatusChannelsLinked(new String[] {CHANNEL_SCANNER_STATUS, CHANNEL_SCANNER_ADFLOADED})) {
-            scannerStatusScheduler = scheduler.scheduleWithFixedDelay(this::checkScannerStatus, 0, statusCheckInterval, TimeUnit.SECONDS);
+        if (handler.areStatusChannelsLinked(new String[] { CHANNEL_SCANNER_STATUS, CHANNEL_SCANNER_ADFLOADED })) {
+            scannerStatusScheduler = scheduler.scheduleWithFixedDelay(this::checkScannerStatus, 0, statusCheckInterval,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -576,8 +614,10 @@ public class HPPrinterBinder {
         HPServerResult<HPScannerStatus> result = printerClient.getScannerStatus();
 
         if (result.getStatus() == RequestStatus.SUCCESS) {
-            handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_STATUS, new StringType(result.getData().getScannerStatus()));
-            handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_ADFLOADED, convertToOnOffType(result.getData().getAdfLoaded()));
+            handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_STATUS,
+                    new StringType(result.getData().getScannerStatus()));
+            handler.updateState(CGROUP_STATUS, CHANNEL_SCANNER_ADFLOADED,
+                    convertToOnOffType(result.getData().getAdfLoaded()));
         } else {
             goneOffline();
         }
@@ -588,7 +628,8 @@ public class HPPrinterBinder {
 
         if (result.getStatus() == RequestStatus.SUCCESS) {
             handler.updateState(CGROUP_STATUS, CHANNEL_STATUS, new StringType(result.getData().getPrinterStatus()));
-            handler.updateState(CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN, convertToOnOffType(result.getData().getTrayEmptyOrOpen()));
+            handler.updateState(CGROUP_STATUS, CHANNEL_TRAYEMPTYOROPEN,
+                    convertToOnOffType(result.getData().getTrayEmptyOrOpen()));
         } else {
             goneOffline();
         }
@@ -606,7 +647,7 @@ public class HPPrinterBinder {
         HPServerResult<HPUsage> result = printerClient.getUsage();
 
         if (result.getStatus() == RequestStatus.SUCCESS) {
-            //Inks
+            // Inks
             handler.updateState(CGROUP_INK, CHANNEL_BLACK_LEVEL,
                     new QuantityType<>(result.getData().getInkBlack(), SmartHomeUnits.PERCENT));
             handler.updateState(CGROUP_INK, CHANNEL_COLOR_LEVEL,
@@ -643,59 +684,69 @@ public class HPPrinterBinder {
             handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_MARKING, new QuantityType<>(
                     result.getData().getInkYellowMarking(), MetricPrefix.MILLI(SmartHomeUnits.LITRE)));
 
-            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING, 
+            handler.updateState(CGROUP_USAGE, CHANNEL_BLACK_PAGES_REMAINING,
                     new DecimalType(result.getData().getInkBlackPagesRemaining()));
 
-            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_PAGES_REMAINING, 
+            handler.updateState(CGROUP_USAGE, CHANNEL_COLOR_PAGES_REMAINING,
                     new DecimalType(result.getData().getInkColorPagesRemaining()));
 
-            handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_PAGES_REMAINING, 
+            handler.updateState(CGROUP_USAGE, CHANNEL_CYAN_PAGES_REMAINING,
                     new DecimalType(result.getData().getInkCyanPagesRemaining()));
 
-            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_PAGES_REMAINING, 
+            handler.updateState(CGROUP_USAGE, CHANNEL_MAGENTA_PAGES_REMAINING,
                     new DecimalType(result.getData().getInkMagentaPagesRemaining()));
 
-            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING, 
+            handler.updateState(CGROUP_USAGE, CHANNEL_YELLOW_PAGES_REMAINING,
                     new DecimalType(result.getData().getInkYellowPagesRemaining()));
 
-            //Scan
-            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_ADF, new DecimalType(
-                    result.getData().getScanAdfCount()));
+            // Scan
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_ADF, new DecimalType(result.getData().getScanAdfCount()));
 
-            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_FLATBED, new DecimalType(
-                result.getData().getScanFlatbedCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_FLATBED,
+                    new DecimalType(result.getData().getScanFlatbedCount()));
 
-            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOEMAIL, new DecimalType(
-                result.getData().getScanToEmailCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOEMAIL,
+                    new DecimalType(result.getData().getScanToEmailCount()));
 
-            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOFOLDER, new DecimalType(
-                result.getData().getScanToFolderCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOFOLDER,
+                    new DecimalType(result.getData().getScanToFolderCount()));
 
-            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOHOST, new DecimalType(
-                result.getData().getScanToHostCount()));
+            handler.updateState(CGROUP_SCAN, CHANNEL_TOTAL_TOHOST,
+                    new DecimalType(result.getData().getScanToHostCount()));
 
-            //Scanner
-            handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_ADF, new DecimalType(result.getData().getScannerAdfCount()));
-            handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED, new DecimalType(result.getData().getScannerFlatbedCount()));
-            handler.updateState(CGROUP_SCANNER, CHANNEL_JAM_EVENTS, new DecimalType(result.getData().getScannerJamEvents()));
-            handler.updateState(CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS, new DecimalType(result.getData().getScannerMispickEvents()));
+            // Scanner
+            handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_ADF,
+                    new DecimalType(result.getData().getScannerAdfCount()));
+            handler.updateState(CGROUP_SCANNER, CHANNEL_TOTAL_FLATBED,
+                    new DecimalType(result.getData().getScannerFlatbedCount()));
+            handler.updateState(CGROUP_SCANNER, CHANNEL_JAM_EVENTS,
+                    new DecimalType(result.getData().getScannerJamEvents()));
+            handler.updateState(CGROUP_SCANNER, CHANNEL_MISPICK_EVENTS,
+                    new DecimalType(result.getData().getScannerMispickEvents()));
 
-            //Copy
+            // Copy
             handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_ADF, new DecimalType(result.getData().getCopyAdfCount()));
-            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_FLATBED, new DecimalType(result.getData().getCopyFlatbedCount()));
-            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_PAGES, new DecimalType(result.getData().getCopyTotalImpressions()));
-            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_COLORPAGES, new DecimalType(result.getData().getCopyTotalColorImpressions()));
-            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_MONOPAGES, new DecimalType(result.getData().getCopyTotalMonochromeImpressions()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_FLATBED,
+                    new DecimalType(result.getData().getCopyFlatbedCount()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_PAGES,
+                    new DecimalType(result.getData().getCopyTotalImpressions()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_COLORPAGES,
+                    new DecimalType(result.getData().getCopyTotalColorImpressions()));
+            handler.updateState(CGROUP_COPY, CHANNEL_TOTAL_MONOPAGES,
+                    new DecimalType(result.getData().getCopyTotalMonochromeImpressions()));
 
             // App Usage
             handler.updateState(CGROUP_APP, CHANNEL_TOTAL_WIN, new DecimalType(result.getData().getAppWindowsCount()));
             handler.updateState(CGROUP_APP, CHANNEL_TOTAL_OSX, new DecimalType(result.getData().getAppOSXCount()));
             handler.updateState(CGROUP_APP, CHANNEL_TOTAL_IOS, new DecimalType(result.getData().getAppIosCount()));
-            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_ANDROID, new DecimalType(result.getData().getAppAndroidCount()));
-            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_SAMSUNG, new DecimalType(result.getData().getAppSamsungCount()));
-            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_CHROME, new DecimalType(result.getData().getAppChromeCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_ANDROID,
+                    new DecimalType(result.getData().getAppAndroidCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_SAMSUNG,
+                    new DecimalType(result.getData().getAppSamsungCount()));
+            handler.updateState(CGROUP_APP, CHANNEL_TOTAL_CHROME,
+                    new DecimalType(result.getData().getAppChromeCount()));
 
-            //Other
+            // Other
             handler.updateState(CGROUP_OTHER, CHANNEL_CLOUD_PRINT,
                     new DecimalType(result.getData().getCloudPrintImpressions()));
 

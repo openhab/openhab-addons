@@ -36,7 +36,7 @@ public class HPScannerStatusFeatures {
         Element nodes = (Element) document.getDocumentElement();
         localHasStatus = (nodes.getElementsByTagName("pwg:State").getLength() > 0);
         localHasAdf = (nodes.getElementsByTagName("scan:AdfState").getLength() > 0);
-       
+
         hasStatus = localHasStatus;
         hasAdf = localHasAdf;
     }

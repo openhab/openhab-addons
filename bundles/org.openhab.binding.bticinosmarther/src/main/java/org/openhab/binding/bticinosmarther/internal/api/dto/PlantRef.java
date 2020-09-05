@@ -44,5 +44,4 @@ public class PlantRef {
     public String toString() {
         return String.format("id=%s, module=[%s]", id, module);
     }
-
 }
