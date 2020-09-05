@@ -212,72 +212,41 @@ The openHAB UI will show a full list of channels and the descriptions, most are 
 Each camera brand will have different channels depending on how much of the support for an API has been added. 
 The channels are kept consistent as much as possible from brand to brand to make upgrading to a different branded camera easier and to help when sharing rules with other users in the forum.
 
-**externalMotion**
-
-This channel is intended to allow any external sensor the ability to inform the binding that there is motion in the cameras field of view. 
-Note: It will not be passed onto your camera and will not trigger any recordings, it is purely for the bindings own set of features. 
-An example of how this is useful is if your camera either has no motion alarm features, or you have bugs tripping the built in sensors, you can use this channel with a ZWave PIR sensor to inform the camera of motion.
-This becomes more important when you start to use Camera groups that dynamically change the display order of the cameras based on if there is movement or not.
-It can also be handy to use this when doing testing as it allows motion to be simulated with the press of a button. 
-
-**updateImageNow**
-
-This control can be used to manually start and stop updating the Image channel with a picture, or it will start and stop FFmpeg from creating snapshots from a RTSP source depending on how the bindings config parameters are set. 
-The `updateImage` config sets the state this control is set to on startup/reboot of openHAB.
-When ON the image channel will update at the `pollTime` rate. 
-Note that cameras that create snapshots from RTSP using FFmpeg will not update the image channel at all and the better methods like ipcamera.jpg covered in this readme, are the recommended way to achieve a picture. 
-When OFF the Image channel will NOT update, but the other methods of achieving a picture or stream will still work. 
-If you need to update the image channel more often then every 5 seconds, please see the snapshot and stream sections of this readme to learn how to get a picture without using the Image channel. 
-
-**ffmpegMotionControl**
-
-This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB.
+| Channel | Description |
+|-|-|
+| `externalMotion` | A switch you can use to inform the camera has motion in its area if you own PIR or any other kind of external sensor. If you use the autofps.mjpeg feature, this could increase the frame rate when a door that was closed is opened. Note: It will not be passed onto your camera and will not trigger any recordings. |
+| `ffmpegMotionControl` | This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB.
 The higher the number, the less sensitive the camera is to movement or you have to wave your hand faster to trigger the alarm.
 It is best described in the first few posts of this thread, along with how to fault find it using a terminal/command line.
 <https://community.openhab.org/t/how-to-turn-a-cameras-rtsp-stream-into-motion-detection/89906>
 You can link a Switch and a Slider to this channel at the same time to have both ON/OFF switch control, as well as a slider to change the threshold.
-The channel that will move is called `ffmpegMotionAlarm`.
-
-**thresholdAudioAlarm**
-
-Most of the API cameras have a separate ON/OFF channel, but for non API cameras that use FFmpeg to create an Audio Alarm from a RTSP source, this channel can be linked to a Switch and a Slider.
+The channel that will move is called `ffmpegMotionAlarm`. |
+| `lastMotionType` | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. 
+You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
+| `recordMp4` | Set this channel to a number of how many seconds that you wish to record for, then the recording will start. Once completed the channel automatically changes to 0 to indicate the file is ready to be used. |
+| `mp4Filename` | A string that can be supplied for the binding to use for the next MP4 recording. |
+| `mp4History` | This string keeps the last 50 MP4 recording filenames (separated by commas) until you reset the history.
+The channel `mp4Filename` is where this channel gets the names from when a recording is triggered. |
+| `mp4HistoryLength` | How many filenames are in the `mp4History`. Setting this to 0 will clear the history. |
+| `startStream` | Starts the HLS files being created, if it not manually moved it will indicate if the files are being created on demand. |
+| `thresholdAudioAlarm` | Most of the API cameras have a separate ON/OFF channel, but for non API cameras that use FFmpeg to create an Audio Alarm from a RTSP source, this channel can be linked to a Switch and a Slider.
 Linking both controls to this channel at the same time gives ON/OFF control as well as a slider to change the threshold. 
 The value of the slider is the value in dB that is detected as no noise/alarm. 
-Higher values are more sensitive and will trigger the Alarm with quieter / less noise.
-
-**updateGif**
-
-When this control is turned ON it will trigger an animated Gif to be created by FFmpeg. 
+Higher values are more sensitive and will trigger the Alarm with quieter / less noise. |
+| `updateGif` | When this control is turned ON it will trigger an animated Gif to be created by FFmpeg. 
 Once the file is created the control will auto turn itself back to OFF which can be used to trigger a rule to email/Pushover/Telegram the file to you. 
 When `gifPreroll` is set to a value higher than 0, the binding will create and use snapshots (JPG) instead of using the RTSP feed from the camera, which is the default behavior when the `gifPreroll` is set to 0 or not defined. 
 `updateImageWhen` must be set to always update the image and `pollTime` sets how often the snapshot is added to the FIFO buffer that creates the animated GIF. 
 The snapshot files are not deleted but are overwritten each time a gif is created.
 These files 'snapshotxx.jpg' can also be used by yourself to create and email Jpeg files also giving you a number to choose from in case your camera has delayed footage. 
 The files are placed into the folder specified by the config `ffmpegOutput`.
-You can now change the files name by using the channel `gifFilename` Just change the string in that channel and that is what the file will be called, handy if you want the date and time stamped into the file.
-
-**lastMotionType**
-
-Cameras with multiple alarm types will update this with which alarm detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. 
-You can use this to create a timestamp of when the last motion was detected by creating a rule when this channel is updated.
-
-items:
-
-```java
-String BabyCamLastMotionType "Last Motion Type" { channel="ipcamera:dahua:BabyCamera:lastMotionType" }
-DateTime BabyCamLastMotionTime "Last Update [%1$ta %1$tR]"
-```
-
-rules:
-
-```java
-rule "Create timestamp of last movement"
-    when
-    Item BabyCamLastMotionType received update
-    then
-    BabyCamLastMotionTime.postUpdate( new DateTimeType() )
-end
-```
+You can now change the files name by using the channel `gifFilename` Just change the string in that channel and that is what the file will be called, handy if you want the date and time stamped into the file. |
+| `updateImageNow` | This control can be used to manually start and stop updating the Image channel with a picture, or it will start and stop FFmpeg from creating snapshots from a RTSP source depending on how the bindings config parameters are set. 
+The `updateImage` config sets the state this control is set to on startup/reboot of openHAB.
+When ON the image channel will update at the `pollTime` rate. 
+Note that cameras that create snapshots from RTSP using FFmpeg will not update the image channel at all and the better methods like ipcamera.jpg covered in this readme, are the recommended way to achieve a picture. 
+When OFF the Image channel will NOT update, but the other methods of achieving a picture or stream will still work. 
+If you need to update the image channel more often then every 5 seconds, please see the snapshot and stream sections of this readme to learn how to get a picture without using the Image channel. |
 
 ## Moving PTZ Cameras
 
