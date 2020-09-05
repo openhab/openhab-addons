@@ -144,14 +144,14 @@ Example: The thing type for a camera with no ONVIF support is "generic".
 
 | Thing Type ID | Description |
 |-|-|
-| `amcrest` | Use for all Amcrest Cameras that do not work as a Dahua thing. This uses an older polling method for alarm detection which is not as efficient as the newer method used in Dahua. Amcrest are made by Dahua and hence their cameras can be setup as a Dahua thing. |
-| `dahua` | Use for all current Dahua and Amcrest cameras as they support an API as well as ONVIF. |
+| `generic` | For any camera that is not ONVIF compatible yet has working RTSP or HTTP URLs. |
+| `onvif` | Use for all ONVIF cameras that do not have an API. |
+| `amcrest` | Only use for if your Amcrest cameras wont work as a `dahua` thing. This uses an older polling based method for alarms that is not as efficient as the newer method used in `dahua`. Amcrest are made by Dahua and hence the API is similar. |
+| `dahua` | Use for all Dahua and Amcrest cameras that support the API. |
 | `doorbird` | Use for all current Doorbird cameras as they support an API as well as ONVIF. |
-| `foscam` | Use for all current Foscam HD Cameras as they support an API as well as ONVIF. |
+| `foscam` | Use for all current Foscam HD cameras as they support an API as well as ONVIF. |
 | `hikvision` | Use for all current Hikvision cameras as they support an API as well as ONVIF. |
-| `generic` | For any camera that is not ONVIF compatible yet still has the ability to fetch a snapshot or stream with a URL. RTSP cameras should use this if they do not have ONVIF. |
-| `instar` | Use for all current instar Cameras as they support an API as well as ONVIF. |
-| `onvif` | Use for all ONVIF Cameras from any brand that does not have an API. |
+| `instar` | Use for all current Instar cameras as they support an API as well as ONVIF. |
 | `group` | Used to display or cast multiple cameras like they are a single camera. This is an advanced feature that may require some tweaking of the cameras settings to fully work. |
 
 ## Thing Configuration
