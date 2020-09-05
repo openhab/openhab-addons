@@ -9,13 +9,13 @@
 		<description>Calendar based on an iCal calendar.</description>
 
 		<channels>
-			<channel id="current_title" typeId="event_current_title" />
-			<channel id="current_start" typeId="event_current_start" />
-			<channel id="current_end" typeId="event_current_end" />
-			<channel id="current_presence" typeId="event_current_presence" />
-			<channel id="next_title" typeId="event_next_title" />
-			<channel id="next_start" typeId="event_next_start" />
-			<channel id="next_end" typeId="event_next_end" />
+			<channel id="current_title" typeId="event_current_title"/>
+			<channel id="current_start" typeId="event_current_start"/>
+			<channel id="current_end" typeId="event_current_end"/>
+			<channel id="current_presence" typeId="event_current_presence"/>
+			<channel id="next_title" typeId="event_next_title"/>
+			<channel id="next_start" typeId="event_next_start"/>
+			<channel id="next_end" typeId="event_next_end"/>
 		</channels>
 
 		<config-description>
@@ -61,77 +61,77 @@
 		<item-type>String</item-type>
 		<label>Current Event Title</label>
 		<description>Title of the currently present event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_current_start">
 		<item-type>DateTime</item-type>
 		<label>Current Event Start</label>
 		<description>Start of the currently present event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_current_end">
 		<item-type>DateTime</item-type>
 		<label>Current Event End</label>
 		<description>End of the currently present event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_current_presence">
 		<item-type>Switch</item-type>
 		<label>Current Event Presence</label>
 		<description>Current presence of an event</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_next_title">
 		<item-type>String</item-type>
 		<label>Next Event Title</label>
 		<description>Title of the next starting event in calendar</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_next_start">
 		<item-type>DateTime</item-type>
 		<label>Next Event Start</label>
 		<description>Start of the next event in calendar</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="event_next_end">
 		<item-type>DateTime</item-type>
 		<label>Next Event End</label>
 		<description>End of the next event in calendar</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="result_start">
 		<item-type>DateTime</item-type>
 		<label>Start of result</label>
 		<description>Start of the found result in calendar</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="result_end">
 		<item-type>DateTime</item-type>
 		<label>End of result</label>
 		<description>End of the found result in calendar</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="result_title">
 		<item-type>String</item-type>
 		<label>Title of result</label>
 		<description>Title of the found result in calendar</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-group-type id="result">
 		<label>Result Event</label>
 		<description>A resulting event found by filter</description>
 		<channels>
-			<channel typeId="result_start" id="begin" />
-			<channel typeId="result_end" id="end" />
-			<channel typeId="result_title" id="title" />
+			<channel typeId="result_start" id="begin"/>
+			<channel typeId="result_end" id="end"/>
+			<channel typeId="result_title" id="title"/>
 		</channels>
 	</channel-group-type>
 
 
 	<thing-type id="eventfilter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="calendar" />
+			<bridge-type-ref id="calendar"/>
 		</supported-bridge-type-refs>
 		<label>Filtered Events</label>
 		<description>Filtered Events from the calendar</description>
@@ -172,7 +172,8 @@
 			</parameter>
 			<parameter name="datetimeRound" type="boolean" groupName="datetime_based">
 				<label>Round to date/time unit</label>
-				<description>Setting this will round start and end date/time to the unit down (e.g. if unit is day: start and end will be rounded to 0:00 day time)</description>
+				<description>Setting this will round start and end date/time to the unit down (e.g. if unit is day: start and end
+					will be rounded to 0:00 day time)</description>
 			</parameter>
 			<parameter name="textEventField" type="text" groupName="text_based">
 				<label>Event field</label>
