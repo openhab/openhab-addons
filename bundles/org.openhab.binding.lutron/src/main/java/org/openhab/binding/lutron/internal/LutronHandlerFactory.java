@@ -111,7 +111,8 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClient httpClient;
 
     @Activate
-    public LutronHandlerFactory(final @Reference SerialPortManager serialPortManager, @Reference HttpClientFactory httpClientFactory) {
+    public LutronHandlerFactory(final @Reference SerialPortManager serialPortManager,
+            @Reference HttpClientFactory httpClientFactory) {
         this.serialPortManager = serialPortManager;
         this.httpClient = httpClientFactory.getCommonHttpClient();
     }

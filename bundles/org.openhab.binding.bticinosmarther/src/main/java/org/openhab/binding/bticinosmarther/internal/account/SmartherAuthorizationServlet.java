@@ -268,5 +268,4 @@ public class SmartherAuthorizationServlet extends HttpServlet {
         m.appendTail(sb);
         return sb.toString();
     }
-
 }

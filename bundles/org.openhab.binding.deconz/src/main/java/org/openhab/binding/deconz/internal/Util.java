@@ -62,8 +62,7 @@ public class Util {
      */
     public static DateTimeType convertTimestampToDateTime(String timestamp) {
         if (timestamp.endsWith("Z")) {
-            return new DateTimeType(
-                    ZonedDateTime.parse(timestamp));
+            return new DateTimeType(ZonedDateTime.parse(timestamp));
         } else {
             return new DateTimeType(
                     ZonedDateTime.ofInstant(LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_LOCAL_DATE_TIME),

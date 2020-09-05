@@ -32,5 +32,4 @@ public class HeliosVentilationConfiguration {
      * The Panel Poll Period. Default is 60 sec. = 1 minute;
      */
     public int pollPeriod = 60;
-
 }

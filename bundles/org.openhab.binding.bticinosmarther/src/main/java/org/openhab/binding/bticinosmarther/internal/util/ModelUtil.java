@@ -41,5 +41,4 @@ public final class ModelUtil {
     public static Gson gsonInstance() {
         return GSON;
     }
-
 }

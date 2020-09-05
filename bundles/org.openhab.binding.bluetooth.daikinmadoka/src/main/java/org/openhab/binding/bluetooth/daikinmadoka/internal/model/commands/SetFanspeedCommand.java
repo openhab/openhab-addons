@@ -72,5 +72,4 @@ public class SetFanspeedCommand extends BRC1HCommand {
     public FanSpeed getHeatingFanSpeed() {
         return heatingFanSpeed;
     }
-
 }

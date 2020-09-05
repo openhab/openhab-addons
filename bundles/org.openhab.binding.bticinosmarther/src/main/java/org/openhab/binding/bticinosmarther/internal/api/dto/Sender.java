@@ -57,5 +57,4 @@ public class Sender {
     public String toString() {
         return String.format("addressType=%s, system=%s, plant=[%s]", addressType, system, plant);
     }
-
 }

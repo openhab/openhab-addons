@@ -220,5 +220,4 @@ public interface SmartherAccountHandler extends ThingHandler {
      * @return a string containing the formatted url, or the empty string ("") in case of issue
      */
     String formatAuthorizationUrl(String redirectUri);
-
 }

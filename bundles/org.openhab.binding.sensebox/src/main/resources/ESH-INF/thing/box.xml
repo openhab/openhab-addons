@@ -10,14 +10,14 @@
 		<description>This is a senseBox sensor.</description>
 
 		<channel-groups>
-			<channel-group typeId="descriptors" id="descriptors" />
-			<channel-group typeId="measurements" id="measurements" />
-			<channel-group typeId="lastReported" id="lastReported" />
+			<channel-group typeId="descriptors" id="descriptors"/>
+			<channel-group typeId="measurements" id="measurements"/>
+			<channel-group typeId="lastReported" id="lastReported"/>
 		</channel-groups>
 
 		<representation-property>senseBoxId</representation-property>
 
-		<config-description-ref uri="thing-type:sensebox:config" />
+		<config-description-ref uri="thing-type:sensebox:config"/>
 	</thing-type>
 
 </thing:thing-descriptions>

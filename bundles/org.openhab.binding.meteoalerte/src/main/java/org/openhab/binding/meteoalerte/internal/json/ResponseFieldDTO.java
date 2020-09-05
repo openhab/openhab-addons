@@ -152,5 +152,4 @@ public class ResponseFieldDTO {
         }
         return Optional.empty();
     }
-
 }

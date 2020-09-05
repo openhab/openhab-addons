@@ -107,5 +107,4 @@ public class MoonHandler extends AstroThingHandler {
                 longitude != null ? longitude : 0, localMoon);
         return localMoon.getPosition();
     }
-
 }

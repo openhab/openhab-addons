@@ -175,5 +175,4 @@ public final class StringUtil {
 
         return writer.toString();
     }
-
 }

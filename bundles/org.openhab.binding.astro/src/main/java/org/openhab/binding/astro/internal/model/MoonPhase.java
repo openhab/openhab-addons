@@ -164,5 +164,4 @@ public class MoonPhase {
     public void setAgePercent(double agePercent) {
         this.agePercent = agePercent;
     }
-
 }

@@ -33,5 +33,4 @@ public class SmartherSubscriptionAlreadyExistsException extends SmartherNotifica
     public SmartherSubscriptionAlreadyExistsException(String message) {
         super(message);
     }
-
 }

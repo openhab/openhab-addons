@@ -43,5 +43,4 @@ public interface ILGWebOSActions {
     public void decreaseChannel();
 
     public void sendRCButton(String rcButton);
-
 }

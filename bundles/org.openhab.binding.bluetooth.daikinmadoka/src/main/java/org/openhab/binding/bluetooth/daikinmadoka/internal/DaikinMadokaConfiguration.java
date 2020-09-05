@@ -22,5 +22,4 @@ public class DaikinMadokaConfiguration {
     public String address;
     public Integer refreshInterval;
     public Integer commandTimeout;
-
 }

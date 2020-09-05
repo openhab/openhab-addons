@@ -60,5 +60,4 @@ public interface SolarEdgeHandler extends ThingHandler, ChannelProvider {
      * @return
      */
     SolarEdgeConfiguration getConfiguration();
-
 }

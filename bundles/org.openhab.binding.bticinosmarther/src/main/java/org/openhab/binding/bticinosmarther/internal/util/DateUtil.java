@@ -177,5 +177,4 @@ public final class DateUtil {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(pattern);
         return String.format(RANGE_FORMAT, date1.format(dtf), date2.format(dtf));
     }
-
 }

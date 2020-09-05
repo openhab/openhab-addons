@@ -14,6 +14,15 @@ package org.openhab.binding.enigma2.handler;
 
 import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.*;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.*;
@@ -31,15 +40,6 @@ import org.openhab.binding.enigma2.internal.Enigma2Configuration;
 import org.openhab.binding.enigma2.internal.Enigma2RemoteKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The {@link Enigma2Handler} is responsible for handling commands, which are
@@ -73,7 +73,8 @@ public class Enigma2Handler extends BaseThingHandler {
         }
         enigma2Client = Optional.of(new Enigma2Client(configuration.host, configuration.user, configuration.password,
                 configuration.timeout));
-        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 2, configuration.refreshInterval, TimeUnit.SECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 2, configuration.refreshInterval,
+                TimeUnit.SECONDS);
     }
 
     private void refresh() {
@@ -100,7 +101,7 @@ public class Enigma2Handler extends BaseThingHandler {
     @Override
     public void dispose() {
         ScheduledFuture<?> job = this.refreshJob;
-        if(job != null) {
+        if (job != null) {
             job.cancel(true);
         }
         this.refreshJob = null;

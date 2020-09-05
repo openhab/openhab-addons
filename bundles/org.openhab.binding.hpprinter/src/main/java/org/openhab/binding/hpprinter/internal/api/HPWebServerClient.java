@@ -82,7 +82,6 @@ public class HPWebServerClient {
         return fetchData(serverAddress + HPScannerStatusFeatures.ENDPOINT, (HPScannerStatusFeatures::new));
     }
 
-
     /**
      * Gets the Usage information from the Embedded Web Server.
      * 

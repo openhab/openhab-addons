@@ -64,7 +64,7 @@ public class HPProductUsageFeatures {
             final Element currInk = (Element) consumableInk.item(i);
             final String inkName = currInk.getElementsByTagName("dd:MarkerColor").item(0).getTextContent();
             final String consumeType = currInk.getElementsByTagName("dd:ConsumableTypeEnum").item(0).getTextContent();
-            
+
             if (consumeType.equalsIgnoreCase("printhead")) {
                 continue;
             }
@@ -89,8 +89,9 @@ public class HPProductUsageFeatures {
                     break;
             }
         }
-        
-        pagesRemaining = (((Element) consumableInk.item(0)).getElementsByTagName("dd:EstimatedPagesRemaining").getLength() > 0);
+
+        pagesRemaining = (((Element) consumableInk.item(0)).getElementsByTagName("dd:EstimatedPagesRemaining")
+                .getLength() > 0);
 
         final NodeList printerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrinterSubunit");
         if (printerSubUnit.getLength() > 0) {
@@ -98,11 +99,14 @@ public class HPProductUsageFeatures {
 
             jamEvents = (currPrinterSubUnit.getElementsByTagName("dd:JamEvents").getLength() > 0);
             mispickEvents = (currPrinterSubUnit.getElementsByTagName("dd:MispickEvents").getLength() > 0);
-            subscriptionImpressions = (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions").getLength() > 0);
-            frontPanelCancel = (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses").getLength() > 0);
+            subscriptionImpressions = (currPrinterSubUnit.getElementsByTagName("pudyn:SubscriptionImpressions")
+                    .getLength() > 0);
+            frontPanelCancel = (currPrinterSubUnit.getElementsByTagName("dd:TotalFrontPanelCancelPresses")
+                    .getLength() > 0);
         }
 
-        final NodeList scannerSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        final NodeList scannerSubUnit = document.getDocumentElement()
+                .getElementsByTagName("pudyn:ScanApplicationSubunit");
         if (scannerSubUnit.getLength() > 0) {
             final Element currScannerSubUnit = (Element) scannerSubUnit.item(0);
 
@@ -113,26 +117,30 @@ public class HPProductUsageFeatures {
             scanToHost = (currScannerSubUnit.getElementsByTagName("dd:ScanToHostImages").getLength() > 0);
         }
 
-        final NodeList scanAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScanApplicationSubunit");
+        final NodeList scanAppSubUnit = document.getDocumentElement()
+                .getElementsByTagName("pudyn:ScanApplicationSubunit");
         if (scanAppSubUnit.getLength() > 0) {
             printApplication = true;
 
             final Element currAppSubUnit = (Element) scanAppSubUnit.item(0);
-            
+
             printApplicationChrome = (currAppSubUnit.getElementsByTagName("pudyn:RemoteDeviceType").getLength() > 0);
         }
 
-        final NodeList printAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:PrintApplicationSubunit");
+        final NodeList printAppSubUnit = document.getDocumentElement()
+                .getElementsByTagName("pudyn:PrintApplicationSubunit");
         if (printAppSubUnit.getLength() > 0) {
             final Element currPrintAppSubUnit = (Element) printAppSubUnit.item(0);
 
             cloudPrint = (currPrintAppSubUnit.getElementsByTagName("dd:CloudPrintImpressions").getLength() > 0);
         }
 
-        final NodeList scannerEngineSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:ScannerEngineSubunit");
+        final NodeList scannerEngineSubUnit = document.getDocumentElement()
+                .getElementsByTagName("pudyn:ScannerEngineSubunit");
         scannerEngine = (scannerEngineSubUnit.getLength() > 0);
 
-        final NodeList copyAppSubUnit = document.getDocumentElement().getElementsByTagName("pudyn:CopyApplicationSubunit");
+        final NodeList copyAppSubUnit = document.getDocumentElement()
+                .getElementsByTagName("pudyn:CopyApplicationSubunit");
         copyApplication = (copyAppSubUnit.getLength() > 0);
     }
 
@@ -238,7 +246,7 @@ public class HPProductUsageFeatures {
     public boolean hasCloudPrint() {
         return cloudPrint;
     }
-    
+
     /**
      * Printer data contains Print Application Usage Information.
      *

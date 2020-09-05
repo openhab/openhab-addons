@@ -318,6 +318,5 @@ public class SunCalcTest {
         assertEquals(1, meteoSun.getSeason().getSpring().get(Calendar.DAY_OF_MONTH));
         assertFalse(meteoSun.getSeason().getSpring().get(Calendar.DAY_OF_MONTH) == equiSun.getSeason().getSpring()
                 .get(Calendar.DAY_OF_MONTH));
-
     }
 }
