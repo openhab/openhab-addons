@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.discovery;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -59,9 +60,9 @@ public class DiscoveryTest {
         discovery.onResponse(container);
         verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
         List<DiscoveryResult> results = discoveries.getAllValues();
-        results.forEach(entry -> {
-            logger.info("{}", entry.toString());
-        });
+        assertEquals("Found Vehicles", 1, results.size());
+        DiscoveryResult result = results.get(0);
+        assertEquals("Thing UID", "bmwconnecteddrive:BEV_REX:MY_REAL_VIN", result.getThingUID().getAsString());
     }
 
     @Test

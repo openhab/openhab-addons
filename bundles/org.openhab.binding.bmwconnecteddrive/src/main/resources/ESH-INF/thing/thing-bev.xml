@@ -52,13 +52,11 @@
 				<label>Image Viewport</label>
 				<description>Viewport of Car Image</description>
 				<options>
-					<option value="FRONTSIDE">Frontside</option>
-					<option value="FRONT">Front</option>
-					<option value="REARSIDE">Rearside</option>
-					<option value="REAR">Rear</option>
-					<option value="SIDE">Side</option>
-					<option value="DASHBOARD">Dashboard</option>
-					<option value="DRIVERDOOR">Driver Door</option>
+					<option value="FRONT">Front View</option>
+					<option value="REAR">Rear View</option>
+					<option value="SIDE">Side View</option>
+					<option value="DASHBOARD">Dashboard View</option>
+					<option value="DRIVERDOOR">Driver Door View</option>
 				</options>
 			</parameter>
 		</config-description>

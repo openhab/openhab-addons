@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="vehicle-status">
 		<label>Vehicle Status</label>
-		<description>Provides Status of Doors, Lock State, Service and Check Control Messages</description>
+		<description>Provides Status of Doors, Windows, Lock State, Service and Check Control Messages</description>
 		<channels>
 			<channel id="doors" typeId="doors-channel"/>
 			<channel id="windows" typeId="windows-channel"/>

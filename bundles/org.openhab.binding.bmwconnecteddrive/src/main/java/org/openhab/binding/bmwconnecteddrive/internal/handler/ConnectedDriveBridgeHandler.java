@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.DISCOVERY_FINGERPRINT;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.ANONYMOUS;
 
 import java.util.Hashtable;
@@ -23,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -35,12 +33,12 @@ import org.openhab.binding.bmwconnecteddrive.internal.discovery.ConnectedCarDisc
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Dealer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link ConnectedDriveBridgeHandler} is responsible for handling commands, which are
@@ -51,7 +49,6 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveBridgeHandler.class);
-    private static final Gson GSON = new Gson();
     private HttpClient httpClient;
     private BundleContext bundleContext;
     private ConnectedCarDiscovery discoveryService;
@@ -61,8 +58,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
 
-    private ChannelUID discoveryfingerPrint;
-
     public ConnectedDriveBridgeHandler(Bridge bridge, HttpClient hc, BundleContext bc) {
         super(bridge);
         httpClient = hc;
@@ -70,27 +65,10 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         discoveryService = new ConnectedCarDiscovery(this);
         discoveryServiceRegstration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
-        discoveryfingerPrint = new ChannelUID(thing.getUID(), DISCOVERY_FINGERPRINT);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (command instanceof OnOffType) {
-            if (command.equals(OnOffType.ON)) {
-                if (channelUID.getIdWithoutGroup().equals(DISCOVERY_FINGERPRINT)) {
-                    if (troubleshootFingerprint.isPresent()) {
-                        logger.warn("BMW ConnectedDrive Binding - Discovery Troubleshoot fingerprint - BEGIN");
-                        logger.warn("{}", troubleshootFingerprint.get());
-                        logger.warn("BMW ConnectedDrive Binding - Discovery Troubleshoot fingerprint - END");
-                    } else {
-                        logger.warn(
-                                "BMW ConnectedDrive Binding - No Discovery Troubleshoot fingerprint available. Please check for valid username and password Settings for proper connection towards ConnectDrive");
-                    }
-                    // Switch back to off immediately
-                    updateState(discoveryfingerPrint, OnOffType.OFF);
-                }
-            }
-        }
     }
 
     @Override
@@ -104,7 +82,6 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
-        updateState(discoveryfingerPrint, OnOffType.OFF);
     }
 
     @Override
@@ -120,18 +97,13 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         }
     }
 
-    /**
-     * There's only the Vehicles response available
-     */
-    @Override
-    public void onResponse(Optional<String> response) {
-        if (response.isPresent()) {
-            VehiclesContainer container = GSON.fromJson(response.get(), VehiclesContainer.class);
-            discoveryService.onResponse(container);
-            updateStatus(ThingStatus.ONLINE);
+    public String getDiscoveryFingerprint() {
+        if (troubleshootFingerprint.isPresent()) {
+            VehiclesContainer container = Converter.getGson().fromJson(troubleshootFingerprint.get(),
+                    VehiclesContainer.class);
             if (container.vehicles != null) {
                 if (container.vehicles.isEmpty()) {
-                    troubleshootFingerprint = Optional.of("No Cars found in your ConnectedDrive Account");
+                    return Constants.EMPTY_VEHICLES;
                 } else {
                     container.vehicles.forEach(entry -> {
                         entry.vin = ANONYMOUS;
@@ -146,16 +118,51 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
                             d.street = ANONYMOUS;
                         }
                     });
-                    troubleshootFingerprint = Optional.of(GSON.toJson(container));
+                    return Converter.getGson().toJson(container);
                 }
+            } else {
+                // Vehicles is empty so deliver fingerprint as it is
+                return troubleshootFingerprint.get();
             }
         } else {
-            logger.info("No Vehciles found");
+            return Constants.INVALID;
+        }
+    }
+
+    /**
+     * There's only the Vehicles response available
+     */
+    @Override
+    public void onResponse(Optional<String> response) {
+        if (response.isPresent()) {
+            troubleshootFingerprint = response;
+            VehiclesContainer container = Converter.getGson().fromJson(response.get(), VehiclesContainer.class);
+            updateStatus(ThingStatus.ONLINE);
+            if (container.vehicles != null) {
+                discoveryService.onResponse(container);
+                container.vehicles.forEach(entry -> {
+                    entry.vin = ANONYMOUS;
+                    entry.breakdownNumber = ANONYMOUS;
+                    if (entry.dealer != null) {
+                        Dealer d = entry.dealer;
+                        d.city = ANONYMOUS;
+                        d.country = ANONYMOUS;
+                        d.name = ANONYMOUS;
+                        d.phone = ANONYMOUS;
+                        d.postalCode = ANONYMOUS;
+                        d.street = ANONYMOUS;
+                    }
+                });
+                troubleshootFingerprint = Optional.of(Converter.getGson().toJson(container));
+            }
+        } else {
+            troubleshootFingerprint = Optional.of(Constants.EMPTY_VEHICLES);
         }
     }
 
     @Override
     public void onError(NetworkError error) {
+        troubleshootFingerprint = Optional.of(error.toJson());
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
     }
 

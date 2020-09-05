@@ -35,7 +35,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID lock;
     protected ChannelUID service;
     protected ChannelUID checkControl;
-    protected ChannelUID chargingStatus;
+    protected ChannelUID lastUpdate;
 
     // Range channels
     protected ChannelUID mileage;
@@ -44,7 +44,9 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID remainingSoc;
     protected ChannelUID remainingRangeFuel;
     protected ChannelUID remainingFuel;
-    protected ChannelUID lastUpdate;
+    protected ChannelUID rangeRadiusElectric;
+    protected ChannelUID rangeRadiusFuel;
+    protected ChannelUID rangeRadiusHybrid;
 
     // Lifetime Efficiency Channels
     protected ChannelUID lifeTimeAverageConsumption;
@@ -61,12 +63,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     // Location Channels
     protected ChannelUID longitude;
     protected ChannelUID latitude;
-    protected ChannelUID latlong;
     protected ChannelUID heading;
-    protected ChannelUID rangeRadius;
-
-    // Image
-    protected ChannelUID imageChannel;
 
     // Remote Services
     protected ChannelUID remoteLightChannel;
@@ -88,8 +85,27 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     protected ChannelUID destinationLat3;
     protected ChannelUID destinationLon3;
 
+    // Charging
+    protected ChannelUID chargingStatus;
+    protected ChannelUID chargeProfileClimate;
+    protected ChannelUID chargeProfileChargeMode;
+    protected ChannelUID chargeWindowStart;
+    protected ChannelUID chargeWindowEnd;
+    protected ChannelUID timer1Departure;
+    protected ChannelUID timer1Enabled;
+    protected ChannelUID timer1Days;
+    protected ChannelUID timer2Departure;
+    protected ChannelUID timer2Enabled;
+    protected ChannelUID timer2Days;
+    protected ChannelUID timer3Departure;
+    protected ChannelUID timer3Enabled;
+    protected ChannelUID timer3Days;
+
     // Troubleshooting
     protected ChannelUID vehicleFingerPrint;
+
+    // Image
+    protected ChannelUID imageChannel;
 
     public ConnectedCarChannelHandler(Thing thing) {
         super(thing);
@@ -102,17 +118,16 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
 
-        // Charge Channels
-        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGING_STATUS);
-
         // range Channels
         mileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, MILEAGE);
         remainingRangeHybrid = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_HYBRID);
         remainingRangeElectric = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_ELECTRIC);
-        remainingSoc = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, SOC);
         remainingRangeFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_FUEL);
+        remainingSoc = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, SOC);
         remainingFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, REMAINING_FUEL);
-        rangeRadius = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_RADIUS);
+        rangeRadiusElectric = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_RADIUS_ELECTRIC);
+        rangeRadiusFuel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_RADIUS_FUEL);
+        rangeRadiusHybrid = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID);
 
         // Last Trip Channels
         tripDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, DISTANCE);
@@ -130,10 +145,23 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         // Location Channels
         longitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LONGITUDE);
         latitude = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATITUDE);
-        latlong = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, LATLONG);
         heading = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, HEADING);
 
-        imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
+        // Charge Channels
+        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_STATUS);
+        chargeProfileClimate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_CLIMATE);
+        chargeProfileChargeMode = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_MODE);
+        chargeWindowStart = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START);
+        chargeWindowEnd = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_END);
+        timer1Departure = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DEPARTURE);
+        timer1Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_ENABLED);
+        timer1Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER1_DAYS);
+        timer2Departure = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DEPARTURE);
+        timer2Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_ENABLED);
+        timer2Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER2_DAYS);
+        timer3Departure = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DEPARTURE);
+        timer3Enabled = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_DAYS);
+        timer3Days = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_TIMER3_ENABLED);
 
         remoteLightChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_LIGHT_FLASH);
         remoteFinderChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_VEHICLE_FINDER);
@@ -152,6 +180,8 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         destinationName3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_3);
         destinationLat3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_3);
         destinationLon3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_3);
+
+        imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
 
         vehicleFingerPrint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, VEHICLE_FINGERPRINT);
     }

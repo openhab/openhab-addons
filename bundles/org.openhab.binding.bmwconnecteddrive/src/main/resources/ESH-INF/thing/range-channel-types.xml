@@ -13,7 +13,7 @@
 	</channel-type>
 	<channel-type id="range-electric-channel">
 		<item-type>Number:Length</item-type>
-		<label>Battery Range</label>
+		<label>Electric Range</label>
 	</channel-type>
 	<channel-type id="soc-channel">
 		<item-type>Number:Dimensionless</item-type>
@@ -27,8 +27,16 @@
 		<item-type>Number:Volume</item-type>
 		<label>Remaining Fuel </label>
 	</channel-type>
-	<channel-type id="range-radius-channel">
+	<channel-type id="range-radius-electric-channel">
 		<item-type>Number:Length</item-type>
-		<label>Range Radius</label>
+		<label>ELectric Range Radius </label>
+	</channel-type>
+	<channel-type id="range-radius-fuel-channel">
+		<item-type>Number:Length</item-type>
+		<label>Fuel Range Radius</label>
+	</channel-type>
+	<channel-type id="range-radius-hybrid-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Range Radius</label>
 	</channel-type>
 </thing:thing-descriptions>

@@ -30,6 +30,7 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,7 +182,7 @@ public class RemoteServiceHandler {
             } else {
                 String state = contentResponse.getContentAsString();
                 logger.info("Executed {}, Response {}", serviceExecuting.get(), state);
-                ExecutionStatusContainer esc = ConnectedCarHandler.GSON.fromJson(state, ExecutionStatusContainer.class);
+                ExecutionStatusContainer esc = Converter.getGson().fromJson(state, ExecutionStatusContainer.class);
                 ExecutionStatus execStatus = esc.executionStatus;
 
                 handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);

@@ -3,8 +3,8 @@
 <img align="right" src="./doc/bmw-connected.png" width="150" height="150"/>
 
 The Binding connects your BMW Vehicles which are registered in the _Garage_ of your BMW ConnectedDrive Portal.
-Due to the high variety of Cars and ConnectedDrive Services you need to check which Channels are applicable to your Car. 
-The Discovery Service recognizes your Car with the correct type 
+Due to the high variety of Cars and Online Services you need to check which Channels are applicable to your Vehicle. 
+The Discovery Service recognizes your Vehicle with the correct type 
 
 * Conventional Fuel Vehicle
 * Plugin-Hybrid Electrical Vehicle 
@@ -13,6 +13,10 @@ The Discovery Service recognizes your Car with the correct type
 
 In addition Properties are attached to the Vehicle Thing to observe the Supported & Activated Services.
 Different Channel Groups are available so you are able to cross-check which group is supported by your Car.  
+
+Please note **this isn't a _real-time_ Binding**. 
+If you open the Door the state isn't transmitted immediately and shown in your GUI. 
+This isn't a flaw in the Binding itself because the state in BMWs own ConnectedDrive App is also updated with delay. 
 
 ## Supported Things
 

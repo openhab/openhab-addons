@@ -1,7 +1,7 @@
 {
 	"vehicles": [
 		{
-			"vin": "WBY1Z81040V905639",
+			"vin": "MY_REAL_VIN",
 			"model": "i3 94 (+ REX)",
 			"bodytype": "I01",
 			"driveTrain": "BEV_REX",
@@ -14,14 +14,14 @@
 			"hub": "HUB_ECE",
 			"hasAlarmSystem": true,
 			"dealer": {
-				"name": "Andreas Ehrl Potsdam GmbH & Co. KG",
-				"street": "Fritz-Zubeil-Str. 95",
-				"postalCode": "14482",
-				"city": "Potsdam",
+				"name": "My Real Dealer Name",
+				"street": "My Real Dealer Address",
+				"postalCode": "4711",
+				"city": "My Real Dealer City",
 				"country": "DE",
-				"phone": "+49 331 888888"
+				"phone": "My Real Dealer Phone"
 			},
-			"breakdownNumber": "+4989358957103",
+			"breakdownNumber": "Real Phone Number",
 			"countryCode": "V6",
 			"egoVehiclePath": "",
 			"chargingUpdateMode": "NORMAL_PROGNOSE_BASED",

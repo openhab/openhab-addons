@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
+package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
 import static org.junit.Assert.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
@@ -18,6 +18,7 @@ import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConst
 import java.util.List;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,6 +32,10 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
@@ -44,7 +49,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class StatusWrapper {
     private static final Gson GSON = new Gson();
-    private static final Unit KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
+    private static final Unit<Length> KILOMETRE = MetricPrefix.KILO(SIUnits.METRE);
 
     private VehicleStatus vStatus;
     private boolean imperial;
@@ -52,7 +57,7 @@ public class StatusWrapper {
     private boolean hasFuel;
     private boolean isHybrid;
 
-    public StatusWrapper(@Nullable String type, boolean imperial, @Nullable String statusJson) {
+    public StatusWrapper(String type, boolean imperial, String statusJson) {
         this.imperial = imperial;
         hasFuel = type.equals(CarType.CONVENTIONAL.toString()) || type.equals(CarType.PLUGIN_HYBRID.toString())
                 || type.equals(CarType.ELECTRIC_REX.toString());
@@ -77,7 +82,7 @@ public class StatusWrapper {
 
     private void checkResult(ChannelUID channelUID, State state) {
         String cUid = channelUID.getIdWithoutGroup();
-        QuantityType qt;
+        QuantityType<Length> qt;
         StringType st;
         DecimalType dt;
         switch (cUid) {
@@ -175,7 +180,7 @@ public class StatusWrapper {
                 st = (StringType) state;
                 assertEquals("Next Service", vStatus.getNextService(imperial), st.toString());
                 break;
-            case CHARGING_STATUS:
+            case CHARGE_STATUS:
                 assertTrue("Is Eelctric", isElectric);
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
@@ -214,32 +219,44 @@ public class StatusWrapper {
                 assertNotNull(vStatus.position);
                 assertEquals("Heading", vStatus.position.heading, qt.intValue(), 0.01);
                 break;
-            case LATLONG:
-                assertTrue(state instanceof StringType);
-                st = ((StringType) state);
-                assertNotNull(vStatus.position);
-                assertEquals("Lat/Long", vStatus.position.lat + "," + vStatus.position.lon, st.toString());
-                break;
-            case RANGE_RADIUS:
+            case RANGE_RADIUS_ELECTRIC:
                 assertTrue(state instanceof QuantityType);
+                assertTrue(isElectric);
                 qt = (QuantityType) state;
-                int totalRange = 0;
                 if (imperial) {
-                    if (isElectric) {
-                        totalRange += vStatus.remainingRangeElectricMls;
-                    }
-                    if (hasFuel) {
-                        totalRange += vStatus.remainingRangeFuelMls;
-                    }
+                    assertEquals("Range Radius Electric mi",
+                            Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), qt.floatValue(), 0.1);
                 } else {
-                    if (isElectric) {
-                        totalRange += vStatus.remainingRangeElectric;
-                    }
-                    if (hasFuel) {
-                        totalRange += vStatus.remainingRangeFuel;
-                    }
+                    assertEquals("Range Radius Electric km", Converter.guessRangeRadius(vStatus.remainingRangeElectric),
+                            qt.floatValue(), 0.1);
                 }
-                assertEquals("Range Circle", Converter.guessRange(totalRange), qt.floatValue(), 0.1);
+                break;
+            case RANGE_RADIUS_FUEL:
+                assertTrue(state instanceof QuantityType);
+                assertTrue(hasFuel);
+                qt = (QuantityType) state;
+                if (imperial) {
+                    assertEquals("Range Radius Fuel mi", Converter.guessRangeRadius(vStatus.remainingRangeFuelMls),
+                            qt.floatValue(), 0.1);
+                } else {
+                    assertEquals("Range Radius Fuel km", Converter.guessRangeRadius(vStatus.remainingRangeFuel),
+                            qt.floatValue(), 0.1);
+                }
+                break;
+            case RANGE_RADIUS_HYBRID:
+                assertTrue(state instanceof QuantityType);
+                assertTrue(isHybrid);
+                qt = (QuantityType) state;
+                if (imperial) {
+                    assertEquals("Range Radius Hybrid mi",
+                            Converter.guessRangeRadius(
+                                    vStatus.remainingRangeElectricMls + vStatus.remainingRangeFuelMls),
+                            qt.floatValue(), 0.1);
+                } else {
+                    assertEquals("Range Radius Hybrid km",
+                            Converter.guessRangeRadius(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
+                            qt.floatValue(), 0.1);
+                }
                 break;
             default:
                 // fail in case of unknown update
