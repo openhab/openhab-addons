@@ -57,5 +57,4 @@ public class ICalendarBindingConstants {
     public final static ChannelTypeUID BEGIN_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_start");
     public final static ChannelTypeUID END_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_end");
     public final static ChannelTypeUID TITLE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_title");
-
 }
