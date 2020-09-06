@@ -13,6 +13,7 @@
 package org.openhab.binding.magentatv.internal.network;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.substringBetween;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,7 +24,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
@@ -118,12 +118,12 @@ public class MagentaTVNotifyServlet extends HttpServlet {
             } else {
                 if (data.contains("STB_")) {
                     data = data.replaceAll("&quot;", "\"");
-                    String stbMac = StringUtils.substringBetween(data, "<STB_Mac>", "</STB_Mac>");
+                    String stbMac = substringBetween(data, "<STB_Mac>", "</STB_Mac>");
                     String stbEvent = "";
                     if (data.contains("<STB_playContent>")) {
-                        stbEvent = StringUtils.substringBetween(data, "<STB_playContent>", "</STB_playContent>");
+                        stbEvent = substringBetween(data, "<STB_playContent>", "</STB_playContent>");
                     } else if (data.contains("<STB_EitChanged>")) {
-                        stbEvent = StringUtils.substringBetween(data, "<STB_EitChanged>", "</STB_EitChanged>");
+                        stbEvent = substringBetween(data, "<STB_EitChanged>", "</STB_EitChanged>");
                     } else {
                         logger.debug("Unknown STB event: {}", data);
                     }

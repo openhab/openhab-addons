@@ -29,7 +29,7 @@
 				<context>network-address</context>
 			</parameter>
 			<parameter name="userId" type="text">
-				<label>UID (userId)</label>
+				<label>User Id</label>
 				<description>Technical User userId required for pairing process</description>
 			</parameter>
 			<parameter name="accountName" type="text">

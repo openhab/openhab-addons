@@ -13,6 +13,7 @@
 package org.openhab.binding.magentatv.internal.handler;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -21,7 +22,6 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.config.MagentaTVDynamicConfig;
@@ -89,9 +89,6 @@ public class MagentaTVControl {
      * @throws MagentaTVException
      */
     public String authenticateUser(String accountName, String accountPassword) throws MagentaTVException {
-        if (accountName.equals(EMPTY_CRED) || accountPassword.equals(EMPTY_CRED)) {
-            throw new MagentaTVException("Credentials missing or invalid!");
-        }
         return oauth.getUserId(accountName, accountPassword);
     }
 
@@ -125,17 +122,17 @@ public class MagentaTVControl {
         String result = http.httpGet(buildHost(), url, "");
         if (result.contains("<modelName>")) {
             {
-                config.setModel(StringUtils.substringBetween(result, "<modelName>", "</modelName>"));
+                config.setModel(substringBetween(result, "<modelName>", "</modelName>"));
             }
         }
         if (result.contains("<modelNumber>")) {
             {
-                config.setHardwareVersion(StringUtils.substringBetween(result, "<modelNumber>", "</modelNumber>"));
+                config.setHardwareVersion(substringBetween(result, "<modelNumber>", "</modelNumber>"));
             }
         }
         if (result.contains("<X_wakeOnLan>")) {
             {
-                String wol = StringUtils.substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
+                String wol = substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
                 config.setWakeOnLAN(wol);
                 logger.debug("{}: Wake-on-LAN is {}", thingId, wol.equals("0") ? "disabled" : "enabled");
             }
@@ -144,10 +141,10 @@ public class MagentaTVControl {
             {
                 String version;
                 if (result.contains("<productVersionNumber>&quot; ")) {
-                    version = StringUtils.substringBetween(result, "<productVersionNumber>&quot; ",
+                    version = substringBetween(result, "<productVersionNumber>&quot; ",
                             " &quot;</productVersionNumber>");
                 } else {
-                    version = StringUtils.substringBetween(result, "<productVersionNumber>", "</productVersionNumber>");
+                    version = substringBetween(result, "<productVersionNumber>", "</productVersionNumber>");
                 }
                 config.setFirmwareVersion(version);
             }
@@ -191,7 +188,7 @@ public class MagentaTVControl {
                 network.getLocalIP(), network.getLocalPort(), PAIRING_NOTIFY_URI, PAIRING_TIMEOUT_SEC);
         String response = http.sendData(config.getIpAddress(), config.getPort(), subscribe);
         if (!response.contains("200 OK")) {
-            response = StringUtils.substringBefore(response, "SERVER");
+            response = substringBefore(response, "SERVER");
             throw new MagentaTVException("Unable to subscribe to pairing channel: " + response);
         }
         if (!response.contains(NOTIFY_SID)) {
@@ -245,7 +242,7 @@ public class MagentaTVControl {
             throw new MagentaTVException("Unexpected result for pairing response: " + response);
         }
 
-        String result = StringUtils.substringBetween(response, "<result>", "</result>");
+        String result = substringBetween(response, "<result>", "</result>");
         if (!result.equals("0")) {
             throw new MagentaTVException("Pairing failed, result=" + result);
         }
@@ -514,7 +511,7 @@ public class MagentaTVControl {
         String open = "<" + tagName + ">";
         String close = "</" + tagName + ">";
         if (xml.contains(open) && xml.contains(close)) {
-            return StringUtils.substringBetween(xml, open, close);
+            return substringBetween(xml, open, close);
         }
         return "";
     }

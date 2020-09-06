@@ -13,6 +13,7 @@
 package org.openhab.binding.magentatv.internal.network;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.substringAfterLast;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,7 +26,6 @@ import java.util.UUID;
 
 import javax.ws.rs.HttpMethod;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
@@ -94,7 +94,7 @@ public class MagentaTVOAuth {
             step = "get credentials";
             httpHeader = initHttpHeader();
             url = OAUTH_GET_CRED_URL + ":" + OAUTH_GET_CRED_PORT + OAUTH_GET_CRED_URI;
-            httpHeader.setProperty(HEADER_HOST, StringUtils.substringAfterLast(OAUTH_GET_CRED_URL, "/"));
+            httpHeader.setProperty(HEADER_HOST, substringAfterLast(OAUTH_GET_CRED_URL, "/"));
             logger.trace("{} from {}", step, url);
             httpResponse = HttpUtil.executeUrl(HttpMethod.GET, url, httpHeader, null, null, NETWORK_TIMEOUT_MS);
             logger.trace("http response = {}", httpResponse);

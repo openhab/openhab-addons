@@ -14,13 +14,13 @@ package org.openhab.binding.magentatv.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -69,7 +69,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
                 Map<String, Object> properties = new TreeMap<>();
                 String descriptorURL = device.getIdentity().getDescriptorURL().toString();
-                String port = StringUtils.substringBefore(StringUtils.substringAfterLast(descriptorURL, ":"), "/");
+                String port = substringBefore(substringAfterLast(descriptorURL, ":"), "/");
                 String hex = device.getIdentity().getUdn().getIdentifierString()
                         .substring(device.getIdentity().getUdn().getIdentifierString().length() - 12);
                 String mac = hex.substring(0, 2) + ":" + hex.substring(2, 4) + ":" + hex.substring(4, 6) + ":"
@@ -79,9 +79,9 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 properties.put(PROPERTY_HARDWARE_VERSION, device.getDetails().getModelDetails().getModelNumber());
                 properties.put(PROPERTY_MAC_ADDRESS, mac);
                 properties.put(PROPERTY_UDN, device.getIdentity().getUdn().getIdentifierString().toUpperCase());
-                properties.put(PROPERTY_IP, StringUtils.substringBetween(descriptorURL, "http://", ":"));
+                properties.put(PROPERTY_IP, substringBetween(descriptorURL, "http://", ":"));
                 properties.put(PROPERTY_PORT, port);
-                properties.put(PROPERTY_DESC_URL, StringUtils.substringAfterLast(descriptorURL, ":" + port));
+                properties.put(PROPERTY_DESC_URL, substringAfterLast(descriptorURL, ":" + port));
 
                 logger.debug("Create Thing for device {} with UDN {}, Model{}", device.getDetails().getFriendlyName(),
                         device.getIdentity().getUdn().getIdentifierString(), modelName);

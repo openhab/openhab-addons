@@ -13,6 +13,7 @@
 package org.openhab.binding.magentatv.internal;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.substringAfterLast;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -21,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
@@ -136,7 +136,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
             Map<String, String> discoveryProperties, @Nullable MagentaTVHandler handler) {
         String mac = "";
         if (macAddress.isEmpty()) { // build MAC from UDN
-            mac = StringUtils.substringAfterLast(udn, "-");
+            mac = substringAfterLast(udn, "-");
         } else {
             mac = macAddress;
         }

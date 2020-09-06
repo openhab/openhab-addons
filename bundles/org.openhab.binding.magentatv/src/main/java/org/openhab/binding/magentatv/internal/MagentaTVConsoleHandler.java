@@ -93,16 +93,16 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
     @Override
     public List<String> getUsages() {
         return Arrays.asList(buildCommandUsage(CMD_LOGIN + " [<login email>] [<password>]",
-                "Authenticates the login name and provides a UID (userId)."));
+                "Authenticates the login name and provides the technical User Id (userId parameter)."));
     }
 
     private void login(Console console, String username, String password) {
         try {
             logger.info("Performing OAuth for user {}", username);
             String userId = oauth.getUserId(username, password);
-            console.println("Login successful, returned UID (userId) is " + userId);
-            console.println("Edit thing configuration and copy this value to the field UID");
-            logger.info("userId for user {} is {}", username, userId);
+            console.println("Login successful, returned userId is " + userId);
+            console.println("Edit thing configuration and copy this value to the field User Id (userId)");
+            logger.info("User Id for user {} is {}", username, userId);
         } catch (MagentaTVException e) {
             console.println("Login with account " + username + " failed: " + e.getMessage());
             logger.warn("Unable to authenticate account {}, check credentials ({}", username, e.getMessage());

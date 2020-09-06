@@ -13,6 +13,7 @@
 package org.openhab.binding.magentatv.internal.network;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -20,8 +21,6 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
@@ -76,7 +75,6 @@ public class MagentaTVPoweroffListener extends Thread {
             // Join the Multicast group on the selected network interface
             socket.setNetworkInterface(networkInterface);
             InetAddress group = InetAddress.getByName(UPNP_MULTICAST_ADDRESS);
-            Validate.notNull(group);
             socket.joinGroup(group);
 
             // read the SSDP messages
@@ -85,9 +83,9 @@ public class MagentaTVPoweroffListener extends Thread {
                 socket.receive(packet);
                 String message = new String(packet.getData(), 0, packet.getLength());
                 try {
-                    String ipAddress = StringUtils.substringAfter(packet.getAddress().toString(), "/");
+                    String ipAddress = substringAfter(packet.getAddress().toString(), "/");
                     if (message.contains("NTS: ")) {
-                        String ssdpMsg = StringUtils.substringBetween(message, "NTS: ", "\r");
+                        String ssdpMsg = substringBetween(message, "NTS: ", "\r");
                         if (ssdpMsg != null) {
                             if (message.contains(MR400_DEF_DESCRIPTION_URL)
                                     || message.contains(MR401B_DEF_DESCRIPTION_URL)) {
@@ -117,7 +115,6 @@ public class MagentaTVPoweroffListener extends Thread {
      */
     public void close() {
         if (isStarted()) {
-            Validate.notNull(socket);
             socket.close();
             logger.debug("No longer listening to SSDP messages");
         }

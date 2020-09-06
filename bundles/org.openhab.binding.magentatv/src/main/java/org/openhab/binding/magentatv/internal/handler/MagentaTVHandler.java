@@ -13,6 +13,7 @@
 package org.openhab.binding.magentatv.internal.handler;
 
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.*;
+import static org.openhab.binding.magentatv.internal.MagentaTVUtil.*;
 
 import java.text.DateFormat;
 import java.text.MessageFormat;
@@ -30,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
@@ -143,13 +143,13 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             if (config.getUDN().isEmpty()) {
                 // get UDN from device name
                 String uid = this.getThing().getUID().getAsString();
-                config.setUDN(StringUtils.substringAfterLast(uid, ":"));
+                config.setUDN(substringAfterLast(uid, ":"));
             }
             if (config.getMacAddress().isEmpty()) {
                 // get MAC address from UDN (last 12 digits)
-                String macAddress = StringUtils.substringAfterLast(config.getUDN(), "_");
+                String macAddress = substringAfterLast(config.getUDN(), "_");
                 if (macAddress.isEmpty()) {
-                    macAddress = StringUtils.substringAfterLast(config.getUDN(), "-");
+                    macAddress = substringAfterLast(config.getUDN(), "-");
                 }
                 config.setMacAddress(macAddress);
             }
@@ -159,7 +159,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             // Check for emoty credentials (e.g. missing in .things file)
             String account = config.getAccountName();
             if (config.getUserID().isEmpty()) {
-                if (account.isEmpty() || account.equals(EMPTY_CRED)) {
+                if (account.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Credentials missing or invalid! Fill credentials into thing configuration or generate UID on the openHAB console - see README");
                     return;
@@ -203,7 +203,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         if (configurationParameters.containsKey(PROPERTY_ACCT_NAME)) {
             @Nullable
             String newAccount = (String) configurationParameters.get(PROPERTY_ACCT_NAME);
-            if ((newAccount != null) && !newAccount.isEmpty() && !newAccount.equals(EMPTY_CRED)) {
+            if ((newAccount != null) && !newAccount.isEmpty()) {
                 // new account info, need to renew userId
                 config.setUserID("");
             }
@@ -361,12 +361,12 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             configuration.remove(PROPERTY_ACCT_NAME);
             configuration.remove(PROPERTY_ACCT_PWD);
             configuration.remove(PROPERTY_USERID);
-            configuration.put(PROPERTY_ACCT_NAME, EMPTY_CRED);
-            configuration.put(PROPERTY_ACCT_PWD, EMPTY_CRED);
+            configuration.put(PROPERTY_ACCT_NAME, "");
+            configuration.put(PROPERTY_ACCT_PWD, "");
             configuration.put(PROPERTY_USERID, userId);
             this.updateConfiguration(configuration);
-            config.setAccountName(EMPTY_CRED);
-            config.setAccountPassword(EMPTY_CRED);
+            config.setAccountName("");
+            config.setAccountPassword("");
         } else {
             logger.debug("{}: Skip OAuth, use existing userID {}", thingId, config.getUserID());
         }
@@ -482,8 +482,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
                             String tsLocal = ps.startTime.replace('/', '-').replace(" ", "T") + "Z";
                             Instant timestamp = Instant.parse(tsLocal);
                             ZonedDateTime localTime = timestamp.atZone(ZoneId.of("Europe/Berlin"));
-                            tsLocal = StringUtils.substringBeforeLast(localTime.toString(), "[");
-                            tsLocal = StringUtils.substringBefore(tsLocal.replace('-', '/').replace('T', ' '), "+");
+                            tsLocal = substringBeforeLast(localTime.toString(), "[");
+                            tsLocal = substringBefore(tsLocal.replace('-', '/').replace('T', ' '), "+");
 
                             logger.debug("{}: Info for channel {} / {} - {} {}.{}, start time={}, duration={}", thingId,
                                     pinfo.channelNum, pinfo.channelCode, control.getRunStatus(ps.runningStatus),
@@ -590,10 +590,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         if (jsonEvent.contains(MR_EVENT_CHAN_TAG) && !jsonEvent.contains(MR_EVENT_CHAN_TAG + "\"")) {
             // hack: reformat the JSON string to make it compatible with the GSON parsing
             logger.trace("{}: malformed JSON->fix channel_num", thingId);
-            String start = StringUtils.substringBefore(jsonEvent, MR_EVENT_CHAN_TAG); // up to "channel_num":
-            String end = StringUtils.substringAfter(jsonEvent, MR_EVENT_CHAN_TAG); // behind "channel_num":
-            String chan = StringUtils.substringBetween(jsonEvent, MR_EVENT_CHAN_TAG, ",");
-            chan = StringUtils.trim(chan);
+            String start = substringBefore(jsonEvent, MR_EVENT_CHAN_TAG); // up to "channel_num":
+            String end = substringAfter(jsonEvent, MR_EVENT_CHAN_TAG); // behind "channel_num":
+            String chan = substringBetween(jsonEvent, MR_EVENT_CHAN_TAG, ",").trim();
             return start + "\"channel_num\":" + "\"" + chan + "\"" + end;
         }
         return jsonEvent;
