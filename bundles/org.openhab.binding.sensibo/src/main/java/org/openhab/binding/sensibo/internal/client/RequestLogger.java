@@ -72,7 +72,7 @@ public final class RequestLogger {
                     group.append(reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
-                scambleAndLog(stringsToRemove, dataToLog);
+                scrambleAndLog(stringsToRemove, dataToLog);
                 contentBuffer.delete(0, contentBuffer.length());
                 group.delete(0, group.length());
             });
@@ -99,18 +99,16 @@ public final class RequestLogger {
                 }
 
                 String dataToLog = group.toString();
-                scambleAndLog(stringsToRemove, dataToLog);
+                scrambleAndLog(stringsToRemove, dataToLog);
             });
         }
     }
 
-    private void scambleAndLog(String[] stringsToRemove, String dataToLog) {
+    private void scrambleAndLog(String[] stringsToRemove, String dataToLog) {
         for (String stringToRemove : stringsToRemove) {
-            if (stringToRemove != null) {
-                dataToLog = dataToLog.replace(stringToRemove, "<HIDDEN>");
-            }
+            dataToLog = dataToLog.replace(stringToRemove, "<HIDDEN>");
         }
-        logger.debug(dataToLog);
+        logger.debug("{}", dataToLog);
     }
 
     private Charset getCharset(final HttpFields headers) {
