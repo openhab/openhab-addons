@@ -14,13 +14,17 @@
 
   <name>openHAB Add-ons :: Bundles :: OpenWebNet (BTicino/Legrand) Binding</name>
 
+  <properties>
+    <bnd.importpackage>gnu.io;version="[3.12,6)"</bnd.importpackage>
+  </properties>
+
   <dependencies>
 
     <dependency>
       <groupId>com.github.openwebnet4j</groupId>
       <artifactId>openwebnet4j</artifactId>
       <version>0.2.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
   </dependencies>
