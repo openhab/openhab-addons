@@ -186,4 +186,6 @@ public class MagentaTVBindingConstants {
 
     public static final String HASH_ALGORITHM_MD5 = "MD5";
     public static final String HASH_ALGORITHM_SHA256 = "SHA-256";
+
+    public static final String EMPTY_CRED = "***";
 }

@@ -89,10 +89,10 @@ public class MagentaTVControl {
      * @throws MagentaTVException
      */
     public String authenticateUser(String accountName, String accountPassword) throws MagentaTVException {
-        if (accountName.equals("***") || accountPassword.equals("***")) {
+        if (accountName.equals(EMPTY_CRED) || accountPassword.equals(EMPTY_CRED)) {
             throw new MagentaTVException("Credentials missing or invalid!");
         }
-        return oauth.getOAuthCredentials(accountName, accountPassword);
+        return oauth.getUserId(accountName, accountPassword);
     }
 
     /**

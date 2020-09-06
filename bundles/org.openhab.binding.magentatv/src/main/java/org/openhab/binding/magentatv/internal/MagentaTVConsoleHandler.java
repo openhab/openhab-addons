@@ -1,4 +1,3 @@
-
 /**
  * Copyright (c) 2010-2020 Contributors to the openHAB project
  *
@@ -16,18 +15,19 @@ package org.openhab.binding.magentatv.internal;
 import static org.openhab.binding.magentatv.internal.MagentaTVBindingConstants.BINDING_ID;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
+import org.openhab.binding.magentatv.internal.network.MagentaTVOAuth;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,11 +47,10 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
     private static final String CMD_LOGIN = "login";
 
     private final Logger logger = LoggerFactory.getLogger(MagentaTVConsoleHandler.class);
+    private final MagentaTVOAuth oauth = new MagentaTVOAuth();
 
     @Reference(cardinality = ReferenceCardinality.OPTIONAL)
     private @Nullable ClientBuilder injectedClientBuilder;
-
-    private @Nullable WebTarget tokenTarget;
 
     @Activate
     public MagentaTVConsoleHandler() {
@@ -67,17 +66,13 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
                     if (args.length == 1) {
                         try {
                             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                            console.print("Username (email): ");
+                            console.print("Login Name (email): ");
                             String username = br.readLine();
-                            console.println(username);
-
                             console.print("Password: ");
-
                             String pwd = br.readLine();
-                            console.println("");
                             console.println("Attempting login...");
                             login(console, username, pwd);
-                        } catch (Exception e) {
+                        } catch (IOException e) {
                             console.println(e.toString());
                         }
                     } else if (args.length == 3) {
@@ -97,43 +92,20 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(CMD_LOGIN + " [<user email>] [<password>]",
-                "Authenticates the user and provides a refresh token."));
+        return Arrays.asList(buildCommandUsage(CMD_LOGIN + " [<login email>] [<password>]",
+                "Authenticates the login name and provides a UID (userId)."));
     }
 
     private void login(Console console, String username, String password) {
-        /*
-         * try {
-         * Gson gson = new Gson();
-         * 
-         * TokenRequest token = new TokenRequestPassword(username, password);
-         * String payLoad = gson.toJson(token);
-         * 
-         * Response response = getTokenTarget().request()
-         * .post(Entity.entity(payLoad, MediaType.APPLICATION_JSON_TYPE));
-         * 
-         * if (response != null) {
-         * if (response.getStatus() == 200 && response.hasEntity()) {
-         * String responsePayLoad = response.readEntity(String.class);
-         * TokenResponse tokenResponse = gson.fromJson(responsePayLoad.trim(), TokenResponse.class);
-         * console.println("Refresh token: " + tokenResponse.refresh_token);
-         * 
-         * ThingUID thingUID = new ThingUID(TeslaBindingConstants.THING_TYPE_ACCOUNT,
-         * UIDUtils.encode(username));
-         * DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel("Tesla Account")
-         * .withProperty(TeslaBindingConstants.CONFIG_REFRESHTOKEN, tokenResponse.refresh_token)
-         * .withProperty(TeslaBindingConstants.CONFIG_USERNAME, username)
-         * .withRepresentationProperty(TeslaBindingConstants.CONFIG_USERNAME).build();
-         * teslaAccountDiscoveryService.thingDiscovered(result);
-         * } else {
-         * console.println(
-         * "Failure: " + response.getStatus() + " " + response.getStatusInfo().getReasonPhrase());
-         * }
-         * }
-         * } catch (Exception e) {
-         * console.println("Failed to retrieve token: " + e.getMessage());
-         * logger.error("Could not get refresh token.", e);
-         * }
-         */
+        try {
+            logger.info("Performing OAuth for user {}", username);
+            String userId = oauth.getUserId(username, password);
+            console.println("Login successful, returned UID (userId) is " + userId);
+            console.println("Edit thing configuration and copy this value to the field UID");
+            logger.info("userId for user {} is {}", username, userId);
+        } catch (MagentaTVException e) {
+            console.println("Login with account " + username + " failed: " + e.getMessage());
+            logger.warn("Unable to authenticate account {}, check credentials ({}", username, e.getMessage());
+        }
     }
 }

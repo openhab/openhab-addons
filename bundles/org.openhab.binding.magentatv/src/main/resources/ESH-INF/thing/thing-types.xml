@@ -28,16 +28,18 @@
 				<required>true</required>
 				<context>network-address</context>
 			</parameter>
+			<parameter name="userId" type="text">
+				<label>UID (userId)</label>
+				<description>Technical User userId required for pairing process</description>
+			</parameter>
 			<parameter name="accountName" type="text">
 				<label>Account Name</label>
 				<description>Credentials: Login name (e.g. xxx@t-online.de, same as for the Telekom Kundencenter)</description>
-				<required>true</required>
 			</parameter>
 			<parameter name="accountPassword" type="text">
 				<label>Account Password</label>
 				<description>Credentials: Account Password (same as for the Telekom Kundencenter)</description>
 				<context>password</context>
-				<required>true</required>
 			</parameter>
 			<parameter name="udn" type="text">
 				<label>Unique Device Name</label>
@@ -50,12 +52,6 @@
 				<description>Port address for UPnP</description>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="userId" type="text">
-				<label>UID</label>
-				<description>Technical UID required for pairing process</description>
-				<required>false</required>
-				<advanced>true</advanced>
-			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -63,11 +59,11 @@
 		<label>Control</label>
 		<description>Control function for your Media Receiver</description>
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="channel" typeId="channelNumber" />
-			<channel id="player" typeId="system.media-control" />
-			<channel id="mute" typeId="system.mute" />
-			<channel id="key" typeId="key" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="channel" typeId="channelNumber"/>
+			<channel id="player" typeId="system.media-control"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="key" typeId="key"/>
 		</channels>
 	</channel-group-type>
 
@@ -75,11 +71,11 @@
 		<label>Program Information</label>
 		<description>Information on the running program</description>
 		<channels>
-			<channel id="title" typeId="system.media-title" />
-			<channel id="text" typeId="programText" />
-			<channel id="start" typeId="programStart" />
-			<channel id="duration" typeId="programDuration" />
-			<channel id="position" typeId="programPosition" />
+			<channel id="title" typeId="system.media-title"/>
+			<channel id="text" typeId="programText"/>
+			<channel id="start" typeId="programStart"/>
+			<channel id="duration" typeId="programDuration"/>
+			<channel id="position" typeId="programPosition"/>
 		</channels>
 	</channel-group-type>
 
@@ -87,9 +83,9 @@
 		<label>Play Status</label>
 		<description>Status information on media play</description>
 		<channels>
-			<channel id="channelCode" typeId="channelCode" />
-			<channel id="runStatus" typeId="runStatus" />
-			<channel id="playMode" typeId="playMode" />
+			<channel id="channelCode" typeId="channelCode"/>
+			<channel id="runStatus" typeId="runStatus"/>
+			<channel id="playMode" typeId="playMode"/>
 		</channels>
 	</channel-group-type>
 

@@ -83,7 +83,6 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListener {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHandler.class);
-    private static final String EMPTY_CRED = "***";
     private static final DecimalType ZERO = new DecimalType(0);
 
     protected MagentaTVDynamicConfig config = new MagentaTVDynamicConfig();
@@ -159,14 +158,17 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
             // Check for emoty credentials (e.g. missing in .things file)
             String account = config.getAccountName();
-            if (config.getUserID().isEmpty() && (config.getAccountName().isEmpty() || account.equals(EMPTY_CRED))) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Missing credentials for login!");
-                return;
+            if (config.getUserID().isEmpty()) {
+                if (account.isEmpty() || account.equals(EMPTY_CRED)) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            "Credentials missing or invalid! Fill credentials into thing configuration or generate UID on the openHAB console - see README");
+                    return;
+                }
+
+                logger.info("{}: Authenticate account {}", thingId, account);
+                authenticateUser();
             }
 
-            logger.info("{}: Authenticate account {}", thingId, account);
-            authenticateUser();
             connectReceiver(); // throws MagentaTVException on error
 
             // setup background device check
@@ -199,8 +201,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         logger.debug("{}: Thing config updated, re-initialize", thingId);
         cancelAllJobs();
         if (configurationParameters.containsKey(PROPERTY_ACCT_NAME)) {
+            @Nullable
             String newAccount = (String) configurationParameters.get(PROPERTY_ACCT_NAME);
-            if (!newAccount.equals(EMPTY_CRED)) {
+            if ((newAccount != null) && !newAccount.isEmpty() && !newAccount.equals(EMPTY_CRED)) {
                 // new account info, need to renew userId
                 config.setUserID("");
             }
