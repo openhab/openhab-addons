@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 		<label>TouchWand Dimmer Unit</label>
 		<channels>
-			<channel id="brightness" typeId="brightness">
+			<channel id="brightness" typeId="system.brightness">
 				<description>light brightness control</description>
 			</channel>
 		</channels>
