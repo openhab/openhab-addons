@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>2.5.7-SNAPSHOT</version>
+    <version>2.5.9-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -69,6 +69,7 @@
     <module>org.openhab.binding.cbus</module>
     <module>org.openhab.binding.chromecast</module>
     <module>org.openhab.binding.cm11a</module>
+    <module>org.openhab.binding.comfoair</module>
     <module>org.openhab.binding.coolmasternet</module>
     <module>org.openhab.binding.coronastats</module>
     <module>org.openhab.binding.daikin</module>
@@ -81,6 +82,7 @@
     <module>org.openhab.binding.dlinksmarthome</module>
     <module>org.openhab.binding.dmx</module>
     <module>org.openhab.binding.doorbird</module>
+    <module>org.openhab.binding.draytonwiser</module>
     <module>org.openhab.binding.dscalarm</module>
     <module>org.openhab.binding.dsmr</module>
     <module>org.openhab.binding.dwdpollenflug</module>
@@ -120,6 +122,7 @@
     <module>org.openhab.binding.hue</module>
     <module>org.openhab.binding.hydrawise</module>
     <module>org.openhab.binding.hyperion</module>
+    <module>org.openhab.binding.iammeter</module>
     <module>org.openhab.binding.iaqualink</module>
     <module>org.openhab.binding.icalendar</module>
     <module>org.openhab.binding.icloud</module>
@@ -162,8 +165,12 @@
     <module>org.openhab.binding.milight</module>
     <module>org.openhab.binding.minecraft</module>
     <module>org.openhab.binding.modbus</module>
-    <module>org.openhab.binding.modbus.studer</module>    
+    <module>org.openhab.binding.modbus.e3dc</module>
+    <module>org.openhab.binding.modbus.studer</module>   
     <module>org.openhab.binding.modbus.sunspec</module>
+    <module>org.openhab.binding.modbus.stiebeleltron</module>
+    <module>org.openhab.binding.monopriceaudio</module>
+    <module>org.openhab.binding.mpd</module>
     <module>org.openhab.binding.mqtt</module>
     <module>org.openhab.binding.mqtt.generic</module>
     <module>org.openhab.binding.mqtt.homeassistant</module>
@@ -183,6 +190,7 @@
     <module>org.openhab.binding.novafinedust</module>
     <module>org.openhab.binding.ntp</module>
     <module>org.openhab.binding.nuki</module>
+    <module>org.openhab.binding.nuvo</module>
     <module>org.openhab.binding.oceanic</module>
     <module>org.openhab.binding.ojelectronics</module>
     <module>org.openhab.binding.omnikinverter</module>
@@ -195,6 +203,8 @@
     <module>org.openhab.binding.openthermgateway</module>
     <module>org.openhab.binding.openuv</module>
     <module>org.openhab.binding.openweathermap</module>
+    <module>org.openhab.binding.openwebnet</module>
+    <module>org.openhab.binding.oppo</module>
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.paradoxalarm</module>
     <module>org.openhab.binding.pentair</module>
@@ -233,7 +243,7 @@
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
-	<module>org.openhab.binding.somfymylink</module>
+    <module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
@@ -251,6 +261,7 @@
     <module>org.openhab.binding.tplinksmarthome</module>
     <module>org.openhab.binding.tradfri</module>
     <module>org.openhab.binding.unifi</module>
+    <module>org.openhab.binding.upnpcontrol</module>
     <module>org.openhab.binding.urtsi</module>
     <module>org.openhab.binding.valloxmv</module>
     <module>org.openhab.binding.vektiva</module>

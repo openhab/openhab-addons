@@ -23,7 +23,7 @@
 				<description>Slave address of BSP device</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="1" unit="s">
+			<parameter name="refresh" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
@@ -56,11 +56,11 @@
 				<description>Slave address of Xtender device</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="1" unit="s">
+			<parameter name="refresh" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
-                <advanced>true</advanced>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -87,7 +87,7 @@
 				<description>Slave address of VarioTrack device</description>
 				<default>20</default>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="1" unit="s">
+			<parameter name="refresh" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
@@ -128,7 +128,7 @@
 				<description>Slave address of VarioString device</description>
 				<default>40</default>
 			</parameter>
-			<parameter name="refreshSec" type="integer" min="1" unit="s">
+			<parameter name="refresh" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Poll interval</description>
 				<default>5</default>
