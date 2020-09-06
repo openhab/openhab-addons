@@ -29,6 +29,4 @@ public class IammeterBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_POWERMETER = new ThingTypeUID(BINDING_ID, "powermeter");
     public static final ThingTypeUID THING_TYPE_POWERMETER_3080T = new ThingTypeUID(BINDING_ID, "powermeter3080T");
-
-
 }
