@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 public class TouchWandBindingConstants {
 
     public static final String BINDING_ID = "touchwand";
+    public static final String DISCOVERY_THREAD_ID = "binding-touchwand-discovery";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
