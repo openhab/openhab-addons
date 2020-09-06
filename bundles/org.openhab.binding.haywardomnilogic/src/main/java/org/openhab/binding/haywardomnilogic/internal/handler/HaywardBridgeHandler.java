@@ -232,6 +232,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             config.token = evaluateXPath("/Response/Parameters//Parameter[@name='Token']/text()", xmlResponse).get(0);
             config.userID = evaluateXPath("/Response/Parameters//Parameter[@name='UserID']/text()", xmlResponse).get(0);
+
         } catch (Exception e) {
             logger.debug("Unable to login to Hayward's server {}:{}", config.hostname, config.username, e);
             return false;
@@ -1075,7 +1076,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 initPolling(config.telemetryPollTime);
             }
         } catch (Exception e) {
-            logger.error("Unable to send command to Hayward's server {}:{}", config.hostname, config.username, e);
+            logger.debug("Unable to send command to Hayward's server {}:{}", config.hostname, config.username);
             // Restart Polling
             initPolling(config.telemetryPollTime);
         }
