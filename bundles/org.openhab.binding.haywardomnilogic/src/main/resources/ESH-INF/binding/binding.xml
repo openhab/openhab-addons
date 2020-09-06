@@ -4,6 +4,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>Hayward OmniLogix Binding</name>
-	<description>This is the binding for Hayward OmniLogix.</description>
+	<description>Binding for the Hayward OmniLogix swimming pool automation controller.</description>
 	<author>Matt Myers</author>
 </binding:binding>
