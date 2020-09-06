@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCConfiguration;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
@@ -45,13 +44,11 @@ public class MotionDetectorHandler extends BoschSHCHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
-        BoschSHCConfiguration config = super.getBoschConfig();
         Bridge bridge = this.getBridge();
 
-        if (bridge != null && config != null) {
+        if (bridge != null) {
 
-            logger.debug("Handle command for: {} - {}", config.id, command);
+            logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
             BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
             if (bridgeHandler != null) {
@@ -68,7 +65,7 @@ public class MotionDetectorHandler extends BoschSHCHandler {
                 }
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge or config is NUL");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge is NUL");
         }
     }
 
