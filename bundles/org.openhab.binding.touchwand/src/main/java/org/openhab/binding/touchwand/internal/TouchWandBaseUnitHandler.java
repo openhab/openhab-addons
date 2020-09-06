@@ -125,7 +125,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
             if (!this.getThing().getStatusInfo().getStatus().equals(ThingStatus.ONLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             }
-        } catch (JsonParseException | IllegalStateException | UnsupportedOperationException e) {
+        } catch (JsonParseException | IllegalStateException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Could not parse cmdGetUnitById");
             logger.warn("Could not parse cmdGetUnitById response for unit id {}  label {}", unitId,
                     getThing().getLabel());
