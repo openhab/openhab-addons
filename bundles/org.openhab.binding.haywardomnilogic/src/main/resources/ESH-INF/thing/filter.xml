@@ -47,7 +47,7 @@
 				<option value="1">Pool Only</option>
 				<option value="2">Spa Only</option>
 				<option value="3">Spill Over</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 
@@ -76,7 +76,7 @@
 				<option value="9">Filter Superchlorinate</option>
 				<option value="10">Filter Force Priming</option>
 				<option value="11">Filter Waiting for Pump to Turn Off</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 

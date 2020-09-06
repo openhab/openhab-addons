@@ -47,10 +47,10 @@
 				<option value="3">Expired</option>
 				<option value="4">Lost Link</option>
 				<option value="5">Service Mode</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="backyardstate">
 		<item-type>String</item-type>
 		<label>State</label>
@@ -62,7 +62,7 @@
 				<option value="2">Service Mode</option>
 				<option value="3">Config Mode</option>
 				<option value="4">Timed Service Mode</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 

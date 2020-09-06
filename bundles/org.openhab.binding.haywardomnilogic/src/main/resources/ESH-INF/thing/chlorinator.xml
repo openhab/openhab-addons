@@ -39,7 +39,7 @@
 				<option value="0">Off</option>
 				<option value="1">Timed Percent</option>
 				<option value="2">ORP Autosense</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 
@@ -58,7 +58,7 @@
 			<options>
 				<option value="0">Off</option>
 				<option value="1">Super Chlorinating</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 
@@ -76,7 +76,7 @@
 			<options>
 				<option value="0">None</option>
 				<option value="16">Low T-Cell Temperature</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 

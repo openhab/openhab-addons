@@ -38,7 +38,7 @@
 			<options>
 				<option value="yes">On</option>
 				<option value="no">Off</option>
-			</options>      
+			</options>
 		</state>
 	</channel-type>
 

@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="colorlogic" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
@@ -34,7 +34,7 @@
 				<option value="1">On</option>
 				<option value="4">15 Sec White Light</option>
 				<option value="7">Powering Off</option>
-			</options>  
+			</options>
 		</state>
 	</channel-type>
 
@@ -49,19 +49,19 @@
 				<option value="2">Royal Blue</option>
 				<option value="3">Afternoon Sky</option>
 				<option value="4">Aqua Green</option>
-				<option value="5">Emerald</option>                
+				<option value="5">Emerald</option>
 				<option value="6">Cloud White</option>
 				<option value="7">Warm Red</option>
 				<option value="8">Flamingo</option>
 				<option value="9">Vivid Violet</option>
 				<option value="10">Sangria</option>
-				<option value="11">Twilight</option> 
+				<option value="11">Twilight</option>
 				<option value="12">Tranquility</option>
 				<option value="13">Gemstone</option>
 				<option value="14">USA</option>
 				<option value="15">Mardi Gras</option>
 				<option value="16">Cool Cabaret</option>
-			</options>		
+			</options>
 		</state>
 	</channel-type>
 </thing:thing-descriptions>
