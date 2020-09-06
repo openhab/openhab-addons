@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -100,12 +101,22 @@ public class ShutterControlHandler extends BoschSHCHandler {
     }
 
     private @Nullable ShutterControlState getDeviceState() {
-        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        BoschSHCBridgeHandler bridgeHandler;
+        try {
+            bridgeHandler = this.getBridgeHandler();
+        } catch (BoschSHCException e) {
+            return null;
+        }
         return bridgeHandler.refreshState(getThing(), ShutterControlServiceName, ShutterControlState.class);
     }
 
     private void setDeviceState(ShutterControlState state) {
-        BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+        BoschSHCBridgeHandler bridgeHandler;
+        try {
+            bridgeHandler = this.getBridgeHandler();
+        } catch (BoschSHCException e) {
+            return;
+        }
         String deviceId = this.getBoschID();
         if (deviceId == null) {
             return;
