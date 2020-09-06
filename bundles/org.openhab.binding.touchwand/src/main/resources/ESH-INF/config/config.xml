@@ -9,7 +9,6 @@
 		<parameter name="username" type="text">
 			<label>Username</label>
 			<description>Username for TouchWand Wanderfull Hub</description>
-			<required>true</required>
 		</parameter>
 		<parameter name="password" type="text">
 			<context>password</context>
