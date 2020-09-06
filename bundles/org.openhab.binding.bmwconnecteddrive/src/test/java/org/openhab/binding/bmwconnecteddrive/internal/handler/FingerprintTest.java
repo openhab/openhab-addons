@@ -18,9 +18,9 @@ import static org.mockito.Mockito.*;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.junit.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
@@ -42,9 +42,9 @@ public class FingerprintTest {
     public void testDiscoveryFingerprint() {
         Bridge b = mock(Bridge.class);
         when(b.getUID()).thenReturn(new ThingUID("testbinding", "test"));
-        HttpClient hc = mock(HttpClient.class);
+        HttpClientFactory hcf = mock(HttpClientFactory.class);
         BundleContext bc = mock(BundleContext.class);
-        ConnectedDriveBridgeHandler bh = new ConnectedDriveBridgeHandler(b, hc, bc);
+        ConnectedDriveBridgeHandler bh = new ConnectedDriveBridgeHandler(b, hcf, bc);
         // when(bh.getThing()).thenReturn(b);
 
         bh.onResponse(Optional.of(Constants.EMPTY_VEHICLES));

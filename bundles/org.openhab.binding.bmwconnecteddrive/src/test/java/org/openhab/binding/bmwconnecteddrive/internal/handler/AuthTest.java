@@ -13,10 +13,11 @@
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.junit.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.slf4j.Logger;
@@ -35,8 +36,9 @@ public class AuthTest {
     @Test
     public void testTokenDecoding() {
         String headerValue = "https://www.bmw-connecteddrive.com/app/static/external-dispatch.html#access_token=SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh&token_type=Bearer&expires_in=7199";
-        ConnectedDriveProxy dcp = new ConnectedDriveProxy(mock(HttpClient.class),
-                mock(ConnectedDriveConfiguration.class));
+        HttpClientFactory hcf = mock(HttpClientFactory.class);
+        when(hcf.getCommonHttpClient()).thenReturn(mock(HttpClient.class));
+        ConnectedDriveProxy dcp = new ConnectedDriveProxy(hcf, mock(ConnectedDriveConfiguration.class));
         Token t = dcp.getTokenFromUrl(headerValue);
         assertEquals("Token", "Bearer SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh", t.getBearerToken());
     }

@@ -399,8 +399,8 @@ public class VehicleHandler extends VehicleChannelHandler {
             LocalDateTime ldt = LocalDateTime.now();
             MultiMap<String> dataMap = new MultiMap<String>();
             dataMap.add("deviceTime", ldt.format(Converter.DATE_INPUT_PATTERN));
-            dataMap.add("dlat", Float.toString(p.lat));
-            dataMap.add("dlon", Float.toString(p.lon));
+            dataMap.add("lat", Float.toString(p.lat));
+            dataMap.add("lon", Float.toString(p.lon));
             if (configuration.isPresent()) {
                 proxy.get().requestRangeMap(configuration.get(), Optional.of(dataMap), rangeMapCallback);
             }
