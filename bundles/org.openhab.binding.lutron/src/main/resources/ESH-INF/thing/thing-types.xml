@@ -93,8 +93,7 @@
 			<parameter name="onToLast" type="boolean">
 				<label>Turn On To Last Level</label>
 				<description>
-					If set to true, dimmer will go to the last non-zero level set when an ON command is received.
-					If the
+					If set to true, dimmer will go to the last non-zero level set when an ON command is received. If the
 					last level cannot be determined, the value of onLevel will be used instead.
 				</description>
 				<default>false</default>
@@ -1004,10 +1003,8 @@
 				<default>false</default>
 				<label>Update Processor Time</label>
 				<description>
-					The older HomeWorks processors seem to have difficulty keeping track of the time,
-					especially where
-					daylight savings is concerned. If this option is selected, the HomeWorks
-					bridge will automatically update the
+					The older HomeWorks processors seem to have difficulty keeping track of the time, especially where
+					daylight savings is concerned. If this option is selected, the HomeWorks bridge will automatically update the
 					processor on initialization and once per day thereafter.
 				</description>
 			</parameter>
