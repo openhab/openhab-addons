@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
@@ -94,7 +93,6 @@ public class ShutterControlHandler extends BoschSHCHandler {
     @Override
     public void processUpdate(String id, JsonElement state) {
         try {
-            Gson gson = new Gson();
             updateState(gson.fromJson(state, ShutterControlState.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in Shutter Control: {}", state);

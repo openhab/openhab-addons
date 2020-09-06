@@ -58,6 +58,11 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     private Consumer<TState> stateUpdateListener;
 
     /**
+     * gson instance to convert a class to json string and back.
+     */
+    private Gson gson = new Gson();
+
+    /**
      * Constructor
      * 
      * @param serviceName Unique name of the service.
@@ -123,7 +128,6 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
     /**
      * Sets the state of the device with the specified id.
      * 
-     * @param deviceId Id of device to set state for.
      * @param state State to set.
      */
     public void setState(TState state) {
@@ -136,7 +140,6 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * @param stateData Current state of service. Serialized as JSON.
      */
     public void onStateUpdate(JsonElement stateData) {
-        Gson gson = new Gson();
         TState state = gson.fromJson(stateData, this.stateClass);
         this.onStateUpdate(state);
     }

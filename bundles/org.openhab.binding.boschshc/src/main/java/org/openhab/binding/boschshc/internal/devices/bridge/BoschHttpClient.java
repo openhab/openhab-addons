@@ -69,10 +69,11 @@ public class BoschHttpClient extends HttpClient {
         while (!accessPossible) {
             // sleep some seconds after every try, except the first one
             if (counter > 0) {
-                logger.info("Last Pairing failed, starting retry number {}/{} in few seconds", counter, MAX_PAIR_TRIES);
+                logger.trace("Last Pairing failed, starting retry number {}/{} in few seconds", counter,
+                        MAX_PAIR_TRIES);
                 Thread.sleep(15000);
             } else {
-                logger.info("Pairing needed, because access to Bosch SmartHomeController not possible.");
+                logger.debug("Pairing needed, because access to Bosch SmartHomeController not possible.");
             }
             // Timeout after max tries with an exception that pairing failed
             if (counter >= MAX_PAIR_TRIES) {
@@ -95,14 +96,14 @@ public class BoschHttpClient extends HttpClient {
             logger.debug("Access check response complete: {} - return code: {}", content, contentResponse.getStatus());
             return true;
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.debug("Access check response failed!", e);
+            logger.debug("Access check response failed because of {}!", e.getMessage());
             return false;
         }
     }
 
     public boolean doPairing() {
-        logger.info("Starting pairing openHAB Client with Bosch SmartHomeController!");
-        logger.info("Please press the Bosch SHC button until LED starts blinking");
+        logger.debug("Starting pairing openHAB Client with Bosch SmartHomeController!");
+        logger.debug("Please press the Bosch SHC button until LED starts blinking");
 
         ContentResponse contentResponse;
         try {
@@ -136,14 +137,12 @@ public class BoschHttpClient extends HttpClient {
             }
 
         } catch (InterruptedException | TimeoutException | CertificateEncodingException | KeyStoreException e) {
-            logger.error("Pairing failed with an exception");
-            logger.debug("Pairing failed", e);
+            logger.warn("Pairing failed with exception {}", e.getMessage());
             return false;
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
-            // => pairing failed, because hardware button was not pressed.
-            logger.warn("Pairing failed, was the Bosch SHC button pressed?");
-            logger.debug("Pairing failed", e);
+            // => usually the pairing failed, because hardware button was not pressed.
+            logger.warn("Pairing failed with exception {}, was the Bosch SHC button pressed?", e.getMessage());
             return false;
         }
     }

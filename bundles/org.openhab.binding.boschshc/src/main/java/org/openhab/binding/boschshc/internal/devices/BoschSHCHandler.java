@@ -32,6 +32,7 @@ import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 /**
@@ -72,6 +73,15 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Reusable gson instance to convert a class to json string and back in derived classes.
+     */
+    protected Gson gson = new Gson();
+
+    /**
+     * Bosch SHC configuration loaded from openHAB configuration.
+     */
     private @Nullable BoschSHCConfiguration config;
 
     /**
