@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
@@ -50,9 +51,7 @@ public final class ClimateControlHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-
+    protected void initializeServices() throws BoschSHCException {
         super.createService(TemperatureLevelService.class, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
         this.roomClimateControlService = super.createService(RoomClimateControlService.class, this::updateChannels,
                 Arrays.asList(CHANNEL_SETPOINT_TEMPERATURE));

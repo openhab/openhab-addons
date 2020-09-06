@@ -23,10 +23,12 @@ import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
 import org.slf4j.Logger;
@@ -99,8 +101,9 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @return Unique id of the Bosch device.
      */
     public @Nullable String getBoschID() {
-        if (this.config != null) {
-            return this.config.id;
+        BoschSHCConfiguration config = this.config;
+        if (config != null) {
+            return config.id;
         } else {
             return null;
         }
@@ -114,8 +117,14 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     public void initialize() {
         this.config = getConfigAs(BoschSHCConfiguration.class);
 
-        // Mark immediately as online - if the bridge is online, the thing is too.
-        updateStatus(ThingStatus.ONLINE);
+        try {
+            this.initializeServices();
+
+            // Mark immediately as online - if the bridge is online, the thing is too.
+            this.updateStatus(ThingStatus.ONLINE);
+        } catch (BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
     }
 
     /**
@@ -154,19 +163,25 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
+     * Should be used by handlers to create their required services.
+     */
+    protected void initializeServices() throws BoschSHCException {
+    }
+
+    /**
      * Returns the bridge handler for this thing handler.
      * 
      * @return Bridge handler for this thing handler. Null if no or an invalid bridge was set in the configuration.
-     * @throws Error If bridge for handler is not set or an invalid bridge is set.
+     * @throws BoschSHCException If bridge for handler is not set or an invalid bridge is set.
      */
-    protected BoschSHCBridgeHandler getBridgeHandler() {
+    protected BoschSHCBridgeHandler getBridgeHandler() throws BoschSHCException {
         Bridge bridge = this.getBridge();
         if (bridge == null) {
-            throw new Error(String.format("No valid bridge set for {}", this.getThing()));
+            throw new BoschSHCException(String.format("No valid bridge set for {}", this.getThing()));
         }
         BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
-            throw new Error(String.format("Bridge of {} has no valid bridge handler", this.getThing()));
+            throw new BoschSHCException(String.format("Bridge of {} has no valid bridge handler", this.getThing()));
         }
         return bridgeHandler;
     }
@@ -182,9 +197,11 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param affectedChannels Channels which are affected by the state of this
      *            service.
      * @return Instance of registered service.
+     * @throws BoschSHCException
      */
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> TService createService(
-            Class<TService> serviceClass, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels) {
+            Class<TService> serviceClass, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
+            throws BoschSHCException {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
 
         String deviceId = this.getBoschID();
