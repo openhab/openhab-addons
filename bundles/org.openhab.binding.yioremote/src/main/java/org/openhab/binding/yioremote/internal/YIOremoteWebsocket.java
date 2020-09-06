@@ -15,6 +15,7 @@ package org.openhab.binding.yioremote.internal;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -36,13 +37,14 @@ import com.google.gson.JsonParser;
  * @author Michael Loercher - Initial contribution
  */
 
+@NonNullByDefault
 @WebSocket
 public class YIOremoteWebsocket {
 
-    private Session session;
+    private @Nullable Session session;
     private String string_receivedmessage = "";
     private final Logger logger = LoggerFactory.getLogger(YIOremoteWebsocket.class);
-    private @Nullable JsonObject JsonObject_recievedJsonObject;
+    private JsonObject JsonObject_recievedJsonObject = new JsonObject();
     private boolean boolean_authentication_required = false;
     private boolean boolean_heartbeat = false;
     private boolean boolean_authentication_ok = false;
@@ -78,7 +80,7 @@ public class YIOremoteWebsocket {
     public void onError(Throwable cause) {
         try {
             boolean_heartbeat = false;
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             logger.debug("WebSocketError");
         }
     }

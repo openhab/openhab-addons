@@ -36,10 +36,6 @@ import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOT
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 /**
  * The {@link YIOremoteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -56,7 +52,6 @@ public class YIOremoteHandler extends BaseThingHandler {
     private YIOremoteWebsocket YIOremote_DockwebSocketClientSocket = new YIOremoteWebsocket();
     private ClientUpgradeRequest YIOremote_DockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI URI_yiodockwebsocketaddress;
-    private @Nullable JsonObject JsonObject_recievedJsonObject;
     private YIOREMOTEHANDLESTATUS YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.UNINITIALIZED;
     private @Nullable Future<?> pollingJob;
     private String send_ircode = "";
@@ -228,21 +223,6 @@ public class YIOremoteHandler extends BaseThingHandler {
                 logger.warn("YIOremoteHandler not authenticated");
             }
         }
-    }
-
-    private JsonObject StringtoJsonObject(String jsonString) {
-        logger.debug("StringtoJsonElement function called");
-        JsonParser parser = new JsonParser();
-        JsonElement jsonElement = parser.parse(jsonString);
-
-        JsonObject result = null;
-        if (jsonElement instanceof JsonObject) {
-            result = jsonElement.getAsJsonObject();
-        } else {
-            logger.debug("{} is not valid JSON stirng", jsonString);
-            throw new IllegalArgumentException(jsonString + " is not valid JSON stirng");
-        }
-        return result;
     }
 
     protected void updateChannelString(String group, String channelId, String value) {

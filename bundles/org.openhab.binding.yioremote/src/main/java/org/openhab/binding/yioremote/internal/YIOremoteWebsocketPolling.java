@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.yioremote.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link YIOremoteHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Michael Loercher - Initial contribution
  */
-
+@NonNullByDefault
 public class YIOremoteWebsocketPolling implements Runnable {
     @Override
     public void run() {

@@ -12,16 +12,20 @@
  */
 package org.openhab.binding.yioremote.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link YIOremoteConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Michael Loercher - Initial contribution
  */
+@NonNullByDefault
 public class YIOremoteConfiguration {
 
     /**
      * Sample configuration parameter. Replace with your own.
      */
-    public String yiodockhostip;
-    public String yiodockaccesstoken;
+    public @Nullable String yiodockhostip;
+    public String yiodockaccesstoken = "0";
 }
