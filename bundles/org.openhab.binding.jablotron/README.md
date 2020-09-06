@@ -37,9 +37,9 @@ Binding itself doesn't require specific configuration.
 | thing                | channel name     | description                                               |
 |----------------------|------------------|-----------------------------------------------------------|
 | bridge               | N/A              | the bridge does not expose any channels                   |
-| JA-80                | statusA          | the status of the A section                                   |
-| JA-80                | statusB          | the status of the AB/B section                                |
-| JA-80                | statusABC        | the status of the ABC section                                 |
+| JA-80                | statusA          | the status of the A section                               |
+| JA-80                | statusB          | the status of the AB/B section                            |
+| JA-80                | statusABC        | the status of the ABC section                             |
 | JA-80                | statusPGX        | the status of PGX                                         |
 | JA-80                | statusPGY        | the status of PGY                                         |
 | JA-80                | command          | the channel for sending keyboard codes to the OASIS alarm |

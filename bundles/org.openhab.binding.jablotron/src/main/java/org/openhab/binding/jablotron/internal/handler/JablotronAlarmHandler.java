@@ -50,7 +50,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JablotronAlarmHandler.class);
 
-    protected Gson gson = new Gson();
+    protected final Gson gson = new Gson();
 
     protected JablotronDeviceConfig thingConfig = new JablotronDeviceConfig();
 
@@ -60,8 +60,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     private boolean inService = false;
 
-    @Nullable
-    ScheduledFuture<?> future = null;
+    protected @Nullable ScheduledFuture<?> future = null;
 
     public JablotronAlarmHandler(Thing thing, String alarmName) {
         super(thing);
@@ -85,9 +84,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         thingConfig = getConfigAs(JablotronDeviceConfig.class);
-        scheduler.execute(() -> {
-            doInit();
-        });
+        scheduler.execute(this::doInit);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -115,9 +112,8 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void doInit() {
-        future = scheduler.scheduleWithFixedDelay(() -> {
-            updateAlarmStatus();
-        }, 1, thingConfig.getRefresh(), TimeUnit.SECONDS);
+        future = scheduler.scheduleWithFixedDelay(this::updateAlarmStatus, 1, thingConfig.getRefresh(),
+                TimeUnit.SECONDS);
     }
 
     protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest() {

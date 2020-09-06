@@ -30,11 +30,12 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.jablotron.internal.config.JablotronBridgeConfig;
+import org.openhab.binding.jablotron.internal.discovery.JablotronDiscoveryService;
 import org.openhab.binding.jablotron.internal.model.*;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetPGResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetSectionsResponse;
@@ -51,7 +52,7 @@ import com.google.gson.JsonSyntaxException;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
+public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JablotronBridgeHandler.class);
 
@@ -73,8 +74,8 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
     }
 
     @Override
-    public Collection<ConfigStatusMessage> getConfigStatus() {
-        return Collections.emptyList();
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(JablotronDiscoveryService.class);
     }
 
     @Override

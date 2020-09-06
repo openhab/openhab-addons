@@ -102,15 +102,11 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
     }
 
     public synchronized void sendCommand(String code) {
-        try {
-            JablotronControlResponse response = sendUserCode(code);
-            scheduler.schedule(this::updateAlarmStatus, 1, TimeUnit.SECONDS);
+        JablotronControlResponse response = sendUserCode(code);
+        scheduler.schedule(this::updateAlarmStatus, 1, TimeUnit.SECONDS);
 
-            if (response == null) {
-                logger.debug("null response/status received during sending a code");
-            }
-        } catch (Exception e) {
-            logger.debug("internalReceiveCommand exception", e);
+        if (response == null) {
+            logger.debug("null response/status received during sending a code");
         }
     }
 
