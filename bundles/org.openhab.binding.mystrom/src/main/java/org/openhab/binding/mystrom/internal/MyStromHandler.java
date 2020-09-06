@@ -132,12 +132,11 @@ public class MyStromHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        super.dispose();
-
         if (pollingJob != null) {
             pollingJob.cancel(true);
             pollingJob = null;
         }
+        super.dispose();
     }
 
     /**
