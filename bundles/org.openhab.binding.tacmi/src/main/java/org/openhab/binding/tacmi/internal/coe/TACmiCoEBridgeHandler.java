@@ -214,7 +214,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         // clean up the timeout check
         ScheduledFuture<?> timeoutCheckFuture = this.timeoutCheckFuture;
-        if (timeoutCheckFuture != null && !timeoutCheckFuture.isCancelled()) {
+        if (timeoutCheckFuture != null) {
             timeoutCheckFuture.cancel(true);
             this.timeoutCheckFuture = null;
         }

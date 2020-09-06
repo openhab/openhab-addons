@@ -106,7 +106,7 @@ public final class AnalogMessage extends Message {
      */
     @Override
     public boolean hasPortnumber(int portNumber) {
-        return (portNumber - 1) / 4 == podNumber - 1 ? true : false;
+        return (portNumber - 1) / 4 == podNumber - 1;
     }
 
     @Override
