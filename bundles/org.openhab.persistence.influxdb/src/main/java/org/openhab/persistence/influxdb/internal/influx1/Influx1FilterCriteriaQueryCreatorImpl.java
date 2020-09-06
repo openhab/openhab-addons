@@ -12,11 +12,8 @@
  */
 package org.openhab.persistence.influxdb.internal.influx1;
 
-import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.asc;
-import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.desc;
-import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.select;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V1;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_VALUE_NAME_V1;
+import static org.influxdb.querybuilder.BuiltQuery.QueryBuilder.*;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,22 +39,23 @@ public class Influx1FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     public String createQuery(FilterCriteria criteria, String retentionPolicy) {
         final String tableName;
         boolean hasCriteriaName = criteria.getItemName() != null;
-        if (hasCriteriaName)
+        if (hasCriteriaName) {
             tableName = criteria.getItemName();
-        else
+        } else {
             tableName = "/.*/";
+        }
 
         Select select = select(COLUMN_VALUE_NAME_V1).fromRaw(null,
                 fullQualifiedTableName(retentionPolicy, tableName, hasCriteriaName));
 
         Where where = select.where();
-        if (criteria.getBeginDateZoned() != null) {
-            where = where.and(BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1,
-                    criteria.getBeginDateZoned().toInstant().toString()));
+        if (criteria.getBeginDate() != null) {
+            where = where.and(
+                    BuiltQuery.QueryBuilder.gte(COLUMN_TIME_NAME_V1, criteria.getBeginDate().toInstant().toString()));
         }
-        if (criteria.getEndDateZoned() != null) {
-            where = where.and(BuiltQuery.QueryBuilder.lte(COLUMN_TIME_NAME_V1,
-                    criteria.getEndDateZoned().toInstant().toString()));
+        if (criteria.getEndDate() != null) {
+            where = where.and(
+                    BuiltQuery.QueryBuilder.lte(COLUMN_TIME_NAME_V1, criteria.getEndDate().toInstant().toString()));
         }
 
         if (criteria.getState() != null && criteria.getOperator() != null) {

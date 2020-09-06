@@ -12,9 +12,8 @@
  */
 package org.openhab.persistence.influxdb.internal.influx2;
 
-import static com.influxdb.query.dsl.functions.restriction.Restrictions.*;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.COLUMN_TIME_NAME_V2;
-import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.FIELD_VALUE_NAME;
+import static com.influxdb.query.dsl.functions.restriction.Restrictions.measurement;
+import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 import static org.openhab.persistence.influxdb.internal.InfluxDBStateConvertUtils.stateToObject;
 
 import java.time.temporal.ChronoUnit;
@@ -39,12 +38,14 @@ public class Influx2FilterCriteriaQueryCreatorImpl implements FilterCriteriaQuer
     public String createQuery(FilterCriteria criteria, String retentionPolicy) {
         Flux flux = Flux.from(retentionPolicy);
 
-        if (criteria.getBeginDateZoned() != null || criteria.getEndDateZoned() != null) {
+        if (criteria.getBeginDate() != null || criteria.getEndDate() != null) {
             RangeFlux range = flux.range();
-            if (criteria.getBeginDateZoned() != null)
-                range = range.withStart(criteria.getBeginDateZoned().toInstant());
-            if (criteria.getEndDateZoned() != null)
-                range = range.withStop(criteria.getEndDateZoned().toInstant());
+            if (criteria.getBeginDate() != null) {
+                range = range.withStart(criteria.getBeginDate().toInstant());
+            }
+            if (criteria.getEndDate() != null) {
+                range = range.withStop(criteria.getEndDate().toInstant());
+            }
             flux = range;
         } else {
             flux = flux.range(-100L, ChronoUnit.YEARS); // Flux needs a mandatory range

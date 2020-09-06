@@ -187,13 +187,13 @@ public class JdbcDerbyDAO extends JdbcBaseDAO {
                 StringUtilsExt.filterToString(filter), numberDecimalcount, table, simpleName);
 
         String filterString = "";
-        if (filter.getBeginDateZoned() != null) {
+        if (filter.getBeginDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDateZoned()) + "'";
+            filterString += " TIME>'" + JDBC_DATE_FORMAT.format(filter.getBeginDate()) + "'";
         }
-        if (filter.getEndDateZoned() != null) {
+        if (filter.getEndDate() != null) {
             filterString += filterString.isEmpty() ? " WHERE" : " AND";
-            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDateZoned()) + "'";
+            filterString += " TIME<'" + JDBC_DATE_FORMAT.format(filter.getEndDate()) + "'";
         }
         filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
         if (filter.getPageSize() != 0x7fffffff) {
