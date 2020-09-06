@@ -40,6 +40,7 @@ import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoEjpCbetmLongE
 import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoHcCbetmLongElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoTempoCbetmLongElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoSerialControllerHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -62,20 +63,16 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
             THING_TEMPO_CBETM_ELECTRICITY_METER_TYPE_UID, THING_EJP_CBETM_ELECTRICITY_METER_TYPE_UID)
             .collect(Collectors.toSet());
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public TeleinfoThingHandlerFactory(@Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 
     @Override
