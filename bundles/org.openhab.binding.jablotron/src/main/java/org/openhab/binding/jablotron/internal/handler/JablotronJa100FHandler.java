@@ -78,7 +78,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             if (response != null) {
                 updateSectionState(response.getData().getStates());
             } else {
-                logger.debug("null response/status received");
+                logger.debug("null response/status received during the control of component: {}", componentId);
                 updateAlarmStatus();
             }
         }

@@ -56,12 +56,11 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JablotronBridgeHandler.class);
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     final HttpClient httpClient;
 
-    @Nullable
-    ScheduledFuture<?> future = null;
+    @Nullable ScheduledFuture<?> future = null;
 
     /**
      * Our configuration
@@ -76,14 +75,6 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public void childHandlerInitialized(ThingHandler thingHandler, Thing thing) {
-    }
-
-    @Override
-    public void childHandlerDisposed(ThingHandler thingHandler, Thing thing) {
     }
 
     @Override

@@ -136,7 +136,7 @@
 	<!-- ja100f_alarm_state -->
 	<channel-type id="ja100f_alarm_state">
 		<item-type>String</item-type>
-		<label>Alarm state</label>
+		<label>Alarm State</label>
 		<description>A channel used for controlling the alarm state</description>
 		<state>
 			<options>

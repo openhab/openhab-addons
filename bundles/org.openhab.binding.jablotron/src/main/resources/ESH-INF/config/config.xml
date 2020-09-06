@@ -19,29 +19,26 @@
 			<default>60</default>
 		</parameter>
 
-		<parameter name="code" type="text">
+		<parameter name="code" type="text" required="false">
 			<context>password</context>
 			<label>Code</label>
 			<description>Master code for the JA100 alarm</description>
-			<required>false</required>
 		</parameter>
 	</config-description>
 
 	<config-description uri="bridge-type:jablotron:bridge">
-		<parameter name="login" type="text">
+		<parameter name="login" type="text" required="true">
 			<label>Login</label>
 			<description>Login for Jablonet portal</description>
-			<required>true</required>
 		</parameter>
 
-		<parameter name="password" type="text">
+		<parameter name="password" type="text" required="true">
 			<context>password</context>
 			<label>Password</label>
 			<description>Password for Jablonet portal</description>
-			<required>true</required>
 		</parameter>
 
-		<parameter name="lang" type="text">
+		<parameter name="lang" type="text" required="true">
 			<default>en</default>
 			<label>Language</label>
 			<description>Language for Jablonet portal</description>
@@ -68,11 +65,10 @@
 				<option value="sv">Svenska</option>
 				<option value="tr">Türkçe</option>
 			</options>
-			<required>true</required>
 		</parameter>
 
 		<parameter name="refresh" type="integer" required="false">
-			<label>Refresh refresh</label>
+			<label>Refresh</label>
 			<description>Specifies the refresh time for all alarm warnings (alarm, service mode, ...)</description>
 			<default>30</default>
 		</parameter>

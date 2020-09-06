@@ -97,7 +97,7 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
 
         updateAlarmStatus();
         if (response == null) {
-            logger.debug("null response/status received");
+            logger.debug("null response/status received during the control of section: {}", section);
         }
     }
 
@@ -107,7 +107,7 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
             scheduler.schedule(this::updateAlarmStatus, 1, TimeUnit.SECONDS);
 
             if (response == null) {
-                logger.debug("null response/status received");
+                logger.debug("null response/status received during sending a code");
             }
         } catch (Exception e) {
             logger.debug("internalReceiveCommand exception", e);

@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Jablotron Oasis Alarm</label>
+		<label>Oasis Alarm</label>
 		<description>A Jablotron Oasis alarm device.</description>
 
 		<channels>

@@ -8,7 +8,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
-		<label>Jablotron JA100 Alarm</label>
+		<label>JA100 Alarm</label>
 		<description>A Jablotron JA100 alarm device.</description>
 
 		<channels>

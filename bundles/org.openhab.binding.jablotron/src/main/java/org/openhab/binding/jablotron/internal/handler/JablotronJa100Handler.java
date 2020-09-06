@@ -186,7 +186,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
 
         updateAlarmStatus();
         if (response == null) {
-            logger.debug("null response/status received");
+            logger.debug("null response/status received during the control of PGM section: {}", section);
         }
     }
 
@@ -197,7 +197,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
 
         updateAlarmStatus();
         if (response == null) {
-            logger.debug("null response/status received");
+            logger.debug("null response/status received during the control of STATE section: {}", section);
         }
     }
 }
