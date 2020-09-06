@@ -33,7 +33,6 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.ConfigStatusBridgeHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.jablotron.internal.config.JablotronBridgeConfig;
 import org.openhab.binding.jablotron.internal.model.*;
@@ -60,7 +59,8 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     final HttpClient httpClient;
 
-    @Nullable ScheduledFuture<?> future = null;
+    @Nullable
+    ScheduledFuture<?> future = null;
 
     /**
      * Our configuration
@@ -100,12 +100,14 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateAlarmThing(JablotronDiscoveredService service) {
         for (Thing th : getThing().getThings()) {
-            if (String.valueOf(service.getId()).equals(th.getUID().getId())) {
-                JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
-                if (handler == null) {
-                    logger.debug("Thing handler is null");
-                    continue;
-                }
+            JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+            if (handler == null) {
+                logger.debug("Thing handler is null");
+                continue;
+            }
+
+            if (String.valueOf(service.getId()).equals(handler.thingConfig.getServiceId())) {
                 if ("ENABLED".equals(service.getStatus())) {
                     if (!"".equals(service.getWarning())) {
                         logger.debug("Alarm with service id: {} warning: {}", service.getId(), service.getWarning());
@@ -227,9 +229,9 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
         try {
             url = JABLOTRON_API_URL + "controlSegment.json";
-            String urlParameters = "service=" + th.getThingTypeUID().getId() + "&serviceId=" + th.getUID().getId()
-                    + "&segmentId=" + section + "&segmentKey=" + key + "&expected_status=" + status
-                    + "&control_time=0&control_code=" + code + "&system=" + SYSTEM;
+            String urlParameters = "service=" + th.getThingTypeUID().getId() + "&serviceId="
+                    + handler.thingConfig.getServiceId() + "&segmentId=" + section + "&segmentKey=" + key
+                    + "&expected_status=" + status + "&control_time=0&control_code=" + code + "&system=" + SYSTEM;
             logger.debug("Sending POST to url address: {} to control section: {}", url, section);
             logger.trace("Url parameters: {}", urlParameters);
 
@@ -263,7 +265,14 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     protected synchronized @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/eventHistoryGet.json";
-        String urlParameters = "{\"limit\":1, \"service-id\":" + th.getUID().getId() + "}";
+        JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
+
+        String urlParameters = "{\"limit\":1, \"service-id\":" + handler.thingConfig.getServiceId() + "}";
 
         try {
             ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
@@ -294,8 +303,15 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
         String url = JABLOTRON_API_URL + "dataUpdate.json";
+        JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
+
         String urlParameters = "data=[{ \"filter_data\":[{\"data_type\":\"section\"},{\"data_type\":\"pgm\"},{\"data_type\":\"thermometer\"},{\"data_type\":\"thermostat\"}],\"service_type\":\""
-                + th.getThingTypeUID().getId() + "\",\"service_id\":" + th.getUID().getId()
+                + th.getThingTypeUID().getId() + "\",\"service_id\":" + handler.thingConfig.getServiceId()
                 + ",\"data_group\":\"serviceData\"}]&system=" + SYSTEM;
 
         logger.trace("Url parameters: {}", urlParameters);
@@ -325,8 +341,15 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     protected synchronized @Nullable JablotronGetPGResponse sendGetProgrammableGates(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/programmableGatesGet.json";
-        String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":" + th.getUID().getId()
-                + ",\"service-states\":true}";
+        JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
+
+        String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":"
+                + handler.thingConfig.getServiceId() + ",\"service-states\":true}";
 
         try {
             ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
@@ -354,8 +377,15 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
 
     protected synchronized @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/sectionsGet.json";
-        String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":" + th.getUID().getId()
-                + ",\"service-states\":true}";
+        JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
+
+        if (handler == null) {
+            logger.debug("Thing handler is null");
+            return null;
+        }
+
+        String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":"
+                + handler.thingConfig.getServiceId() + ",\"service-states\":true}";
 
         try {
             ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
@@ -398,7 +428,8 @@ public class JablotronBridgeHandler extends ConfigStatusBridgeHandler {
         String url = JABLOTRON_API_URL + handler.getAlarmName() + "/controlComponent.json";
         String urlParameters = "{\"authorization\":{\"authorization-code\":\"" + code
                 + "\"},\"control-components\":[{\"actions\":{\"action\":\"" + action + "\",\"value\":\"" + value
-                + "\"},\"component-id\":\"" + componentId + "\"}],\"service-id\":" + th.getUID().getId() + "}";
+                + "\"},\"component-id\":\"" + componentId + "\"}],\"service-id\":" + handler.thingConfig.getServiceId()
+                + "}";
 
         try {
             ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)

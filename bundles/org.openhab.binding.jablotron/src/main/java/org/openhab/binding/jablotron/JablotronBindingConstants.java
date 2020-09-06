@@ -61,6 +61,7 @@ public class JablotronBindingConstants {
     public static final String VENDOR = "JABLOTRON:Jablotron";
     public static final String APPLICATION_JSON = "application/json";
     public static final String AUTHENTICATION_CHALLENGE = "Authentication challenge without WWW-Authenticate header";
+    public static final String PROPERTY_SERVICE_ID = "serviceId";
 
     // supported thing types for discovery
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(

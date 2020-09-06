@@ -115,25 +115,34 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService implemen
 
     public void oasisDiscovered(String label, String serviceId) {
         ThingUID thingUID = new ThingUID(THING_TYPE_OASIS, bridge.getThing().getUID(), serviceId);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(PROPERTY_SERVICE_ID, serviceId);
 
         logger.debug("Detected an OASIS alarm with service id: {}", serviceId);
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_OASIS).withLabel(label)
+                .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
                 .withBridge(bridge.getThing().getUID()).build());
     }
 
     public void ja100Discovered(String label, String serviceId) {
         ThingUID thingUID = new ThingUID(THING_TYPE_JA100, bridge.getThing().getUID(), serviceId);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(PROPERTY_SERVICE_ID, serviceId);
 
         logger.debug("Detected a JA100 alarm with service id: {}", serviceId);
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_JA100).withLabel(label)
+                .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
                 .withBridge(bridge.getThing().getUID()).build());
     }
 
     public void ja100fDiscovered(String label, String serviceId) {
         ThingUID thingUID = new ThingUID(THING_TYPE_JA100F, bridge.getThing().getUID(), serviceId);
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(PROPERTY_SERVICE_ID, serviceId);
 
         logger.debug("Detected a JA100+ alarm with service id: {}", serviceId);
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_JA100F).withLabel(label)
+                .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
                 .withBridge(bridge.getThing().getUID()).build());
     }
 

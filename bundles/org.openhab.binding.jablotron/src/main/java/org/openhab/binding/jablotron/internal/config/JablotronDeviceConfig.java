@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class JablotronDeviceConfig {
     private int refresh = 60;
     private String code = "";
+    private String serviceId = "";
 
     public int getRefresh() {
         return refresh;
@@ -31,5 +32,9 @@ public class JablotronDeviceConfig {
 
     public String getCode() {
         return code;
+    }
+
+    public String getServiceId() {
+        return serviceId;
     }
 }

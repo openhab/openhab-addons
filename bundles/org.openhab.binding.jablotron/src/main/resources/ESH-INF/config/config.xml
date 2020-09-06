@@ -10,6 +10,11 @@
 			<description>Specifies the refresh time of thing channels in seconds</description>
 			<default>60</default>
 		</parameter>
+
+		<parameter name="serviceId" type="text" required="true">
+			<label>Alarm Service ID</label>
+			<description>The service ID of the Oasis alarm</description>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:jablotron:ja100device">
@@ -23,6 +28,11 @@
 			<context>password</context>
 			<label>Code</label>
 			<description>Master code for the JA100 alarm</description>
+		</parameter>
+
+		<parameter name="serviceId" type="text" required="true">
+			<label>Alarm Service ID</label>
+			<description>The service ID of the JA100 alarm</description>
 		</parameter>
 	</config-description>
 

@@ -29,6 +29,7 @@ Binding itself doesn't require specific configuration.
 | bridge               | refresh               | the refresh time for all alarm warnings (ALARM, TAMPER triggers and SERVICE state) | optional, default=30s |
 | bridge               | lang                  | the language of the alarm texts                                                    | optional, default=en  |
 | JA-80/JA-100/JA-100F | refresh               | the channels refresh period in seconds                                             | optional, default=60s |
+| JA-80/JA-100/JA-100F | serviceId             | the service ID which identifies the alarm                                          | mandatory             |
 | JA-100/JA-100F       | code                  | the master code for controlling sections                                           | optional              |
 
 ## Channels
