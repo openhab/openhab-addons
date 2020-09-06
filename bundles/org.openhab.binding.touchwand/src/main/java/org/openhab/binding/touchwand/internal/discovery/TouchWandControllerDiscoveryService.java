@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Roie Geron - Initial contribution
  */
 @Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.touchwand")
-@NonNullByDefault({})
+@NonNullByDefault
 public class TouchWandControllerDiscoveryService extends AbstractDiscoveryService {
 
     private static final int SEARCH_TIME_SEC = 2;
@@ -50,21 +50,18 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     private final Logger logger = LoggerFactory.getLogger(TouchWandControllerDiscoveryService.class);
 
     private @Nullable Thread socketReceiveThread = null;
-    private @Nullable DatagramSocket listenSocket;
+    private DatagramSocket listenSocket;
 
-    public TouchWandControllerDiscoveryService() {
+    public TouchWandControllerDiscoveryService() throws SocketException {
         super(TouchWandBridgeHandler.SUPPORTED_THING_TYPES, SEARCH_TIME_SEC, true);
         removeOlderResults(getTimestampOfLastScan());
-        try {
-            listenSocket = new DatagramSocket(TOUCHWAND_BCAST_PORT);
-        } catch (SocketException e) {
-            logger.warn("SocketException {}", e.getMessage());
-        }
+        listenSocket = new DatagramSocket(TOUCHWAND_BCAST_PORT);
     }
 
     @Override
     protected void startScan() {
-        runReceiveThread(listenSocket);
+        DatagramSocket localListenSocket = listenSocket;
+        runReceiveThread(localListenSocket);
     }
 
     @Override
@@ -78,9 +75,8 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
             socketReceiveThread.interrupt();
             socketReceiveThread = null;
         }
-        if (listenSocket != null) {
-            listenSocket.close();
-        }
+
+        listenSocket.close();
         super.deactivate();
     }
 
@@ -103,9 +99,9 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
     }
 
     protected void runReceiveThread(DatagramSocket socket) {
-        socketReceiveThread = new ReceiverThread(socket);
-        socketReceiveThread.setName(TouchWandBindingConstants.BINDING_ID);
-        socketReceiveThread.start();
+        Thread localSocketReceivedThread = socketReceiveThread = new ReceiverThread(socket);
+        localSocketReceivedThread.setName(TouchWandBindingConstants.DISCOVERY_THREAD_ID);
+        localSocketReceivedThread.start();
     }
 
     private class ReceiverThread extends Thread {
