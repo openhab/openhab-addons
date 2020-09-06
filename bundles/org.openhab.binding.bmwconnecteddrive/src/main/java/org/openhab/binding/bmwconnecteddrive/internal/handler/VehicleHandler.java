@@ -42,8 +42,8 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
+import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
@@ -67,18 +67,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ConnectedCarHandler} is responsible for handling commands, which are
+ * The {@link VehicleHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ConnectedCarHandler extends ConnectedCarChannelHandler {
-    private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
+public class VehicleHandler extends VehicleChannelHandler {
+    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
-    private Optional<ConnectedCarConfiguration> configuration = Optional.empty();
+    private Optional<VehicleConfiguration> configuration = Optional.empty();
     private Optional<ConnectedDriveBridgeHandler> bridgeHandler = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
@@ -104,13 +104,13 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     private Optional<String> rangeMapCache = Optional.empty();
     private Optional<String> destinationCache = Optional.empty();
 
-    public ConnectedCarHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
+    public VehicleHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
         super(thing);
         this.imperial = imperial;
-        hasFuel = type.equals(CarType.CONVENTIONAL.toString()) || type.equals(CarType.PLUGIN_HYBRID.toString())
-                || type.equals(CarType.ELECTRIC_REX.toString());
-        isElectric = type.equals(CarType.PLUGIN_HYBRID.toString()) || type.equals(CarType.ELECTRIC_REX.toString())
-                || type.equals(CarType.ELECTRIC.toString());
+        hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
+                || type.equals(VehicleType.ELECTRIC_REX.toString());
+        isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
+                || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
     }
 
@@ -280,7 +280,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        configuration = Optional.of(getConfigAs(ConnectedCarConfiguration.class));
+        configuration = Optional.of(getConfigAs(VehicleConfiguration.class));
         if (configuration.isPresent()) {
             scheduler.execute(() -> {
                 Bridge bridge = getBridge();
@@ -303,7 +303,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
                 switchRemoteServicesOff();
                 updateState(vehicleFingerPrint, OnOffType.OFF);
 
-                // get Car Image one time at the beginning
+                // get Vehicle Image one time at the beginning
                 proxy.get().requestImage(configuration.get(), imageCallback);
 
                 // check imperial setting is different to AutoDetect
@@ -416,7 +416,7 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
         }
     }
 
-    public Optional<ConnectedCarConfiguration> getConfiguration() {
+    public Optional<VehicleConfiguration> getConfiguration() {
         return configuration;
     }
 
@@ -628,14 +628,14 @@ public class ConnectedCarHandler extends ConnectedCarChannelHandler {
     }
 
     /**
-     * The VehicleStatus is supported by all Car Types so it's used to reflect the Thing Status
+     * The VehicleStatus is supported by all Vehicle Types so it's used to reflect the Thing Status
      */
     @NonNullByDefault({})
     public class VehicleStatusCallback implements StringResponseCallback {
         private ThingStatus thingStatus = ThingStatus.UNKNOWN;
 
         /**
-         * Vehicle Satus is supported by all cars so callback result is used to report Thing Status.
+         * Vehicle Status is supported by all Vehicles so callback result is used to report Thing Status.
          * If valid content is delivered in onResponse Thing goes online while onError Thing goes offline
          *
          * @param status

@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
@@ -59,10 +59,10 @@ public class StatusWrapper {
 
     public StatusWrapper(String type, boolean imperial, String statusJson) {
         this.imperial = imperial;
-        hasFuel = type.equals(CarType.CONVENTIONAL.toString()) || type.equals(CarType.PLUGIN_HYBRID.toString())
-                || type.equals(CarType.ELECTRIC_REX.toString());
-        isElectric = type.equals(CarType.PLUGIN_HYBRID.toString()) || type.equals(CarType.ELECTRIC_REX.toString())
-                || type.equals(CarType.ELECTRIC.toString());
+        hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
+                || type.equals(VehicleType.ELECTRIC_REX.toString());
+        isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
+                || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
         isHybrid = hasFuel && isElectric;
         VehicleStatusContainer container = GSON.fromJson(statusJson, VehicleStatusContainer.class);
         assertNotNull(container);

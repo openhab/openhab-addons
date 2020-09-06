@@ -29,27 +29,27 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveHandlerFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedCarHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.VehicleHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ConnectedCarDiscovery} decodes the initial query from ConnectedDrive and is creating
+ * The {@link VehicleDiscovery} decodes the initial query from ConnectedDrive and is creating
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
 // @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.bmwconnecteddrive")
-public class ConnectedCarDiscovery extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(ConnectedCarDiscovery.class);
+public class VehicleDiscovery extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(VehicleDiscovery.class);
     private static final int DISCOVERY_TIMEOUT = 10;
 
     private ConnectedDriveBridgeHandler bridgeHandler;
 
-    public ConnectedCarDiscovery(ConnectedDriveBridgeHandler bh) {
+    public VehicleDiscovery(ConnectedDriveBridgeHandler bh) {
         super(SUPPORTED_THING_SET, DISCOVERY_TIMEOUT, false);
         bridgeHandler = bh;
     }
@@ -115,7 +115,7 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
 
                     // Check now if a thing with the same VIN exists
                     final AtomicBoolean foundVehicle = new AtomicBoolean(false);
-                    List<ConnectedCarHandler> l = ConnectedDriveHandlerFactory.getHandlerRegistry();
+                    List<VehicleHandler> l = ConnectedDriveHandlerFactory.getHandlerRegistry();
                     logger.debug("Handler regsitry has {} entries", l.size());
                     l.forEach(handler -> {
                         Thing vehicleThing = handler.getThing();
@@ -125,7 +125,7 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                             logger.debug("Found VIN {} ", thingVIN);
                             if (vehicle.vin.equals(thingVIN)) {
                                 vehicleThing.setProperties(properties);
-                                logger.debug("Car {} updated", thingVIN);
+                                logger.debug("Vehicle {} updated", thingVIN);
                                 foundVehicle.set(true);
                             }
                         }
@@ -140,11 +140,11 @@ public class ConnectedCarDiscovery extends AbstractDiscoveryService {
                         properties.put("imageSize", Integer.toString(500));
                         properties.put("imageViewport", "FRONT");
 
-                        String carLabel = vehicle.brand + " " + vehicle.model;
-                        logger.debug("Thing {} discovered", carLabel);
+                        String vehicleLabel = vehicle.brand + " " + vehicle.model;
+                        logger.debug("Thing {} discovered", vehicleLabel);
                         Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
                         thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                                .withRepresentationProperty("vin").withLabel(carLabel)
+                                .withRepresentationProperty("vin").withLabel(vehicleLabel)
                                 .withProperties(convertedProperties).build());
                     }
                 }

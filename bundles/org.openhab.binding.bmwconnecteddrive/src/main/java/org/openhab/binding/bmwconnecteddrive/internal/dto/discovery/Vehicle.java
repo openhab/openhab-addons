@@ -55,5 +55,4 @@ public class Vehicle {
     public String climateControlRES;// ": "NOT_SUPPORTED",
     public String smartSolution;// ": "NOT_SUPPORTED",
     public String ipa;// ": "NOT_SUPPORTED",
-
 }

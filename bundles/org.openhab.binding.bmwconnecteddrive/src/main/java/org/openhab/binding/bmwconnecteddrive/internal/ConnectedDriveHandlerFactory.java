@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedCarHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
+import org.openhab.binding.bmwconnecteddrive.internal.handler.VehicleHandler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -44,13 +44,13 @@ import org.osgi.service.component.annotations.Reference;
 public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
-    private static final List<ConnectedCarHandler> CARHANDLER_REGISTRY = new ArrayList<ConnectedCarHandler>();
+    private static final List<VehicleHandler> VEHICLE_HANDLER_REGISTRY = new ArrayList<VehicleHandler>();
     private boolean imperial = false;
 
     @Activate
     public ConnectedDriveHandlerFactory(final @Reference HttpClientFactory hcf, final @Reference LocaleProvider lp) {
         httpClientFactory = hcf;
-        imperial = MILE_COUNTRIES.contains(lp.getLocale().getCountry());
+        imperial = IMPERIAL_COUNTRIES.contains(lp.getLocale().getCountry());
     }
 
     @Override
@@ -65,9 +65,9 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
             return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
                     bundleContext);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            ConnectedCarHandler cch = new ConnectedCarHandler(thing, httpClientFactory.getCommonHttpClient(),
+            VehicleHandler cch = new VehicleHandler(thing, httpClientFactory.getCommonHttpClient(),
                     thingTypeUID.getId(), imperial);
-            CARHANDLER_REGISTRY.add(cch);
+            VEHICLE_HANDLER_REGISTRY.add(cch);
             return cch;
         }
         return null;
@@ -79,11 +79,11 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
             // close Handler and remove Discovery Service
             ((ConnectedDriveBridgeHandler) thingHandler).close();
         } else {
-            CARHANDLER_REGISTRY.remove(thingHandler);
+            VEHICLE_HANDLER_REGISTRY.remove(thingHandler);
         }
     }
 
-    public static List<ConnectedCarHandler> getHandlerRegistry() {
-        return CARHANDLER_REGISTRY;
+    public static List<VehicleHandler> getHandlerRegistry() {
+        return VEHICLE_HANDLER_REGISTRY;
     }
 }

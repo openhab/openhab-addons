@@ -38,8 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ErrorResponseTest {
-    private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
-    // ConnectedCarHandler cch = new Co
+    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
@@ -48,7 +47,7 @@ public class ErrorResponseTest {
     @Nullable
     ThingHandlerCallback tc;
     @Nullable
-    ConnectedCarHandler cch;
+    VehicleHandler cch;
     @Nullable
     List<ChannelUID> allChannels;
     @Nullable
@@ -66,32 +65,12 @@ public class ErrorResponseTest {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         HttpClient hc = mock(HttpClient.class);
-        cch = new ConnectedCarHandler(thing, hc, type, imperial);
+        cch = new VehicleHandler(thing, hc, type, imperial);
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
         stateCaptor = ArgumentCaptor.forClass(State.class);
     }
-
-    // private boolean testCar(@Nullable String statusContent, int callbacksExpected) {
-    // assertNotNull(statusContent);
-    //
-    // cch.vehicleStatusCallback.onResponse(Optional.of(statusContent));
-    // verify(tc, times(callbacksExpected)).stateUpdated(channelCaptor.capture(), stateCaptor.capture());
-    // allChannels = channelCaptor.getAllValues();
-    // allStates = stateCaptor.getAllValues();
-    //
-    // assertNotNull(driveTrain);
-    // StatusWrapper checker = new StatusWrapper(driveTrain, imperial, statusContent);
-    // trace();
-    // return checker.checkResults(allChannels, allStates);
-    // }
-    //
-    // private void trace() {
-    // for (int i = 0; i < allChannels.size(); i++) {
-    // logger.info("Channel {} {}", allChannels.get(i), allStates.get(i));
-    // }
-    // }
 
     @Test
     public void testErrorResponseCallbacks() {

@@ -39,10 +39,10 @@ public class LocaleTest {
 
     @Test
     public void languageTest() {
-        assertTrue("United Kingdom", ConnectedDriveConstants.MILE_COUNTRIES.contains(Locale.UK.getCountry()));
-        assertTrue("United States", ConnectedDriveConstants.MILE_COUNTRIES.contains(Locale.US.getCountry()));
-        assertFalse("France", ConnectedDriveConstants.MILE_COUNTRIES.contains(Locale.FRANCE.getCountry()));
-        assertFalse("Germany", ConnectedDriveConstants.MILE_COUNTRIES.contains(Locale.GERMAN.getCountry()));
+        assertTrue("United Kingdom", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.UK.getCountry()));
+        assertTrue("United States", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.US.getCountry()));
+        assertFalse("France", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.FRANCE.getCountry()));
+        assertFalse("Germany", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.GERMAN.getCountry()));
     }
 
     @Test

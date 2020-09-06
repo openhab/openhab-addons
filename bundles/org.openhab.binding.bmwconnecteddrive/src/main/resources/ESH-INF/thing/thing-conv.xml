@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>BMW Conventional Vehicle</label>
-		<description>Conventional Fuel Car</description>
+		<description>Conventional Fuel Vehicle (CONV)</description>
 
 		<channel-groups>
 			<channel-group id="status" typeId="vehicle-status"/>
@@ -25,7 +25,7 @@
 		<config-description>
 			<parameter name="vin" type="text" required="true">
 				<label>Vehicle Identification Number (VIN)</label>
-				<description>BMW Car VIN </description>
+				<description>Unique VIN given by BMW</description>
 			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
 				<label>Refresh Interval in Minutes</label>
@@ -43,11 +43,11 @@
 			</parameter>
 			<parameter name="imageSize" type="integer">
 				<label>Image Picture Size</label>
-				<description>Car Image size for width and length</description>
+				<description>Vehicle Image size for width and length</description>
 			</parameter>
 			<parameter name="imageViewport" type="text">
 				<label>Image Viewport</label>
-				<description>Viewport of Car Image</description>
+				<description>Viewport for Vehicle Image</description>
 				<options>
 					<option value="FRONT">Front View</option>
 					<option value="REAR">Rear View</option>

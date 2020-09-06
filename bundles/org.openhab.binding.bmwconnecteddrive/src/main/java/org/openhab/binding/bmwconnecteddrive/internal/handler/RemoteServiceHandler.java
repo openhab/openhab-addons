@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link RemoteServiceHandler} handles executions of remote services to your car
+ * The {@link RemoteServiceHandler} handles executions of remote services towards your Vehicle
  *
  * @see https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/remote_services.py
  *
@@ -90,16 +90,15 @@ public class RemoteServiceHandler {
     }
 
     private ConnectedDriveProxy proxy;
-    private ConnectedCarHandler handler;
+    private VehicleHandler handler;
     private HttpClient httpClient;
     private Optional<String> serviceExecuting = Optional.empty();
 
     private String serviceExecutionAPI;
     private String serviceExecutionStateAPI;
 
-    public RemoteServiceHandler(ConnectedCarHandler connectedCarHandler, ConnectedDriveProxy connectedDriveProxy,
-            HttpClient hc) {
-        handler = connectedCarHandler;
+    public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy, HttpClient hc) {
+        handler = vehicleHandler;
         proxy = connectedDriveProxy;
         httpClient = hc;
         if (handler.getConfiguration().isPresent()) {
@@ -109,7 +108,7 @@ public class RemoteServiceHandler {
         } else {
             serviceExecutionAPI = "";
             serviceExecutionStateAPI = "";
-            logger.warn("No configuration for CarHandler available");
+            logger.warn("No configuration for VehicleHandler available");
         }
     }
 
