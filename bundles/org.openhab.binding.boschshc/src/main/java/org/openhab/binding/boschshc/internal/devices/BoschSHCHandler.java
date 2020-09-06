@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -191,7 +192,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * 
      * @param <TService> Type of service.
      * @param <TState> Type of service state.
-     * @param serviceClass Class of service to instantiate a new instance.
+     * @param newService Supplier function to create a new instance of the service.
      * @param stateUpdateListener Function to call when a state update was received
      *            from the device.
      * @param affectedChannels Channels which are affected by the state of this
@@ -200,7 +201,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @throws BoschSHCException
      */
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> TService createService(
-            Class<TService> serviceClass, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
+            Supplier<TService> newService, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
             throws BoschSHCException {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
 
@@ -209,12 +210,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             throw new Error(String.format("Could not create service for {}, no device id set", this.getThing()));
         }
 
-        TService service;
-        try {
-            service = serviceClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new Error(String.format("Could not create instance of service {}", serviceClass.getName()));
-        }
+        TService service = newService.get();
         service.initialize(bridgeHandler, deviceId, stateUpdateListener);
         this.registerService(service, affectedChannels);
 
