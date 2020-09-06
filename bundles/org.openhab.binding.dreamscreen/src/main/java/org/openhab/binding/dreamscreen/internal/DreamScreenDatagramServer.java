@@ -64,6 +64,7 @@ class DreamScreenDatagramServer {
 
     private final Logger logger = LoggerFactory.getLogger(DreamScreenDatagramServer.class);
     private final Map<@Nullable String, DreamScreenHandler> dreamScreens = new ConcurrentHashMap<>();
+    private String thingid = "";
 
     private @Nullable DatagramSocket serverSocket;
     private @Nullable InetAddress hostAddress;
@@ -72,7 +73,9 @@ class DreamScreenDatagramServer {
     private @Nullable ScheduledFuture<?> refreshing;
 
     void register(DreamScreenHandler handler, ScheduledExecutorService scheduler) throws IOException {
-        dreamScreens.put(handler.getName(), handler);
+        String id = handler.getName();
+        thingid = id != null ? id : "";
+        dreamScreens.put(thingid, handler);
         this.scheduler = scheduler;
         ensureRefreshing();
     }
@@ -98,15 +101,16 @@ class DreamScreenDatagramServer {
             socket.setReuseAddress(true);
             this.serverSocket = socket;
 
-            final Thread server = new Thread(this::runServer, "dreamscreen-tv");
+            final Thread server = new Thread(this::runServer,
+                    "OH-binding-" + DreamScreenBindingConstants.BINDING_ID + thingid);
             server.setDaemon(true);
             server.start();
 
             final ScheduledExecutorService scheduler = this.scheduler;
             if (scheduler != null) {
-                this.refreshing = scheduler.scheduleAtFixedRate(this::requestRefresh, 0, 10, TimeUnit.SECONDS);
+                this.refreshing = scheduler.scheduleWithFixedDelay(this::requestRefresh, 0, 10, TimeUnit.SECONDS);
             } else {
-                logger.error("No scheduler found to refresh DreamScreen TV");
+                logger.debug("No scheduler found to refresh DreamScreen TV");
             }
         }
     }
@@ -115,7 +119,7 @@ class DreamScreenDatagramServer {
         try {
             broadcast(0xFF, 0x30, 0x01, 0x0A, new byte[0]);
         } catch (IOException e) {
-            logger.error("Error requesting refresh of state", e);
+            logger.debug("Error requesting refresh of state", e);
         }
     }
 
@@ -152,7 +156,7 @@ class DreamScreenDatagramServer {
                     refreshDreamScreen(buf, off, len, data.getAddress());
                 }
             } catch (IOException ioe) {
-                logger.error("Error receiving DreamScreen data", ioe);
+                logger.debug("Error receiving DreamScreen data", ioe);
             }
         }
     }
@@ -161,7 +165,7 @@ class DreamScreenDatagramServer {
         try {
             this.hostAddress = InetAddress.getByName(value);
         } catch (UnknownHostException e) {
-            logger.error("Cannot set host address to {}", value, e);
+            logger.info("Cannot set host address to {}", value, e);
         }
 
         try {
@@ -170,7 +174,7 @@ class DreamScreenDatagramServer {
                 ensureRefreshing();
             }
         } catch (IOException e) {
-            logger.error("Cannot restart DreamScreen refresh on new host address {}", value, e);
+            logger.debug("Cannot restart DreamScreen refresh on new host address {}", value, e);
         }
     }
 
@@ -221,12 +225,9 @@ class DreamScreenDatagramServer {
 
     void send(int group, int flags, int commandUpper, int commandLower, byte[] payload, @Nullable InetAddress address)
             throws IOException {
-        final DatagramSocket socket = new DatagramSocket();
-        try {
+        try (final DatagramSocket socket = new DatagramSocket()) {
             socket.setBroadcast(false);
             socket.send(buildPacket(group, flags, commandUpper, commandLower, payload, address));
-        } finally {
-            socket.close();
         }
     }
 

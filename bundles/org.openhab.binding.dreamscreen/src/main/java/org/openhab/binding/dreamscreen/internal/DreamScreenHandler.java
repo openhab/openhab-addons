@@ -69,12 +69,12 @@ public class DreamScreenHandler extends BaseThingHandler {
         config = getConfigAs(DreamScreenConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-        try {
-            server.register(this, scheduler);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot initialize " + getName());
-        }
+            try {
+                server.register(this, scheduler);
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Cannot initialize " + getName());
+            }
         });
     }
 
@@ -126,7 +126,7 @@ public class DreamScreenHandler extends BaseThingHandler {
             this.powerOn = command == ON;
             updateState(CHANNEL_POWER, command);
         } catch (IOException e) {
-            logger.error("Error changing power state", e);
+            logger.debug("Error changing power state", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot send power command to " + getName());
         }
@@ -141,7 +141,7 @@ public class DreamScreenHandler extends BaseThingHandler {
             this.powerOnMode = mode;
             updateState(CHANNEL_MODE, state);
         } catch (IOException e) {
-            logger.error("Error changing mode", e);
+            logger.debug("Error changing mode", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot send mode command to " + getName());
         }
@@ -156,7 +156,7 @@ public class DreamScreenHandler extends BaseThingHandler {
             }
             updateState(CHANNEL_SCENE, state);
         } catch (IOException e) {
-            logger.error("Error changing scene", e);
+            logger.debug("Error changing scene", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot send scene command to " + getName());
         }
@@ -167,7 +167,7 @@ public class DreamScreenHandler extends BaseThingHandler {
             send(0x03, 0x20, new byte[] { state.byteValue() });
             updateState(CHANNEL_INPUT, state);
         } catch (IOException e) {
-            logger.error("Error changing input", e);
+            logger.debug("Error changing input", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot send input change command to " + getName());
         }
@@ -185,7 +185,7 @@ public class DreamScreenHandler extends BaseThingHandler {
         this.address = address;
         this.group = data[off + 38];
 
-        logger.info("{}", data.toString());
+        logger.trace("{}", data.toString());
         refreshMode(data[off + 39]);
         refreshAmbientScene((byte) 0, data[off + 68]);
         refreshInputNames(new String(data, off + 81, 16, UTF_8), //
@@ -236,6 +236,5 @@ public class DreamScreenHandler extends BaseThingHandler {
                     BigDecimal.ONE, null, false, options);
             descProvider.setChannelDescription(inputChannelUID, description);
         }
-
     }
 }

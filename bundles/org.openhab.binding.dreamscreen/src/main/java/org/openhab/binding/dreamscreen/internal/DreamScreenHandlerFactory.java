@@ -26,6 +26,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -42,7 +43,14 @@ public class DreamScreenHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_DREAMSCREEN);
 
     private final DreamScreenDatagramServer server = new DreamScreenDatagramServer();
-    private @Nullable DreamScreenDynamicStateDescriptionProvider descriptionProvider;
+    private final DreamScreenDynamicStateDescriptionProvider descriptionProvider;
+
+    @Activate
+    public DreamScreenHandlerFactory(@Reference DreamScreenDynamicStateDescriptionProvider provider,
+            @Reference NetworkAddressService networkAddressService) {
+        this.descriptionProvider = provider;
+        server.setHostAddress(networkAddressService.getPrimaryIpv4HostAddress());
+    }
 
     @Override
     protected void deactivate(ComponentContext componentContext) {
@@ -64,23 +72,5 @@ public class DreamScreenHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(DreamScreenDynamicStateDescriptionProvider provider) {
-        this.descriptionProvider = provider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(DreamScreenDynamicStateDescriptionProvider provider) {
-        this.descriptionProvider = null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        server.setHostAddress(networkAddressService.getPrimaryIpv4HostAddress());
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        // nothing to really unset. This just needed to grab the primary IPv4 host address.
     }
 }

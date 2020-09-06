@@ -10,11 +10,11 @@
 		<description>Controls the DreamScreen TV</description>
 
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input" />
-			<channel id="mode" typeId="mode" />
-			<channel id="scene" typeId="scene" />
-			<channel id="color" typeId="color" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="scene" typeId="scene"/>
+			<channel id="color" typeId="color"/>
 		</channels>
 
 		<config-description>

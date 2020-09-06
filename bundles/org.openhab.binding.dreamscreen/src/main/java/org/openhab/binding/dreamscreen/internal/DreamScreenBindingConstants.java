@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DreamScreenBindingConstants {
 
-    private static final String BINDING_ID = "dreamscreen";
+    public static final String BINDING_ID = "dreamscreen";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_DREAMSCREEN = new ThingTypeUID(BINDING_ID, "dreamScreen");
