@@ -34,6 +34,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -935,24 +936,20 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         String status = null;
 
         int cmdValue = 0;
-        String cmdBool;
-        String cmdString;
+        String cmdBool = null;
+        String cmdString = null;
         if (command == OnOffType.OFF) {
             cmdValue = 0;
             cmdBool = "false";
-            cmdString = "2";
         } else if (command == OnOffType.ON) {
             cmdValue = 1;
             cmdBool = "True";
-            cmdString = "3";
         } else if (command instanceof DecimalType) {
             cmdValue = ((DecimalType) command).intValue();
-            cmdBool = "null";
-            cmdString = "null";
         } else if (command instanceof StringType) {
-            cmdValue = 0;
             cmdString = ((StringType) command).toString();
-            cmdBool = "null";
+        } else if (command instanceof QuantityType) {
+            cmdValue = ((QuantityType) command).intValue();
         } else {
             logger.error("command type {} is not supported", command);
             return;
@@ -965,7 +962,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
                 urlParameters = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>";
 
-                // @formatter:off
                 urlTokenMspPoolID = "<Parameter name=\"Token\" dataType=\"String\">" + config.token + "</Parameter>"
                         + "<Parameter name=\"MspSystemID\" dataType=\"int\">" + config.mspSystemID + "</Parameter>"
                         + "<Parameter name=\"PoolID\" dataType=\"int\">" + poolID + "</Parameter>";
@@ -977,7 +973,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                         + "<Parameter name=\"EndTimeMinutes\" dataType=\"int\">0</Parameter>"
                         + "<Parameter name=\"DaysActive\" dataType=\"int\">0</Parameter>"
                         + "<Parameter name=\"Recurring\" dataType=\"bool\">false</Parameter>";
-                // @formatter:on
 
                 switch (channelUID.getId()) {
                     case HaywardBindingConstants.CHANNEL_FILTER_ENABLE:
@@ -992,7 +987,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                             }
                         }
                         // Append the command to the http command string
-                        // @formatter:off
                         urlParameters = urlParameters + "<Name>SetUIEquipmentCmd</Name><Parameters>" + urlTokenMspPoolID
                                 + "<Parameter name=\"EquipmentID\" dataType=\"int\">" + systemID + "</Parameter>"
                                 + "<Parameter name=\"IsOn\" dataType=\"int\">" + cmdValue + "</Parameter>" + urlSchedule
@@ -1014,49 +1008,45 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                         break;
                     case HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE:
                         // Append the command to the http command string
-                        urlParameters = urlParameters
-                                + "<Name>SetCHLORParams</Name><Parameters>"
-                                + urlTokenMspPoolID
-                                + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID + "</Parameter>"
-                                + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">" + cmdString + "</Parameter>"
+                        urlParameters = urlParameters + "<Name>SetCHLORParams</Name><Parameters>" + urlTokenMspPoolID
+                                + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID
+                                + "</Parameter>" + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">"
+                                + cmdValue + "</Parameter>"
                                 + "<Parameter name=\"OpMode\" dataType=\"byte\" alias=\"Data2\">1</Parameter>"
                                 + "<Parameter name=\"BOWType\" dataType=\"byte\" alias=\"Data3\">1</Parameter>"
                                 + "<Parameter name=\"CellType\" dataType=\"byte\" alias=\"Data4\">4</Parameter>"
-                                + "<Parameter name=\"TimedPercent\" dataType=\"byte\" alias=\"Data5\">" + this.chlorTimedPercent + "</Parameter>"
+                                + "<Parameter name=\"TimedPercent\" dataType=\"byte\" alias=\"Data5\">"
+                                + this.chlorTimedPercent + "</Parameter>"
                                 + "<Parameter name=\"SCTimeout\" dataType=\"byte\" unit=\"hour\" alias=\"Data6\">24</Parameter>"
                                 + "<Parameter name=\"ORPTimout\" dataType=\"byte\" unit=\"hour\" alias=\"Data7\">24</Parameter>"
                                 + "</Parameters></Request>";
-                                this.chlorTimedPercent=Integer.toString(cmdValue);
+                        this.chlorTimedPercent = Integer.toString(cmdValue);
                         break;
                     case HaywardBindingConstants.CHANNEL_CHLORINATOR_TIMEDPERCENT:
                         // Append the command to the http command string
-                        urlParameters = urlParameters
-                                + "<Name>SetCHLORParams</Name><Parameters>"
-                                + urlTokenMspPoolID
-                                + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID + "</Parameter>"
-                                + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">" + this.chlorState + "</Parameter>"
+                        urlParameters = urlParameters + "<Name>SetCHLORParams</Name><Parameters>" + urlTokenMspPoolID
+                                + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID
+                                + "</Parameter>" + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">"
+                                + this.chlorState + "</Parameter>"
                                 + "<Parameter name=\"OpMode\" dataType=\"byte\" alias=\"Data2\">1</Parameter>"
                                 + "<Parameter name=\"BOWType\" dataType=\"byte\" alias=\"Data3\">1</Parameter>"
                                 + "<Parameter name=\"CellType\" dataType=\"byte\" alias=\"Data4\">4</Parameter>"
-                                + "<Parameter name=\"TimedPercent\" dataType=\"byte\" alias=\"Data5\">" + cmdValue + "</Parameter>"
+                                + "<Parameter name=\"TimedPercent\" dataType=\"byte\" alias=\"Data5\">" + cmdValue
+                                + "</Parameter>"
                                 + "<Parameter name=\"SCTimeout\" dataType=\"byte\" unit=\"hour\" alias=\"Data6\">24</Parameter>"
                                 + "<Parameter name=\"ORPTimout\" dataType=\"byte\" unit=\"hour\" alias=\"Data7\">24</Parameter>"
                                 + "</Parameters></Request>";
-                                this.chlorTimedPercent=Integer.toString(cmdValue);
+                        this.chlorTimedPercent = Integer.toString(cmdValue);
                         break;
                     case HaywardBindingConstants.CHANNEL_COLORLOGIC_CURRENTSHOW:
                         // Append the command to the http command string
-                        urlParameters = urlParameters
-                                + "<Name>SetStandAloneLightShow</Name><Parameters>"
-                                + urlTokenMspPoolID
-                                + "<Parameter name=\"LightID\" dataType=\"int\">" + systemID + "</Parameter>"
-                                + "<Parameter name=\"Show\" dataType=\"int\">" + cmdString + "</Parameter>"
-                                + "<Parameter name=\"Speed\" dataType=\"byte\">4</Parameter>"
+                        urlParameters = urlParameters + "<Name>SetStandAloneLightShow</Name><Parameters>"
+                                + urlTokenMspPoolID + "<Parameter name=\"LightID\" dataType=\"int\">" + systemID
+                                + "</Parameter>" + "<Parameter name=\"Show\" dataType=\"int\">" + cmdString
+                                + "</Parameter>" + "<Parameter name=\"Speed\" dataType=\"byte\">4</Parameter>"
                                 + "<Parameter name=\"Brightness\" dataType=\"byte\">4</Parameter>"
-                                + "<Parameter name=\"Reserved\" dataType=\"byte\">0</Parameter>"
-                                + urlSchedule
+                                + "<Parameter name=\"Reserved\" dataType=\"byte\">0</Parameter>" + urlSchedule
                                 + "</Parameters></Request>";
-                        // @formatter:on
                         break;
                     default:
                         logger.error("haywardCommand Unsupported type {}", channelUID);
