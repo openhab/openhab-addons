@@ -14,8 +14,6 @@ package org.openhab.binding.teleinfo.internal.handler;
 
 import static org.openhab.binding.teleinfo.internal.TeleinfoBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,12 +23,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.teleinfo.internal.TeleinfoDiscoveryService;
 import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoBaseCbemmElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoEjpCbemmElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.handler.cbemm.TeleinfoHcCbemmElectricityMeterHandler;
@@ -44,7 +40,6 @@ import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoEjpCbetmLongE
 import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoHcCbetmLongElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.handler.cbetm.TeleinfoTempoCbetmLongElectricityMeterHandler;
 import org.openhab.binding.teleinfo.internal.serial.TeleinfoSerialControllerHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -68,7 +63,6 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
             .collect(Collectors.toSet());
 
     private @NonNullByDefault({}) SerialPortManager serialPortManager;
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -118,24 +112,6 @@ public class TeleinfoThingHandlerFactory extends BaseThingHandlerFactory {
             return new TeleinfoEjpCbetmLongElectricityMeterHandler(thing);
         } else {
             throw new IllegalStateException("Teleinfo frame type not supported: " + thing.getThingTypeUID());
-        }
-    }
-
-    @Override
-    @SuppressWarnings("null")
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof TeleinfoAbstractControllerHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                // remove discovery service, if bridge handler is removed
-                TeleinfoDiscoveryService service = (TeleinfoDiscoveryService) bundleContext
-                        .getService(serviceReg.getReference());
-                if (service != null) {
-                    service.deactivate();
-                }
-                serviceReg.unregister();
-                discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            }
         }
     }
 }
