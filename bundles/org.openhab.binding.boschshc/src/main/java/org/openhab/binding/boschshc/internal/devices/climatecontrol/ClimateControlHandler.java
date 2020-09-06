@@ -52,8 +52,8 @@ public final class ClimateControlHandler extends BoschSHCHandler {
 
     @Override
     protected void initializeServices() throws BoschSHCException {
-        super.createService(TemperatureLevelService.class, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
-        this.roomClimateControlService = super.createService(RoomClimateControlService.class, this::updateChannels,
+        super.createService(TemperatureLevelService::new, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
+        this.roomClimateControlService = super.createService(RoomClimateControlService::new, this::updateChannels,
                 Arrays.asList(CHANNEL_SETPOINT_TEMPERATURE));
     }
 
