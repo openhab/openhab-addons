@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -86,6 +87,11 @@ public class AVMFritzBindingConstants {
     public static final String PROPERTY_MEMBERS = "members";
 
     // List of all Channel ids
+    public static final String CHANNEL_CALL_INCOMING = "incoming_call";
+    public static final String CHANNEL_CALL_OUTGOING = "outgoing_call";
+    public static final String CHANNEL_CALL_ACTIVE = "active_call";
+    public static final String CHANNEL_CALL_STATE = "call_state";
+
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_LOCKED = "locked";
     public static final String CHANNEL_DEVICE_LOCKED = "device_locked";
@@ -121,6 +127,12 @@ public class AVMFritzBindingConstants {
     public static final String INPUT_NEXTTEMP = "tchange";
     public static final String INPUT_BATTERY = "batterylow";
 
+    // List of all call states
+    public static final StringType CALL_STATE_IDLE = new StringType("IDLE");
+    public static final StringType CALL_STATE_RINGING = new StringType("RINGING");
+    public static final StringType CALL_STATE_DIALING = new StringType("DIALING");
+    public static final StringType CALL_STATE_ACTIVE = new StringType("ACTIVE");
+
     // List of all Mode types
     public static final String MODE_AUTO = "AUTOMATIC";
     public static final String MODE_MANUAL = "MANUAL";
@@ -136,11 +148,12 @@ public class AVMFritzBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(DECT400_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE).collect(Collectors.toSet()));
 
+    public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Collections.unmodifiableSet(
+            Stream.of(DECT300_THING_TYPE, DECT301_THING_TYPE, COMETDECT_THING_TYPE).collect(Collectors.toSet()));
+
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE,
-                            DECT301_THING_TYPE, PL546E_THING_TYPE, COMETDECT_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE,
+                    HAN_FUN_CONTACT_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE).collect(Collectors.toSet()));
@@ -149,7 +162,7 @@ public class AVMFritzBindingConstants {
             .unmodifiableSet(Stream.of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS.stream(), SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(),
-                    SUPPORTED_GROUP_THING_TYPES_UIDS.stream(), SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
-            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
+            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
+                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 }

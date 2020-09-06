@@ -23,6 +23,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
@@ -36,9 +38,14 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelType;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -53,12 +60,16 @@ import org.openhab.binding.miio.internal.cloud.MiCloudException;
 import org.openhab.binding.miio.internal.robot.ConsumablesType;
 import org.openhab.binding.miio.internal.robot.FanModeType;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
+import org.openhab.binding.miio.internal.robot.RobotCababilities;
+import org.openhab.binding.miio.internal.robot.StatusDTO;
 import org.openhab.binding.miio.internal.robot.StatusType;
 import org.openhab.binding.miio.internal.robot.VacuumErrorType;
 import org.openhab.binding.miio.internal.transport.MiIoAsyncCommunication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -72,9 +83,10 @@ import com.google.gson.JsonObject;
 public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private final Logger logger = LoggerFactory.getLogger(MiIoVacuumHandler.class);
     private static final float MAP_SCALE = 2.0f;
-    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHss");
+    private static final SimpleDateFormat DATEFORMATTER = new SimpleDateFormat("yyyyMMdd-HHmmss");
     private static final String MAP_PATH = ConfigConstants.getUserDataFolder() + File.separator + BINDING_ID
             + File.separator;
+    private static final Gson GSON = new GsonBuilder().serializeNulls().create();
     private final ChannelUID mapChannelUid;
 
     private ExpiringCache<String> status;
@@ -86,11 +98,15 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private String lastHistoryId = "";
     private String lastMap = "";
     private CloudConnector cloudConnector;
+    private boolean hasChannelStructure;
+    private ConcurrentHashMap<RobotCababilities, Boolean> deviceCapabilities = new ConcurrentHashMap<>();
+    private ChannelTypeRegistry channelTypeRegistry;
 
     public MiIoVacuumHandler(Thing thing, MiIoDatabaseWatchService miIoDatabaseWatchService,
-            CloudConnector cloudConnector) {
+            CloudConnector cloudConnector, ChannelTypeRegistry channelTypeRegistry) {
         super(thing, miIoDatabaseWatchService);
         this.cloudConnector = cloudConnector;
+        this.channelTypeRegistry = channelTypeRegistry;
         mapChannelUid = new ChannelUID(thing.getUID(), CHANNEL_VACUUM_MAP);
         status = new ExpiringCache<>(CACHE_EXPIRY, () -> {
             try {
@@ -168,9 +184,15 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             if (command instanceof OnOffType) {
                 if (command.equals(OnOffType.ON)) {
                     sendCommand(MiIoCommand.START_VACUUM);
+                    forceStatusUpdate();
+                    return;
                 } else {
                     sendCommand(MiIoCommand.STOP_VACUUM);
-                    sendCommand(MiIoCommand.CHARGE);
+                    scheduler.schedule(() -> {
+                        sendCommand(MiIoCommand.CHARGE);
+                        forceStatusUpdate();
+                    }, 2000, TimeUnit.MILLISECONDS);
+                    return;
                 }
             }
         }
@@ -183,7 +205,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
                 sendCommand(MiIoCommand.PAUSE);
             } else if (command.toString().equals("dock")) {
                 sendCommand(MiIoCommand.STOP_VACUUM);
-                sendCommand(MiIoCommand.CHARGE);
+                scheduler.schedule(() -> {
+                    sendCommand(MiIoCommand.CHARGE);
+                    forceStatusUpdate();
+                }, 2000, TimeUnit.MILLISECONDS);
+                return;
             } else {
                 logger.info("Command {} not recognised", command.toString());
             }
@@ -192,6 +218,17 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (channelUID.getId().equals(CHANNEL_FAN_POWER)) {
             sendCommand(MiIoCommand.SET_MODE, "[" + command.toString() + "]");
+            forceStatusUpdate();
+            return;
+        }
+        if (channelUID.getId().equals(RobotCababilities.WATERBOX_MODE.getChannel())) {
+            sendCommand(MiIoCommand.SET_WATERBOX_MODE, "[" + command.toString() + "]");
+            forceStatusUpdate();
+            return;
+        }
+        if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()) {
+            sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
+            updateState(RobotCababilities.SEGMENT_CLEAN.getChannel(), UnDefType.UNDEF);
             forceStatusUpdate();
             return;
         }
@@ -216,69 +253,93 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         status.getValue();
     }
 
-    private boolean updateVacuumStatus(JsonObject statusData) {
-        updateState(CHANNEL_BATTERY, new DecimalType(statusData.get("battery").getAsBigDecimal()));
-        updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusData.get("clean_area").getAsDouble() / 1000000.0));
-        updateState(CHANNEL_CLEAN_TIME,
-                new DecimalType(TimeUnit.SECONDS.toMinutes(statusData.get("clean_time").getAsLong())));
-        updateState(CHANNEL_DND_ENABLED, new DecimalType(statusData.get("dnd_enabled").getAsBigDecimal()));
-        updateState(CHANNEL_ERROR_CODE,
-                new StringType(VacuumErrorType.getType(statusData.get("error_code").getAsInt()).getDescription()));
-        updateState(CHANNEL_ERROR_ID, new DecimalType(statusData.get("error_code").getAsInt()));
-        int fanLevel = statusData.get("fan_power").getAsInt();
-        updateState(CHANNEL_FAN_POWER, new DecimalType(fanLevel));
-        updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(fanLevel).getId()));
-        updateState(CHANNEL_IN_CLEANING, new DecimalType(statusData.get("in_cleaning").getAsInt()));
-        updateState(CHANNEL_MAP_PRESENT, new DecimalType(statusData.get("map_present").getAsBigDecimal()));
-        StatusType state = StatusType.getType(statusData.get("state").getAsInt());
-        updateState(CHANNEL_STATE, new StringType(state.getDescription()));
-        stateId = statusData.get("state").getAsInt();
-        updateState(CHANNEL_STATE_ID, new DecimalType(stateId));
-        State vacuum = OnOffType.OFF;
-        String control;
-        switch (state) {
-            case CLEANING:
-                control = "vacuum";
-                vacuum = OnOffType.ON;
-                break;
-            case CHARGING:
-                control = "dock";
-                break;
-            case CHARGING_ERROR:
-                control = "dock";
-                break;
-            case DOCKING:
-                control = "dock";
-                break;
-            case FULL:
-                control = "dock";
-                break;
-            case IDLE:
-                control = "pause";
-                break;
-            case PAUSED:
-                control = "pause";
-                break;
-            case RETURNING:
-                control = "dock";
-                break;
-            case SLEEPING:
-                control = "pause";
-                break;
-            case SPOTCLEAN:
-                control = "spot";
-                vacuum = OnOffType.ON;
-                break;
-            default:
-                control = "undef";
-                break;
-        }
-        if (control.equals("undef")) {
-            updateState(CHANNEL_CONTROL, UnDefType.UNDEF);
+    private void safeUpdateState(String channelID, @Nullable Integer state) {
+        if (state != null) {
+            updateState(channelID, new DecimalType(state));
         } else {
-            updateState(CHANNEL_CONTROL, new StringType(control));
+            logger.debug("Channel {} not update. value not available.", channelID);
         }
-        updateState(CHANNEL_VACUUM, vacuum);
+    }
+
+    private boolean updateVacuumStatus(JsonObject statusData) {
+        StatusDTO statusInfo = GSON.fromJson(statusData, StatusDTO.class);
+        safeUpdateState(CHANNEL_BATTERY, statusInfo.getBattery());
+        if (statusInfo.getCleanArea() != null) {
+            updateState(CHANNEL_CLEAN_AREA, new DecimalType(statusInfo.getCleanArea() / 1000000.0));
+        }
+        if (statusInfo.getCleanTime() != null) {
+            updateState(CHANNEL_CLEAN_TIME, new DecimalType(TimeUnit.SECONDS.toMinutes(statusInfo.getCleanTime())));
+        }
+        safeUpdateState(CHANNEL_DND_ENABLED, statusInfo.getDndEnabled());
+
+        if (statusInfo.getErrorCode() != null) {
+            updateState(CHANNEL_ERROR_CODE,
+                    new StringType(VacuumErrorType.getType(statusInfo.getErrorCode()).getDescription()));
+            safeUpdateState(CHANNEL_ERROR_ID, statusInfo.getErrorCode());
+        }
+
+        if (statusInfo.getFanPower() != null) {
+            updateState(CHANNEL_FAN_POWER, new DecimalType(statusInfo.getFanPower()));
+            updateState(CHANNEL_FAN_CONTROL, new DecimalType(FanModeType.getType(statusInfo.getFanPower()).getId()));
+        }
+        safeUpdateState(CHANNEL_IN_CLEANING, statusInfo.getInCleaning());
+        safeUpdateState(CHANNEL_MAP_PRESENT, statusInfo.getMapPresent());
+        if (statusInfo.getState() != null) {
+            StatusType state = StatusType.getType(statusInfo.getState());
+            updateState(CHANNEL_STATE, new StringType(state.getDescription()));
+            updateState(CHANNEL_STATE_ID, new DecimalType(statusInfo.getState()));
+
+            State vacuum = OnOffType.OFF;
+            String control;
+            switch (state) {
+                case ZONE:
+                case ROOM:
+                case CLEANING:
+                case RETURNING:
+                    control = "vacuum";
+                    vacuum = OnOffType.ON;
+                    break;
+                case CHARGING:
+                case CHARGING_ERROR:
+                case DOCKING:
+                case FULL:
+                    control = "dock";
+                    break;
+                case SLEEPING:
+                case PAUSED:
+                case IDLE:
+                    control = "pause";
+                    break;
+                case SPOTCLEAN:
+                    control = "spot";
+                    vacuum = OnOffType.ON;
+                    break;
+                default:
+                    control = "undef";
+                    break;
+            }
+            if (control.equals("undef")) {
+                updateState(CHANNEL_CONTROL, UnDefType.UNDEF);
+            } else {
+                updateState(CHANNEL_CONTROL, new StringType(control));
+            }
+            updateState(CHANNEL_VACUUM, vacuum);
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_MODE)) {
+            safeUpdateState(RobotCababilities.WATERBOX_MODE.getChannel(), statusInfo.getWaterBoxMode());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_STATUS)) {
+            safeUpdateState(RobotCababilities.WATERBOX_STATUS.getChannel(), statusInfo.getWaterBoxStatus());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_CARRIAGE)) {
+            safeUpdateState(RobotCababilities.WATERBOX_CARRIAGE.getChannel(), statusInfo.getWaterBoxCarriageStatus());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.LOCKSTATUS)) {
+            safeUpdateState(RobotCababilities.LOCKSTATUS.getChannel(), statusInfo.getLockStatus());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_FORBIDDEN)) {
+            safeUpdateState(RobotCababilities.MOP_FORBIDDEN.getChannel(), statusInfo.getMopForbiddenEnable());
+        }
         return true;
     }
 
@@ -401,6 +462,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     }
 
     @Override
+    public void initialize() {
+        super.initialize();
+        hasChannelStructure = false;
+    }
+
+    @Override
     protected boolean initializeData() {
         updateState(CHANNEL_CONSUMABLE_RESET, new StringType("none"));
         return super.initializeData();
@@ -415,7 +482,12 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         switch (response.getCommand()) {
             case GET_STATUS:
                 if (response.getResult().isJsonArray()) {
-                    updateVacuumStatus(response.getResult().getAsJsonArray().get(0).getAsJsonObject());
+                    JsonObject statusResponse = response.getResult().getAsJsonArray().get(0).getAsJsonObject();
+                    if (!hasChannelStructure) {
+                        setCapabilities(statusResponse);
+                        createCapabilityChannels();
+                    }
+                    updateVacuumStatus(statusResponse);
                 }
                 break;
             case CONSUMABLES_GET:
@@ -456,6 +528,54 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             default:
                 break;
         }
+    }
+
+    private void setCapabilities(JsonObject statusResponse) {
+        for (RobotCababilities capability : RobotCababilities.values()) {
+            if (statusResponse.has(capability.getStatusFieldName())) {
+                deviceCapabilities.putIfAbsent(capability, false);
+                logger.debug("Setting additional vacuum {}", capability);
+            }
+        }
+    }
+
+    private void createCapabilityChannels() {
+        ThingBuilder thingBuilder = editThing();
+        int cnt = 0;
+
+        for (Entry<RobotCababilities, Boolean> robotCapability : deviceCapabilities.entrySet()) {
+            RobotCababilities capability = robotCapability.getKey();
+            Boolean channelCreated = robotCapability.getValue();
+            if (!channelCreated) {
+                if (thing.getChannels().stream()
+                        .anyMatch(ch -> ch.getUID().getId().equalsIgnoreCase(capability.getChannel()))) {
+                    logger.debug("Channel already available...skip creation of channel '{}'.", capability.getChannel());
+                    deviceCapabilities.replace(capability, true);
+                    continue;
+                }
+                logger.debug("Creating dynamic channel for capability {}", capability);
+                ChannelType channelType = channelTypeRegistry.getChannelType(capability.getChannelType());
+                if (channelType != null) {
+                    logger.debug("Found channelType '{}' for capability {}", channelType, capability.name());
+                    ChannelUID channelUID = new ChannelUID(getThing().getUID(), capability.getChannel());
+                    Channel channel = ChannelBuilder.create(channelUID, channelType.getItemType())
+                            .withType(capability.getChannelType()).withLabel(channelType.getLabel()).build();
+                    thingBuilder.withChannel(channel);
+                    cnt++;
+                } else {
+                    logger.debug("ChannelType {} not found (Unexpected). Available types:",
+                            capability.getChannelType());
+                    for (ChannelType ct : channelTypeRegistry.getChannelTypes()) {
+                        logger.debug("Available channelType: '{}' '{}' '{}'", ct.getUID(), ct.toString(),
+                                ct.getConfigDescriptionURI());
+                    }
+                }
+            }
+        }
+        if (cnt > 0) {
+            updateThing(thingBuilder.build());
+        }
+        hasChannelStructure = true;
     }
 
     private State getMap(String map) {

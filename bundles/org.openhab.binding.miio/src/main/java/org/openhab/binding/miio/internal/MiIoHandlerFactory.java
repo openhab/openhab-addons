@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeRegistry;
 import org.openhab.binding.miio.internal.basic.MiIoDatabaseWatchService;
 import org.openhab.binding.miio.internal.cloud.CloudConnector;
 import org.openhab.binding.miio.internal.handler.MiIoBasicHandler;
@@ -50,10 +51,12 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
 
     private MiIoDatabaseWatchService miIoDatabaseWatchService;
     private CloudConnector cloudConnector;
+    private ChannelTypeRegistry channelTypeRegistry;
 
     @Activate
-    public MiIoHandlerFactory(@Reference MiIoDatabaseWatchService miIoDatabaseWatchService,
-            @Reference CloudConnector cloudConnector, Map<String, Object> properties) {
+    public MiIoHandlerFactory(@Reference ChannelTypeRegistry channelTypeRegistry,
+            @Reference MiIoDatabaseWatchService miIoDatabaseWatchService, @Reference CloudConnector cloudConnector,
+            Map<String, Object> properties) {
         this.miIoDatabaseWatchService = miIoDatabaseWatchService;
         this.cloudConnector = cloudConnector;
         @Nullable
@@ -64,6 +67,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
         String country = (String) properties.get("country");
         cloudConnector.setCredentials(username, password, country);
         scheduler.submit(() -> cloudConnector.isConnected());
+        this.channelTypeRegistry = channelTypeRegistry;
     }
 
     @Override
@@ -81,7 +85,7 @@ public class MiIoHandlerFactory extends BaseThingHandlerFactory {
             return new MiIoBasicHandler(thing, miIoDatabaseWatchService);
         }
         if (thingTypeUID.equals(THING_TYPE_VACUUM)) {
-            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector);
+            return new MiIoVacuumHandler(thing, miIoDatabaseWatchService, cloudConnector, channelTypeRegistry);
         }
         return new MiIoUnsupportedHandler(thing, miIoDatabaseWatchService);
     }

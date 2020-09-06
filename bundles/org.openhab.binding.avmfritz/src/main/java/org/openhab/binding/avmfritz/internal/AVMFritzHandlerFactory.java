@@ -25,6 +25,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzButtonHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingDeviceHandler;
+import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingGroupHandler;
 import org.openhab.binding.avmfritz.internal.handler.BoxHandler;
 import org.openhab.binding.avmfritz.internal.handler.DeviceHandler;
 import org.openhab.binding.avmfritz.internal.handler.GroupHandler;
@@ -47,13 +49,13 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AVMFritzHandlerFactory.class);
 
     private final HttpClient httpClient;
-    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+    private final AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     @Activate
     public AVMFritzHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
-            final @Reference AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+            final @Reference AVMFritzDynamicCommandDescriptionProvider stateDescriptionProvider) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = stateDescriptionProvider;
     }
 
     /**
@@ -71,13 +73,17 @@ public class AVMFritzHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (BRIDGE_THING_TYPE.equals(thingTypeUID)) {
-            return new BoxHandler((Bridge) thing, httpClient, stateDescriptionProvider);
+            return new BoxHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (PL546E_STANDALONE_THING_TYPE.equals(thingTypeUID)) {
-            return new Powerline546EHandler((Bridge) thing, httpClient, stateDescriptionProvider);
+            return new Powerline546EHandler((Bridge) thing, httpClient, commandDescriptionProvider);
         } else if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new AVMFritzButtonHandler(thing);
+        } else if (SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)) {
+            return new AVMFritzHeatingDeviceHandler(thing);
         } else if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new DeviceHandler(thing);
+        } else if (GROUP_HEATING_THING_TYPE.equals(thingTypeUID)) {
+            return new AVMFritzHeatingGroupHandler(thing);
         } else if (SUPPORTED_GROUP_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new GroupHandler(thing);
         } else {

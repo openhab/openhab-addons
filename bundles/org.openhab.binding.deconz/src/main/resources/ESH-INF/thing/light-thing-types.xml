@@ -4,6 +4,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<thing-type id="warningdevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="deconz"/>
+		</supported-bridge-type-refs>
+		<label>Warning Device</label>
+		<description>A warning device</description>
+		<channels>
+			<channel id="alert" typeId="alert"></channel>
+		</channels>
+	</thing-type>
+
 	<thing-type id="windowcovering">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="deconz"/>
@@ -124,5 +135,9 @@
 		<state pattern="%d" min="15" max="100000" step="100"/>
 	</channel-type>
 
+	<channel-type id="alert">
+		<item-type>Switch</item-type>
+		<label>Alert</label>
+	</channel-type>
 
 </thing:thing-descriptions>

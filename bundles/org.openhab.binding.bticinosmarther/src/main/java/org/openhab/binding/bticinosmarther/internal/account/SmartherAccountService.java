@@ -288,5 +288,4 @@ public class SmartherAccountService {
     protected void unsetHttpService(HttpService httpService) {
         this.httpService = null;
     }
-
 }

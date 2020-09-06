@@ -12,18 +12,11 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
-import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_POSITION;
-import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_POSITION;
-
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -36,98 +29,72 @@ import io.github.hapjava.services.impl.WindowCoveringService;
  *
  * @author epike - Initial contribution
  */
-public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl implements WindowCoveringAccessory {
-    private final int closedPosition;
-    private final int openPosition;
+@NonNullByDefault
+public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryImpl implements WindowCoveringAccessory {
 
     public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        final String invertedConfig = getAccessoryConfiguration(HomekitTaggedItem.INVERTED, "true");
-        final boolean inverted = invertedConfig.equalsIgnoreCase("yes") || invertedConfig.equalsIgnoreCase("true");
-        closedPosition = inverted ? 0 : 100;
-        openPosition = inverted ? 100 : 0;
-        this.getServices().add(new WindowCoveringService(this));
+        getServices().add(new WindowCoveringService(this));
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Integer> getCurrentPosition() {
-        return CompletableFuture.completedFuture(convertPositionState(CURRENT_POSITION));
+        return super.getCurrentPosition();
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<PositionStateEnum> getPositionState() {
-        return CompletableFuture.completedFuture(PositionStateEnum.STOPPED);
+        return super.getPositionState();
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Integer> getTargetPosition() {
-        return CompletableFuture.completedFuture(convertPositionState(TARGET_POSITION));
+        return super.getTargetPosition();
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Void> setTargetPosition(int value) {
-        getItem(TARGET_POSITION, RollershutterItem.class)
-                .ifPresent(item -> item.send(new PercentType(convertPosition(value))));
-        return CompletableFuture.completedFuture(null);
+        return super.setTargetPosition(value);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribeCurrentPosition(HomekitCharacteristicChangeCallback callback) {
-        subscribe(CURRENT_POSITION, callback);
+        super.subscribeCurrentPosition(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribePositionState(HomekitCharacteristicChangeCallback callback) {
-        // Not implemented
+        super.subscribePositionState(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribeTargetPosition(HomekitCharacteristicChangeCallback callback) {
-        subscribe(TARGET_POSITION, callback);
+        super.subscribeTargetPosition(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribeCurrentPosition() {
-        unsubscribe(CURRENT_POSITION);
+        super.unsubscribeCurrentPosition();
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribePositionState() {
-        // Not implemented
+        super.unsubscribePositionState();
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribeTargetPosition() {
-        unsubscribe(TARGET_POSITION);
-    }
-
-    /**
-     * openHAB Rollershutter is:
-     * - completely open if position is 0%,
-     * - completely closed if position is 100%.
-     * HomeKit mapping has inverted mapping
-     * From Specification: "For blinds/shades/awnings, a value of 0 indicates a position that permits the least light
-     * and a value
-     * of 100 indicates a position that allows most light.", i.e.
-     * HomeKit Blinds is
-     * - completely open if position is 100%,
-     * - completely closed if position is 0%.
-     *
-     * As openHAB rollershutter item is typically used for window covering, the binding has by default inverting
-     * mapping.
-     * One can override this default behaviour with inverted="false/no" flag. in this cases, openHAB item value will be
-     * sent to HomeKit with no changes.
-     * 
-     * @param value source value
-     * @return target value
-     */
-    private int convertPosition(int value) {
-        return Math.abs(openPosition - value);
-    }
-
-    private int convertPositionState(HomekitCharacteristicType type) {
-        final @Nullable DecimalType value = getStateAs(type, PercentType.class);
-        return value != null ? convertPosition(value.intValue()) : closedPosition;
+        super.unsubscribeTargetPosition();
     }
 }

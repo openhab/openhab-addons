@@ -44,7 +44,7 @@ Restrictions:
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
 - Automatic turn on your amplifier and connect echo with bluetooth if the echo plays music
-- If the amplifier was turned of, the echo stop playing and disconnect the bluetooth
+- If the amplifier was turned off, the echo stop playing and disconnect the bluetooth
 - The echo starts playing radio if the light was turned on
 - The echo starts playing radio at specified time 
 - Remind you with a voice message, that a window is open for a long time and it is winter
@@ -61,7 +61,7 @@ Some ideas what you can do in your home by using rules and other openHAB control
 With the possibility to control your lights you could do:
 
 - a scene-based configuration of your rooms
-- connect single bulbs to functions of openhab
+- connect single bulbs to functions of openHAB
 - simulate your presence at home
 - automatically turn on your lights at the evening
 - integrate your smart bulbs with rules 
@@ -161,10 +161,10 @@ It will be configured at runtime by using the save channel to store the current 
 | bluetooth             | Switch      | R/W         | echo, echoshow, echospot      | Connect/Disconnect to the last used bluetooth device (works after a bluetooth connection was established after the openHAB start) 
 | bluetoothDeviceName   | String      | R           | echo, echoshow, echospot      | User friendly name of the connected bluetooth device
 | radioStationId        | String      | R/W         | echo, echoshow, echospot, wha | Start playing of a TuneIn radio station by specifying its id or stops playing if an empty string was provided
-| radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openhab start)
+| radio                 | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used TuneIn radio station (works after the radio station started after the openHAB start)
 | amazonMusicTrackId    | String      | R/W         | echo, echoshow, echospot, wha | Start playing of an Amazon Music track by its id or stops playing if an empty string was provided
 | amazonMusicPlayListId | String      | W           | echo, echoshow, echospot, wha | Write Only! Start playing of an Amazon Music playlist by specifying its id or stops playing if an empty string was provided. Selection will only work in PaperUI
-| amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openhab start)
+| amazonMusic           | Switch      | R/W         | echo, echoshow, echospot, wha | Start playing of the last used Amazon Music song (works after at least one song was started after the openHAB start)
 | remind                | String      | R/W         | echo, echoshow, echospot      | Write Only! Speak the reminder and sends a notification to the Alexa app (Currently the reminder is played and notified two times, this seems to be a bug in the Amazon software)
 | nextReminder          | DateTime    | R           | echo, echoshow, echospot      | Next reminder on the device
 | playAlarmSound        | String      | W           | echo, echoshow, echospot      | Write Only! Plays an Alarm sound
@@ -219,6 +219,9 @@ Sample for the Thing echo1 only. But it will work in the same way for the other 
 Take a look in the channel description above to know, which channels are supported by your thing type.
 
 ```
+// Account
+String Echo_Living_Room_SendMessage            "SendMessage"                           {channel="amazonechocontrol:account:account1:sendMessage"}
+
 Group Alexa_Living_Room <player>
 
 // Player control
@@ -687,6 +690,11 @@ This can be used to call Alexa API from rules.
 E.g. to read out the history call from an installation on openhab:8080 with an account named account1:
 
 http://openhab:8080/amazonechocontrol/account1/PROXY/api/activities?startTime=&size=50&offset=1
+
+To resolve login problems the connection settings of an `account` thing can be reset via the karaf console.
+The command `amazonechocontrol listAccounts` shows a list of all available `account` things.
+The command `amazonechocontrol resetAccount <id>` resets the device id and all other connection settings.
+After resetting a connection, a new login as described above is necessary.
 
 ## Note
 

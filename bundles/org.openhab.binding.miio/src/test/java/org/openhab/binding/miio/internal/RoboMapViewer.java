@@ -18,10 +18,14 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.HeadlessException;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.nio.file.InvalidPathException;
@@ -43,6 +47,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Ignore;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
+import org.openhab.binding.miio.internal.robot.RRMapFileParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,6 +60,7 @@ import org.slf4j.LoggerFactory;
 public class RoboMapViewer extends JFrame {
 
     private static final String TITLE = "Offline Xiaomi Robot Radar Map Viewer";
+    private static final float MM = 50.0f;
     private final JFrame parent;
     private final RRDrawPanel rrDrawPanel = new RRDrawPanel();
     private final JTextArea textArea = new JTextArea();
@@ -63,18 +69,20 @@ public class RoboMapViewer extends JFrame {
 
     private float scale = 1.0f;
     private @Nullable File file;
+    private @Nullable RRMapDraw rrMap;
 
     private final Logger logger = LoggerFactory.getLogger(RoboMapViewer.class);
+    protected MapPoint fromLocation = new MapPoint();
     private static final long serialVersionUID = 2623447051590306992L;
 
     @Ignore
     public static void main(String args[]) {
         System.setProperty("swing.defaultlaf", "javax.swing.plaf.metal.MetalLookAndFeel");
-        RoboMapViewer vc = new RoboMapViewer();
+        RoboMapViewer vc = new RoboMapViewer(args);
         vc.setVisible(true);
     }
 
-    public RoboMapViewer() {
+    public RoboMapViewer(String args[]) {
         super(TITLE);
         parent = this;
         setSize(500, 600);
@@ -115,21 +123,76 @@ public class RoboMapViewer extends JFrame {
         statusbar.add(BorderLayout.EAST, statusbarR);
         c.add(statusbar, "Last");
 
-        // TODO: have the map details of the coord with mouse click/moveover
+        rrDrawPanel.addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(@Nullable MouseWheelEvent event) {
+                if (event != null) {
+                    if (event.getWheelRotation() < 0) {
+                        zoomIn();
+                    } else {
+                        zoomOut();
+                    }
+                }
+            }
+        });
+
+        rrDrawPanel.addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseDragged(@Nullable MouseEvent e) {
+                if (e != null) {
+                    rrDrawPanel.setEndPoint(e.getX(), e.getY());
+                    repaint();
+                }
+            }
+
+            @Override
+            public void mouseMoved(@Nullable MouseEvent e) {
+                if (e != null) {
+                    MapPoint roboMouseLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                    updateStatusLine(roboMouseLocation);
+                }
+            }
+        });
+
         rrDrawPanel.addMouseListener((new MouseListener() {
+
             @Override
             public void mouseReleased(@Nullable MouseEvent e) {
+                if (e != null) {
+                    rrDrawPanel.setEndPoint(e.getX(), e.getY());
+                    repaint();
+
+                    if (rrDrawPanel.hasDrawZone()) {
+                        final MapPoint endLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                        double minX = Math.min(fromLocation.getX(), endLocation.getX());
+                        double maxX = Math.max(fromLocation.getX(), endLocation.getX());
+                        double minY = Math.min(fromLocation.getY(), endLocation.getY());
+                        double maxY = Math.max(fromLocation.getY(), endLocation.getY());
+                        textArea.append(String.format(
+                                "Zone coordinates:\t%s, %s\t\tZone clean command:  app_zone_clean[ %.0f,%.0f,%.0f,%.0f,1 ]\r\n",
+                                endLocation, fromLocation, minX, minY, maxX, maxY));
+                    } else {
+                        final MapPoint pointLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
+                        textArea.append(String.format(
+                                "GoTo coordinates:\t[X=%.0f, Y=%.0f]\t\tGoto command:  app_goto_target[ %.0f,%.0f ]\r\n",
+                                pointLocation.getX(), pointLocation.getY(), pointLocation.getX(),
+                                pointLocation.getY()));
+                    }
+                }
             }
 
             @Override
             public void mousePressed(@Nullable MouseEvent e) {
                 if (e != null) {
-                    logger.info("Click @ {}", e.getPoint());
+                    rrDrawPanel.setStartPoint(e.getX(), e.getY());
+                    fromLocation = MapCoordstoRoboCoords(localCoordtoMapCoords(e.getPoint()));
                 }
             }
 
             @Override
             public void mouseExited(@Nullable MouseEvent e) {
+                updateStatusLine(null);
             }
 
             @Override
@@ -144,21 +207,13 @@ public class RoboMapViewer extends JFrame {
         scalePButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(@Nullable ActionEvent ae) {
-                scale = scale + 0.5f;
-                final File f = file;
-                if (f != null) {
-                    loadfile(f);
-                }
+                zoomIn();
             }
         });
         scaleMButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(@Nullable ActionEvent ae) {
-                scale = scale < 1.5 ? 1 : scale - 0.5f;
-                final File f = file;
-                if (f != null) {
-                    loadfile(f);
-                }
+                zoomOut();
             }
         });
 
@@ -182,7 +237,7 @@ public class RoboMapViewer extends JFrame {
                         }
                     }
                 } catch (SecurityException e) {
-                    logger.debug("Error finding next file:{}", e);
+                    logger.debug("Error finding next file: {}", e);
                 }
             }
         });
@@ -234,7 +289,33 @@ public class RoboMapViewer extends JFrame {
             }
         });
 
-        loadFirstFile();
+        if (args.length > 0) {
+            loadfile(new File(args[0]));
+        } else {
+            loadFirstFile();
+        }
+    }
+
+    private MapPoint MapCoordstoRoboCoords(MapPoint imagePoint) {
+        final RRMapDraw rrMap = this.rrMap;
+        if (rrMap != null) {
+            final RRMapFileParser mapDetails = rrMap.getMapParseDetails();
+            double xPos = (mapDetails.getLeft() + mapDetails.getImgWidth() - imagePoint.getX()) * MM;
+            double yPos = (mapDetails.getTop() + imagePoint.getY()) * MM;
+            return new MapPoint(xPos, yPos);
+        } else {
+            return new MapPoint();
+        }
+    }
+
+    private MapPoint localCoordtoMapCoords(Point local) {
+        final RRMapDraw rrMap = this.rrMap;
+        if (rrMap != null) {
+            double xLoc = (rrMap.getWidth() * scale - local.getX()) / scale;
+            double yLoc = (rrMap.getHeight() * scale - local.getY()) / scale;
+            return new MapPoint(xLoc, yLoc);
+        }
+        return new MapPoint();
     }
 
     protected boolean isRRFile(File fileEntry) {
@@ -258,30 +339,88 @@ public class RoboMapViewer extends JFrame {
         }
     }
 
-    private void updateStatusLine() {
+    private void updateStatusLine(@Nullable MapPoint p) {
         final File f = this.file;
         if (f != null) {
             statusbarL.setText(f.getName());
         } else {
             statusbarL.setText("");
         }
-        statusbarR.setText("zoom: " + Float.toString(scale) + "x ");
+        if (p != null) {
+            statusbarR.setText(String.format("%s  zoom: %.1fx ", p.toString(), scale));
+        } else {
+            statusbarR.setText(String.format("zoom: %.1fx ", scale));
+        }
     }
 
     private void loadfile(File file) {
         try {
             logger.info("Loading " + file.getPath());
-            RRMapDraw rrMap = RRMapDraw.loadImage(file);
+            final RRMapDraw rrMap = RRMapDraw.loadImage(file);
+            this.rrMap = rrMap;
             textArea.setText(rrMap.toString());
             parent.setTitle(TITLE + " " + file.getName());
             rrDrawPanel.setImage(rrMap.getImage(scale));
             rrMap.writePic(file.getPath() + ".jpg", "JPEG", scale);
-            updateStatusLine();
+            updateStatusLine(null);
             rrDrawPanel.setSize(rrMap.getWidth(), rrMap.getHeight());
         } catch (Exception e) {
             textArea.append("Error while loading: " + e.getMessage());
             logger.info("Error while loading {}", e);
         }
+    }
+
+    private void zoomIn() {
+        scale = scale + 0.5f;
+        final File f = file;
+        if (f != null) {
+            loadfile(f);
+        }
+    }
+
+    private void zoomOut() {
+        scale = scale < 1.5 ? 1 : scale - 0.5f;
+        final File f = file;
+        if (f != null) {
+            loadfile(f);
+        }
+    }
+}
+
+/**
+ * Point with X & Y coordinate
+ *
+ * @author Marcel Verpaalen - Initial contribution
+ */
+@NonNullByDefault
+class MapPoint {
+    private double x;
+    private double y;
+
+    public MapPoint() {
+        this(0, 0);
+    }
+
+    public MapPoint(MapPoint p) {
+        this(p.x, p.y);
+    }
+
+    public MapPoint(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%.0f,%.0f]", x, y);
     }
 }
 
@@ -296,12 +435,18 @@ class RRDrawPanel extends JPanel {
     private @Nullable BufferedImage image;
     Dimension size = new Dimension();
 
+    int x, y, x2, y2;
+
     @Override
     protected void paintComponent(@Nullable Graphics g) {
         super.paintComponent(g);
         final BufferedImage image = this.image;
         if (g != null && image != null) {
             g.drawImage(image, 0, 0, this);
+            if (hasDrawZone()) {
+                g.setColor(Color.YELLOW);
+                drawZoneRect(g, x, y, x2, y2);
+            }
         }
     }
 
@@ -312,6 +457,7 @@ class RRDrawPanel extends JPanel {
 
     public void setImage(BufferedImage bi) {
         image = bi;
+        x = y = x2 = y2 = 0;
         setComponentSize();
         repaint();
     }
@@ -323,5 +469,32 @@ class RRDrawPanel extends JPanel {
             size.height = image.getHeight();
             revalidate(); // signal parent/scrollpane
         }
+    }
+
+    public void setStartPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void setEndPoint(int x, int y) {
+        x2 = (x);
+        y2 = (y);
+    }
+
+    public boolean hasDrawZone() {
+        int pw = Math.abs(x - x2);
+        int ph = Math.abs(y - y2);
+        if (pw != 0 && ph != 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public void drawZoneRect(Graphics g, int x, int y, int x2, int y2) {
+        int px = Math.min(x, x2);
+        int py = Math.min(y, y2);
+        int pw = Math.abs(x - x2);
+        int ph = Math.abs(y - y2);
+        g.drawRect(px, py, pw, ph);
     }
 }

@@ -18,10 +18,13 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryListener;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.junit.Assert;
@@ -29,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
@@ -89,5 +93,15 @@ public class DeconzTest {
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {
         String json = IOUtils.toString(DeconzTest.class.getResourceAsStream(filename), StandardCharsets.UTF_8.name());
         return gson.fromJson(json, clazz);
+    }
+
+    @Test
+    public void dateTimeConversionTest() {
+        DateTimeType dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09Z");
+        Assert.assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:00Z")), dateTime);
+
+        dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09:47");
+        Assert.assertEquals(
+                new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:47Z")).toZone(ZoneId.systemDefault()), dateTime);
     }
 }

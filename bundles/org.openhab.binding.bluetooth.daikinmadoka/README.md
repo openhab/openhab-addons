@@ -96,7 +96,7 @@ The Daikin Madoka BRC1H Thermostat requires Bluetooth Pairing before it can be u
 This pairing process can be a bit challenging, as it seems the timing is very important for it success.
 
 We suggest that the Bluetooth adapter is not being used by another component during the pairing phase.
-As such, if you have other Bluetooth Things in your OpenHAB, it is suggested to stop the openhab service before doing the pairing.
+As such, if you have other Bluetooth Things in your OpenHAB, it is suggested to stop the openHAB service before doing the pairing.
 
   * Ensure that your BRC1H has Bluetooth enabled in the menu
   * Open `bluetoothctl` on your openHAB server - preferably as `root`

@@ -19,9 +19,11 @@ import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBi
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -59,12 +61,14 @@ import com.google.gson.Gson;
  *
  * @author Michael Geramb - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.amazonechocontrol")
+@Component(service = { ThingHandlerFactory.class,
+        AmazonEchoControlHandlerFactory.class }, configurationPid = "binding.amazonechocontrol")
 @NonNullByDefault
 public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(AmazonEchoControlHandlerFactory.class);
     private final Map<ThingUID, @Nullable List<ServiceRegistration<?>>> discoveryServiceRegistrations = new HashMap<>();
 
+    private final Set<AccountHandler> accountHandlers = new HashSet<>();
     private final HttpService httpService;
     private final StorageService storageService;
     private final BindingServlet bindingServlet;
@@ -99,6 +103,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
             Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
             AccountHandler bridgeHandler = new AccountHandler((Bridge) thing, httpService, storage, gson);
+            accountHandlers.add(bridgeHandler);
             registerDiscoveryService(bridgeHandler);
             bindingServlet.addAccountThing(thing);
             return bridgeHandler;
@@ -131,6 +136,7 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof AccountHandler) {
+            accountHandlers.remove(thingHandler);
             BindingServlet bindingServlet = this.bindingServlet;
             bindingServlet.removeAccountThing(thingHandler.getThing());
 
@@ -153,5 +159,9 @@ public class AmazonEchoControlHandlerFactory extends BaseThingHandlerFactory {
                 });
             }
         }
+    }
+
+    public Set<AccountHandler> getAccountHandlers() {
+        return accountHandlers;
     }
 }

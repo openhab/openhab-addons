@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.neato.internal;
 
+import static org.openhab.binding.neato.internal.classes.Category.HOUSE;
+import static org.openhab.binding.neato.internal.classes.Category.MAP;
+import static org.openhab.binding.neato.internal.classes.Mode.TURBO;
+import static org.openhab.binding.neato.internal.classes.NavigationMode.DEEP;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,10 +36,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
-import org.openhab.binding.neato.internal.classes.ErrorMessage;
-import org.openhab.binding.neato.internal.classes.NeatoGeneralInfo;
-import org.openhab.binding.neato.internal.classes.NeatoRobotInfo;
-import org.openhab.binding.neato.internal.classes.NeatoState;
+import org.openhab.binding.neato.internal.classes.*;
 import org.openhab.binding.neato.internal.config.NeatoRobotConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 /**
- * The {@link NeatoBinding} class defines common constants, which are
+ * The {@link NeatoRobot} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Patrik Wimnell - Initial contribution
@@ -107,11 +109,10 @@ public class NeatoRobot {
 
             InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
 
-            String result = HttpUtil.executeUrl("POST",
+            return HttpUtil.executeUrl("POST",
                     "https://nucleo.neatocloud.com:4443/vendors/neato/robots/" + this.serialNumber + "/messages",
                     headers, stream, "text/html; charset=ISO-8859-1", 20000);
 
-            return result;
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new NeatoCommunicationException(e);
         }
@@ -119,12 +120,15 @@ public class NeatoRobot {
 
     public void sendCommand(String command) throws NeatoCommunicationException {
         CommandRequest request = new CommandRequest();
+        logger.debug("State neato : {}", this.state);
 
         if ("clean".equalsIgnoreCase(command)) {
             String houseCleaningStr = this.state.getAvailableServices().getHouseCleaning();
+            logger.debug("Mode cleaning : {}", houseCleaningStr);
+            logger.debug("State neato : {}", this.state);
 
             request.setCmd("startCleaning");
-            request.addParam("category", 2);
+            request.addParam("category", HOUSE.getCategory());
 
             if ("basic-1".equalsIgnoreCase(houseCleaningStr)) {
                 request.addParam("mode", this.state.getCleaning().getModeValue());
@@ -139,29 +143,34 @@ public class NeatoRobot {
                 }
 
                 request.addParam("mode", this.state.getCleaning().getModeValue());
-                request.addParam("category", "2");
+                request.addParam("category", HOUSE.getCategory());
 
                 Integer navigationMode = this.state.getCleaning().getNavigationModeValue();
-                if (Integer.valueOf(2).equals(this.state.getCleaning().getModeValue())) {
+                if (Integer.valueOf(TURBO.getMode()).equals(this.state.getCleaning().getModeValue())) {
                     // From the Neato API Docs...
                     // Note that navigationMode can only be set to 3 if mode is 2,
                     // otherwise an error will be returned.
-                    navigationMode = 3;
+                    navigationMode = DEEP.getNavigationMode();
                 }
                 request.addParam("navigationMode", navigationMode);
             }
-        } else if ("pause".equalsIgnoreCase(command.toString())) {
+        } else if ("cleanWithMap".equalsIgnoreCase(command)) {
+            request.setCmd("startCleaning");
+            request.addParam("category", MAP.getCategory());
+            request.addParam("mode", TURBO.getMode());
+            request.addParam("navigationMode", DEEP.getNavigationMode());
+        } else if ("pause".equalsIgnoreCase(command)) {
             request.setCmd("pauseCleaning");
-        } else if ("stop".equalsIgnoreCase(command.toString())) {
+        } else if ("stop".equalsIgnoreCase(command)) {
             request.setCmd("stopCleaning");
-        } else if ("resume".equalsIgnoreCase(command.toString())) {
+        } else if ("resume".equalsIgnoreCase(command)) {
             request.setCmd("resumeCleaning");
-        } else if ("dock".equalsIgnoreCase(command.toString())) {
+        } else if ("dock".equalsIgnoreCase(command)) {
             request.setCmd("sendToBase");
-        } else if ("dismissAlert".equalsIgnoreCase(command.toString())) {
+        } else if ("dismissAlert".equalsIgnoreCase(command)) {
             request.setCmd("dismissCurrentAlert");
         } else {
-            logger.debug("Unexpected command received: {}", command.toString());
+            logger.debug("Unexpected command received: {}", command);
             return;
         }
 

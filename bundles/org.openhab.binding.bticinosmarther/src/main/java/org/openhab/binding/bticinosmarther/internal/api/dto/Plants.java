@@ -31,5 +31,4 @@ public class Plants {
     public List<Plant> getPlants() {
         return plants;
     }
-
 }

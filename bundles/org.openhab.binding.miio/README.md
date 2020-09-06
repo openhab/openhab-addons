@@ -49,7 +49,11 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
+After succesfull Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
+For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
+
+![Binding Config](doc/miioBindingConfig.jpg)
 
 ## Thing Configuration
 
@@ -130,6 +134,11 @@ or in case of unknown models include the model information e.g.:
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.sa1](#zhimi-fan-sa1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za1](#zhimi-fan-za1) | Yes       |            |
 | Xiaomi Mi Smart Pedestal Fan | miio:basic       | [zhimi.fan.za4](#zhimi-fan-za4) | Yes       |            |
+| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.1c](#dmaker-fan-1c) | Yes       |            |
+| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p5](#dmaker-fan-p5) | Yes       |            |
+| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p8](#dmaker-fan-p8) | Yes       |            |
+| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p9](#dmaker-fan-p9) | Yes       |            |
+| Xiaomi Mijia Smart Tower Fan | miio:basic       | [dmaker.fan.p10](#dmaker-fan-p10) | Yes       |            |
 | Viomi Internet refrigerator iLive | miio:unsupported | viomi.fridge.v3        | No        |            |
 | Mi Smart Home Gateway v1     | miio:unsupported | lumi.gateway.v1        | No        |            |
 | Mi Smart Home Gateway v2     | miio:unsupported | lumi.gateway.v2        | No        |            |
@@ -161,6 +170,11 @@ or in case of unknown models include the model information e.g.:
 | Mi Toothbrush                | miio:unsupported | soocare.toothbrush.x3  | No        |            |
 | Mi Robot Vacuum              | miio:vacuum      | [rockrobo.vacuum.v1](#rockrobo-vacuum-v1) | Yes       |            |
 | Mi Xiaowa Vacuum c1          | miio:vacuum      | [roborock.vacuum.c1](#roborock-vacuum-c1) | Yes       |            |
+| Roborock Vacuum S6 pure      | miio:vacuum      | [roborock.vacuum.a08](#roborock-vacuum-a08) | Yes       |            |
+| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a09](#roborock-vacuum-a09) | Yes       |            |
+| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a10](#roborock-vacuum-a10) | Yes       |            |
+| Roborock S6 MaxV / T7 Pro    | miio:vacuum      | [roborock.vacuum.a11](#roborock-vacuum-a11) | Yes       |            |
+| Roborock Vacuum S6 pure      | miio:vacuum      | [roborock.vacuum.p5](#roborock-vacuum-p5) | Yes       |            |
 | Mi Robot Vacuum v2           | miio:vacuum      | [roborock.vacuum.s5](#roborock-vacuum-s5) | Yes       |            |
 | Mi Robot Vacuum 1S           | miio:vacuum      | [roborock.vacuum.m1s](#roborock-vacuum-m1s) | Yes       |            |
 | Mi Robot Vacuum S4           | miio:vacuum      | [roborock.vacuum.s4](#roborock-vacuum-s4) | Yes       |            |
@@ -181,8 +195,9 @@ or in case of unknown models include the model information e.g.:
 | Roborock Vacuum S6           | miio:vacuum      | [rockrobo.vacuum.s6](#rockrobo-vacuum-s6) | Yes       |            |
 | Roborock Vacuum S6           | miio:vacuum      | [roborock.vacuum.s6](#roborock-vacuum-s6) | Yes       |            |
 | Rockrobo Xiaowa Vacuum v2    | miio:unsupported | roborock.vacuum.e2     | No        |            |
-| Xiaomi Mijia vacuum V-RVCLM21B | miio:unsupported | viomi.vacuum.v6        | No        |            |
-| Xiaomi Mijia vacuum STYJ02YM | miio:unsupported | viomi.vacuum.v7        | No        |            |
+| Xiaomi Mijia vacuum V-RVCLM21B | miio:basic       | [viomi.vacuum.v6](#viomi-vacuum-v6) | Yes       |            |
+| Xiaomi Mijia vacuum mop STYJ02YM | miio:basic       | [viomi.vacuum.v7](#viomi-vacuum-v7) | Yes       |            |
+| Xiaomi Mijia vacuum mop STYJ02YM v2 | miio:basic       | [viomi.vacuum.v8](#viomi-vacuum-v8) | Yes       |            |
 | Vacuum 1C STYTJ01ZHM         | miio:basic       | [dreame.vacuum.mc1808](#dreame-vacuum-mc1808) | Yes       |            |
 | roborock.vacuum.c1           | miio:unsupported | roborock.vacuum.c1     | No        |            |
 | Rockrobo Xiaowa Sweeper v2   | miio:unsupported | roborock.sweeper.e2v2  | No        |            |
@@ -239,7 +254,7 @@ The binding allows to try/test if your new device is working with database files
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
+Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
 
 # Advanced: adding local database files to support new devices
 
@@ -247,7 +262,7 @@ Things using the basic handler (miio:basic things) are driven by json 'database'
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
-For format, please check the current database files in Openhab github.
+For format, please check the current database files in openHAB GitHub.
 
 ## Channels
 
@@ -964,6 +979,94 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | naturalLevel     | Number  | Natural Level                       |
 | move             | String  | Move Direction                      |
 
+### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-1c">dmaker.fan.1c</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| On               | Switch  | Fan-Switch Status                   |
+| FanLevel         | Number  | Fan-Fan Level                       |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
+| Mode             | Number  | Fan-Mode                            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
+| Alarm            | Switch  | Fan-Alarm                           |
+| Brightness       | Switch  | Fan-Brightness                      |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+
+### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p5">dmaker.fan.p5</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| power            | Switch  | Power                               |
+| roll             | Switch  | Rotation                            |
+| mode             | Number  | Mode                                |
+| angle            | Number  | Angle                               |
+| timer            | Number  | Timer                               |
+| beep             | Switch  | Beep Sound                          |
+| light            | Number  | Light                               |
+| child_lock       | Switch  | Child Lock                          |
+| speed            | Number  | Speed                               |
+
+### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p8">dmaker.fan.p8</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| On               | Switch  | Fan-Switch Status                   |
+| FanLevel         | Number  | Fan-Fan Level                       |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
+| Mode             | Number  | Fan-Mode                            |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
+| Alarm            | Switch  | Fan-Alarm                           |
+| Brightness       | Switch  | Fan-Brightness                      |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+
+### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p9">dmaker.fan.p9</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| On               | Switch  | Fan-Switch Status                   |
+| FanLevel         | Number  | Fan-Fan Level                       |
+| Mode             | Number  | Fan-Mode                            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
+| HorizontalAngle  | Number  | Fan-Horizontal Angle                |
+| Alarm            | Switch  | Fan-Alarm                           |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
+| Brightness       | Switch  | Fan-Brightness                      |
+| MotorControl     | Number  | Fan-Motor Control                   |
+| SpeedLevel       | Number  | Fan-Speed Level                     |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+
+### Xiaomi Mijia Smart Tower Fan (<a name="dmaker-fan-p10">dmaker.fan.p10</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| Manufacturer     | String  | Device Information-Device Manufacturer |
+| Model            | String  | Device Information-Device Model     |
+| SerialNumber     | String  | Device Information-Device Serial Number |
+| FirmwareRevision | String  | Device Information-Current Firmware Version |
+| On               | Switch  | Fan-Switch Status                   |
+| FanLevel         | Number  | Fan-Fan Level                       |
+| Mode             | Number  | Fan-Mode                            |
+| HorizontalSwing  | Switch  | Fan-Horizontal Swing                |
+| HorizontalAngle  | Number  | Fan-Horizontal Angle                |
+| Alarm            | Switch  | Fan-Alarm                           |
+| OffDelayTime     | Number  | Fan-Power Off Delay Time            |
+| Brightness       | Switch  | Fan-Brightness                      |
+| MotorControl     | Number  | Fan-Motor Control                   |
+| SpeedLevel       | Number  | Fan-Speed Level                     |
+| PhysicalControlsLocked | Switch  | Physical Control Locked-Physical Control Locked |
+
 ### Mi Humdifier (<a name="zhimi-humidifier-v1">zhimi.humidifier.v1</a>) Channels
 
 | Channel          | Type    | Description                         |
@@ -1200,10 +1303,71 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | current          | Number  | Current                             |
 | temperature      | Number  | Temperature                         |
 
+### Xiaomi Mijia vacuum V-RVCLM21B (<a name="viomi-vacuum-v6">viomi.vacuum.v6</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| vacuumaction     | Number  | Vacuum Action                       |
+| state            | Number  | State                               |
+| mode             | Number  | Mode                                |
+| err_state        | Number  | Error                               |
+| battery_life     | Number  | Battery                             |
+| box_type         | Number  | Box type                            |
+| mop_type         | Number  | mop_type                            |
+| s_time           | Number  | Clean time                          |
+| s_area           | Number  | Clean Area                          |
+| suction_grade    | Number  | suction_grade                       |
+| water_grade      | Number  | water_grade                         |
+| remember_map     | Number  | remember_map                        |
+| has_map          | Number  | has_map                             |
+| is_mop           | Number  | is_mop                              |
+| has_newmap       | Number  | has_newmap                          |
+
+### Xiaomi Mijia vacuum mop STYJ02YM (<a name="viomi-vacuum-v7">viomi.vacuum.v7</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| vacuumaction     | Number  | Vacuum Action                       |
+| state            | Number  | State                               |
+| mode             | Number  | Mode                                |
+| err_state        | Number  | Error                               |
+| battery_life     | Number  | Battery                             |
+| box_type         | Number  | Box type                            |
+| mop_type         | Number  | mop_type                            |
+| s_time           | Number  | Clean time                          |
+| s_area           | Number  | Clean Area                          |
+| suction_grade    | Number  | suction_grade                       |
+| water_grade      | Number  | water_grade                         |
+| remember_map     | Number  | remember_map                        |
+| has_map          | Number  | has_map                             |
+| is_mop           | Number  | is_mop                              |
+| has_newmap       | Number  | has_newmap                          |
+
+### Xiaomi Mijia vacuum mop STYJ02YM v2 (<a name="viomi-vacuum-v8">viomi.vacuum.v8</a>) Channels
+
+| Channel          | Type    | Description                         |
+|------------------|---------|-------------------------------------|
+| vacuumaction     | Number  | Vacuum Action                       |
+| state            | Number  | State                               |
+| mode             | Number  | Mode                                |
+| err_state        | Number  | Error                               |
+| battery_life     | Number  | Battery                             |
+| box_type         | Number  | Box type                            |
+| mop_type         | Number  | mop_type                            |
+| s_time           | Number  | Clean time                          |
+| s_area           | Number  | Clean Area                          |
+| suction_grade    | Number  | suction_grade                       |
+| water_grade      | Number  | water_grade                         |
+| remember_map     | Number  | remember_map                        |
+| has_map          | Number  | has_map                             |
+| is_mop           | Number  | is_mop                              |
+| has_newmap       | Number  | has_newmap                          |
+
 ### Vacuum 1C STYTJ01ZHM (<a name="dreame-vacuum-mc1808">dreame.vacuum.mc1808</a>) Channels
 
 | Channel          | Type    | Description                         |
 |------------------|---------|-------------------------------------|
+| vacuumaction     | String  | Vacuum Action                       |
 | BatteryLevel     | Number  | Battery-Battery Level               |
 | ChargingState    | Number  | Battery-Charging State              |
 | FirmwareRevision | String  | Device Information-Current Firmware Version |
@@ -1731,11 +1895,24 @@ Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel=
 Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_error" }
 Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_finish" }
 
-
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
 Note: cleaning map is only available with cloud access.
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+
+
 
 ### Mi Air Monitor v1 (zhimi.airmonitor.v1) item file lines
 
@@ -2530,6 +2707,109 @@ Number naturalLevel "Natural Level" (G_fan) {channel="miio:basic:fan:naturalLeve
 String move "Move Direction" (G_fan) {channel="miio:basic:fan:move"}
 ```
 
+### Xiaomi Mijia Smart Tower Fan (dmaker.fan.1c) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
+String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
+Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
+```
+
+### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p5) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+Switch power "Power" (G_fan) {channel="miio:basic:fan:power"}
+Switch roll "Rotation" (G_fan) {channel="miio:basic:fan:roll"}
+Number mode "Mode" (G_fan) {channel="miio:basic:fan:mode"}
+Number angle "Angle" (G_fan) {channel="miio:basic:fan:angle"}
+Number timer "Timer" (G_fan) {channel="miio:basic:fan:timer"}
+Switch beep "Beep Sound" (G_fan) {channel="miio:basic:fan:beep"}
+Number light "Light" (G_fan) {channel="miio:basic:fan:light"}
+Switch child_lock "Child Lock" (G_fan) {channel="miio:basic:fan:child_lock"}
+Number speed "Speed" (G_fan) {channel="miio:basic:fan:speed"}
+```
+
+### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p8) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
+String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
+Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
+Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
+```
+
+### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p9) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
+String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
+Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number HorizontalAngle "Fan-Horizontal Angle" (G_fan) {channel="miio:basic:fan:HorizontalAngle"}
+Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
+Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
+Number MotorControl "Fan-Motor Control" (G_fan) {channel="miio:basic:fan:MotorControl"}
+Number SpeedLevel "Fan-Speed Level" (G_fan) {channel="miio:basic:fan:SpeedLevel"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
+```
+
+### Xiaomi Mijia Smart Tower Fan (dmaker.fan.p10) item file lines
+
+note: Autogenerated example. Replace the id (fan) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_fan "Xiaomi Mijia Smart Tower Fan" <status>
+String Manufacturer "Device Information-Device Manufacturer" (G_fan) {channel="miio:basic:fan:Manufacturer"}
+String Model "Device Information-Device Model" (G_fan) {channel="miio:basic:fan:Model"}
+String SerialNumber "Device Information-Device Serial Number" (G_fan) {channel="miio:basic:fan:SerialNumber"}
+String FirmwareRevision "Device Information-Current Firmware Version" (G_fan) {channel="miio:basic:fan:FirmwareRevision"}
+Switch On "Fan-Switch Status" (G_fan) {channel="miio:basic:fan:On"}
+Number FanLevel "Fan-Fan Level" (G_fan) {channel="miio:basic:fan:FanLevel"}
+Number Mode "Fan-Mode" (G_fan) {channel="miio:basic:fan:Mode"}
+Switch HorizontalSwing "Fan-Horizontal Swing" (G_fan) {channel="miio:basic:fan:HorizontalSwing"}
+Number HorizontalAngle "Fan-Horizontal Angle" (G_fan) {channel="miio:basic:fan:HorizontalAngle"}
+Switch Alarm "Fan-Alarm" (G_fan) {channel="miio:basic:fan:Alarm"}
+Number OffDelayTime "Fan-Power Off Delay Time" (G_fan) {channel="miio:basic:fan:OffDelayTime"}
+Switch Brightness "Fan-Brightness" (G_fan) {channel="miio:basic:fan:Brightness"}
+Number MotorControl "Fan-Motor Control" (G_fan) {channel="miio:basic:fan:MotorControl"}
+Number SpeedLevel "Fan-Speed Level" (G_fan) {channel="miio:basic:fan:SpeedLevel"}
+Switch PhysicalControlsLocked "Physical Control Locked-Physical Control Locked" (G_fan) {channel="miio:basic:fan:PhysicalControlsLocked"}
+```
+
 ### Mi Humdifier (zhimi.humidifier.v1) item file lines
 
 note: Autogenerated example. Replace the id (humidifier) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
@@ -2832,12 +3112,82 @@ Number current "Current" (G_powerstrip) {channel="miio:basic:powerstrip:current"
 Number temperature "Temperature" (G_powerstrip) {channel="miio:basic:powerstrip:temperature"}
 ```
 
+### Xiaomi Mijia vacuum V-RVCLM21B (viomi.vacuum.v6) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Mijia vacuum V-RVCLM21B" <status>
+Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
+Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
+Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
+Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+```
+
+### Xiaomi Mijia vacuum mop STYJ02YM (viomi.vacuum.v7) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Mijia vacuum mop STYJ02YM" <status>
+Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
+Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
+Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
+Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+```
+
+### Xiaomi Mijia vacuum mop STYJ02YM v2 (viomi.vacuum.v8) item file lines
+
+note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
+
+```java
+Group G_vacuum "Xiaomi Mijia vacuum mop STYJ02YM v2" <status>
+Number vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
+Number state "State" (G_vacuum) {channel="miio:basic:vacuum:state"}
+Number mode "Mode" (G_vacuum) {channel="miio:basic:vacuum:mode"}
+Number err_state "Error" (G_vacuum) {channel="miio:basic:vacuum:err_state"}
+Number battery_life "Battery" (G_vacuum) {channel="miio:basic:vacuum:battery_life"}
+Number box_type "Box type" (G_vacuum) {channel="miio:basic:vacuum:box_type"}
+Number mop_type "mop_type" (G_vacuum) {channel="miio:basic:vacuum:mop_type"}
+Number s_time "Clean time" (G_vacuum) {channel="miio:basic:vacuum:s_time"}
+Number s_area "Clean Area" (G_vacuum) {channel="miio:basic:vacuum:s_area"}
+Number suction_grade "suction_grade" (G_vacuum) {channel="miio:basic:vacuum:suction_grade"}
+Number water_grade "water_grade" (G_vacuum) {channel="miio:basic:vacuum:water_grade"}
+Number remember_map "remember_map" (G_vacuum) {channel="miio:basic:vacuum:remember_map"}
+Number has_map "has_map" (G_vacuum) {channel="miio:basic:vacuum:has_map"}
+Number is_mop "is_mop" (G_vacuum) {channel="miio:basic:vacuum:is_mop"}
+Number has_newmap "has_newmap" (G_vacuum) {channel="miio:basic:vacuum:has_newmap"}
+```
+
 ### Vacuum 1C STYTJ01ZHM (dreame.vacuum.mc1808) item file lines
 
 note: Autogenerated example. Replace the id (vacuum) in the channel with your own. Replace `basic` with `generic` in the thing UID depending on how your thing was discovered.
 
 ```java
 Group G_vacuum "Vacuum 1C STYTJ01ZHM" <status>
+String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
 Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
 String FirmwareRevision "Device Information-Current Firmware Version" (G_vacuum) {channel="miio:basic:vacuum:FirmwareRevision"}

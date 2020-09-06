@@ -14,7 +14,6 @@ package org.openhab.binding.logreader.internal.handler;
 
 import static org.openhab.binding.logreader.internal.LogReaderBindingConstants.*;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.regex.PatternSyntaxException;
 

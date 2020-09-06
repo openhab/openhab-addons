@@ -322,16 +322,17 @@ public class HeosBridgeHandler extends BaseBridgeHandler implements HeosEventLis
      * Sets the HEOS Thing offline
      */
     @SuppressWarnings("null")
-    public void setGroupOffline(String hashValue) {
-        HeosGroupHandler groupHandler = groupHandlerMap.get(hashValue);
+    public void setGroupOffline(String groupMemberHash) {
+        HeosGroupHandler groupHandler = groupHandlerMap.get(groupMemberHash);
         if (groupHandler != null) {
             groupHandler.setStatusOffline();
         }
+        hashToGidMap.remove(groupMemberHash);
     }
 
     /**
      * Sets the HEOS Thing online. Also updates the link between
-     * the groupMemberHash value with the actual gid of this group *
+     * the groupMemberHash value with the actual gid of this group
      */
     public void setGroupOnline(String groupMemberHash, String groupId) {
         hashToGidMap.put(groupMemberHash, groupId);

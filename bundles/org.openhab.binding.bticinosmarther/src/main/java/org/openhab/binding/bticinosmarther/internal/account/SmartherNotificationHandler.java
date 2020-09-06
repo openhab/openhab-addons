@@ -62,5 +62,4 @@ public interface SmartherNotificationHandler extends ThingHandler {
      *             in case of communication issues with the Smarther API
      */
     void unregisterNotification(String plantId) throws SmartherGatewayException;
-
 }

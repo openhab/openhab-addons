@@ -31,5 +31,4 @@ public class MadokaParsingException extends Exception {
     public MadokaParsingException(Throwable t) {
         super(t);
     }
-
 }

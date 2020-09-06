@@ -59,8 +59,6 @@ public class RRMapFileParser {
     public static final String PATH_POINT_SIZE = "pointSize";
     public static final String PATH_ANGLE = "angle";
 
-    private static final float MM = 50.0f;
-
     private byte[] image = new byte[] { 0 };
     private final int majorVersion;
     private final int minorVersion;
@@ -73,7 +71,6 @@ public class RRMapFileParser {
     private int imageSize;
     private int top;
     private int left;
-    private int offset;
 
     private int chargerX;
     private int chargerY;
@@ -124,7 +121,6 @@ public class RRMapFileParser {
                     this.left = getUInt32LE(header, blockHeaderLength - 12);
                     this.imgHeight = (getUInt32LE(header, blockHeaderLength - 8));
                     this.imgWidth = getUInt32LE(header, blockHeaderLength - 4);
-                    this.offset = imgWidth + left;
                     this.image = data;
                     break;
                 case ROBOT_POSITION:
@@ -144,8 +140,8 @@ public class RRMapFileParser {
                     detail.put(PATH_POINT_SIZE, getUInt32LE(header, 0x0C));
                     detail.put(PATH_ANGLE, getUInt32LE(header, 0x10));
                     for (int pathpair = 0; pathpair < pairs; pathpair++) {
-                        float x = offset - (getUInt16(getBytes(raw, blockDataStart + pathpair * 4, 2))) / MM;
-                        float y = getUInt16(getBytes(raw, blockDataStart + pathpair * 4 + 2, 2)) / MM - top;
+                        float x = (getUInt16(getBytes(raw, blockDataStart + pathpair * 4, 2)));
+                        float y = getUInt16(getBytes(raw, blockDataStart + pathpair * 4 + 2, 2));
                         path.add(new float[] { x, y });
                     }
                     paths.put(blocktype, path);
@@ -154,16 +150,16 @@ public class RRMapFileParser {
                 case CURRENTLY_CLEANED_ZONES:
                     int zonePairs = getUInt16(header, 0x08);
                     for (int zonePair = 0; zonePair < zonePairs; zonePair++) {
-                        float x0 = offset - (getUInt16(raw, blockDataStart + zonePair * 8)) / MM;
-                        float y0 = getUInt16(raw, blockDataStart + zonePair * 8 + 2) / MM - top;
-                        float x1 = offset - (getUInt16(raw, blockDataStart + zonePair * 8 + 4)) / MM;
-                        float y1 = getUInt16(raw, blockDataStart + zonePair * 8 + 6) / MM - top;
+                        float x0 = (getUInt16(raw, blockDataStart + zonePair * 8));
+                        float y0 = getUInt16(raw, blockDataStart + zonePair * 8 + 2);
+                        float x1 = (getUInt16(raw, blockDataStart + zonePair * 8 + 4));
+                        float y1 = getUInt16(raw, blockDataStart + zonePair * 8 + 6);
                         zones.add(new float[] { x0, y0, x1, y1 });
                     }
                     break;
                 case GOTO_TARGET:
-                    this.gotoX = offset - getUInt16(data, 0x00) / MM;
-                    this.gotoY = getUInt16(data, 0x02) / MM - top;
+                    this.gotoX = getUInt16(data, 0x00);
+                    this.gotoY = getUInt16(data, 0x02);
                     break;
                 case DIGEST:
                     isValid = Arrays.equals(data, sha1Hash(getBytes(raw, 0, mapHeaderLength + mapDataLength - 20)));
@@ -171,10 +167,10 @@ public class RRMapFileParser {
                 case VIRTUAL_WALLS:
                     int wallPairs = getUInt16(header, 0x08);
                     for (int wallPair = 0; wallPair < wallPairs; wallPair++) {
-                        float x0 = offset - (getUInt16(raw, blockDataStart + wallPair * 8)) / MM;
-                        float y0 = getUInt16(raw, blockDataStart + wallPair * 8 + 2) / MM - top;
-                        float x1 = offset - (getUInt16(raw, blockDataStart + wallPair * 8 + 4)) / MM;
-                        float y1 = getUInt16(raw, blockDataStart + wallPair * 8 + 6) / MM - top;
+                        float x0 = (getUInt16(raw, blockDataStart + wallPair * 8));
+                        float y0 = getUInt16(raw, blockDataStart + wallPair * 8 + 2);
+                        float x1 = (getUInt16(raw, blockDataStart + wallPair * 8 + 4));
+                        float y1 = getUInt16(raw, blockDataStart + wallPair * 8 + 6);
                         walls.add(new float[] { x0, y0, x1, y1 });
                     }
                     break;
@@ -183,14 +179,14 @@ public class RRMapFileParser {
                     int areaPairs = getUInt16(header, 0x08);
                     ArrayList<float[]> area = new ArrayList<float[]>();
                     for (int areaPair = 0; areaPair < areaPairs; areaPair++) {
-                        float x0 = offset - (getUInt16(raw, blockDataStart + areaPair * 16)) / MM;
-                        float y0 = getUInt16(raw, blockDataStart + areaPair * 16 + 2) / MM - top;
-                        float x1 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 4)) / MM;
-                        float y1 = getUInt16(raw, blockDataStart + areaPair * 16 + 6) / MM - top;
-                        float x2 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 8)) / MM;
-                        float y2 = getUInt16(raw, blockDataStart + areaPair * 16 + 10) / MM - top;
-                        float x3 = offset - (getUInt16(raw, blockDataStart + areaPair * 16 + 12)) / MM;
-                        float y3 = getUInt16(raw, blockDataStart + areaPair * 16 + 14) / MM - top;
+                        float x0 = (getUInt16(raw, blockDataStart + areaPair * 16));
+                        float y0 = getUInt16(raw, blockDataStart + areaPair * 16 + 2);
+                        float x1 = (getUInt16(raw, blockDataStart + areaPair * 16 + 4));
+                        float y1 = getUInt16(raw, blockDataStart + areaPair * 16 + 6);
+                        float x2 = (getUInt16(raw, blockDataStart + areaPair * 16 + 8));
+                        float y2 = getUInt16(raw, blockDataStart + areaPair * 16 + 10);
+                        float x3 = (getUInt16(raw, blockDataStart + areaPair * 16 + 12));
+                        float y3 = getUInt16(raw, blockDataStart + areaPair * 16 + 14);
                         area.add(new float[] { x0, y0, x1, y1, x2, y2, x3, y3 });
                     }
                     areas.put(Integer.valueOf(blocktype & 0xFF), area);
@@ -277,14 +273,18 @@ public class RRMapFileParser {
                 minorVersion, mapIndex, mapSequence);
         pw.printf("Image:\tsize: %9d\ttop: %9d\tleft: %9d height: %9d width: %9d\r\n", imageSize, top, left, imgHeight,
                 imgWidth);
-        pw.printf("Charger pos:\tX: %.1f\tY: %.1f\r\n", getChargerX(), getChargerY());
-        pw.printf("Robo pos:\tX: %.1f\tY: %.1f\tAngle: %d\r\n", getRoboX(), getRoboY(), getRoboA());
-        pw.printf("Goto:\tX: %.1f\tY: %.1f\r\n", getGotoX(), getGotoY());
+        pw.printf("Charger pos:\tX: %.0f\tY: %.0f\r\n", getChargerX(), getChargerY());
+        pw.printf("Robo pos:\tX: %.0f\tY: %.0f\tAngle: %d\r\n", getRoboX(), getRoboY(), getRoboA());
+        pw.printf("Goto:\tX: %.0f\tY: %.0f\r\n", getGotoX(), getGotoY());
         for (Integer area : areas.keySet()) {
             pw.print(area == NO_GO_AREAS ? "No Go zones:\t" : "MFBZS zones:\t");
             pw.printf("%d\r\n", areas.get(area).size());
+            printAreaDetails(areas.get(area), pw);
         }
         pw.printf("Walls:\t%d\r\n", walls.size());
+        printAreaDetails(walls, pw);
+        pw.printf("Zones:\t%d\r\n", zones.size());
+        printAreaDetails(zones, pw);
         pw.printf("Obstacles:\t%d\r\n", obstacles.size());
         pw.printf("Blocks:\t%d\r\n", blocks.length);
         pw.print("Paths:");
@@ -297,6 +297,16 @@ public class RRMapFileParser {
         pw.println();
         pw.close();
         return sw.toString();
+    }
+
+    private void printAreaDetails(ArrayList<float[]> areas, PrintWriter pw) {
+        areas.forEach(area -> {
+            pw.printf("\tArea coordinates:");
+            for (int i = 0; i < area.length; i++) {
+                pw.printf("\t%.0f", area[i]);
+            }
+            pw.println();
+        });
     }
 
     /**
@@ -363,19 +373,19 @@ public class RRMapFileParser {
     }
 
     public float getRoboX() {
-        return offset - (roboX / MM);
+        return roboX;
     }
 
     public float getRoboY() {
-        return roboY / MM - top;
+        return roboY;
     }
 
     public float getChargerX() {
-        return offset - (chargerX / MM);
+        return chargerX;
     }
 
     public float getChargerY() {
-        return chargerY / MM - top;
+        return chargerY;
     }
 
     public float getGotoX() {

@@ -49,7 +49,11 @@ Note. The Xiaomi devices change the token when inclusion is done. Hence if you g
 
 ## Binding Configuration
 
-No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s)
+No binding configuration is required. However to enable cloud functionality enter your Xiaomi username, password and server(s).
+After succesfull Xiaomi cloud login, the binding will use the connection to retrieve the required device tokens from the cloud. 
+For Xiaomi vacuums the map can be visualized in openHAB using the cloud connection.
+
+![Binding Config](doc/miioBindingConfig.jpg)
 
 ## Thing Configuration
 
@@ -87,7 +91,7 @@ The binding allows to try/test if your new device is working with database files
 For this, first remove your unsupported thing. Manually add a miio:basic thing. 
 Besides the regular configuration (like ip address, token) the modelId needs to be provided.
 Normally the modelId is populated with the model of your device, however in this case, use the modelId of a similar device.
-Look at the openhab forum, or the openhab github repository for the modelId of similar devices.
+Look at the openHAB forum, or the openHAB GitHub repository for the modelId of similar devices.
 
 # Advanced: adding local database files to support new devices
 
@@ -95,7 +99,7 @@ Things using the basic handler (miio:basic things) are driven by json 'database'
 This instructs the binding which channels to create, which properties and actions are associated with the channels etc.
 The conf/misc/miio (e.g. in Linux `/opt/openhab2/conf/misc/miio/`) is scanned for database files and will be used for your devices. 
 Note that local database files take preference over build-in ones, hence if a json file is local and in the database the local file will be used. 
-For format, please check the current database files in Openhab github.
+For format, please check the current database files in openHAB GitHub.
 
 ## Channels
 
@@ -160,10 +164,23 @@ Number lastTime    "Last Clean Time [%1.0f']"   <clock>     (gVacLast) {channel=
 Number lastError    "Error [%s]"  <error>  (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_error" }
 Switch lastCompleted  "Last Cleaning Completed"    (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#last_clean_finish" }
 
-
 Image map "Cleaning Map" (gVacLast) {channel="miio:vacuum:034F0E45:cleaning#map"}
 ```
 
 Note: cleaning map is only available with cloud access.
+
+Additionally depending on the capabilities of your robot vacuum other channels may be enabled at runtime
+
+
+| Type    | Channel                           | Description                |
+|---------|-----------------------------------|----------------------------|
+| Switch  | status#water_box_status           | Water Box Status           |
+| Switch  | status#lock_status                | Lock Status                |
+| Number  | status#water_box_mode             | Water Box Mode             |
+| Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
+| Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
+| Number  | actions#segment                   | Room Clean  (enter room #) |
+
+
 
 !!!itemFileExamples

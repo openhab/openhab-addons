@@ -1,4 +1,6 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -9,7 +11,7 @@
 
   <groupId>org.openhab.addons</groupId>
   <artifactId>org.openhab.addons.reactor</artifactId>
-  <version>2.5.7-SNAPSHOT</version>
+  <version>2.5.9-SNAPSHOT</version>
 
   <packaging>pom</packaging>
 
@@ -76,8 +78,7 @@
     <bnd.includeresource>-${.}/NOTICE, -${.}/*.xsd</bnd.includeresource>
 
     <feature.directory>src/main/feature/feature.xml</feature.directory>
-    <spotless.check.skip>true</spotless.check.skip> <!-- Spotless disabled for now -->
-    <spotless.version>1.31.1</spotless.version>
+    <spotless.version>2.0.3</spotless.version>
   </properties>
 
   <dependencyManagement>
@@ -564,7 +565,7 @@ Import-Package: \\
               <format>
                 <!-- feature.xml -->
                 <includes>
-                  <include>src/main/feature/feature.xml</include>
+                  <include>**/src/main/feature/feature.xml</include>
                 </includes>
                 <eclipseWtp>
                   <type>XML</type>

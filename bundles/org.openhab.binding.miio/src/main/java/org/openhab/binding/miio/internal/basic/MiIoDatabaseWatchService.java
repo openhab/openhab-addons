@@ -67,6 +67,9 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
     @Activate
     public MiIoDatabaseWatchService() {
         super(LOCAL_DATABASE_PATH);
+        logger.debug(
+                "Started miio basic devices local databases watch service. Watching for database files at path: {}",
+                LOCAL_DATABASE_PATH);
         processWatchEvent(null, null, Paths.get(LOCAL_DATABASE_PATH));
         populateDatabase();
         if (logger.isTraceEnabled()) {

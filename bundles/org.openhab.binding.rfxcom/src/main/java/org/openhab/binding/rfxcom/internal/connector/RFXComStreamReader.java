@@ -42,7 +42,8 @@ public class RFXComStreamReader extends Thread {
         }
     }
 
-    public RFXComStreamReader(RFXComBaseConnector connector) {
+    public RFXComStreamReader(RFXComBaseConnector connector, String threadName) {
+        super(threadName);
         this.connector = connector;
         setUncaughtExceptionHandler(new ExceptionHandler());
     }

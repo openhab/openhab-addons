@@ -46,5 +46,4 @@ public class Program {
     public String toString() {
         return String.format("number=%d, name=%s", number, name);
     }
-
 }

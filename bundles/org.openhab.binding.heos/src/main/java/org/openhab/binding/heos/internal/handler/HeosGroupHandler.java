@@ -278,6 +278,8 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
                     throw new IllegalStateException("Invalid group response received");
                 }
 
+                assertSameGroup(group);
+
                 gid = groupId;
                 updateConfiguration(groupId, group);
                 updateStatus(ThingStatus.ONLINE);
@@ -288,6 +290,20 @@ public class HeosGroupHandler extends HeosThingBaseHandler {
                 cancel(scheduledStartupFuture, false);
                 scheduledStartupFuture = scheduler.schedule(this::delayedInitialize, 30, TimeUnit.SECONDS);
             }
+        }
+    }
+
+    /**
+     * Make sure the given group is group which this handler represents
+     * 
+     * @param group retrieved from HEOS system
+     */
+    private void assertSameGroup(Group group) {
+        String storedGroupHash = HeosGroup.calculateGroupMemberHash(configuration.members);
+        String retrievedGroupHash = HeosGroup.calculateGroupMemberHash(group);
+
+        if (!retrievedGroupHash.equals(storedGroupHash)) {
+            throw new IllegalStateException("Invalid group received, members / hash do not match.");
         }
     }
 

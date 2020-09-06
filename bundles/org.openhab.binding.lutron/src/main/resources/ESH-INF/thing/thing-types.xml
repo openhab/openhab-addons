@@ -84,6 +84,21 @@
 				<label>Fade Out Time</label>
 				<description>Fade time in seconds when turning off the light</description>
 			</parameter>
+			<parameter name="onLevel" type="decimal" min="0.01" max="100.00">
+				<label>On Level</label>
+				<description>Output level to go to when an ON command is received. Default is 100%.</description>
+				<default>100</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="onToLast" type="boolean">
+				<label>Turn On To Last Level</label>
+				<description>
+					If set to true, dimmer will go to the last non-zero level set when an ON command is received. If the
+					last level cannot be determined, the value of onLevel will be used instead.
+				</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 	</thing-type>
 
@@ -201,13 +216,13 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccopulsed">
+	<thing-type id="ccopulsed" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Pulsed CCO</label>
-		<description>Pulsed Contact Closure Output</description>
+		<label>Pulsed CCO (Deprecated)</label>
+		<description>Pulsed Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -228,13 +243,13 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="ccomaintained">
+	<thing-type id="ccomaintained" listed="false">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ipbridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Maintained CCO</label>
-		<description>Maintained Contact Closure Output</description>
+		<label>Maintained CCO (Deprecated)</label>
+		<description>Maintained Contact Closure Output (Deprecated)</description>
 
 		<channels>
 			<channel id="switchstatus" typeId="switchState"/>
@@ -268,6 +283,26 @@
 			<parameter name="integrationId" type="integer" required="true">
 				<label>Integration ID</label>
 				<description>Address of sensor in the Lutron lighting system</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<thing-type id="sysvar">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="ipbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>System State Variable</label>
+		<description>HomeWorks QS system state variable</description>
+
+		<channels>
+			<channel id="varstate" typeId="varstateType"/>
+		</channels>
+
+		<config-description>
+			<parameter name="integrationId" type="integer" required="true">
+				<label>Integration ID</label>
+				<description>Integration ID for state variable</description>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -968,10 +1003,8 @@
 				<default>false</default>
 				<label>Update Processor Time</label>
 				<description>
-					The older HomeWorks processors seem to have difficulty keeping track of the time,
-					especially where
-					daylight savings is concerned. If this option is selected, the HomeWorks
-					bridge will automatically update the
+					The older HomeWorks processors seem to have difficulty keeping track of the time, especially where
+					daylight savings is concerned. If this option is selected, the HomeWorks bridge will automatically update the
 					processor on initialization and once per day thereafter.
 				</description>
 			</parameter>
@@ -1234,6 +1267,14 @@
 		<description>Green mode step number</description>
 		<category>Number</category>
 		<state min="1"/>
+	</channel-type>
+
+	<channel-type id="varstateType">
+		<item-type>Number</item-type>
+		<label>Variable State</label>
+		<description>System variable state</description>
+		<category>Number</category>
+		<state min="0"/>
 	</channel-type>
 
 	<channel-type id="superschedulebutton">

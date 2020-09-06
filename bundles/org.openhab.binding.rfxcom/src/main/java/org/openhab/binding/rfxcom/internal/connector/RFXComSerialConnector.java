@@ -39,13 +39,15 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
 
     private OutputStream out;
     private SerialPort serialPort;
-    private SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
+    private final String readerThreadName;
     private Thread readerThread;
 
-    public RFXComSerialConnector(SerialPortManager serialPortManager) {
+    public RFXComSerialConnector(SerialPortManager serialPortManager, String readerThreadName) {
         super();
         this.serialPortManager = serialPortManager;
+        this.readerThreadName = readerThreadName;
     }
 
     @Override
@@ -81,7 +83,7 @@ public class RFXComSerialConnector extends RFXComBaseConnector implements Serial
         } catch (TooManyListenersException e) {
         }
 
-        readerThread = new RFXComStreamReader(this);
+        readerThread = new RFXComStreamReader(this, readerThreadName);
         readerThread.start();
     }
 

@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
 import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
 import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.endpoint.EndpointPoolConfiguration;
@@ -46,7 +47,7 @@ public class ModbusTcpThingHandlerTest extends AbstractModbusOSGiTest {
     }
 
     @Test
-    public void testInitializeAndSlaveEndpoint() {
+    public void testInitializeAndSlaveEndpoint() throws EndpointNotInitializedException {
         Configuration thingConfig = new Configuration();
         thingConfig.put("host", "thisishost");
         thingConfig.put("port", 44);

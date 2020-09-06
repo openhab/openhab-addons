@@ -762,5 +762,4 @@ public class SmartherBridgeHandler extends BaseBridgeHandler
             return false;
         }
     }
-
 }

@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Holds the calculated sun phase informations.
  *
@@ -35,10 +32,5 @@ public class SunPhase {
      */
     public void setName(SunPhaseName name) {
         this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("name", name).toString();
     }
 }

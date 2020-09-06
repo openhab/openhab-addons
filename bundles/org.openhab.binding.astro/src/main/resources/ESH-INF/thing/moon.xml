@@ -38,7 +38,7 @@
 
 		<representation-property>geolocation</representation-property>
 
-		<config-description-ref uri="thing-type:astro:config"/>
+		<config-description-ref uri="thing-type:astro:moonconfig"/>
 	</thing-type>
 
 </thing:thing-descriptions>

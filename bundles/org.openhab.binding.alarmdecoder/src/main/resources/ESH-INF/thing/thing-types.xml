@@ -143,16 +143,16 @@
 	<!-- Virtual Zone Thing Type -->
 	<thing-type id="vzone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ipbridge" />
-			<bridge-type-ref id="serialbridge" />
+			<bridge-type-ref id="ipbridge"/>
+			<bridge-type-ref id="serialbridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Virtual Zone</label>
 		<description>Alarm Decoder virtual zone</description>
 
 		<channels>
-			<channel id="command" typeId="contact-command-channel" />
-			<channel id="state" typeId="switch-channel" />
+			<channel id="command" typeId="contact-command-channel"/>
+			<channel id="state" typeId="switch-channel"/>
 		</channels>
 
 		<config-description>
@@ -239,9 +239,10 @@
 		</channels>
 
 		<config-description>
-			<parameter name="addressMask" type="text" required="true">
+			<parameter name="addressMask" type="text">
 				<label>Address Mask</label>
-				<description>Keypad address mask</description>
+				<description>Receive and send messages from a specific keypad (0=any)</description>
+				<default>0</default>
 			</parameter>
 			<parameter name="sendCommands" type="boolean">
 				<label>Send Commands</label>
@@ -325,7 +326,7 @@
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
 		<category>Switch</category>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 	<!-- Number Channel Type -->

@@ -201,7 +201,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         // missing
         Integer writeStart = this.writeStart;
         if (writeStart == null) {
-            logger.warn(
+            logger.debug(
                     "Thing {} '{}': not processing command {} since writeStart is missing and transformation output is not a JSON",
                     getThing().getUID(), getThing().getLabel(), command);
             return;
@@ -247,9 +247,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 processJsonTransform(command, transformOutput);
                 return null;
             } else if (writeParametersHavingTransformationOnly) {
-                logger.error(
-                        "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
-                        getThing().getUID(), command, channelUID);
                 updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '%s' (channel %s), this is a configuration error",
                         command, channelUID));
@@ -631,7 +628,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
 
         // Determine bit positions polled, both start and end inclusive
         int pollStartBitIndex = readRequest.getReference() * dataElementBits;
-        int pollEndBitIndex = pollStartBitIndex + readRequest.getDataLength() * dataElementBits;
+        int pollEndBitIndex = pollStartBitIndex + readRequest.getDataLength() * dataElementBits - 1;
 
         // Determine bit positions read, both start and end inclusive
         int readStartBitIndex = readIndex.get() * dataElementBits + readSubIndex.orElse(0) * valueTypeBitCount;
@@ -733,10 +730,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             return;
         }
         if (error instanceof ModbusConnectionException) {
-            logger.error("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
+            logger.trace("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else if (error instanceof ModbusTransportException) {
-            logger.error("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
+            logger.trace("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else {
             logger.error(
@@ -769,10 +766,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             return;
         }
         if (error instanceof ModbusConnectionException) {
-            logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
+            logger.debug("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else if (error instanceof ModbusTransportException) {
-            logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
+            logger.debug("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else {
             logger.error(

@@ -149,7 +149,7 @@ The following channels will be translated to local language based on the languag
 Bridge weathercompany:account:myaccount [ apiKey="0123456789" ] {
     Thing weather-forecast myweather "My Forecast" @ "Home" [locationType="postalCode",postalCode="10001:US",language="en-US",refreshInterval=30]
     Thing weather-observations myobservations "My Observations" @ "Home" [pwsStationId="KFLMIAMI208",refreshInterval=30]
-    Thing weather-forecast chitown "Chicago Forecast" @ "Ohare Airport" [apiKey="734982347982374",locationType="iataCode",iataCode="ORD",language="en-US",refreshInterval=30]
+    Thing weather-forecast chitown "Chicago Forecast" @ "Ohare Airport" [locationType="iataCode",iataCode="ORD",language="en-US",refreshInterval=30]
     Thing weather-forecast miami "Miami Weather"  @ "South Beach" [locationType="postalCode",postalCode="33139:US",language="es-US",refreshInterval=30]
     Thing weather-observations patagonia "Torres del Paine Weather" @ "Patagonia" [pwsStationId="IPUNTAAR4",refreshInterval=30]
 }

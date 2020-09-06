@@ -166,7 +166,6 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         api.setRelayTurn(lightId, SHELLY_API_OFF);
                         update = false;
                     } else {
-
                         if (command instanceof IncreaseDecreaseType) {
                             ShellyShortLightStatus light = api.getLightStatus(lightId);
                             if (((IncreaseDecreaseType) command).equals(IncreaseDecreaseType.INCREASE)) {

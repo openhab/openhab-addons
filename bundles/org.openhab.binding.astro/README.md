@@ -54,6 +54,7 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
     * **group** `eclipse`
         * **channel**: 
             * `total, partial, ring` (DateTime)
+            * `totalElevation, partialElevation, ringElevation` (Number:Angle)
     * **group** `phase`
         * **channel** 
             * `name` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NIGHT`
@@ -71,6 +72,7 @@ This is done by setting `useMeteorologicalSeason` to true in the advanced settin
     * **group** `eclipse`
         * **channel**: 
             * `total, partial` (DateTime)
+            * `totalElevation, partialElevation` (Number:Angle)
     * **group** `distance`
         * **channel**: 
             * `date` (DateTime)
@@ -198,6 +200,66 @@ then
     ...
 end
 ```
+
+## Rule Actions
+
+Multiple actions are supported by this binding. In classic rules these are accessible as shown in the example below:
+
+Getting sunActions variable in scripts
+
+```
+ val sunActions = getActions("astro","astro:sun:local")
+ if(null === sunActions) {
+        logInfo("actions", "sunActions not found, check thing ID")
+        return
+ } else {
+        // do something with sunActions
+ }
+```
+
+### getEventTime(phaseName, date, moment)
+
+Retrieves date and time (ZonedDateTime) of the requested phase name.
+Thing method only applies to Sun thing type.
+
+* `phaseName` (String), values: `SUN_RISE, ASTRO_DAWN, NAUTIC_DAWN, CIVIL_DAWN, CIVIL_DUSK, NAUTIC_DUSK, ASTRO_DUSK, SUN_SET, DAYLIGHT, NIGHT`. Mandatory.
+
+* `date` (ZonedDateTime), only the date part of this parameter will be considered - defaulted to now() if null.
+
+* `moment` (String), values: `START, END` - defaulted to `START` if null.
+
+Example :
+
+```
+ val sunEvent = "SUN_SET"
+ val today = ZonedDateTime.now;
+ val sunEventTime = sunActions.getEventTime(sunEvent,today,"START")
+ logInfo("AstroActions","{} will happen at : {}", sunEvent, sunEventTime.toString)
+```
+
+### getElevation(timeStamp)
+
+Retrieves the elevation (QuantityType<Angle>) of the sun at the requested instant.
+Thing method applies to Sun and Moon.
+
+* `timeStamp` (ZonedDateTime) - defaulted to now() if null.
+
+
+### getAzimuth(timeStamp)
+
+Retrieves the azimuth (QuantityType<Angle>) of the sun at the requested instant.
+Thing method applies to Sun and Moon.
+
+* `timeStamp` (ZonedDateTime) - defaulted to now() if null.
+
+Example :
+
+```
+ val azimuth = sunActions.getAzimuth(sunEventTime)
+ val elevation = sunActions.getElevation(sunEventTime)
+ logInfo("AstroActions", "{} will be positioned at elevation {} - azimuth {}",sunEvent, elevation.toString,azimuth.toString)
+```
+
 
 ## Tips
 

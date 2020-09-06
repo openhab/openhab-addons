@@ -262,10 +262,12 @@ public class SceneManagerImpl implements SceneManager {
     public void callInternalScene(String sceneID) {
         InternalScene intScene = this.internalSceneMap.get(sceneID);
         if (intScene != null) {
+            logger.debug("activating existing scene {}", intScene.getSceneName());
             intScene.activateScene();
         } else {
             intScene = createNewScene(sceneID);
             if (intScene != null) {
+                logger.debug("created new scene, activating it: {}", intScene.getSceneName());
                 discovery.sceneDiscoverd(intScene);
                 intScene.activateScene();
             }
@@ -373,10 +375,12 @@ public class SceneManagerImpl implements SceneManager {
     public void undoInternalScene(String sceneID) {
         InternalScene intScene = this.internalSceneMap.get(sceneID);
         if (intScene != null) {
+            logger.debug("deactivating existing scene {}", intScene.getSceneName());
             intScene.deactivateScene();
         } else {
             intScene = createNewScene(sceneID);
             if (intScene != null) {
+                logger.debug("created new scene, deactivating it: {}", intScene.getSceneName());
                 intScene.deactivateScene();
             }
         }

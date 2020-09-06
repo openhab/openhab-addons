@@ -15,6 +15,9 @@ package org.openhab.binding.shelly.internal.discovery;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -27,47 +30,81 @@ import org.eclipse.smarthome.core.thing.ThingUID;
  */
 @NonNullByDefault
 public class ShellyThingCreator {
-    public static ThingUID getThingUID(String serviceName, String mode, boolean unknown) {
-        String devid = StringUtils.substringAfterLast(serviceName, "-");
-        return new ThingUID(!unknown ? getThingTypeUID(serviceName, mode)
-                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, mode), devid);
+    private static final Map<String, String> THING_TYPE_MAPPING = new LinkedHashMap<>();
+    static {
+        // mapping by thing type
+        THING_TYPE_MAPPING.put(SHELLYDT_1PM, THING_TYPE_SHELLY1PM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_1, THING_TYPE_SHELLY1_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_3EM, THING_TYPE_SHELLY3EM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_EM, THING_TYPE_SHELLYEM_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_GAS, THING_TYPE_SHELLYGAS_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_DW, THING_TYPE_SHELLYDOORWIN_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_DW2, THING_TYPE_SHELLYDOORWIN2_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_DUO, THING_TYPE_SHELLYDUO_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_BULB, THING_TYPE_SHELLYBULB_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_VINTAGE, THING_TYPE_SHELLYVINTAGE_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_DIMMER, THING_TYPE_SHELLYDIMMER_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_DIMMER2, THING_TYPE_SHELLYDIMMER2_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_IX3, THING_TYPE_SHELLYIX3_STR);
+        THING_TYPE_MAPPING.put(SHELLYDT_BUTTON1, THING_TYPE_SHELLYBUTTON1_STR);
+
+        // mapping by thing type
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1_STR, THING_TYPE_SHELLY1_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY1PM_STR, THING_TYPE_SHELLY1PM_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY4PRO_STR, THING_TYPE_SHELLY4PRO_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDIMMER2_STR, THING_TYPE_SHELLYDIMMER2_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDIMMER_STR, THING_TYPE_SHELLYDIMMER_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYIX3_STR, THING_TYPE_SHELLYIX3_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLY3EM_STR, THING_TYPE_SHELLY3EM_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYEM_STR, THING_TYPE_SHELLYEM_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYVINTAGE_STR, THING_TYPE_SHELLYVINTAGE_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBULB_STR, THING_TYPE_SHELLYBULB_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDUO_STR, THING_TYPE_SHELLYDUO_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYHT_STR, THING_TYPE_SHELLYHT_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYSMOKE_STR, THING_TYPE_SHELLYSMOKE_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYGAS_STR, THING_TYPE_SHELLYGAS_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYFLOOD_STR, THING_TYPE_SHELLYFLOOD_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDOORWIN_STR, THING_TYPE_SHELLYDOORWIN_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYDOORWIN2_STR, THING_TYPE_SHELLYDOORWIN2_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYSENSE_STR, THING_TYPE_SHELLYSENSE_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYEYE_STR, THING_TYPE_SHELLYEYE_STR);
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYBUTTON1_STR, THING_TYPE_SHELLYBUTTON1_STR);
+
+        THING_TYPE_MAPPING.put(THING_TYPE_SHELLYPROTECTED_STR, THING_TYPE_SHELLYPROTECTED_STR);
     }
 
-    public static ThingTypeUID getThingTypeUID(String serviceName, String mode) {
-        return new ThingTypeUID(BINDING_ID, getThingType(serviceName, mode));
+    public static ThingUID getThingUID(String serviceName, String deviceType, String mode, boolean unknown) {
+        String devid = StringUtils.substringAfterLast(serviceName, "-");
+        if (devid == null) {
+            throw new IllegalArgumentException("serviceName has improper format: " + serviceName);
+        }
+        return new ThingUID(!unknown ? getThingTypeUID(serviceName, deviceType, mode)
+                : getThingTypeUID(THING_TYPE_SHELLYPROTECTED_STR + "-" + devid, deviceType, mode), devid);
+    }
+
+    public static ThingTypeUID getThingTypeUID(String serviceName, String deviceType, String mode) {
+        return new ThingTypeUID(BINDING_ID, getThingType(serviceName, deviceType, mode));
     }
 
     public static ThingTypeUID getUnknownTTUID() {
         return new ThingTypeUID(BINDING_ID, THING_TYPE_SHELLYPROTECTED_STR);
     }
 
-    public static String getThingType(String hostname, String mode) {
+    public static String getThingType(String hostname, String deviceType, String mode) {
         String name = hostname.toLowerCase();
+        String type = StringUtils.substringBefore(name, "-").toLowerCase();
         String devid = StringUtils.substringAfterLast(name, "-");
-        if (devid == null) {
+        if ((devid == null) || (type == null)) {
             throw new IllegalArgumentException("Invalid device name format: " + hostname);
         }
 
-        if (name.startsWith(THING_TYPE_SHELLY1PN_STR)) {
-            return THING_TYPE_SHELLY1PN_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYEM3_STR)) {
-            return THING_TYPE_SHELLYEM3_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYEM_STR)) {
-            return THING_TYPE_SHELLYEM_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLY1_STR)) {
-            return THING_TYPE_SHELLY1_STR;
-        }
+        // First check for special handling
         if (name.startsWith(THING_TYPE_SHELLY25_PREFIX)) { // Shelly v2.5
             return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY25_RELAY_STR : THING_TYPE_SHELLY25_ROLLER_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLY2_PREFIX)) { // Shelly v2
             return mode.equals(SHELLY_MODE_RELAY) ? THING_TYPE_SHELLY2_RELAY_STR : THING_TYPE_SHELLY2_ROLLER_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLY4PRO_STR)) {
-            return THING_TYPE_SHELLY4PRO_STR;
         }
         if (name.startsWith(THING_TYPE_SHELLYPLUG_STR)) {
             // shellyplug-s needs to be mapped to shellyplugs to follow the schema
@@ -77,40 +114,17 @@ public class ShellyThingCreator {
             }
             return THING_TYPE_SHELLYPLUG_STR;
         }
-        if (name.startsWith(THING_TYPE_SHELLYDIMMER_STR)) {
-            return THING_TYPE_SHELLYDIMMER_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYDUO_STR)) {
-            return THING_TYPE_SHELLYDUO_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYBULB_STR)) {
-            return THING_TYPE_SHELLYBULB_STR;
-        }
         if (name.startsWith(THING_TYPE_SHELLYRGBW2_PREFIX)) {
             return mode.equals(SHELLY_MODE_COLOR) ? THING_TYPE_SHELLYRGBW2_COLOR_STR : THING_TYPE_SHELLYRGBW2_WHITE_STR;
         }
-        if (name.startsWith(THING_TYPE_SHELLYHT_STR)) {
-            return THING_TYPE_SHELLYHT_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYSMOKE_STR)) {
-            return THING_TYPE_SHELLYSMOKE_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYFLOOD_STR)) {
-            return THING_TYPE_SHELLYFLOOD_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYDOORWIN_STR)) {
-            return THING_TYPE_SHELLYDOORWIN_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYSENSE_STR)) {
-            return THING_TYPE_SHELLYSENSE_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYEYE_STR)) {
-            return THING_TYPE_SHELLYEYE_STR;
-        }
-        if (name.startsWith(THING_TYPE_SHELLYPROTECTED_STR)) {
-            return THING_TYPE_SHELLYPROTECTED_STR;
-        }
 
-        return THING_TYPE_UNKNOWN_STR;
+        // Check general mapping
+        if (!deviceType.isEmpty() && THING_TYPE_MAPPING.containsKey(deviceType)) {
+            return THING_TYPE_MAPPING.get(deviceType);
+        }
+        if (THING_TYPE_MAPPING.containsKey(type)) {
+            return THING_TYPE_MAPPING.get(type);
+        }
+        return THING_TYPE_SHELLYUNKNOWN_STR;
     }
 }

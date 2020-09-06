@@ -12,16 +12,21 @@
  */
 package org.openhab.binding.hdpowerview.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
- * Basic configuration for the HD Power View HUB
+ * Basic configuration for the HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 public class HDPowerViewHubConfiguration {
 
     public static final String HOST = "host";
 
-    public String host;
+    public @Nullable String host;
 
     public long refresh;
+    public long hardRefresh;
 }
