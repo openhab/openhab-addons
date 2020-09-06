@@ -161,7 +161,8 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
-        if (scanningJob == null || scanningJob.isCancelled()) {
+        ScheduledFuture<?> localScanningJob = scanningJob;
+        if (localScanningJob == null || localScanningJob.isCancelled()) {
             scanningJob = scheduler.scheduleWithFixedDelay(this::startScan, LINK_DISCOVERY_SERVICE_INITIAL_DELAY_SEC,
                     SCAN_INTERVAL_SEC, TimeUnit.SECONDS);
         }
