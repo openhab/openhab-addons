@@ -27,8 +27,7 @@
 		<parameter name="subscriptionKey" groupName="subscription" type="text" pattern="[0-9a-f]{32}">
 			<label>Subscription Key</label>
 			<description>This is the Subscription Key provided by BTicino/Legrand when you subscribe to Smarther - v2.0 product.
-				Go to
-				https://developer.legrand.com/tutorials/getting-started/</description>
+				Go to https://developer.legrand.com/tutorials/getting-started/</description>
 			<required>true</required>
 		</parameter>
 
@@ -36,8 +35,7 @@
 			pattern="[0-9a-f]{8}[-]([0-9a-f]{4}[-]){3}[0-9a-f]{12}">
 			<label>Client ID</label>
 			<description>This is the Client ID provided by BTicino/Legrand when you add a new Application to your developer
-				account. Go to
-				https://developer.legrand.com/tutorials/create-an-application/</description>
+				account. Go to https://developer.legrand.com/tutorials/create-an-application/</description>
 			<required>true</required>
 		</parameter>
 
@@ -52,15 +50,10 @@
 		<parameter name="useNotifications" groupName="advancedset" type="boolean">
 			<label>Use Notifications</label>
 			<description>ON = the bridge subscribes each of its locations to receive C2C notifications upon changes on each of
-				its modules' status or sensors
-				data - temperature, humidity (requires a public https endpoint has been set as "First
-				Reply Url" when registering the
-				Application on Legrand's development
-				portal); OFF = for each module connected to this
-				bridge, status+sensors data are requested to Smarther API gateway on a
-				periodical basis and whenever new
-				settings are
-				applied (period can be changed via module's "Status Refresh Period" parameter).</description>
+				its modules' status or sensors data - temperature, humidity (requires a public https endpoint has been set as "First
+				Reply Url" when registering the Application on Legrand's development portal); OFF = for each module connected to
+				this bridge, status+sensors data are requested to Smarther API gateway on a periodical basis and whenever new
+				settings are applied (period can be changed via module's "Status Refresh Period" parameter).</description>
 			<required>false</required>
 			<advanced>true</advanced>
 			<default>true</default>
@@ -69,11 +62,8 @@
 		<parameter name="statusRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="min">
 			<label>Bridge Status Refresh Period (minutes)</label>
 			<description>This is the frequency the Smarther API gateway is called to update bridge status. There are limits to
-				the number of
-				requests that can be sent to the Smarther API gateway. The more often you poll, the faster locations
-				are updated - at the
-				risk of running out of your request
-				quota.</description>
+				the number of requests that can be sent to the Smarther API gateway. The more often you poll, the faster locations
+				are updated - at the risk of running out of your request quota.</description>
 			<required>false</required>
 			<advanced>true</advanced>
 			<unitLabel>Minutes</unitLabel>
@@ -115,8 +105,7 @@
 		<parameter name="settingsAutoupdate" groupName="advancedset" type="boolean">
 			<label>Module Settings Auto-Update</label>
 			<description>ON = the module settings are automatically updated according to the module status whenever it changes
-				(e.g. polling, notification,
-				etc.). OFF = the module settings are aligned to the module status only upon module
+				(e.g. polling, notification, etc.). OFF = the module settings are aligned to the module status only upon module
 				initialization.</description>
 			<required>false</required>
 			<advanced>true</advanced>
@@ -126,11 +115,8 @@
 		<parameter name="programsRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="h">
 			<label>Programs Refresh Period (hours)</label>
 			<description>This is the frequency the Smarther API gateway is called to refresh Programs list used in "automatic"
-				mode. There are limits to the
-				number of requests that can be sent to the Smarther API gateway. The more often you
-				poll, the faster locations are updated
-				- at the risk of running out of your
-				request quota.</description>
+				mode. There are limits to the number of requests that can be sent to the Smarther API gateway. The more often you
+				poll, the faster locations are updated - at the risk of running out of your request quota.</description>
 			<required>false</required>
 			<advanced>true</advanced>
 			<unitLabel>Hours</unitLabel>
@@ -140,8 +126,7 @@
 		<parameter name="numberOfEndDays" groupName="advancedset" type="integer" min="1" max="9">
 			<label>Number Of Days For End Date</label>
 			<description>This is the number of days to be displayed in module settings, as options list for "End Date" field in
-				"manual" mode (e.g. 1 = only
-				"Today" is displayed, 5 = "Today" + "Tomorrow" + following 3 days are displayed).</description>
+				"manual" mode (e.g. 1 = only "Today" is displayed, 5 = "Today" + "Tomorrow" + following 3 days are displayed).</description>
 			<required>false</required>
 			<advanced>true</advanced>
 			<default>5</default>
@@ -150,11 +135,8 @@
 		<parameter name="statusRefreshPeriod" groupName="advancedset" type="integer" min="1" unit="min">
 			<label>Module Status Refresh Period (minutes)</label>
 			<description>This is the frequency the Smarther API gateway is called to update module status and sensors data. There
-				are limits to the number of
-				requests that can be sent to the Smarther API gateway. The more often you poll, the
-				faster locations are updated - at the
-				risk of running out of your request
-				quota.</description>
+				are limits to the number of requests that can be sent to the Smarther API gateway. The more often you poll, the
+				faster locations are updated - at the risk of running out of your request quota.</description>
 			<required>false</required>
 			<advanced>true</advanced>
 			<unitLabel>Minutes</unitLabel>
