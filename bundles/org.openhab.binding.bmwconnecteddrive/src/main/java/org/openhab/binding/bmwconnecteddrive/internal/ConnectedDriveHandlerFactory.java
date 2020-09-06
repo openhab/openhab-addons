@@ -62,8 +62,7 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
-            return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
-                    bundleContext);
+            return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory, bundleContext);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
             VehicleHandler cch = new VehicleHandler(thing, httpClientFactory.getCommonHttpClient(),
                     thingTypeUID.getId(), imperial);

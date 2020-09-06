@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -29,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveBridgeHandler.class);
-    private HttpClient httpClient;
+    private HttpClientFactory httpClientFactory;
     private BundleContext bundleContext;
     private VehicleDiscovery discoveryService;
     private ServiceRegistration<?> discoveryServiceRegstration;
@@ -61,9 +61,9 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private Optional<String> troubleshootFingerprint = Optional.empty();
     private ChannelUID discoveryFingerprintChannel;
 
-    public ConnectedDriveBridgeHandler(Bridge bridge, HttpClient hc, BundleContext bc) {
+    public ConnectedDriveBridgeHandler(Bridge bridge, HttpClientFactory hcf, BundleContext bc) {
         super(bridge);
-        httpClient = hc;
+        httpClientFactory = hcf;
         bundleContext = bc;
         discoveryService = new VehicleDiscovery(this);
         discoveryServiceRegstration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
@@ -91,7 +91,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         updateStatus(ThingStatus.UNKNOWN);
         configuration = Optional.of(getConfigAs(ConnectedDriveConfiguration.class));
         if (configuration.isPresent()) {
-            proxy = Optional.of(new ConnectedDriveProxy(httpClient, configuration.get()));
+            proxy = Optional.of(new ConnectedDriveProxy(httpClientFactory, configuration.get()));
             // give the system some time to create all predefined Vehicles
             scheduler.schedule(this::requestVehicles, 5, TimeUnit.SECONDS);
         } else {

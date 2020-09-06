@@ -32,6 +32,7 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
@@ -54,7 +55,7 @@ import org.slf4j.LoggerFactory;
 public class ConnectedDriveProxy {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveProxy.class);
     private static final int TIMEOUT_SEC = 10;
-    private HttpClient http;
+    private HttpClient httpClient;
     private String authUri;
     private ConnectedDriveConfiguration configuration;
     private Token token = new Token();
@@ -74,8 +75,8 @@ public class ConnectedDriveProxy {
     String serviceExecutionAPI = "/executeService";
     String serviceExecutionStateAPI = "/serviceExecutionStatus?serviceType=";
 
-    public ConnectedDriveProxy(HttpClient hc, ConnectedDriveConfiguration config) {
-        http = hc;
+    public ConnectedDriveProxy(HttpClientFactory httpClientFactory, ConnectedDriveConfiguration config) {
+        httpClient = httpClientFactory.getCommonHttpClient();
         configuration = config;
         // generate URI for Authorization
         // https://customer.bmwgroup.com/one/app/oauth.js
@@ -90,7 +91,7 @@ public class ConnectedDriveProxy {
         baseUrl = "https://" + getRegionServer() + "/webapi/v1/user/vehicles/";
     }
 
-    public void request(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
+    public synchronized void request(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
         if (tokenUpdate()) {
             final StringBuffer completeUrl = new StringBuffer(url);
             if (params.isPresent()) {
@@ -100,12 +101,10 @@ public class ConnectedDriveProxy {
                 // req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
                 // req.content(new StringContentProvider(urlEncodedData));
                 // logger.info("URL has parameters {}", urlEncodedData);
-                logger.info("Params for request: {}", urlEncodedData);
-            } else {
-                logger.info("No Params for request: {}", url);
+                // logger.info("Params for request: {}", urlEncodedData);
             }
             logger.info("Complete URL {}", completeUrl.toString());
-            Request req = http.newRequest(completeUrl.toString());
+            Request req = httpClient.newRequest(completeUrl.toString());
             req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
             req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
             req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
@@ -188,7 +187,7 @@ public class ConnectedDriveProxy {
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {
-        return new RemoteServiceHandler(vehicleHandler, this, http);
+        return new RemoteServiceHandler(vehicleHandler, this, httpClient);
     }
 
     // Token handling
@@ -197,7 +196,7 @@ public class ConnectedDriveProxy {
         if (token.isExpired() || !token.isValid()) {
             token = getToken();
             if (token.isExpired() || !token.isValid()) {
-                logger.info("Token update failed!");
+                logger.warn("Token update failed!");
                 return false;
             }
         }
@@ -216,9 +215,9 @@ public class ConnectedDriveProxy {
      *
      * @return
      */
-    public Token getNewToken() {
-        http.setFollowRedirects(false);
-        Request req = http.POST(authUri);
+    public synchronized Token getNewToken() {
+        httpClient.setFollowRedirects(false);
+        Request req = httpClient.POST(authUri);
 
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
         req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
@@ -241,12 +240,12 @@ public class ConnectedDriveProxy {
             logger.info("Status {} ", contentResponse.getStatus());
             HttpFields fields = contentResponse.getHeaders();
             HttpField field = fields.getField(HttpHeader.LOCATION);
-            http.setFollowRedirects(true);
+            httpClient.setFollowRedirects(true);
             return getTokenFromUrl(field.getValue());
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.warn("Auth Exception: {}", e.getMessage());
         }
-        http.setFollowRedirects(true);
+        httpClient.setFollowRedirects(true);
         return new Token();
     }
 
