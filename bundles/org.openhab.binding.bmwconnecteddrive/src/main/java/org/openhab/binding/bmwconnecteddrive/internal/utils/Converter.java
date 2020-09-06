@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.Gson;
 
 /**
- * The {@link Converter} Data Transfer Object
+ * The {@link Converter} Conversion Helpers
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -83,6 +83,10 @@ public class Converter {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
 
+    public static Gson getGson() {
+        return GSON;
+    }
+
     /**
      * Measure distance between 2 coordinates
      *
@@ -124,7 +128,4 @@ public class Converter {
         return range * 0.8;
     }
 
-    public static Gson getGson() {
-        return GSON;
-    }
 }

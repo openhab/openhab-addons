@@ -30,6 +30,7 @@ import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,8 +107,8 @@ public class RemoteServiceHandler {
             serviceExecutionStateAPI = proxy.baseUrl + handler.getConfiguration().get().vin
                     + proxy.serviceExecutionStateAPI;
         } else {
-            serviceExecutionAPI = "";
-            serviceExecutionStateAPI = "";
+            serviceExecutionAPI = Constants.INVALID;
+            serviceExecutionStateAPI = Constants.INVALID;
             logger.warn("No configuration for VehicleHandler available");
         }
     }
@@ -115,6 +116,7 @@ public class RemoteServiceHandler {
     boolean execute(RemoteService service) {
         synchronized (this) {
             if (serviceExecuting.isPresent()) {
+                // only one service executing
                 return false;
             }
             serviceExecuting = Optional.of(service.toString());
@@ -135,13 +137,12 @@ public class RemoteServiceHandler {
             try {
                 ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
                 if (contentResponse.getStatus() != 200) {
-                    logger.info("URL {}", serviceExecutionAPI);
-                    logger.info("Status {}", contentResponse.getStatus());
-                    logger.info("Reason {}", contentResponse.getReason());
+                    logger.debug("URL {} Status {} Reason {}", serviceExecutionAPI, contentResponse.getStatus(),
+                            contentResponse.getReason());
                     reset();
                     return false;
                 } else {
-                    logger.info("Executed {}, Response {}", service.toString(), contentResponse.getContentAsString());
+                    logger.debug("Executed {}, Response {}", service.toString(), contentResponse.getContentAsString());
                     handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
                     return true;
                 }
@@ -175,21 +176,17 @@ public class RemoteServiceHandler {
         try {
             ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (contentResponse.getStatus() != 200) {
-                logger.info("URL {}", serviceExecutionStateAPI);
-                logger.info("Status {}", contentResponse.getStatus());
-                logger.info("Reason {}", contentResponse.getReason());
+                logger.debug("URL {} Status {} Reason {}", serviceExecutionAPI, contentResponse.getStatus(),
+                        contentResponse.getReason());
             } else {
                 String state = contentResponse.getContentAsString();
-                logger.info("Executed {}, Response {}", serviceExecuting.get(), state);
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(state, ExecutionStatusContainer.class);
                 ExecutionStatus execStatus = esc.executionStatus;
 
                 handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
                 if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
-                    logger.info("Continue state observing");
                     handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
                 } else {
-                    logger.info("Execution finished");
                     reset();
                     // immediately refresh data
                     handler.getData();
