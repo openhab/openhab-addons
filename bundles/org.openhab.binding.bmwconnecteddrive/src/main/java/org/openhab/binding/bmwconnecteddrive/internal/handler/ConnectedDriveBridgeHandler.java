@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -29,7 +30,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
-import org.openhab.binding.bmwconnecteddrive.internal.discovery.ConnectedCarDiscovery;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
+import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Dealer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
@@ -51,24 +53,37 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveBridgeHandler.class);
     private HttpClient httpClient;
     private BundleContext bundleContext;
-    private ConnectedCarDiscovery discoveryService;
+    private VehicleDiscovery discoveryService;
     private ServiceRegistration<?> discoveryServiceRegstration;
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
+    private ChannelUID discoveryFingerprintChannel;
 
     public ConnectedDriveBridgeHandler(Bridge bridge, HttpClient hc, BundleContext bc) {
         super(bridge);
         httpClient = hc;
         bundleContext = bc;
-        discoveryService = new ConnectedCarDiscovery(this);
+        discoveryService = new VehicleDiscovery(this);
         discoveryServiceRegstration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
+        discoveryFingerprintChannel = new ChannelUID(bridge.getUID(), ConnectedDriveConstants.DISCOVERY_FINGERPRINT);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (ConnectedDriveConstants.DISCOVERY_FINGERPRINT.equals(channelUID.getIdWithoutGroup())
+                && command instanceof OnOffType) {
+            if (command.equals(OnOffType.ON)) {
+                logger.warn(
+                        "###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - BEGIN ######");
+                logger.warn("### Discovery Result ###");
+                logger.warn("{}", getDiscoveryFingerprint());
+                logger.warn("###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - END ######");
+                updateState(discoveryFingerprintChannel, OnOffType.OFF);
+            }
+        }
     }
 
     @Override
@@ -82,6 +97,7 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         }
+        updateState(discoveryFingerprintChannel, OnOffType.OFF);
     }
 
     @Override

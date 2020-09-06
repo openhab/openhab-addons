@@ -105,7 +105,7 @@ public class Converter {
 
     /**
      * Easy function but there's some measures behind:
-     * Guessing the range of the Vehicle on Map. If you can drive x kilometers with your car it's not feasible to
+     * Guessing the range of the Vehicle on Map. If you can drive x kilometers with your Vehicle it's not feasible to
      * project this x km Radius on Map. The roads to be taken are causing some overhead because they are not a straight
      * line from Location A to B.
      * I've taken some measurements to calculate the overhead factor based on Google Maps
