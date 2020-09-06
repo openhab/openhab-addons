@@ -78,7 +78,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     public void handleStandaloneElement(final String elementName, final Map<String, String> attributes,
             final boolean minimized, final int line, final int col) throws ParseException {
 
-        logger.info("Error parsing options for {}: Unexpected StandaloneElement in {}{}: {} [{}]", channelName, line,
+        logger.debug("Error parsing options for {}: Unexpected StandaloneElement in {}{}: {} [{}]", channelName, line,
                 col, elementName, attributes);
     }
 
@@ -128,7 +128,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             this.curOptionValue = new StringBuilder();
             this.curOptionId = attributes == null ? null : attributes.get("value");
         } else {
-            logger.info("Error parsing options for {}: Unexpected OpenElement in {}:{}: {} [{}]", channelName, line,
+            logger.debug("Error parsing options for {}: Unexpected OpenElement in {}:{}: {} [{}]", channelName, line,
                     col, elementName, attributes);
         }
     }
@@ -149,7 +149,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             this.curOptionId = null;
             if (value != null) {
                 if (id == null || id.trim().isEmpty()) {
-                    logger.info("Error parsing options for {}: Got option with empty 'value' in {}:{}: [{}]",
+                    logger.debug("Error parsing options for {}: Got option with empty 'value' in {}:{}: [{}]",
                             channelName, line, col, value);
                     return;
                 }
@@ -157,12 +157,12 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
                 @Nullable
                 String prev = this.options.put(value, id);
                 if (prev != null && !prev.equals(value)) {
-                    logger.info("Error parsing options for {}: Got duplicate options in {}:{} for {}: {} and {}",
+                    logger.debug("Error parsing options for {}: Got duplicate options in {}:{} for {}: {} and {}",
                             channelName, line, col, value, prev, id);
                 }
             }
         } else {
-            logger.info("Error parsing options for {}: Unexpected CloseElement in {}:{}: {}", channelName, line, col,
+            logger.debug("Error parsing options for {}: Unexpected CloseElement in {}:{}: {}", channelName, line, col,
                     elementName);
         }
     }
@@ -170,33 +170,33 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleAutoCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        logger.info("Unexpected AutoCloseElement in {}:{}: {}", line, col, elementName);
+        logger.debug("Unexpected AutoCloseElement in {}:{}: {}", line, col, elementName);
     }
 
     @Override
     public void handleUnmatchedCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        logger.info("Unexpected UnmatchedCloseElement in {}:{}: {}", line, col, elementName);
+        logger.debug("Unexpected UnmatchedCloseElement in {}:{}: {}", line, col, elementName);
     }
 
     @Override
     public void handleDocType(final @Nullable String elementName, final @Nullable String publicId,
             final @Nullable String systemId, final @Nullable String internalSubset, final int line, final int col)
             throws ParseException {
-        logger.info("Unexpected DocType in {}:{}: {}/{}/{}/{}", line, col, elementName, publicId, systemId,
+        logger.debug("Unexpected DocType in {}:{}: {}/{}/{}/{}", line, col, elementName, publicId, systemId,
                 internalSubset);
     }
 
     @Override
     public void handleComment(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-        logger.info("Unexpected comment in {}:{}: {}", line, col, new String(buffer, offset, len));
+        logger.debug("Unexpected comment in {}:{}: {}", line, col, new String(buffer, offset, len));
     }
 
     @Override
     public void handleCDATASection(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-        logger.info("Unexpected CDATA in {}:{}: {}", line, col, new String(buffer, offset, len));
+        logger.debug("Unexpected CDATA in {}:{}: {}", line, col, new String(buffer, offset, len));
     }
 
     @Override
@@ -219,7 +219,7 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
             // this is a label next to the value input field - we currently have no use for it so
             // it's dropped...
         } else {
-            logger.info("Error parsing options for {}: Unexpected Text {}:{}: (ctx: {} len: {}) '{}' ",
+            logger.debug("Error parsing options for {}: Unexpected Text {}:{}: (ctx: {} len: {}) '{}' ",
                     this.channelName, line, col, this.parserState, len, new String(buffer, offset, len));
         }
     }
@@ -227,13 +227,13 @@ public class ChangerX2Parser extends AbstractSimpleMarkupHandler {
     @Override
     public void handleXmlDeclaration(final @Nullable String version, final @Nullable String encoding,
             final @Nullable String standalone, final int line, final int col) throws ParseException {
-        logger.info("Unexpected XML Declaration {}:{}: {} {} {}", line, col, version, encoding, standalone);
+        logger.debug("Unexpected XML Declaration {}:{}: {} {} {}", line, col, version, encoding, standalone);
     }
 
     @Override
     public void handleProcessingInstruction(final @Nullable String target, final @Nullable String content,
             final int line, final int col) throws ParseException {
-        logger.info("Unexpected ProcessingInstruction {}:{}: {} {}", line, col, target, content);
+        logger.debug("Unexpected ProcessingInstruction {}:{}: {} {}", line, col, target, content);
     }
 
     @Nullable

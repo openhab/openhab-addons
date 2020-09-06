@@ -265,11 +265,11 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                 e.setLastState((State) command);
                 updateState(channelUID, (State) command);
             } else {
-                logger.error("Error sending update for {} = {}: {} {}", channelUID, command, res.getStatus(),
+                logger.warn("Error sending update for {} = {}: {} {}", channelUID, command, res.getStatus(),
                         res.getReason());
             }
         } catch (InterruptedException | TimeoutException | ExecutionException ex) {
-            logger.error("Error sending update for {} = {}: {}", channelUID, command, ex.getMessage(), ex);
+            logger.warn("Error sending update for {} = {}: {}", channelUID, command, ex.getMessage());
         }
     }
 
@@ -283,12 +283,8 @@ public class TACmiSchemaHandler extends BaseThingHandler {
     public void dispose() {
         final ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) {
-            try {
-                scheduledFuture.cancel(true);
-                this.scheduledFuture = null;
-            } catch (final Exception e) {
-                // swallow this
-            }
+            scheduledFuture.cancel(true);
+            this.scheduledFuture = null;
         }
         super.dispose();
     }

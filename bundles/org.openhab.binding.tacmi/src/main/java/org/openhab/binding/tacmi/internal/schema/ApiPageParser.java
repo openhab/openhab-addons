@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.attoparser.ParseException;
 import org.attoparser.simple.AbstractSimpleMarkupHandler;
@@ -119,7 +121,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             final @Nullable Map<String, String> attributes, final boolean minimized, final int line, final int col)
             throws ParseException {
 
-        logger.info("Unexpected StandaloneElement in {}:{}: {} [{}]", line, col, elementName, attributes);
+        logger.debug("Unexpected StandaloneElement in {}:{}: {} [{}]", line, col, elementName, attributes);
     }
 
     @Override
@@ -165,7 +167,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 && "span".equals(elementName)) {
             // ignored...
         } else {
-            logger.info("Unexpected OpenElement in {}:{}: {} [{}]", line, col, elementName, attributes);
+            logger.debug("Unexpected OpenElement in {}:{}: {} [{}]", line, col, elementName, attributes);
         }
     }
 
@@ -184,7 +186,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     int lids = sb.lastIndexOf(":");
                     int fsp = sb.indexOf(" ");
                     if (fsp < 0 || lids < 0 || fsp > lids) {
-                        logger.info("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType, sb);
+                        logger.debug("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType,
+                                sb);
                     } else {
                         String shortName = sb.substring(0, fsp).trim();
                         String description = sb.substring(fsp + 1, lids).trim();
@@ -196,7 +199,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     int fsp = sbt.indexOf(" ");
 
                     if (fsp < 0) {
-                        logger.info("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType,
+                        logger.debug("Invalid format for setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType,
                                 sbt);
                     } else {
                         String shortName = sbt.substring(0, fsp).trim();
@@ -206,47 +209,47 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                 } else if (this.fieldType == FieldType.IGNORE) {
                     // ignore
                 } else {
-                    logger.info("Unhandled setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType, sb);
+                    logger.debug("Unhandled setting {}:{}:{} [{}] : {}", id, line, col, this.fieldType, sb);
                 }
             }
         } else if (this.parserState == ParserState.DATA_ENTRY && this.fieldType == FieldType.BUTTON
                 && "span".equals(elementName)) {
             // ignored...
         } else {
-            logger.info("Unexpected CloseElement in {}:{}: {}", line, col, elementName);
+            logger.debug("Unexpected CloseElement in {}:{}: {}", line, col, elementName);
         }
     }
 
     @Override
     public void handleAutoCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        logger.info("Unexpected AutoCloseElement in {}:{}: {}", line, col, elementName);
+        logger.debug("Unexpected AutoCloseElement in {}:{}: {}", line, col, elementName);
     }
 
     @Override
     public void handleUnmatchedCloseElement(final @Nullable String elementName, final int line, final int col)
             throws ParseException {
-        logger.info("Unexpected UnmatchedCloseElement in {}:{}: {}", line, col, elementName);
+        logger.debug("Unexpected UnmatchedCloseElement in {}:{}: {}", line, col, elementName);
     }
 
     @Override
     public void handleDocType(final @Nullable String elementName, final @Nullable String publicId,
             final @Nullable String systemId, final @Nullable String internalSubset, final int line, final int col)
             throws ParseException {
-        logger.info("Unexpected DocType in {}:{}: {}/{}/{}/{}", line, col, elementName, publicId, systemId,
+        logger.debug("Unexpected DocType in {}:{}: {}/{}/{}/{}", line, col, elementName, publicId, systemId,
                 internalSubset);
     }
 
     @Override
     public void handleComment(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-        logger.info("Unexpected comment in {}:{}: {}", line, col, new String(buffer, offset, len));
+        logger.debug("Unexpected comment in {}:{}: {}", line, col, new String(buffer, offset, len));
     }
 
     @Override
     public void handleCDATASection(final char @Nullable [] buffer, final int offset, final int len, final int line,
             final int col) throws ParseException {
-        logger.info("Unexpected CDATA in {}:{}: {}", line, col, new String(buffer, offset, len));
+        logger.debug("Unexpected CDATA in {}:{}: {}", line, col, new String(buffer, offset, len));
     }
 
     @Override
@@ -268,20 +271,20 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
             // single newline - ignore/drop it...
         } else {
             String msg = new String(buffer, offset, len).replace("\n", "\\n").replace("\r", "\\r");
-            logger.info("Unexpected Text {}:{}: ParserState: {} ({}) `{}`", line, col, parserState, len, msg);
+            logger.debug("Unexpected Text {}:{}: ParserState: {} ({}) `{}`", line, col, parserState, len, msg);
         }
     }
 
     @Override
     public void handleXmlDeclaration(final @Nullable String version, final @Nullable String encoding,
             final @Nullable String standalone, final int line, final int col) throws ParseException {
-        logger.info("Unexpected XML Declaration {}:{}: {} {} {}", line, col, version, encoding, standalone);
+        logger.debug("Unexpected XML Declaration {}:{}: {} {} {}", line, col, version, encoding, standalone);
     }
 
     @Override
     public void handleProcessingInstruction(final @Nullable String target, final @Nullable String content,
             final int line, final int col) throws ParseException {
-        logger.info("Unexpected ProcessingInstruction {}:{}: {} {}", line, col, target, content);
+        logger.debug("Unexpected ProcessingInstruction {}:{}: {} {}", line, col, target, content);
     }
 
     private void getApiPageEntry(@Nullable String id2, int line, int col, String shortName, String description,
@@ -415,8 +418,8 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     URI uri = this.taCmiSchemaHandler.buildUri("INCLUDE/changerx2.cgi?sadrx2=" + address);
                     final ChangerX2Parser pp = this.taCmiSchemaHandler.parsePage(uri, new ChangerX2Parser(shortName));
                     cx2e = pp.getParsedEntry();
-                } catch (final Exception ex) {
-                    logger.error("Error loading API Scheme: {} ", ex.getMessage(), ex);
+                } catch (final ParseException | InterruptedException | TimeoutException | ExecutionException ex) {
+                    logger.warn("Error loading API Scheme: {} ", ex.getMessage(), ex);
                 }
             }
             if (channel == null) {
@@ -462,9 +465,7 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     ChannelType ct = ChannelTypeBuilder
                             .state(new ChannelTypeUID(TACmiBindingConstants.BINDING_ID, shortName), shortName, itemType)
                             .withDescription("Auto-created for " + shortName)
-                            .withStateDescription(sdb.build().toStateDescription())
-                            // .withCategory("CategoryName") can we do something useful ?
-                            .build();
+                            .withStateDescription(sdb.build().toStateDescription()).build();
                     channelTypeProvider.addChannelType(ct);
                     channelBuilder.withType(ct.getUID());
                 } else {

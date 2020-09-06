@@ -32,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.tacmi.internal.TACmiBindingConstants;
 import org.openhab.binding.tacmi.internal.message.AnalogMessage;
 import org.openhab.binding.tacmi.internal.message.DigitalMessage;
 import org.openhab.binding.tacmi.internal.message.Message;
@@ -76,8 +77,8 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     private class ReceiveThread extends Thread {
         private final Logger logger = LoggerFactory.getLogger(ReceiveThread.class);
 
-        ReceiveThread() {
-            super("tacmi TA C.M.I. CoE ReceiveThread");
+        ReceiveThread(String threadName) {
+            super(threadName);
         }
 
         @Override
@@ -121,8 +122,8 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                         }
                     }
                     if (!found) {
-                        logger.info("Received CoE-Packet from {} Node {} and we don't have a Thing for!", remoteAddress,
-                                node);
+                        logger.debug("Received CoE-Packet from {} Node {} and we don't have a Thing for!",
+                                remoteAddress, node);
                     }
                 } catch (final IOException e) {
                     if (isInterrupted()) {
@@ -167,7 +168,8 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        ReceiveThread reciveThreadNN = new ReceiveThread();
+        ReceiveThread reciveThreadNN = new ReceiveThread(
+                "OH-" + TACmiBindingConstants.BINDING_ID + "-" + getThing().getUID().getAsString());
         reciveThreadNN.setDaemon(true);
         reciveThreadNN.start();
         this.receiveThread = reciveThreadNN;
@@ -239,7 +241,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                 // caused to stop.
                 receiveThread.join(250);
             } catch (final InterruptedException e) {
-                logger.info("Unexpected interrupt in receiveThread.join(): {}", e.getMessage(), e);
+                logger.debug("Unexpected interrupt in receiveThread.join(): {}", e.getMessage(), e);
             }
             this.receiveThread = null;
         }
