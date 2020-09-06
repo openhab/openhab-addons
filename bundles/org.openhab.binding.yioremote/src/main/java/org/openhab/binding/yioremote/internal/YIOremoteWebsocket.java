@@ -29,6 +29,7 @@ public class YIOremoteWebsocket {
     private boolean boolean_authentication_ok = false;
     private boolean boolean_sendir_status = false;
     private String string_receivedstatus = "";
+    private String string_lastsendircode = "";
 
     CountDownLatch latch = new CountDownLatch(1);
 
@@ -78,17 +79,27 @@ public class YIOremoteWebsocket {
         try {
             if (messagetype.equals(YIOREMOTEMESSAGETYPE.AUTHENTICATE)) {
                 session.getRemote().sendString("{\"type\":\"auth\", \"token\":\"" + messagepyload + "\"}");
+                logger.debug("sending authenticating message: \"{\"type\":\"auth\", \"token\":\"{}\"}\"",
+                        messagepyload);
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.HEARTBEAT)) {
+                string_lastsendircode = "\"0;0x0;0;0\"";
                 session.getRemote().sendString(
                         "{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
+                logger.debug(
+                        "sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.IRRECEIVERON)) {
                 session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_receive_on\"}");
+                logger.debug("sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_receive_on\"");
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.IRRECEIVEROFF)) {
                 session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_receive_off\"}");
+                logger.debug("sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_receive_off\"");
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.IRSEND)) {
                 session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"" + messagepyload
                         + "\", \"format\":\"hex\"}");
-
+                string_lastsendircode = messagepyload;
+                logger.debug(
+                        "sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"{}\", \"format\":\"hex\"}",
+                        messagepyload);
             }
         } catch (
 
@@ -121,20 +132,24 @@ public class YIOremoteWebsocket {
                 if (JsonObject_recievedJsonObject.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
                     logger.debug("ir send message");
                     if (JsonObject_recievedJsonObject.get("success").toString().equalsIgnoreCase("true")) {
-                        logger.debug("ir send message true");
+                        logger.debug("Send IR Code successfully");
                         string_receivedstatus = "Send IR Code successfully";
                         boolean_sendir_status = true;
                         boolean_heartbeat = true;
                         boolean_result = true;
                     } else {
-                        logger.debug("ir send message failed");
-                        // string_receivedstatus = "Send IR Code failure";
+                        if (string_lastsendircode.equalsIgnoreCase("\"0;0x0;0;0\"")) {
+                            logger.debug("Send IR Code heartbeat");
+                        } else {
+                            logger.debug("Send IR Code failure");
+                            string_receivedstatus = "Send IR Code failure";
+                        }
                         boolean_sendir_status = true;
                         boolean_heartbeat = true;
                         boolean_result = true;
                     }
                 } else {
-                    logger.debug("No known message {}", string_receivedmessage);
+                    logger.warn("No known message {}", string_receivedmessage);
                     boolean_heartbeat = false;
                     boolean_result = false;
                 }

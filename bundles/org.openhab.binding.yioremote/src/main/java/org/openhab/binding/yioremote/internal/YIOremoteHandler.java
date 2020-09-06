@@ -150,6 +150,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                                 YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
                                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                         "Connection lost no ping from YIO DOCK");
+                                updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
                                 pollingJob.cancel(true);
                             }
                         } else {
@@ -157,6 +158,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                             YIOREMOTEHANDLESTATUS_actualstatus = YIOREMOTEHANDLESTATUS.CONNECTION_FAILED;
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                                     "Connection lost no ping from YIO DOCK");
+                            updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
                             pollingJob.cancel(true);
                         }
                     } catch (InterruptedException e) {
@@ -167,6 +169,7 @@ public class YIOremoteHandler extends BaseThingHandler {
             try {
                 pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30, TimeUnit.SECONDS);
             } catch (Exception e) {
+                updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
                 logger.warn("Error during starting the WebSocket polling Thread {}", e);
             }
         } else {
@@ -179,6 +182,7 @@ public class YIOremoteHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
+        updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
         pollingJob.cancel(true);
     }
 
