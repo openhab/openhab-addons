@@ -13,10 +13,10 @@
 package org.openhab.binding.max.internal.command;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
 
 /**
@@ -51,7 +51,7 @@ public class TCommand extends CubeCommand {
         for (String rfAddress : rfAddresses) {
             commandArray = ArrayUtils.addAll(Utils.hexStringToByteArray(rfAddress), commandArray);
         }
-        String encodedString = Base64.encodeBase64StringUnChunked(commandArray);
+        String encodedString = Base64.getEncoder().encodeToString(commandArray);
 
         return "t:" + String.format("%02d", rfAddresses.size()) + "," + updateForced + "," + encodedString + '\r'
                 + '\n';
