@@ -71,7 +71,6 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
 
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.debug("Thing createHandler for thing: {} - {}", thing.getLabel(), thingTypeUID);
 
         if (THING_TYPE_SHC.equals(thingTypeUID)) {
             return new BoschSHCBridgeHandler((Bridge) thing);

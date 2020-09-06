@@ -29,7 +29,6 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCConfiguration;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
@@ -87,8 +86,6 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     @Override
     public void processUpdate(String id, @NonNull JsonElement state) {
         logger.debug("Twinguard: received update: {} {}", id, state);
-
-        Gson gson = new Gson();
 
         try {
             TwinguardState parsed = gson.fromJson(state, TwinguardState.class);

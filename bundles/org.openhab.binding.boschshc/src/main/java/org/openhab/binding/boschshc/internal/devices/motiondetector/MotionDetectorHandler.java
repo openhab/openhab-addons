@@ -28,7 +28,6 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCConfiguration;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
@@ -83,7 +82,6 @@ public class MotionDetectorHandler extends BoschSHCHandler {
         logger.debug("Motion detector: received update: {} {}", id, state);
 
         try {
-            Gson gson = new Gson();
             updateLatestMotionState(gson.fromJson(state, LatestMotionState.class));
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in in-wall switch: {}", state);

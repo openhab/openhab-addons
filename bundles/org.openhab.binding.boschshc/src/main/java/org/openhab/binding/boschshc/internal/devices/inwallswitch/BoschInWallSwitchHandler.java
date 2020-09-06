@@ -29,7 +29,6 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCConfiguration;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 
@@ -111,8 +110,6 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
     @Override
     public void processUpdate(String id, JsonElement state) {
         logger.debug("in-wall switch: received update: ID {} state {}", id, state);
-
-        Gson gson = new Gson();
 
         try {
 
