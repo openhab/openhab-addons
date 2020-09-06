@@ -33,6 +33,7 @@ The following parameters are valid for all thing types:
 | temperature      | Number:Temperature   | true      | The temperature at the plug                                   |
 
 ## Full Example
+
 ### Thing Configuration
 
 ```
@@ -40,13 +41,16 @@ Thing mystrom:mystromplug:d6217a31 "Plug" [hostname="hostname|ip"]
 ```
 
 ### Item Configuration
+
 ```
 Switch PlugSwitch		"Plug" 	                		 		{channel="mystrom:mystromplug:d6217a31:switch"}
 Number:Temperature PlugTemperature "Temperature: [%.1f °C]"     {channel="mystrom:mystromplug:d6217a31:temperature"}  
 Number:Power PlugPower "Power: [%.1f W]"                        {channel="mystrom:mystromplug:d6217a31:power"} 
 
 ```
+
 ### Sitemap Configuration
+
 ```
 Frame label="myStrom Plug" { 
     Switch item=PlugSwitch

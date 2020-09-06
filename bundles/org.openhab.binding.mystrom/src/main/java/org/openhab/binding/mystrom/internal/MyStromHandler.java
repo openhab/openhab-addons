@@ -61,11 +61,12 @@ public class MyStromHandler extends BaseThingHandler {
     }
 
     private static final int HTTP_OK_CODE = 200;
-    private static final String COMMUNICATION_ERROR = "Error while communicating to myStrom: ";
+    private static final String COMMUNICATION_ERROR = "Error while communicating to the myStrom plug: ";
+    private static final String HTTP_REQUEST_URL_PREFIX = "http://";
+    private static final String HTTPS_REQUEST_URL_PREFIX = "https://";
 
     private final Logger logger = LoggerFactory.getLogger(MyStromHandler.class);
 
-    private @Nullable MyStromConfiguration config;
     private HttpClient httpClient;
     private String hostname = "";
 
@@ -88,10 +89,9 @@ public class MyStromHandler extends BaseThingHandler {
                     sendHttpGet("relay?state=" + (command == OnOffType.ON ? "1" : "0"));
                     scheduler.schedule(this::pollDevice, 500, TimeUnit.MILLISECONDS);
                 }
-
             }
         } catch (MyStromException e) {
-            logger.warn(COMMUNICATION_ERROR, e);
+            logger.warn("Error while handling command {}", e.getMessage());
         }
     }
 
@@ -102,8 +102,7 @@ public class MyStromHandler extends BaseThingHandler {
             updateStatus(ThingStatus.ONLINE);
             return report;
         } catch (MyStromException e) {
-            logger.debug(COMMUNICATION_ERROR, e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             return null;
         }
     }
@@ -114,22 +113,21 @@ public class MyStromHandler extends BaseThingHandler {
             updateState(CHANNEL_SWITCH, report.relay ? OnOffType.ON : OnOffType.OFF);
             updateState(CHANNEL_POWER, QuantityType.valueOf(report.power, WATT));
             updateState(CHANNEL_TEMPERATURE, QuantityType.valueOf(report.temperature, CELSIUS));
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, COMMUNICATION_ERROR);
         }
     }
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
-        config = getConfigAs(MyStromConfiguration.class);
-        hostname = config.hostname;
+        MyStromConfiguration config = getConfigAs(MyStromConfiguration.class);
+        if (config.hostname.startsWith(HTTP_REQUEST_URL_PREFIX)
+                || config.hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
+            this.hostname = config.hostname;
+        } else {
+            this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.refresh, TimeUnit.SECONDS);
-
-        logger.debug("Finished initializing!");
     }
 
     @Override
@@ -151,13 +149,12 @@ public class MyStromHandler extends BaseThingHandler {
      * @throws Exception
      */
     public String sendHttpGet(String action) throws MyStromException {
-
-        String url = "http://" + hostname + "/" + action;
+        String url = hostname + "/" + action;
         ContentResponse response = null;
         try {
-            response = httpClient.newRequest(url).method(HttpMethod.GET).send();
+            response = httpClient.newRequest(url).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET).send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new MyStromException("Request to mystrom device failed: " + e.getMessage());
+            throw new MyStromException(COMMUNICATION_ERROR + e.getMessage());
         }
 
         if (response.getStatus() != HTTP_OK_CODE) {
