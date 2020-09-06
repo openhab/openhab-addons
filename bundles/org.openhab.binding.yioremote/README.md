@@ -1,6 +1,6 @@
 # YIOremote Binding
 
-This binding will control a YIO Dock/Remote combination. YIO Remote/Dock is a smart home solution that includes an IP based remote. More information can be found at YIO or in the forums at yioremote.com. 
+This binding will control a YIO Dock/Remote combination. YIO Remote/Dock is a smart home solution that includes an IP based remote. More information can be found at https://www.yio-remote.com/ or in the forums at https://community.yio-remote.com/. 
 
 This binding has been designed to compliment the YIO websocket Transport Protocol.
 
