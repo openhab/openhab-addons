@@ -222,7 +222,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             xmlResponse = httpXmlResponse(urlParameters);
 
-            if (xmlResponse == null) {
+            if (xmlResponse.isEmpty()) {
                 logger.error("Hayward Login XML response was null");
                 return false;
             }
@@ -256,7 +256,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             xmlResponse = httpXmlResponse(urlParameters);
 
-            if (xmlResponse == null) {
+            if (xmlResponse.isEmpty()) {
                 logger.error("Hayward Login XML response was null");
                 return false;
             }
@@ -279,7 +279,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             xmlResponse = httpXmlResponse(urlParameters);
 
-            if (xmlResponse == null) {
+            if (xmlResponse.isEmpty()) {
                 logger.error("Hayward getSiteList XML response was null");
                 return false;
             }
@@ -329,7 +329,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             // "C:/Users/Controls/openhab-2-5-x/git/openhab-addons/bundles/org.openhab.binding.haywardomnilogic/getConfig.xml";
             // xmlResponse = new String(Files.readAllBytes(Paths.get(path)));
 
-            if (xmlResponse == null) {
+            if (xmlResponse.isEmpty()) {
                 logger.error("Hayward requestConfig XML response was null");
                 return false;
             }
@@ -521,7 +521,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             xmlResponse = httpXmlResponse(urlParameters);
 
-            if (xmlResponse == null) {
+            if (xmlResponse.isEmpty()) {
                 logger.error("Hayward getTelemetry XML response was null");
                 return false;
             }
@@ -951,7 +951,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         } else if (command instanceof StringType) {
             cmdString = ((StringType) command).toString();
         } else if (command instanceof QuantityType) {
-            cmdValue = ((QuantityType) command).intValue();
+            cmdValue = ((QuantityType<?>) command).intValue();
         } else {
             logger.error("command type {} is not supported", command);
             return;
