@@ -12,12 +12,11 @@
  */
 package org.openhab.io.transport.modbus.internal;
 
-import java.util.Objects;
-
 import org.apache.commons.pool2.impl.DefaultEvictionPolicy;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.internal.pooling.ModbusSlaveConnectionEvictionPolicy;
 
 import net.wimpi.modbus.net.ModbusSlaveConnection;
@@ -33,8 +32,9 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  *
  */
 @NonNullByDefault
-public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
+public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig<ModbusSlaveConnection> {
 
+    @SuppressWarnings("unused")
     private EvictionPolicy<ModbusSlaveConnection> evictionPolicy = new DefaultEvictionPolicy<>();
 
     public ModbusPoolConfig() {
@@ -68,11 +68,11 @@ public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
         setTimeBetweenEvictionRunsMillis(10000);
     }
 
-    public EvictionPolicy<ModbusSlaveConnection> getEvictionPolicy() {
-        return evictionPolicy;
+    @Override
+    public void setEvictionPolicyClassName(@Nullable String evictionPolicyClassName) {
+        // Protect against https://issues.apache.org/jira/browse/POOL-338
+        // Disallow re-setting eviction policy with class name. Only setEvictionPolicy allowed
+        throw new IllegalStateException("setEvictionPolicyClassName disallowed! Will fail in OSGI");
     }
 
-    public void setEvictionPolicy(EvictionPolicy<ModbusSlaveConnection> evictionPolicy) {
-        this.evictionPolicy = Objects.requireNonNull(evictionPolicy, "evictionPolicy should not be null!");
-    }
 }
