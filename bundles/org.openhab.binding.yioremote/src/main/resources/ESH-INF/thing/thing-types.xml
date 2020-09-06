@@ -21,6 +21,7 @@
             <parameter name="yiodockaccesstoken" type="text" required="true">
                 <label>Access token for the YIO Dock</label>
                 <description>Access token for the YIO Dock</description>
+                <default>0</default>
             </parameter>
         </config-description>
 
