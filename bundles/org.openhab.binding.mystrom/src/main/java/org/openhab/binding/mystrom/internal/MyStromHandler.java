@@ -63,7 +63,6 @@ public class MyStromHandler extends BaseThingHandler {
     private static final int HTTP_OK_CODE = 200;
     private static final String COMMUNICATION_ERROR = "Error while communicating to the myStrom plug: ";
     private static final String HTTP_REQUEST_URL_PREFIX = "http://";
-    private static final String HTTPS_REQUEST_URL_PREFIX = "https://";
 
     private final Logger logger = LoggerFactory.getLogger(MyStromHandler.class);
 
@@ -119,12 +118,7 @@ public class MyStromHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         MyStromConfiguration config = getConfigAs(MyStromConfiguration.class);
-        if (config.hostname.startsWith(HTTP_REQUEST_URL_PREFIX)
-                || config.hostname.startsWith(HTTPS_REQUEST_URL_PREFIX)) {
-            this.hostname = config.hostname;
-        } else {
-            this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
-        }
+        this.hostname = HTTP_REQUEST_URL_PREFIX + config.hostname;
 
         updateStatus(ThingStatus.UNKNOWN);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevice, 0, config.refresh, TimeUnit.SECONDS);

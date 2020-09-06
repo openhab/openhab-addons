@@ -17,10 +17,7 @@
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the myStrom plug. It may or may not start with the
-					protocol, e.g. in
-					order to use https:// instead of the default http:// in case the myStrom plug is behind a reverse proxy. The
-					myStrom plug itself only supports http.</description>
+				<description>The host name or IP address of the myStrom plug.</description>
 				<context>network-address</context>
 				<default>localhost</default>
 			</parameter>
