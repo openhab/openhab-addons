@@ -1,8 +1,10 @@
 # YIOremote Binding
 
-_Give some details about what this binding is meant for - a protocol, system, specific device._
+This binding will control a YIO Dock/Remote combination. YIO Remote/Dock is a smart home solution that includes an IP based remote. More information can be found at YIO or in the forums at yioremote.com. 
 
-_If possible, provide some resources like pictures, a YouTube video, etc. to give an impression of what can be done with this binding. You can place such resources into a `doc` folder next to this README.md._
+This binding has been designed to compliment the YIO websocket Transport Protocol.
+
+Since this binding allows actual you to trigger IR send/receive actions on YIO Dock, this allows you to use the YIO Dock as an IR solution to openHAB and even learn new IR codes from your remotes. In other words, if the IR code is known then openHAB can use the YIO Dock to control that Device regardless if there is an openHAB binding for it or not.
 
 ## Supported Things
 
