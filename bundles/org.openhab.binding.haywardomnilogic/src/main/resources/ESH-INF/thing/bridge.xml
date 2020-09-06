@@ -10,38 +10,31 @@
 		<description>Connection to Hayward's Server</description>
 
 		<config-description>
-			<parameter name="hostname" type="text">
+			<parameter name="hostname" type="text" required="true">
 				<context>url</context>
 				<label>Host Name</label>
 				<!-- API Hostname -->
 				<default>https://app1.haywardomnilogic.com/HAAPI/HomeAutomation/API.ashx</default>
-				<!-- This is the hostname that the iOS mobile app utilizes -->
-				<!-- <default>http://209.114.50.126/MobileInterface/MobileInterface.ashx</default> -->
 				<description>The host name of the server.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="username" type="text">
+			<parameter name="username" type="text" required="true">
 				<label>User Name</label>
 				<description>The username to connect to the server.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="true">
 				<context>password</context>
 				<label>Password</label>
 				<description>The password to connect to the server.</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="telemetryPollTime" type="integer" min="10" max="60" unit="s">
+			<parameter name="telemetryPollTime" type="integer" min="10" max="60" unit="s" required="true">
 				<label>Telemetry Poll Delay</label>
 				<default>12</default>
 				<description>How often to request telemetry data from Hayward Server</description>
-				<required>true</required>
 			</parameter>
-			<parameter name="alarmPollTime" type="integer" min="0" max="120">
+			<parameter name="alarmPollTime" type="integer" min="0" max="120" required="true">
 				<label>Alarm Poll Delay</label>
 				<default>60</default>
-				<description>How often to request alarm data. Enter 0 to disable.</description>
-				<required>true</required>
+				<description>How often to request alarm data from Hayward Server. Enter 0 to disable.</description>
 			</parameter>
 		</config-description>
 	</bridge-type>
