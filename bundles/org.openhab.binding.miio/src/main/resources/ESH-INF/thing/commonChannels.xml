@@ -464,7 +464,7 @@
 		<state>
 			<options>
 				<option value="0">Stop</option>
-				<option value="1">Start</option>
+				<option value="1">Vacuum</option>
 				<option value="2">Pause</option>
 			</options>
 		</state>
