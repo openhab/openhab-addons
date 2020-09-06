@@ -8,9 +8,7 @@ Since this binding allows actual you to trigger IR send/receive actions on YIO D
 
 ## Supported Things
 
-_Please describe the different supported things / devices within this section._
-_Which different types are supported, which models were tested etc.?_
-_Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/ESH-INF/thing``` of your binding._
+* Thing: YIO Device.
 
 ## Discovery
 
