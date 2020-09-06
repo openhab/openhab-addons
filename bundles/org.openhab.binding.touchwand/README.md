@@ -29,9 +29,9 @@ After adding TouchWand Hub the auto discovery will add all switches dimmers and 
 |----------|--|----|--|
 | username|Touchwand hub username  | string | yes
 | password|Touchwand hub password | string | yes
-|ipAddress|Touchwand hub IP address | dot notated IP address | yes
+|ipAddress|Touchwand hub hotname or IP address | string | yes
 |port| Management port (default 80) | integer | no
-|statusrefresh| Unit status refresh interval | seconds | no
+|statusrefresh| Unit status refresh interval in seconds | integer | no
 |addSecondaryUnits|If the controller is primary, add secondary controllers units as well|bool|no
 
 
