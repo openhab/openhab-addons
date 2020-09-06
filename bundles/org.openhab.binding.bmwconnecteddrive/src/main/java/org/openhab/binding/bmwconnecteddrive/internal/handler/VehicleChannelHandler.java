@@ -33,7 +33,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID doors;
     protected ChannelUID windows;
     protected ChannelUID lock;
-    protected ChannelUID service;
+    protected ChannelUID serviceDate;
+    protected ChannelUID serviceMilage;
+    protected ChannelUID serviceDescription;
     protected ChannelUID checkControl;
     protected ChannelUID lastUpdate;
 
@@ -114,7 +116,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
         doors = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, DOORS);
         windows = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, WINDOWS);
         lock = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LOCK);
-        service = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE);
+        serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_DATE);
+        serviceMilage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_MILEAGE);
+        serviceDescription = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_NAME);
         checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
 

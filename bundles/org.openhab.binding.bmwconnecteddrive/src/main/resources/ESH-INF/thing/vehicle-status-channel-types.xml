@@ -15,9 +15,17 @@
 		<item-type>String</item-type>
 		<label>Doors Locked </label>
 	</channel-type>
-	<channel-type id="service-channel">
+	<channel-type id="service-date-channel">
 		<item-type>String</item-type>
-		<label>Upcoming Service</label>
+		<label>Date of Upcoming Service</label>
+	</channel-type>
+	<channel-type id="service-mileage-channel">
+		<item-type>String</item-type>
+		<label>Mileage till Upcoming Service</label>
+	</channel-type>
+	<channel-type id="service-name-channel">
+		<item-type>String</item-type>
+		<label>Description of Upcoming Service</label>
 	</channel-type>
 	<channel-type id="check-control-channel">
 		<item-type>String</item-type>

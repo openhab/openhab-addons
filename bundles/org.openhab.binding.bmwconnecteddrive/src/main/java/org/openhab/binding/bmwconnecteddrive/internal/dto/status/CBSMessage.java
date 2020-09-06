@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+
 /**
  * The {@link CBSMessage} Data Transfer Object
  *
@@ -23,4 +25,20 @@ public class CBSMessage {
     public String cbsDueDate;// ": "2021-11",
     public String cbsDescription;// ": "Next change due at the latest by the stated date."
     public int cbsRemainingMileage; // 46000
+
+    public String getDueDate() {
+        if (cbsDueDate == null) {
+            return Constants.INVALID;
+        } else {
+            return cbsDueDate;
+        }
+    }
+
+    public String getType() {
+        if (cbsType == null) {
+            return Constants.INVALID;
+        } else {
+            return cbsType;
+        }
+    }
 }

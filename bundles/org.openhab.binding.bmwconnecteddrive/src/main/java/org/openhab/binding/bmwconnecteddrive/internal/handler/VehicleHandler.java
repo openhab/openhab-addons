@@ -15,7 +15,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -54,6 +53,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
@@ -439,7 +439,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 ChargeProfile cp = Converter.getGson().fromJson(content.get(), ChargeProfile.class);
                 WeeklyPlanner planner = cp.weeklyPlanner;
                 updateState(chargeProfileClimate, OnOffType.from(planner.climatizationEnabled));
-                updateState(chargeProfileChargeMode, StringType.valueOf(planner.chargingMode));
+                updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(planner.chargingMode)));
 
                 ChargingWindow cw = planner.preferredChargingWindow;
                 updateState(chargeWindowStart, StringType.valueOf(cw.startTime));
@@ -448,33 +448,18 @@ public class VehicleHandler extends VehicleChannelHandler {
                 Timer t1 = planner.timer1;
                 updateState(timer1Departure, StringType.valueOf(t1.departureTime));
                 updateState(timer1Enabled, OnOffType.from(t1.timerEnabled));
-                updateState(timer1Days, StringType.valueOf(getDays(t1.weekdays)));
+                updateState(timer1Days, StringType.valueOf(t1.getDays()));
 
                 Timer t2 = planner.timer2;
                 updateState(timer2Departure, StringType.valueOf(t2.departureTime));
                 updateState(timer2Enabled, OnOffType.from(t2.timerEnabled));
-                updateState(timer2Days, StringType.valueOf(getDays(t2.weekdays)));
+                updateState(timer2Days, StringType.valueOf(t2.getDays()));
 
                 Timer t3 = planner.timer3;
                 updateState(timer3Departure, StringType.valueOf(t3.departureTime));
                 updateState(timer3Enabled, OnOffType.from(t3.timerEnabled));
-                updateState(timer3Days, StringType.valueOf(getDays(t3.weekdays)));
+                updateState(timer3Days, StringType.valueOf(t3.getDays()));
             }
-        }
-
-        private String getDays(List<String> l) {
-            if (l == null) {
-                return Converter.toTitleCase(Constants.UNKNOWN);
-            }
-            StringBuffer days = new StringBuffer();
-            l.forEach(entry -> {
-                if (days.length() == 0) {
-                    days.append(entry);
-                } else {
-                    days.append(Constants.COMMA).append(entry);
-                }
-            });
-            return days.toString();
         }
 
         /**
@@ -667,7 +652,17 @@ public class VehicleHandler extends VehicleChannelHandler {
                 Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
                 updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
                 updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
-                updateState(service, StringType.valueOf(vStatus.getNextService(imperial)));
+
+                CBSMessage service = vStatus.getNextService(imperial);
+                updateState(serviceDate, StringType.valueOf(service.getDueDate()));
+                updateState(serviceDescription, StringType.valueOf(Converter.toTitleCase(service.getType())));
+                if (imperial) {
+                    updateState(serviceMilage,
+                            QuantityType.valueOf(Converter.round(service.cbsRemainingMileage), ImperialUnits.MILE));
+                } else {
+                    updateState(serviceMilage, QuantityType.valueOf(Converter.round(service.cbsRemainingMileage),
+                            MetricPrefix.KILO(SIUnits.METRE)));
+                }
 
                 // Range values
                 // based on unit of length decide if range shall be reported in km or miles

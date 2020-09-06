@@ -127,5 +127,4 @@ public class Converter {
     public static double guessRangeRadius(float range) {
         return range * 0.8;
     }
-
 }
