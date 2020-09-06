@@ -172,7 +172,6 @@ public class YIOremoteHandler extends BaseThingHandler {
         }
 
         logger.debug("Finished initializing!");
-
     }
 
     @Override
@@ -231,6 +230,5 @@ public class YIOremoteHandler extends BaseThingHandler {
         if (isLinked(id)) {
             updateState(id, new StringType(value));
         }
-
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="yioremote"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Sample Thing Type -->
 	<thing-type id="yioremote">
 		<label>YIOremote Binding Thing</label>
@@ -27,15 +27,15 @@ xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https:/
 		<label>Inputs</label>
 		<description>The channels used for Input</description>
 		<channels>
-			<channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch" />
-			<channel id="yiodocksendircode" typeId="yiodocksendircode" />
+			<channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch"/>
+			<channel id="yiodocksendircode" typeId="yiodocksendircode"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="output">
 		<label>Results</label>
 		<description>The channels used for Input</description>
 		<channels>
-			<channel id="yiodockstatus" typeId="yiodockstatus" />
+			<channel id="yiodockstatus" typeId="yiodockstatus"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="yiodockreceiverswitch">

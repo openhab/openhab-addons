@@ -248,5 +248,4 @@ public class YIOremoteWebsocket {
         boolean_sendir_status = false;
         return boolean_result;
     }
-
 }

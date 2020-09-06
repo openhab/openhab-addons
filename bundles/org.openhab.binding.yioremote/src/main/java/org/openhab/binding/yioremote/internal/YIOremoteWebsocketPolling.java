@@ -24,6 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class YIOremoteWebsocketPolling implements Runnable {
     @Override
     public void run() {
-
     }
 }

@@ -60,5 +60,4 @@ public class YIOremoteBindingConstants {
     // Configuration elements
     public static final String CONFIG_YIODOCKHOSTIP = "yiodockhostip";
     public static final String CONFIG_YIODOCKACCESSTOKEN = "yiodockaccesstoken";
-
 }
