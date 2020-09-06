@@ -545,5 +545,4 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         }
         return modelName;
     }
-
 }

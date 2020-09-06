@@ -149,5 +149,4 @@ public class PlayStationBindingConstants {
     private PlayStationBindingConstants() {
         // Don't instantiate this class.
     }
-
 }

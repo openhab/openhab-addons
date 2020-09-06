@@ -9,7 +9,7 @@
 		<description>Sony PlayStation 3 console.</description>
 
 		<channels>
-			<channel id="power" typeId="power-channel" />
+			<channel id="power" typeId="power-channel"/>
 		</channels>
 
 		<properties>
@@ -17,7 +17,7 @@
 			<property name="modelId">PlayStation 3</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
-		<config-description-ref uri="thing-type:playstation:PS3" />
+		<config-description-ref uri="thing-type:playstation:PS3"/>
 
 	</thing-type>
 
@@ -26,21 +26,21 @@
 		<description>Sony PlayStation 4 console.</description>
 
 		<channels>
-			<channel id="power" typeId="power-channel" />
-			<channel id="applicationName" typeId="application-channel" />
-			<channel id="applicationId" typeId="applicationId-channel" />
-			<channel id="applicationImage" typeId="applicationImage-channel" />
-			<channel id="oskText" typeId="oskText-channel" />
-			<channel id="disconnect" typeId="disconnect-channel" />
-			<channel id="keyUp" typeId="keyUp-channel" />
-			<channel id="keyDown" typeId="keyDown-channel" />
-			<channel id="keyRight" typeId="keyRight-channel" />
-			<channel id="keyLeft" typeId="keyLeft-channel" />
-			<channel id="keyEnter" typeId="keyEnter-channel" />
-			<channel id="keyBack" typeId="keyBack-channel" />
-			<channel id="keyOption" typeId="keyOption-channel" />
-			<channel id="keyPS" typeId="keyPS-channel" />
-			<channel id="secondScreen" typeId="secondScreen-channel" />
+			<channel id="power" typeId="power-channel"/>
+			<channel id="applicationName" typeId="application-channel"/>
+			<channel id="applicationId" typeId="applicationId-channel"/>
+			<channel id="applicationImage" typeId="applicationImage-channel"/>
+			<channel id="oskText" typeId="oskText-channel"/>
+			<channel id="disconnect" typeId="disconnect-channel"/>
+			<channel id="keyUp" typeId="keyUp-channel"/>
+			<channel id="keyDown" typeId="keyDown-channel"/>
+			<channel id="keyRight" typeId="keyRight-channel"/>
+			<channel id="keyLeft" typeId="keyLeft-channel"/>
+			<channel id="keyEnter" typeId="keyEnter-channel"/>
+			<channel id="keyBack" typeId="keyBack-channel"/>
+			<channel id="keyOption" typeId="keyOption-channel"/>
+			<channel id="keyPS" typeId="keyPS-channel"/>
+			<channel id="secondScreen" typeId="secondScreen-channel"/>
 		</channels>
 
 		<properties>
@@ -48,7 +48,7 @@
 			<property name="modelId">PlayStation 4</property>
 		</properties>
 		<representation-property>deviceId</representation-property>
-		<config-description-ref uri="thing-type:playstation:PS4" />
+		<config-description-ref uri="thing-type:playstation:PS4"/>
 
 	</thing-type>
 
@@ -59,7 +59,7 @@
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
@@ -73,7 +73,7 @@
 		<item-type>String</item-type>
 		<label>Application</label>
 		<description>Name of the currently running application.</description>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="applicationId-channel">
 		<item-type>String</item-type>
@@ -85,7 +85,7 @@
 		<item-type>Image</item-type>
 		<label>Artwork</label>
 		<description>Application artwork.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="oskText-channel" advanced="true">
 		<item-type>String</item-type>
@@ -149,7 +149,7 @@
 		<item-type>String</item-type>
 		<label>Second screen</label>
 		<description>Link to 2ndScreen HTTP server.</description>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

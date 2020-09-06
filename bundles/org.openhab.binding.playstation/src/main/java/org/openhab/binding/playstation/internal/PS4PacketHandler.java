@@ -322,5 +322,4 @@ public class PS4PacketHandler {
         packet.put(chars);
         return packet;
     }
-
 }

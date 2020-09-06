@@ -64,5 +64,4 @@ public class PlayStationHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

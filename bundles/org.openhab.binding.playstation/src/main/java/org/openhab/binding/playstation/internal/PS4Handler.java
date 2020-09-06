@@ -435,7 +435,6 @@ public class PS4Handler extends BaseThingHandler {
             ps4Crypto.clearCiphers();
             loggedIn = false;
         }
-
     }
 
     private @Nullable PS4Command parseResponsePacket(ByteBuffer rBuffer) {

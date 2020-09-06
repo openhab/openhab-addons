@@ -29,7 +29,8 @@
 		</parameter>
 		<parameter name="connectionTimeout" type="integer" min="0">
 			<label>Connection timeout</label>
-			<description>How many seconds after the last command the connection to the PS4 closes down. Use 0 to never close connection.</description>
+			<description>How many seconds after the last command the connection to the PS4 closes down. Use 0 to never close
+				connection.</description>
 			<default>60</default>
 			<advanced>true</advanced>
 		</parameter>

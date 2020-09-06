@@ -157,5 +157,4 @@ public class PS4ArtworkHandler {
         }
         return artwork;
     }
-
 }
