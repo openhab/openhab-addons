@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -46,9 +48,10 @@ public class CFactory {
      */
     public static @Nullable AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID,
             String channelConfigurationJSON, ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
-            Gson gson, TransformationServiceProvider transformationServiceProvider) {
+            ScheduledExecutorService scheduler, Gson gson,
+            TransformationServiceProvider transformationServiceProvider) {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, updateListener, tracker)
+                channelConfigurationJSON, gson, updateListener, tracker, scheduler)
                         .transformationProvider(transformationServiceProvider);
         try {
             switch (haID.component) {
@@ -86,16 +89,19 @@ public class CFactory {
         private final ChannelStateUpdateListener updateListener;
         private final AvailabilityTracker tracker;
         private final Gson gson;
+        private final ScheduledExecutorService scheduler;
         private @Nullable TransformationServiceProvider transformationServiceProvider;
 
         protected ComponentConfiguration(ThingUID thingUID, HaID haID, String configJSON, Gson gson,
-                ChannelStateUpdateListener updateListener, AvailabilityTracker tracker) {
+                ChannelStateUpdateListener updateListener, AvailabilityTracker tracker,
+                ScheduledExecutorService scheduler) {
             this.thingUID = thingUID;
             this.haID = haID;
             this.configJSON = configJSON;
             this.gson = gson;
             this.updateListener = updateListener;
             this.tracker = tracker;
+            this.scheduler = scheduler;
         }
 
         public ComponentConfiguration transformationProvider(
@@ -131,6 +137,10 @@ public class CFactory {
 
         public AvailabilityTracker getTracker() {
             return tracker;
+        }
+
+        public ScheduledExecutorService getScheduler() {
+            return scheduler;
         }
 
         public <C extends BaseChannelConfiguration> C getConfig(Class<C> clazz) {

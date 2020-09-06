@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -152,8 +153,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             if (channelConfigurationJSON == null) {
                 logger.warn("Provided channel does not have a 'config' configuration key!");
             } else {
-                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this, gson,
-                        transformationServiceProvider);
+                component = CFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this, scheduler,
+                        gson, transformationServiceProvider);
             }
 
             if (component != null) {
@@ -296,8 +297,8 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     }
 
     @Override
-    protected void updateThingStatus(boolean messageReceived, boolean availabilityTopicsSeen) {
-        if (!messageReceived || availabilityTopicsSeen) {
+    protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availabilityTopicsSeen) {
+        if (availabilityTopicsSeen.orElse(messageReceived)) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);

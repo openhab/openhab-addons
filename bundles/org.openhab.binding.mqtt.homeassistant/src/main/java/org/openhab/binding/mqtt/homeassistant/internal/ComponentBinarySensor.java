@@ -12,9 +12,15 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
+import org.openhab.binding.mqtt.homeassistant.internal.listener.OffDelayUpdateStateListener;
 
 /**
  * A MQTT BinarySensor, following the https://www.home-assistant.io/components/binary_sensor.mqtt/ specification.
@@ -35,23 +41,41 @@ public class ComponentBinarySensor extends AbstractComponent<ComponentBinarySens
 
         protected @Nullable String device_class;
         protected boolean force_update = false;
-        protected int expire_after = 0;
+        protected @Nullable Integer expire_after;
+        protected @Nullable Integer off_delay;
 
         protected String state_topic = "";
         protected String payload_on = "ON";
         protected String payload_off = "OFF";
+
+        protected @Nullable String json_attributes_topic;
+        protected @Nullable String json_attributes_template;
+        protected @Nullable List<String> json_attributes;
     }
 
     public ComponentBinarySensor(CFactory.ComponentConfiguration componentConfiguration) {
         super(componentConfiguration, ChannelConfiguration.class);
 
-        if (channelConfiguration.force_update) {
-            throw new UnsupportedOperationException("Component:Sensor does not support forced updates");
+        OnOffValue value = new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off);
+
+        buildChannel(sensorChannelID, value, "value", getListener(componentConfiguration, value))
+                .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template).build();
+    }
+
+    private ChannelStateUpdateListener getListener(CFactory.ComponentConfiguration componentConfiguration,
+            Value value) {
+        ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
+
+        if (channelConfiguration.expire_after != null) {
+            updateListener = new ExpireUpdateStateListener(updateListener, channelConfiguration.expire_after, value,
+                    componentConfiguration.getTracker(), componentConfiguration.getScheduler());
+        }
+        if (channelConfiguration.off_delay != null) {
+            updateListener = new OffDelayUpdateStateListener(updateListener, channelConfiguration.off_delay, value,
+                    componentConfiguration.getScheduler());
         }
 
-        buildChannel(sensorChannelID, new OnOffValue(channelConfiguration.payload_on, channelConfiguration.payload_off),
-                channelConfiguration.name, componentConfiguration.getUpdateListener())//
-                        .stateTopic(channelConfiguration.state_topic, channelConfiguration.value_template)//
-                        .build();
+        return updateListener;
     }
+
 }

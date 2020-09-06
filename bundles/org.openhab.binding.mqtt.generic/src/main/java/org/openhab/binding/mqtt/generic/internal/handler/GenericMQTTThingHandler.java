@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -186,8 +187,8 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     }
 
     @Override
-    protected void updateThingStatus(boolean messageReceived, boolean availibilityTopicsSeen) {
-        if (messageReceived || availibilityTopicsSeen) {
+    protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availibilityTopicsSeen) {
+        if (availibilityTopicsSeen.orElse(true)) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
