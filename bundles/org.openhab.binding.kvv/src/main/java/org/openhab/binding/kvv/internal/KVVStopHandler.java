@@ -60,7 +60,11 @@ public class KVVStopHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
+        init();
+        updateStatus(ThingStatus.ONLINE);
+    }
 
+    private synchronized void init() {
         this.config = getConfigAs(KVVStopConfig.class);
         if (config.stopId == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -90,12 +94,12 @@ public class KVVStopHandler extends BaseThingHandler {
             channels.add(
                     ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
         }
+        this.updateThing(this.editThing().withChannels(new ArrayList<Channel>()).build());
         this.updateThing(this.editThing().withChannels(channels).build());
         this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(bridgeHandler, this.config), 0,
                 bridgeHandler.getBridgeConfig().updateInterval, TimeUnit.SECONDS);
 
         this.bridgeHandler = bridgeHandler;
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -133,13 +137,7 @@ public class KVVStopHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command == RefreshType.REFRESH) {
-            final KVVBridgeHandler bridgeHandler = this.bridgeHandler;
-            if (bridgeHandler == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_MISSING_ERROR,
-                        "Failed to get bridge handler");
-                return;
-            }
-            new UpdateTask(bridgeHandler, this.config).run();
+            init();
         }
     }
 
