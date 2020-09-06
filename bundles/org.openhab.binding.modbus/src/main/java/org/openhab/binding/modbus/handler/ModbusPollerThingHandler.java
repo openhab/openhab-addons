@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.modbus.handler;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -178,7 +177,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
-    private final static List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.keySet().stream().sorted().collect(Collectors.toList());
+    private final static List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
+            .keySet().stream().sorted().collect(Collectors.toList());
 
     private @NonNullByDefault({}) ModbusPollerConfiguration config;
     private long cacheMillis;
