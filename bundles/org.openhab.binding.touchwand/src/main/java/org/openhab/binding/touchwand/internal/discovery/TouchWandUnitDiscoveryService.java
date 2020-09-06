@@ -70,10 +70,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        if (touchWandBridgeHandler.touchWandClient == null) {
-            logger.warn("Could not scan units without bridge handler");
-            return;
-        }
 
         if (touchWandBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("Could not scan units while bridge offline");
