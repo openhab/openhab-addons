@@ -90,11 +90,11 @@ Please note, if you define the things manually (not in the UI) that the ThingID 
 
 #### Parameters
 
-- **Address:** Type the address of the module like the DIP switches (you can also find in the PHC software) of the module, e.g. 10110. (mandatory)
+- **address:** Type the address of the module like the DIP switches (you can also find in the PHC software) of the module, e.g. 10110. (mandatory)
 
-- **UpDownTime[1-4] (only JRM):** (advanced) The time in seconds that the shutter needs to move up or down. The default, if no value is specified, is 30 seconds.
+- **upDownTime[1-4] (only JRM):** (advanced) The time in seconds that the shutter needs to move up or down, with a resolution of 1/10 seconds. The default, if no value is specified, is 30 seconds.
 
-- **DimTime[1-2] (only DIM):** (advanced) The time in seconds in that the dimmer should move 100%. The default is 2 seconds, then for example dimming from 0 to 100% takes 1 second.
+- **dimTime[1-2] (only DIM):** (advanced) The time in seconds in that the dimmer should move 100%. The default is 2 seconds, then for example dimming from 0 to 100% takes 2 second.
 
 ## Channels
 
@@ -129,7 +129,7 @@ Bridge phc:bridge:demo [port="/dev/ttyUSB0"]{
     // The ThingID have to be the address.
     Thing AM 01101 [address="01101"]
     Thing EM 00110 [address="00110"]
-    Thing JRM 10111 [address="10111", upDownTime3="60", upDownTime4="20"]
+    Thing JRM 10111 [address="10111", upDownTime3=60, upDownTime4=20]
     Thing DIM 00000 [address="00000"]
 ```
 
