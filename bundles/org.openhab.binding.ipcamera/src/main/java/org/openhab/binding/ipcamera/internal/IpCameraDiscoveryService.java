@@ -59,7 +59,7 @@ public class IpCameraDiscoveryService extends AbstractDiscoveryService {
         ThingUID thingUID = new ThingUID(thingtypeuid, hostname.replace(".", ""));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                 .withProperty(CONFIG_IPADDRESS, hostname).withProperty(CONFIG_ONVIF_PORT, onvifPort)
-                .withLabel(brand + " Camera @" + hostname).build();
+                .withLabel(brand + " camera @" + hostname).build();
         thingDiscovered(discoveryResult);
     }
 

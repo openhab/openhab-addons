@@ -745,8 +745,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     updateState(CHANNEL_IMAGE_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
                 } catch (Exception e) {
-                    cameraConfigError(
-                            "Exception occured when starting the streaming server. Try changing the SERVER_PORT to another number.");
+                    cameraConfigError("Exception when starting server. Try changing the serverPort to another number.");
                 }
             }
         }
@@ -783,11 +782,11 @@ public class IpCameraHandler extends BaseThingHandler {
             if (streamingSnapshotMjpeg && snapshotMjpegChannelGroup.isEmpty()) {
                 streamingSnapshotMjpeg = false;
                 stopSnapshotPolling();
-                logger.debug("All Snapshot based MJPEG streams have stopped.");
+                logger.debug("All snapshots.mjpeg streams have stopped.");
             } else if (streamingAutoFps && autoSnapshotMjpegChannelGroup.isEmpty()) {
                 streamingAutoFps = false;
                 stopSnapshotPolling();
-                logger.debug("All AutoFps Snapshot based MJPEG streams have stopped.");
+                logger.debug("All autofps.mjpeg streams have stopped.");
             }
         }
     }
@@ -819,7 +818,7 @@ public class IpCameraHandler extends BaseThingHandler {
         } else {
             mjpegChannelGroup.remove(ctx.channel());
             if (mjpegChannelGroup.isEmpty()) {
-                logger.debug("All Mjpeg streams have stopped, cleaning up now");
+                logger.debug("All ipcamera.mjpeg streams have stopped.");
                 if (mjpegUri.equals("ffmpeg")) {
                     if (ffmpegMjpeg != null) {
                         ffmpegMjpeg.stopConverting();
@@ -1672,9 +1671,10 @@ public class IpCameraHandler extends BaseThingHandler {
 
         serverPort = Integer.parseInt(config.get(CONFIG_SERVER_PORT).toString());
         if (serverPort == -1) {
-            logger.warn("The SERVER_PORT = -1 which disables a lot of features. See readme for more info.");
+            logger.warn(
+                    "The serverPort config is set to '-1' which disables a lot of binding features. See readme for more info.");
         } else if (serverPort < 1025) {
-            logger.warn("The SERVER_PORT is <= 1024 and may cause permission errors under Linux, try a higher port.");
+            logger.warn("The serverPort is <= 1024 and may cause permission errors under Linux, try a higher number.");
         }
 
         rtspUri = (config.get(CONFIG_FFMPEG_INPUT) == null) ? "" : config.get(CONFIG_FFMPEG_INPUT).toString();

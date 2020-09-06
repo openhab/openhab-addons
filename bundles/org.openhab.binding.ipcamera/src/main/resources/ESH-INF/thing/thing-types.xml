@@ -79,7 +79,7 @@
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
@@ -87,7 +87,6 @@
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -227,7 +226,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -323,12 +322,11 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
+			<parameter name="serverPort" type="integer" required="true" min="1" max="65535" groupName="Settings">
 				<label>serverPort</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
-					for each camera. Setting the port to -1 will turn the feature off.
+				<description>The port that will serve any files back to Openhab without authentication. It must be unique for each
+					camera.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -488,7 +486,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -593,7 +591,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -737,7 +734,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -813,7 +810,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -1035,7 +1031,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1195,7 +1191,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -1316,7 +1311,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1392,7 +1387,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -1593,7 +1587,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1669,7 +1663,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -1896,7 +1889,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -1972,7 +1965,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">
@@ -2186,7 +2178,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The full path where ffmpeg has the ability to write files to ending with a slash. For windows use this
 					format, c:\openhabconf\html\ipcamera\
 				</description>
-				<default>/cameratmpfs/camera1/</default>
+				<default>/etc/openhab2/html/camera1/</default>
 			</parameter>
 
 			<parameter name="hlsOutOptions" type="text" required="false" groupName="FFmpeg Setup">
@@ -2262,7 +2254,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
-				<default>-1</default>
 			</parameter>
 
 			<parameter name="ipWhitelist" type="text" required="false" groupName="Settings">

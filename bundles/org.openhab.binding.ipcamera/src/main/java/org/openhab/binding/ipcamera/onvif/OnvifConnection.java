@@ -713,8 +713,9 @@ public class OnvifConnection {
     void parseProfiles(String message) {
         mediaProfileTokens = listOfResults(message, "<trt:Profiles", "token=\"");
         if (mediaProfileIndex >= mediaProfileTokens.size()) {
-            logger.warn("You have set the media profile to {} when the camera reported {} profiles.", mediaProfileIndex,
-                    mediaProfileTokens.size());
+            logger.warn(
+                    "You have set the media profile to {} when the camera reported {} profiles. Falling back to mainstream 0.",
+                    mediaProfileIndex, mediaProfileTokens.size());
             mediaProfileIndex = 0;
         }
     }
