@@ -19,6 +19,7 @@ import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -27,8 +28,6 @@ import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomCli
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
-
-import tec.uom.se.unit.Units;
 
 /**
  * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
@@ -95,7 +94,7 @@ public final class ClimateControlHandler extends BoschSHCHandler {
      * @param quantityType Command which contains the new desired temperature.
      */
     private void updateSetpointTemperature(QuantityType<?> quantityType) {
-        QuantityType<?> celsiusType = quantityType.toUnit(Units.CELSIUS);
+        QuantityType<?> celsiusType = quantityType.toUnit(SIUnits.CELSIUS);
         if (celsiusType == null) {
             logger.debug("Could not convert quantity command to celsius");
             return;

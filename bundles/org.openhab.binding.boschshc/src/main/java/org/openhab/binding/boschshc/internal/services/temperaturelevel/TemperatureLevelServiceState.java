@@ -16,10 +16,9 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
-
-import tec.uom.se.unit.Units;
 
 /**
  * TemperatureLevel service state.
@@ -44,6 +43,6 @@ public class TemperatureLevelServiceState extends BoschSHCServiceState {
      * @return Current temperature state to use for a thing.
      */
     public State getTemperatureState() {
-        return new QuantityType<Temperature>(this.temperature, Units.CELSIUS);
+        return new QuantityType<Temperature>(this.temperature, SIUnits.CELSIUS);
     }
 }

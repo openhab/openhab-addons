@@ -16,10 +16,9 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
-
-import tec.uom.se.unit.Units;
 
 /**
  * State for {@link RoomClimateControlService} to get and set the desired temperature of a room.
@@ -59,6 +58,6 @@ public class RoomClimateControlServiceState extends BoschSHCServiceState {
      * @return Desired temperature state to set for a thing.
      */
     public State getSetpointTemperatureState() {
-        return new QuantityType<Temperature>(this.setpointTemperature, Units.CELSIUS);
+        return new QuantityType<Temperature>(this.setpointTemperature, SIUnits.CELSIUS);
     }
 }
