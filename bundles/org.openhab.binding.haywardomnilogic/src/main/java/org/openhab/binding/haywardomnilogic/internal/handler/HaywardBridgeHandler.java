@@ -25,6 +25,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -59,16 +61,17 @@ import org.xml.sax.InputSource;
  * @author Matt Myers - Initial contribution
  */
 
+@NonNullByDefault
 public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardListener {
     private final Logger logger = LoggerFactory.getLogger(HaywardBridgeHandler.class);
     private List<HaywardHandlerListener> listeners = new ArrayList<HaywardHandlerListener>();
     private final HttpClient httpClient;
-    private ScheduledFuture<?> initializeFuture;
-    private ScheduledFuture<?> pollTelemetryFuture;
-    private ScheduledFuture<?> pollAlarmsFuture;
+    private @Nullable ScheduledFuture<?> initializeFuture;
+    private @Nullable ScheduledFuture<?> pollTelemetryFuture;
+    private @Nullable ScheduledFuture<?> pollAlarmsFuture;
     private int commFailureCount;
-    public String chlorTimedPercent;
-    public String chlorState;
+    public String chlorTimedPercent = "";
+    public String chlorState = "";
 
     HaywardConfig config = getConfig().as(HaywardConfig.class);
 
@@ -233,7 +236,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             config.token = evaluateXPath("/Response/Parameters//Parameter[@name='Token']/text()", xmlResponse).get(0);
             config.userID = evaluateXPath("/Response/Parameters//Parameter[@name='UserID']/text()", xmlResponse).get(0);
-
         } catch (Exception e) {
             logger.debug("Unable to login to Hayward's server {}:{}", config.hostname, config.username, e);
             return false;
@@ -801,8 +803,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
             xmlResponse = httpXmlResponse(urlParameters);
 
-            if (xmlResponse == null) {
-                logger.error("Hayward getAlarmList XML response was null");
+            if (xmlResponse.isEmpty()) {
+                logger.error("Hayward getAlarmList XML response was empty");
                 return false;
             }
 
@@ -922,7 +924,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         }, initalDelay, config.alarmPollTime, TimeUnit.SECONDS);
     }
 
-    private void clearPolling(ScheduledFuture<?> pollJob) {
+    private void clearPolling(@Nullable ScheduledFuture<?> pollJob) {
         if (pollJob != null) {
             pollJob.cancel(false);
         }
@@ -1072,6 +1074,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         }
     }
 
+    @Nullable
     Thing getThingForType(HaywardTypeToRequest type, int num) {
         for (Thing thing : getThing().getThings()) {
             Map<String, String> properties = thing.getProperties();
@@ -1147,7 +1150,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                     logger.error("{} Hayward http command: {}", getCallingMethod(), urlParameters);
                     logger.error("{} Hayward http response: {}", getCallingMethod(), status);
                 }
-                return null;
+                return "";
             }
 
         } catch (TimeoutException e) {
@@ -1155,13 +1158,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 logger.error("{}  Connection timeout to Hayward's server {} with username {}", getCallingMethod(),
                         config.hostname, config.username);
             }
-            return null;
+            return "";
         } catch (Exception e) {
             if (logger.isErrorEnabled()) {
                 logger.error("{}  Unable to open connection to Hayward's server {} with username {}",
                         getCallingMethod(), config.hostname, config.username, e);
             }
-            return null;
+            return "";
         }
     }
 

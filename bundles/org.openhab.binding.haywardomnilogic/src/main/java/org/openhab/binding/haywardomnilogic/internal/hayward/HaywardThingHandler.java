@@ -13,10 +13,10 @@
 
 package org.openhab.binding.haywardomnilogic.internal.hayward;
 
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -58,9 +58,13 @@ public class HaywardThingHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
-    private @Nullable HaywardBridgeHandler getHaywardOmniLogixBridgeHandler() {
-        return (HaywardBridgeHandler) getBridge().getHandler();
+    private HaywardBridgeHandler getHaywardOmniLogixBridgeHandler() {
+        Bridge bridge = getBridge();
+        if (bridge == null || bridge.getHandler() == null) {
+            return null;
+        } else {
+            return (HaywardBridgeHandler) getBridge().getHandler();
+        }
     }
 
     public State toState(String type, String value) throws NumberFormatException {
