@@ -62,6 +62,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
     private final Logger logger = LoggerFactory.getLogger(HaywardBridgeHandler.class);
     private List<HaywardHandlerListener> listeners = new ArrayList<HaywardHandlerListener>();
     private final HttpClient httpClient;
+    private ScheduledFuture<?> initializeFuture;
     private ScheduledFuture<?> pollTelemetryFuture;
     private ScheduledFuture<?> pollAlarmsFuture;
     private int commFailureCount;
@@ -127,6 +128,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
     @Override
     public void dispose() {
+        clearPolling(initializeFuture);
         clearPolling(pollTelemetryFuture);
         clearPolling(pollAlarmsFuture);
         logger.trace("Hayward polling cancelled");
@@ -135,10 +137,16 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                 "Opening connection to Hayward's Server");
 
-        // Load up the config and then get the connection to Hayward setup.
+        initializeFuture = scheduler.schedule(() -> {
+            scheduledInitialize();
+        }, 1, TimeUnit.SECONDS);
+        return;
+    }
+
+    public void scheduledInitialize() {
         config = getConfigAs(HaywardConfig.class);
 
         clearPolling(pollTelemetryFuture);
