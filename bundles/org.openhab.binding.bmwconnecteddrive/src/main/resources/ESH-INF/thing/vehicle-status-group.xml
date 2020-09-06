@@ -10,7 +10,9 @@
 			<channel id="doors" typeId="doors-channel"/>
 			<channel id="windows" typeId="windows-channel"/>
 			<channel id="lock" typeId="lock-channel"/>
-			<channel id="service" typeId="service-channel"/>
+			<channel id="service-date" typeId="service-date-channel"/>
+			<channel id="service-mileage" typeId="service-mileage-channel"/>
+			<channel id="service-name" typeId="service-name-channel"/>
 			<channel id="check-control" typeId="check-control-channel"/>
 			<channel id="last-update" typeId="last-update-channel"/>
 		</channels>

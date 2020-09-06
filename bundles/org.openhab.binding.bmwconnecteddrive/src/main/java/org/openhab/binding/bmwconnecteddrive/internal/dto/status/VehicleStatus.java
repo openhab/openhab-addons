@@ -79,12 +79,13 @@ public class VehicleStatus {
      * @param imperial
      * @return
      */
-    public String getNextService(boolean imperial) {
+    public CBSMessage getNextService(boolean imperial) {
+        CBSMessage cbs = new CBSMessage();
         if (cbsData == null) {
-            return Converter.toTitleCase(UNKNOWN);
+            return cbs;
         }
         if (cbsData.isEmpty()) {
-            return NO_SERVICE_REQUEST;
+            return cbs;
         } else {
             int serviceMileage = Integer.MAX_VALUE;
             LocalDate serviceDate = LocalDate.now().plusYears(100);
@@ -97,34 +98,34 @@ public class VehicleStatus {
                     LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
                             Converter.SERVICE_DATE_INPUT_PATTERN);
                     if ((entry.cbsRemainingMileage < serviceMileage) || (d.isBefore(serviceDate))) {
-                        serviceDate = d;
-                        serviceMileage = entry.cbsRemainingMileage;
-                        service = new StringBuffer(serviceDate.format(Converter.SERVICE_DATE_OUTPUT_PATTERN))
-                                .append(" or in ").append(serviceMileage).append(" ").append(getUnit(imperial))
-                                .append(" - ").append(serviceDescription).toString();
+                        cbs = entry;
+                        // serviceDate = d;
+                        // serviceMileage = entry.cbsRemainingMileage;
+                        // service = new StringBuffer(serviceDate.format(Converter.SERVICE_DATE_OUTPUT_PATTERN))
+                        // .append(" or in ").append(serviceMileage).append(" ").append(getUnit(imperial))
+                        // .append(" - ").append(serviceDescription).toString();
                     }
                 } else if (entry.cbsRemainingMileage != 0) {
                     if (entry.cbsRemainingMileage < serviceMileage) {
-                        serviceMileage = entry.cbsRemainingMileage;
-                        service = new StringBuffer("In ").append(serviceMileage).append(" ").append(getUnit(imperial))
-                                .append(" - ").append(serviceDescription).toString();
+                        cbs = entry;
+                        // serviceMileage = entry.cbsRemainingMileage;
+                        // service = new StringBuffer("In ").append(serviceMileage).append("
+                        // ").append(getUnit(imperial))
+                        // .append(" - ").append(serviceDescription).toString();
                     }
                 } else if (entry.cbsDueDate != null) {
                     LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
                             Converter.SERVICE_DATE_INPUT_PATTERN);
                     if (d.isBefore(serviceDate)) {
-                        serviceDate = d;
-                        service = new StringBuffer(serviceDate.format(Converter.SERVICE_DATE_OUTPUT_PATTERN))
-                                .append(" - ").append(serviceDescription).toString();
+                        cbs = entry;
+                        // serviceDate = d;
+                        // service = new StringBuffer(serviceDate.format(Converter.SERVICE_DATE_OUTPUT_PATTERN))
+                        // .append(" - ").append(serviceDescription).toString();
                     }
                 }
             }
-            if (service != null) {
-                return service;
-            } else {
-                return "Unknown";
-            }
         }
+        return cbs;
     }
 
     private Object getUnit(boolean imperial) {

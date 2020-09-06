@@ -100,24 +100,26 @@ public class ConnectedDriveConstants {
     // Thing Group definitions
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_GROUP_RANGE = "range";
-    public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
-    public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
-    public static final String CHANNEL_GROUP_VEHICLE_STATUS = "status";
     public static final String CHANNEL_GROUP_LOCATION = "location";
-    public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+    public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
+    public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
-    public static final String CHANNEL_GROUP_DESTINATION = "destination";
     public static final String CHANNEL_GROUP_CHARGE = "charge";
+    public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
+    public static final String CHANNEL_GROUP_DESTINATION = "destination";
     public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
 
     // Status
     public static final String DOORS = "doors";
     public static final String WINDOWS = "windows";
     public static final String LOCK = "lock";
-    public static final String SERVICE = "service";
+    public static final String SERVICE_DATE = "service-date";
+    public static final String SERVICE_MILEAGE = "service-mileage";
+    public static final String SERVICE_NAME = "service-name";
     public static final String CHECK_CONTROL = "check-control";
     public static final String LAST_UPDATE = "last-update";
 
+    // Chraging
     public static final String CHARGE_STATUS = "status";
     public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
     public static final String CHARGE_PROFILE_MODE = "profile-mode";
