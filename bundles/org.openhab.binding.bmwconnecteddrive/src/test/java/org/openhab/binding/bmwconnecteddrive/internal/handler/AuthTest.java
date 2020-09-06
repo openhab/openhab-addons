@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AuthTest {
-    private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     @Test
     public void testTokenDecoding() {

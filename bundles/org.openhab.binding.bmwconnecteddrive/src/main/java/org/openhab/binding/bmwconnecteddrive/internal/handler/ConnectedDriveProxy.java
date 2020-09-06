@@ -32,10 +32,11 @@ import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.jetty.util.UrlEncoded;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedCarConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
+import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,36 +135,36 @@ public class ConnectedDriveProxy {
         request(baseUrl, Optional.empty(), callback);
     }
 
-    public void requestVehcileStatus(ConnectedCarConfiguration config, StringResponseCallback callback) {
+    public void requestVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
         request(new StringBuffer(baseUrl).append(config.vin).append(vehicleStatusAPI).toString(), Optional.empty(),
                 callback);
     }
 
-    public void requestLastTrip(ConnectedCarConfiguration config, StringResponseCallback callback) {
+    public void requestLastTrip(VehicleConfiguration config, StringResponseCallback callback) {
         request(new StringBuffer(baseUrl).append(config.vin).append(lastTripAPI).toString(), Optional.empty(),
                 callback);
     }
 
-    public void requestAllTrips(ConnectedCarConfiguration config, StringResponseCallback callback) {
+    public void requestAllTrips(VehicleConfiguration config, StringResponseCallback callback) {
         request(new StringBuffer(baseUrl).append(config.vin).append(allTripsAPI).toString(), Optional.empty(),
                 callback);
     }
 
-    public void requestChargingProfile(ConnectedCarConfiguration config, StringResponseCallback callback) {
+    public void requestChargingProfile(VehicleConfiguration config, StringResponseCallback callback) {
         request(new StringBuffer(baseUrl).append(config.vin).append(chargeAPI).toString(), Optional.empty(), callback);
     }
 
-    public void requestDestinations(ConnectedCarConfiguration config, StringResponseCallback callback) {
+    public void requestDestinations(VehicleConfiguration config, StringResponseCallback callback) {
         request(new StringBuffer(baseUrl).append(config.vin).append(destinationAPI).toString(), Optional.empty(),
                 callback);
     }
 
-    public void requestRangeMap(ConnectedCarConfiguration config, Optional<MultiMap<String>> params,
+    public void requestRangeMap(VehicleConfiguration config, Optional<MultiMap<String>> params,
             StringResponseCallback callback) {
         request(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
     }
 
-    public void requestImage(ConnectedCarConfiguration config, ByteResponseCallback callback) {
+    public void requestImage(VehicleConfiguration config, ByteResponseCallback callback) {
         // String localImageUrl = baseUrl + config.vin + imageAPI + "?width=" + config.imageSize + "&height="
         // + config.imageSize + "&view=" + config.imageViewport;
 
@@ -179,11 +180,15 @@ public class ConnectedDriveProxy {
     }
 
     private String getRegionServer() {
-        return BimmerConstants.SERVER_MAP.get(configuration.region);
+        if (BimmerConstants.SERVER_MAP.containsKey(configuration.region)) {
+            return BimmerConstants.SERVER_MAP.get(configuration.region);
+        } else {
+            return Constants.INVALID;
+        }
     }
 
-    RemoteServiceHandler getRemoteServiceHandler(ConnectedCarHandler carHandler) {
-        return new RemoteServiceHandler(carHandler, this, http);
+    RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {
+        return new RemoteServiceHandler(vehicleHandler, this, http);
     }
 
     // Token handling
@@ -245,17 +250,21 @@ public class ConnectedDriveProxy {
         return new Token();
     }
 
+    @SuppressWarnings("null")
     public Token getTokenFromUrl(String encodedUrl) {
         MultiMap<String> tokenMap = new MultiMap<String>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
         final Token token = new Token();
         tokenMap.forEach((key, value) -> {
-            if (key.endsWith(ACCESS_TOKEN)) {
-                token.setToken(value.get(0).toString());
-            } else if (key.equals(EXPIRES_IN)) {
-                token.setExpiration(Integer.parseInt(value.get(0).toString()));
-            } else if (key.equals(TOKEN_TYPE)) {
-                token.setType(value.get(0).toString());
+            if (value.size() > 0) {
+                String val = value.get(0);
+                if (key.endsWith(ACCESS_TOKEN)) {
+                    token.setToken(val.toString());
+                } else if (key.equals(EXPIRES_IN)) {
+                    token.setExpiration(Integer.parseInt(val.toString()));
+                } else if (key.equals(TOKEN_TYPE)) {
+                    token.setType(val.toString());
+                }
             }
         });
         return token;

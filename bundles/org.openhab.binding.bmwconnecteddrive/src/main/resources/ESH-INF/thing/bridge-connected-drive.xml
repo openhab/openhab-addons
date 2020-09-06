@@ -9,14 +9,18 @@
 		<label>BMW ConnectedDrive Account</label>
 		<description>Access to BMW ConnectedDrive Portal for a specific user</description>
 
+		<channels>
+			<channel id="discovery-fingerprint" typeId="discovery-fingerprint-channel"/>
+		</channels>
+
 		<config-description>
 			<parameter name="userName" type="text" required="true">
 				<label>Username</label>
-				<description>BMW ConnectedDrive Username</description>
+				<description>BMW Connected Drive Username</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
 				<label>Password</label>
-				<description>BMW ConnectedDrive Password</description>
+				<description>BMW Connected Drive Password</description>
 			</parameter>
 			<parameter name="region" type="text" required="true">
 				<label>Region</label>
@@ -30,4 +34,11 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+
+	<channel-type id="discovery-fingerprint-channel">
+		<item-type>Switch</item-type>
+		<label>Log Discovery Fingerprint</label>
+		<description>Forcing a log entry to analyze Discovery Problems</description>
+	</channel-type>
+
 </thing:thing-descriptions>

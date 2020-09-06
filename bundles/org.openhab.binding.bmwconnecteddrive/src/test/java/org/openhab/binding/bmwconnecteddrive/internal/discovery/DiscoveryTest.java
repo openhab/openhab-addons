@@ -50,7 +50,7 @@ public class DiscoveryTest {
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
         when(b.getUID()).thenReturn(new ThingUID("testbinding", "test"));
-        ConnectedCarDiscovery discovery = new ConnectedCarDiscovery(bh);
+        VehicleDiscovery discovery = new VehicleDiscovery(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
         VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);
@@ -72,7 +72,7 @@ public class DiscoveryTest {
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
         when(b.getUID()).thenReturn(new ThingUID("testbinding", "test"));
-        ConnectedCarDiscovery discovery = new ConnectedCarDiscovery(bh);
+        VehicleDiscovery discovery = new VehicleDiscovery(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
         VehiclesContainer container = GSON.fromJson(content, VehiclesContainer.class);

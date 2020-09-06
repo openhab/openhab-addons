@@ -16,12 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 
 /**
- * The {@link ConnectedCarConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link VehicleConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ConnectedCarConfiguration {
+public class VehicleConfiguration {
     /**
      * Vehilce Identification Number (VIN)
      */

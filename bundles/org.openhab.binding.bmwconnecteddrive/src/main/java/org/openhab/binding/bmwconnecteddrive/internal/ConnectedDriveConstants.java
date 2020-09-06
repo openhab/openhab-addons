@@ -37,7 +37,7 @@ public class ConnectedDriveConstants {
 
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
-    public enum CarType {
+    public enum VehicleType {
         CONVENTIONAL("CONV"),
         PLUGIN_HYBRID("PHEV"),
         ELECTRIC_REX("BEV_REX"),
@@ -45,7 +45,7 @@ public class ConnectedDriveConstants {
 
         private final String type;
 
-        CarType(String s) {
+        VehicleType(String s) {
             type = s;
         }
 
@@ -55,23 +55,23 @@ public class ConnectedDriveConstants {
         }
     }
 
-    public static final Set<String> FUEL_CARS = new HashSet<String>() {
+    public static final Set<String> FUEL_VEHICLES = new HashSet<String>() {
         {
-            add(CarType.CONVENTIONAL.toString());
-            add(CarType.PLUGIN_HYBRID.toString());
-            add(CarType.ELECTRIC_REX.toString());
+            add(VehicleType.CONVENTIONAL.toString());
+            add(VehicleType.PLUGIN_HYBRID.toString());
+            add(VehicleType.ELECTRIC_REX.toString());
         }
     };
-    public static final Set<String> ELECTRIC_CARS = new HashSet<String>() {
+    public static final Set<String> ELECTRIC_VEHICLES = new HashSet<String>() {
         {
-            add(CarType.ELECTRIC.toString());
-            add(CarType.PLUGIN_HYBRID.toString());
-            add(CarType.ELECTRIC_REX.toString());
+            add(VehicleType.ELECTRIC.toString());
+            add(VehicleType.PLUGIN_HYBRID.toString());
+            add(VehicleType.ELECTRIC_REX.toString());
         }
     };
 
     // Countries with Mileage display
-    public static final Set<String> MILE_COUNTRIES = new HashSet<String>() {
+    public static final Set<String> IMPERIAL_COUNTRIES = new HashSet<String>() {
         {
             add("US");
             add("GB");
@@ -80,10 +80,13 @@ public class ConnectedDriveConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CONNECTED_DRIVE_ACCOUNT = new ThingTypeUID(BINDING_ID, "account");
-    public static final ThingTypeUID THING_TYPE_CONV = new ThingTypeUID(BINDING_ID, CarType.CONVENTIONAL.toString());
-    public static final ThingTypeUID THING_TYPE_PHEV = new ThingTypeUID(BINDING_ID, CarType.PLUGIN_HYBRID.toString());
-    public static final ThingTypeUID THING_TYPE_BEV_REX = new ThingTypeUID(BINDING_ID, CarType.ELECTRIC_REX.toString());
-    public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, CarType.ELECTRIC.toString());
+    public static final ThingTypeUID THING_TYPE_CONV = new ThingTypeUID(BINDING_ID,
+            VehicleType.CONVENTIONAL.toString());
+    public static final ThingTypeUID THING_TYPE_PHEV = new ThingTypeUID(BINDING_ID,
+            VehicleType.PLUGIN_HYBRID.toString());
+    public static final ThingTypeUID THING_TYPE_BEV_REX = new ThingTypeUID(BINDING_ID,
+            VehicleType.ELECTRIC_REX.toString());
+    public static final ThingTypeUID THING_TYPE_BEV = new ThingTypeUID(BINDING_ID, VehicleType.ELECTRIC.toString());
     public static final Set<ThingTypeUID> SUPPORTED_THING_SET = new HashSet<ThingTypeUID>() {
         {
             add(THING_TYPE_CONNECTED_DRIVE_ACCOUNT);
@@ -99,9 +102,9 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LIFETIME = "lifetime";
     public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
-    public static final String CHANNEL_GROUP_CAR_STATUS = "status";
+    public static final String CHANNEL_GROUP_VEHICLE_STATUS = "status";
     public static final String CHANNEL_GROUP_LOCATION = "location";
-    public static final String CHANNEL_GROUP_CAR_IMAGE = "image";
+    public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
     public static final String CHANNEL_GROUP_REMOTE = "remote";
     public static final String CHANNEL_GROUP_DESTINATION = "destination";
     public static final String CHANNEL_GROUP_CHARGE = "charge";
@@ -179,5 +182,6 @@ public class ConnectedDriveConstants {
     public static final String DESTINATION_LON_3 = "lon-3";
 
     // Troubleshoot
+    public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
     public static final String VEHICLE_FINGERPRINT = "vehicle-fingerprint";
 }

@@ -28,7 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerCallback;
 import org.eclipse.smarthome.core.types.State;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.CarType;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ChargeProfileTest {
-    private final Logger logger = LoggerFactory.getLogger(ConnectedCarHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
     private final int PROFILE_CALLBACK_NUMBER = 13;
 
@@ -53,7 +53,7 @@ public class ChargeProfileTest {
     @Nullable
     ThingHandlerCallback tc;
     @Nullable
-    ConnectedCarHandler cch;
+    VehicleHandler cch;
     @Nullable
     List<ChannelUID> allChannels;
     @Nullable
@@ -70,7 +70,7 @@ public class ChargeProfileTest {
         Thing thing = mock(Thing.class);
         when(thing.getUID()).thenReturn(new ThingUID("testbinding", "test"));
         HttpClient hc = mock(HttpClient.class);
-        cch = new ConnectedCarHandler(thing, hc, type, imperial);
+        cch = new VehicleHandler(thing, hc, type, imperial);
         tc = mock(ThingHandlerCallback.class);
         cch.setCallback(tc);
         channelCaptor = ArgumentCaptor.forClass(ChannelUID.class);
@@ -114,7 +114,7 @@ public class ChargeProfileTest {
     @Test
     public void testChargingProfile() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(CarType.ELECTRIC_REX.toString(), false);
+        setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/webapi/charging-profile.json");
         testProfile(content, PROFILE_CALLBACK_NUMBER);
     }

@@ -21,13 +21,13 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 
 /**
- * The {@link ConnectedCarChannelHandler} is responsible for handling commands, which are
+ * The {@link VehicleChannelHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class ConnectedCarChannelHandler extends BaseThingHandler {
+public class VehicleChannelHandler extends BaseThingHandler {
 
     // Vahicle Status Channels
     protected ChannelUID doors;
@@ -107,7 +107,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
     // Image
     protected ChannelUID imageChannel;
 
-    public ConnectedCarChannelHandler(Thing thing) {
+    public VehicleChannelHandler(Thing thing) {
         super(thing);
 
         // Vehicle Status channels
@@ -181,7 +181,7 @@ public class ConnectedCarChannelHandler extends BaseThingHandler {
         destinationLat3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_3);
         destinationLon3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_3);
 
-        imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CAR_IMAGE, IMAGE);
+        imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE);
 
         vehicleFingerPrint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, VEHICLE_FINGERPRINT);
     }
