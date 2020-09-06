@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
-	
+
 	<config-description uri="thing-type:iammeter:powermeter">
 		<parameter name="host" type="text" required="true">
 			<label>Device's IP Address</label>
@@ -32,5 +32,5 @@
 			<default>60</default>
 		</parameter>
 	</config-description>
-	
+
 </config-description:config-descriptions>

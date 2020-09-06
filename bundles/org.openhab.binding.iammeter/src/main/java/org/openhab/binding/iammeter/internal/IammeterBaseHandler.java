@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.iammeter.internal;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -49,7 +46,7 @@ import com.google.gson.JsonSyntaxException;
  */
 
 @NonNullByDefault
-public class IammeterBaseHandler extends BaseThingHandler {
+public abstract class IammeterBaseHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IammeterBaseHandler.class);
     private @Nullable ScheduledFuture<?> refreshJob;
@@ -80,9 +77,7 @@ public class IammeterBaseHandler extends BaseThingHandler {
         }
     }
 
-    protected void resolveData(String response) {
-
-    }
+    protected abstract void resolveData(String response);
 
     @SuppressWarnings("null")
     private boolean refresh() {
@@ -92,33 +87,8 @@ public class IammeterBaseHandler extends BaseThingHandler {
             String httpMethod = "GET";
             String url = "http://" + config.username + ":" + config.password + "@" + config.host + ":" + config.port
                     + "/monitorjson";
-            String content = "";
-            InputStream stream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
-
             String response = HttpUtil.executeUrl(httpMethod, url, TIMEOUT_MS);
-
             resolveData(response);
-
-            // JsonElement iammeterDataElement = new JsonParser().parse(response);
-            // JsonObject iammeterData = iammeterDataElement.getAsJsonObject();
-            // String keyWord = "Datas";
-            // if (iammeterData.has("Datas") && iammeterData.has("SN")) {
-            // String groups[] = { "powerPhaseA", "powerPhaseB", "powerPhaseC" };
-            // for (int row = 0; row < groups.length; row++) {
-            // String gpName = groups[row];
-            // List<Channel> chnList = getThing().getChannelsOfGroup(gpName);
-            // for (IammeterWEM3080Channel channelConfig : IammeterWEM3080Channel.values()) {
-            // Channel chnl = chnList.get(channelConfig.ordinal());
-            // if (chnl != null) {
-            // State state = getQuantityState(iammeterData.get(keyWord).getAsJsonArray().get(row)
-            // .getAsJsonArray().get(channelConfig.ordinal()).toString(), channelConfig.getUnit());
-            // updateState(chnl.getUID(), state);
-            // }
-            // }
-            // updateStatus(ThingStatus.ONLINE);
-            // }
-            // }
-            stream.close();
             updateStatus(ThingStatus.ONLINE);
             return true;
             // Very rudimentary Exception differentiation
