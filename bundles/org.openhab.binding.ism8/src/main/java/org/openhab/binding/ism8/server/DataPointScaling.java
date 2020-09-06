@@ -54,8 +54,8 @@ public class DataPointScaling extends DataPointBase<@Nullable Double> {
     protected byte[] convertWriteValue(Object value) {
         this.setValue(Math.max(Math.min(Double.parseDouble(value.toString()), 100), 0));
         Object rawVal = this.getValue();
-        double rawValResult = rawVal!= null ? (Double)rawVal : 0.0;
-        byte val = (byte) (rawValResult  / 100.0 * 255.0);
+        double rawValResult = rawVal != null ? (Double) rawVal : 0.0;
+        byte val = (byte) (rawValResult / 100.0 * 255.0);
         return new byte[] { val };
     }
 }

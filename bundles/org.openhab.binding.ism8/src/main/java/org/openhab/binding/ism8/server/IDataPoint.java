@@ -52,7 +52,8 @@ public interface IDataPoint {
      * Gets the value object.
      *
      */
-    @Nullable Object getValueObject();
+    @Nullable
+    Object getValueObject();
 
     /**
      * Processes the data received

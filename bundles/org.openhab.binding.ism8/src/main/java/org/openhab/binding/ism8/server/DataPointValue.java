@@ -81,7 +81,7 @@ public class DataPointValue extends DataPointBase<@Nullable Double> {
         ByteBuffer data = ByteBuffer.allocate(2);
         this.setValue(Double.parseDouble(value.toString()));
         Object rawVal = this.getValue();
-        double rawValResult = rawVal!= null ? (Double)rawVal : 0.0;
+        double rawValResult = rawVal != null ? (Double) rawVal : 0.0;
         double dblValue = rawValResult / this.factor;
         boolean inverted = dblValue < 0.0;
         int exp = 0;

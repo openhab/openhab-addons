@@ -70,8 +70,7 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
         double dblVal;
         try {
             dblVal = Double.parseDouble(value.toString());
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             dblVal = 0.0;
         }
 

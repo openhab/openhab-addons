@@ -16,8 +16,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.ServerSocket; 
-import java.net.Socket; 
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
@@ -170,7 +170,7 @@ public class Server extends Thread {
             IDataPointChangeListener listener = this.changeListener;
             if (listener != null) {
                 listener.connectionStatusChanged(ThingStatus.OFFLINE);
-            }            
+            }
             ServerSocket serverSock = new ServerSocket(this.getPort());
             this.serverSocket = serverSock;
             Socket clientSocket = serverSock.accept();
@@ -184,8 +184,7 @@ public class Server extends Thread {
             this.sendUpdateCommand();
             while (!this.isInterrupted()) {
                 byte[] bytes = getBytesFromInputStream(clientSocket.getInputStream());
-                int amount = bytes.length;
-                ArrayList<byte[]> packages = this.getPackages(bytes, amount);
+                ArrayList<byte[]> packages = this.getPackages(bytes);
 
                 for (byte[] pack : packages) {
                     logger.debug("Data received: {}", this.printBytes(pack));
@@ -195,14 +194,14 @@ public class Server extends Thread {
                         if (answer.length > 0) {
                             this.sendData(answer);
                         }
-                                                
+
                         for (SetDatapointValueMessage message : frame.getValueMessages()) {
                             logger.debug("Message received: {} {}", message.getId(),
                                     this.printBytes(message.getData()));
 
                             IDataPoint dataPoint = null;
                             for (int k = 0; k < this.dataPoints.size(); k++) {
-                                IDataPoint dp = this.dataPoints.get(k); 
+                                IDataPoint dp = this.dataPoints.get(k);
                                 if (dp.getId() == message.getId()) {
                                     dataPoint = dp;
                                     break;
@@ -217,7 +216,7 @@ public class Server extends Thread {
                                 }
                                 break;
                             }
-                        }                   
+                        }
                     }
                 }
             }
@@ -241,30 +240,28 @@ public class Server extends Thread {
         return os.toByteArray();
     }
 
-    private ArrayList<byte[]> getPackages(byte[] data, int amount) {
+    private ArrayList<byte[]> getPackages(byte[] data) {
         ArrayList<byte[]> result = new ArrayList<byte[]>();
-        if (data.length >= amount) {
-            ByteBuffer list = ByteBuffer.allocate(amount);
-            list.put(data, 0, amount);
+        if (data.length >= 0) {
+            ByteBuffer list = ByteBuffer.allocate(data.length);
+            list.put(data);
             int start = -1;
-            for (int i = 0; i < amount - 4; i++) {
+            for (int i = 0; i < data.length - 4; i++) {
                 if (list.get(i + 0) == (byte) 0x06 && list.get(i + 1) == (byte) 0x20 && list.get(i + 2) == (byte) 0xF0
                         && list.get(i + 3) == (byte) 0x80) {
                     if (start >= 0) {
                         byte[] pkgData = new byte[i - start];
-                        for (int j = 0; j < pkgData.length; j++) {
-                            pkgData[j] = list.get(start + j);
-                        }
+                        list.position(start);
+                        list.get(pkgData);
                         result.add(pkgData);
                     }
                     start = i;
                 }
             }
             if (start >= 0) {
-                byte[] pkgData = new byte[amount - start];
-                for (int j = 0; j < pkgData.length; j++) {
-                    pkgData[j] = list.get(start + j);
-                }
+                byte[] pkgData = new byte[data.length - start];
+                list.position(start);
+                list.get(pkgData);
                 result.add(pkgData);
             }
         }

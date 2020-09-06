@@ -55,16 +55,21 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         if (channel != null && svr != null) {
             if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("write")
                     && channel.getConfiguration().get("write").toString().equalsIgnoreCase("true")) {
-                int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
-                this.logger.debug("Channel '{}' writting into ID '{}'", channel.getUID().getId(), id);
-                this.updateState(channelUID, new QuantityType<>(command.toString()));
-
                 IDataPoint dataPoint = null;
-                for (IDataPoint dp : svr.getDataPoints()) {
-                    if (dp.getId() == id) {
-                        dataPoint = dp;
-                        break;
+                try {
+                    int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
+                    this.logger.debug("Channel '{}' writting into ID '{}'", channel.getUID().getId(), id);
+                    this.updateState(channelUID, new QuantityType<>(command.toString()));
+
+                    for (IDataPoint dp : svr.getDataPoints()) {
+                        if (dp.getId() == id) {
+                            dataPoint = dp;
+                            break;
+                        }
                     }
+                } catch (NumberFormatException e) {
+                    this.logger.debug("Updating State of ISM DataPoint '{}' failed. '{}'", channel.getConfiguration(),
+                            e.getMessage());
                 }
 
                 if (dataPoint != null) {
@@ -95,7 +100,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
             Server svr = new Server(cfg.getPortNumber());
             for (Channel channel : getThing().getChannels()) {
                 if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("type")) {
-                    try { 
+                    try {
                         int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
                         String type = channel.getConfiguration().get("type").toString();
                         String description = channel.getLabel();
@@ -103,7 +108,9 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                             svr.addDataPoint(id, type, description);
                         }
                     } catch (NumberFormatException e) {
-                        this.logger.warn("Ism8 initialize: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}", channel.getLabel(), channel.getConfiguration());
+                        this.logger.warn(
+                                "Ism8 initialize: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}",
+                                channel.getLabel(), channel.getConfiguration());
                     }
                 } else {
                     this.logger.info("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
@@ -137,7 +144,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
 
     private void updateDataPoint(IDataPoint dataPoint) {
         this.updateStatus(ThingStatus.ONLINE);
-        for (Channel channel : getThing().getChannels()) {            
+        for (Channel channel : getThing().getChannels()) {
             if (channel.getConfiguration().containsKey("id")) {
                 try {
                     int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
@@ -149,7 +156,9 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                         }
                     }
                 } catch (NumberFormatException e) {
-                    this.logger.warn("Ism8 updateDataPoint: ID couldn't be converted correctly. Check the configuration of channel {}. {}", channel.getLabel(), e.getMessage());
+                    this.logger.warn(
+                            "Ism8 updateDataPoint: ID couldn't be converted correctly. Check the configuration of channel {}. {}",
+                            channel.getLabel(), e.getMessage());
                 }
             }
         }
