@@ -93,17 +93,17 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
         super(thing);
     }
 
+    /**
+     * Returns the unique id of the Bosch device.
+     * 
+     * @return Unique id of the Bosch device.
+     */
     public @Nullable String getBoschID() {
-        BoschSHCConfiguration config = this.getBoschConfig();
-        if (config != null) {
-            return config.id;
+        if (this.config != null) {
+            return this.config.id;
         } else {
             return null;
         }
-    }
-
-    public @Nullable BoschSHCConfiguration getBoschConfig() {
-        return this.config;
     }
 
     /**
