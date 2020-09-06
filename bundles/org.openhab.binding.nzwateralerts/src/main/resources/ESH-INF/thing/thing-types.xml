@@ -9,7 +9,7 @@
 		<description>Water Alert Levels for New Zealand water supply.</description>
 
 		<channels>
-			<channel id="alertlevel" typeId="alertlevel" />
+			<channel id="alertlevel" typeId="alertlevel"/>
 		</channels>
 
 		<config-description>

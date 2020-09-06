@@ -47,7 +47,6 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
         super(thing);
 
         this.httpClient = httpClient;
-        
     }
 
     @Override
@@ -55,7 +54,7 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
         if (CHANNEL_ALERTLEVEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 if (binder != null)
-                binder.update();
+                    binder.update();
             }
         }
     }
@@ -68,7 +67,6 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
 
         updateStatus(ThingStatus.UNKNOWN);
         binder.registerListener(this);
-
     }
 
     @Override

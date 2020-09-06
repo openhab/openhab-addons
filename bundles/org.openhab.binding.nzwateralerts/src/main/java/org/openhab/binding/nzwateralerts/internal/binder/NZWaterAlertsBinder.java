@@ -89,7 +89,7 @@ public class NZWaterAlertsBinder {
      * registered, this method returns immediately.
      *
      * @param alertsBinderInterface The {@link NZWaterAlertsBinderListener} to be
-     *                              registered.
+     *            registered.
      */
     public void registerListener(final NZWaterAlertsBinderListener alertsBinderInterface) {
         final boolean isAdded = listeners.add(alertsBinderInterface);
@@ -103,7 +103,7 @@ public class NZWaterAlertsBinder {
      * unregistered, this method returns immediately.
      *
      * @param alertsBinderInterface The {@link NZWaterAlertsBinderListener} to be
-     *                              unregistered.
+     *            unregistered.
      */
     public void unregisterListener(final NZWaterAlertsBinderListener alertsBinderInterface) {
         final boolean isRemoved = listeners.remove(alertsBinderInterface);
@@ -116,7 +116,7 @@ public class NZWaterAlertsBinder {
         final boolean isPolling = future != null;
         if (isPolling && listeners.isEmpty()) {
             if (future != null)
-            future.cancel(true);
+                future.cancel(true);
             future = null;
             return;
         }

@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.nzwateralerts.internal.api;
 
+import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingConstants.*;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingConstants.*;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * The {@link WebClient} class contains the logic to get data from a URL.

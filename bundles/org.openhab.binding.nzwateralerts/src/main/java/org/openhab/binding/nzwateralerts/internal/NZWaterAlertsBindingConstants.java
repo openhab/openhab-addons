@@ -39,6 +39,7 @@ public class NZWaterAlertsBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_ALERTLEVEL = "alertlevel";
 
-    //List of all supported services
-    public static final List<WaterWebService> WATER_WEB_SERVICES = Arrays.asList(new WaterWebService[]{new SmartWater(), new BeWaterWise(), new NapierCityCouncil()});
+    // List of all supported services
+    public static final List<WaterWebService> WATER_WEB_SERVICES = Arrays
+            .asList(new WaterWebService[] { new SmartWater(), new BeWaterWise(), new NapierCityCouncil() });
 }

@@ -63,5 +63,4 @@ public class NZWaterAlertsHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

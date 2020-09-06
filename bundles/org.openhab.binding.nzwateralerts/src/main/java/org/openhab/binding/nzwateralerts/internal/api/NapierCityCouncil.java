@@ -81,5 +81,4 @@ public class NapierCityCouncil implements WaterWebService {
         }
         return -1;
     }
-
 }

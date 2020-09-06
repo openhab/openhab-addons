@@ -24,6 +24,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 @NonNullByDefault
 public interface NZWaterAlertsBinderListener {
     public void updateWaterLevel(int level);
+
     public void updateBindingStatus(ThingStatus thingStatus);
+
     public void updateBindingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail, String description);
 }

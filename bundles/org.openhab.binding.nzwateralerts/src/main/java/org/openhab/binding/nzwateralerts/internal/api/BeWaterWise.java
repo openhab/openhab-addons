@@ -74,5 +74,4 @@ public class BeWaterWise implements WaterWebService {
         }
         return -1;
     }
-
 }

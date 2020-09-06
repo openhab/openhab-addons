@@ -88,5 +88,4 @@ public class TaupoDistrictCouncil implements WaterWebService {
         }
         return -1;
     }
-
 }

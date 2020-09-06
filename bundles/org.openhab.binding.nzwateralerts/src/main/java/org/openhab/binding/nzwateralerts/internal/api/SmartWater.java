@@ -75,5 +75,4 @@ public class SmartWater implements WaterWebService {
         }
         return -1;
     }
-
 }
