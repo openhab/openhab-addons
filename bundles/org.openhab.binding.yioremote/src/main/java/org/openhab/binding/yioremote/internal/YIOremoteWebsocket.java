@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2020 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.yioremote.internal;
 
 import java.io.IOException;
@@ -17,12 +29,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+/**
+ * The {@link YIOremoteHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author Michael Loercher - Initial contribution
+ */
+
 @WebSocket
 public class YIOremoteWebsocket {
 
     private Session session;
     private String string_receivedmessage = "";
-    private final Logger logger = LoggerFactory.getLogger(YIOremoteHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(YIOremoteWebsocket.class);
     private @Nullable JsonObject JsonObject_recievedJsonObject;
     private boolean boolean_authentication_required = false;
     private boolean boolean_heartbeat = false;
@@ -58,11 +77,9 @@ public class YIOremoteWebsocket {
     @OnWebSocketError
     public void onError(Throwable cause) {
         try {
-            /* this.handleTransportError(this.session, cause); */
-            logger.debug(cause.toString());
+            boolean_heartbeat = false;
         } catch (Throwable ex) {
-            logger.debug(cause.toString());
-            /* ExceptionWebSocketHandlerDecorator.tryCloseWithError(this.session, ex, logger); */
+            logger.debug("WebSocketError");
         }
     }
 
@@ -70,8 +87,7 @@ public class YIOremoteWebsocket {
         try {
             session.getRemote().sendString(str);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Error during sendMessage function {}", e.toString());
         }
     }
 
@@ -104,8 +120,7 @@ public class YIOremoteWebsocket {
         } catch (
 
         IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.warn("Error during sendMessage function {}", e.toString());
         }
     }
 

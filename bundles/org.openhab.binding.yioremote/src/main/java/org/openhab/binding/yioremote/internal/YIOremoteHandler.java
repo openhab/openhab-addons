@@ -85,7 +85,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                 YIOremote_DockwebSocketClient.start();
                 logger.debug("Started websocket Client");
             } catch (Exception e) {
-                logger.warn("Web socket start failed {}", e);
+                logger.warn("Web socket start failed {}", e.toString());
                 // throw new IOException("Web socket start failed");
             }
             try {
@@ -117,17 +117,17 @@ public class YIOremoteHandler extends BaseThingHandler {
                     }
 
                 } catch (IllegalArgumentException e) {
-                    logger.warn("JSON convertion failure {}", e);
+                    logger.warn("JSON convertion failure {}", e.toString());
                 }
 
             } catch (
 
             Exception e) {
-                logger.warn("Web socket connect failed {}", e);
+                logger.warn("Web socket connect failed {}", e.toString());
                 // throw new IOException("Web socket start failed");
             }
         } catch (URISyntaxException e) {
-            logger.debug("Initialize web socket failed {}", e);
+            logger.debug("Initialize web socket failed {}", e.toString());
         }
 
         if (YIOREMOTEHANDLESTATUS_actualstatus.equals(YIOREMOTEHANDLESTATUS.AUTHENTICATED)) {
@@ -162,7 +162,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                             pollingJob.cancel(true);
                         }
                     } catch (InterruptedException e) {
-                        logger.warn("Error during initializing the WebSocket polling Thread {}", e);
+                        logger.warn("Error during initializing the WebSocket polling Thread {}", e.toString());
                     }
                 }
             };
@@ -170,7 +170,7 @@ public class YIOremoteHandler extends BaseThingHandler {
                 pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30, TimeUnit.SECONDS);
             } catch (Exception e) {
                 updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
-                logger.warn("Error during starting the WebSocket polling Thread {}", e);
+                logger.warn("Error during starting the WebSocket polling Thread {}", e.toString());
             }
         } else {
             updateStatus(ThingStatus.OFFLINE);

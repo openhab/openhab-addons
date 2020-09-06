@@ -1,65 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="yioremote"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-    xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-    <!-- Sample Thing Type -->
-    <thing-type id="yioremote">
-        <label>YIOremote Binding Thing</label>
-        <description>YIOremote Binding Thing</description>
-        <channel-groups>
-            <channel-group id="input" typeId="input"/>
-            <channel-group id="output" typeId="output"/>
-        </channel-groups>
-        
-        
-        <config-description>
-            <parameter name="yiodockhostip" type="text" required="true">
-                <label>IP Address of the YIO Dock</label>
-                <description>IP Address of the YIO Dock</description>
-            </parameter>
-            <parameter name="yiodockaccesstoken" type="text" required="true">
-                <label>Access token for the YIO Dock</label>
-                <description>Access token for the YIO Dock</description>
-                <default>0</default>
-            </parameter>
-        </config-description>
-
-    </thing-type>
-    
-    <channel-group-type id="input">
-        <label>Inputs</label>
-        <description>The channels used for Input</description>
-       
-    <channels>
-            <channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch" />
-            <channel id="yiodocksendircode" typeId="yiodocksendircode" />
-        </channels>
-    </channel-group-type>
-    
-    <channel-group-type id="output">
-        <label>Results</label>
-        <description>The channels used for Input</description>
-        <channels>
-    <channel id="yiodockstatus" typeId="yiodockstatus" />
-    </channels>
-    </channel-group-type>
-    
-    <channel-type id="yiodockreceiverswitch">
-        <item-type>Switch</item-type>
-        <label>yiodockreceiverswitch</label>
-        <description>yiodockreceiverswitch</description>
-    </channel-type>
-    
-    <channel-type id="yiodockstatus">
-        <item-type>String</item-type>
-        <label>yiodockstatus</label>
-        <description>yiodockstatus</description>
-    </channel-type>
-    
-     <channel-type id="yiodocksendircode">
-        <item-type>String</item-type>
-        <label>yiodocksendircode</label>
-        <description>yiodocksendircode</description>
-    </channel-type>
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Sample Thing Type -->
+	<thing-type id="yioremote">
+		<label>YIOremote Binding Thing</label>
+		<description>YIOremote Binding Thing</description>
+		<channel-groups>
+			<channel-group id="input" typeId="input"/>
+			<channel-group id="output" typeId="output"/>
+		</channel-groups>
+		<config-description>
+			<parameter name="yiodockhostip" type="text" required="true">
+				<label>IP Address of the YIO Dock</label>
+				<description>IP Address of the YIO Dock</description>
+			</parameter>
+			<parameter name="yiodockaccesstoken" type="text" required="true">
+				<label>Access token for the YIO Dock</label>
+				<description>Access token for the YIO Dock</description>
+				<default>0</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<channel-group-type id="input">
+		<label>Inputs</label>
+		<description>The channels used for Input</description>
+		<channels>
+			<channel id="yiodockreceiverswitch" typeId="yiodockreceiverswitch" />
+			<channel id="yiodocksendircode" typeId="yiodocksendircode" />
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="output">
+		<label>Results</label>
+		<description>The channels used for Input</description>
+		<channels>
+			<channel id="yiodockstatus" typeId="yiodockstatus" />
+		</channels>
+	</channel-group-type>
+	<channel-type id="yiodockreceiverswitch">
+		<item-type>Switch</item-type>
+		<label>yiodockreceiverswitch</label>
+		<description>yiodockreceiverswitch</description>
+	</channel-type>
+	<channel-type id="yiodockstatus">
+		<item-type>String</item-type>
+		<label>yiodockstatus</label>
+		<description>yiodockstatus</description>
+	</channel-type>
+	<channel-type id="yiodocksendircode">
+		<item-type>String</item-type>
+		<label>yiodocksendircode</label>
+		<description>yiodocksendircode</description>
+	</channel-type>
 </thing:thing-descriptions>
