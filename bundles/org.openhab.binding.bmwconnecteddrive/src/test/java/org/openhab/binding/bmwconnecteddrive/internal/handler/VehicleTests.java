@@ -45,9 +45,9 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private final int HYBRID_CALL_TIMES = 19;
-    private final int CONV_CALL_TIMES = 13;
-    private final int EV_CALL_TIMES = 14;
+    private final int HYBRID_CALL_TIMES = 21;
+    private final int CONV_CALL_TIMES = 15;
+    private final int EV_CALL_TIMES = 16;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;

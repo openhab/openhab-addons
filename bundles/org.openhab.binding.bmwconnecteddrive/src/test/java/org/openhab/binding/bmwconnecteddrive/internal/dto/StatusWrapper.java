@@ -175,10 +175,27 @@ public class StatusWrapper {
                 st = (StringType) state;
                 assertEquals("Check Control", vStatus.getCheckControl(), st.toString());
                 break;
-            case SERVICE:
+            case SERVICE_DATE:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals("Next Service", vStatus.getNextService(imperial), st.toString());
+                assertEquals("Next Service", vStatus.getNextService(imperial).getDueDate(), st.toString());
+                break;
+            case SERVICE_MILEAGE:
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                if (imperial) {
+                    assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
+                    assertEquals("Mileage", vStatus.getNextService(imperial).cbsRemainingMileage, qt.intValue());
+                } else {
+                    assertEquals("KM", KILOMETRE, qt.getUnit());
+                    assertEquals("Mileage", vStatus.getNextService(imperial).cbsRemainingMileage, qt.intValue());
+                }
+                break;
+            case SERVICE_NAME:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                assertEquals("Next Service", Converter.toTitleCase(vStatus.getNextService(imperial).getType()),
+                        st.toString());
                 break;
             case CHARGE_STATUS:
                 assertTrue("Is Eelctric", isElectric);
