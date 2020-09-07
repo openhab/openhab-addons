@@ -41,8 +41,6 @@ import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandle
 import org.openhab.binding.boschshc.internal.devices.twinguard.BoschTwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BoschSHCHandlerFactory} is responsible for creating things and
@@ -54,8 +52,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.boschshc", service = ThingHandlerFactory.class)
 public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
-
-    private final Logger logger = LoggerFactory.getLogger(BoschSHCHandlerFactory.class);
 
     // List of all supported Bosch devices.
     public static final Collection<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Arrays.asList(THING_TYPE_SHC,
