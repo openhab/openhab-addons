@@ -67,11 +67,12 @@ public class HPPrinterHandler extends BaseThingHandler {
     public void initialize() {
         final HPPrinterConfiguration config = getConfigAs(HPPrinterConfiguration.class);
 
-        if (config != null && !"".equals(config.ipAddress)) {
-            binder = new HPPrinterBinder(this, httpClient, scheduler, config);
-            binder.dynamicallyAddChannels(thing.getUID());
-            binder.retrieveProperties();
-            binder.open();
+        if (!"".equals(config.ipAddress)) {
+            final HPPrinterBinder localBinder = binder = new HPPrinterBinder(this, httpClient, scheduler, config);
+
+            localBinder.dynamicallyAddChannels(thing.getUID());
+            localBinder.retrieveProperties();
+            localBinder.open();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
         }
@@ -79,8 +80,9 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (binder != null) {
-            binder.close();
+        final HPPrinterBinder localBinder = binder;
+        if (localBinder != null) {
+            localBinder.close();
             binder = null;
         }
     }
@@ -100,12 +102,18 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        binder.channelsChanged();
+        final HPPrinterBinder localBinder = binder;
+        if (localBinder != null) {
+            localBinder.channelsChanged();
+        }
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        binder.channelsChanged();
+        final HPPrinterBinder localBinder = binder;
+        if (localBinder != null) {
+            localBinder.channelsChanged();
+        }
     }
 
     protected void updateStatus(final ThingStatus status, final ThingStatusDetail thingStatusDetail,
