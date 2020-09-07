@@ -15,6 +15,7 @@ package org.openhab.binding.nzwateralerts.internal.api;
 import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingConstants.*;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -33,6 +34,8 @@ import org.slf4j.LoggerFactory;
 public class WaterAlertWebClient {
     private final Logger logger = LoggerFactory.getLogger(WaterAlertWebClient.class);
 
+    private static final int REQUEST_TIMEOUT = 10;
+
     private final HttpClient httpClient;
     private final String webService;
     private final String region;
@@ -40,7 +43,7 @@ public class WaterAlertWebClient {
 
     private @Nullable WaterWebService service = null;
 
-    public WaterAlertWebClient(final HttpClient httpClient, final String location) throws Exception {
+    public WaterAlertWebClient(final HttpClient httpClient, final String location) {
         this.httpClient = httpClient;
 
         final String[] locationSegmented = location.split(":", 3);
@@ -69,8 +72,8 @@ public class WaterAlertWebClient {
                 logger.debug("Getting Water Level from service {} region {} area {}", webService, region, area);
 
                 final String endpoint = localService.endpoint(region);
-                logger.trace("Getting data from endpoint {}", endpoint);
-                response = httpClient.GET(endpoint);
+                logger.trace("Getting data from endpoint {} with timeout {}", endpoint, REQUEST_TIMEOUT);
+                response = httpClient.newRequest(endpoint).timeout(REQUEST_TIMEOUT, TimeUnit.SECONDS).send();
 
                 final int waterLevel = localService.findWaterLevel(response.getContentAsString(), area);
                 logger.debug("Got water level {}", waterLevel);

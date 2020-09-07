@@ -16,7 +16,6 @@
 			<parameter name="location" type="text" required="true">
 				<label>Location</label>
 				<description>The location to get the Water Alert level for.</description>
-				<required>true</required>
 				<limitToOptions>true</limitToOptions>
 				<options>
 					<option value="bewaterwise:whangarei:breambay">Bream Bay</option>
