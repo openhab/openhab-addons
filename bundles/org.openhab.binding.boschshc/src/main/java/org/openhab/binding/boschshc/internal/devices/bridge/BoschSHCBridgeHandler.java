@@ -202,7 +202,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // functions.
         logger.debug("Subscribe: Sending content: {} - using httpClient {}", content, this.httpClient);
 
-        @NonNullByDefault
         class SubscribeListener extends BufferingResponseListener {
             private BoschSHCBridgeHandler bridgeHandler;
 
@@ -284,7 +283,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         /**
          * TODO Move this to separate file?
          */
-        @NonNullByDefault
         class LongPollListener extends BufferingResponseListener {
 
             private BoschSHCBridgeHandler bridgeHandler;
