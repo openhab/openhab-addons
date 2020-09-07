@@ -15,7 +15,9 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto;
 import static org.junit.Assert.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
@@ -57,6 +59,8 @@ public class StatusWrapper {
     private boolean hasFuel;
     private boolean isHybrid;
 
+    private Map<String, State> specialHandlingMap = new HashMap<String, State>();
+
     public StatusWrapper(String type, boolean imperial, String statusJson) {
         this.imperial = imperial;
         hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
@@ -70,6 +74,13 @@ public class StatusWrapper {
         vStatus = container.vehicleStatus;
     }
 
+    /**
+     * Test results auctomatically against json values
+     *
+     * @param channels
+     * @param states
+     * @return
+     */
     public boolean checkResults(@Nullable List<ChannelUID> channels, @Nullable List<State> states) {
         assertNotNull(channels);
         assertNotNull(states);
@@ -78,6 +89,17 @@ public class StatusWrapper {
             checkResult(channels.get(i), states.get(i));
         }
         return true;
+    }
+
+    /**
+     * Add a specific check for a value e.g. hard coded "Upcoming Service" in order to check the right ordering
+     *
+     * @param specialHand
+     * @return
+     */
+    public StatusWrapper append(Map<String, State> compareMap) {
+        specialHandlingMap.putAll(compareMap);
+        return this;
     }
 
     private void checkResult(ChannelUID channelUID, State state) {
@@ -173,29 +195,41 @@ public class StatusWrapper {
             case CHECK_CONTROL:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals("Check Control", vStatus.getCheckControl(), st.toString());
+                if (specialHandlingMap.containsKey(CHECK_CONTROL)) {
+                    assertEquals("Next Service", specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString());
+                } else {
+                    assertEquals("Check Control", vStatus.getCheckControl(), st.toString());
+                }
                 break;
             case SERVICE_DATE:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals("Next Service", vStatus.getNextService(imperial).getDueDate(), st.toString());
+                if (specialHandlingMap.containsKey(SERVICE_DATE)) {
+                    assertEquals("Next Service", specialHandlingMap.get(SERVICE_DATE).toString(), st.toString());
+                } else {
+                    assertEquals("Next Service", vStatus.getNextService(imperial).getDueDate(), st.toString());
+                }
                 break;
             case SERVICE_MILEAGE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 if (imperial) {
-                    assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
+                    assertEquals("Next Service Miles", ImperialUnits.MILE, qt.getUnit());
                     assertEquals("Mileage", vStatus.getNextService(imperial).cbsRemainingMileage, qt.intValue());
                 } else {
-                    assertEquals("KM", KILOMETRE, qt.getUnit());
+                    assertEquals("Next Service KM", KILOMETRE, qt.getUnit());
                     assertEquals("Mileage", vStatus.getNextService(imperial).cbsRemainingMileage, qt.intValue());
                 }
                 break;
             case SERVICE_NAME:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                assertEquals("Next Service", Converter.toTitleCase(vStatus.getNextService(imperial).getType()),
-                        st.toString());
+                if (specialHandlingMap.containsKey(SERVICE_NAME)) {
+                    assertEquals("Next Service Name", specialHandlingMap.get(SERVICE_NAME).toString(), st.toString());
+                } else {
+                    assertEquals("Next Service Name", Converter.toTitleCase(vStatus.getNextService(imperial).getType()),
+                            st.toString());
+                }
                 break;
             case CHARGE_STATUS:
                 assertTrue("Is Eelctric", isElectric);

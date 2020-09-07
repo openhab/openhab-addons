@@ -30,7 +30,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
-import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.discovery.VehicleDiscovery;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Dealer;
@@ -59,6 +58,8 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
     private Optional<ConnectedDriveConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
     private Optional<String> troubleshootFingerprint = Optional.empty();
+
+    private static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";
     private ChannelUID discoveryFingerprintChannel;
 
     public ConnectedDriveBridgeHandler(Bridge bridge, HttpClientFactory hcf, BundleContext bc) {
@@ -68,13 +69,12 @@ public class ConnectedDriveBridgeHandler extends BaseBridgeHandler implements St
         discoveryService = new VehicleDiscovery(this);
         discoveryServiceRegstration = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
-        discoveryFingerprintChannel = new ChannelUID(bridge.getUID(), ConnectedDriveConstants.DISCOVERY_FINGERPRINT);
+        discoveryFingerprintChannel = new ChannelUID(bridge.getUID(), DISCOVERY_FINGERPRINT);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (ConnectedDriveConstants.DISCOVERY_FINGERPRINT.equals(channelUID.getIdWithoutGroup())
-                && command instanceof OnOffType) {
+        if (DISCOVERY_FINGERPRINT.equals(channelUID.getIdWithoutGroup()) && command instanceof OnOffType) {
             if (command.equals(OnOffType.ON)) {
                 logger.warn(
                         "###### BMW ConnectedDrive Binding - Discovery Troubleshoot Fingerprint Data - BEGIN ######");

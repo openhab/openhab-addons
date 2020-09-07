@@ -89,38 +89,28 @@ public class VehicleStatus {
         } else {
             int serviceMileage = Integer.MAX_VALUE;
             LocalDate serviceDate = LocalDate.now().plusYears(100);
-            String service = null;
 
             for (int i = 0; i < cbsData.size(); i++) {
                 CBSMessage entry = cbsData.get(i);
-                String serviceDescription = Converter.toTitleCase(entry.cbsType);
                 if (entry.cbsRemainingMileage != 0 && entry.cbsDueDate != null) {
                     LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
                             Converter.SERVICE_DATE_INPUT_PATTERN);
                     if ((entry.cbsRemainingMileage < serviceMileage) || (d.isBefore(serviceDate))) {
+                        serviceDate = d;
+                        serviceMileage = entry.cbsRemainingMileage;
                         cbs = entry;
-                        // serviceDate = d;
-                        // serviceMileage = entry.cbsRemainingMileage;
-                        // service = new StringBuffer(serviceDate.format(Converter.SERVICE_DATE_OUTPUT_PATTERN))
-                        // .append(" or in ").append(serviceMileage).append(" ").append(getUnit(imperial))
-                        // .append(" - ").append(serviceDescription).toString();
                     }
                 } else if (entry.cbsRemainingMileage != 0) {
                     if (entry.cbsRemainingMileage < serviceMileage) {
+                        serviceMileage = entry.cbsRemainingMileage;
                         cbs = entry;
-                        // serviceMileage = entry.cbsRemainingMileage;
-                        // service = new StringBuffer("In ").append(serviceMileage).append("
-                        // ").append(getUnit(imperial))
-                        // .append(" - ").append(serviceDescription).toString();
                     }
                 } else if (entry.cbsDueDate != null) {
                     LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
                             Converter.SERVICE_DATE_INPUT_PATTERN);
                     if (d.isBefore(serviceDate)) {
+                        serviceDate = d;
                         cbs = entry;
-                        // serviceDate = d;
-                        // service = new StringBuffer(serviceDate.format(Converter.SERVICE_DATE_OUTPUT_PATTERN))
-                        // .append(" - ").append(serviceDescription).toString();
                     }
                 }
             }

@@ -26,6 +26,7 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveHandlerFactory;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
@@ -37,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link VehicleDiscovery} decodes the initial query from ConnectedDrive and is creating
+ * The {@link VehicleDiscovery} requests data from ConnectedDrive and is identifying the Vehicles after response
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -135,10 +136,10 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
                     if (!foundVehicle.get()) {
                         // Properties needed for functional THing
                         properties.put("vin", vehicle.vin);
-                        properties.put("refreshInterval", Integer.toString(15));
-                        properties.put("units", "AUTODETECT");
-                        properties.put("imageSize", Integer.toString(500));
-                        properties.put("imageViewport", "FRONT");
+                        properties.put("refreshInterval", Integer.toString(5));
+                        properties.put("units", ConnectedDriveConstants.UNITS_AUTODETECT);
+                        properties.put("imageSize", Integer.toString(ConnectedDriveConstants.DEFAULT_IMAGE_SIZE));
+                        properties.put("imageViewport", ConnectedDriveConstants.DEFAULT_IMAGE_VIEWPORT);
 
                         String vehicleLabel = vehicle.brand + " " + vehicle.model;
                         logger.debug("Thing {} discovered", vehicleLabel);
@@ -149,23 +150,30 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
                     }
                 }
             });
-
         });
     }
 
-    public String getObject(Object obj, String compare) {
+    /**
+     * Get all field names from a DTO with a specific value
+     * Used to get e.g. all services which are "ACTIVATED"
+     *
+     * @param DTO Object
+     * @param compare String which needs to map with the value
+     * @return String with all field names matching this value separated with Spaces
+     */
+    public String getObject(Object dto, String compare) {
         StringBuffer buf = new StringBuffer();
-        for (Field field : obj.getClass().getDeclaredFields()) {
+        for (Field field : dto.getClass().getDeclaredFields()) {
             try {
-                if (field.get(obj) != null) {
-                    if (field.get(obj).equals(compare)) {
+                if (field.get(dto) != null) {
+                    if (field.get(dto).equals(compare)) {
                         buf.append(Converter.capitalizeFirst(field.getName()) + Constants.SPACE);
                     }
                 }
             } catch (IllegalArgumentException e) {
-                logger.warn("Field {} not found {}", compare, e.getMessage());
+                logger.debug("Field {} not found {}", compare, e.getMessage());
             } catch (IllegalAccessException e) {
-                logger.warn("Field {} not found {}", compare, e.getMessage());
+                logger.debug("Field {} not found {}", compare, e.getMessage());
             }
         }
         return buf.toString();

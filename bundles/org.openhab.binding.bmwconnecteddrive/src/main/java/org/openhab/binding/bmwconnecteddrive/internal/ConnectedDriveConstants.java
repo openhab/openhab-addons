@@ -35,6 +35,10 @@ public class ConnectedDriveConstants {
     public static final String UNITS_IMPERIAL = "IMPERIAL";
     public static final String UNITS_METRIC = "METRIC";
 
+    public static final int DEFAULT_IMAGE_SIZE = 600;
+    public static final int DEFAULT_REFRESH_INTERVAL = 5;
+    public static final String DEFAULT_IMAGE_VIEWPORT = "FRONT";
+
     // See constants from bimmer-connected
     // https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/vehicle.py
     public enum VehicleType {
