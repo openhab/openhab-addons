@@ -63,7 +63,7 @@ public class HaywardThingHandler extends BaseThingHandler {
         if (bridge == null || bridge.getHandler() == null) {
             return null;
         } else {
-            return (HaywardBridgeHandler) getBridge().getHandler();
+            return (HaywardBridgeHandler) bridge.getHandler();
         }
     }
 
