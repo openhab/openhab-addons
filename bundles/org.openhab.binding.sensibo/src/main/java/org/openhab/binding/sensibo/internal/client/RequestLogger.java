@@ -105,10 +105,11 @@ public final class RequestLogger {
     }
 
     private void scrambleAndLog(String[] stringsToRemove, String dataToLog) {
+        String modifiedData = dataToLog;
         for (String stringToRemove : stringsToRemove) {
-            dataToLog = dataToLog.replace(stringToRemove, "<HIDDEN>");
+            modifiedData = modifiedData.replace(stringToRemove, "<HIDDEN>");
         }
-        logger.debug("{}", dataToLog);
+        logger.debug("{}", modifiedData);
     }
 
     private Charset getCharset(final HttpFields headers) {
