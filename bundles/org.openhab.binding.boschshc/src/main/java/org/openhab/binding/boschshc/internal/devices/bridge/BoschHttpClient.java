@@ -59,7 +59,7 @@ public class BoschHttpClient extends HttpClient {
 
     private String getCertFromSslContextFactory() throws KeyStoreException, CertificateEncodingException {
         Certificate cert = this.getSslContextFactory().getKeyStore().getCertificate(BoschSslUtil.getBoschSHCId());
-        return new String(Base64.getEncoder().encode(cert.getEncoded()));
+        return Base64.getEncoder().encodeToString(cert.getEncoded());
     }
 
     public void checkAccessAndPairIfNecessary() throws InterruptedException, PairingFailedException {
@@ -122,7 +122,7 @@ public class BoschHttpClient extends HttpClient {
 
             contentResponse = this.POST("https://" + ipAddress + ":8443/smarthome/clients")
                     .header("Systempassword",
-                            new String(Base64.getEncoder().encode(systempassword.getBytes(StandardCharsets.UTF_8))))
+                            Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)))
                     .header("Content-Type", "application/json").header("Accept", "application/json")
                     .content(new StringContentProvider(new Gson().toJson(items))).send();
 
