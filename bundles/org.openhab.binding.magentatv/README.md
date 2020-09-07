@@ -198,8 +198,8 @@ In addition you could send any key code in the 0xHHHH format., refer to
 ### magentatv.things
 
 ```
-Thing magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx "MagentaTV" [
-udn="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+Thing magentatv:receiver:XXXXXXXXXXX "MagentaTV" [
+udn="XXXXXXXXXXX",
 ipAddress="xxx.xxx.xxx.xxx", 
 accountName="xxxxxx.xxxx@t-online.de",
 accountPassword="xxxxxxxxxx"
@@ -210,27 +210,98 @@ accountPassword="xxxxxxxxxx"
 
 ```
 # MagentaTV Control
-Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#power"}
-Number MagentaTV_Channel      "Channel"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channel"}
-String MagentaTV_Key          "Key"          {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:control#key"}
+Switch MagentaTV_Power        "Power"        {channel="magentatv:receiver:XXXXXXXXXXX:control#power"}
+Number MagentaTV_Channel      "Channel"      {channel="magentatv:receiver:XXXXXXXXXXX:status#channel"}
+String MagentaTV_Key          "Key"          {channel="magentatv:receiver:XXXXXXXXXXX:control#key"}
 
 # MagentaTV Program Information
-String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#title"}
-String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#text"}
-String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#tart"}
-String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#duration"}
-String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:program#position"}
+String MagentaTV_ProgTitle   "Program Title" {channel="magentatv:receiver:XXXXXXXXXXX:program#title"}
+String MagentaTV_ProgDescr   "Description"   {channel="magentatv:receiver:XXXXXXXXXXX:program#text"}
+String MagentaTV_ProgStart   "Start Time"    {channel="magentatv:receiver:XXXXXXXXXXX:program#tart"}
+String MagentaTV_ProgDur     "Duration"      {channel="magentatv:receiver:XXXXXXXXXXX:program#duration"}
+String MagentaTV_ProgPos     "Position"      {channel="magentatv:receiver:XXXXXXXXXXX:program#position"}
 
 # MagentaTV Play Status
-Number MagentaTV_ChCode    "Channel Code"    {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#channelCode"}
-String MagentaTV_PlayMode  "Play Mode"       {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#playMode"}
-String MagentaTV_RunStatus "Run Status"      {channel="magentatv:receiver:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:status#runStatus"}
+Number MagentaTV_ChCode    "Channel Code"    {channel="magentatv:receiver:XXXXXXXXXXX:status#channelCode"}
+String MagentaTV_PlayMode  "Play Mode"       {channel="magentatv:receiver:XXXXXXXXXXX:status#playMode"}
+String MagentaTV_RunStatus "Run Status"      {channel="magentatv:receiver:XXXXXXXXXXX:status#runStatus"}
+```
+
+or
+
+```
+Group    gRB_GF_LR_TVReceiver "RB_GF_LR: TV Receiver"
+         (gRB_GF_LivingRoom, gMedia, gSpeechCmnd)
+
+Switch   RB_GF_LR_TVReceiver_Power
+         "RB_GF_LR: TV Receiver power [MAP(i18n_switch.map):%s]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:control#power"}
+Player   RB_GF_LR_TVReceiver_Control
+         "RB_GF_LR: TV Receiver control"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:control#player"}
+Switch   RB_GF_LR_TVReceiver_Mute
+         "RB_GF_LR: TV Receiver mute [MAP(i18n_switch.map):%s]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:control#mute"}
+Number   RB_GF_LR_TVReceiver_Channel
+         "RB_GF_LR: TV Receiver Channel"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:control#channel"}
+String   RB_GF_LR_TVReceiver_Key
+         "RB_GF_LR: TV Receiver Key"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:control#key"}
+String   RB_GF_LR_TVReceiver_ProgTitle
+         "Label [%s]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#title"}
+String   RB_GF_LR_TVReceiver_ProgDescription
+         "Label [%s]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#text"}
+DateTime RB_GF_LR_TVReceiver_ProgStart
+         "Label [%1$td.%1$tm.%1$ty %1$tH:%1$tM]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#start"}
+Number:Time RB_GF_LR_TVReceiver_ProgDuration
+         "Label [%d min]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#duration"}
+Number:Time RB_GF_LR_TVReceiver_PlayPosition
+         "Label [%d min.]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:program#position"}
+String   RB_GF_LR_TVReceiver_PlayMode
+         "Label [%s]"
+         (gRB_GF_LR_TVReceiver)
+         {channel="magentatv:receiver:XXXXXXXXXXX:status#playMode"}
 ```
 
 ### sitemap
 
 ```
-please contribute an example
+Text label="TV" icon="it_television" {
+  Frame label="Bedienung"  {
+    Switch item=RB_GF_LR_TVReceiver_Power label="Ein/Aus []" icon="control_on_off" mappings=[ ON="Ein/Aus" ]
+    Default item=RB_GF_LR_TVReceiver_Control label="Player []" icon=""
+    Switch item=RB_GF_LR_TVReceiver_Key label="Lautstärke []" icon="audio_volume_high" mappings=[ "VOLUP"="˄", "VOLDOWN"="˅" ]
+    Slider item=RB_GF_LR_TVReceiver_Volume label="Lautstärke [%d %%]" icon="audio_volume_high"
+    Switch item=RB_GF_LR_TVReceiver_Key label="Programm []" icon="audio_playlist" mappings=[ "CHUP"="˄", "CHDOWN"="˅" ]
+    Selection item=RB_GF_LR_TVReceiver_Channel label="Kanal [%s]" icon="audio_playlist" mappings=[ 1="ARD", 2="ZDF", 3="RTL", 4="SAT.1", 5="ProSieben", 6="VOX" ]
+    Switch item=RB_GF_LR_TVReceiver_Mute label="Mute []" icon="audio_volume_mute" mappings=[ ON="mute", OFF="unmute" ]
+    }
+  Frame label="Aktuelles Programm" {
+    Text item=RB_GF_LR_TVReceiver_ProgTitle label="Sendung [%s]" icon="it_television"
+    Text item=RB_GF_LR_TVReceiver_ProgDescription label="Beschreibung [%s]" icon="it_television"
+    Text item=RB_GF_LR_TVReceiver_ProgStart label="Start [%1$td.%1$tm.%1$ty %1$tH:%1$tM]" icon="time_clock"
+    Text item=RB_GF_LR_TVReceiver_ProgDuration label="Dauer [%d min.]" icon="time_clock"
+    Text item=RB_GF_LR_TVReceiver_PlayPosition label="Position [%d min.]" icon="it_television"
+    Text item=RB_GF_LR_TVReceiver_PlayMode label="Mode [%s]" icon="it_television"
+  }
+}
+
 ```
 
 ### magentatv.rules
