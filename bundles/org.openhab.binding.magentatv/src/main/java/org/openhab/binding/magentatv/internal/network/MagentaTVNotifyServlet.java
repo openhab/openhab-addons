@@ -55,7 +55,7 @@ public class MagentaTVNotifyServlet extends HttpServlet {
         this.handlerFactory = handlerFactory;
         try {
             httpService.registerServlet(PAIRING_NOTIFY_URI, this, null, httpService.createDefaultHttpContext());
-            logger.info("Servlet started at {}", PAIRING_NOTIFY_URI);
+            logger.debug("Servlet started at {}", PAIRING_NOTIFY_URI);
             if (!handlerFactory.getNotifyServletStatus()) {
                 handlerFactory.setNotifyServletStatus(true);
             }

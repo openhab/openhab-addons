@@ -116,7 +116,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     /**
      * Thing initialization:
      * - initialize thing status from UPnP discovery, thing config, local network settings
-     * - perform Oath if userID is not configured and credentials are available
+     * - initiate OAuth if userId is not configured and credentials are available
      * - wait for NotifyServlet to initialize (solves timing issues on fast startup)
      */
     @Override
@@ -158,25 +158,21 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
 
             // Check for emoty credentials (e.g. missing in .things file)
             String account = config.getAccountName();
-            if (config.getUserID().isEmpty()) {
+            if (config.getUserId().isEmpty()) {
                 if (account.isEmpty()) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Credentials missing or invalid! Fill credentials into thing configuration or generate UID on the openHAB console - see README");
                     return;
                 }
 
-                logger.info("{}: Authenticate account {}", thingId, account);
-                authenticateUser();
+                getUserId();
             }
 
             connectReceiver(); // throws MagentaTVException on error
 
             // setup background device check
-            renewEventJob = scheduler.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    renewEventSubscription();
-                }
+            renewEventJob = scheduler.scheduleWithFixedDelay(() -> {
+                renewEventSubscription();
             }, 2, 5, TimeUnit.MINUTES);
 
             // change to ThingStatus.ONLINE will be done when the pairing result is received
@@ -188,7 +184,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         } finally {
             if (!errorMessage.isEmpty()) {
                 logger.debug("{}: {}", thingId, errorMessage);
-                setOnlineState(ThingStatus.OFFLINE, errorMessage);
+                setOnlineStatus(ThingStatus.OFFLINE, errorMessage);
             }
         }
     }
@@ -205,13 +201,11 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             String newAccount = (String) configurationParameters.get(PROPERTY_ACCT_NAME);
             if ((newAccount != null) && !newAccount.isEmpty()) {
                 // new account info, need to renew userId
-                config.setUserID("");
+                config.setUserId("");
             }
         }
 
         super.handleConfigurationUpdate(configurationParameters);
-
-        // initializeThing();
     }
 
     /**
@@ -294,7 +288,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             String errorMessage = MessageFormat.format("Channel operation failed (command={0}, value={1}): {2}",
                     command, channelUID.getId(), e.toString());
             logger.debug("{}: {}", thingId, errorMessage);
-            setOnlineState(ThingStatus.OFFLINE, errorMessage);
+            setOnlineStatus(ThingStatus.OFFLINE, errorMessage);
         }
     }
 
@@ -337,7 +331,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             pairingWatchdogJob = scheduler.schedule(() -> {
                 if (iRefresh == idRefresh) { // Make a best effort to not run multiple deferred refresh
                     if (config.getVerificationCode().isEmpty()) {
-                        setOnlineState(ThingStatus.OFFLINE, "Timeout on pairing request!");
+                        setOnlineStatus(ThingStatus.OFFLINE, "Timeout on pairing request!");
                     }
                 }
             }, 15, TimeUnit.SECONDS);
@@ -345,18 +339,19 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     /**
-     * If userID is empty and credentials are given the Telekom OAuth service is
-     * used to query the userID
+     * If userId is empty and credentials are given the Telekom OAuth service is
+     * used to query the userId
      *
      * @throws MagentaTVException
      */
-    private void authenticateUser() throws MagentaTVException {
-        String userId = config.getUserID();
+    private void getUserId() throws MagentaTVException {
+        String userId = config.getUserId();
         if (userId.isEmpty()) {
-            // run OAuth authentication, this finally provides the userID
-            userId = control.authenticateUser(config.getAccountName(), config.getAccountPassword());
+            // run OAuth authentication, this finally provides the userId
+            logger.debug("{}: Login with account {}", thingId, config.getAccountName());
+            userId = control.getUserId(config.getAccountName(), config.getAccountPassword());
 
-            // Update thing configuration (persistent) - remove credentials, add userID
+            // Update thing configuration (persistent) - remove credentials, add userId
             Configuration configuration = this.getConfig();
             configuration.remove(PROPERTY_ACCT_NAME);
             configuration.remove(PROPERTY_ACCT_PWD);
@@ -368,10 +363,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             config.setAccountName("");
             config.setAccountPassword("");
         } else {
-            logger.debug("{}: Skip OAuth, use existing userID {}", thingId, config.getUserID());
+            logger.debug("{}: Skip OAuth, use existing userId {}", thingId, config.getUserId());
         }
         if (!userId.isEmpty()) {
-            config.setUserID(userId);
+            config.setUserId(userId);
         } else {
             logger.warn("{}: Unable to obtain userId from OAuth", thingId);
         }
@@ -383,7 +378,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param mode new thing status
      * @return ON = power on, OFF=power off
      */
-    public void setOnlineState(ThingStatus newStatus, String errorMessage) {
+    public void setOnlineStatus(ThingStatus newStatus, String errorMessage) {
         ThingStatus status = this.getThing().getStatus();
         if (status != newStatus) {
             if (newStatus == ThingStatus.ONLINE) {
@@ -413,7 +408,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             connectReceiver();
         } else {
             logger.debug("{}: Refesh device status for {} (UDN={}", thingId, deviceName(), config.getUDN());
-            setOnlineState(ThingStatus.ONLINE, "");
+            setOnlineStatus(ThingStatus.ONLINE, "");
         }
     }
 
@@ -430,15 +425,15 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             if (control.generateVerificationCode(pairingCode)) {
                 config.setPairingCode(pairingCode);
                 logger.debug(
-                        "{}: Pairing code received (UDN {}, terminalID {}, pairingCode={}, verificationCode={}, userID={})",
+                        "{}: Pairing code received (UDN {}, terminalID {}, pairingCode={}, verificationCode={}, userId={})",
                         thingId, config.getUDN(), config.getTerminalID(), config.getPairingCode(),
-                        config.getVerificationCode(), config.getUserID());
+                        config.getVerificationCode(), config.getUserId());
 
                 // verify pairing completes the pairing process
                 if (control.verifyPairing()) {
                     logger.debug("{}: Pairing completed for device {} ({}), Thing now ONLINE", thingId,
                             config.getFriendlyName(), config.getTerminalID());
-                    setOnlineState(ThingStatus.ONLINE, "");
+                    setOnlineStatus(ThingStatus.ONLINE, "");
                     cancelPairingCheck(); // stop timeout check
                 }
             }
@@ -555,6 +550,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             case "buffering":
                 logger.debug("{}: Setting Player state to PLAY", thingId);
                 updateState(CHANNEL_PLAYER, PlayPauseType.PLAY);
+                break;
             case "paused":
             case "stopped":
                 logger.debug("{}: Setting Player state to PAUSE", thingId);
@@ -569,7 +565,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void onPowerOff() throws MagentaTVException {
         logger.debug("{}: Power-Off received for device {}", thingId, deviceName());
-        // MR was powered off -> update pwoer status, reset items
+        // MR was powered off -> update power status, reset items
         resetEventChannels();
     }
 
@@ -603,8 +599,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     /**
-     * Check device status, if pairing
-     * events (if callbackUrl is configured)
+     * Renew the event subscription. The periodic refresh is required, otherwise the receive will stop sending events.
+     * Reconnect if nessesary.
      */
     private void renewEventSubscription() {
         if (!control.isInitialized()) {
@@ -627,8 +623,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         // another try: if the above SUBSCRIBE fails, try a re-connect immediatly
         try {
             if ((this.getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR)
-                    && !config.getUserID().isEmpty()) {
-                // if we have no userID the OAuth is not completed or pairing process got stuck
+                    && !config.getUserId().isEmpty()) {
+                // if we have no userId the OAuth is not completed or pairing process got stuck
                 logger.debug("{}: Reconnect media receiver", deviceName());
                 connectReceiver(); // throws MagentaTVException on error
             }

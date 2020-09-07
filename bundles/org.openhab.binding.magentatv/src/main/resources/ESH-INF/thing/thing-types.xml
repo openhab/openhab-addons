@@ -23,14 +23,14 @@
 
 		<config-description>
 			<parameter name="ipAddress" type="text">
-				<label>Media Receiver's IP Address</label>
+				<label>Device IP Address</label>
 				<description>IP address of the receiver</description>
 				<required>true</required>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="userId" type="text">
-				<label>User Id</label>
-				<description>Technical User userId required for pairing process</description>
+				<label>User ID</label>
+				<description>Technical User ID required for pairing process</description>
 			</parameter>
 			<parameter name="accountName" type="text">
 				<label>Account Name</label>
@@ -48,7 +48,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="port" type="text">
-				<label>Receiver Port</label>
+				<label>Port</label>
 				<description>Port address for UPnP</description>
 				<advanced>true</advanced>
 			</parameter>

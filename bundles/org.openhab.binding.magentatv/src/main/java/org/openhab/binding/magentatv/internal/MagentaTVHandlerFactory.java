@@ -55,7 +55,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_RECEIVER);
 
-    private final MagentaTVPoweroffListener upnpListener;
+    private @Nullable MagentaTVPoweroffListener upnpListener;
     private final MagentaTVNetwork network = new MagentaTVNetwork();
     private boolean servletInitialized = false;
 
@@ -92,10 +92,10 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
                 port = 8080;
             }
             network.initLocalNet(lip != null ? lip : "", port.toString());
+            upnpListener = new MagentaTVPoweroffListener(this, network.getLocalInterface());
         } catch (MagentaTVException e) {
             logger.warn("Initialization failed: {}", e.toString());
         }
-        upnpListener = new MagentaTVPoweroffListener(this, network.getLocalInterface());
     }
 
     @Override
@@ -107,7 +107,7 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (!upnpListener.isStarted()) {
+        if (upnpListener != null) {
             upnpListener.start();
         }
 
@@ -236,10 +236,10 @@ public class MagentaTVHandlerFactory extends BaseThingHandlerFactory {
     }
 
     /**
-     * We received the pairing resuled (by the Norify servlet)
+     * We received the pairing result (by the Notify servlet)
      *
      * @param notifyDeviceId The unique device id pairing was initiated for
-     * @param pairingCode Pairng code computed by the receiver
+     * @param pairingCode Pairing code computed by the receiver
      * @return true: thing handler was called, false: failed, e.g. unknown device
      */
     public boolean notifyPairingResult(String notifyDeviceId, String ipAddress, String pairingCode) {

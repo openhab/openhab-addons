@@ -19,17 +19,40 @@ import org.openhab.binding.magentatv.internal.MagentaTVException;
 
 /**
  * The {@link MagentaTVListener} defines the interface to pass back the pairing
- * code to the listener class
+ * code and device events to the listener
  *
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
 public interface MagentaTVListener {
+    /**
+     * Device returned pairing code
+     *
+     * @param pairingCode Code to be used for pairing process
+     * @throws MagentaTVException
+     */
     public void onPairingResult(String pairingCode) throws MagentaTVException;
 
+    /**
+     * Device woke up (UPnP)
+     *
+     * @param discoveredProperties Properties from UPnP discovery
+     * @throws MagentaTVException
+     */
     public void onWakeup(Map<String, String> discoveredProperties) throws MagentaTVException;
 
+    /**
+     * An event has been received from the MR
+     *
+     * @param playContent event information
+     * @throws MagentaTVException
+     */
     public void onMREvent(String playContent) throws MagentaTVException;
 
+    /**
+     * A power-off was detected (SSDN message received)
+     *
+     * @throws MagentaTVException
+     */
     public void onPowerOff() throws MagentaTVException;
 }

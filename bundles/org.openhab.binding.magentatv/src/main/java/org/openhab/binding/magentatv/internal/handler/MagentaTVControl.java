@@ -88,7 +88,7 @@ public class MagentaTVControl {
      *
      * @throws MagentaTVException
      */
-    public String authenticateUser(String accountName, String accountPassword) throws MagentaTVException {
+    public String getUserId(String accountName, String accountPassword) throws MagentaTVException {
         return oauth.getUserId(accountName, accountPassword);
     }
 
@@ -227,11 +227,11 @@ public class MagentaTVControl {
      */
     public boolean sendPairingRequest() throws MagentaTVException {
         logger.debug("{}: Send Pairing Request (deviceID={}, type={}, userID={})", thingId, config.getTerminalID(),
-                DEF_FRIENDLY_NAME, config.getUserID());
+                DEF_FRIENDLY_NAME, config.getUserId());
         resetPairing();
 
         String soapBody = MessageFormat.format(PAIRING_SOAP_BODY, config.getTerminalID(), DEF_FRIENDLY_NAME,
-                config.getUserID());
+                config.getUserId());
         String soapXml = MessageFormat.format(SOAP_ENVELOPE, soapBody);
         String response = http.httpPOST(buildHost(), buildReceiverUrl(PAIRING_CONTROL_URI), soapXml,
                 PAIRING_SOAP_ACTION, CONNECTION_CLOSE);
@@ -267,7 +267,7 @@ public class MagentaTVControl {
             return false;
         }
         config.setPairingCode(pairingCode);
-        String md5Input = pairingCode + config.getTerminalID() + config.getUserID();
+        String md5Input = pairingCode + config.getTerminalID() + config.getUserId();
         config.setVerificationCode(computeMD5(md5Input).toUpperCase());
         logger.debug("{}: VerificationCode({}): Input={}, code={}", thingId, config.getTerminalID(), md5Input,
                 config.getVerificationCode());
@@ -359,11 +359,11 @@ public class MagentaTVControl {
         }
 
         String soapBody = MessageFormat.format(SENDKEY_SOAP_BODY, keyCode, config.getTerminalID(),
-                config.getVerificationCode(), config.getUserID());
+                config.getVerificationCode(), config.getUserId());
         String soapXml = MessageFormat.format(SOAP_ENVELOPE, soapBody);
         logger.debug("{}: send keyCode={} to {}:{}", thingId, keyCode, config.getIpAddress(), config.getPort());
         logger.trace("{}: sendKey terminalid={}, pairingCode={}, verificationCode={}, userId={}", thingId,
-                config.getTerminalID(), config.getPairingCode(), config.getVerificationCode(), config.getUserID());
+                config.getTerminalID(), config.getPairingCode(), config.getVerificationCode(), config.getUserId());
         http.httpPOST(buildHost(), buildReceiverUrl(SENDKEY_URI), soapXml, SENDKEY_SOAP_ACTION, CONNECTION_CLOSE);
         // Exception if request failed (response code != HTTP_OK)
         // pairingCode will be received by the Servlet, is calls onPairingResult()

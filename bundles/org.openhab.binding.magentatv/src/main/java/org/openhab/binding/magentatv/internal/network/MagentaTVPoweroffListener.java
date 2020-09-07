@@ -56,8 +56,10 @@ public class MagentaTVPoweroffListener extends Thread {
 
     @Override
     public void start() {
-        logger.debug("Listening to SSDP shutdown messages");
-        super.start();
+        if (!isStarted()) {
+            logger.debug("Listening to SSDP shutdown messages");
+            super.start();
+        }
     }
 
     /**
@@ -78,7 +80,7 @@ public class MagentaTVPoweroffListener extends Thread {
             socket.joinGroup(group);
 
             // read the SSDP messages
-            while (true) {
+            while (!socket.isClosed()) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
                 String message = new String(packet.getData(), 0, packet.getLength());
@@ -115,8 +117,10 @@ public class MagentaTVPoweroffListener extends Thread {
      */
     public void close() {
         if (isStarted()) {
-            socket.close();
             logger.debug("No longer listening to SSDP messages");
+            if (!socket.isClosed()) {
+                socket.close();
+            }
         }
     }
 

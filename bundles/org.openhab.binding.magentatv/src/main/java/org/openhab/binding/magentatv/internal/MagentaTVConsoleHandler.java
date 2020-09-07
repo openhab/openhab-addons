@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Console commands for interacting with the Tesla integration
+ * Console commands for interacting with the MagentaTV binding
  *
  * @author Markus Michels - Initial contribution
  */
@@ -92,8 +92,8 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(buildCommandUsage(CMD_LOGIN + " [<login email>] [<password>]",
-                "Authenticates the login name and provides the technical User Id (userId parameter)."));
+        return Arrays.asList(buildCommandUsage(CMD_LOGIN + " [<email>] [<password>]",
+                "Logs into the account with the provided credentials and retrieves the User ID."));
     }
 
     private void login(Console console, String username, String password) {
@@ -101,11 +101,11 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
             logger.info("Performing OAuth for user {}", username);
             String userId = oauth.getUserId(username, password);
             console.println("Login successful, returned userId is " + userId);
-            console.println("Edit thing configuration and copy this value to the field User Id (userId)");
-            logger.info("User Id for user {} is {}", username, userId);
+            console.println("Edit thing configuration and copy this value to the field User ID.");
+            logger.info("User ID for user {} is {}.", username, userId);
         } catch (MagentaTVException e) {
             console.println("Login with account " + username + " failed: " + e.getMessage());
-            logger.warn("Unable to authenticate account {}, check credentials ({}", username, e.getMessage());
+            logger.warn("Unable to login with  account {}, check credentials ({})", username, e.getMessage());
         }
     }
 }

@@ -79,11 +79,11 @@ public class MagentaTVThingConfiguration {
         this.accountPassword = accountPassword;
     }
 
-    public String getUserID() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserID(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

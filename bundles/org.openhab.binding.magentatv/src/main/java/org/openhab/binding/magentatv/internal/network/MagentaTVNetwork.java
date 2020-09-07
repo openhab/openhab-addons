@@ -124,7 +124,7 @@ public class MagentaTVNetwork {
     public static final int WOL_PORT = 9;
 
     /**
-     * Send a Waker-on-LAN packet
+     * Send a Wake-on-LAN packet
      *
      * @param ipAddr destination ip
      * @param macAddress destination MAC address
