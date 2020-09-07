@@ -16,12 +16,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.RoomInformation;
@@ -165,7 +165,7 @@ public class MCommand extends CubeCommand {
 
         }
 
-        final String encodedString = Base64.encodeBase64StringUnChunked(message.toByteArray());
+        final String encodedString = Base64.getEncoder().encodeToString(message.toByteArray());
         final StringBuilder commandStringBuilder = new StringBuilder();
         int parts = (int) Math.round(encodedString.length() / MAX_MSG_LENGTH + 0.5);
         for (int i = 0; i < parts; i++) {

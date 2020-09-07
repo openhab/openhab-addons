@@ -13,8 +13,8 @@
 package org.openhab.binding.max.internal.message;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
-import org.apache.commons.net.util.Base64;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
@@ -45,8 +45,8 @@ public final class NMessage extends Message {
 
         if (msgPayload.length() > 0) {
             try {
-                decodedPayload = new String(Base64.decodeBase64(msgPayload), StandardCharsets.UTF_8);
-                byte[] bytes = Base64.decodeBase64(msgPayload);
+                decodedPayload = new String(Base64.getDecoder().decode(msgPayload), StandardCharsets.UTF_8);
+                byte[] bytes = Base64.getDecoder().decode(msgPayload);
 
                 deviceType = DeviceType.create(bytes[0] & 0xFF);
                 rfAddress = Utils.toHex(bytes[1] & 0xFF, bytes[2] & 0xFF, bytes[3] & 0xFF);
