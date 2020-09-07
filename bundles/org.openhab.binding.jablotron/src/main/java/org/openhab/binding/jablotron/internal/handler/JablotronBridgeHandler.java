@@ -86,11 +86,12 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         bridgeConfig = getConfigAs(JablotronBridgeConfig.class);
         scheduler.execute(this::login);
-        future = scheduler.scheduleWithFixedDelay(() -> updateAlarmThings(), 30, bridgeConfig.getRefresh(),
+        future = scheduler.scheduleWithFixedDelay(this::updateAlarmThings, 30, bridgeConfig.getRefresh(),
                 TimeUnit.SECONDS);
     }
 
     private void updateAlarmThings() {
+        @Nullable
         List<JablotronDiscoveredService> services = discoverServices();
         if (services != null) {
             for (JablotronDiscoveredService service : services) {
@@ -101,6 +102,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     private void updateAlarmThing(JablotronDiscoveredService service) {
         for (Thing th : getThing().getThings()) {
+            @Nullable
             JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
             if (handler == null) {
@@ -135,32 +137,73 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         logout();
     }
 
-    protected synchronized void login() {
+    private @Nullable <T> T sendJsonMessage(String url, String urlParameters, Class<T> classOfT) {
+        return sendMessage(url, urlParameters, classOfT, APPLICATION_JSON, true);
+    }
+
+    private @Nullable <T> T sendJsonMessage(String url, String urlParameters, Class<T> classOfT, boolean relogin) {
+        return sendMessage(url, urlParameters, classOfT, APPLICATION_JSON, relogin);
+    }
+
+    private @Nullable <T> T sendUrlEncodedMessage(String url, String urlParameters, Class<T> classOfT) {
+        return sendMessage(url, urlParameters, classOfT, WWW_FORM_URLENCODED, true);
+    }
+
+    private @Nullable <T> T sendMessage(String url, String urlParameters, Class<T> classOfT, String encoding,
+            boolean relogin) {
         try {
-            String url = JABLOTRON_API_URL + "userAuthorize.json";
-            String urlParameters = "{\"login\":\"" + bridgeConfig.getLogin() + "\", \"password\":\""
-                    + bridgeConfig.getPassword() + "\"}";
+            ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters), encoding)
+                    .send();
 
-            ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
-
+            logger.trace("Request: {} with data: {}", url, urlParameters);
             String line = resp.getContentAsString();
-            logger.trace("login response: {}", line);
-            JablotronLoginResponse response = gson.fromJson(line, JablotronLoginResponse.class);
-            if (response.getHttpCode() != 200) {
-                logger.debug("Error during login, got http error: {}", response.getHttpCode());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Http error: " + String.valueOf(response.getHttpCode()));
-            } else {
-                logger.debug("Successfully logged in");
-                updateStatus(ThingStatus.ONLINE);
-            }
+            logger.trace("Response: {}", line);
+            return gson.fromJson(line, classOfT);
         } catch (TimeoutException e) {
-            logger.debug("Timeout during getting login cookie", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot login to Jablonet cloud");
-        } catch (ExecutionException | InterruptedException | JsonSyntaxException e) {
-            logger.debug("Cannot get Jablotron login cookie", e);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Cannot login to Jablonet cloud");
+            logger.debug("Timeout during calling url: {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Timeout during calling url: " + url);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupt during calling url: {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Interrupt during calling url: " + url);
+            Thread.currentThread().interrupt();
+        } catch (JsonSyntaxException e) {
+            logger.debug("Syntax error during calling url: {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Syntax error during calling url: " + url);
+        } catch (ExecutionException e) {
+            if (relogin) {
+                if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
+                    relogin();
+                    return null;
+                }
+            }
+            logger.debug("Error during calling url: {}", url, e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Error during calling url: " + url);
+        }
+        return null;
+    }
+
+    protected synchronized void login() {
+        String url = JABLOTRON_API_URL + "userAuthorize.json";
+        String urlParameters = "{\"login\":\"" + bridgeConfig.getLogin() + "\", \"password\":\""
+                + bridgeConfig.getPassword() + "\"}";
+        @Nullable
+        JablotronLoginResponse response = sendJsonMessage(url, urlParameters, JablotronLoginResponse.class, false);
+
+        if (response == null) {
+            return;
+        }
+
+        if (response.getHttpCode() != 200) {
+            logger.debug("Error during login, got http error: {}", response.getHttpCode());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Http error: " + response.getHttpCode());
+        } else {
+            logger.debug("Successfully logged in");
+            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -169,53 +212,38 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String urlParameters = "system=" + SYSTEM;
 
         try {
-            ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters),
-                    "application/x-www-form-urlencoded; charset=UTF-8").send();
-            String line = resp.getContentAsString();
+            ContentResponse resp = createRequest(url)
+                    .content(new StringContentProvider(urlParameters), WWW_FORM_URLENCODED).send();
 
-            logger.trace("logout response: {}", line);
+            if (logger.isTraceEnabled()) {
+                String line = resp.getContentAsString();
+                logger.trace("logout response: {}", line);
+            }
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
             // Silence
         }
     }
 
     public synchronized @Nullable List<JablotronDiscoveredService> discoverServices() {
-        try {
-            String url = JABLOTRON_API_URL + "serviceListGet.json";
-            String urlParameters = "{\"list-type\": \"EXTENDED\",\"visibility\": \"VISIBLE\"}";
+        String url = JABLOTRON_API_URL + "serviceListGet.json";
+        String urlParameters = "{\"list-type\": \"EXTENDED\",\"visibility\": \"VISIBLE\"}";
+        @Nullable
+        JablotronGetServiceResponse response = sendJsonMessage(url, urlParameters, JablotronGetServiceResponse.class);
 
-            ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
-
-            String line = resp.getContentAsString();
-
-            logger.trace("Response: {}", line);
-            JablotronGetServiceResponse response = gson.fromJson(line, JablotronGetServiceResponse.class);
-
-            if (response.getHttpCode() != 200) {
-                logger.debug("Error during service discovery, got http code: {}", response.getHttpCode());
-            }
-
-            return response.getData().getServices();
-        } catch (TimeoutException e) {
-            logger.debug("Timeout during discovering services", e);
-        } catch (InterruptedException e) {
-            logger.debug("Error during discovering services", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-            } else {
-                logger.debug("Error during discovering services", e);
-            }
+        if (response == null) {
+            return null;
         }
-        return null;
+
+        if (response.getHttpCode() != 200) {
+            logger.debug("Error during service discovery, got http code: {}", response.getHttpCode());
+        }
+
+        return response.getData().getServices();
     }
 
     protected synchronized @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key,
             String status, String code) throws SecurityException {
-        String url;
+        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -228,44 +256,27 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
             return null;
         }
 
-        try {
-            url = JABLOTRON_API_URL + "controlSegment.json";
-            String urlParameters = "service=" + th.getThingTypeUID().getId() + "&serviceId="
-                    + handler.thingConfig.getServiceId() + "&segmentId=" + section + "&segmentKey=" + key
-                    + "&expected_status=" + status + "&control_time=0&control_code=" + code + "&system=" + SYSTEM;
-            logger.debug("Sending POST to url address: {} to control section: {}", url, section);
-            logger.trace("Url parameters: {}", urlParameters);
+        String url = JABLOTRON_API_URL + "controlSegment.json";
+        String urlParameters = "service=" + th.getThingTypeUID().getId() + "&serviceId="
+                + handler.thingConfig.getServiceId() + "&segmentId=" + section + "&segmentKey=" + key
+                + "&expected_status=" + status + "&control_time=0&control_code=" + code + "&system=" + SYSTEM;
 
-            ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters),
-                    "application/x-www-form-urlencoded; charset=UTF-8").send();
+        @Nullable
+        JablotronControlResponse response = sendUrlEncodedMessage(url, urlParameters, JablotronControlResponse.class);
 
-            String line = resp.getContentAsString();
-
-            logger.trace("Control response: {}", line);
-            JablotronControlResponse response = gson.fromJson(line, JablotronControlResponse.class);
-            if (!response.isStatus()) {
-                logger.debug("Error during sending user code: {}", response.getErrorMessage());
-            }
-            return response;
-        } catch (TimeoutException e) {
-            logger.debug("sendUserCode timeout exception", e);
-        } catch (InterruptedException e) {
-            logger.debug("sendUserCode exception", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-                throw new SecurityException(AUTHENTICATION_CHALLENGE);
-            } else {
-                logger.debug("sendUserCode exception", e);
-            }
+        if (response == null) {
+            return null;
         }
-        return null;
+
+        if (!response.isStatus()) {
+            logger.debug("Error during sending user code: {}", response.getErrorMessage());
+        }
+        return response;
     }
 
     protected synchronized @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/eventHistoryGet.json";
+        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -274,36 +285,23 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         }
 
         String urlParameters = "{\"limit\":1, \"service-id\":" + handler.thingConfig.getServiceId() + "}";
+        @Nullable
+        JablotronGetEventHistoryResponse response = sendJsonMessage(url, urlParameters,
+                JablotronGetEventHistoryResponse.class);
 
-        try {
-            ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
-
-            String line = resp.getContentAsString();
-            logger.trace("get event history: {}", line);
-            JablotronGetEventHistoryResponse response = gson.fromJson(line, JablotronGetEventHistoryResponse.class);
-            if (200 != response.getHttpCode()) {
-                logger.debug("Got error while getting history with http code: {}", response.getHttpCode());
-            }
-            return response.getData().getEvents();
-        } catch (TimeoutException e) {
-            logger.debug("Timeout during getting alarm history!", e);
-        } catch (InterruptedException e) {
-            logger.debug("sendGetEventHistory exception", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-            } else {
-                logger.debug("sendGetEventHistory exception", e);
-            }
+        if (response == null) {
+            return null;
         }
-        return null;
+
+        if (200 != response.getHttpCode()) {
+            logger.debug("Got error while getting history with http code: {}", response.getHttpCode());
+        }
+        return response.getData().getEvents();
     }
 
     protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
         String url = JABLOTRON_API_URL + "dataUpdate.json";
+        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -315,33 +313,12 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
                 + th.getThingTypeUID().getId() + "\",\"service_id\":" + handler.thingConfig.getServiceId()
                 + ",\"data_group\":\"serviceData\"}]&system=" + SYSTEM;
 
-        logger.trace("Url parameters: {}", urlParameters);
-        try {
-            ContentResponse resp = createRequest(url).content(new StringContentProvider(urlParameters),
-                    "application/x-www-form-urlencoded; charset=UTF-8").send();
-
-            String line = resp.getContentAsString();
-            logger.trace("get status: {}", line);
-
-            return gson.fromJson(line, JablotronDataUpdateResponse.class);
-        } catch (TimeoutException e) {
-            logger.debug("Timeout during getting alarm status!", e);
-        } catch (InterruptedException e) {
-            logger.debug("sendGetStatusRequest exception", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-            } else {
-                logger.debug("sendGetStatusRequest exception", e);
-            }
-        }
-        return null;
+        return sendUrlEncodedMessage(url, urlParameters, JablotronDataUpdateResponse.class);
     }
 
     protected synchronized @Nullable JablotronGetPGResponse sendGetProgrammableGates(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/programmableGatesGet.json";
+        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -352,32 +329,12 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":"
                 + handler.thingConfig.getServiceId() + ",\"service-states\":true}";
 
-        try {
-            ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
-
-            String line = resp.getContentAsString();
-            logger.trace("get programmable gates: {}", line);
-
-            return gson.fromJson(line, JablotronGetPGResponse.class);
-        } catch (TimeoutException e) {
-            logger.debug("Timeout during getting programmable gates!", e);
-        } catch (InterruptedException e) {
-            logger.debug("sendGetProgramambleGates exception", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-            } else {
-                logger.debug("sendGetProgramambleGates exception", e);
-            }
-        }
-        return null;
+        return sendJsonMessage(url, urlParameters, JablotronGetPGResponse.class);
     }
 
     protected synchronized @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/sectionsGet.json";
+        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -388,32 +345,12 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String urlParameters = "{\"connect-device\":false,\"list-type\":\"FULL\",\"service-id\":"
                 + handler.thingConfig.getServiceId() + ",\"service-states\":true}";
 
-        try {
-            ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
-
-            String line = resp.getContentAsString();
-            logger.trace("get sections: {}", line);
-
-            return gson.fromJson(line, JablotronGetSectionsResponse.class);
-        } catch (TimeoutException e) {
-            logger.debug("Timeout during getting alarm sections!", e);
-        } catch (InterruptedException e) {
-            logger.debug("sendGetSections exception", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-            } else {
-                logger.debug("sendGetSections exception", e);
-            }
-        }
-        return null;
+        return sendJsonMessage(url, urlParameters, JablotronGetSectionsResponse.class);
     }
 
     protected synchronized @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action,
             String value, String componentId) throws SecurityException {
+        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -432,33 +369,11 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
                 + "\"},\"component-id\":\"" + componentId + "\"}],\"service-id\":" + handler.thingConfig.getServiceId()
                 + "}";
 
-        try {
-            ContentResponse resp = createRequest(url).header(HttpHeader.ACCEPT, APPLICATION_JSON)
-                    .content(new StringContentProvider(urlParameters), APPLICATION_JSON).send();
-
-            String line = resp.getContentAsString();
-            logger.trace("control component: {}", line);
-
-            return gson.fromJson(line, JablotronGetSectionsResponse.class);
-        } catch (TimeoutException e) {
-            logger.debug("Timeout during getting alarm sections!", e);
-        } catch (InterruptedException e) {
-            logger.debug("controlComponent exception", e);
-        } catch (JsonSyntaxException e) {
-            logger.debug("JSON syntax exception", e);
-        } catch (ExecutionException e) {
-            if (e.getMessage().contains(AUTHENTICATION_CHALLENGE)) {
-                relogin();
-                throw new SecurityException(AUTHENTICATION_CHALLENGE);
-            } else {
-                logger.debug("controlComponent exception", e);
-            }
-        }
-        return null;
+        return sendJsonMessage(url, urlParameters, JablotronGetSectionsResponse.class);
     }
 
     private Request createRequest(String url) {
-        return httpClient.newRequest(url).method(HttpMethod.POST)
+        return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.ACCEPT, APPLICATION_JSON)
                 .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang()).header(HttpHeader.ACCEPT_ENCODING, "*")
                 .header("x-vendor-id", VENDOR).agent(AGENT).timeout(TIMEOUT, TimeUnit.SECONDS);
     }

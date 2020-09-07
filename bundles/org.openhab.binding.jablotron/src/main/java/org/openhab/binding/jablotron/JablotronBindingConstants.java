@@ -60,6 +60,7 @@ public class JablotronBindingConstants {
     public static final String SYSTEM = "openHAB";
     public static final String VENDOR = "JABLOTRON:Jablotron";
     public static final String APPLICATION_JSON = "application/json";
+    public static final String WWW_FORM_URLENCODED = "application/x-www-form-urlencoded; charset=UTF-8";
     public static final String AUTHENTICATION_CHALLENGE = "Authentication challenge without WWW-Authenticate header";
     public static final String PROPERTY_SERVICE_ID = "serviceId";
     public static final int DISCOVERY_TIMEOUT_SEC = 10;
