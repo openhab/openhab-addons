@@ -73,8 +73,9 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
     @Override
     public void dispose() {
         NZWaterAlertsBinder localBinder = binder;
-        if (localBinder != null)
+        if (localBinder != null) {
             localBinder.unregisterListener(this);
+        }
 
         super.dispose();
     }
@@ -82,8 +83,9 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
     @Override
     public void handleRemoval() {
         NZWaterAlertsBinder localBinder = binder;
-        if (localBinder != null)
+        if (localBinder != null) {
             localBinder.unregisterListener(this);
+        }
 
         super.handleRemoval();
     }

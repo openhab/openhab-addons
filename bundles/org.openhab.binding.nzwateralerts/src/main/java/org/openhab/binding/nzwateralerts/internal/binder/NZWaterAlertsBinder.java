@@ -58,15 +58,8 @@ public class NZWaterAlertsBinder {
                             "Location is not set.");
                 }
             } else {
-                try {
-                    this.webClient = new WaterAlertWebClient(httpClient, localLocation);
-                    refreshInterval = config.refreshInterval;
-                } catch (Exception ex) {
-                    for (final NZWaterAlertsBinderListener listener : listeners) {
-                        listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Location is not valid.");
-                    }
-                }
+                this.webClient = new WaterAlertWebClient(httpClient, localLocation);
+                refreshInterval = config.refreshInterval;
             }
         } else {
             for (final NZWaterAlertsBinderListener listener : listeners) {
