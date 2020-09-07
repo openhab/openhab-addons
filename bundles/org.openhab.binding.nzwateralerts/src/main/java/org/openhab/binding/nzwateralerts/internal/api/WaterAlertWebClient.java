@@ -17,7 +17,6 @@ import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingCon
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.NullArgumentException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -41,28 +40,24 @@ public class WaterAlertWebClient {
 
     private @Nullable WaterWebService service = null;
 
-    public WaterAlertWebClient(final HttpClient httpClient, @Nullable final String location) {
+    public WaterAlertWebClient(final HttpClient httpClient, final String location) throws Exception {
         this.httpClient = httpClient;
 
-        if (location != null) {
-            final String[] locationSegmented = location.split(":", 3);
-            webService = locationSegmented[0];
-            region = locationSegmented[1];
-            area = locationSegmented[2];
+        final String[] locationSegmented = location.split(":", 3);
+        webService = locationSegmented[0];
+        region = locationSegmented[1];
+        area = locationSegmented[2];
 
-            for (final WaterWebService srv : WATER_WEB_SERVICES) {
-                logger.trace("Checking service {}", srv.service());
-                if (locationSegmented[0].equalsIgnoreCase(srv.service())) {
-                    logger.trace("Found service {}", srv.service());
-                    service = srv;
-                }
+        for (final WaterWebService srv : WATER_WEB_SERVICES) {
+            logger.trace("Checking service {}", srv.service());
+            if (locationSegmented[0].equalsIgnoreCase(srv.service())) {
+                logger.trace("Found service {}", srv.service());
+                service = srv;
             }
+        }
 
-            if (service == null) {
-                logger.debug("Service could not be found for {}", locationSegmented[0]);
-            }
-        } else {
-            throw new NullArgumentException("The location is empty.");
+        if (service == null) {
+            logger.debug("Service could not be found for {}", locationSegmented[0]);
         }
     }
 

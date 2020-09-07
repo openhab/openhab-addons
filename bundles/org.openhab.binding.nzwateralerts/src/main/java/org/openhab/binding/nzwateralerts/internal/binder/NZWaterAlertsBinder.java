@@ -51,14 +51,22 @@ public class NZWaterAlertsBinder {
         this.scheduler = scheduler;
 
         if (config != null) {
-            if (config.location == null) {
+            final String localLocation = config.location;
+            if (localLocation == null) {
                 for (final NZWaterAlertsBinderListener listener : listeners) {
                     listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Location is not set.");
                 }
             } else {
-                this.webClient = new WaterAlertWebClient(httpClient, config.location);
-                refreshInterval = config.refreshInterval;
+                try {
+                    this.webClient = new WaterAlertWebClient(httpClient, localLocation);
+                    refreshInterval = config.refreshInterval;
+                } catch (Exception ex) {
+                    for (final NZWaterAlertsBinderListener listener : listeners) {
+                        listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Location is not valid.");
+                    }
+                }
             }
         } else {
             for (final NZWaterAlertsBinderListener listener : listeners) {
