@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - Detailed parsing, OH2 Update
  */
+@NonNullByDefault
 public final class CMessage extends Message {
 
     private final Logger logger = LoggerFactory.getLogger(CMessage.class);
@@ -46,19 +48,19 @@ public final class CMessage extends Message {
     private DeviceType deviceType;
     private int roomId = -1;
     private String serialNumber;
-    private BigDecimal tempComfort;
-    private BigDecimal tempEco;
-    private BigDecimal tempSetpointMax;
-    private BigDecimal tempSetpointMin;
-    private BigDecimal tempOffset;
-    private BigDecimal tempOpenWindow;
-    private BigDecimal durationOpenWindow;
-    private BigDecimal decalcification;
-    private BigDecimal valveMaximum;
-    private BigDecimal valveOffset;
-    private BigDecimal boostDuration;
-    private BigDecimal boostValve;
-    private String programData;
+    private BigDecimal tempComfort = BigDecimal.ZERO;
+    private BigDecimal tempEco = BigDecimal.ZERO;
+    private BigDecimal tempSetpointMax = BigDecimal.ZERO;
+    private BigDecimal tempSetpointMin = BigDecimal.ZERO;
+    private BigDecimal tempOffset = BigDecimal.ZERO;
+    private BigDecimal tempOpenWindow = BigDecimal.ZERO;
+    private BigDecimal durationOpenWindow = BigDecimal.ZERO;
+    private BigDecimal decalcification = BigDecimal.ZERO;
+    private BigDecimal valveMaximum = BigDecimal.ZERO;
+    private BigDecimal valveOffset = BigDecimal.ZERO;
+    private BigDecimal boostDuration = BigDecimal.ZERO;
+    private BigDecimal boostValve = BigDecimal.ZERO;
+    private String programData = "";
 
     private Map<String, Object> properties = new HashMap<>();
 
@@ -168,8 +170,7 @@ public final class CMessage extends Message {
         int weekDay = bytes[1] & 0xFF;
         int hour = bytes[2] & 0xFF;
         int utcOffset = new BigInteger(Arrays.copyOfRange(bytes, 0x03, 0x07)).intValue();
-        suffix = " (" + suffix + ")";
-        properties.put("Utc Offset" + suffix, utcOffset);
+        properties.put("Utc Offset" + " (" + suffix + ")", utcOffset);
         Calendar pCal = Calendar.getInstance();
         pCal.set(Calendar.getInstance().get(Calendar.YEAR), month - 1, 15, hour, 0, 0);
         pCal.set(Calendar.DAY_OF_WEEK, weekDay + 1);

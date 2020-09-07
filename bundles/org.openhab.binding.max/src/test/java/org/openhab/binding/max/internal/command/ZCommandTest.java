@@ -14,6 +14,7 @@ package org.openhab.binding.max.internal.command;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
@@ -21,10 +22,11 @@ import org.junit.Test;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class ZCommandTest {
 
     @Test
-    public void PrefixTest() {
+    public void prefixTest() {
         ZCommand scmd = new ZCommand(ZCommand.WakeUpType.DEVICE, "0b0da3", 30);
 
         String commandStr = scmd.getCommandString();
@@ -34,14 +36,14 @@ public class ZCommandTest {
     }
 
     @Test
-    public void BaseCommandTest() {
+    public void baseCommandTest() {
         ZCommand scmd = new ZCommand(ZCommand.WakeUpType.DEVICE, "0b0da3", 30);
         String commandStr = scmd.getCommandString();
         assertEquals("z:1E,D,0b0da3" + '\r' + '\n', commandStr);
     }
 
     @Test
-    public void WakeAllTest() {
+    public void wakeAllTest() {
         ZCommand scmd = new ZCommand(ZCommand.WakeUpType.ALL, "0b0da3", 60);
         String commandStr = scmd.getCommandString();
         assertEquals("z:3C,A" + '\r' + '\n', commandStr);
@@ -56,7 +58,7 @@ public class ZCommandTest {
     }
 
     @Test
-    public void WakeRoomTest() {
+    public void wakeRoomTest() {
         ZCommand scmd = new ZCommand(ZCommand.WakeUpType.ROOM, "01", 30);
         String commandStr = scmd.getCommandString();
         assertEquals("z:1E,G,01" + '\r' + '\n', commandStr);
@@ -71,7 +73,7 @@ public class ZCommandTest {
     }
 
     @Test
-    public void WakeDeviceTest() {
+    public void wakeDeviceTest() {
         ZCommand scmd = ZCommand.wakeupDevice("0b0da3");
         String commandStr = scmd.getCommandString();
         assertEquals("z:1E,D,0b0da3" + '\r' + '\n', commandStr);

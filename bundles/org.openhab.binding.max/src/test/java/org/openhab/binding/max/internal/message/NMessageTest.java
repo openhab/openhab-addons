@@ -14,26 +14,22 @@ package org.openhab.binding.max.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.device.DeviceType;
 
 /**
  * Tests cases for {@link NMessage}.
  *
- * @author Marcel Verpaalen - Initial Version
+ * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class NMessageTest {
 
     public static final String RAW_DATA = "N:Aw4VzExFUTAwMTUzNDD/";
     // public final String rawData = "N:AQe250tFUTAxNDUxNzL/";
 
-    private NMessage message;
-
-    @Before
-    public void before() {
-        message = new NMessage(RAW_DATA);
-    }
+    private NMessage message = new NMessage(RAW_DATA);
 
     @Test
     public void getMessageTypeTest() {

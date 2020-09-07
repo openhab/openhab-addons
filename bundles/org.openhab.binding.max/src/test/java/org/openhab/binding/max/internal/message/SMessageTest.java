@@ -14,7 +14,7 @@ package org.openhab.binding.max.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
@@ -22,19 +22,14 @@ import org.junit.Test;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class SMessageTest {
 
     private static final String RAW_DATA_1 = "S:01,0,31";
     private static final String RAW_DATA_2 = "S:00,1,00";
 
-    private SMessage message1;
-    private SMessage message2;
-
-    @Before
-    public void before() {
-        message1 = new SMessage(RAW_DATA_1);
-        message2 = new SMessage(RAW_DATA_2);
-    }
+    private final SMessage message1 = new SMessage(RAW_DATA_1);
+    private final SMessage message2 = new SMessage(RAW_DATA_2);
 
     @Test
     public void getMessageTypeTest() {

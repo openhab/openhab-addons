@@ -15,6 +15,7 @@ package org.openhab.binding.max.internal.command;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
@@ -24,10 +25,11 @@ import org.openhab.binding.max.internal.device.ThermostatModeType;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class SCommandTest {
 
     @Test
-    public void PrefixTest() {
+    public void prefixTest() {
         SCommand scmd = new SCommand("0b0da3", 1, ThermostatModeType.MANUAL, 20.0);
         String commandStr = scmd.getCommandString();
         String prefix = commandStr.substring(0, 2);
@@ -36,7 +38,7 @@ public class SCommandTest {
     }
 
     @Test
-    public void BaseCommandTest() {
+    public void baseCommandTest() {
         SCommand scmd = new SCommand("0b0da3", 1, ThermostatModeType.MANUAL, 20.0);
 
         String commandStr = scmd.getCommandString();

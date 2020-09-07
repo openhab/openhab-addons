@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.max.internal.device.Device;
@@ -35,18 +36,18 @@ import org.openhab.binding.max.internal.device.ShutterContact;
  * @author Dominic Lerbs - Initial contribution
  * @author Christoph Weitkamp - OH2 Version and updates
  */
+@NonNullByDefault
 public class LMessageTest {
 
-    private static final String rawData = "L:BgVPngkSEAsLhBkJEhkLJQDAAAsLhwwJEhkRJwDKAAYO8ZIJEhAGBU+kCRIQCwxuRPEaGQMmAMcACwxuQwkSGQgnAM8ACwQd5t0SGQ0oAMsA";
+    private static final String RAWDATA = "L:BgVPngkSEAsLhBkJEhkLJQDAAAsLhwwJEhkRJwDKAAYO8ZIJEhAGBU+kCRIQCwxuRPEaGQMmAMcACwxuQwkSGQgnAM8ACwQd5t0SGQ0oAMsA";
 
     private final Map<String, Device> testDevices = new HashMap<>();
 
-    private LMessage message;
+    private final LMessage message = new LMessage(RAWDATA);
     private final List<DeviceConfiguration> configurations = new ArrayList<>();
 
     @Before
     public void setUp() {
-        message = new LMessage(rawData);
         createTestDevices();
     }
 

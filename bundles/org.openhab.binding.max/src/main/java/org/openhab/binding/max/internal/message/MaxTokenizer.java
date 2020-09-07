@@ -14,6 +14,8 @@ package org.openhab.binding.max.internal.message;
 
 import java.util.Enumeration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The MaxTokenizer parses a L message into the MAX! devices encoded within. The L message contains
  * real time information for multiple devices. Each device starts with the length n bytes.
@@ -24,6 +26,7 @@ import java.util.Enumeration;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
+@NonNullByDefault
 public final class MaxTokenizer implements Enumeration<byte[]> {
 
     private int offset;

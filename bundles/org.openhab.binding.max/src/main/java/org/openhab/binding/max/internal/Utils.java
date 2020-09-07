@@ -14,6 +14,8 @@ package org.openhab.binding.max.internal;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Utility class for common tasks within the MAX! binding package.
  *
@@ -21,6 +23,7 @@ import java.util.Date;
  * @author Marcel Verpaalen - OH2 update
  *
  */
+@NonNullByDefault
 public final class Utils {
 
     /**
@@ -169,9 +172,6 @@ public final class Utils {
     static final String HEXES = "0123456789ABCDEF";
 
     public static String getHex(byte[] raw) {
-        if (raw == null) {
-            return null;
-        }
         final StringBuilder hex = new StringBuilder(3 * raw.length);
         for (final byte b : raw) {
             hex.append(HEXES.charAt((b & 0xF0) >> 4)).append(HEXES.charAt((b & 0x0F))).append(" ");

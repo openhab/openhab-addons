@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
  * @author Marcel Verpaalen - OH2 update
  *
  */
+@NonNullByDefault
 public final class LMessage extends Message {
 
     public LMessage(String raw) {

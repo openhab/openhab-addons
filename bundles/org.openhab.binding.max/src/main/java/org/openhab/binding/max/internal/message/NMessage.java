@@ -15,6 +15,8 @@ package org.openhab.binding.max.internal.message;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
@@ -26,13 +28,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public final class NMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(NMessage.class);
 
-    private String decodedPayload;
-    private DeviceType deviceType;
-    private String rfAddress;
-    private String serialnr;
+    private @Nullable String decodedPayload;
+    private @Nullable DeviceType deviceType;
+    private String rfAddress = "";
+    private @Nullable String serialnr;
 
     /**
      * The {@link: NMessage} contains information about a newly discovered Device
@@ -62,7 +65,7 @@ public final class NMessage extends Message {
         }
     }
 
-    public DeviceType getDeviceType() {
+    public @Nullable DeviceType getDeviceType() {
         return deviceType;
     }
 
@@ -70,7 +73,7 @@ public final class NMessage extends Message {
         return rfAddress;
     }
 
-    public String getSerialNumber() {
+    public @Nullable String getSerialNumber() {
         return serialnr;
     }
 

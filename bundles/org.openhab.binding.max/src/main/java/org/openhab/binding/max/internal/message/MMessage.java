@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceInformation;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -30,11 +31,12 @@ import org.slf4j.LoggerFactory;
  * @author Andreas Heil (info@aheil.de) - Initial Contribution
  * @author Marcel Verpaalen - Room details parse
  */
+@NonNullByDefault
 public final class MMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(MMessage.class);
 
-    public List<RoomInformation> rooms;
-    public List<DeviceInformation> devices;
+    public List<RoomInformation> rooms = new ArrayList<>();
+    public List<DeviceInformation> devices = new ArrayList<>();
     private Boolean hasConfiguration;
 
     public MMessage(String raw) {
@@ -136,7 +138,6 @@ public final class MMessage extends Message {
                         logger.debug("\tRoom Id        : {}", device.getRoomId());
                     }
                 }
-
             }
         } else {
             logger.debug("M Message empty. No Configuration");

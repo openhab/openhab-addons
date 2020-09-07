@@ -15,6 +15,7 @@ package org.openhab.binding.max.internal.command;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
 
@@ -23,10 +24,11 @@ import org.openhab.binding.max.internal.Utils;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class TCommandTest {
 
     @Test
-    public void PrefixTest() {
+    public void prefixTest() {
         TCommand scmd = new TCommand("0f1d54", false);
 
         String commandStr = scmd.getCommandString();
@@ -36,7 +38,7 @@ public class TCommandTest {
     }
 
     @Test
-    public void BaseCommandTest() {
+    public void baseCommandTest() {
         TCommand scmd = new TCommand("0f1d54", false);
 
         String commandStr = scmd.getCommandString();
@@ -54,7 +56,7 @@ public class TCommandTest {
     }
 
     @Test
-    public void AddRoomTest() {
+    public void addRoomTest() {
         TCommand scmd = new TCommand("0f1d54", false);
         scmd.addRoom("0b0da3");
 
@@ -73,7 +75,7 @@ public class TCommandTest {
     }
 
     @Test
-    public void ForceModeTest() {
+    public void forceModeTest() {
         TCommand scmd = new TCommand("0f1d54", true);
         String commandStr = scmd.getCommandString();
 
