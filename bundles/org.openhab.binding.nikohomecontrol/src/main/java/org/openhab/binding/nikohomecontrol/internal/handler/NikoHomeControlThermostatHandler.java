@@ -187,6 +187,13 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                     nhcThermostat.getOverrule(), nhcThermostat.getDemand());
 
             logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
+
+            Bridge bridge = getBridge();
+            if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
         });
     }
 
