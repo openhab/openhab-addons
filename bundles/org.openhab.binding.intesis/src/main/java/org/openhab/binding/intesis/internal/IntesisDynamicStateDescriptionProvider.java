@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.types.StateDescription;
 import org.osgi.service.component.annotations.Component;
@@ -33,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = { DynamicStateDescriptionProvider.class, IntesisDynamicStateDescriptionProvider.class })
 @NonNullByDefault
-public class IntesisDynamicStateDescriptionProvider implements DynamicStateDescriptionProvider {
+public class IntesisDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -56,6 +57,7 @@ public class IntesisDynamicStateDescriptionProvider implements DynamicStateDescr
         return description;
     }
 
+    @Override
     @Deactivate
     public void deactivate() {
         descriptions.clear();

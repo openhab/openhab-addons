@@ -13,6 +13,7 @@
 package org.openhab.binding.intesis.internal.api;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,7 +59,7 @@ public class IntesisHomeHttpApi {
             request.header(HttpHeader.CONTENT_TYPE, "application/json");
             request.content(new StringContentProvider(contentString), "application/json");
 
-            ContentResponse contentResponse = request.send();
+            ContentResponse contentResponse = request.timeout(5, TimeUnit.SECONDS).send();
 
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
             logger.trace("HTTP Response {}: {}", contentResponse.getStatus(), response);
