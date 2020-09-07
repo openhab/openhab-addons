@@ -52,6 +52,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.magentatv.internal.MagentaTVDeviceManager;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEvent;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRPayEventInstanceCreator;
@@ -64,7 +65,6 @@ import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRShortProgramInf
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
-import org.openhab.binding.magentatv.internal.MagentaTVHandlerFactory;
 import org.openhab.binding.magentatv.internal.config.MagentaTVDynamicConfig;
 import org.openhab.binding.magentatv.internal.config.MagentaTVThingConfiguration;
 import org.openhab.binding.magentatv.internal.network.MagentaTVNetwork;
@@ -88,7 +88,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     protected MagentaTVDynamicConfig config = new MagentaTVDynamicConfig();
     private final Gson gson;
     protected final MagentaTVNetwork network;
-    protected final MagentaTVHandlerFactory handlerFactory;
+    protected final MagentaTVDeviceManager manager;
     protected MagentaTVControl control = new MagentaTVControl();
 
     private String thingId = "";
@@ -103,9 +103,9 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
      * @param thing
      * @param bindingConfig
      */
-    public MagentaTVHandler(MagentaTVHandlerFactory handlerFactory, Thing thing, MagentaTVNetwork network) {
+    public MagentaTVHandler(MagentaTVDeviceManager manager, Thing thing, MagentaTVNetwork network) {
         super(thing);
-        this.handlerFactory = handlerFactory;
+        this.manager = manager;
         this.network = network;
         gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
                 .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
@@ -322,7 +322,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     protected void connectReceiver() throws MagentaTVException {
         if (control.checkDev()) {
             updateThingProperties();
-            handlerFactory.registerDevice(config.getUDN(), config.getTerminalID(), config.getIpAddress(), this);
+            manager.registerDevice(config.getUDN(), config.getTerminalID(), config.getIpAddress(), this);
             control.subscribeEventChannel();
             control.sendPairingRequest();
 
@@ -682,7 +682,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     @Override
     public void dispose() {
         cancelAllJobs();
-        handlerFactory.removeDevice(config.getTerminalID());
+        manager.removeDevice(config.getTerminalID());
         super.dispose();
     }
 }
