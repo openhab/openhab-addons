@@ -128,64 +128,6 @@
 			<channel-group id="forecastMinutes01" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes02" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes03" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes04" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes05" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes06" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes07" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes08" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes09" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes10" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes11" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes12" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes13" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes14" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes15" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes16" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes17" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes18" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes19" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes20" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes21" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes22" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes23" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes24" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes25" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes26" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes27" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes28" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes29" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes30" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes31" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes32" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes33" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes34" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes35" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes36" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes37" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes38" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes39" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes40" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes41" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes42" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes43" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes44" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes45" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes46" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes47" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes48" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes49" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes50" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes51" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes52" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes53" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes54" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes55" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes56" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes57" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes58" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes59" typeId="oneCallMinutely"/>
-			<channel-group id="forecastMinutes60" typeId="oneCallMinutely"/>
-
 
 			<channel-group id="forecastHours01" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours02" typeId="oneCallHourly"/>
@@ -199,42 +141,7 @@
 			<channel-group id="forecastHours10" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours11" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours12" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours13" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours14" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours15" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours16" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours17" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours18" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours19" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours20" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours21" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours22" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours23" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours24" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours25" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours26" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours27" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours28" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours29" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours30" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours31" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours32" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours33" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours34" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours35" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours36" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours37" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours38" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours39" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours40" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours41" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours42" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours43" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours44" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours45" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours46" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours47" typeId="oneCallHourly"/>
-			<channel-group id="forecastHours48" typeId="oneCallHourly"/>
+
 
 			<channel-group id="forecastToday" typeId="oneCallDaily">
 				<label>One Call API Todays Forecast</label>

@@ -102,7 +102,7 @@
 		<parameter name="forecastHours" type="integer" min="0" max="48" step="1">
 			<label>Number of Hours</label>
 			<description>Number of hours for hourly forecast.</description>
-			<default>24</default>
+			<default>12</default>
 		</parameter>
 		<parameter name="forecastMinutes" type="integer" min="0" max="60" step="1">
 			<label>Number of Minutes</label>

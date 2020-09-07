@@ -116,7 +116,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     for (int i = forecastMinutes + 1; i <= newForecastMinutes; i++) {
                         toBeAddedChannels.addAll(createChannelsForGroup(
                                 CHANNEL_GROUP_MINUTELY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
-                                CHANNEL_GROUP_TYPE_MINUTELY_FORECAST));
+                                CHANNEL_GROUP_TYPE_ONECALL_MINUTELY_FORECAST));
                     }
                 }
                 forecastMinutes = newForecastMinutes;
@@ -132,7 +132,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     for (int i = forecastHours + 1; i <= newForecastHours; i++) {
                         toBeAddedChannels.addAll(createChannelsForGroup(
                                 CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
-                                CHANNEL_GROUP_TYPE_HOURLY_FORECAST));
+                                CHANNEL_GROUP_TYPE_ONECALL_HOURLY_FORECAST));
                     }
                 }
                 forecastHours = newForecastHours;
@@ -153,16 +153,16 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                 } else {
                     if (forecastDays == 0 && newForecastDays > 0) {
                         toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TODAY,
-                                CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                                CHANNEL_GROUP_TYPE_ONECALL_DAILY_FORECAST));
                     }
                     if (forecastDays <= 1 && newForecastDays > 1) {
                         toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW,
-                                CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                                CHANNEL_GROUP_TYPE_ONECALL_DAILY_FORECAST));
                     }
                     for (int i = (forecastDays < 2) ? 2 : forecastDays; i < newForecastDays; ++i) {
                         toBeAddedChannels.addAll(
                                 createChannelsForGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i),
-                                        CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                                        CHANNEL_GROUP_TYPE_ONECALL_DAILY_FORECAST));
                     }
                 }
                 forecastDays = newForecastDays;
