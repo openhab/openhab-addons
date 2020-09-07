@@ -30,7 +30,7 @@ public class VehicleConfiguration {
     /**
      * Data refresh rate in minutes
      */
-    public int refreshInterval = 15;
+    public int refreshInterval = ConnectedDriveConstants.DEFAULT_IMAGE_SIZE;
 
     /**
      * Either Auto Detect Miles units (UK & US) or select Format directly
@@ -38,23 +38,20 @@ public class VehicleConfiguration {
      * <option value="METRIC">Metric</option>
      * <option value="IMPERIAL">Imperial</option>
      */
-    public String units = "AUTODETECT";
+    public String units = ConnectedDriveConstants.UNITS_AUTODETECT;
 
     /**
      * image size - width & length (square)
      */
-    public int imageSize = 300;
+    public int imageSize = ConnectedDriveConstants.DEFAULT_IMAGE_SIZE;
 
     /**
      * image viewport defined as options in thing xml
-     * <option value="FRONTSIDE">Frontside</option>
      * <option value="FRONT">Front</option>
-     * <option value="REARSIDE">Rearside</option>
      * <option value="REAR">Rear</option>
      * <option value="SIDE">Slide</option>
      * <option value="DASHBOARD">Dashboard</option>
      * <option value="DRIVERDOOR">Driver Door</option>
-     * <option value="REARBIRDSEYE">Rear BirdsEye</option>
      */
-    public String imageViewport = "FRONT";
+    public String imageViewport = ConnectedDriveConstants.DEFAULT_IMAGE_VIEWPORT;
 }

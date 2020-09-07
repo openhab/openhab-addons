@@ -249,7 +249,6 @@ public class ConnectedDriveProxy {
         return new Token();
     }
 
-    @SuppressWarnings("null")
     public Token getTokenFromUrl(String encodedUrl) {
         MultiMap<String> tokenMap = new MultiMap<String>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);

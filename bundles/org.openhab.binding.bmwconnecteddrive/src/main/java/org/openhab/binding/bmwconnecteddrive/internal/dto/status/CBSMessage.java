@@ -41,4 +41,10 @@ public class CBSMessage {
             return cbsType;
         }
     }
+
+    @Override
+    public String toString() {
+        return new StringBuffer(cbsDueDate).append(Constants.HYPHEN).append(cbsRemainingMileage)
+                .append(Constants.HYPHEN).append(cbsType).toString();
+    }
 }

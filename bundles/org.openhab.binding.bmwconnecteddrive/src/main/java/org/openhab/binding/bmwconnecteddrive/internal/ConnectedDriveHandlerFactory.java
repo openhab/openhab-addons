@@ -64,10 +64,10 @@ public class ConnectedDriveHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CONNECTED_DRIVE_ACCOUNT.equals(thingTypeUID)) {
             return new ConnectedDriveBridgeHandler((Bridge) thing, httpClientFactory, bundleContext);
         } else if (SUPPORTED_THING_SET.contains(thingTypeUID)) {
-            VehicleHandler cch = new VehicleHandler(thing, httpClientFactory.getCommonHttpClient(),
+            VehicleHandler vh = new VehicleHandler(thing, httpClientFactory.getCommonHttpClient(),
                     thingTypeUID.getId(), imperial);
-            VEHICLE_HANDLER_REGISTRY.add(cch);
-            return cch;
+            VEHICLE_HANDLER_REGISTRY.add(vh);
+            return vh;
         }
         return null;
     }
