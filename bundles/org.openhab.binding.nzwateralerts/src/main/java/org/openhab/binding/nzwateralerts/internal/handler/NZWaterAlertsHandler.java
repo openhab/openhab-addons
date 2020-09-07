@@ -51,10 +51,11 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        final NZWaterAlertsBinder localBinder = binder;
         if (CHANNEL_ALERTLEVEL.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
-                if (binder != null)
-                    binder.update();
+                if (localBinder != null)
+                    localBinder.update();
             }
         }
     }
@@ -63,22 +64,26 @@ public class NZWaterAlertsHandler extends BaseThingHandler implements NZWaterAle
     public void initialize() {
         config = getConfigAs(NZWaterAlertsConfiguration.class);
 
-        binder = new NZWaterAlertsBinder(httpClient, config, scheduler);
+        NZWaterAlertsBinder localBinder = binder = new NZWaterAlertsBinder(httpClient, config, scheduler);
 
         updateStatus(ThingStatus.UNKNOWN);
-        binder.registerListener(this);
+        localBinder.registerListener(this);
     }
 
     @Override
     public void dispose() {
-        binder.unregisterListener(this);
+        NZWaterAlertsBinder localBinder = binder;
+        if (localBinder != null)
+            localBinder.unregisterListener(this);
 
         super.dispose();
     }
 
     @Override
     public void handleRemoval() {
-        binder.unregisterListener(this);
+        NZWaterAlertsBinder localBinder = binder;
+        if (localBinder != null)
+            localBinder.unregisterListener(this);
 
         super.handleRemoval();
     }

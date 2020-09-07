@@ -12,7 +12,7 @@ This Binding scrapes multiple websites for Water Levels:
 
 ## Thing Configuration
 
-You can configure this Binding through _PaperUI_ or manually.
+The binding and thing ID is `nzwateralerts:wateralert`.
 
 ### Configuration Values
 

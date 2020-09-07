@@ -42,13 +42,15 @@ public class NZWaterAlertsBinder {
 
     private final Set<NZWaterAlertsBinderListener> listeners = new CopyOnWriteArraySet<>();
     private @Nullable ScheduledFuture<?> future;
-    private @Nullable ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
 
     private int refreshInterval = 5;
 
     public NZWaterAlertsBinder(final HttpClient httpClient, @Nullable final NZWaterAlertsConfiguration config,
-            @Nullable final ScheduledExecutorService scheduler) {
-        if (httpClient != null && config != null && scheduler != null) {
+            final ScheduledExecutorService scheduler) {
+        this.scheduler = scheduler;
+
+        if (config != null) {
             if (config.location == null) {
                 for (final NZWaterAlertsBinderListener listener : listeners) {
                     listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -56,7 +58,6 @@ public class NZWaterAlertsBinder {
                 }
             } else {
                 this.webClient = new WaterAlertWebClient(httpClient, config.location);
-                this.scheduler = scheduler;
                 refreshInterval = config.refreshInterval;
             }
         } else {
@@ -64,14 +65,14 @@ public class NZWaterAlertsBinder {
                 listener.updateBindingStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Could not create webClient, a parameter is null");
             }
-            logger.debug("Create Binder failed due to null item; httpClient {} config {} scheduler {}",
-                    httpClient != null, config != null, scheduler != null);
+            logger.debug("Create Binder failed due to null config item");
         }
     }
 
     public void update() {
-        if (webClient != null) {
-            final Integer waterLevel = webClient.getLevel();
+        final WaterAlertWebClient localWebClient = webClient;
+        if (localWebClient != null) {
+            final Integer waterLevel = localWebClient.getLevel();
 
             for (final NZWaterAlertsBinderListener listener : listeners) {
                 if (waterLevel == null) {
@@ -113,18 +114,16 @@ public class NZWaterAlertsBinder {
     }
 
     private void updatePollingState() {
-        final boolean isPolling = future != null;
-        if (isPolling && listeners.isEmpty()) {
-            if (future != null)
-                future.cancel(true);
+        final ScheduledFuture<?> localFuture = future;
+
+        if (localFuture != null && listeners.isEmpty()) {
+            localFuture.cancel(true);
             future = null;
             return;
         }
 
-        if (!isPolling && !listeners.isEmpty()) {
-            future = scheduler.scheduleWithFixedDelay(() -> {
-                update();
-            }, 0, refreshInterval, TimeUnit.HOURS);
+        if (localFuture == null && !listeners.isEmpty()) {
+            future = scheduler.scheduleWithFixedDelay(this::update, 0, refreshInterval, TimeUnit.HOURS);
         }
     }
 }

@@ -17,6 +17,7 @@ import static org.openhab.binding.nzwateralerts.internal.NZWaterAlertsBindingCon
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.NullArgumentException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -43,38 +44,44 @@ public class WaterAlertWebClient {
     public WaterAlertWebClient(final HttpClient httpClient, @Nullable final String location) {
         this.httpClient = httpClient;
 
-        final String[] locationSegmented = location.split(":", 3);
-        webService = locationSegmented[0];
-        region = locationSegmented[1];
-        area = locationSegmented[2];
+        if (location != null) {
+            final String[] locationSegmented = location.split(":", 3);
+            webService = locationSegmented[0];
+            region = locationSegmented[1];
+            area = locationSegmented[2];
 
-        for (final WaterWebService srv : WATER_WEB_SERVICES) {
-            logger.trace("Checking service {}", srv.service());
-            if (locationSegmented[0].equalsIgnoreCase(srv.service())) {
-                logger.trace("Found service {}", srv.service());
-                service = srv;
+            for (final WaterWebService srv : WATER_WEB_SERVICES) {
+                logger.trace("Checking service {}", srv.service());
+                if (locationSegmented[0].equalsIgnoreCase(srv.service())) {
+                    logger.trace("Found service {}", srv.service());
+                    service = srv;
+                }
             }
-        }
 
-        if (service == null) {
-            logger.debug("Service could not be found for {}", locationSegmented[0]);
+            if (service == null) {
+                logger.debug("Service could not be found for {}", locationSegmented[0]);
+            }
+        } else {
+            throw new NullArgumentException("The location is empty.");
         }
     }
 
     public @Nullable Integer getLevel() {
         ContentResponse response;
+        final WaterWebService localService = service;
         try {
-            if (service != null) {
+            if (localService != null) {
                 logger.debug("Getting Water Level from service {} region {} area {}", webService, region, area);
-                final String endpoint = service.endpoint(region);
+
+                final String endpoint = localService.endpoint(region);
                 logger.trace("Getting data from endpoint {}", endpoint);
                 response = httpClient.GET(endpoint);
 
-                final int waterLevel = service.findWaterLevel(response.getContentAsString(), area);
+                final int waterLevel = localService.findWaterLevel(response.getContentAsString(), area);
                 logger.debug("Got water level {}", waterLevel);
                 return waterLevel;
             } else {
-                logger.debug("Service is null");
+                logger.debug("Service, region is null");
                 return null;
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {

@@ -22,10 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class NZWaterAlertsConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
     public @Nullable String location;
     public int refreshInterval;
 }

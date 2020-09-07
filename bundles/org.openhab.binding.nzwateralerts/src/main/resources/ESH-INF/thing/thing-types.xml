@@ -45,7 +45,7 @@
 					<option value="bewaterwise:whangarei:whangarei">Whangarei</option>
 				</options>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" required="true">
+			<parameter name="refreshInterval" type="integer" required="true" min="1" unit="h">
 				<label>Refresh Interval</label>
 				<default>5</default>
 				<description>The interval (in hours) to refresh the data.</description>
