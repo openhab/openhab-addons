@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
+package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 /**
  * Error response of the Controller for a Long Poll API call.
@@ -19,7 +19,7 @@ package org.openhab.binding.boschshc.internal.devices.bridge;
  */
 public class LongPollError {
 
-    final static int SUBSCRIPTION_INVALID = -32001;
+    public static final int SUBSCRIPTION_INVALID = -32001;
 
     /**
      * {
@@ -32,11 +32,10 @@ public class LongPollError {
      */
 
     public class ErrorInfo {
-
-        int code;
-        String message;
+        public int code;
+        public String message;
     }
 
-    String jsonrpc;
-    ErrorInfo error;
+    public String jsonrpc;
+    public ErrorInfo error;
 }

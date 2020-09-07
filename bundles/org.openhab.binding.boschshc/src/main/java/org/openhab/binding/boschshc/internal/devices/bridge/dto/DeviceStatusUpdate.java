@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
+package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import com.google.gson.JsonElement;
 import com.google.gson.annotations.SerializedName;
@@ -26,32 +26,31 @@ public class DeviceStatusUpdate {
     /**
      * Url path of the service the update came from.
      */
-    String path;
+    public String path;
 
     /**
      * The type of message.
      */
     @SerializedName("@type")
-    String type;
+    public String type;
 
     /**
      * Name of service the update came from.
      */
-    String id;
+    public String id;
 
     /**
      * Current state of device. Serialized as JSON.
      */
-    JsonElement state;
+    public JsonElement state;
 
     /**
      * Id of device the update is for.
      */
-    String deviceId;
+    public String deviceId;
 
     @Override
     public String toString() {
-
         return this.deviceId + "state: " + this.type;
     }
 }

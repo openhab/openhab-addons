@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
-
-import org.eclipse.jdt.annotation.Nullable;
+package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 /**
  * Response of the Controller for a Long Poll API call.
@@ -22,14 +20,14 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Stefan Kästle - Initial contribution
  */
 public class SubscribeResult {
-    private @Nullable String result;
-    private @Nullable String jsonrpc;
+    private String result;
+    private String jsonrpc;
 
-    public @Nullable String getResult() {
+    public String getResult() {
         return this.result;
     }
 
-    public @Nullable String getJsonrpc() {
+    public String getJsonrpc() {
         return this.jsonrpc;
     }
 }

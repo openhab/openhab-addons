@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
+package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import java.util.ArrayList;
 
@@ -41,17 +41,17 @@ import com.google.gson.annotations.SerializedName;
 public class Device {
 
     @SerializedName("@type")
-    String type;
+    public String type;
 
-    String rootDeviceId;
-    String id;
-    ArrayList<String> deviceSerivceIDs;
-    String manufacturer;
-    String roomId;
-    String deviceModel;
-    String serial;
-    String profile;
-    String name;
-    String status;
-    ArrayList<String> childDeviceIds;
+    public String rootDeviceId;
+    public String id;
+    public ArrayList<String> deviceSerivceIDs;
+    public String manufacturer;
+    public String roomId;
+    public String deviceModel;
+    public String serial;
+    public String profile;
+    public String name;
+    public String status;
+    public ArrayList<String> childDeviceIds;
 }

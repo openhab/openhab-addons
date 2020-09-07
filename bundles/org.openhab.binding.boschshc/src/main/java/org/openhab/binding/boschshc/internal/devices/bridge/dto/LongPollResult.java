@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
+package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import java.util.ArrayList;
 
@@ -36,6 +36,6 @@ public class LongPollResult {
      * ],"jsonrpc":"2.0"}
      */
 
-    ArrayList<DeviceStatusUpdate> result;
-    String jsonrpc;
+    public ArrayList<DeviceStatusUpdate> result;
+    public String jsonrpc;
 }
