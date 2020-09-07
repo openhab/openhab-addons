@@ -202,7 +202,6 @@ public class HomieThingHandlerTests {
         doNothing().when(thingHandler).accept(any());
 
         thingHandler.initialize();
-
         assertThat(thingHandler.device.isInitialized(), is(true));
 
         verify(callback).statusUpdated(eq(thing), argThat((arg) -> arg.getStatus().equals(ThingStatus.OFFLINE)
