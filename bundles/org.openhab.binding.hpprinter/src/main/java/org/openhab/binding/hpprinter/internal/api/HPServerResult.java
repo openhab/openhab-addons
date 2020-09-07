@@ -39,11 +39,12 @@ public class HPServerResult<result> {
         this.errorMessage = "";
     }
 
+    @SuppressWarnings("null")
     public result getData() {
-        if (status != RequestStatus.SUCCESS || data == null) {
+        final result localData = data;
+        if (status != RequestStatus.SUCCESS || localData == null)
             throw new IllegalStateException("No data available for result");
-        }
-        return data;
+        return localData;
     }
 
     public RequestStatus getStatus() {

@@ -553,8 +553,10 @@ public class HPPrinterBinder {
     public void close() {
         stopBackgroundSchedules();
 
-        if (offlineScheduler != null) {
-            offlineScheduler.cancel(true);
+        final ScheduledFuture<?> localOfflineScheduler = offlineScheduler;
+
+        if (localOfflineScheduler != null) {
+            localOfflineScheduler.cancel(true);
             offlineScheduler = null;
         }
     }
@@ -758,8 +760,10 @@ public class HPPrinterBinder {
     private void goneOnline() {
         handler.updateStatus(ThingStatus.ONLINE);
 
-        if (offlineScheduler != null) {
-            offlineScheduler.cancel(true);
+        final ScheduledFuture<?> localOfflineScheduler = offlineScheduler;
+
+        if (localOfflineScheduler != null) {
+            localOfflineScheduler.cancel(true);
             offlineScheduler = null;
         }
         retrieveProperties();
