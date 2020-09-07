@@ -10,31 +10,23 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.bridge;
+package org.openhab.binding.boschshc.internal.devices.bridge.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Represents the state of a device as reported from the Smart Home Controller
+ * A room as represented by the controller.
+ *
+ * Json example:
+ * {"@type":"room","id":"hz_1","iconId":"icon_room_bedroom","name":"Bedroom"}
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class PowerSwitchStateUpdate {
-    /*
-     * "body": {
-     * "mode": "raw",
-     * "raw": "{\r\n    \"@type\": \"powerSwitchState\",\r\n    \"switchState\": \"ON\"\r\n}"
-     * },
-     */
+public class Room {
 
     @SerializedName("@type")
     public String type;
 
-    public String switchState;
-
-    public PowerSwitchStateUpdate(String type, String state) {
-
-        this.type = type;
-        this.switchState = state;
-    }
+    public String id;
+    public String name;
 }
