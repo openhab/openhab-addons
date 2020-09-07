@@ -15,8 +15,6 @@ package org.openhab.binding.haywardomnilogic.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.haywardomnilogic.internal.hayward.HaywardThingHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The Relay Handler
@@ -25,7 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class HaywardRelayHandler extends HaywardThingHandler {
-    private final Logger logger = LoggerFactory.getLogger(HaywardRelayHandler.class);
 
     public HaywardRelayHandler(Thing thing) {
         super(thing);
