@@ -30,8 +30,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.magentatv.internal.MagentaTVException;
-import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponse;
-import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponseInstanceCreator;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAuthenticateResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAuthenticateResponseInstanceCreator;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponseInstanceCreator;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
@@ -88,7 +88,8 @@ public class MagentaTVOAuth {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(OauthCredentials.class, new OauthCredentialsInstanceCreator())
                     .registerTypeAdapter(OAuthTokenResponse.class, new OAuthTokenResponseInstanceCreator())
-                    .registerTypeAdapter(OAuthAutenhicateResponse.class, new OAuthAutenhicateResponseInstanceCreator())
+                    .registerTypeAdapter(OAuthAuthenticateResponse.class,
+                            new OAuthAuthenticateResponseInstanceCreator())
                     .create();
 
             step = "get credentials";
@@ -163,7 +164,7 @@ public class MagentaTVOAuth {
             httpResponse = HttpUtil.executeUrl(HttpMethod.POST, url, httpHeader, dataStream, null, NETWORK_TIMEOUT_MS);
 
             logger.trace("http response={}", httpResponse);
-            OAuthAutenhicateResponse authResp = gson.fromJson(httpResponse, OAuthAutenhicateResponse.class);
+            OAuthAuthenticateResponse authResp = gson.fromJson(httpResponse, OAuthAuthenticateResponse.class);
             if (authResp.userID.isEmpty()) {
                 String errorMessage = MessageFormat.format("Unable to authenticate: accountName={0}, rc={1} {2}",
                         accountName, getString(authResp.retcode), getString(authResp.desc));

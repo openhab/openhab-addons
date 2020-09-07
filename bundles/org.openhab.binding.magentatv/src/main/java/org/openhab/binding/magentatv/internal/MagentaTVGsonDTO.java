@@ -178,17 +178,17 @@ public class MagentaTVGsonDTO {
         }
     }
 
-    public static class OAuthAutenhicateResponse {
+    public static class OAuthAuthenticateResponse {
         public String retcode = "";
         public String desc = "";
         public String epgurl = "";
         public String userID = "";
     }
 
-    public static class OAuthAutenhicateResponseInstanceCreator implements InstanceCreator<OAuthAutenhicateResponse> {
+    public static class OAuthAuthenticateResponseInstanceCreator implements InstanceCreator<OAuthAuthenticateResponse> {
         @Override
-        public OAuthAutenhicateResponse createInstance(@Nullable Type type) {
-            return new OAuthAutenhicateResponse();
+        public OAuthAuthenticateResponse createInstance(@Nullable Type type) {
+            return new OAuthAuthenticateResponse();
         }
     }
 }

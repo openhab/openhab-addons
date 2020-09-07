@@ -100,9 +100,10 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
         try {
             logger.info("Performing OAuth for user {}", username);
             String userId = oauth.getUserId(username, password);
-            console.println("Login successful, returned userId is " + userId);
-            console.println("Edit thing configuration and copy this value to the field User ID.");
-            logger.info("User ID for user {} is {}.", username, userId);
+            console.println("Login successful, returned User ID is " + userId);
+            console.println(
+                    "Edit thing configuration and copy this value to the field User ID or use it as parameter userId for the textual configuration.");
+            logger.info("Login with account {} was successful, returned User ID is {}", username, userId);
         } catch (MagentaTVException e) {
             console.println("Login with account " + username + " failed: " + e.getMessage());
             logger.warn("Unable to login with  account {}, check credentials ({})", username, e.getMessage());

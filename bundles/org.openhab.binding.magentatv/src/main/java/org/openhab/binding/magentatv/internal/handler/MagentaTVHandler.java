@@ -62,7 +62,7 @@ import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRProgramStatus;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRProgramStatusInstanceCreator;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRShortProgramInfo;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.MRShortProgramInfoInstanceCreator;
-import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAutenhicateResponse;
+import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthAuthenticateResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OAuthTokenResponse;
 import org.openhab.binding.magentatv.internal.MagentaTVGsonDTO.OauthCredentials;
 import org.openhab.binding.magentatv.internal.config.MagentaTVDynamicConfig;
@@ -109,8 +109,8 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         this.network = network;
         gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new MRProgramInfoEventInstanceCreator())
                 .registerTypeAdapter(OAuthTokenResponse.class, new MRProgramStatusInstanceCreator())
-                .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRShortProgramInfoInstanceCreator())
-                .registerTypeAdapter(OAuthAutenhicateResponse.class, new MRPayEventInstanceCreator()).create();
+                .registerTypeAdapter(OAuthAuthenticateResponse.class, new MRShortProgramInfoInstanceCreator())
+                .registerTypeAdapter(OAuthAuthenticateResponse.class, new MRPayEventInstanceCreator()).create();
     }
 
     /**
