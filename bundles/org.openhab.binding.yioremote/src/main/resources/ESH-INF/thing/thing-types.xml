@@ -4,17 +4,17 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<!-- Sample Thing Type -->
-	<thing-type id="yioremote">
-		<label>YIOremote Binding Thing</label>
-		<description>YIOremote Binding Thing</description>
+	<thing-type id="yioremotedock">
+		<label>YIOremote Dock Binding Thing</label>
+		<description>YIOremote Dock Binding Thing</description>
 		<channel-groups>
 			<channel-group id="input" typeId="input"/>
 			<channel-group id="output" typeId="output"/>
 		</channel-groups>
 		<config-description>
-			<parameter name="yiodockhostip" type="text" required="true">
-				<label>IP Address of the YIO Dock</label>
-				<description>IP Address of the YIO Dock</description>
+			<parameter name="yiodockhost" type="text" required="true">
+				<label>Host/IP Address of the YIO Dock</label>
+				<description>Host/IP Address of the YIO Dock</description>
 			</parameter>
 			<parameter name="yiodockaccesstoken" type="text" required="true">
 				<label>Access token for the YIO Dock</label>

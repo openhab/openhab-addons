@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yioremote.internal;
 
-import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.THING_TYPE_YIOREMOTE;
+import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.THING_TYPE_YIOREMOTEDOCK;
 
 import java.util.Collections;
 import java.util.Set;
@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.yioremote", service = ThingHandlerFactory.class)
 public class YIOremoteHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_YIOREMOTE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_YIOREMOTEDOCK);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -47,8 +47,8 @@ public class YIOremoteHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_YIOREMOTE.equals(thingTypeUID)) {
-            return new YIOremoteHandler(thing);
+        if (THING_TYPE_YIOREMOTEDOCK.equals(thingTypeUID)) {
+            return new YIOremoteDockHandler(thing);
         }
 
         return null;

@@ -46,7 +46,7 @@ public class YIOremoteBindingConstants {
     }
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_YIOREMOTE = new ThingTypeUID(BINDING_ID, "yioremote");
+    public static final ThingTypeUID THING_TYPE_YIOREMOTEDOCK = new ThingTypeUID(BINDING_ID, "yioremotedock");
 
     // List of all Channel Groups Group Channel ids
     public static final String GROUP_INPUT = "input";
@@ -58,6 +58,6 @@ public class YIOremoteBindingConstants {
     public static final String YIODOCKSTATUS = "yiodockstatus";
 
     // Configuration elements
-    public static final String CONFIG_YIODOCKHOSTIP = "yiodockhostip";
+    public static final String CONFIG_YIODOCKHOST = "yiodockhost";
     public static final String CONFIG_YIODOCKACCESSTOKEN = "yiodockaccesstoken";
 }

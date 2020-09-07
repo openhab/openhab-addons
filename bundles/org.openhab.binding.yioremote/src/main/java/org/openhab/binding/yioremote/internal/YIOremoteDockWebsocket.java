@@ -31,19 +31,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The {@link YIOremoteHandler} is responsible for handling commands, which are
- * sent to one of the channels.
+ * The {@link YIOremoteDockWebsocket} is responsible for the Websocket Connection to the YIO Remote Dock
  *
  * @author Michael Loercher - Initial contribution
  */
 
 @NonNullByDefault
 @WebSocket
-public class YIOremoteWebsocket {
+public class YIOremoteDockWebsocket {
 
     private @Nullable Session session;
     private String string_receivedmessage = "";
-    private final Logger logger = LoggerFactory.getLogger(YIOremoteWebsocket.class);
+    private final Logger logger = LoggerFactory.getLogger(YIOremoteDockWebsocket.class);
     private JsonObject JsonObject_recievedJsonObject = new JsonObject();
     private boolean boolean_authentication_required = false;
     private boolean boolean_heartbeat = false;

@@ -16,8 +16,8 @@ The following are the configurations available to each of the bridges/things:
 
 | Name                 | Type    | Required | Default | Description                                                                                                    |
 |----------------------|---------|----------|---------|----------------------------------------------------------------------------------------------------------------|
-| yiodockhostip        | string  | Yes      | (None)  | IP Address or host name of the YIO Dock                                                                        |
-| yiodockaccesstoken   | string  | Yes      | 0       | The authentication token for the access currently 0
+| yiodockhost	       | string  | Yes      | (None)  | Host/IP Address or host name of the YIO Dock                                                                   |
+| yiodockaccesstoken   | string  | Yes      | 0       | The authentication token for the access currently 0                                                            |
                                                       
 ## Channels
 
@@ -37,15 +37,15 @@ The YIO Dock has the following channels:
 .things
 
 ```
-yioremote:yioremote:livingroom [ yiodockhostip="192.168.178.21",yiodockaccesstoken="0"  ]
+yioremote:yioremotedock:livingroom [ yiodockhost="192.168.178.21",yiodockaccesstoken="0"  ]
 ```
 
 .items
 
 ```
-String yiodocksendircode		"IR CODE [%s]" 			{channel="yioremote:yioremote:livingroom:input#yiodocksendircode"}
-Switch yiodockreceiverswitch	"IR recieving switch"	{channel="yioremote:yioremote:livingroom:input#yiodockreceiverswitch"}
-String yiodockstatus			"YIO Dock status[%s]" 	{channel="yioremote:yioremote:livingroom:output#yiodockstatus"}
+String yiodocksendircode		"IR CODE [%s]" 			{channel="yioremote:yioremotedock:livingroom:input#yiodocksendircode"}
+Switch yiodockreceiverswitch	"IR recieving switch"	{channel="yioremote:yioremotedock:livingroom:input#yiodockreceiverswitch"}
+String yiodockstatus			"YIO Dock status[%s]" 	{channel="yioremote:yioremotedock:livingroom:output#yiodockstatus"}
 ```
 
 .sitemap
