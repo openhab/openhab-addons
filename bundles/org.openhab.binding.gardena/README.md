@@ -111,7 +111,7 @@ Number  Watering_Duration   "Duration [%d min]" { channel="gardena:watering_comp
 String Power_Timer          "Power Timer [%s]"  { channel="gardena:power:home:myPowerplug:power#power_timer" }
 
 // smart Irrigation Control
-Number Watering_Timer_1     "Watering Timer 1 [%s s]  { channel="gardena:ic24:home:myIrrigationController:watering#watering_timer_1" }
+Number Watering_Timer_1     "Watering Timer 1 [%d s]  { channel="gardena:ic24:home:myIrrigationController:watering#watering_timer_1" }
 
 // smart Pressure Pump
 Number Pump_Timer           "Pump Timer [%d min]        { channel="gardena:electronic_pressure_pump:home:myPressurePump:manual_watering#manual_watering_timer" }
