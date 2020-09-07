@@ -103,15 +103,17 @@ public class HPPrinterHandler extends BaseThingHandler {
     @Override
     public void channelLinked(ChannelUID channelUID) {
         final HPPrinterBinder localBinder = binder;
-        if (localBinder != null)
+        if (localBinder != null) {
             localBinder.channelsChanged();
+        }
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         final HPPrinterBinder localBinder = binder;
-        if (localBinder != null)
+        if (localBinder != null) {
             localBinder.channelsChanged();
+        }
     }
 
     protected void updateStatus(final ThingStatus status, final ThingStatusDetail thingStatusDetail,

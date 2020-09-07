@@ -42,8 +42,9 @@ public class HPServerResult<result> {
     @SuppressWarnings("null")
     public result getData() {
         final result localData = data;
-        if (status != RequestStatus.SUCCESS || localData == null)
+        if (status != RequestStatus.SUCCESS || localData == null) {
             throw new IllegalStateException("No data available for result");
+        }
         return localData;
     }
 
