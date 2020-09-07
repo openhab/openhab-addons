@@ -69,9 +69,12 @@ public class MagentaTVUtil {
     public static String substringBetween(@Nullable String string, String begin, String end) {
         if (string != null) {
             int s = string.indexOf(begin);
-            int e = string.indexOf(end);
-            if ((s != -1) && (e != -1) && (e >= s)) {
-                return string.substring(s + 1, e);
+            if (s != -1) {
+                // The end tag might be included before the start tag, e.g.
+                // when using "http://" and ":" to get the IP from http://192.168.1.1:8081/xxx
+                // therefore make it 2 steps
+                String result = string.substring(s + begin.length());
+                return substringBefore(result, end);
             }
         }
         return "";
