@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="meteoalerte" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="meteoalerte"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -56,8 +57,8 @@
 			<channel id="avalanches-icon" typeId="condition-icon">
 				<label>Etat Avalanches</label>
 			</channel>
-			<channel id="comment" typeId="comment" />
-			<channel id="observation-time" typeId="observation-time" />
+			<channel id="comment" typeId="comment"/>
+			<channel id="observation-time" typeId="observation-time"/>
 		</channels>
 
 		<config-description>
@@ -202,8 +203,6 @@
 		<item-type>Image</item-type>
 		<label>Pictogramme</label>
 		<description>Pictogramme associé au niveau d'alerte.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
-
-

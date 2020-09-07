@@ -314,7 +314,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
             case HttpURLConnection.HTTP_INTERNAL_ERROR:
             case HttpURLConnection.HTTP_OK:
                 if (!connectionEstablished) {
-                    connectionEstablished = true;
                     onConnectionResumed();
                 }
                 break;
@@ -326,7 +325,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 if (sessionToken != null) {
                     if (!connectionEstablished) {
                         onConnectionResumed();
-                        connectionEstablished = true;
                     }
                 } else {
                     if (this.genAppToken) {
@@ -337,22 +335,19 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 break;
             case ConnectionManager.MALFORMED_URL_EXCEPTION:
                 onConnectionLost(ConnectionListener.INVALID_URL);
-                connectionEstablished = false;
                 break;
             case ConnectionManager.CONNECTION_EXCEPTION:
             case ConnectionManager.SOCKET_TIMEOUT_EXCEPTION:
                 onConnectionLost(ConnectionListener.CONNECTON_TIMEOUT);
-                connectionEstablished = false;
+                break;
+            case ConnectionManager.SSL_HANDSHAKE_EXCEPTION:
+                onConnectionLost(ConnectionListener.SSL_HANDSHAKE_ERROR);
                 break;
             case ConnectionManager.GENERAL_EXCEPTION:
-                if (connListener != null) {
-                    connListener.onConnectionStateChange(ConnectionListener.CONNECTION_LOST);
-                }
+                onConnectionLost(ConnectionListener.CONNECTION_LOST);
                 break;
             case ConnectionManager.UNKNOWN_HOST_EXCEPTION:
-                if (connListener != null) {
-                    onConnectionLost(ConnectionListener.UNKNOWN_HOST);
-                }
+                onConnectionLost(ConnectionListener.UNKNOWN_HOST);
                 break;
             case ConnectionManager.AUTHENTIFICATION_PROBLEM:
                 if (connListener != null) {
@@ -367,7 +362,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 break;
             case HttpURLConnection.HTTP_NOT_FOUND:
                 onConnectionLost(ConnectionListener.HOST_NOT_FOUND);
-                connectionEstablished = false;
                 break;
         }
         return connectionEstablished;
@@ -485,6 +479,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         if (connListener != null) {
             connListener.onConnectionStateChange(ConnectionListener.CONNECTION_LOST, reason);
         }
+        connectionEstablished = false;
     }
 
     /**
@@ -494,6 +489,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         if (connListener != null) {
             connListener.onConnectionStateChange(ConnectionListener.CONNECTION_RESUMED);
         }
+        connectionEstablished = true;
     }
 
     @Override

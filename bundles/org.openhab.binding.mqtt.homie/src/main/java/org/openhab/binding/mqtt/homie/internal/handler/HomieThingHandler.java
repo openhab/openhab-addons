@@ -142,6 +142,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         }
         delayedProcessing.join();
         device.stop();
+        super.stop();
     }
 
     @Override

@@ -23,9 +23,9 @@ import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
-import org.apache.commons.net.util.Base64;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
@@ -321,7 +321,7 @@ public class RemoteControllerLegacy extends RemoteController {
     }
 
     private void writeBase64String(Writer writer, String str) throws IOException {
-        String tmp = new String(Base64.encodeBase64(str.getBytes()));
+        String tmp = Base64.getEncoder().encodeToString(str.getBytes());
         writeString(writer, tmp);
     }
 

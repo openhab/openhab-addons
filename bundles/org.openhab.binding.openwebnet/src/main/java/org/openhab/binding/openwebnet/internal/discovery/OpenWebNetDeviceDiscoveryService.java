@@ -173,7 +173,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return bridgeHandler;
     }
 }

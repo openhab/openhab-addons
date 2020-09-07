@@ -14,6 +14,8 @@ package org.openhab.binding.lcn.internal.common;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -31,6 +33,10 @@ public final class LcnDefs {
     public static final int THRESHOLD_REGISTER_COUNT = 4;
     /** Number of key tables of an LCN module. */
     public static final int KEY_TABLE_COUNT = 4;
+    /** Number of key tables of an LCN module before firmware 0C030C0. */
+    public static final int KEY_TABLE_COUNT_UNTIL_0C030C0 = 3;
+    /** Number of keys per table of an LCN module */
+    public static final int KEY_COUNT = 8;
     /** Number of thresholds before LCN module firmware version 2013 */
     public static final int THRESHOLD_COUNT_BEFORE_2013 = 5;
     /**
@@ -114,10 +120,25 @@ public final class LcnDefs {
 
     /** Command types used when sending LCN keys. */
     public enum SendKeyCommand {
-        HIT,
-        MAKE,
-        BREAK,
-        DONTSEND
+        DONTSEND(0),
+        HIT(1),
+        MAKE(2),
+        BREAK(3);
+
+        private int id;
+
+        SendKeyCommand(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public static SendKeyCommand get(int id) {
+            return Arrays.stream(values()).filter(v -> v.getId() == id).findAny()
+                    .orElseThrow(NoSuchElementException::new);
+        }
     }
 
     /** Key-lock modifiers used in LCN commands. */

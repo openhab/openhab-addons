@@ -128,5 +128,4 @@ public class SmartherNotificationServlet extends HttpServlet {
             logger.warn("C2C notification {}: not applied: {}", notification.getId(), e.getMessage());
         }
     }
-
 }

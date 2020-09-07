@@ -31,6 +31,7 @@
 			<channel id="commands" typeId="commands"/>
 			<channel id="fan" typeId="fan"/>
 			<channel id="vacuum" typeId="vacuum"/>
+			<channel id="segment" typeId="segment"/>
 		</channels>
 	</channel-group-type>
 
@@ -151,6 +152,34 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- Dynamic Status Channels -->
+	<channel-type id="water_box_mode">
+		<item-type>Number</item-type>
+		<label>Water Box Mode</label>
+		<state min="200" max="204" step="1" pattern="%.0f%%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="water_box_status">
+		<item-type>Switch</item-type>
+		<label>Water Box State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="water_box_carriage_status">
+		<item-type>Switch</item-type>
+		<label>Water Box Carriage State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="lock_status">
+		<item-type>Switch</item-type>
+		<label>Lock Status</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="mop_forbidden_enable">
+		<item-type>Switch</item-type>
+		<label>Mop Forbidden</label>
+		<state readOnly="true"/>
+		<config-description-ref uri="channel-type:miio:dynamic-channel-config"/>
+	</channel-type>
+
 	<!-- Consumables channels -->
 	<channel-type id="main_brush_percent">
 		<item-type>Number</item-type>
@@ -230,6 +259,11 @@
 		<item-type>Switch</item-type>
 		<label>Vacuum On/Off</label>
 	</channel-type>
+	<channel-type id="segment" advanced="true">
+		<item-type>String</item-type>
+		<label>Vacuum Room [room#]</label>
+	</channel-type>
+
 	<channel-type id="consumable_reset">
 		<item-type>String</item-type>
 		<label>Reset Consumable</label>

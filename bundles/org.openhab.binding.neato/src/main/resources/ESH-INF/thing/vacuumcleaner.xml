@@ -148,10 +148,11 @@
 	<channel-type id="command">
 		<item-type>String</item-type>
 		<label>Send Command</label>
-		<description>Send Commands to Vacuum Cleaner. (clean, pause, resume, stop, dock)</description>
+		<description>Send Commands to Vacuum Cleaner. (clean with map, clean, pause, resume, stop, dock)</description>
 		<state readOnly="false" pattern="%s">
 			<options>
 				<option value="clean">Clean</option>
+				<option value="cleanWithMap">Clean with Map</option>
 				<option value="pause">Pause</option>
 				<option value="resume">Resume</option>
 				<option value="stop">Stop</option>

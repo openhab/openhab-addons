@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Battery voltage Channel Type -->
+	<channel-type id="Ubat">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Battery current Channel Type -->
+	<channel-type id="Ibat">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Battery Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

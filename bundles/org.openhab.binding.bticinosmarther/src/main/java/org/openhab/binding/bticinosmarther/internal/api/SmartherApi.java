@@ -41,6 +41,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Chronothermostat;
+import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Module;
 import org.openhab.binding.bticinosmarther.internal.api.dto.ModuleStatus;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Plant;
@@ -48,7 +49,6 @@ import org.openhab.binding.bticinosmarther.internal.api.dto.Plants;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Program;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Subscription;
 import org.openhab.binding.bticinosmarther.internal.api.dto.Topology;
-import org.openhab.binding.bticinosmarther.internal.api.dto.Enums.MeasureUnit;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherAuthorizationException;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherGatewayException;
 import org.openhab.binding.bticinosmarther.internal.api.exception.SmartherTokenExpiredException;
@@ -501,5 +501,4 @@ public class SmartherApi {
             }
         }
     }
-
 }

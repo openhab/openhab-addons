@@ -32,7 +32,7 @@
 
 	<thing-type id="shellyvintage">
 		<label>Shelly Vintage (SHVIN-1)</label>
-		<description>Shelly Vintage</description>
+		<description>Shelly Vintage Light Bulb</description>
 		<channel-groups>
 			<channel-group id="control" typeId="duoControl"/>
 			<channel-group id="white" typeId="whiteSettingsSimple"/>

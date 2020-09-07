@@ -59,5 +59,4 @@ public class Subscription {
     public String toString() {
         return String.format("plantId=%s, id=%s, endpoint=%s", plantId, subscriptionId, endpointUrl);
     }
-
 }

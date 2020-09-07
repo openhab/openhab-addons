@@ -311,5 +311,4 @@ public class ModuleSettings {
                 "plantId=%s, moduleId=%s, mode=%s, setPointTemperature=%s, program=%s, boostTime=%s, endDate=%s, endHour=%s, endMinute=%s",
                 plantId, moduleId, mode, setPointTemperature, program, boostTime, endDate, endHour, endMinute);
     }
-
 }

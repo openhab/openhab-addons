@@ -155,8 +155,16 @@ public class DSMRSerialConnector extends DSMRBaseConnector implements SerialPort
             serialPort.notifyOnOverrunError(true);
             serialPort.notifyOnParityError(true);
 
-            serialPort.enableReceiveThreshold(SERIAL_TIMEOUT_MILLISECONDS);
-            serialPort.enableReceiveTimeout(SERIAL_TIMEOUT_MILLISECONDS);
+            try {
+                serialPort.enableReceiveThreshold(SERIAL_TIMEOUT_MILLISECONDS);
+            } catch (UnsupportedCommOperationException e) {
+                logger.debug("Enable receive threshold is unsupported");
+            }
+            try {
+                serialPort.enableReceiveTimeout(SERIAL_TIMEOUT_MILLISECONDS);
+            } catch (UnsupportedCommOperationException e) {
+                logger.debug("Enable receive timeout is unsupported");
+            }
             // The binding is ready, let the meter know we want to receive values
             serialPort.setRTS(true);
             if (!serialPortReference.compareAndSet(oldSerialPort, serialPort)) {

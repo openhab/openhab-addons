@@ -137,5 +137,4 @@ public class VigiCruesHandler extends BaseThingHandler {
             updateState(channelId, new DateTimeType(localDateTime));
         }
     }
-
 }

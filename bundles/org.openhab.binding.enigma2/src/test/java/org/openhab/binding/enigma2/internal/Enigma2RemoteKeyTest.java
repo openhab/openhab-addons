@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.enigma2.internal;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
 
 /**
  * The {@link Enigma2RemoteKeyTest} class is responsible for testing {@link Enigma2RemoteKey}.

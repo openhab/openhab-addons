@@ -50,7 +50,6 @@ public class IhcAirlinkManagementServiceTest {
 
         requestProps.clear();
         requestProps.put("SOAPAction", "getDetectedDeviceList");
-
     }
 
     @Test

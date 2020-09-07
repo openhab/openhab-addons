@@ -98,6 +98,12 @@ public class XiaomiBridgeDiscoveryService extends AbstractDiscoveryService imple
         String ipAddress = jobject.get("ip").getAsString();
         int port = jobject.get("port").getAsInt();
 
+        // It is reported that the gateway is sometimes providing the serial number without the leading 0
+        // This is a workaround for a bug in the gateway
+        if (serialNumber.length() == 11) {
+            serialNumber = "0" + serialNumber;
+        }
+
         properties.put(SERIAL_NUMBER, serialNumber);
         properties.put(HOST, ipAddress);
         properties.put(PORT, port);

@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -78,7 +77,7 @@ public class PropertyUtils {
      * example rise.start, the methods getRise().getStart() are called.
      */
     public static @Nullable Object getPropertyValue(ChannelUID channelUID, Object instance) throws Exception {
-        String[] properties = StringUtils.split(channelUID.getId(), "#");
+        String[] properties = channelUID.getId().split("#");
         return getPropertyValue(instance, properties, 0);
     }
 

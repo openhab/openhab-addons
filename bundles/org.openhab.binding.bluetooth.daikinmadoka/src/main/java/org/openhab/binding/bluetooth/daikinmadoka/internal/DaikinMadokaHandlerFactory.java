@@ -62,5 +62,4 @@ public class DaikinMadokaHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

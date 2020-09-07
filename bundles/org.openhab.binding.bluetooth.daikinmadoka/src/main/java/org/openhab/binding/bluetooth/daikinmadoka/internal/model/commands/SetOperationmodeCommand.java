@@ -64,5 +64,4 @@ public class SetOperationmodeCommand extends BRC1HCommand {
     public OperationMode getOperationMode() {
         return operationMode;
     }
-
 }

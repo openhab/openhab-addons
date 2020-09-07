@@ -103,13 +103,18 @@ public class AstroActions implements ThingActions, IAstroActions {
             @ActionInput(name = "moment", label = "Moment", required = false, defaultValue = "START", description = "Either START or END") @Nullable String moment) {
         logger.debug("Sun action 'getEventTime' called");
         try {
-            if (handler instanceof SunHandler) {
-                SunHandler handler = (SunHandler) this.handler;
-                SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase());
-                return handler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
-                        moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
+            AstroThingHandler theHandler = this.handler;
+            if (theHandler != null) {
+                if (theHandler instanceof SunHandler) {
+                    SunHandler handler = (SunHandler) theHandler;
+                    SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase());
+                    return handler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
+                            moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
+                } else {
+                    logger.info("Astro Action service ThingHandler is not a SunHandler!");
+                }
             } else {
-                logger.info("Astro Action service ThingHandler is not a SunHandler!");
+                logger.info("Astro Action service ThingHandler is null!");
             }
         } catch (IllegalArgumentException e) {
             logger.info("Parameter {} is not a valid phase name", phaseName);
@@ -154,5 +159,4 @@ public class AstroActions implements ThingActions, IAstroActions {
         }
         throw new IllegalArgumentException("Actions is not an instance of AstroActions");
     }
-
 }
