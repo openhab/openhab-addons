@@ -161,7 +161,7 @@
 			<channel id="wind-direction" typeId="system.wind-direction"/>
 			<channel id="gust-speed" typeId="gust-speed"/>
 			<channel id="cloudiness" typeId="cloudiness"/>
-			<channel id="probability" typeId="probability"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>
 			<channel id="visibility" typeId="visibility"/>
@@ -197,7 +197,7 @@
 			<channel id="gust-speed" typeId="gust-speed"/>
 			<channel id="cloudiness" typeId="cloudiness"/>
 			<channel id="uvindex" typeId="forecasted-uvindex"/>
-			<channel id="probability" typeId="probability"/>
+			<channel id="precip-probability" typeId="precip-probability"/>
 			<channel id="rain" typeId="rain"/>
 			<channel id="snow" typeId="snow"/>
 			<channel id="visibility" typeId="visibility"/>
@@ -586,10 +586,10 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="probability">
+	<channel-type id="precip-probability">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Prbability</label>
-		<description>Probability of forecast.</description>
+		<label>Probability</label>
+		<description>Forecasted Precipitation Probability.</description>
 		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 

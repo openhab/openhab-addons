@@ -94,6 +94,21 @@
 			<label>Location of Weather</label>
 			<description>Location of weather in geographical coordinates (latitude/longitude/altitude).</description>
 		</parameter>
+		<parameter name="forecastDays" type="integer" min="0" max="8" step="1">
+			<label>Number of Days</label>
+			<description>Number of days for daily forecast, including the current day.</description>
+			<default>6</default>
+		</parameter>
+		<parameter name="forecastHours" type="integer" min="0" max="48" step="1">
+			<label>Number of Hours</label>
+			<description>Number of hours for hourly forecast.</description>
+			<default>24</default>
+		</parameter>
+		<parameter name="forecastMinutes" type="integer" min="0" max="60" step="1">
+			<label>Number of Minutes</label>
+			<description>Number of minutes for minutely precipitation forecast.</description>
+			<default>0</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:openweathermap:onecall-history">

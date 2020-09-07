@@ -264,6 +264,10 @@
 				<label>One Call API 6 Day Forecast</label>
 				<description>This is the weather forecast in six days from the one call API.</description>
 			</channel-group>
+			<channel-group id="forecastDay7" typeId="oneCallDaily">
+				<label>One Call API 7 Day Forecast</label>
+				<description>This is the weather forecast in seven days from the one call API.</description>
+			</channel-group>
 		</channel-groups>
 
 		<representation-property>location</representation-property>

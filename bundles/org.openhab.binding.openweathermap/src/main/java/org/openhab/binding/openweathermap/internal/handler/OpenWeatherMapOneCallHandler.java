@@ -17,6 +17,8 @@ import static org.eclipse.smarthome.core.library.unit.SIUnits.*;
 import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.*;
 import static org.openhab.binding.openweathermap.internal.OpenWeatherMapBindingConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,8 +27,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.*;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapOnecallConfiguration;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
@@ -59,14 +63,117 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     private @Nullable OpenWeatherMapOneCallAPIData weatherData;
 
+    private int forecastMinutes = 0;
+    private int forecastHours = 0;
+    private int forecastDays = 0;
+
+    private boolean initialized = false;
+
     public OpenWeatherMapOneCallHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
     }
 
     @Override
     public void initialize() {
+        initialized = false;
         super.initialize();
         logger.debug("Initialize OpenWeatherMapOneCallHandler handler '{}'.", getThing().getUID());
+        OpenWeatherMapOnecallConfiguration config = getConfigAs(OpenWeatherMapOnecallConfiguration.class);
+
+        boolean configValid = true;
+        int newForecastMinutes = config.forecastMinutes;
+        if (newForecastMinutes < 0 || newForecastMinutes > 60) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-not-supported-onecall-number-of-minutes");
+            configValid = false;
+        }
+        int newForecastHours = config.forecastHours;
+        if (newForecastHours < 0 || newForecastHours > 48) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-not-supported-onecall-number-of-hours");
+            configValid = false;
+        }
+        int newForecastDays = config.forecastDays;
+        if (newForecastDays < 0 || newForecastDays > 8) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-not-supported-onecall-number-of-days");
+            configValid = false;
+        }
+
+        if (configValid) {
+            logger.debug("Rebuilding thing '{}'.", getThing().getUID());
+            List<Channel> toBeAddedChannels = new ArrayList<>();
+            List<Channel> toBeRemovedChannels = new ArrayList<>();
+
+            if (forecastMinutes != newForecastMinutes) {
+                logger.debug("Rebuilding minutely forecast channel groups.");
+                if (forecastMinutes > newForecastMinutes) {
+                    for (int i = newForecastMinutes + 1; i <= forecastMinutes; i++) {
+                        toBeRemovedChannels.addAll(removeChannelsOfGroup(
+                                CHANNEL_GROUP_MINUTELY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i)));
+                    }
+                } else {
+                    for (int i = forecastMinutes + 1; i <= newForecastMinutes; i++) {
+                        toBeAddedChannels.addAll(createChannelsForGroup(
+                                CHANNEL_GROUP_MINUTELY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
+                                CHANNEL_GROUP_TYPE_MINUTELY_FORECAST));
+                    }
+                }
+                forecastMinutes = newForecastMinutes;
+            }
+            if (forecastHours != newForecastHours) {
+                logger.debug("Rebuilding hourly forecast channel groups.");
+                if (forecastHours > newForecastHours) {
+                    for (int i = newForecastHours + 1; i <= forecastHours; i++) {
+                        toBeRemovedChannels.addAll(removeChannelsOfGroup(
+                                CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i)));
+                    }
+                } else {
+                    for (int i = forecastHours + 1; i <= newForecastHours; i++) {
+                        toBeAddedChannels.addAll(createChannelsForGroup(
+                                CHANNEL_GROUP_HOURLY_FORECAST_PREFIX + ((i < 10) ? "0" : "") + Integer.toString(i),
+                                CHANNEL_GROUP_TYPE_HOURLY_FORECAST));
+                    }
+                }
+                forecastHours = newForecastHours;
+            }
+            if (forecastDays != newForecastDays) {
+                logger.debug("Rebuilding daily forecast channel groups.");
+                if (forecastDays > newForecastDays) {
+                    if (newForecastDays < 1) {
+                        toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TODAY));
+                    }
+                    if (newForecastDays < 2) {
+                        toBeRemovedChannels.addAll(removeChannelsOfGroup(CHANNEL_GROUP_FORECAST_TOMORROW));
+                    }
+                    for (int i = newForecastDays; i < forecastDays; ++i) {
+                        toBeRemovedChannels.addAll(
+                                removeChannelsOfGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i)));
+                    }
+                } else {
+                    if (forecastDays == 0 && newForecastDays > 0) {
+                        toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TODAY,
+                                CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                    }
+                    if (forecastDays <= 1 && newForecastDays > 1) {
+                        toBeAddedChannels.addAll(createChannelsForGroup(CHANNEL_GROUP_FORECAST_TOMORROW,
+                                CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                    }
+                    for (int i = (forecastDays < 2) ? 2 : forecastDays; i < newForecastDays; ++i) {
+                        toBeAddedChannels.addAll(
+                                createChannelsForGroup(CHANNEL_GROUP_DAILY_FORECAST_PREFIX + Integer.toString(i),
+                                        CHANNEL_GROUP_TYPE_DAILY_FORECAST));
+                    }
+                }
+                forecastDays = newForecastDays;
+            }
+            ThingBuilder builder = editThing().withoutChannels(toBeRemovedChannels);
+            for (Channel channel : toBeAddedChannels) {
+                builder.withChannel(channel);
+            }
+            updateThing(builder.build());
+        }
+        initialized = true;
     }
 
     @Override
@@ -74,7 +181,8 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
             throws OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
         logger.debug("Update weather and forecast data of thing '{}'.", getThing().getUID());
         try {
-            weatherData = connection.getOneCallAPIData(location);
+            weatherData = connection.getOneCallAPIData(location, forecastMinutes == 0, forecastHours == 0,
+                    forecastDays == 0);
             return true;
         } catch (JsonSyntaxException e) {
             logger.debug("JsonSyntaxException occurred during execution: {}", e.getLocalizedMessage(), e);
@@ -84,6 +192,10 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
+        // avoid null pointer exceptions and unnecessary work until initiolization is done.
+        if (!initialized) {
+            return;
+        }
         String channelGroupId = channelUID.getGroupId();
         logger.debug("OneCallHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
         switch (channelGroupId) {
@@ -227,6 +339,12 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
         OpenWeatherMapOneCallAPIData localWeatherData = weatherData;
+        if (forecastMinutes == 0) {
+            logger.warn(
+                    "Can't update channel group {} because forecastMinutes is set to '0'. Please adjust config accordingly",
+                    channelGroupId);
+            return;
+        }
         if (localWeatherData != null && localWeatherData.getMinutely().size() > count) {
             org.openhab.binding.openweathermap.internal.dto.onecall.Minutely forecastData = localWeatherData
                     .getMinutely().get(count);
@@ -260,6 +378,12 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
+        if (forecastHours == 0) {
+            logger.warn(
+                    "Can't update channel group {} because forecastHours is set to '0'. Please adjust config accordingly",
+                    channelGroupId);
+            return;
+        }
         OpenWeatherMapOneCallAPIData localWeatherData = weatherData;
         if (localWeatherData != null && localWeatherData.getHourly().size() > count) {
             org.openhab.binding.openweathermap.internal.dto.onecall.Hourly forecastData = localWeatherData.getHourly()
@@ -322,7 +446,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
                             .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
-                case CHANNEL_PROBABILITY:
+                case CHANNEL_PRECIP_PROBABILITY:
                     state = getDecimalTypeState(forecastData.getPop());
                     break;
                 case CHANNEL_RAIN:
@@ -354,6 +478,12 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     private void updateDailyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
+        if (forecastDays == 0) {
+            logger.warn(
+                    "Can't update channel group {} because forecastDays is set to '0'. Please adjust config accordingly",
+                    channelGroupId);
+            return;
+        }
         @Nullable
         OpenWeatherMapOneCallAPIData localWeatherData = weatherData;
         if (localWeatherData != null && localWeatherData.getDaily().size() > count) {
@@ -483,7 +613,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                     State tempstate = new QuantityType<>(localWeatherData.getCurrent().getVisibility(), METRE)
                             .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
-                case CHANNEL_PROBABILITY:
+                case CHANNEL_PRECIP_PROBABILITY:
                     state = getDecimalTypeState(forecastData.getPop());
                     break;
                 case CHANNEL_RAIN:

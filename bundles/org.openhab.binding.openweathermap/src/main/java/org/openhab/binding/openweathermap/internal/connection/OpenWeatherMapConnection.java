@@ -72,6 +72,7 @@ public class OpenWeatherMapConnection {
     private static final String PARAM_LANG = "lang";
     private static final String PARAM_FORECAST_CNT = "cnt";
     private static final String PARAM_HISTORY_DATE = "dt";
+    private static final String PARAM_EXCLUDE = "exclude";
 
     // Current weather data (see https://openweathermap.org/current)
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
@@ -252,12 +253,25 @@ public class OpenWeatherMapConnection {
      * @throws OpenWeatherMapCommunicationException
      * @throws OpenWeatherMapConfigurationException
      */
-    public synchronized @Nullable OpenWeatherMapOneCallAPIData getOneCallAPIData(@Nullable PointType location)
+    public synchronized @Nullable OpenWeatherMapOneCallAPIData getOneCallAPIData(@Nullable PointType location,
+            boolean excludeMinutely, boolean excludeHourly, boolean excludeDaily)
             throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
-        return gson.fromJson(
-                getResponseFromCache(
-                        buildURL(ONECALL_URL, getRequestParams(handler.getOpenWeatherMapAPIConfig(), location))),
-                OpenWeatherMapOneCallAPIData.class);
+        Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
+        StringBuilder exclude = new StringBuilder("");
+        if (excludeMinutely) {
+            exclude.append("minutely");
+        }
+        if (excludeHourly) {
+            exclude.append(exclude.length() > 0 ? "," : "").append("hourly");
+        }
+        if (excludeDaily) {
+            exclude.append(exclude.length() > 0 ? "," : "").append("daily");
+        }
+        logger.debug("Exclude: '{}'", exclude);
+        if (exclude.length() > 0) {
+            params.put(PARAM_EXCLUDE, exclude.toString());
+        }
+        return gson.fromJson(getResponseFromCache(buildURL(ONECALL_URL, params)), OpenWeatherMapOneCallAPIData.class);
     }
 
     /**

@@ -60,6 +60,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     // the relative day in history.
     private int day = 0;
+    private boolean initialized = false;
 
     public OpenWeatherMapOneCallHistoryHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
         super(thing, timeZoneProvider);
@@ -67,6 +68,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     @Override
     public void initialize() {
+        initialized = false;
         super.initialize();
         OpenWeatherMapOnecallHistoryConfiguration config = getConfigAs(OpenWeatherMapOnecallHistoryConfiguration.class);
         if (config.historyDay <= 0) {
@@ -84,6 +86,7 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
         day = config.historyDay;
         logger.debug("Initialize OpenWeatherMapOneCallHistoryHandler handler '{}' with historyDay {}.",
                 getThing().getUID(), day);
+        initialized = true;
     }
 
     @Override
@@ -101,6 +104,10 @@ public class OpenWeatherMapOneCallHistoryHandler extends AbstractOpenWeatherMapH
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
+        // avoid null pointer exceptions and unnecessary work until initiolization is done.
+        if (!initialized) {
+            return;
+        }
         String channelGroupId = channelUID.getGroupId();
         switch (channelGroupId) {
             case CHANNEL_GROUP_ONECALL_HISTORY:
