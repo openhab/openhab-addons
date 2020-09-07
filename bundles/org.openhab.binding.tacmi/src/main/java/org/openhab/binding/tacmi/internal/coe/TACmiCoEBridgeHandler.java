@@ -32,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.tacmi.internal.TACmiBindingConstants;
 import org.openhab.binding.tacmi.internal.message.AnalogMessage;
 import org.openhab.binding.tacmi.internal.message.DigitalMessage;
 import org.openhab.binding.tacmi.internal.message.Message;
@@ -168,8 +167,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        ReceiveThread reciveThreadNN = new ReceiveThread(
-                "OH-" + TACmiBindingConstants.BINDING_ID + "-" + getThing().getUID().getAsString());
+        ReceiveThread reciveThreadNN = new ReceiveThread("OH-binding-" + getThing().getUID().getAsString());
         reciveThreadNN.setDaemon(true);
         reciveThreadNN.start();
         this.receiveThread = reciveThreadNN;

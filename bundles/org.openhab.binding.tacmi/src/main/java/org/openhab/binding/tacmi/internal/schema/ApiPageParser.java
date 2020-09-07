@@ -418,12 +418,14 @@ public class ApiPageParser extends AbstractSimpleMarkupHandler {
                     URI uri = this.taCmiSchemaHandler.buildUri("INCLUDE/changerx2.cgi?sadrx2=" + address);
                     final ChangerX2Parser pp = this.taCmiSchemaHandler.parsePage(uri, new ChangerX2Parser(shortName));
                     cx2e = pp.getParsedEntry();
-                } catch (final ParseException | InterruptedException | TimeoutException | ExecutionException ex) {
-                    logger.warn("Error loading API Scheme: {} ", ex.getMessage(), ex);
+                } catch (final ParseException | RuntimeException ex) {
+                    logger.warn("Error parsing API Scheme: {} ", ex.getMessage(), ex);
+                } catch (final TimeoutException | InterruptedException | ExecutionException ex) {
+                    logger.warn("Error loading API Scheme: {} ", ex.getMessage());
                 }
             }
             if (channel == null) {
-                logger.info("Creating / updating channel {} of type {} for '{}'", shortName, channelType, description);
+                logger.debug("Creating / updating channel {} of type {} for '{}'", shortName, channelType, description);
                 this.configChanged = true;
                 ChannelUID channelUID = new ChannelUID(this.taCmiSchemaHandler.getThing().getUID(), shortName);
                 ChannelBuilder channelBuilder = ChannelBuilder.create(channelUID, channelType);
