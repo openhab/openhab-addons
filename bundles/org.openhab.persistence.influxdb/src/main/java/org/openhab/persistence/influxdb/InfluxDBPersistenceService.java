@@ -220,7 +220,7 @@ public class InfluxDBPersistenceService implements QueryablePersistenceService {
             logger.trace(
                     "Filter: itemname: {}, ordering: {}, state: {},  operator: {}, getBeginDate: {}, getEndDate: {}, getPageSize: {}, getPageNumber: {}",
                     filter.getItemName(), filter.getOrdering().toString(), filter.getState(), filter.getOperator(),
-                    filter.getBeginDateZoned(), filter.getEndDateZoned(), filter.getPageSize(), filter.getPageNumber());
+                    filter.getBeginDate(), filter.getEndDate(), filter.getPageSize(), filter.getPageNumber());
 
             String query = RepositoryFactory.createQueryCreator(configuration).createQuery(filter,
                     configuration.getRetentionPolicy());

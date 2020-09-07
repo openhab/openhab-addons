@@ -188,11 +188,11 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         boolean hasEndDate = false;
         String queryString = "SELECT n FROM " + JpaPersistentItem.class.getSimpleName()
                 + " n WHERE n.realName = :itemName";
-        if (filter.getBeginDateZoned() != null) {
+        if (filter.getBeginDate() != null) {
             queryString += " AND n.timestamp >= :beginDate";
             hasBeginDate = true;
         }
-        if (filter.getEndDateZoned() != null) {
+        if (filter.getEndDate() != null) {
             queryString += " AND n.timestamp <= :endDate";
             hasEndDate = true;
         }
@@ -209,10 +209,10 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             Query query = em.createQuery(queryString);
             query.setParameter("itemName", item.getName());
             if (hasBeginDate) {
-                query.setParameter("beginDate", Date.from(filter.getBeginDateZoned().toInstant()));
+                query.setParameter("beginDate", Date.from(filter.getBeginDate().toInstant()));
             }
             if (hasEndDate) {
-                query.setParameter("endDate", Date.from(filter.getEndDateZoned().toInstant()));
+                query.setParameter("endDate", Date.from(filter.getEndDate().toInstant()));
             }
 
             query.setFirstResult(filter.getPageNumber() * filter.getPageSize());

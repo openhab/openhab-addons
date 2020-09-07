@@ -197,11 +197,11 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         if (db != null) {
             ConsolFun consolidationFunction = getConsolidationFunction(db);
             long start = 0L;
-            long end = filter.getEndDateZoned() == null ? System.currentTimeMillis() / 1000
-                    : filter.getEndDateZoned().toInstant().getEpochSecond();
+            long end = filter.getEndDate() == null ? System.currentTimeMillis() / 1000
+                    : filter.getEndDate().toInstant().getEpochSecond();
 
             try {
-                if (filter.getBeginDateZoned() == null) {
+                if (filter.getBeginDate() == null) {
                     // as rrd goes back for years and gets more and more
                     // inaccurate, we only support descending order
                     // and a single return value
@@ -210,7 +210,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                     // query, which we want to support
                     if (filter.getOrdering() == Ordering.DESCENDING && filter.getPageSize() == 1
                             && filter.getPageNumber() == 0) {
-                        if (filter.getEndDateZoned() == null) {
+                        if (filter.getEndDate() == null) {
                             // we are asked only for the most recent value!
                             double lastValue = db.getLastDatasourceValue(DATASOURCE_STATE);
                             if (!Double.isNaN(lastValue)) {
@@ -230,7 +230,7 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
                                 + "unless order is descending and a single value is requested");
                     }
                 } else {
-                    start = filter.getBeginDateZoned().toInstant().getEpochSecond();
+                    start = filter.getBeginDate().toInstant().getEpochSecond();
                 }
                 FetchRequest request = db.createFetchRequest(consolidationFunction, start, end, 1);
 
