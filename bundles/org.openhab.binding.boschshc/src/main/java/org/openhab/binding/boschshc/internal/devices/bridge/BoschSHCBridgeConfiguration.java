@@ -12,20 +12,23 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BoschSHCBridgeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Stefan Kästle - Initial contribution
  */
+@NonNullByDefault
 public class BoschSHCBridgeConfiguration {
 
     /**
      * IP address of the Bosch Smart Home Controller
      */
-    public String ipAddress;
+    public String ipAddress = "";
 
     /**
      * Password of the Bosch Smart Home Controller. Set during initialization via the Bosch app.
      */
-    public String password;
+    public String password = "";
 }
