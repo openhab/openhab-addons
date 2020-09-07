@@ -80,6 +80,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         // Read configuration
         this.config = getConfigAs(BoschSHCBridgeConfiguration.class);
 
+        if (this.config.ipAddress.isEmpty()) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address set");
+            return;
+        }
+
+        if (this.config.password.isEmpty()) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No system password set");
+            return;
+        }
+
         // Instantiate HttpClient with the SslContextFactory
         this.httpClient = new BoschHttpClient(config.ipAddress, config.password,
                 // prepare SSL key and certificates
