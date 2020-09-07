@@ -166,19 +166,23 @@ public class BoschSslUtil {
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
 
         logger.debug("Adding Issuing CA to keystore");
-        BufferedInputStream streamIssuingCA = new BufferedInputStream(
-                BoschSslUtil.class.getClassLoader().getResourceAsStream("Smart Home Controller Issuing CA.pem"));
-        Certificate certIssueingCA = cf.generateCertificate(streamIssuingCA);
-        keyStore.setCertificateEntry("Smart Home Controller Issuing CA", certIssueingCA);
+        try (BufferedInputStream streamIssuingCA = new BufferedInputStream(
+                BoschSslUtil.class.getClassLoader().getResourceAsStream("Smart Home Controller Issuing CA.pem"))) {
+            Certificate certIssueingCA = cf.generateCertificate(streamIssuingCA);
+            keyStore.setCertificateEntry("Smart Home Controller Issuing CA", certIssueingCA);
+        }
 
         logger.debug("Adding root CA to keystore");
-        BufferedInputStream streamRootCa = new BufferedInputStream(BoschSslUtil.class.getClassLoader()
-                .getResourceAsStream("Smart Home Controller Productive Root CA.pem"));
-        Certificate certRooCA = cf.generateCertificate(streamRootCa);
-        keyStore.setCertificateEntry("Smart Home Controller Productive Root CA", certRooCA);
+        try (BufferedInputStream streamRootCa = new BufferedInputStream(BoschSslUtil.class.getClassLoader()
+                .getResourceAsStream("Smart Home Controller Productive Root CA.pem"))) {
+            Certificate certRooCA = cf.generateCertificate(streamRootCa);
+            keyStore.setCertificateEntry("Smart Home Controller Productive Root CA", certRooCA);
+        }
 
         logger.debug("Storing keystore to file {}", keystore);
-        keyStore.store(new FileOutputStream(new File(keystore)), keystorePassword.toCharArray());
+        try (FileOutputStream streamKeystore = new FileOutputStream(new File(keystore))) {
+            keyStore.store(streamKeystore, keystorePassword.toCharArray());
+        }
 
         return keyStore;
     }
