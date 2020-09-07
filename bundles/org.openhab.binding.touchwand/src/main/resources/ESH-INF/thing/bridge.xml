@@ -9,6 +9,6 @@
 		<properties>
 			<property name="vendor">TouchWand</property>
 		</properties>
-		<config-description-ref uri="bridge-type:touchwand:bridge" />
+		<config-description-ref uri="bridge-type:touchwand:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>
