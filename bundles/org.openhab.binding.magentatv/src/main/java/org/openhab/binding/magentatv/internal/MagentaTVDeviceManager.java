@@ -25,6 +25,11 @@ import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * The {@link MagentaTVDeviceManager} class manages the device table (shared between HandlerFactory and Thing handlers).
+ *
+ * @author Markus Michels - Initial contribution
+ */
 @NonNullByDefault
 @Component(service = MagentaTVDeviceManager.class, immediate = true)
 public class MagentaTVDeviceManager {
