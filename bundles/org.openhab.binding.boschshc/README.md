@@ -2,21 +2,95 @@
 
 Binding for the Bosch Smart Home Controller.
 
+- [BoschSHC Binding](#boschshc-binding)
+  - [Supported Things](#supported-things)
+    - [Bosch In-Wall switches & Bosch Smart Plugs](#bosch-in-wall-switches--bosch-smart-plugs)
+    - [Bosch TwinGuard smoke detector](#bosch-twinguard-smoke-detector)
+    - [Bosch Window/Door contacts](#bosch-windowdoor-contacts)
+    - [Bosch Motion Detector](#bosch-motion-detector)
+    - [Bosch Shutter Control in-wall](#bosch-shutter-control-in-wall)
+    - [Bosch Thermostat](#bosch-thermostat)
+    - [Bosch Climate Control](#bosch-climate-control)
+  - [Limitations](#limitations)
+  - [Discovery](#discovery)
+  - [Binding Configuration](#binding-configuration)
+  - [Getting the device IDs](#getting-the-device-ids)
+  - [Thing Configuration](#thing-configuration)
+  - [Item Configuration](#item-configuration)
+
 ## Supported Things
 
- - Bosch In-Wall switches
- - Bosch Smart Plugs (use "in-wall-switch" thing too).
- - Bosch TwinGuard smoke detector
- - Bosch Window/Door contacts
- - Bosch Motion Detector
- - Bosch Shutter Control in-wall
- - Bosch Thermostat
- - Bosch Climate Control
+### Bosch In-Wall switches & Bosch Smart Plugs
+
+**Thing Type ID**: `in-wall-switch`
+
+| Channel Type ID    | Item Type | Description                                  |
+| ------------------ | --------- | -------------------------------------------- |
+| power-switch       | Switch    | Current state of the switch.                 |
+| power-consumption  | Number    | Current power consumption (W) of the device. |
+| energy-consumption | Number    | Energy consumption of the device.            |
+
+### Bosch TwinGuard smoke detector
+
+**Thing Type ID**: `twinguard`
+
+| Channel Type ID    | Item Type          | Description                                   |
+| ------------------ | ------------------ | --------------------------------------------- |
+| temperature        | Number:Temperature | Current measured temperature.                 |
+| temperature-rating | String             | Rating of the currently measured temperature. |
+| humidity           | Number             | Current measured humidity.                    |
+| humidity-rating    | String             | Rating of current measured humidity.          |
+| purity             | String             | Purity of the air.                            |
+| purity-rating      | String             | Rating of current measured purity.            |
+| air-description    | String             | Overall description of the air quality.       |
+| combined-rating    | String             | Combined rating of the air quality.           |
+
+### Bosch Window/Door contacts
+
+**Thing Type ID**: `window-contact`
+
+| Channel Type ID | Item Type | Description                  |
+| --------------- | --------- | ---------------------------- |
+| contact         | Contact   | Contact state of the device. |
+
+### Bosch Motion Detector
+
+**Thing Type ID**: `motion-detector`
+
+| Channel Type ID | Item Type | Description                    |
+| --------------- | --------- | ------------------------------ |
+| latest-motion   | DateTime  | The date of the latest motion. |
+
+### Bosch Shutter Control in-wall
+
+**Thing Type ID**: `shutter-control`
+
+| Channel Type ID | Item Type     | Description                              |
+| --------------- | ------------- | ---------------------------------------- |
+| level           | Rollershutter | Current open ratio (0 to 100, Step 0.5). |
+
+### Bosch Thermostat
+
+**Thing Type ID**: `thermostat`
+
+| Channel Type ID       | Item Type          | Description                                    |
+| --------------------- | ------------------ | ---------------------------------------------- |
+| temperature           | Number:Temperature | Current measured temperature.                  |
+| valve-tappet-position | Number             | Current open ratio of valve tappet (0 to 100). |
+
+### Bosch Climate Control
+
+**Thing Type ID**: `climate-control`
+
+| Channel Type ID      | Item Type          | Description                   |
+| -------------------- | ------------------ | ----------------------------- |
+| temperature          | Number:Temperature | Current measured temperature. |
+| setpoint-temperature | Number:Temperature | Desired temperature.          |
 
 ## Limitations
 
- - Discovery of Things
- - Discovery of Bridge
+- Discovery of Things
+- Discovery of Bridge
 
 ## Discovery
 
@@ -24,15 +98,15 @@ Configuration via configuration files or UI (see below).
 
 ## Binding Configuration
 
-You need to provide the IP address and the system password of your Bosch Smart Home Controller. 
-The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI. 
-The system password is set by you during your initial registration steps in the _Bosch Smart Home App_. 
+You need to provide the IP address and the system password of your Bosch Smart Home Controller.
+The IP address of the controller is visible in the Bosch Smart Home Mobile App (More -> System -> Smart Home Controller) or in your network router UI.
+The system password is set by you during your initial registration steps in the _Bosch Smart Home App_.
 
-A keystore file with a self signed certificate is created automatically. 
-This certificate is used for pairing between the Bridge and the Bosch SHC. 
+A keystore file with a self signed certificate is created automatically.
+This certificate is used for pairing between the Bridge and the Bosch SHC.
 
 *Press and hold the Bosch Smart Home Controller Bridge button until the LED starts blinking after you save your settings for pairing*.
-        
+
 ## Getting the device IDs
 
 Bosch IDs for found devices are displayed in the openHAB log on bootup (`OPENHAB_FOLDER/userdata/logs/openhab.log`)
