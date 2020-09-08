@@ -14,7 +14,11 @@
 package org.openhab.binding.ipcamera.internal;
 
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URLEncoder;
+import java.util.Enumeration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -79,5 +83,25 @@ public class Helper {
 
         }
         return processed;
+    }
+
+    public static String getLocalIpAddress() {
+        String ipAddress = "";
+        try {
+            for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
+                    .hasMoreElements();) {
+                NetworkInterface networkInterface = enumNetworks.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
+                        .hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().toString().length() < 18
+                            && inetAddress.isSiteLocalAddress()) {
+                        ipAddress = inetAddress.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+        }
+        return ipAddress;
     }
 }

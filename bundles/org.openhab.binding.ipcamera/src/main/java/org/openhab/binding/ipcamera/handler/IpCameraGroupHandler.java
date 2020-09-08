@@ -18,14 +18,10 @@ import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -43,6 +39,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.ipcamera.internal.GroupTracker;
+import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.StreamServerGroupHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +74,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> pollCameraGroupJob = null;
     private @Nullable ServerBootstrap serverBootstrap;
     private @Nullable ChannelFuture serverFuture = null;
-    public String hostIp = "0.0.0.0";
+    public String hostIp;
     boolean motionChangesOrder = true;
     public int serverPort = 0;
     public String playList = "";
@@ -87,10 +85,17 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     BigDecimal numberOfFiles = new BigDecimal(1);
     int mediaSequence = 1;
     int discontinuitySequence = 0;
+    GroupTracker groupTracker;
 
-    public IpCameraGroupHandler(Thing thing) {
+    public IpCameraGroupHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
         super(thing);
         config = thing.getConfiguration();
+        if (openhabIpAddress != null) {
+            hostIp = openhabIpAddress;
+        } else {
+            hostIp = Helper.getLocalIpAddress();
+        }
+        this.groupTracker = groupTracker;
     }
 
     public String getWhiteList() {
@@ -186,27 +191,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         return this;
     }
 
-    public String getLocalIpAddress() {
-        String ipAddress = "";
-        try {
-            for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
-                    .hasMoreElements();) {
-                NetworkInterface networkInterface = enumNetworks.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
-                        .hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().toString().length() < 18
-                            && inetAddress.isSiteLocalAddress()) {
-                        ipAddress = inetAddress.getHostAddress().toString();
-                        logger.debug("Possible NIC/IP match found:{}", ipAddress);
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-        }
-        return ipAddress;
-    }
-
     @SuppressWarnings("null")
     public void startStreamServer(boolean start) {
         if (!start) {
@@ -214,7 +198,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             serverBootstrap = null;
         } else {
             if (serverBootstrap == null) {
-                hostIp = getLocalIpAddress();
                 try {
                     serversLoopGroup = new NioEventLoopGroup();
                     serverBootstrap = new ServerBootstrap();
@@ -252,8 +235,8 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     // @SuppressWarnings("null")
     void addCamera(String UniqueID) {
-        if (IpCameraHandler.listOfOnlineCameraUID.contains(UniqueID)) {
-            for (IpCameraHandler handler : IpCameraHandler.listOfOnlineCameraHandlers) {
+        if (groupTracker.listOfOnlineCameraUID.contains(UniqueID)) {
+            for (IpCameraHandler handler : groupTracker.listOfOnlineCameraHandlers) {
                 if (handler.getThing().getUID().getId().equals(UniqueID)) {
                     if (!cameraOrder.contains(handler)) {
                         logger.info("Adding {} to a camera group.", UniqueID);
@@ -292,7 +275,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     }
 
     boolean addIfOnline(String UniqueID) {
-        if (IpCameraHandler.listOfOnlineCameraUID.contains(UniqueID)) {
+        if (groupTracker.listOfOnlineCameraUID.contains(UniqueID)) {
             addCamera(UniqueID);
             return true;
         }
@@ -309,7 +292,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
             addIfOnline(config.get(CONFIG_FORTH_CAM).toString());
         }
         // Cameras can now send events of when they go on and offline.
-        IpCameraHandler.listOfGroupHandlers.add(this);
+        groupTracker.listOfGroupHandlers.add(this);
     }
 
     int checkForMotion(int nextCamerasIndex) {
@@ -387,7 +370,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         startStreamServer(false);
-        IpCameraHandler.listOfGroupHandlers.remove(this);
+        groupTracker.listOfGroupHandlers.remove(this);
         if (pollCameraGroupJob != null) {
             pollCameraGroupJob.cancel(true);
             pollCameraGroupJob = null;

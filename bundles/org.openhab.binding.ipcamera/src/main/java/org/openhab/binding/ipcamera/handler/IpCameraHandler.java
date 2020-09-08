@@ -21,15 +21,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -60,6 +56,7 @@ import org.openhab.binding.ipcamera.internal.DahuaHandler;
 import org.openhab.binding.ipcamera.internal.DoorBirdHandler;
 import org.openhab.binding.ipcamera.internal.Ffmpeg;
 import org.openhab.binding.ipcamera.internal.FoscamHandler;
+import org.openhab.binding.ipcamera.internal.GroupTracker;
 import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.HikvisionHandler;
 import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
@@ -120,13 +117,10 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 
 @NonNullByDefault
 public class IpCameraHandler extends BaseThingHandler {
-
-    public static ArrayList<IpCameraHandler> listOfOnlineCameraHandlers = new ArrayList<IpCameraHandler>(1);
-    public static ArrayList<IpCameraGroupHandler> listOfGroupHandlers = new ArrayList<IpCameraGroupHandler>(0);
-    public static ArrayList<String> listOfOnlineCameraUID = new ArrayList<String>(1);
     public final Logger logger = LoggerFactory.getLogger(getClass());
     private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(4);
     public Configuration config;
+    private GroupTracker groupTracker;
 
     // ChannelGroup is thread safe
     public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -169,7 +163,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private boolean updateImageChannel = false;
     private boolean updateAutoFps = false;
     private byte lowPriorityCounter = 0;
-    public String hostIp = "0.0.0.0";
+    public String hostIp;
     private String ffmpegOutputFolder = "";
     public ReentrantLock lock = new ReentrantLock();
     public List<ChannelTracking> channelTracker = new ArrayList<>(18);
@@ -423,9 +417,15 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     };
 
-    public IpCameraHandler(Thing thing) {
+    public IpCameraHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
         super(thing);
         config = thing.getConfiguration();
+        if (openhabIpAddress != null) {
+            hostIp = openhabIpAddress;
+        } else {
+            hostIp = Helper.getLocalIpAddress();
+        }
+        this.groupTracker = groupTracker;
     }
 
     private IpCameraHandler getHandle() {
@@ -687,27 +687,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    public String getLocalIpAddress() {
-        String ipAddress = "";
-        try {
-            for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
-                    .hasMoreElements();) {
-                NetworkInterface networkInterface = enumNetworks.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
-                        .hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().toString().length() < 18
-                            && inetAddress.isSiteLocalAddress()) {
-                        ipAddress = inetAddress.getHostAddress().toString();
-                        logger.debug("Possible NIC/IP match found:{}", ipAddress);
-                    }
-                }
-            }
-        } catch (SocketException ex) {
-        }
-        return ipAddress;
-    }
-
     @SuppressWarnings("null")
     public void startStreamServer(boolean start) {
 
@@ -716,7 +695,6 @@ public class IpCameraHandler extends BaseThingHandler {
             serverBootstrap = null;
         } else {
             if (serverBootstrap == null) {
-                hostIp = getLocalIpAddress();
                 try {
                     serversLoopGroup = new NioEventLoopGroup();
                     serverBootstrap = new ServerBootstrap();
@@ -1434,8 +1412,8 @@ public class IpCameraHandler extends BaseThingHandler {
     void bringCameraOnline() {
         isOnline = true;
         updateStatus(ThingStatus.ONLINE);
-        listOfOnlineCameraHandlers.add(this);
-        listOfOnlineCameraUID.add(getThing().getUID().getId());
+        groupTracker.listOfOnlineCameraHandlers.add(this);
+        groupTracker.listOfOnlineCameraUID.add(getThing().getUID().getId());
         if (cameraConnectionJob != null) {
             cameraConnectionJob.cancel(false);
         }
@@ -1456,8 +1434,8 @@ public class IpCameraHandler extends BaseThingHandler {
         } else {
             updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.OFF);
         }
-        if (!listOfGroupHandlers.isEmpty()) {
-            for (IpCameraGroupHandler handle : listOfGroupHandlers) {
+        if (!groupTracker.listOfGroupHandlers.isEmpty()) {
+            for (IpCameraGroupHandler handle : groupTracker.listOfGroupHandlers) {
                 handle.cameraOnline(getThing().getUID().getId());
             }
         }
@@ -1777,10 +1755,10 @@ public class IpCameraHandler extends BaseThingHandler {
         threadPool.shutdown();
         threadPool = Executors.newScheduledThreadPool(4);
 
-        listOfOnlineCameraHandlers.remove(this);
-        listOfOnlineCameraUID.remove(getThing().getUID().getId());
+        groupTracker.listOfOnlineCameraHandlers.remove(this);
+        groupTracker.listOfOnlineCameraUID.remove(getThing().getUID().getId());
         // inform all group handlers that this camera has gone offline
-        for (IpCameraGroupHandler handle : listOfGroupHandlers) {
+        for (IpCameraGroupHandler handle : groupTracker.listOfGroupHandlers) {
             handle.cameraOffline(this);
         }
         basicAuth = ""; // clear out stored password hash

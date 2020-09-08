@@ -17,6 +17,7 @@ import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -24,7 +25,9 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.ipcamera.handler.IpCameraGroupHandler;
 import org.openhab.binding.ipcamera.handler.IpCameraHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link IpCameraHandlerFactory} is responsible for creating things and thing
@@ -35,6 +38,13 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = ThingHandlerFactory.class, immediate = true, configurationPid = "binding.ipcamera")
 @NonNullByDefault
 public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
+    private final @Nullable String openhabIpAddress;
+    private final GroupTracker groupTracker = new GroupTracker();
+
+    @Activate
+    public IpCameraHandlerFactory(final @Reference NetworkAddressService networkAddressService) {
+        openhabIpAddress = networkAddressService.getPrimaryIpv4HostAddress();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,9 +59,9 @@ public class IpCameraHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IpCameraHandler(thing);
+            return new IpCameraHandler(thing, openhabIpAddress, groupTracker);
         } else if (GROUP_SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new IpCameraGroupHandler(thing);
+            return new IpCameraGroupHandler(thing, openhabIpAddress, groupTracker);
         }
         return null;
     }
