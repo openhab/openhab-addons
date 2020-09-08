@@ -102,7 +102,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                                 String debugMe = ipCameraGroupHandler.getPlayList();
                                 logger.debug("playlist is:{}", debugMe);
                                 sendString(ctx, debugMe, "application/x-mpegurl");
-                                ctx.close();
+                                // ctx.close();
                                 return;
                             } else {
                                 logger.warn(
@@ -115,7 +115,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                             break;
                         case "/ipcamera.jpg":
                             sendSnapshotImage(ctx, "image/jpg");
-                            ctx.close();
+                            // ctx.close();
                             return;
                         default:
                             if (httpRequest.uri().contains(".ts")) {
