@@ -23,9 +23,21 @@ Optionally, a refresh interval (in seconds) can be defined.
 ## Channels
 
 -   **powerIn** Purchased power &lsqb;W&rsqb;
+-   **powerIn** Purchased power L1&lsqb;W&rsqb;
+-   **powerIn** Purchased power L2&lsqb;W&rsqb;
+-   **powerIn** Purchased power L3&lsqb;W&rsqb;
 -   **powerOut** Grid feed-in power &lsqb;W&rsqb;
+-   **powerOut** Grid feed-in power L1&lsqb;W&rsqb;
+-   **powerOut** Grid feed-in power L2&lsqb;W&rsqb;
+-   **powerOut** Grid feed-in power L3&lsqb;W&rsqb;
 -   **energyIn** Purchased energy &lsqb;kWh&rsqb;
+-   **energyIn** Purchased energy L1&lsqb;kWh&rsqb;
+-   **energyIn** Purchased energy L2&lsqb;kWh&rsqb;
+-   **energyIn** Purchased energy L3&lsqb;kWh&rsqb;
 -   **energyOut** Grid feed-in energy &lsqb;kWh&rsqb;
+-   **energyOut** Grid feed-in energy L1&lsqb;kWh&rsqb;
+-   **energyOut** Grid feed-in energy L2&lsqb;kWh&rsqb;
+-   **energyOut** Grid feed-in energy L3&lsqb;kWh&rsqb;
 
 ## Full example
 
