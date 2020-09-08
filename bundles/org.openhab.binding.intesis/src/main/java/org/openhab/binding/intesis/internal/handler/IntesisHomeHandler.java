@@ -44,8 +44,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.StateDescription;
-import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 import org.openhab.binding.intesis.internal.IntesisConfiguration;
 import org.openhab.binding.intesis.internal.IntesisDynamicStateDescriptionProvider;
@@ -546,15 +544,9 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                     e.toString().substring(0, 1) + e.toString().substring(1).toLowerCase()))
                             .collect(Collectors.toList());
                     logger.trace("StateOptions : '{}'", stateOptions);
-                    updateStateDescription(thing.getChannel(channelId).getUID(), stateOptions);
+                    intesisStateDescriptionProvider.setStateOptions(thing.getChannel(channelId).getUID(), stateOptions);
                 }
             }
         }
-    }
-
-    private void updateStateDescription(ChannelUID channelUID, List<StateOption> stateOptionList) {
-        StateDescription stateDescription = StateDescriptionFragmentBuilder.create().withReadOnly(false)
-                .withOptions(stateOptionList).build().toStateDescription();
-        intesisStateDescriptionProvider.setDescription(channelUID, stateDescription);
     }
 }
