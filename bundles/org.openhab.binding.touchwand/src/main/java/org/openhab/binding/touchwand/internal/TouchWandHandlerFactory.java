@@ -82,5 +82,4 @@ public class TouchWandHandlerFactory extends BaseThingHandlerFactory {
     protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = null;
     }
-
 }

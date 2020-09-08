@@ -78,5 +78,4 @@ public class TouchWandBindingConstants {
 
     public static final String[] SUPPORTED_TOUCHWAND_TYPES = { TYPE_WALLCONTROLLER, TYPE_SWITCH, TYPE_SHUTTER,
             TYPE_DIMMER, TYPE_ALARMSENSOR };
-
 }

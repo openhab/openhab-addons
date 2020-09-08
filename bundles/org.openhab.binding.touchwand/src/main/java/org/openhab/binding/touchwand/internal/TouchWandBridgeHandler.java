@@ -155,5 +155,4 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
             updateListener.onItemStatusUpdate(unitData);
         }
     }
-
 }

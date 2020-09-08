@@ -35,5 +35,4 @@ public class CurrStatus {
     public void setCsc(Csc csc) {
         this.csc = csc;
     }
-
 }

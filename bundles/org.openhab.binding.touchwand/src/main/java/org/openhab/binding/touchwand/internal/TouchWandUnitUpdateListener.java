@@ -27,5 +27,4 @@ public interface TouchWandUnitUpdateListener {
     void onItemStatusUpdate(TouchWandUnitData unitData);
 
     String getId();
-
 }

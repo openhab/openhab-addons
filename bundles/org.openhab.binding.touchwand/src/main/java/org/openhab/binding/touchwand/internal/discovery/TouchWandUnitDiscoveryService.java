@@ -210,5 +210,4 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
         );
         // @formatter:on
     }
-
 }

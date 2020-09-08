@@ -138,5 +138,4 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
             }
         }
     }
-
 }

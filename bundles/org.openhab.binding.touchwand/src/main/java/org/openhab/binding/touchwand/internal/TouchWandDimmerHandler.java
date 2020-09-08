@@ -56,5 +56,4 @@ public class TouchWandDimmerHandler extends TouchWandBaseUnitHandler {
             logger.warn("updateTouchWandUnitState incompatible TouchWandUnitData instance");
         }
     }
-
 }

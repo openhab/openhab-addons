@@ -151,5 +151,4 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     public String getId() {
         return unitId;
     }
-
 }

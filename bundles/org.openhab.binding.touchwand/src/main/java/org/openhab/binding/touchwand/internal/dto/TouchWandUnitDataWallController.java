@@ -40,5 +40,4 @@ public class TouchWandUnitDataWallController extends TouchWandUnitData {
     public void setCurrStatus(CurrStatus currStatus) {
         this.currStatus = currStatus;
     }
-
 }

@@ -61,14 +61,11 @@ public class TouchWandUnitFromJson {
         }
 
         return touchWandUnit;
-
     }
 
     public static TouchWandUnitData parseResponse(String JsonUnit) {
         JsonParser jsonParser = new JsonParser();
         JsonObject unitObj = jsonParser.parse(JsonUnit).getAsJsonObject();
         return parseResponse(unitObj);
-
     }
-
 }
