@@ -41,9 +41,9 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class DahuaHandler extends ChannelDuplexHandler {
     IpCameraHandler ipCameraHandler;
-    String nvrChannel;
+    int nvrChannel;
 
-    public DahuaHandler(IpCameraHandler handler, String nvrChannel) {
+    public DahuaHandler(IpCameraHandler handler, int nvrChannel) {
         ipCameraHandler = handler;
         this.nvrChannel = nvrChannel;
     }

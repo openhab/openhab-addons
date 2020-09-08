@@ -148,7 +148,7 @@
 				<advanced>true</advanced>
 			</parameter-group>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -428,7 +428,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter-group>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -821,7 +821,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -1102,7 +1102,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -1398,7 +1398,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -1674,7 +1674,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -1976,7 +1976,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[
@@ -2265,7 +2265,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="updateImageWhen" type="integer" groupName="Image ch Settings" multiple="false">
+			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update the Image channel when:</label>
 				<description>
 <![CDATA[

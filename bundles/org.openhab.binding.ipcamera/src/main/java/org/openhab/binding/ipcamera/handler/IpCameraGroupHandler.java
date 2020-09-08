@@ -108,14 +108,14 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     public String getOutputFolder(int index) {
         IpCameraHandler handle = cameraOrder.get(index);
-        return (String) handle.config.get(CONFIG_FFMPEG_OUTPUT);
+        return handle.cameraConfig.getFfmpegOutput();
     }
 
     private String readCamerasPlaylist(int cameraIndex) {
         String camerasm3u8 = "";
         IpCameraHandler handle = cameraOrder.get(cameraIndex);
         try {
-            String file = handle.config.get(CONFIG_FFMPEG_OUTPUT).toString() + "ipcamera.m3u8";
+            String file = handle.cameraConfig.getFfmpegOutput() + "ipcamera.m3u8";
             camerasm3u8 = new String(Files.readAllBytes(Paths.get(file)));
         } catch (IOException e) {
             logger.warn("Error occured fetching a groupDisplay cameras m3u8 file :{}", e.getMessage());

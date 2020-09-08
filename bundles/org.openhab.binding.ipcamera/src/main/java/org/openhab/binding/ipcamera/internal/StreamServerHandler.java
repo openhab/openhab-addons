@@ -13,8 +13,6 @@
 
 package org.openhab.binding.ipcamera.internal;
 
-import static org.openhab.binding.ipcamera.IpCameraBindingConstants.CONFIG_FFMPEG_OUTPUT;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -238,7 +236,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void sendFile(ChannelHandlerContext ctx, String fileUri, String contentType) throws IOException {
-        File file = new File(ipCameraHandler.config.get(CONFIG_FFMPEG_OUTPUT).toString() + fileUri);
+        File file = new File(ipCameraHandler.cameraConfig.getFfmpegOutput() + fileUri);
         ChunkedFile chunkedFile = new ChunkedFile(file);
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);

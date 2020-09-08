@@ -54,10 +54,10 @@ import io.netty.util.ReferenceCountUtil;
 public class HikvisionHandler extends ChannelDuplexHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     IpCameraHandler ipCameraHandler;
-    String nvrChannel;
+    int nvrChannel;
     int lineCount, vmdCount, leftCount, takenCount, faceCount, pirCount, fieldCount = 0;
 
-    public HikvisionHandler(ThingHandler handler, String nvrChannel) {
+    public HikvisionHandler(ThingHandler handler, int nvrChannel) {
         ipCameraHandler = (IpCameraHandler) handler;
         this.nvrChannel = nvrChannel;
     }

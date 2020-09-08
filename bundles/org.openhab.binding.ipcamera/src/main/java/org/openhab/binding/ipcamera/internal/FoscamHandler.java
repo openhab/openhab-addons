@@ -185,11 +185,11 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
                 if ("ON".equals(command.toString())) {
-                    if (ipCameraHandler.config.get(CONFIG_AUDIO_URL_OVERRIDE) == null) {
+                    if (ipCameraHandler.cameraConfig.getCustomAudioAlarmUrl().isEmpty()) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setAudioAlarmConfig&isEnable=1&usr="
                                 + username + "&pwd=" + password);
                     } else {
-                        ipCameraHandler.sendHttpGET(ipCameraHandler.config.get(CONFIG_AUDIO_URL_OVERRIDE).toString());
+                        ipCameraHandler.sendHttpGET(ipCameraHandler.cameraConfig.getCustomAudioAlarmUrl());
                     }
                 } else {
                     ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setAudioAlarmConfig&isEnable=0&usr="
@@ -198,13 +198,13 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
                 if ("ON".equals(command.toString())) {
-                    if (ipCameraHandler.config.get(CONFIG_MOTION_URL_OVERRIDE) == null) {
+                    if (ipCameraHandler.cameraConfig.getCustomMotionAlarmUrl().isEmpty()) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&usr="
                                 + username + "&pwd=" + password);
                         ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig1&isEnable=1&usr="
                                 + username + "&pwd=" + password);
                     } else {
-                        ipCameraHandler.sendHttpGET(ipCameraHandler.config.get(CONFIG_MOTION_URL_OVERRIDE).toString());
+                        ipCameraHandler.sendHttpGET(ipCameraHandler.cameraConfig.getCustomMotionAlarmUrl());
                     }
                 } else {
                     ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=0&usr="
