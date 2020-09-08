@@ -59,7 +59,7 @@
 				<default>false</default>
 			</parameter>
 			<parameter name="absolute" type="boolean">
-				<label>Run in absolute setpoint mode</label>
+				<label>Run in Absolute Setpoint Mode</label>
 				<description>Optional Flag to run in absolute or temporary setpoint mode</description>
 				<default>false</default>
 			</parameter>
