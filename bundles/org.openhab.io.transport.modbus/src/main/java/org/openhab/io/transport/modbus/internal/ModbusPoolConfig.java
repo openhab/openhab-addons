@@ -66,6 +66,11 @@ public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig<ModbusSlaveCo
         // Evict idle connections every 10 seconds
         setEvictionPolicy(new ModbusSlaveConnectionEvictionPolicy());
         setTimeBetweenEvictionRunsMillis(10000);
+        // Let eviction re-create ready-to-use idle (=unconnected) connections
+        // This is to avoid occasional / rare deadlocks seen with pool 2.8.1 & 2.4.3 when
+        // borrow hangs (waiting indefinitely for idle object to appear in the pool)
+        // https://github.com/openhab/openhab-addons/issues/8460
+        setMinIdlePerKey(1);
     }
 
     @Override
