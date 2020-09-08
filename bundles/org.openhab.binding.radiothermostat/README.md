@@ -39,7 +39,7 @@ The thing has a few configuration parameters:
 | logRefresh      | Overrides the refresh interval of the run-time logs & humidity data. Optional, the default is 10 minutes.                                                                                                                                                                                |
 | isCT80          | Flag to enable additional features only available on the CT80 thermostat. Optional, the default is false.                                                                                                                                                                                |
 | disableLogs     | Disable retrieval of run-time logs from the thermostat. Optional, the default is false.                                                                                                                                                                                                  |
-| absolute        | Controls temporary or absolute mode. When false setpoint changes are temporary; the thermostat will return to its program after a time. When true setpoint changes are perminant; the thermostat will ignore its program maintaining the given setpoint. Optional, the default is false. |
+| absolute        | Controls temporary or absolute mode. When false setpoint changes are temporary; the thermostat will return to its program after a time. When true setpoint changes are permanent; the thermostat will ignore its program maintaining the given setpoint. Optional, the default is false. |
 
 ## Channels
 
