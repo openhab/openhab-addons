@@ -146,7 +146,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 ipCameraHandler.sendHttpGET(
                         "/cgi-bin/CGIProxy.fcgi?cmd=setInfraLedConfig&mode=1&usr=" + username + "&pwd=" + password);
                 ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
-                if ("0".equals(command.toString()) || "OFF".equals(command.toString())) {
+                if ("0".equals(command.toString()) || OnOffType.OFF.equals(command)) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/CGIProxy.fcgi?cmd=closeInfraLed&usr=" + username + "&pwd=" + password);
                 } else {
@@ -155,7 +155,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_AUTO_LED:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/CGIProxy.fcgi?cmd=setInfraLedConfig&mode=0&usr=" + username + "&pwd=" + password);
@@ -184,7 +184,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     if (ipCameraHandler.cameraConfig.getCustomAudioAlarmUrl().isEmpty()) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setAudioAlarmConfig&isEnable=1&usr="
                                 + username + "&pwd=" + password);
@@ -197,7 +197,7 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     if (ipCameraHandler.cameraConfig.getCustomMotionAlarmUrl().isEmpty()) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&usr="
                                 + username + "&pwd=" + password);
@@ -214,9 +214,9 @@ public class FoscamHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = true;
-                } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
                     ipCameraHandler.motionAlarmEnabled = false;
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {

@@ -404,14 +404,14 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_PIR_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>true</enabled>");
                 } else {
                     hikChangeSetting("/ISAPI/WLAlarm/PIR", "enabled", "<enabled>false</enabled>");
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     hikChangeSetting("/ISAPI/Smart/AudioDetection/channels/" + nvrChannel + "01", "enabled",
                             "<enabled>true</enabled>");
                 } else {
@@ -420,7 +420,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_LINE_CROSSING_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     hikChangeSetting("/ISAPI/Smart/LineDetection/" + nvrChannel + "01", "enabled",
                             "<enabled>true</enabled>");
                 } else {
@@ -429,7 +429,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     hikChangeSetting("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "01/motionDetection",
                             "enabled", "<enabled>true</enabled>");
                 } else {
@@ -438,7 +438,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_FIELD_DETECTION_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     hikChangeSetting("/ISAPI/Smart/FieldDetection/" + nvrChannel + "01", "enabled",
                             "<enabled>true</enabled>");
                 } else {
@@ -447,7 +447,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     hikSendXml("/ISAPI/System/IO/outputs/" + nvrChannel + "/trigger",
                             "<IOPortData version=\"1.0\" xmlns=\"http://www.hikvision.com/ver10/XMLSchema\">\r\n    <outputState>high</outputState>\r\n</IOPortData>\r\n");
                 } else {
@@ -456,9 +456,9 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = true;
-                } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
                     ipCameraHandler.motionAlarmEnabled = false;
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {

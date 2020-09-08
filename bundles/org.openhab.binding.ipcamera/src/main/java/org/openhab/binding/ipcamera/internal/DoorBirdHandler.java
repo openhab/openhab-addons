@@ -83,24 +83,24 @@ public class DoorBirdHandler extends ChannelDuplexHandler {
         } // end of "REFRESH"
         switch (channelUID.getId()) {
             case CHANNEL_ACTIVATE_ALARM_OUTPUT:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/bha-api/open-door.cgi");
                 }
                 return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT2:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/bha-api/open-door.cgi?r=2");
                 }
                 return;
             case CHANNEL_EXTERNAL_LIGHT:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/bha-api/light-on.cgi");
                 }
                 return;
             case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = true;
-                } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
                     ipCameraHandler.motionAlarmEnabled = false;
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {

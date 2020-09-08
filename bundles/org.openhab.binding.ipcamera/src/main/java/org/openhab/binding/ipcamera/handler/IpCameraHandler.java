@@ -1189,9 +1189,9 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_FFMPEG_MOTION_CONTROL:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         motionAlarmEnabled = true;
-                    } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                    } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
                         motionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_MOTION_ALARM);
                     } else {
@@ -1218,7 +1218,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     setupFfmpegFormat(ffmpegFormat.RECORD);
                     return;
                 case CHANNEL_START_STREAM:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         setupFfmpegFormat(ffmpegFormat.HLS);
                         if (ffmpegHLS != null) {
                             ffmpegHLS.setKeepAlive(-1);// will keep running till manually stopped.
@@ -1230,7 +1230,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_EXTERNAL_MOTION:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         motionDetected(CHANNEL_EXTERNAL_MOTION);
                     } else {
                         noMotionDetected(CHANNEL_EXTERNAL_MOTION);
@@ -1242,7 +1242,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_UPDATE_IMAGE_NOW:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         if (snapshotUri.isEmpty()) {
                             ffmpegSnapshotGeneration = true;
                             setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
@@ -1260,7 +1260,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_UPDATE_GIF:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         if (preroll > 0) {
                             snapCount = postroll;
                         } else {
@@ -1285,7 +1285,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             return;
-                        } else if ("OFF".equals(command.toString())) {
+                        } else if (OnOffType.OFF.equals(command)) {
                             onvifCamera.sendPTZRequest("Stop");
                             return;
                         }
@@ -1310,7 +1310,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             return;
-                        } else if ("OFF".equals(command.toString())) {
+                        } else if (OnOffType.OFF.equals(command)) {
                             onvifCamera.sendPTZRequest("Stop");
                             return;
                         }
@@ -1335,7 +1335,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             return;
-                        } else if ("OFF".equals(command.toString())) {
+                        } else if (OnOffType.OFF.equals(command)) {
                             onvifCamera.sendPTZRequest("Stop");
                             return;
                         }
