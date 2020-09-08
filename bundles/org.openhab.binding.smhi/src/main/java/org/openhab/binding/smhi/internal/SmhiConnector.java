@@ -16,6 +16,7 @@ package org.openhab.binding.smhi.internal;
 import static org.openhab.binding.smhi.internal.SmhiBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -76,7 +77,7 @@ public class SmhiConnector {
      */
     public TimeSeries getForecast(double lat, double lon) throws SmhiException, PointOutOfBoundsException {
         logger.debug("Fetching new forecast");
-        String url = String.format(POINT_FORECAST_URL, lon, lat);
+        String url = String.format(Locale.ROOT, POINT_FORECAST_URL, lon, lat);
         Request req = httpClient.newRequest(url);
         req.accept(ACCEPT);
         ContentResponse resp;
