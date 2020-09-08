@@ -6,28 +6,15 @@
 
 	<!-- Bosch Bridge -->
 	<bridge-type id="shc">
-		<label>Bosch Smart Home Controller</label>
+		<label>Smart Home Controller</label>
 		<description>The Bosch SHC Bridge representing the Bosch Smart Home Controller.</description>
 
-		<config-description>
-			<parameter name="ipAddress" type="text">
-				<context>network-address</context>
-				<label>Network Address</label>
-				<description>Network address of the Bosch Smart Home Controller.</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="password" type="text">
-				<label>System password</label>
-				<description>The system password of the Bosch Smart Home Controller necessary for pairing.</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:bridge"/>
 	</bridge-type>
 
-	<!--Bosch in-wall switch -->
 	<thing-type id="in-wall-switch">
-		<label>Bosch in-wall switch</label>
-		<description>In-wall switch for light control</description>
+		<label>In-wall Switch</label>
+		<description>Bosch In-wall switch for light control</description>
 
 		<channels>
 			<channel id="power-switch" typeId="power-switch"/>
@@ -35,20 +22,13 @@
 			<channel id="energy-consumption" typeId="energy-consumption"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the in-wall switch</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
-	<!--Bosch in-wall switch -->
 	<thing-type id="twinguard">
-		<label>Bosch TwinGuard</label>
-		<description>TwinGuard environmental sensor</description>
+		<label>TwinGuard</label>
+		<description>Bosch TwinGuard environmental sensor</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -61,32 +41,19 @@
 			<channel id="combined-rating" typeId="combined-rating"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the Twinguard</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
-	<!--Bosch in-wall switch -->
 	<thing-type id="window-contact">
-		<label>Bosch Window/Door Contact</label>
-		<description>Contact for windows and doors</description>
+		<label>Window/Door Contact</label>
+		<description>Bosch Contact for windows and doors</description>
 
 		<channels>
 			<channel id="contact" typeId="contact"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the contact</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
@@ -98,13 +65,7 @@
 			<channel id="latest-motion" typeId="latest-motion"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the contact</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
@@ -120,13 +81,7 @@
 			<channel id="level" typeId="level"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the shutter control</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
@@ -143,13 +98,7 @@
 			<channel id="valve-tappet-position" typeId="valve-tappet-position"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the thermostat</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
@@ -167,17 +116,10 @@
 			<channel id="setpoint-temperature" typeId="setpoint-temperature"/>
 		</channels>
 
-		<config-description>
-			<parameter name="id" type="text" required="true">
-				<label>Device ID</label>
-				<description>Device ID of the climate control</description>
-				<required>true</required>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:boschshc:device"/>
 
 	</thing-type>
 
-	<!-- https://www.eclipse.org/smarthome/documentation/concepts/items.html -->
 	<channel-type id="power-switch">
 		<item-type>Switch</item-type>
 		<label>State</label>
