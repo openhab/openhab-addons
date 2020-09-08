@@ -64,19 +64,19 @@ public class EnergyMeter {
         energyIn = new FieldDTO(0x28, 8, 3600000);
         powerOut = new FieldDTO(0x34, 4, 10);
         energyOut = new FieldDTO(0x3C, 8, 3600000);
-        
-        powerInL1 = new FieldDTO(0xA8, 4, 10); 
-        energyInL1 = new FieldDTO(0xB0, 8, 3600000); // +8 
+
+        powerInL1 = new FieldDTO(0xA8, 4, 10);
+        energyInL1 = new FieldDTO(0xB0, 8, 3600000); // +8
         powerOutL1 = new FieldDTO(0xBC, 4, 10); // + C
         energyOutL1 = new FieldDTO(0xC4, 8, 3600000); // +8
 
-        powerInL2 = new FieldDTO(0x138, 4, 10); 
-        energyInL2 = new FieldDTO(0x140, 8, 3600000); // +8 
+        powerInL2 = new FieldDTO(0x138, 4, 10);
+        energyInL2 = new FieldDTO(0x140, 8, 3600000); // +8
         powerOutL2 = new FieldDTO(0x14C, 4, 10); // + C
         energyOutL2 = new FieldDTO(0x154, 8, 3600000); // +8
 
-        powerInL3 = new FieldDTO(0x1C8, 4, 10); 
-        energyInL3 = new FieldDTO(0x1D0, 8, 3600000); // +8 
+        powerInL3 = new FieldDTO(0x1C8, 4, 10);
+        energyInL3 = new FieldDTO(0x1D0, 8, 3600000); // +8
         powerOutL3 = new FieldDTO(0x1DC, 4, 10); // + C
         energyOutL3 = new FieldDTO(0x1E4, 8, 3600000); // +8
     }

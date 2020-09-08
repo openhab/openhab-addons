@@ -76,7 +76,7 @@
 		<category>Energy</category>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
-		<channel-type id="powerInTypeL1">
+	<channel-type id="powerInTypeL1">
 		<item-type>Number</item-type>
 		<label>Purchased Power L1</label>
 		<category>Energy</category>
@@ -100,7 +100,7 @@
 		<category>Energy</category>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
-		<channel-type id="powerInTypeL2">
+	<channel-type id="powerInTypeL2">
 		<item-type>Number</item-type>
 		<label>Purchased Power L2</label>
 		<category>Energy</category>
@@ -124,7 +124,7 @@
 		<category>Energy</category>
 		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
-		<channel-type id="powerInTypeL3">
+	<channel-type id="powerInTypeL3">
 		<item-type>Number</item-type>
 		<label>Purchased Power L3</label>
 		<category>Energy</category>
