@@ -48,7 +48,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(JablotronAlarmHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected final Gson gson = new Gson();
 

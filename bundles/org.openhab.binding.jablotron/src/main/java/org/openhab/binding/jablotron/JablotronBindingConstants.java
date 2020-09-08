@@ -56,7 +56,7 @@ public class JablotronBindingConstants {
     // Constants
     public static final String JABLOTRON_API_URL = "https://api.jablonet.net/api/1.6/";
     public static final String AGENT = "Swagger-Codegen/1.0.0/android";
-    public static final int TIMEOUT = 10;
+    public static final int TIMEOUT_SEC = 10;
     public static final String SYSTEM = "openHAB";
     public static final String VENDOR = "JABLOTRON:Jablotron";
     public static final String APPLICATION_JSON = "application/json";

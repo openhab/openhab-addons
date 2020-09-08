@@ -1,6 +1,6 @@
 # Jablotron Alarm Binding
 
-This is the OH2.x binding for Jablotron alarms.
+This is the binding for Jablotron alarms.
 https://www.jablotron.com/en/jablotron-products/alarms/
 
 ## Supported Things

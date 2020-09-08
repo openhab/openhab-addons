@@ -207,7 +207,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    protected synchronized void logout() {
+    protected void logout() {
         String url = JABLOTRON_API_URL + "logout.json";
         String urlParameters = "system=" + SYSTEM;
 
@@ -224,7 +224,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public synchronized @Nullable List<JablotronDiscoveredService> discoverServices() {
+    public @Nullable List<JablotronDiscoveredService> discoverServices() {
         String url = JABLOTRON_API_URL + "serviceListGet.json";
         String urlParameters = "{\"list-type\": \"EXTENDED\",\"visibility\": \"VISIBLE\"}";
         @Nullable
@@ -241,7 +241,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return response.getData().getServices();
     }
 
-    protected synchronized @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key,
+    protected @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key,
             String status, String code) throws SecurityException {
         @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
@@ -274,7 +274,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return response;
     }
 
-    protected synchronized @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(Thing th, String alarm) {
+    protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/eventHistoryGet.json";
         @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
@@ -299,7 +299,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return response.getData().getEvents();
     }
 
-    protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
+    protected @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
         String url = JABLOTRON_API_URL + "dataUpdate.json";
         @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
@@ -316,7 +316,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return sendUrlEncodedMessage(url, urlParameters, JablotronDataUpdateResponse.class);
     }
 
-    protected synchronized @Nullable JablotronGetPGResponse sendGetProgrammableGates(Thing th, String alarm) {
+    protected @Nullable JablotronGetPGResponse sendGetProgrammableGates(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/programmableGatesGet.json";
         @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
@@ -332,7 +332,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return sendJsonMessage(url, urlParameters, JablotronGetPGResponse.class);
     }
 
-    protected synchronized @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
+    protected @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/sectionsGet.json";
         @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
@@ -348,7 +348,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return sendJsonMessage(url, urlParameters, JablotronGetSectionsResponse.class);
     }
 
-    protected synchronized @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action,
+    protected @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action,
             String value, String componentId) throws SecurityException {
         @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
@@ -375,7 +375,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     private Request createRequest(String url) {
         return httpClient.newRequest(url).method(HttpMethod.POST).header(HttpHeader.ACCEPT, APPLICATION_JSON)
                 .header(HttpHeader.ACCEPT_LANGUAGE, bridgeConfig.getLang()).header(HttpHeader.ACCEPT_ENCODING, "*")
-                .header("x-vendor-id", VENDOR).agent(AGENT).timeout(TIMEOUT, TimeUnit.SECONDS);
+                .header("x-vendor-id", VENDOR).agent(AGENT).timeout(TIMEOUT_SEC, TimeUnit.SECONDS);
     }
 
     private void relogin() {

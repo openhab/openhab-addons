@@ -43,10 +43,9 @@ import org.osgi.service.component.annotations.Reference;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class, immediate = true)
+@Component(service = ThingHandlerFactory.class)
 public class JablotronHandlerFactory extends BaseThingHandlerFactory {
 
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final HttpClientFactory httpClientFactory;
 
     @Activate
