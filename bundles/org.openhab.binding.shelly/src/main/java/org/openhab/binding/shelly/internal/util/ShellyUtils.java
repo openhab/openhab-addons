@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -145,6 +146,16 @@ public class ShellyUtils {
 
     public static DecimalType getDecimal(@Nullable Long value) {
         return new DecimalType((value != null ? value : 0));
+    }
+
+    public static Double getNumber(Command command) throws IllegalArgumentException {
+        if (command instanceof DecimalType) {
+            return ((DecimalType) command).doubleValue();
+        }
+        if (command instanceof QuantityType) {
+            return ((QuantityType<?>) command).doubleValue();
+        }
+        throw new IllegalArgumentException("Unable to convert number");
     }
 
     public static OnOffType getOnOff(@Nullable Boolean value) {
