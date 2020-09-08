@@ -410,13 +410,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    Runnable runnableMovePTZ = new Runnable() {
-        @Override
-        public void run() {
-            onvifCamera.sendPTZRequest("AbsoluteMove");
-        }
-    };
-
     public IpCameraHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
         super(thing);
         cameraConfig = getConfigAs(CameraConfig.class);
@@ -1152,6 +1145,11 @@ public class IpCameraHandler extends BaseThingHandler {
         return ""; // Did not find the String we were searching for
     }
 
+    private void sendPTZRequest() {
+        onvifCamera.sendPTZRequest("AbsoluteMove");
+    }
+
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -1291,7 +1289,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsolutePan(Float.valueOf(command.toString()));
-                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_TILT:
@@ -1316,7 +1314,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsoluteTilt(Float.valueOf(command.toString()));
-                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_ZOOM:
@@ -1341,7 +1339,7 @@ public class IpCameraHandler extends BaseThingHandler {
                             return;
                         }
                         onvifCamera.setAbsoluteZoom(Float.valueOf(command.toString()));
-                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
             }
