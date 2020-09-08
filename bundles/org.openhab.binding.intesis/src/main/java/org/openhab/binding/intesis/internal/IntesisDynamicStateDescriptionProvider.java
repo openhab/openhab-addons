@@ -12,10 +12,21 @@
  */
 package org.openhab.binding.intesis.internal;
 
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.BaseDynamicStateDescriptionProvider;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
+import org.eclipse.smarthome.core.types.StateDescription;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,4 +36,30 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class IntesisDynamicStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Map<ChannelUID, @Nullable StateDescription> descriptions = new ConcurrentHashMap<>();
+
+    public void setDescription(ChannelUID channelUID, @Nullable StateDescription description) {
+        logger.debug("Adding state description for channel {}", channelUID);
+        descriptions.put(channelUID, description);
+    }
+
+    public void removeAllDescriptions() {
+        logger.debug("Removing all state descriptions");
+        descriptions.clear();
+    }
+
+    @Override
+    public @Nullable StateDescription getStateDescription(Channel channel,
+            @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
+        StateDescription description = descriptions.get(channel.getUID());
+        return description;
+    }
+
+    @Override
+    @Deactivate
+    public void deactivate() {
+        descriptions.clear();
+    }
 }
