@@ -186,11 +186,10 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE);
             this.online = false;
         } catch (final ParseException | RuntimeException e) {
-            logger.warn("Error parsing API Scheme: {} ", e.getMessage(), e);
+            logger.debug("Error parsing API Scheme: {} ", e.getMessage(), e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR, "Error: " + e.getMessage());
             this.online = false;
         } catch (final TimeoutException | ExecutionException e) {
-            logger.warn("Error loading API Scheme: {} ", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error: " + e.getMessage());
             this.online = false;
         }
