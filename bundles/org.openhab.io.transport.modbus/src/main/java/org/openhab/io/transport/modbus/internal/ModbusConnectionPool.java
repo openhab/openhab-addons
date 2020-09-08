@@ -45,5 +45,4 @@ public class ModbusConnectionPool extends GenericKeyedObjectPool<ModbusSlaveEndp
         }
         super.setConfig(conf);
     }
-
 }

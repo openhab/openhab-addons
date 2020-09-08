@@ -74,5 +74,4 @@ public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig<ModbusSlaveCo
         // Disallow re-setting eviction policy with class name. Only setEvictionPolicy allowed
         throw new IllegalStateException("setEvictionPolicyClassName disallowed! Will fail in OSGI");
     }
-
 }
