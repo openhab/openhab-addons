@@ -102,7 +102,6 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
                 nhcComm.startEnergyMeter(energyMeterId);
             }
 
-            updateStatus(ThingStatus.ONLINE);
             logger.debug("Niko Home Control: energy meter intialized {}", energyMeterId);
 
             Bridge bridge = getBridge();
