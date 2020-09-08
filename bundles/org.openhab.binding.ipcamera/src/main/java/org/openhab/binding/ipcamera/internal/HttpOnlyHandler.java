@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -63,7 +64,7 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
             case CHANNEL_THRESHOLD_AUDIO_ALARM:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.audioAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                     ipCameraHandler.audioAlarmEnabled = false;
                 } else {
                     ipCameraHandler.audioAlarmEnabled = true;

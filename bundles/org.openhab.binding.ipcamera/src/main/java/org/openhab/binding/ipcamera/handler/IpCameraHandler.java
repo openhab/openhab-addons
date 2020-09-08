@@ -35,6 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -1175,14 +1176,14 @@ public class IpCameraHandler extends BaseThingHandler {
         else {
             switch (channelUID.getId()) {
                 case CHANNEL_MP4_HISTORY_LENGTH:
-                    if ("0".equals(command.toString())) {
+                    if (DecimalType.ZERO.equals(command)) {
                         mp4HistoryLength = 0;
                         mp4History = "";
                         setChannelState(CHANNEL_MP4_HISTORY, new StringType(mp4History));
                     }
                     return;
                 case CHANNEL_GIF_HISTORY_LENGTH:
-                    if ("0".equals(command.toString())) {
+                    if (DecimalType.ZERO.equals(command)) {
                         gifHistoryLength = 0;
                         gifHistory = "";
                         setChannelState(CHANNEL_GIF_HISTORY, new StringType(gifHistory));
@@ -1191,7 +1192,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_FFMPEG_MOTION_CONTROL:
                     if (OnOffType.ON.equals(command)) {
                         motionAlarmEnabled = true;
-                    } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
+                    } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         motionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_MOTION_ALARM);
                     } else {

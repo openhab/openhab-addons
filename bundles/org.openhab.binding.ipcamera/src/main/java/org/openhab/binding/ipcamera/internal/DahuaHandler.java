@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -181,7 +182,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_LED:
                 ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
-                if ("0".equals(command.toString()) || OnOffType.OFF.equals(command)) {
+                if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off");
                 } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler
@@ -253,7 +254,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
             case CHANNEL_FFMPEG_MOTION_CONTROL:
                 if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = true;
-                } else if (OnOffType.OFF.equals(command) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = false;
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {
