@@ -11,6 +11,7 @@
 		</parameter>
 		<parameter name="password" type="text" required="true">
 			<label>System Password</label>
+			<context>password</context>
 			<description>The system password of the Bosch Smart Home Controller necessary for pairing.</description>
 		</parameter>
 	</config-description>

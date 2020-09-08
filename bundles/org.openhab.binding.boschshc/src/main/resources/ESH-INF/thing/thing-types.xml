@@ -17,7 +17,7 @@
 		<description>Bosch In-wall switch for light control</description>
 
 		<channels>
-			<channel id="power-switch" typeId="power-switch"/>
+			<channel id="power-switch" typeId="system.power"/>
 			<channel id="power-consumption" typeId="power-consumption"/>
 			<channel id="energy-consumption" typeId="energy-consumption"/>
 		</channels>
@@ -120,17 +120,11 @@
 
 	</thing-type>
 
-	<channel-type id="power-switch">
-		<item-type>Switch</item-type>
-		<label>State</label>
-		<description>State of the Bosch Power Switch</description>
-	</channel-type>
-
 	<channel-type id="temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current measured temperature.</description>
-		<state min="0" max="40" step="0.5" pattern="%.1f °C" readOnly="true"/>
+		<state min="0" max="40" step="0.5" pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="temperature-rating">
@@ -140,7 +134,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current measured humidity.</description>
 	</channel-type>
@@ -152,13 +146,13 @@
 	</channel-type>
 
 	<channel-type id="energy-consumption">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Energy consumption (Wh)</label>
 		<description>Energy consumption of the device.</description>
 	</channel-type>
 
 	<channel-type id="power-consumption">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power consumption (W)</label>
 		<description>Current power consumption of the device.</description>
 	</channel-type>
@@ -190,7 +184,7 @@
 	<channel-type id="contact">
 		<item-type>Contact</item-type>
 		<label>Window/Door contact</label>
-		<description>A Bosch window and door contact.</description>
+		<description>A window and door contact.</description>
 	</channel-type>
 
 	<channel-type id="latest-motion">
@@ -207,7 +201,7 @@
 	</channel-type>
 
 	<channel-type id="valve-tappet-position">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Valve Tappet Position</label>
 		<description>Current open ratio (0 to 100).</description>
 		<state min="0" max="100" step="1" readOnly="true"/>
@@ -216,8 +210,8 @@
 	<channel-type id="setpoint-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint Temperature</label>
-		<description>Desired temperature (in degree celsius).</description>
-		<state min="5" max="30" step="0.5" pattern="%.1f °C"/>
+		<description>Desired temperature.</description>
+		<state min="5" max="30" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
