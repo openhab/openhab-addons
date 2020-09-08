@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.max.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link LCommand} request a status update for MAX! devices.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class LCommand extends CubeCommand {
 
     @Override
