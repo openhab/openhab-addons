@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	
+
 	<thing-type id="yioremotedock">
 		<label>YIOremote Dock Binding Thing</label>
 		<description>YIOremote Dock Binding Thing</description>
@@ -13,13 +13,13 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>Host/IP Address of the YIO Dock</label>
-				<description>Host/IP Address of the YIO Dock</description>
+				<label>Network address of the YIO Remote Dock</label>
+				<description>Network address of the YIO Remote Dock</description>
 				<context>network-address</context>
 			</parameter>
 			<parameter name="accesstoken" type="text" required="true">
-				<label>Access token for the YIO Dock</label>
-				<description>Access token for the YIO Dock</description>
+				<label>Access token of the YIO Remote Dock</label>
+				<description>The authentication token for the access currently 0</description>
 				<default>0</default>
 			</parameter>
 		</config-description>
@@ -33,25 +33,25 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="output">
-		<label>Results</label>
-		<description>The channels used for Input</description>
+		<label>Outputs</label>
+		<description>The channels used for Output</description>
 		<channels>
 			<channel id="status" typeId="status"/>
 		</channels>
 	</channel-group-type>
 	<channel-type id="receiverswitch">
 		<item-type>Switch</item-type>
-		<label>receiverswitch</label>
-		<description>receiverswitch</description>
+		<label>YIO Remote Dock receiverswitch</label>
+		<description>The switch to enable disable the IR receiving diode/function</description>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
-		<label>status</label>
-		<description>status</description>
+		<label>YIO Remote Dock  status</label>
+		<description>v</description>
 	</channel-type>
 	<channel-type id="sendircode">
 		<item-type>String</item-type>
-		<label>sendircode</label>
-		<description>sendircode</description>
+		<label>YIO Dock sendircode</label>
+		<description>The IR Code Format(3;0x20DF40BF;32;0) which will send by the YIO Dock</description>
 	</channel-type>
 </thing:thing-descriptions>

@@ -14,10 +14,10 @@ The following are the configurations available to each of the bridges/things:
 
 ### YIO Dock
 
-| Name                 | Type    | Required | Default | Description                                                                                                    |
-|----------------------|---------|----------|---------|----------------------------------------------------------------------------------------------------------------|
-| 	host	       | string  | Yes      | (None)  | Host/IP Address or host name of the YIO Dock                                                                   |
-| 	accesstoken   | string  | Yes      | 0       | The authentication token for the access currently 0                                                            |
+| Name                 	| Type    | Required | Default | Description                                                                                                    |
+|-----------------------|---------|----------|---------|----------------------------------------------------------------------------------------------------------------|
+| 	host				| string  | Yes      | (None)  | Host/IP Address or host name of the YIO Dock                                                                   |
+| 	accesstoken   		| string  | Yes      | 0       | The authentication token for the access currently 0                                                            |
                                                       
 ## Channels
 
