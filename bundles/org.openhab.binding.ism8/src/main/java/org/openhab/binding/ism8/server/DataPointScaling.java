@@ -42,7 +42,7 @@ public class DataPointScaling extends DataPointBase<@Nullable Double> {
     public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
             if (data[3] != 1 && data.length <= 4) {
-                logger.warn("DataPoint-ProcessData: Data size wrong for this type({}/1).", data[3]);
+                logger.debug("DataPoint-ProcessData: Data size wrong for this type({}/1).", data[3]);
                 return;
             }
 

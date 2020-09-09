@@ -36,39 +36,35 @@ public class DataPointFactory {
     @Nullable
     public static IDataPoint createDataPoint(int id, String knxType, String description) {
         IDataPoint dataPoint = null;
-        try {
-            switch (knxType) {
-                case "1.001":
-                case "1.002":
-                case "1.003":
-                case "1.009":
-                    dataPoint = new DataPointBool(id, knxType, description);
-                    break;
-                case "5.001":
-                    dataPoint = new DataPointScaling(id, knxType, description);
-                    break;
-                case "9.001":
-                case "9.002":
-                case "9.006":
-                    dataPoint = new DataPointValue(id, knxType, description);
-                    break;
-                case "13.002":
-                    dataPoint = new DataPointLongValue(id, knxType, description);
-                    break;
-                case "20.102":
-                case "20.103":
-                case "20.105":
-                    dataPoint = new DataPointByteValue(id, knxType, description);
-                    break;
-            }
-        } catch (Exception e) {
-            logger.warn("Error creating data point {}. {}", id, e.getMessage());
+        switch (knxType) {
+            case "1.001":
+            case "1.002":
+            case "1.003":
+            case "1.009":
+                dataPoint = new DataPointBool(id, knxType, description);
+                break;
+            case "5.001":
+                dataPoint = new DataPointScaling(id, knxType, description);
+                break;
+            case "9.001":
+            case "9.002":
+            case "9.006":
+                dataPoint = new DataPointValue(id, knxType, description);
+                break;
+            case "13.002":
+                dataPoint = new DataPointLongValue(id, knxType, description);
+                break;
+            case "20.102":
+            case "20.103":
+            case "20.105":
+                dataPoint = new DataPointByteValue(id, knxType, description);
+                break;
         }
 
         if (dataPoint != null) {
             for (IDataPoint dp : dataPoints) {
                 if (dp.getId() == dataPoint.getId()) {
-                    logger.info("Data point already exists ({}).", id);
+                    logger.debug("Data point already exists ({}).", id);
                     return null;
                 }
             }

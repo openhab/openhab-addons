@@ -32,7 +32,7 @@ public class SetDatapointValueMessage {
     public SetDatapointValueMessage() {
     }
 
-    public SetDatapointValueMessage(byte[] data) throws Exception {
+    public SetDatapointValueMessage(byte[] data) throws IllegalArgumentException {
         if (data.length < 5) {
             throw new IllegalArgumentException("Data size too small for a SetDatapointValueMessage.");
         }

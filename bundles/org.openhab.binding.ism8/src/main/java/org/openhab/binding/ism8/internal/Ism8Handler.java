@@ -96,8 +96,9 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
     public void initialize() {
         this.config = getConfigAs(Ism8Configuration.class);
         Ism8Configuration cfg = this.config;
+        final String uid = this.getThing().getUID().getAsString();
         if (cfg != null) {
-            Server svr = new Server(cfg.getPortNumber());
+            Server svr = new Server(cfg.getPortNumber(), uid);
             for (Channel channel : getThing().getChannels()) {
                 if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("type")) {
                     try {
@@ -113,7 +114,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                                 channel.getLabel(), channel.getConfiguration());
                     }
                 } else {
-                    this.logger.info("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
+                    this.logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
                             channel.getConfiguration());
                 }
                 this.logger.debug("Ism8: Channel={}", channel.getConfiguration().toString());

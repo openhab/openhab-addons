@@ -45,7 +45,9 @@ public class Server extends Thread {
     private @Nullable Socket client;
     private @Nullable IDataPointChangeListener changeListener;
 
-    public Server(int port) {
+    public Server(int port, String uid) {
+        super("OH-binding-" + uid);
+        setDaemon(true);
         this.port = port;
     }
 
@@ -87,10 +89,9 @@ public class Server extends Thread {
                 }
             } catch (InterruptedException e) {
                 logger.debug("Thread interrupted");
-            } catch (Exception e) {
-                logger.warn("Error Handle Communication - restart communication. {}", e.getMessage());
-                this.startRetries++;
             }
+
+            this.startRetries++;
         }
     }
 
@@ -152,15 +153,11 @@ public class Server extends Thread {
 
             Socket clientSocket = this.client;
             if (clientSocket != null) {
-                if (clientSocket.isConnected()) {
-                    clientSocket.getInputStream().close();
-                }
-
                 clientSocket.close();
                 this.client = null;
             }
-        } catch (Exception e) {
-            logger.warn("Error stopping Communication. {}", e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Error stopping Communication. {}", e.getMessage());
         }
     }
 
@@ -220,13 +217,13 @@ public class Server extends Thread {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Error handle client data stream. {}", e.getMessage());
             this.stopServer();
         }
     }
 
-    private void sendUpdateCommand() throws Exception {
+    private void sendUpdateCommand() throws IOException {
         byte[] data = new byte[] { (byte) 0x06, (byte) 0x20, (byte) 0xF0, (byte) 0x80, (byte) 0x00, (byte) 0x16,
                 (byte) 0x04, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xF0, (byte) 0xD0 };
         this.sendData(data);

@@ -54,7 +54,7 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
     public void processData(byte[] data) {
         if (this.checkProcessData(data)) {
             if (data[3] != 4 && data.length <= 7) {
-                logger.warn("DataPoint-ProcessData: Data size wrong for this type({}/4).", data[3]);
+                logger.debug("DataPoint-ProcessData: Data size wrong for this type({}/4).", data[3]);
                 return;
             }
 

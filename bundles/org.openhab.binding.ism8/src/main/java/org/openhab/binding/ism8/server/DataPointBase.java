@@ -138,20 +138,20 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
      */
     protected boolean checkProcessData(byte[] data) {
         if (data.length < 4) {
-            logger.warn("DataPoint-ProcessData: Data size too small ({}).", data.length);
+            logger.debug("DataPoint-ProcessData: Data size too small ({}).", data.length);
             return false;
         }
 
         int dataPointId = Byte.toUnsignedInt(data[0]) * 256 + Byte.toUnsignedInt(data[1]);
         if (dataPointId != this.getId()) {
-            logger.warn("DataPoint-ProcessData: Data contains the wrong ID ({}/{}).", dataPointId, this.getId());
+            logger.debug("DataPoint-ProcessData: Data contains the wrong ID ({}/{}).", dataPointId, this.getId());
             return false;
         }
 
         int length = data[3];
         int expectedLength = length + 4;
         if (length <= 0 && expectedLength != data.length) {
-            logger.warn("DataPoint-ProcessData: Data size wrong ({}/{}).", data.length, expectedLength);
+            logger.debug("DataPoint-ProcessData: Data size wrong ({}/{}).", data.length, expectedLength);
             return false;
         }
         return true;
