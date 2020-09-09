@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -155,14 +156,14 @@ public class InstarHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1");
                 } else {
                     ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=0");
                 }
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/hi3510/param.cgi?cmd=setmdattr&-enable=1&-name=1&cmd=setmdattr&-enable=1&-name=2&cmd=setmdattr&-enable=1&-name=3&cmd=setmdattr&-enable=1&-name=4");
                 } else {
@@ -179,30 +180,30 @@ public class InstarHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_AUTO_LED:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=auto");
                 } else {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setinfrared&-infraredstat=close");
                 }
                 return;
             case CHANNEL_ENABLE_PIR_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&-pir_enable=1");
                 } else {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setpirattr&-pir_enable=0");
                 }
                 return;
             case CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&-io_enable=1");
                 } else {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setioattr&-io_enable=0");
                 }
                 return;
             case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = true;
-                } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = false;
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {
