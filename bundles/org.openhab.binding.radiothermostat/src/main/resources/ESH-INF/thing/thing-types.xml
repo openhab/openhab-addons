@@ -58,10 +58,14 @@
 				<description>Optional Flag to Disable the Retrieval of Run-time Data from the Thermostat</description>
 				<default>false</default>
 			</parameter>
-			<parameter name="absolute" type="boolean">
-				<label>Run in Absolute Setpoint Mode</label>
-				<description>Optional Flag to run in absolute or temporary setpoint mode</description>
-				<default>false</default>
+			<parameter name="setpointMode" type="text">
+				<label>Setpoint Mode</label>
+				<description>Run in absolute or temporary setpoint mode</description>
+				<default>temporary</default>
+				<options>
+					<option value="absolute">Absolute</option>
+					<option value="temporary">Temporary</option>
+				</options>
 			</parameter>
 
 		</config-description>
