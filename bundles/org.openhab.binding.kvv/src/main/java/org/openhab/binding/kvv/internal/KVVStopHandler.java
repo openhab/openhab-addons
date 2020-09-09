@@ -60,11 +60,11 @@ public class KVVStopHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        init();
+        init(true);
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private synchronized void init() {
+    private synchronized void init(final boolean createChannels) {
         this.config = getConfigAs(KVVStopConfig.class);
         if (config.stopId == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -85,17 +85,18 @@ public class KVVStopHandler extends BaseThingHandler {
         }
 
         // creating channels
-        final List<Channel> channels = new ArrayList<Channel>();
-        for (int i = 0; i < bridgeHandler.getBridgeConfig().maxTrains; i++) {
-            channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
-                    .build());
-            channels.add(ChannelBuilder
-                    .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
-            channels.add(
-                    ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String").build());
+        if (createChannels) {
+            final List<Channel> channels = new ArrayList<Channel>();
+            for (int i = 0; i < bridgeHandler.getBridgeConfig().maxTrains; i++) {
+                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
+                        .build());
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String").build());
+                channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
+                        .build());
+            }
+            this.updateThing(this.editThing().withChannels(channels).build());
         }
-        this.updateThing(this.editThing().withChannels(new ArrayList<Channel>()).build());
-        this.updateThing(this.editThing().withChannels(channels).build());
         this.pollingJob = this.scheduler.scheduleWithFixedDelay(new UpdateTask(bridgeHandler, this.config), 0,
                 bridgeHandler.getBridgeConfig().updateInterval, TimeUnit.SECONDS);
 
@@ -105,7 +106,7 @@ public class KVVStopHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         if (this.pollingJob != null) {
-            this.pollingJob.cancel(true);
+            this.pollingJob.cancel(false);
         }
     }
 
@@ -137,7 +138,7 @@ public class KVVStopHandler extends BaseThingHandler {
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         if (command == RefreshType.REFRESH) {
-            init();
+            init(false);
         }
     }
 
