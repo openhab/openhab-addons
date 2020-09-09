@@ -352,8 +352,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				</description>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -602,8 +602,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -922,8 +922,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -1219,8 +1219,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -1490,8 +1490,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -1780,8 +1780,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -2077,8 +2077,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
@@ -2357,8 +2357,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<default>0</default>
 			</parameter>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
-				<label>pollTime (milliseconds)</label>
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings" unit="ms">
+				<label>Poll Time</label>
 				<description>Most features are made on demand and not polled, but some features require a regular snapshot to work.
 					Default is "1000" which is 1 second.
 				</description>
