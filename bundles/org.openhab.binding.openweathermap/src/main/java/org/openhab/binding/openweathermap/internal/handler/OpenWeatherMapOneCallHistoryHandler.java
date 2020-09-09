@@ -10,6 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.openweathermap.internal.handler;
 
 import static org.eclipse.smarthome.core.library.unit.MetricPrefix.HECTO;
