@@ -5,7 +5,8 @@ Enables the user to show the latest departure times for specific street car stop
 
 ## Supported Things
 
-Every street car stop is represented by one thing. Each thing contains channels for the information referred to the next n trains.
+Every street car stop is represented by one thing.
+Each thing contains channels for the information referred to the next n trains.
 This includes the name of the train, the final destination and the estimated time available (eta).
 
 ## Thing Configuration
@@ -22,9 +23,21 @@ curl https://live.kvv.de/webapp/stops/byname/Volkswohnung\?key\=[APIKEY]
 {"stops":[{"id":"de:8212:72","name":"Karlsruhe Volkswohnung","lat":49.00381654,"lon":8.40393026}]}
 ```
 
+## Channel Configuration
+
+Each stop automatically creates a set of channels depending on the configuration.
+If `maxTrains` is set to three, each stop creates three sets of channels.
+Each set consists of the following three channels:
+
+| Channel                                                    | Type   | Description                                                   |
+| :--------------------------------------------------------- | :----- | :------------------------------------------------------------ |
+| kvv:stop:${bridgeId}:${stopId}:train${trainId}-name        | String | Name of the line, e.g. _S5_                                   |
+| kvv:stop:${bridgeId}:${stopId}:train${trainId}-destination | String | Name of the stop the train is heading to                      |
+| kvv:stop:${bridgeId}:${stopId}:train${trainId}-eta         | String | Duration until the train arrives. Can be relative or absolute |
+
 ## Full Example
 
-### demo.things
+### Things
 
 ```things
 Bridge kvv:bridge:1 "Bridge" @ "Wohnzimmer" [ maxTrains="3", updateInterval="10", apiKey="" ] {
@@ -32,23 +45,23 @@ Bridge kvv:bridge:1 "Bridge" @ "Wohnzimmer" [ maxTrains="3", updateInterval="10"
 }
 ```
 
-### demo.items
+### Items
 
 ```items
-String kvv_gottesauerplatz_train0_name          {channel="kvv:stop:1:gottesauerplatz:train0-name"}
-String kvv_gottesauerplatz_train0_destination   {channel="kvv:stop:1:gottesauerplatz:train0-destination"}
-String kvv_gottesauerplatz_train0_eta           {channel="kvv:stop:1:gottesauerplatz:train0-eta"}
+String kvv_gottesauerplatz_train0_name          "Name [%s]"         {channel="kvv:stop:1:gottesauerplatz:train0-name"}
+String kvv_gottesauerplatz_train0_destination   "Destination [%s]"  {channel="kvv:stop:1:gottesauerplatz:train0-destination"}
+String kvv_gottesauerplatz_train0_eta           "ETA [%s]"          {channel="kvv:stop:1:gottesauerplatz:train0-eta"}
 
-String kvv_gottesauerplatz_train1_name          {channel="kvv:stop:1:gottesauerplatz:train1-name"}
-String kvv_gottesauerplatz_train1_destination   {channel="kvv:stop:1:gottesauerplatz:train1-destination"}
-String kvv_gottesauerplatz_train1_eta           {channel="kvv:stop:1:gottesauerplatz:train1-eta"}
+String kvv_gottesauerplatz_train1_name          "Name [%s]"         {channel="kvv:stop:1:gottesauerplatz:train1-name"}
+String kvv_gottesauerplatz_train1_destination   "Destination [%s]"  {channel="kvv:stop:1:gottesauerplatz:train1-destination"}
+String kvv_gottesauerplatz_train1_eta           "ETA [%s]"          {channel="kvv:stop:1:gottesauerplatz:train1-eta"}
 
-String kvv_gottesauerplatz_train2_name          {channel="kvv:stop:1:gottesauerplatz:train2-name"}
-String kvv_gottesauerplatz_train2_destination   {channel="kvv:stop:1:gottesauerplatz:train2-destination"}
-String kvv_gottesauerplatz_train2_eta           {channel="kvv:stop:1:gottesauerplatz:train2-eta"}
+String kvv_gottesauerplatz_train2_name          "Name [%s]"         {channel="kvv:stop:1:gottesauerplatz:train2-name"}
+String kvv_gottesauerplatz_train2_destination   "Destination [%s]"  {channel="kvv:stop:1:gottesauerplatz:train2-destination"}
+String kvv_gottesauerplatz_train2_eta           "ETA [%s]"          {channel="kvv:stop:1:gottesauerplatz:train2-eta"}
 ```
 
-### habpanel template
+### Template for HABPanel
 
 ```html
 <style>
@@ -70,4 +83,28 @@ String kvv_gottesauerplatz_train2_eta           {channel="kvv:stop:1:gottesauerp
   <td>{{itemValue('kvv_gottesauerplatz_train2_eta')}}</td>
 </tr>
 </table>
+```
+
+### Sitemap for Basic UI
+
+```sitemap
+sitemap kvv label="KVV" {
+    Frame label="Gottesauer Platz/BGV" {
+        Group item=kvv_gottesauerplatz_train0_destination label="Train #1" {
+            Text item=kvv_gottesauerplatz_train0_name
+            Text item=kvv_gottesauerplatz_train0_destination
+            Text item=kvv_gottesauerplatz_train0_eta
+        }
+        Group item=kvv_gottesauerplatz_train1_destination label="Train #2" {
+            Text item=kvv_gottesauerplatz_train1_name
+            Text item=kvv_gottesauerplatz_train1_destination
+            Text item=kvv_gottesauerplatz_train1_eta
+        }
+        Group item=kvv_gottesauerplatz_train2_destination label="Train #3" {
+            Text item=kvv_gottesauerplatz_train2_name
+            Text item=kvv_gottesauerplatz_train2_destination
+            Text item=kvv_gottesauerplatz_train2_eta
+        }
+    }
+}
 ```
