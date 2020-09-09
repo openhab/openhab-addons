@@ -12,18 +12,18 @@
  */
 package org.openhab.binding.enigma2.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 
-import static org.eclipse.jdt.annotation.Checks.requireNonNull;
-import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * The {@link Enigma2ClientTest} class is responsible for testing {@link Enigma2Client}.

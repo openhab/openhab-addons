@@ -113,6 +113,5 @@ public class HueCommandExtension extends AbstractConsoleCommandExtension {
         return Arrays.asList(new String[] { buildCommandUsage("<bridgeUID> " + USER_NAME, "show the user name"),
                 buildCommandUsage("<bridgeUID> " + SCENES, "list all the scenes with their id"),
                 buildCommandUsage("<groupThingUID> " + SCENES, "list all the scenes from this group with their id") });
-
     }
 }

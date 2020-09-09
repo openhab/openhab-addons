@@ -108,25 +108,13 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
     private final SerialPortManager serialPortManager;
-
-    private @NonNullByDefault({}) HttpClient httpClient;
-    // shared instance obtained from HttpClientFactory service and passed to device discovery service
+    private final HttpClient httpClient;
 
     @Activate
-    public LutronHandlerFactory(final @Reference SerialPortManager serialPortManager) {
-        // Obtain the serial port manager service using an OSGi reference
+    public LutronHandlerFactory(final @Reference SerialPortManager serialPortManager,
+            @Reference HttpClientFactory httpClientFactory) {
         this.serialPortManager = serialPortManager;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
-        logger.trace("HTTP client configured.");
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-        logger.trace("HTTP client unconfigured.");
     }
 
     @Override

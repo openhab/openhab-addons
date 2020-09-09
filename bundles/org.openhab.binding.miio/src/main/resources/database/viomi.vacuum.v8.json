@@ -1,6 +1,8 @@
 {
     "deviceMapping": {
         "id": [
+            "viomi.vacuum.v6",
+            "viomi.vacuum.v7",
             "viomi.vacuum.v8"
         ],
         "channels": [
@@ -57,7 +59,7 @@
             {
                 "property": "battery_life",
                 "friendlyName": "Battery",
-                "channel": "battary_life",
+                "channel": "battery_life",
                 "type": "Number",
                 "refresh": true,
                 "actions": [

@@ -22,5 +22,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class PointOutOfBoundsException extends Exception {
 
     private static final long serialVersionUID = 546566512L;
-
 }

@@ -4,8 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>LIRC Binding</name>
-	<description>The LIRC binding allows transmission and receipt of
-		standard infrared remote control signals via a LIRC
+	<description>The LIRC binding allows transmission and receipt of standard infrared remote control signals via a LIRC
 		server.</description>
 	<author>Andrew Nagle</author>
 

@@ -44,7 +44,7 @@ Restrictions:
 Some ideas what you can do in your home by using rules and other openHAB controlled devices:
 
 - Automatic turn on your amplifier and connect echo with bluetooth if the echo plays music
-- If the amplifier was turned of, the echo stop playing and disconnect the bluetooth
+- If the amplifier was turned off, the echo stop playing and disconnect the bluetooth
 - The echo starts playing radio if the light was turned on
 - The echo starts playing radio at specified time 
 - Remind you with a voice message, that a window is open for a long time and it is winter

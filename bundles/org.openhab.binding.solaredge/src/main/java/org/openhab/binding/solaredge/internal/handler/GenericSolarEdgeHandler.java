@@ -47,5 +47,4 @@ public class GenericSolarEdgeHandler extends SolarEdgeBaseHandler {
         Channel channel = getThing().getChannel(new ChannelUID(channelGroupUID, channelId));
         return channel;
     }
-
 }

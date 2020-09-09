@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 
 /**
@@ -19,6 +20,7 @@ import org.openhab.binding.max.internal.Utils;
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class ZCommand extends CubeCommand {
 
     public enum WakeUpType {

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nzwateralerts"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="wateralert">
+		<label>Alert</label>
+		<description>Water Alert Levels for New Zealand water supply.</description>
+
+		<channels>
+			<channel id="alertlevel" typeId="alertlevel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="location" type="text" required="true">
+				<label>Location</label>
+				<description>The location to get the Water Alert level for.</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="bewaterwise:whangarei:breambay">Bream Bay</option>
+					<option value="bewaterwise:kaipara:dargavilleampbaylys">Dargaville &amp; Baylys</option>
+					<option value="bewaterwise:kaipara:glinksgully">Glinks Gully</option>
+					<option value="smartwater:hamilton:hamilton">Hamilton City</option>
+					<option value="bewaterwise:farnorth:kaikohengawha">Kaikohe / Ngawha</option>
+					<option value="bewaterwise:farnorth:kaitaia">Kaitaia</option>
+					<option value="bewaterwise:farnorth:kerikeriwaipapa">Kerikeri / Waipapa</option>
+					<option value="smartwater:waipa:kihikihi">Kihikihi</option>
+					<option value="bewaterwise:whangarei:mangapai">Mangapai</option>
+					<option value="bewaterwise:kaipara:mangawhai">Mangawhai</option>
+					<option value="bewaterwise:whangarei:maungakaramea">Maungakaramea</option>
+					<option value="bewaterwise:kaipara:maungaturoto">Maungaturoto</option>
+					<option value="bewaterwise:farnorth:moerewakawakawa">Moerewa / Kawakawa</option>
+					<option value="napiercitycouncil:napier:napier">Napier</option>
+					<option value="bewaterwise:farnorth:okaihau">Okaihau</option>
+					<option value="bewaterwise:farnorth:opononiomapere">Opononi / Omapere</option>
+					<option value="smartwater:waipa:pukerimu">Pukerimu</option>
+					<option value="bewaterwise:farnorth:rawene">Rawene</option>
+					<option value="bewaterwise:kaipara:ruawai">Ruawai</option>
+					<option value="bewaterwise:farnorth:russell">Russell</option>
+					<option value="smartwater:waipa:waipa">Waipa District</option>
+					<option value="smartwater:waikato:waikato">Waikato District</option>
+					<option value="bewaterwise:farnorth:waitangipaihiaopua">Waitangi / Paihia / Opua</option>
+					<option value="bewaterwise:whangarei:whangarei">Whangarei</option>
+				</options>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="true" min="1" unit="h">
+				<label>Refresh Interval</label>
+				<default>5</default>
+				<description>The interval (in hours) to refresh the data.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="alertlevel">
+		<item-type>Number</item-type>
+		<label>Alert Level</label>
+		<description>The alert level for the location.</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

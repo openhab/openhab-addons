@@ -130,5 +130,4 @@ public class AggregateDataResponseTransformerPublicApi extends AbstractDataRespo
         putPercentType(valueMap, channelProvider.getChannel(group, CHANNEL_ID_SELF_CONSUMPTION_COVERAGE),
                 selfConsumption, consumption);
     }
-
 }

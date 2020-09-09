@@ -6,25 +6,25 @@
 
 	<thing-type id="brc1h">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dbusbluez" />
+			<bridge-type-ref id="dbusbluez"/>
 		</supported-bridge-type-refs>
 
 		<label>Daikin BRC1H Thermostat</label>
 		<description>A Daikin Madoka BRC1H Thermostat (BLE)</description>
 
 		<channels>
-			<channel id="rssi" typeId="rssi" />
-			<channel id="onOffStatus" typeId="brc1h_onOffStatus" />
-			<channel id="indoorTemperature" typeId="brc1h_indoorTemperature" />
-			<channel id="outdoorTemperature" typeId="brc1h_outdoorTemperature" />
-			<channel id="remoteCtrlVersion" typeId="brc1h_remoteCtrlVersion" />
-			<channel id="commCtrlVersion" typeId="brc1h_commCtrlVersion" />
-			<channel id="operationMode" typeId="brc1h_operationMode" />
-			<channel id="setpoint" typeId="brc1h_setpoint" />
-			<channel id="fanSpeed" typeId="brc1h_fanSpeed" />
-			<channel id="homekitCurrentHeatingCoolingMode" typeId="brc1h_homekitCurrentHeatingCoolingMode" />
-			<channel id="homekitTargetHeatingCoolingMode" typeId="brc1h_homekitTargetHeatingCoolingMode" />
-			<channel id="homebridgeMode" typeId="brc1h_homebridgeMode" />
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="onOffStatus" typeId="brc1h_onOffStatus"/>
+			<channel id="indoorTemperature" typeId="brc1h_indoorTemperature"/>
+			<channel id="outdoorTemperature" typeId="brc1h_outdoorTemperature"/>
+			<channel id="remoteCtrlVersion" typeId="brc1h_remoteCtrlVersion"/>
+			<channel id="commCtrlVersion" typeId="brc1h_commCtrlVersion"/>
+			<channel id="operationMode" typeId="brc1h_operationMode"/>
+			<channel id="setpoint" typeId="brc1h_setpoint"/>
+			<channel id="fanSpeed" typeId="brc1h_fanSpeed"/>
+			<channel id="homekitCurrentHeatingCoolingMode" typeId="brc1h_homekitCurrentHeatingCoolingMode"/>
+			<channel id="homekitTargetHeatingCoolingMode" typeId="brc1h_homekitTargetHeatingCoolingMode"/>
+			<channel id="homebridgeMode" typeId="brc1h_homebridgeMode"/>
 		</channels>
 
 		<config-description>

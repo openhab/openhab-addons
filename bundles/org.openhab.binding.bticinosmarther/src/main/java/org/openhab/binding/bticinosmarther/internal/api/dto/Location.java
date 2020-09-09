@@ -181,5 +181,4 @@ public class Location {
         return String.format("plantId=%s, name=%s, subscriptionId=%s, endpointUrl=%s", plantId, name, subscriptionId,
                 endpointUrl);
     }
-
 }

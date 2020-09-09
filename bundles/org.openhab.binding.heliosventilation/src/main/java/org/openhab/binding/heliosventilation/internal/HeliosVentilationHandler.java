@@ -254,7 +254,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
             }
             serialPort = null;
         }
-
     }
 
     private void poll(HeliosVentilationDataPoint v) {
@@ -401,7 +400,6 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
                 v = v.next();
             } while (v != null);
         });
-
     }
 
     /**

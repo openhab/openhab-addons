@@ -75,5 +75,4 @@ public class LiveDataResponse {
     public final void setSiteCurrentPowerFlow(SiteCurrentPowerFlow siteCurrentPowerFlow) {
         this.siteCurrentPowerFlow = siteCurrentPowerFlow;
     }
-
 }

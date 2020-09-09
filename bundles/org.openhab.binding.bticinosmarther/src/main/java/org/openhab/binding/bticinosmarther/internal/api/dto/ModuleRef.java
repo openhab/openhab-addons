@@ -34,5 +34,4 @@ public class ModuleRef {
     public String toString() {
         return String.format("id=%s", id);
     }
-
 }

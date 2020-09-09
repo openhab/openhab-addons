@@ -75,5 +75,4 @@ public class GetVersionCommand extends BRC1HCommand {
     public @Nullable String getCommunicationControllerVersion() {
         return communicationControllerVersion;
     }
-
 }

@@ -40,13 +40,13 @@ public class HPScannerStatus {
         if (state.getLength() > 0) {
             localScannerStatus = state.item(0).getTextContent();
         }
-        
+
         NodeList adfState = nodes.getElementsByTagName("scan:AdfState");
         if (adfState.getLength() > 0) {
             String adfStatus = adfState.item(0).getTextContent();
             localAdfLoaded = convertAdfStatus(adfStatus);
         }
-       
+
         adfLoaded = localAdfLoaded;
         status = localScannerStatus;
     }

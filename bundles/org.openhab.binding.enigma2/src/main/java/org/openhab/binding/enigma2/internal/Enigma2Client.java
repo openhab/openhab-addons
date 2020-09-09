@@ -153,7 +153,7 @@ public class Enigma2Client {
     private Optional<Document> transmitWithResult(String path) {
         try {
             Optional<String> xml = transmit(path);
-            if(xml.isPresent()) {
+            if (xml.isPresent()) {
                 DocumentBuilder builder = factory.newDocumentBuilder();
                 return Optional.ofNullable(builder.parse(new InputSource(new StringReader(xml.get()))));
             }

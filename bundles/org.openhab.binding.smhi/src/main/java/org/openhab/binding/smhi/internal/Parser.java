@@ -23,11 +23,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Class with static methods for parsing json strings returned from Smhi
@@ -53,9 +54,8 @@ public class Parser {
         JsonArray timeSeries = object.get("timeSeries").getAsJsonArray();
 
         List<Forecast> forecasts = StreamSupport.stream(timeSeries.spliterator(), false)
-                        .map(element -> parseForecast(element.getAsJsonObject()))
-                        .sorted(Comparator.naturalOrder())
-                        .collect(Collectors.toList());
+                .map(element -> parseForecast(element.getAsJsonObject())).sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
 
         return new TimeSeries(referenceTime, forecasts);
     }

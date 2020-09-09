@@ -29,6 +29,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.type.AutoUpdatePolicy;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -137,6 +138,7 @@ public class Property implements AttributeChanged {
      * @return Returns the ChannelType to be used to build the Channel.
      */
     private ChannelType createChannelType(PropertyAttributes attributes, ChannelState channelState) {
+        // Retained property -> State channel
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
@@ -144,6 +146,14 @@ public class Property implements AttributeChanged {
                             .toStateDescription())
                     .build();
         } else {
+            // Non-retained and settable property -> State channel
+            if (attributes.settable) {
+                return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
+                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
+                        .withCommandDescription(channelState.getCache().createCommandDescription().build())
+                        .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+            }
+            // Non-retained and non settable property -> Trigger channel
             if (attributes.datatype.equals(DataTypeEnum.enum_)) {
                 if (attributes.format.contains("PRESSED") && attributes.format.contains("RELEASED")) {
                     return DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON;

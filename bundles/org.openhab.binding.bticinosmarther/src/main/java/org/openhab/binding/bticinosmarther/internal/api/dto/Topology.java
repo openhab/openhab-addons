@@ -44,5 +44,4 @@ public class Topology {
     public List<Module> getModules() {
         return (plant != null) ? plant.getModules() : new ArrayList<>();
     }
-
 }

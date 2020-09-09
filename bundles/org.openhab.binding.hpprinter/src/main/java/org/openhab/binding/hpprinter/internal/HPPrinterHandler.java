@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hpprinter.internal;
 
+import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,6 @@ import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 
-import static org.openhab.binding.hpprinter.internal.HPPrinterBindingConstants.*;
 /**
  * The {@link HPPrinterHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -66,11 +67,12 @@ public class HPPrinterHandler extends BaseThingHandler {
     public void initialize() {
         final HPPrinterConfiguration config = getConfigAs(HPPrinterConfiguration.class);
 
-        if (config != null && !"".equals(config.ipAddress)) {
-            binder = new HPPrinterBinder(this, httpClient, scheduler, config);
-            binder.dynamicallyAddChannels(thing.getUID());
-            binder.retrieveProperties();
-            binder.open();
+        if (!"".equals(config.ipAddress)) {
+            final HPPrinterBinder localBinder = binder = new HPPrinterBinder(this, httpClient, scheduler, config);
+
+            localBinder.dynamicallyAddChannels(thing.getUID());
+            localBinder.retrieveProperties();
+            localBinder.open();
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "You must set an IP Address");
         }
@@ -78,17 +80,18 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (binder != null) {
-            binder.close();
+        final HPPrinterBinder localBinder = binder;
+        if (localBinder != null) {
+            localBinder.close();
             binder = null;
         }
     }
-    
+
     protected Boolean areStatusChannelsLinked(final String[] channels) {
         for (int i = 0; i < channels.length; i++) {
-           if (isLinked(new ChannelUID(thing.getUID(), CGROUP_STATUS, channels[i]))) {
-               return true;
-           }
+            if (isLinked(new ChannelUID(thing.getUID(), CGROUP_STATUS, channels[i]))) {
+                return true;
+            }
         }
         return false;
     }
@@ -99,16 +102,22 @@ public class HPPrinterHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        binder.channelsChanged();
+        final HPPrinterBinder localBinder = binder;
+        if (localBinder != null) {
+            localBinder.channelsChanged();
+        }
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        binder.channelsChanged();
+        final HPPrinterBinder localBinder = binder;
+        if (localBinder != null) {
+            localBinder.channelsChanged();
+        }
     }
 
     protected void updateStatus(final ThingStatus status, final ThingStatusDetail thingStatusDetail,
-    @Nullable final String message) {
+            @Nullable final String message) {
         super.updateStatus(status, thingStatusDetail, message);
     }
 

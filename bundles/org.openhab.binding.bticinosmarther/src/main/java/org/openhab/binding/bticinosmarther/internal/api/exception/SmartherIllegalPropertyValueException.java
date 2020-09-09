@@ -49,5 +49,4 @@ public class SmartherIllegalPropertyValueException extends Exception {
     public SmartherIllegalPropertyValueException(String propertyName, String invalidValue) {
         super(String.format(MSG_FORMAT, propertyName, invalidValue));
     }
-
 }
