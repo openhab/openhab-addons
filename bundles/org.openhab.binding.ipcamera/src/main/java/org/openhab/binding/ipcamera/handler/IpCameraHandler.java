@@ -35,6 +35,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
@@ -408,13 +409,6 @@ public class IpCameraHandler extends BaseThingHandler {
             }
         }
     }
-
-    Runnable runnableMovePTZ = new Runnable() {
-        @Override
-        public void run() {
-            onvifCamera.sendPTZRequest("AbsoluteMove");
-        }
-    };
 
     public IpCameraHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
         super(thing);
@@ -1151,6 +1145,11 @@ public class IpCameraHandler extends BaseThingHandler {
         return ""; // Did not find the String we were searching for
     }
 
+    private void sendPTZRequest() {
+        onvifCamera.sendPTZRequest("AbsoluteMove");
+    }
+
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
@@ -1175,23 +1174,23 @@ public class IpCameraHandler extends BaseThingHandler {
         else {
             switch (channelUID.getId()) {
                 case CHANNEL_MP4_HISTORY_LENGTH:
-                    if ("0".equals(command.toString())) {
+                    if (DecimalType.ZERO.equals(command)) {
                         mp4HistoryLength = 0;
                         mp4History = "";
                         setChannelState(CHANNEL_MP4_HISTORY, new StringType(mp4History));
                     }
                     return;
                 case CHANNEL_GIF_HISTORY_LENGTH:
-                    if ("0".equals(command.toString())) {
+                    if (DecimalType.ZERO.equals(command)) {
                         gifHistoryLength = 0;
                         gifHistory = "";
                         setChannelState(CHANNEL_GIF_HISTORY, new StringType(gifHistory));
                     }
                     return;
                 case CHANNEL_FFMPEG_MOTION_CONTROL:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         motionAlarmEnabled = true;
-                    } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                    } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                         motionAlarmEnabled = false;
                         noMotionDetected(CHANNEL_MOTION_ALARM);
                     } else {
@@ -1218,7 +1217,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     setupFfmpegFormat(ffmpegFormat.RECORD);
                     return;
                 case CHANNEL_START_STREAM:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         setupFfmpegFormat(ffmpegFormat.HLS);
                         if (ffmpegHLS != null) {
                             ffmpegHLS.setKeepAlive(-1);// will keep running till manually stopped.
@@ -1230,7 +1229,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_EXTERNAL_MOTION:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         motionDetected(CHANNEL_EXTERNAL_MOTION);
                     } else {
                         noMotionDetected(CHANNEL_EXTERNAL_MOTION);
@@ -1242,7 +1241,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_UPDATE_IMAGE_NOW:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         if (snapshotUri.isEmpty()) {
                             ffmpegSnapshotGeneration = true;
                             setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
@@ -1260,7 +1259,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     return;
                 case CHANNEL_UPDATE_GIF:
-                    if ("ON".equals(command.toString())) {
+                    if (OnOffType.ON.equals(command)) {
                         if (preroll > 0) {
                             snapCount = postroll;
                         } else {
@@ -1285,12 +1284,12 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             return;
-                        } else if ("OFF".equals(command.toString())) {
+                        } else if (OnOffType.OFF.equals(command)) {
                             onvifCamera.sendPTZRequest("Stop");
                             return;
                         }
                         onvifCamera.setAbsolutePan(Float.valueOf(command.toString()));
-                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_TILT:
@@ -1310,12 +1309,12 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             return;
-                        } else if ("OFF".equals(command.toString())) {
+                        } else if (OnOffType.OFF.equals(command)) {
                             onvifCamera.sendPTZRequest("Stop");
                             return;
                         }
                         onvifCamera.setAbsoluteTilt(Float.valueOf(command.toString()));
-                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
                 case CHANNEL_ZOOM:
@@ -1335,12 +1334,12 @@ public class IpCameraHandler extends BaseThingHandler {
                                 }
                             }
                             return;
-                        } else if ("OFF".equals(command.toString())) {
+                        } else if (OnOffType.OFF.equals(command)) {
                             onvifCamera.sendPTZRequest("Stop");
                             return;
                         }
                         onvifCamera.setAbsoluteZoom(Float.valueOf(command.toString()));
-                        threadPool.schedule(runnableMovePTZ, 500, TimeUnit.MILLISECONDS);
+                        threadPool.schedule(this::sendPTZRequest, 500, TimeUnit.MILLISECONDS);
                     }
                     return;
             }

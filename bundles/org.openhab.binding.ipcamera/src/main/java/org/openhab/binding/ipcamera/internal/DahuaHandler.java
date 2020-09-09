@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -181,9 +182,9 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_LED:
                 ipCameraHandler.setChannelState(CHANNEL_AUTO_LED, OnOffType.OFF);
-                if ("0".equals(command.toString()) || "OFF".equals(command.toString())) {
+                if (DecimalType.ZERO.equals(command) || OnOffType.OFF.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Off");
-                } else if ("ON".equals(command.toString())) {
+                } else if (OnOffType.ON.equals(command)) {
                     ipCameraHandler
                             .sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Manual");
                 } else {
@@ -193,7 +194,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_AUTO_LED:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.setChannelState(CHANNEL_ENABLE_LED, UnDefType.UNDEF);
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&Lighting[0][0].Mode=Auto");
                 }
@@ -210,7 +211,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_AUDIO_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&AudioDetect[0].MutationDetect=true&AudioDetect[0].EventHandler.Dejitter=1");
                 } else {
@@ -219,7 +220,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_LINE_CROSSING_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&VideoAnalyseRule[0][1].Enable=true");
                 } else {
@@ -228,7 +229,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ENABLE_MOTION_ALARM:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&MotionDetect[0].Enable=true&MotionDetect[0].EventHandler.Dejitter=1");
                 } else {
@@ -237,23 +238,23 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 }
                 return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[0].Mode=1");
                 } else {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[0].Mode=0");
                 }
                 return;
             case CHANNEL_ACTIVATE_ALARM_OUTPUT2:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[1].Mode=1");
                 } else {
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AlarmOut[1].Mode=0");
                 }
                 return;
             case CHANNEL_FFMPEG_MOTION_CONTROL:
-                if ("ON".equals(command.toString())) {
+                if (OnOffType.ON.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = true;
-                } else if ("OFF".equals(command.toString()) || "0".equals(command.toString())) {
+                } else if (OnOffType.OFF.equals(command) || DecimalType.ZERO.equals(command)) {
                     ipCameraHandler.motionAlarmEnabled = false;
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {
