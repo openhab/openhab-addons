@@ -364,7 +364,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="onvif">
-		<label>"onvif" - IP camera with ONVIF support.</label>
+		<label>ONVIF IP Camera</label>
 		<description>Use when the binding does not list your brand of ONVIF camera.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
