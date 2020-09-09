@@ -88,7 +88,7 @@ public class YIOremoteDockWebsocket {
         try {
             session.getRemote().sendString(str);
         } catch (IOException e) {
-            logger.warn("Error during sendMessage function {}", e.toString());
+            logger.warn("Error during sendMessage function {}", e.getMessage());
         }
     }
 
@@ -118,10 +118,8 @@ public class YIOremoteDockWebsocket {
                         "sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"{}\", \"format\":\"hex\"}",
                         messagepyload);
             }
-        } catch (
-
-        IOException e) {
-            logger.warn("Error during sendMessage function {}", e.toString());
+        } catch (IOException e) {
+            logger.warn("Error during sendMessage function {}", e.getMessage());
         }
     }
 

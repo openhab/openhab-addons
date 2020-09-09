@@ -22,10 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class YIOremoteConfiguration {
-
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public @Nullable String yiodockhost;
-    public String yiodockaccesstoken = "0";
+    public @Nullable String host;
+    public String accesstoken = "0";
 }

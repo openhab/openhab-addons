@@ -16,8 +16,8 @@ The following are the configurations available to each of the bridges/things:
 
 | Name                 | Type    | Required | Default | Description                                                                                                    |
 |----------------------|---------|----------|---------|----------------------------------------------------------------------------------------------------------------|
-| yiodockhost	       | string  | Yes      | (None)  | Host/IP Address or host name of the YIO Dock                                                                   |
-| yiodockaccesstoken   | string  | Yes      | 0       | The authentication token for the access currently 0                                                            |
+| 	host	       | string  | Yes      | (None)  | Host/IP Address or host name of the YIO Dock                                                                   |
+| 	accesstoken   | string  | Yes      | 0       | The authentication token for the access currently 0                                                            |
                                                       
 ## Channels
 
@@ -27,9 +27,9 @@ The YIO Dock has the following channels:
 
 | Channel 		     		| Input/Output 	| Item Type    | Description                                                                                																			|
 |---------------------------|---------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| yiodockreceiverswitch     | Input         | Switch       | The switch to enable diable the IR reciving diode/function                                 																			|
-| yiodocksendircode		    | Input         | String       | The IR Code Format(3;0x20DF40BF;32;0) which will send by the YIO Dock                     																				|
-| yiodockstatus			    | Output        | String       | The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise the IR send status is displayed of the last IR code send.	|
+| 	receiverswitch     		| Input         | Switch       | The switch to enable disable the IR receiving diode/function                                 																			|
+| 	sendircode		    	| Input         | String       | The IR Code Format(3;0x20DF40BF;32;0) which will send by the YIO Dock                     																				|
+| 	status			    	| Output        | String       | The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise the IR send status is displayed of the last IR code send.	|
 
 
 ## Full Example
@@ -37,23 +37,23 @@ The YIO Dock has the following channels:
 .things
 
 ```
-yioremote:yioremotedock:livingroom [ yiodockhost="192.168.178.21",yiodockaccesstoken="0"  ]
+yioremote:yioremotedock:livingroom [ 	host="192.168.178.21",	accesstoken="0"  ]
 ```
 
 .items
 
 ```
-String yiodocksendircode		"IR CODE [%s]" 			{channel="yioremote:yioremotedock:livingroom:input#yiodocksendircode"}
-Switch yiodockreceiverswitch	"IR recieving switch"	{channel="yioremote:yioremotedock:livingroom:input#yiodockreceiverswitch"}
-String yiodockstatus			"YIO Dock status[%s]" 	{channel="yioremote:yioremotedock:livingroom:output#yiodockstatus"}
+String 	sendircode		"IR CODE [%s]" 			{channel="yioremote:yioremotedock:livingroom:input#	sendircode"}
+Switch 	receiverswitch	"IR recieving switch"	{channel="yioremote:yioremotedock:livingroom:input#	receiverswitch"}
+String 	status			"YIO Dock status[%s]" 	{channel="yioremote:yioremotedock:livingroom:output#	status"}
 ```
 
 .sitemap
 
 ```
 sitemap Basic label="YIO Dock" {
-        Text item=yiodocksendircode
-        Switch item=yiodockreceiverswitch
-        Text item=yiodockstatus
+        Text item=	sendircode
+        Switch item=	receiverswitch
+        Text item=	status
 }
 ```
