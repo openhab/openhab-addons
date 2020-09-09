@@ -62,7 +62,6 @@ public class TACmiHandler extends BaseThingHandler {
 
     private @Nullable TACmiCoEBridgeHandler bridge;
     private long lastMessageRecvTS; // last received message timestamp
-    private boolean online; // online status shadow
 
     /**
      * the C.M.I.'s address
@@ -81,7 +80,6 @@ public class TACmiHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        this.online = false;
 
         scheduler.execute(this::initializeDetached);
     }
@@ -174,9 +172,9 @@ public class TACmiHandler extends BaseThingHandler {
         bridge.registerCMI(this);
         this.bridge = bridge;
 
-        // we set it to offline - will be set to online as soon as we start receiving
-        // data...
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING, "Waiting for data from the C.M.I.");
+        // we set it to UNKNOWN. Will be set to ONLIN~E as soon as we start receiving
+        // data or to OFFLINE when no data is received within 900 seconds.
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     private PodData getPodData(final PodIdentifier pi) {
@@ -338,9 +336,8 @@ public class TACmiHandler extends BaseThingHandler {
         final ChannelTypeUID channelType = message.getType() == MessageType.DIGITAL
                 ? TACmiBindingConstants.CHANNEL_TYPE_COE_DIGITAL_IN_UID
                 : TACmiBindingConstants.CHANNEL_TYPE_COE_ANALOG_IN_UID;
-        if (!this.online) {
+        if (getThing().getStatus() != ThingStatus.ONLINE) {
             updateStatus(ThingStatus.ONLINE);
-            this.online = true;
         }
         this.lastMessageRecvTS = System.currentTimeMillis();
         for (final Channel channel : thing.getChannels()) {
@@ -365,9 +362,8 @@ public class TACmiHandler extends BaseThingHandler {
 
     public void checkForTimeout() {
         final long refTs = System.currentTimeMillis();
-        if (online && refTs - this.lastMessageRecvTS > 900000) {
+        if (refTs - this.lastMessageRecvTS > 900000 && getThing().getStatus() != ThingStatus.OFFLINE) {
             // no data received for 900 seconds - set thing status to offline..
-            this.online = false;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "No update from C.M.I. for 15 min");
         }
