@@ -35,7 +35,7 @@
 			</parameter>
 
 			<parameter name="motionChangesOrder" type="boolean" required="true" groupName="Settings">
-				<label>motionChangesOrder</label>
+				<label>Motion Changes Order</label>
 				<description>When switched ON motion on a camera will make it skip ahead in the queue of cameras that have no
 					motion.
 				</description>
