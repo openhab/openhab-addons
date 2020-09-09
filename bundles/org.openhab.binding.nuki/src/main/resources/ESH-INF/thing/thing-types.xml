@@ -106,16 +106,16 @@
 		<label>Door State</label>
 		<description>Use this channel to display the current state of the door sensor</description>
 		<category>Door</category>
-        <state>
-            <options>
-                <option value="0">Unavailable</option>
-                <option value="1">Deactivated</option>
-                <option value="2">Closed</option>
-                <option value="3">Open</option>
-                <option value="4">Unknown</option>
-                <option value="5">Calibrating</option>
-            </options>
-        </state>
+		<state>
+			<options>
+				<option value="0">Unavailable</option>
+				<option value="1">Deactivated</option>
+				<option value="2">Closed</option>
+				<option value="3">Open</option>
+				<option value="4">Unknown</option>
+				<option value="5">Calibrating</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -81,10 +81,10 @@ Bridge nuki:bridge:NB1 [ ip="192.168.0.50", port=8080, apiToken="myS3cr3t!", man
 ### items/nuki.items
 
 ```
-Switch Frontdoor_Lock		"Frontdoor (Unlock / Lock)"		<nukiwhite>		{ channel="nuki:smartlock:NB1:SL1:lock" }
-Number Frontdoor_LockState		"Frontdoor (Lock State)"	<nukisl>		{ channel="nuki:smartlock:NB1:SL1:lockState" }
-Switch Frontdoor_LowBattery	"Frontdoor Low Battery"			<nukibattery>	{ channel="nuki:smartlock:NB1:SL1:lowBattery" }
-Number Frontdoor_DoorState		"Frontdoor (Door State)"	<door>		{ channel="nuki:smartlock:NB1:SL1:doorsensorState" }
+Switch Frontdoor_Lock		"Frontdoor (Unlock / Lock)"	<nukiwhite>		{ channel="nuki:smartlock:NB1:SL1:lock" }
+Number Frontdoor_LockState	"Frontdoor (Lock State)"	<nukisl>		{ channel="nuki:smartlock:NB1:SL1:lockState" }
+Switch Frontdoor_LowBattery	"Frontdoor Low Battery"		<nukibattery>		{ channel="nuki:smartlock:NB1:SL1:lowBattery" }
+Number Frontdoor_DoorState	"Frontdoor (Door State)"	<door>			{ channel="nuki:smartlock:NB1:SL1:doorsensorState" }
 ```
 
 ### sitemaps/nuki.sitemap
