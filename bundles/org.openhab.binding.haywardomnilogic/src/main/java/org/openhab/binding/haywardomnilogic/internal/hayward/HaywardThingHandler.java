@@ -72,6 +72,8 @@ public class HaywardThingHandler extends BaseThingHandler {
             return new DecimalType(value);
         } else if ("Switch".equals(type)) {
             return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
+        } else if ("Number:Dimensionless".equals(type)) {
+            return new DecimalType(value);
         } else {
             return StringType.valueOf(value);
         }

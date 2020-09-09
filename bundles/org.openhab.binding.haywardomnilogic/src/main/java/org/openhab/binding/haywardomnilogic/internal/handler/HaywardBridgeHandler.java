@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -140,7 +141,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.COMMUNICATION_ERROR,
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                 "Opening connection to Hayward's Server");
 
         initializeFuture = scheduler.schedule(() -> {
@@ -162,7 +163,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
                 commFailureCount = 50;
-                initPolling(30);
+                initPolling(60);
                 return;
             }
 
@@ -172,7 +173,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
                 commFailureCount = 50;
-                initPolling(30);
+                initPolling(60);
                 return;
             }
 
@@ -182,7 +183,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                 clearPolling(pollTelemetryFuture);
                 clearPolling(pollAlarmsFuture);
                 commFailureCount = 50;
-                initPolling(30);
+                initPolling(60);
                 return;
             }
 
@@ -190,12 +191,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             logger.trace("Succesfully opened connection to Hayward's server: {} Username:{}", config.hostname,
                     config.username);
 
-            if (config.telemetryPollTime > 0) {
-                initPolling(0);
-                logger.trace("Hayward Telemetry polling scheduled");
-            } else {
-                logger.trace("Hayward Telemetry polling disabled");
-            }
+            initPolling(0);
+            logger.trace("Hayward Telemetry polling scheduled");
 
             if (config.alarmPollTime > 0) {
                 initAlarmPolling(1);
@@ -206,8 +203,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "scheduledInitialize exception");
-            logger.error("Unable to open connection to Hayward's server: {} Username:{}", config.hostname,
+            logger.error("Unable to open connection to Hayward Server: {} Username: {}", config.hostname,
                     config.username, e);
+            clearPolling(pollTelemetryFuture);
+            clearPolling(pollAlarmsFuture);
+            commFailureCount = 50;
+            initPolling(60);
+            return;
         }
     }
 
@@ -224,7 +226,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         xmlResponse = httpXmlResponse(urlParameters);
 
         if (xmlResponse.isEmpty()) {
-            logger.error("Hayward Login XML response was null");
             return false;
         }
 
@@ -1083,34 +1084,45 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         String statusMessage;
         String urlParameterslength = Integer.toString(urlParameters.length());
 
-        ContentResponse httpResponse = sendRequestBuilder(config.hostname, HttpMethod.POST)
-                .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
-                .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
+        try {
+            ContentResponse httpResponse = sendRequestBuilder(config.hostname, HttpMethod.POST)
+                    .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
+                    .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
 
-        status = httpResponse.getStatus();
-        String xmlResponse = httpResponse.getContentAsString();
+            status = httpResponse.getStatus();
+            String xmlResponse = httpResponse.getContentAsString();
 
-        if (!(evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse).isEmpty())) {
-            statusMessage = evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse)
-                    .get(0);
+            if (!(evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse)
+                    .isEmpty())) {
+                statusMessage = evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()",
+                        xmlResponse).get(0);
 
-        } else {
-            statusMessage = httpResponse.getReason();
-        }
-
-        if (status == 200) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{} Hayward http command: {}", getCallingMethod(), urlParameters);
-                logger.trace("{} Hayward http response: {} {}", getCallingMethod(), statusMessage, xmlResponse);
-            } else if (logger.isDebugEnabled()) {
-                logger.debug("{} Hayward http response: {}", getCallingMethod(), statusMessage);
+            } else {
+                statusMessage = httpResponse.getReason();
             }
-            return xmlResponse;
-        } else {
-            if (logger.isErrorEnabled()) {
-                logger.error("{} Hayward http command: {}", getCallingMethod(), urlParameters);
-                logger.error("{} Hayward http response: {}", getCallingMethod(), status);
+
+            if (status == 200) {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{} Hayward http command: {}", getCallingMethod(), urlParameters);
+                    logger.trace("{} Hayward http response: {} {}", getCallingMethod(), statusMessage, xmlResponse);
+                } else if (logger.isDebugEnabled()) {
+                    logger.debug("{} Hayward http response: {}", getCallingMethod(), statusMessage);
+                }
+                return xmlResponse;
+            } else {
+                if (logger.isErrorEnabled()) {
+                    logger.error("{} Hayward http command: {}", getCallingMethod(), urlParameters);
+                    logger.error("{} Hayward http response: {}", getCallingMethod(), status);
+                }
+                return "";
             }
+        } catch (java.net.UnknownHostException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unable to resolve host.  Check Hayward hostname and your internet connection.");
+            return "";
+        } catch (TimeoutException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Connection Timeout.  Check Hayward hostname and your internet connection.");
             return "";
         }
     }
