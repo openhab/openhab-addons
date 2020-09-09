@@ -53,7 +53,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     /**
      * Port the C.M.I. uses for COE-Communication - this cannot be changed.
      */
-    private static final int coePort = 5441;
+    private static final int COE_PORT = 5441;
 
     /**
      * Connection socket
@@ -198,7 +198,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
                 cmi.handleCommand(channelUID, command);
             }
         } else {
-            logger.warn("No bridge commands defined.");
+            logger.debug("No bridge commands defined.");
         }
     }
 

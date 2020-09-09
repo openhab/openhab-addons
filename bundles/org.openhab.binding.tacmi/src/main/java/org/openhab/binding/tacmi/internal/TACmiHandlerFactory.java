@@ -49,8 +49,8 @@ public class TACmiHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_CMI, THING_TYPE_COE_BRIDGE, THING_TYPE_CMI_SCHEMA).collect(Collectors.toSet()));
 
-    private HttpClient httpClient;
-    private TACmiChannelTypeProvider channelTypeProvider;
+    private final HttpClient httpClient;
+    private final TACmiChannelTypeProvider channelTypeProvider;
 
     @Activate
     public TACmiHandlerFactory(@Reference HttpClientFactory httpClientFactory,

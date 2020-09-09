@@ -52,8 +52,8 @@ public enum TACmiMeasureType {
 
     UNSUPPORTED(-1, 1);
 
-    private int typeval;
-    private int offset;
+    private final int typeval;
+    private final int offset;
 
     private static final Logger logger = LoggerFactory.getLogger(TACmiMeasureType.class);
 

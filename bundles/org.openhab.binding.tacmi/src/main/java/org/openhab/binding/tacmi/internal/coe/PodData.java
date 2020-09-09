@@ -26,8 +26,7 @@ import org.openhab.binding.tacmi.internal.message.MessageType;
 public class PodData {
     protected final byte podId;
     protected final MessageType messageType;
-    @Nullable
-    protected Message message;
+    protected @Nullable Message message;
 
     /**
      * Create new AnalogValue with specified value and type

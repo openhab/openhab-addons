@@ -80,7 +80,7 @@ public class TACmiHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING);
+        updateStatus(ThingStatus.UNKNOWN);
         this.online = false;
 
         scheduler.execute(this::initializeDetached);
@@ -168,7 +168,7 @@ public class TACmiHandler extends BaseThingHandler {
         final Bridge br = getBridge();
         final TACmiCoEBridgeHandler bridge = br == null ? null : (TACmiCoEBridgeHandler) br.getHandler();
         if (bridge == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, "No Bridge configured!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No Bridge configured!");
             return;
         }
         bridge.registerCMI(this);

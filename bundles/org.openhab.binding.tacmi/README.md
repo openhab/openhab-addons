@@ -43,7 +43,7 @@ The first word *tempCollector* (highlighted in the screenshot) will be used as c
 Everything else till the final *:* will be used as channel description.
 Be sure to have at least 2 words in the *Pre-Text* as we need both - the channel name and a description.
 The binding will log an error otherwise.
-Also keep in mind: for the channel name we have to adhere to the OH channel name conventions - so just use letters and numbers without any special sings here.
+Also keep in mind: for the channel name we have to adhere to the openHAB channel name conventions - so just use letters and numbers without any special sings here.
 The type of the channel will be automatically determined by the type of the object added.
 Also don't forget the final colon - this is the separator between the label and the value.
 Without the colon the parser couldn't build up a working channel for this value.
@@ -75,7 +75,7 @@ Don’t forget to reboot the CMI after you uploaded the coe.csv file.
 
 This thing reflecting one of our 'schema API page' as defined in the prerequisites.
 This thing doesn't need the bridge.
-Multiple of these pages on different C.M.I.'s could be defined within a OH instance.
+Multiple of these pages on different C.M.I.'s could be defined within a openHAB instance.
 
 * TA C.M.I. CoE Bridge
 
@@ -108,7 +108,7 @@ The thing has the following configuration parameters:
 | API Schema ID           | schemaId     | ID of the schema API page                                                                                     | 1-256                  |
 | Poll Interval           | pollInterval | Poll interval (in seconds) how often to poll the API Page                                                     | 1-300; default 10      |
 
-This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within a OH instance.
+This thing doesn't need a bridge. Multiple of these things for different C.M.I.'s could be defined within a openHAB instance.
 
 ### TA C.M.I. CoE Connection
 
@@ -136,7 +136,7 @@ Also when the API Page is updated, the channels are also updated during the next
 Some comments on the CoE Connection and channel configuration:
 As you might already have taken notice when studying the TA's manual, there are always a multiple CoE-values updated within a single CoE-message.
 This is a design decision made by TA.
-But this also means for CoE-Messages from OH to TA C.M.I. we have to send multiple values at once.
+But this also means for CoE-Messages from openHAB to TA C.M.I. we have to send multiple values at once.
 But due to OH's design there is no default restore of previous values out of the box.
 So after OH startup the _output thing channels_ are either initialized with it's configured default value or flagged as 'unknown' until the first update on the channel happens.
 You could either use some 'illegal' value as initial value and use _CoE Value Validation_ on the TA side to detect invalid values.
@@ -177,7 +177,8 @@ Channel `coe-analog-out`:
 | Measurement Type        | type         | Measurement type for this channel (see table below)                                                           | 0-21                    |
 | Initial Value           | initialValue | Initial value to set after startup (optional, defaults to uninitialized)                                      | floating point numeric  |
 
-The binding supports all 21 measure types that exist according to the TA documentation. Unfortunately, the documentation is not consistent here, so most of the types are supported only by generic names.
+The binding supports all 21 measure types that exist according to the TA documentation.
+Unfortunately, the documentation is not consistent here, so most of the types are supported only by generic names.
 The known measure types are:
 
 | id     | type          | description                                   |
@@ -246,7 +247,7 @@ sitemap heatingTA label="heatingTA"
 }
 ```
 
-## Any custom content here!
+## Some additional hints and comments
 
 Some additional hints and comments:
 

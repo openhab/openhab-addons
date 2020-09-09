@@ -55,7 +55,7 @@ public class PodDataOutgoing extends PodData {
         boolean allInitialized = true;
         for (int idx = 0; idx < this.initialized.length; idx++) {
             if (this.channeUIDs[idx] != null && !this.initialized[idx]) {
-                allInitialized = false;
+                return false;
             }
         }
         if (!allInitialized) {

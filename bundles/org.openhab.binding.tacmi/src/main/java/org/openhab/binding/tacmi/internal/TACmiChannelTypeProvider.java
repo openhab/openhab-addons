@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Christian Niessner - Initial contribution
  */
 @NonNullByDefault
-@Component(service = { TACmiChannelTypeProvider.class, ChannelTypeProvider.class }, immediate = true)
+@Component(service = { TACmiChannelTypeProvider.class, ChannelTypeProvider.class })
 public class TACmiChannelTypeProvider implements ChannelTypeProvider {
 
     private final Map<ChannelTypeUID, ChannelType> channelTypesByUID = new HashMap<>();

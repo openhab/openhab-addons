@@ -32,16 +32,19 @@ public final class PodIdentifier {
      */
     public PodIdentifier(MessageType messageType, byte podId, boolean outgoing) {
         this.messageType = messageType;
-        if (podId < 0)
+        if (podId < 0) {
             throw new ArrayIndexOutOfBoundsException(podId);
+        }
         switch (messageType) {
             case ANALOG:
-                if (podId < 1 || podId > 8)
+                if (podId < 1 || podId > 8) {
                     throw new ArrayIndexOutOfBoundsException(podId);
+                }
                 break;
             case DIGITAL:
-                if (podId != 0 && podId != 9)
+                if (podId != 0 && podId != 9) {
                     throw new ArrayIndexOutOfBoundsException(podId);
+                }
                 break;
         }
         this.podId = podId;
@@ -55,8 +58,9 @@ public final class PodIdentifier {
 
     @Override
     public boolean equals(@Nullable Object o) {
-        if (!(o instanceof PodIdentifier))
+        if (!(o instanceof PodIdentifier)) {
             return false;
+        }
         PodIdentifier po = (PodIdentifier) o;
         return this.messageType == po.messageType && this.podId == po.podId && this.outgoing == po.outgoing;
     }
