@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.ipcamera.config;
 
-import java.math.BigDecimal;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -25,12 +23,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class CameraConfig {
     String ipAddress = "";
     int port;
-    BigDecimal onvifPort = new BigDecimal(0);
-    BigDecimal serverPort = new BigDecimal(0);
+    int onvifPort;
+    int serverPort;
     String username = "";
     String password = "";
-    BigDecimal onvifMediaProfile = new BigDecimal(0);
-    BigDecimal pollTime = new BigDecimal(0);
+    int onvifMediaProfile;
+    int pollTime;
     String ffmpegInput = "";
     String snapshotUrl = "";
     String mjpegUrl = "";
@@ -39,7 +37,7 @@ public class CameraConfig {
     String customAudioAlarmUrl = "";
     String updateImageWhen = "";
     boolean updateImage;
-    BigDecimal nvrChannel = new BigDecimal(0);
+    int nvrChannel;
     String ipWhitelist = "";
     String ffmpegLocation = "";
     String ffmpegOutput = "";
@@ -49,11 +47,11 @@ public class CameraConfig {
     String mjpegOptions = "";
     String motionOptions = "";
     boolean ptzContinuous;
-    BigDecimal gifPreroll = new BigDecimal(0);
-    BigDecimal gifPostroll = new BigDecimal(0);
+    int gifPreroll;
+    int gifPostroll;
 
     public int getOnvifMediaProfile() {
-        return onvifMediaProfile.intValue();
+        return onvifMediaProfile;
     }
 
     public String getMjpegOptions() {
@@ -109,7 +107,7 @@ public class CameraConfig {
     }
 
     public int getNvrChannel() {
-        return nvrChannel.intValue();
+        return nvrChannel;
     }
 
     public String getMjpegUrl() {
@@ -129,15 +127,15 @@ public class CameraConfig {
     }
 
     public int getPollTime() {
-        return pollTime.intValue();
+        return pollTime;
     }
 
     public int getOnvifPort() {
-        return onvifPort.intValue();
+        return onvifPort;
     }
 
     public int getServerPort() {
-        return serverPort.intValue();
+        return serverPort;
     }
 
     public String getIp() {
@@ -153,11 +151,11 @@ public class CameraConfig {
     }
 
     public int getGifPreroll() {
-        return gifPreroll.intValue();
+        return gifPreroll;
     }
 
     public int getGifPostroll() {
-        return gifPostroll.intValue();
+        return gifPostroll;
     }
 
     public int getPort() {

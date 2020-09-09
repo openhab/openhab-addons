@@ -376,7 +376,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
         switch (channelUID.getId()) {
             case CHANNEL_TEXT_OVERLAY:
                 logger.debug("Changing text overlay to {}", command.toString());
-                if (command.toString().equals("")) {
+                if (command.toString().isEmpty()) {
                     hikChangeSetting("/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1",
                             "enabled", "<enabled>false</enabled>");
                 } else {
@@ -388,7 +388,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_ENABLE_EXTERNAL_ALARM_INPUT:
                 logger.debug("Changing enabled state of the external input 1 to {}", command.toString());
-                if (command.toString().equals("ON")) {
+                if (OnOffType.ON.equals(command)) {
                     hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "enabled", "<enabled>true</enabled>");
                 } else {
                     hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "enabled", "<enabled>false</enabled>");
@@ -396,7 +396,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT:
                 logger.debug("Changing triggering state of the external input 1 to {}", command.toString());
-                if (command.toString().equals("OFF")) {
+                if (OnOffType.OFF.equals(command)) {
                     hikChangeSetting("/ISAPI/System/IO/inputs/" + nvrChannel, "triggering",
                             "<triggering>low</triggering>");
                 } else {

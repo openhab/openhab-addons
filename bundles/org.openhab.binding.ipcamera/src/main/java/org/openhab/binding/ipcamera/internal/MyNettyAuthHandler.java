@@ -121,7 +121,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }
 
-        if (password.equals("")) {
+        if (password.isEmpty()) {
             myHandler.cameraConfigError("Camera gave a 401 reply: You need to provide a password.");
             return;
         }
@@ -172,7 +172,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                             }
                         }
                     }
-                    if (!authenticate.equals("")) {
+                    if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
                         myHandler.cameraConfigError(

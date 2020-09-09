@@ -71,7 +71,7 @@ public class Ffmpeg {
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http
-        if (!password.equals("") && !input.contains("@") && input.contains("rtsp")) {
+        if (!password.isEmpty() && !input.contains("@") && input.contains("rtsp")) {
             String credentials = username + ":" + password + "@";
             // will not work for https: but currently binding does not use https
             altInput = input.substring(0, 7) + credentials + input.substring(7);
