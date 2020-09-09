@@ -14,8 +14,6 @@ package org.openhab.binding.tacmi.internal.message;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.tacmi.internal.TACmiMeasureType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class handles analog values as used in the analog message.
@@ -29,19 +27,11 @@ public final class AnalogValue {
     public double value;
     public TACmiMeasureType measureType;
 
-    private final Logger logger = LoggerFactory.getLogger(AnalogValue.class);
-
     /**
      * Create new AnalogValue with specified value and type
      */
     public AnalogValue(int rawValue, int type) {
         measureType = TACmiMeasureType.fromInt(type);
         value = ((double) rawValue) / measureType.getOffset();
-        if (measureType.equals(TACmiMeasureType.UNSUPPORTED)) {
-            logger.warn("Unsupported measure type {}, value is {}", type, value);
-        } else {
-            logger.debug("Got measure: type {}, raw value {}, converted: {}, {}", type, rawValue, measureType.name(),
-                    value);
-        }
     }
 }

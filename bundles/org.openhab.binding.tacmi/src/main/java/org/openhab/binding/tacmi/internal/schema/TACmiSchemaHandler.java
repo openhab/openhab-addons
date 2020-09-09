@@ -211,7 +211,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             return;
         }
         if (e == null) {
-            logger.warn("Got command for unknown channel {}: {}", channelUID, command);
+            logger.debug("Got command for unknown channel {}: {}", channelUID, command);
             return;
         }
         final Request reqUpdate;
@@ -228,7 +228,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                             + "&changetox2=" + (command == OnOffType.ON ? "1" : "0")));
                     reqUpdate.header(HttpHeader.REFERER, this.serverBase + "schema.html"); // required...
                 } else {
-                    logger.warn("Got command for uninitalized channel {}: {}", channelUID, command);
+                    logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
                     return;
                 }
                 break;
@@ -246,17 +246,17 @@ public class TACmiSchemaHandler extends BaseThingHandler {
                         return;
                     }
                 } else {
-                    logger.warn("Got command for uninitalized channel {}: {}", channelUID, command);
+                    logger.debug("Got command for uninitalized channel {}: {}", channelUID, command);
                     return;
                 }
                 break;
             case READ_ONLY_NUMERIC:
             case READ_ONLY_STATE:
             case READ_ONLY_SWITCH:
-                logger.warn("Got command for ReadOnly channel {}: {}", channelUID, command);
+                logger.debug("Got command for ReadOnly channel {}: {}", channelUID, command);
                 return;
             default:
-                logger.warn("Got command for unhandled type {} channel {}: {}", e.type, channelUID, command);
+                logger.debug("Got command for unhandled type {} channel {}: {}", e.type, channelUID, command);
                 return;
         }
         try {

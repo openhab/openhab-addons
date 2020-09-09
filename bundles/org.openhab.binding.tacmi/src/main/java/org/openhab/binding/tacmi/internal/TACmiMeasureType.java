@@ -79,7 +79,7 @@ public enum TACmiMeasureType {
                 return mtype;
             }
         }
-        logger.warn("Received unexpected measure type {}", type);
+        logger.debug("Received unexpected measure type {}", type);
         return TACmiMeasureType.UNSUPPORTED;
     }
 }

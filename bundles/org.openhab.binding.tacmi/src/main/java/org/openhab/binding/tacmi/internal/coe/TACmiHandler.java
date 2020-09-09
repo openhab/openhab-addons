@@ -223,7 +223,7 @@ public class TACmiHandler extends BaseThingHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         final TACmiChannelConfiguration channelConfig = this.channelConfigByUID.get(channelUID);
         if (channelConfig == null) {
-            logger.warn("Recived unhandled command '{}' for unknown Channel {} ", command, channelUID);
+            logger.debug("Recived unhandled command '{}' for unknown Channel {} ", command, channelUID);
             return;
         }
         final Channel channel = thing.getChannel(channelUID);
@@ -239,7 +239,7 @@ public class TACmiHandler extends BaseThingHandler {
             } else if ((TACmiBindingConstants.CHANNEL_TYPE_COE_ANALOG_IN_UID.equals(channel.getChannelTypeUID()))) {
                 mt = MessageType.ANALOG;
             } else {
-                logger.warn("Recived unhandled command '{}' on unknown Channel type {} ", command, channelUID);
+                logger.debug("Recived unhandled command '{}' on unknown Channel type {} ", command, channelUID);
                 return;
             }
             final byte podId = getPodId(mt, channelConfig.output);
@@ -268,7 +268,7 @@ public class TACmiHandler extends BaseThingHandler {
             mt = MessageType.ANALOG;
             analog = true;
         } else {
-            logger.warn("Recived unhandled command '{}' on Channel {} ", command, channelUID);
+            logger.debug("Recived unhandled command '{}' on Channel {} ", command, channelUID);
             return;
         }
 
