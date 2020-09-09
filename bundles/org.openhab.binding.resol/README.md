@@ -24,9 +24,12 @@ The Resol binding doesn't need any form of configuration in files.
 
 There are different things supported.
 The most important and common thing is the VBUS Bridge, the device connecting your VBUS to Password for the VBusLAN needs to be configured!
+Default password is "vbus", but if this still works it is highly recommended to change it in the resol controller.
 The other options normally don't need to be touched.
 
-For the Resol controller things nothing is configurable at the time of writing.
+For the Resol controller things no settings are configurable.
+
+Depending on the solar/heating controller you have attached to your VBUS there will be a "controller" and several other things like heat quantity meters, heating circuit controls, etc.
 
 ## Channels
 
