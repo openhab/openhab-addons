@@ -442,20 +442,20 @@
 		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler>
 	</feature>
-    <feature name="MotionSensor2Data">
-        <message-dispatcher>SimpleDispatcher</message-dispatcher>
-        <message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x0C" group="1">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x11" group="1">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x13" group="1">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x03" group="11">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x0C" group="11">MotionSensor2AlternateHeartbeatHandler</message-handler>
-        <message-handler cmd="0x11" group="11">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x13" group="11">NoOpMsgHandler</message-handler>
-        <message-handler cmd="0x2e">MotionSensorDataReplyHandler</message-handler>
-        <command-handler command="OnOffType">NoOpCommandHandler</command-handler>
-        <poll-handler>NoPollHandler</poll-handler>
-    </feature>
+	<feature name="MotionSensor2Data">
+		<message-dispatcher>SimpleDispatcher</message-dispatcher>
+		<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x0C" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x11" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x13" group="1">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x03" group="11">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x0C" group="11">MotionSensor2AlternateHeartbeatHandler</message-handler>
+		<message-handler cmd="0x11" group="11">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x13" group="11">NoOpMsgHandler</message-handler>
+		<message-handler cmd="0x2e">MotionSensorDataReplyHandler</message-handler>
+		<command-handler command="OnOffType">NoOpCommandHandler</command-handler>
+		<poll-handler>NoPollHandler</poll-handler>
+	</feature>
 	<feature name="HiddenDoorSensorData">
 		<message-dispatcher>SimpleDispatcher</message-dispatcher>
 		<message-handler cmd="0x03" group="1">NoOpMsgHandler</message-handler>

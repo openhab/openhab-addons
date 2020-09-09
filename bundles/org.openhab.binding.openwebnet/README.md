@@ -38,7 +38,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | Category             | WHO          | Thing Type IDs                      | Description                                                 | Status           |
 | -------------------- | :----------: | :---------------------------------: | ----------------------------------------------------------- | ---------------- |
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
-| Lightning            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
+| Lighting            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
 
 ### For ZigBee (Radio)
 

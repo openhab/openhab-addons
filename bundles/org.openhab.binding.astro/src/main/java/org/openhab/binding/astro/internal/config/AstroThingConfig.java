@@ -53,5 +53,4 @@ public class AstroThingConfig {
         }
         return null;
     }
-
 }

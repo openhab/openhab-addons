@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 
 /**
@@ -24,6 +25,7 @@ import org.openhab.binding.max.internal.Utils;
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class TCommand extends CubeCommand {
 
     private static final int FORCE_UPDATE = 1;

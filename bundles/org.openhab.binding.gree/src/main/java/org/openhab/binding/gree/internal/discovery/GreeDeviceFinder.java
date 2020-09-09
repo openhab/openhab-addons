@@ -162,5 +162,4 @@ public class GreeDeviceFinder {
     public int getScannedDeviceCount() {
         return deviceTable.size();
     }
-
 }

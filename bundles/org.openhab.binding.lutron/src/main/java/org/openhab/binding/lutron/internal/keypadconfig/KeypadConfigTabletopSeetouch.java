@@ -115,16 +115,16 @@ public final class KeypadConfigTabletopSeetouch extends KeypadConfig {
 
     private static final List<KeypadComponent> BUTTON_GROUPBOTTOM_RL = Arrays.asList(Component.BUTTON16,
             Component.BUTTON17, Component.LOWER3, Component.RAISE3);
-    private static final List<KeypadComponent> BUTTON_GROUPBOTTOM_CRL = Arrays.asList(Component.LOWER1, Component.RAISE1,
-            Component.LOWER2, Component.RAISE2, Component.LOWER3, Component.RAISE3);
+    private static final List<KeypadComponent> BUTTON_GROUPBOTTOM_CRL = Arrays.asList(Component.LOWER1,
+            Component.RAISE1, Component.LOWER2, Component.RAISE2, Component.LOWER3, Component.RAISE3);
     private static final List<KeypadComponent> BUTTON_GROUPBOTTOM_GENERIC = Arrays.asList(Component.BUTTON16,
             Component.BUTTON17, Component.LOWER1, Component.RAISE1, Component.LOWER2, Component.RAISE2,
             Component.LOWER3, Component.RAISE3);
 
-    private static final List<KeypadComponent> LED_GROUP1 = Arrays.asList(Component.LED1, Component.LED2, Component.LED3,
-            Component.LED4, Component.LED5);
-    private static final List<KeypadComponent> LED_GROUP2 = Arrays.asList(Component.LED6, Component.LED7, Component.LED8,
-            Component.LED9, Component.LED10);
+    private static final List<KeypadComponent> LED_GROUP1 = Arrays.asList(Component.LED1, Component.LED2,
+            Component.LED3, Component.LED4, Component.LED5);
+    private static final List<KeypadComponent> LED_GROUP2 = Arrays.asList(Component.LED6, Component.LED7,
+            Component.LED8, Component.LED9, Component.LED10);
     private static final List<KeypadComponent> LED_GROUP3 = Arrays.asList(Component.LED11, Component.LED12,
             Component.LED13, Component.LED14, Component.LED15);
 
@@ -151,15 +151,16 @@ public final class KeypadConfigTabletopSeetouch extends KeypadConfig {
         modelData.put("T10RL", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUPBOTTOM_RL, LED_GROUP1, LED_GROUP2,
                 LED_GROUPBOTTOM_RL));
 
-        modelData.put("T15RL", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUP3, BUTTON_GROUPBOTTOM_RL, LED_GROUP1,
-                LED_GROUP2, LED_GROUP3, LED_GROUPBOTTOM_RL));
+        modelData.put("T15RL", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUP3, BUTTON_GROUPBOTTOM_RL,
+                LED_GROUP1, LED_GROUP2, LED_GROUP3, LED_GROUPBOTTOM_RL));
 
         modelData.put("T5CRL", combinedList(BUTTON_GROUP1, BUTTON_GROUPBOTTOM_CRL, LED_GROUP1));
 
-        modelData.put("T10CRL", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUPBOTTOM_CRL, LED_GROUP1, LED_GROUP2));
+        modelData.put("T10CRL",
+                combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUPBOTTOM_CRL, LED_GROUP1, LED_GROUP2));
 
-        modelData.put("T15CRL", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUP3, BUTTON_GROUPBOTTOM_CRL, LED_GROUP1,
-                LED_GROUP2, LED_GROUP3));
+        modelData.put("T15CRL", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUP3, BUTTON_GROUPBOTTOM_CRL,
+                LED_GROUP1, LED_GROUP2, LED_GROUP3));
 
         modelData.put("Generic", combinedList(BUTTON_GROUP1, BUTTON_GROUP2, BUTTON_GROUP3, BUTTON_GROUPBOTTOM_GENERIC,
                 LED_GROUP1, LED_GROUP2, LED_GROUP3, LED_GROUPBOTTOM_RL)); // Superset of all models

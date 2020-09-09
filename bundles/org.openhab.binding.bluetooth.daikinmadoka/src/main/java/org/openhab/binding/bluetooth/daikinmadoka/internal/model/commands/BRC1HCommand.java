@@ -110,5 +110,4 @@ public abstract class BRC1HCommand {
         }
         return false;
     }
-
 }

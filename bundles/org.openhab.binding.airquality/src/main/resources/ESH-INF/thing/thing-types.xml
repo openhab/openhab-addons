@@ -65,7 +65,7 @@
 		<label>Air Quality Index</label>
 		<description></description>
 		<category>Air Quality Index</category>
-		<state readOnly="true" pattern="%d" min="0" max="500" />
+		<state readOnly="true" pattern="%d" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="aqiDescription">
@@ -203,7 +203,7 @@
 			</options>
 		</state>
 	</channel-type>
-	
+
 	<channel-type id="aqiColor" advanced="true">
 		<item-type>Color</item-type>
 		<label>AQI Color</label>

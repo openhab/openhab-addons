@@ -59,5 +59,4 @@ public class MoonDistance {
     public void setDistance(double kilometer) {
         this.distance = kilometer;
     }
-
 }

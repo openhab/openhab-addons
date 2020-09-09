@@ -178,7 +178,8 @@ public class InnogyBridgeHandlerTest {
         private int executionCount;
         private int directExecutionCount;
 
-        private InnogyBridgeHandlerAccessible(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) throws Exception {
+        private InnogyBridgeHandlerAccessible(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient)
+                throws Exception {
             super(bridge, oAuthFactory, httpClient);
 
             Device bridgeDevice = new Device();

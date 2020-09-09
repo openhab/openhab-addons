@@ -70,5 +70,4 @@ public class VigiCruesHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

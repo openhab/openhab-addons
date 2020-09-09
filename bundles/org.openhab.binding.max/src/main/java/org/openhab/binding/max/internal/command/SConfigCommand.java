@@ -13,6 +13,7 @@
 package org.openhab.binding.max.internal.command;
 
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class SConfigCommand extends CubeCommand {
 
-    private String baseString;
+    private String baseString = "";
     private final String rfAddress;
     private final int roomId;
 
-    private byte[] commandBytes;
+    private byte[] commandBytes = new byte[0];
 
     private final Logger logger = LoggerFactory.getLogger(SConfigCommand.class);
 

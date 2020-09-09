@@ -45,5 +45,4 @@ public class SmartherAuthorizationException extends SmartherGatewayException {
     public SmartherAuthorizationException(String message, Throwable cause) {
         super(message, cause);
     }
-
 }

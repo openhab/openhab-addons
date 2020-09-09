@@ -71,7 +71,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
         if (readings != null) {
             logger.debug("Updating readings for sensor type {}", seneyeService.seneyeType);
             switch (seneyeService.seneyeType) {
-                case 3: 
+                case 3:
                     updateState(CHANNEL_NH4, new DecimalType(readings.nh4.curr));
                     updateState(CHANNEL_PAR, new DecimalType(readings.par.curr));
                     updateState(CHANNEL_LUX, new DecimalType(readings.lux.curr));
@@ -90,7 +90,6 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
                     updateState(CHANNEL_DISCONNECTED, new StringType(readings.status.getDisconnectedString()));
             }
         }
-
     }
 
     @Override

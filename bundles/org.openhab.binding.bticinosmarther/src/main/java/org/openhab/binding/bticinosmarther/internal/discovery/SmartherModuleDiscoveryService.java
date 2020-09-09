@@ -172,5 +172,4 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
         final String moduleId = module.getId();
         return moduleId.substring(0, moduleId.indexOf(ID_SEPARATOR));
     }
-
 }

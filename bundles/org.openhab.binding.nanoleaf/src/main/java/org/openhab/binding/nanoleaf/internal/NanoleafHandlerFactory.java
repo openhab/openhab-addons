@@ -38,6 +38,7 @@ import org.openhab.binding.nanoleaf.internal.discovery.NanoleafPanelsDiscoverySe
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafControllerHandler;
 import org.openhab.binding.nanoleaf.internal.handler.NanoleafPanelHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -53,14 +54,17 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.nanoleaf", service = ThingHandlerFactory.class)
 public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
 
-    private final Logger logger = LoggerFactory.getLogger(NanoleafHandlerFactory.class);
-
-    private @NonNullByDefault({}) HttpClient httpClient;
-
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_LIGHT_PANEL, THING_TYPE_CONTROLLER).collect(Collectors.toSet()));
+
+    private final Logger logger = LoggerFactory.getLogger(NanoleafHandlerFactory.class);
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final HttpClient httpClient;
+
+    @Activate
+    public NanoleafHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -90,15 +94,6 @@ public class NanoleafHandlerFactory extends BaseThingHandlerFactory {
             unregisterDiscoveryService(thingHandler.getThing());
             logger.debug("Nanoleaf controller handler removed.");
         }
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
     }
 
     private synchronized void registerDiscoveryService(NanoleafControllerHandler bridgeHandler) {

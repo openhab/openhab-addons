@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.enigma2.internal;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
-
 import java.io.IOException;
 import java.util.regex.Pattern;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 
 /**
  * The {@link Enigma2HttpClient} class is responsible for sending HTTP-Get requests to the Enigma2 device.
@@ -26,7 +26,8 @@ import java.util.regex.Pattern;
  */
 @NonNullByDefault
 public class Enigma2HttpClient {
-    public static final Pattern PATTERN = Pattern.compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFF]+");
+    public static final Pattern PATTERN = Pattern
+            .compile("[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFF]+");
     private final int timeout;
 
     public Enigma2HttpClient(int timeout) {

@@ -176,10 +176,10 @@ public class HyperionNgHandler extends BaseThingHandler {
             // update Hyperion, older API compatibility
             Hyperion hyperion = info.getHyperion();
             if (hyperion != null) {
-                
+
                 updateHyperion(hyperion);
             }
-            
+
             // populate the effect states
             List<Effect> effects = info.getEffects();
             populateEffects(effects);

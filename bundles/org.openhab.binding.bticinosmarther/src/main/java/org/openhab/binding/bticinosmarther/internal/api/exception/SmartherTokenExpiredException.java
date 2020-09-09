@@ -33,5 +33,4 @@ public class SmartherTokenExpiredException extends SmartherAuthorizationExceptio
     public SmartherTokenExpiredException(String message) {
         super(message);
     }
-
 }

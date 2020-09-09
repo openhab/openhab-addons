@@ -66,5 +66,4 @@ public class Sensor {
     public String toString() {
         return String.format("measures=%s", measures);
     }
-
 }

@@ -80,7 +80,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         logger.debug("handleCommand called for channel '{}' of type '{}' with command '{}'", channelUID,
                 getThing().getThingTypeUID().getId(), command);
-        @Nullable final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
+        @Nullable
+        final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
         if (innogyBridgeHandler == null) {
             logger.warn("BridgeHandler not found. Cannot handle command without bridge.");
             return;
@@ -91,7 +92,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
         }
 
         if (command instanceof RefreshType) {
-            @Nullable final Device device = innogyBridgeHandler.getDeviceById(deviceId);
+            @Nullable
+            final Device device = innogyBridgeHandler.getDeviceById(deviceId);
             if (device != null) {
                 onDeviceStateChanged(device);
             }
@@ -102,7 +104,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
         if (CHANNEL_SWITCH.equals(channelUID.getId())) {
             // DEBUGGING HELPER
             // ----------------
-            @Nullable final Device device = innogyBridgeHandler.getDeviceById(deviceId);
+            @Nullable
+            final Device device = innogyBridgeHandler.getDeviceById(deviceId);
             if (device != null && DEBUG.equals(device.getConfig().getName())) {
                 logger.debug("DEBUG SWITCH ACTIVATED!");
                 if (OnOffType.ON.equals(command)) {
@@ -244,7 +247,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
      */
     private boolean initializeProperties() {
         synchronized (this.lock) {
-            @Nullable final Device device = getDevice();
+            @Nullable
+            final Device device = getDevice();
             if (device != null) {
                 final Map<String, String> properties = editProperties();
                 properties.put(PROPERTY_ID, device.getId());
@@ -326,11 +330,13 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
     private @Nullable InnogyBridgeHandler getInnogyBridgeHandler() {
         synchronized (this.lock) {
             if (this.bridgeHandler == null) {
-                @Nullable final Bridge bridge = getBridge();
+                @Nullable
+                final Bridge bridge = getBridge();
                 if (bridge == null) {
                     return null;
                 }
-                @Nullable final ThingHandler handler = bridge.getHandler();
+                @Nullable
+                final ThingHandler handler = bridge.getHandler();
                 if (handler instanceof InnogyBridgeHandler) {
                     this.bridgeHandler = (InnogyBridgeHandler) handler;
                     this.bridgeHandler.registerDeviceStatusListener(this);
@@ -355,7 +361,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
 
             // DEVICE STATES
             if (device.hasDeviceState()) {
-                @Nullable Boolean reachable = null;
+                @Nullable
+                Boolean reachable = null;
                 if (device.getDeviceState().hasIsReachableState()) {
                     reachable = device.getDeviceState().isReachable();
                 }
@@ -905,7 +912,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
                 } else {
                     logger.debug("Capability {} has no state (yet?) - refreshing device.", capability.getName());
 
-                    @Nullable final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
+                    @Nullable
+                    final InnogyBridgeHandler innogyBridgeHandler = getInnogyBridgeHandler();
                     if (innogyBridgeHandler != null) {
                         device = innogyBridgeHandler.refreshDevice(deviceId);
                     }
@@ -943,7 +951,8 @@ public class InnogyDeviceHandler extends BaseThingHandler implements DeviceStatu
             return value;
         }
 
-        @Nullable final Channel channel = getThing().getChannel(channelId);
+        @Nullable
+        final Channel channel = getThing().getChannel(channelId);
         if (channel == null) {
             logger.debug("Channel {} was null! Value not inverted.", channelId);
             return value;

@@ -52,9 +52,9 @@ Available device options are shown in thing properties.
 
 | Channel ID                         | Item Type                | Label                           | Description                                                                                 | Read Only | Advanced |
 |------------------------------------|--------------------------|---------------------------------|---------------------------------------------------------------------------------------------|-----------|----------|
-| Binding Control                    |                          |                                 |                                                                                             |           |          |
+| **Binding Control**                |                          |                                 |                                                                                             |           |          |
 | bindingControl#activate            | Switch                   | Activate Binding Control        | Activate (control through openHAB) or deactivate (return control to CCEase) binding control | false     | no       |
-| Ventilation Values                 |                          |                                 |                                                                                             |           |          |
+| **Ventilation Values**             |                          |                                 |                                                                                             |           |          |
 | ventilation#fanLevel               | Number                   | Fan Level                       | Fan level                                                                                   | false     | no       |
 | ventilation#fanOut0                | Number                   | Fan Out Level 0 (away)          | Fan level 0 performance (%) of outgoing fan                                                 | false     | yes      |
 | ventilation#fanOut1                | Number                   | Fan Out Level 1                 | Fan level 1 performance (%) of outgoing fan                                                 | false     | yes      |
@@ -68,7 +68,7 @@ Available device options are shown in thing properties.
 | ventilation#fanOutPercent          | Number                   | Fan Out (%)                     | Current relative speed (%) of outgoing fan                                                  | true      | yes      |
 | ventilation#fanInRPM               | Number                   | Fan In (rpm)                    | Current absolute speed (rpm) of incoming fan                                                | true      | yes      |
 | ventilation#fanOutRPM              | Number                   | Fan Out (rpm)                   | Current absolute speed (rpm) of outgoing fan                                                | true      | yes      |
-| Temperature Values                 |                          |                                 |                                                                                             |           |          |
+| **Temperature Values**             |                          |                                 |                                                                                             |           |          |
 | temperatures#targetTemperature     | Number:Temperature       | Target Temperature              | Target (comfort) temperature                                                                | false     | no       |
 | temperatures#outdoorTemperatureIn  | Number:Temperature       | Outdoor Temperature Incoming    | Intake air temperature (outside)                                                            | true      | yes      |
 | temperatures#outdoorTemperatureOut | Number:Temperature       | Outdoor Temperature Outgoing    | Outlet air temperature (outside)                                                            | true      | yes      |
@@ -84,7 +84,7 @@ Available device options are shown in thing properties.
 | temperatures#ewtTemperature        | Number:Temperature       | EWT Temperature                 | Temperature of geothermal heat exchanger sensor                                             | true      | yes      |
 | temperatures#heaterTemperature     | Number:Temperature       | Heater Temperature              | Temperature of heater sensor                                                                | true      | yes      |
 | temperatures#cookerhoodTemperature | Number:Temperature       | Cookerhood Temperature          | Temperature of cookerhood sensor                                                            | true      | yes      |
-| Uptimes                            |                          |                                 |                                                                                             |           |          |
+| **Uptimes**                        |                          |                                 |                                                                                             |           |          |
 | times#level0Time                   | Number:Time              | Level 0 duration                | Uptime at level 0 (away)                                                                    | true      | yes      |
 | times#level1Time                   | Number:Time              | Level 1 duration                | Uptime at level 1                                                                           | true      | yes      |
 | times#level2Time                   | Number:Time              | Level 2 duration                | Uptime at level 2                                                                           | true      | yes      |
@@ -93,7 +93,7 @@ Available device options are shown in thing properties.
 | times#preheaterTime                | Number:Time              | Preheater Duration              | Uptime of preheater                                                                         | true      | yes      |
 | times#bypassTime                   | Number:Time              | Bypass Duration                 | Hours of bypass open                                                                        | true      | yes      |
 | times#filterHours                  | Number:Time              | Filter Duration                 | Uptime of the filter                                                                        | true      | no       |
-| Menu P1: Control States            |                          |                                 |                                                                                             |           |          |
+| **Menu P1: Control States**        |                          |                                 |                                                                                             |           |          |
 | menuP1#menu20Mode                  | Switch                   | Menu 20 Mode (P10)              | State of menu 20 mode (P10)                                                                 | true      | yes      |
 | menuP1#menu21Mode                  | Switch                   | Menu 21 Mode (P11)              | State of menu 21 mode (P11)                                                                 | true      | yes      |
 | menuP1#menu22Mode                  | Switch                   | Menu 22 Mode (P12)              | State of menu 22 mode (P12)                                                                 | true      | yes      |
@@ -104,7 +104,7 @@ Available device options are shown in thing properties.
 | menuP1#menu27Mode                  | Switch                   | Menu 27 Mode (P17)              | State of menu 27 mode (P17)                                                                 | true      | yes      |
 | menuP1#menu28Mode                  | Switch                   | Menu 28 Mode (P18)              | State of menu 28 mode (P18)                                                                 | true      | yes      |
 | menuP1#menu29Mode                  | Switch                   | Menu 29 Mode (P19)              | State of menu 29 mode (P19)                                                                 | true      | yes      |
-| Menu P2: Delay Settings            |                          |                                 |                                                                                             |           |          |
+| **Menu P2: Delay Settings**        |                          |                                 |                                                                                             |           |          |
 | menuP2#bathroomStartDelay          | Number                   | Menu P21                        | Start delay for bathroom switch (min)                                                       | false     | yes      |
 | menuP2#bathroomEndDelay            | Number                   | Menu P22                        | End delay for bathroom switch (min)                                                         | false     | yes      |
 | menuP2#L1EndDelay                  | Number                   | Menu P23                        | End delay for L1 switch (min)                                                               | false     | yes      |
@@ -113,7 +113,7 @@ Available device options are shown in thing properties.
 | menuP2#RFShortDelay                | Number                   | Menu P25                        | End delay (RF short actuation) for ventilation level 3 (min)                                | false     | yes      |
 | menuP2#RFLongDelay                 | Number                   | Menu P26                        | End delay (RF long actuation) for ventilation level 3 (min)                                 | false     | yes      |
 | menuP2#cookerhoodDelay             | Number                   | Menu P20                        | End delay for cooker hood control (min)                                                     | false     | yes      |
-| Menu P9: Option States             |                          |                                 |                                                                                             |           |          |
+| **Menu P9: Option States**         |                          |                                 |                                                                                             |           |          |
 | menuP9#chimneyState (dynamic)      | Switch                   | Chimney Control State           | State of the chimney control                                                                | true      | yes      |
 | menuP9#bypassState (dynamic)       | Switch                   | Bypass State                    | State of the bypass (ON = open / OFF = closed)                                              | true      | yes      |
 | menuP9#ewtState (dynamic)          | Switch                   | EWT State                       | State of the EWT valve (ON = open / OFF = closed)                                           | true      | yes      |
@@ -122,39 +122,39 @@ Available device options are shown in thing properties.
 | menuP9#frostState (dynamic)        | Switch                   | Antifrost State                 | State of the antifrost control                                                              | true      | yes      |
 | menuP9#cookerhoodState (dynamic)   | Switch                   | Cookerhood State                | State of the cookerhood control                                                             | true      | yes      |
 | menuP9#enthalpyState (dynamic)     | Switch                   | Enthalpy State                  | State of the enthalpy module                                                                | true      | yes      |
-| Error States                       |                          |                                 |                                                                                             |           |          |
+| **Error States**                   |                          |                                 |                                                                                             |           |          |
 | errors#filterError                 | Switch                   | Filter Error                    | Filter full                                                                                 | true      | no       |
 | errors#errorsCurrent               | String                   | Errors Current                  | Current errors                                                                              | true      | no       |
 | errors#errorsLast                  | String                   | Errors Last                     | Last errors                                                                                 | true      | yes      |
 | errors#errorsPrelast               | String                   | Errors Prelast                  | Prelast errors                                                                              | true      | yes      |
 | errors#errorsPrePrelast            | String                   | Errors Pre-Prelast              | Pre-Prelast errors                                                                          | true      | yes      |
-| Bypass Values (dynamic)            |                          |                                 |                                                                                             |           |          |
+| **Bypass Values (dynamic)**        |                          |                                 |                                                                                             |           |          |
 | bypass#bypassFactor                | Number                   | Bypass Factor                   | Bypass factor value                                                                         | true      | yes      |
 | bypass#bypassLevel                 | Number                   | Bypass Level                    | Bypass level state                                                                          | true      | yes      |
 | bypass#bypassCorrection            | Number                   | Bypass Correction               | Bypass correction state                                                                     | true      | yes      |
 | bypass#bypassSummer                | Switch                   | Bypass Summer Mode              | Bypass summer mode                                                                          | true      | yes      |
-| Preheater Values (dynamic)         |                          |                                 |                                                                                             |           |          |
+| **Preheater Values (dynamic)**     |                          |                                 |                                                                                             |           |          |
 | preheater#preheaterValve           | Number                   | Preheater Valve                 | State of the preheater valve                                                                | true      | yes      |
 | preheater#preheaterFrostProtect    | Switch                   | Frost Protection                | State of the frost protection                                                               | true      | yes      |
 | preheater#preheaterHeating         | Switch                   | Preheater                       | State of the preheater                                                                      | true      | yes      |
 | preheater#preheaterFrostTime       | Number                   | Preheater Frost Time            | Frost minutes                                                                               | true      | yes      |
 | preheater#preheaterSafety          | Number                   | Preheater Frost Safety          | Frost safety setting                                                                        | true      | yes      |
-| EWT Values (dynamic)               |                          |                                 |                                                                                             |           |          |
+| **EWT Values (dynamic)**           |                          |                                 |                                                                                             |           |          |
 | ewt#ewtTemperatureLow              | Number:Temperature       | EWT Temperature (low)           | Lower temperature of the geothermal heat exchanger                                          | true      | yes      |
 | ewt#ewtTemperatureHigh             | Number:Temperature       | EWT Temperature (high)          | Upper temperature of the geothermal heat exchanger                                          | true      | yes      |
 | ewt#ewtSpeed                       | Number                   | EWT Speed Up (%)                | Speed up of the geothermal heat exchanger                                                   | true      | yes      |
-| Heater Values (dynamic)            |                          |                                 |                                                                                             |           |          |
+| **Heater Values (dynamic)**        |                          |                                 |                                                                                             |           |          |
 | heater#heaterPower                 | Number                   | Heater Power                    | Heater power value                                                                          | true      | yes      |
 | heater#heaterPowerI                | Number                   | Heater Power I-parameter        | Heater power I-parameter value                                                              | true      | yes      |
 | heater#heaterTargetTemperature     | Number:Temperature       | Heater Target Temperature       | Target temperature of the heater                                                            | true      | yes      |
-| Cookerhood Values (dynamic)        |                          |                                 |                                                                                             |           |          |
+| **Cookerhood Values (dynamic)**    |                          |                                 |                                                                                             |           |          |
 | cookerhood#cookerhoodSpeed         | Number                   | Cookerhood Speed Up (%)         | Speed up of the cookerhood                                                                  | true      | yes      |
-| Enthalpy Values (dynamic)          |                          |                                 |                                                                                             |           |          |
+| **Enthalpy Values (dynamic)**      |                          |                                 |                                                                                             |           |          |
 | enthalpy#enthalpyTemperature       | Number:Temperature       | Enthalpy Sensor Temperature     | Temperature of the enthalpy sensor                                                          | true      | yes      |
 | enthalpy#enthalpyHumidity          | Number                   | Enthalpy Sensor Humidity        | Humidity of the enthalpy sensor                                                             | true      | yes      |
 | enthalpy#enthalpyLevel             | Number                   | Enthalpy Sensor Level           | Level of the enthalpy sensor                                                                | true      | yes      |
 | enthalpy#enthalpyTime              | Number                   | Enthalpy Sensor Timer           | Timer state of the enthalpy sensor                                                          | true      | yes      |
-| Inputs                             |                          |                                 |                                                                                             |           |          |
+| **Inputs**                         |                          |                                 |                                                                                             |           |          |
 | inputs#isL1Switch                  | Switch                   | L1 Switch                       | Availability of L1 step switch                                                              | true      | yes      |
 | inputs#isL2Switch                  | Switch                   | L2 Switch                       | Availability of L2 step switch                                                              | true      | yes      |
 | inputs#isBathroomSwitch            | Switch                   | Bathroom Switch                 | Availability of bathroom switch                                                             | true      | yes      |
@@ -162,10 +162,10 @@ Available device options are shown in thing properties.
 | inputs#isExternalFilter            | Switch                   | External Filter                 | Availability of external filter                                                             | true      | yes      |
 | inputs#isWTW                       | Switch                   | Heat Recovery                   | Availability of heat recovery (WTW)                                                         | true      | yes      |
 | inputs#isBathroom2Switch           | Switch                   | Bathroom Switch 2               | Availability of bathroom switch 2 (luxe)                                                    | true      | yes      |
-| Resets                             |                          |                                 |                                                                                             |           |          |
-| resets#filterReset                 | Switch                   | Filter Reset                    | Reset filter uptime                                                                         | false     | no       |
-| resets#errorReset                  | Switch                   | Error Reset                     | Reset errors                                                                                | false     | no       |
-| Analog Inputs [1-4]                |                          |                                 |                                                                                             |           |          |
+| **Resets**                         |                          |                                 |                                                                                             |           |          |
+| resets#filterReset                 | Number                   | Filter Reset                    | Reset filter uptime                                                                         | false     | no       |
+| resets#errorReset                  | Number                   | Error Reset                     | Reset errors                                                                                | false     | no       |
+| **Analog Inputs [1-4]**            |                          |                                 |                                                                                             |           |          |
 | analog[1-4]#isAnalog               | Switch                   | Analog Input Availability       | Availability of analog input [1-4]                                                          | false     | yes      |
 | analog[1-4]#analogMode             | Switch                   | Analog Input State              | State of analog input [1-4]                                                                 | false     | yes      |
 | analog[1-4]#analogNegative         | Switch                   | Analog Input Postive/Negative   | Postive/Negative state of analog input [1-4]                                                | false     | yes      |
@@ -173,7 +173,7 @@ Available device options are shown in thing properties.
 | analog[1-4]#analogMin              | Number                   | Analog Input Min                | Minimum setting for analog input [1-4]                                                      | false     | yes      |
 | analog[1-4]#analogMax              | Number                   | Analog Input Max                | Maximum setting for analog input [1-4]                                                      | false     | yes      |
 | analog[1-4]#analogValue            | Number                   | Analog Input Target             | Target setting for analog input [1-4]                                                       | false     | yes      |
-| RF Input                           |                          |                                 |                                                                                             |           |          |
+| **RF Input**                       |                          |                                 |                                                                                             |           |          |
 | analogRF#isRF                      | Switch                   | RF Input Availability           | Availability of RF input                                                                    | false     | yes      |
 | analogRF#RFMode                    | Switch                   | RF Input State                  | State of RF input                                                                           | false     | yes      |
 | analogRF#RFNegative                | Switch                   | RF Input Postive/Negative       | Postive/Negative state of RF input                                                          | false     | yes      |
@@ -195,13 +195,13 @@ Thing comfoair:comfoair:myComfoAir "ComfoAir" [serialPort="/dev/ttyUSB0", refres
 ```
 Switch	comfoairControl				"Activate"					<computer>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:bindingControl#activate"}
 Number	comfoairFanLevel			"Ventilation level [%d]"			<chart>		(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:ventilation#fanLevel"}
-Switch	comfoairErrorReset			"Error reset"					<service>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:resets#errorReset"}
-Switch	comfoairFilterReset			"Filter reset"					<service>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:resets#filterReset"}
+Number	comfoairErrorReset			"Error reset"					<service>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:resets#errorReset"}
+Number	comfoairFilterReset			"Filter reset"					<service>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:resets#filterReset"}
 Number	comfoairFilterPeriod			"Filter period [%d weeks]"			<clock>		(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP2#filterWeeks"}
 
 // Messages
-String	comfoairError				"Error: [%s]"			(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:errors#errorMessage"}
-Number:Time	comfoairFilterRuntime		"Filter runtime [%.0f h]"			(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:times#filterHours"}
+String		comfoairError			"Error: [%s]"			(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:errors#errorsCurrent"}
+Number:Time	comfoairFilterRuntime		"Filter runtime [%.0f h]"	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:times#filterHours"}
 
 // State
 Number:Temperature	comfoairTargetTemperature		"Comfort temperature [%.1f °C]"			<temperature>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:temperatures#targetTemperature"}
@@ -216,7 +216,7 @@ Number	comfoairFanOut0				"Exhaust capacity - level 0 [%d %%]"		<fan_out>	(Comfo
 Switch	comfoairBypassMode			"Bypass [MAP(comfoair_bypass.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#bypassState"}
 Switch	comfoairEWTMode 			"EWT [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#ewtState"}
 Switch	comfoairChimneyMode			"Fire programme [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#chimneyState"}
-Switch	comfoairHeaterMode			"Heater [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#heaterState"}
+Switch	comfoairHeaterMode			"Heater [MAP(comfoair_on-off.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#heaterState"}
 Switch	comfoairCookerHoodMode			"Extractor hood [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#cookerhoodState"}
 Switch	comfoairEnthalpyMode			"Enthalpy [MAP(comfoair_on-off.map):%s]"	<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#enthalpyState"}
 Switch	comfoairFreezeMode			"Freeze [MAP(comfoair_freeze.map):%s]"		<climate>	(ComfoAir)			{channel="comfoair:comfoair:myComfoAir:menuP9#frostState"}
@@ -227,10 +227,10 @@ Switch	comfoairFreezeMode			"Freeze [MAP(comfoair_freeze.map):%s]"		<climate>	(C
 ```
 sitemap comfoair label="ComfoAir" {
 	Frame label="Main" {
-		Text item=comfoairError labelcolor=[!="OK"="red"] valuecolor=[!="OK"="red"]
+		Text item=comfoairError labelcolor=[!="No Errors"="red"] valuecolor=[!="No Errors"="red"]
 		Switch item=comfoairControl mappings=[0="CCEase", 1="Computer"]
-		Switch item=comfoairErrorReset mappings=[ON="Reset"]
-		Switch item=comfoairFilterReset mappings=[ON="Reset"]
+		Switch item=comfoairErrorReset mappings=[1="Reset"]
+		Switch item=comfoairFilterReset mappings=[1="Reset"]
 	}
 	Frame label="Control" {
 		Selection item=comfoairFanLevel
@@ -258,8 +258,8 @@ sitemap comfoair label="ComfoAir" {
 `comfoair_bypass.map` file:
 
 ```
-1=Opened
-0=Closed
+ON=Opened
+OFF=Closed
 undefined=unknown
 -=unknown
 ```

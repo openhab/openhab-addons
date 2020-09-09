@@ -291,5 +291,4 @@ public class Sun extends RiseSet implements Planet {
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
     }
-
 }

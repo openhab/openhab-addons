@@ -731,5 +731,4 @@ public class SmartherModuleHandler extends BaseThingHandler {
             updateChannelState(CHANNEL_SETTINGS_POWER, OnOffType.OFF);
         }
     }
-
 }

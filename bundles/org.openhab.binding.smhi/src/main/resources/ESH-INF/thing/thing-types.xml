@@ -152,6 +152,6 @@
 			</channel-group>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:smhi:forecast" />
+		<config-description-ref uri="thing-type:smhi:forecast"/>
 	</thing-type>
 </thing:thing-descriptions>
