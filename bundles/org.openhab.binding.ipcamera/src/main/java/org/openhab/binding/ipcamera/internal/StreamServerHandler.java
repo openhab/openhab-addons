@@ -82,7 +82,6 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest httpRequest = (HttpRequest) msg;
-                // logger.debug("Stream Server recieved request \t{}:{}", httpRequest.method(), httpRequest.uri());
                 if (!whiteList.equals("DISABLE")) {
                     String requestIP = "("
                             + ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress() + ")";
@@ -148,7 +147,6 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                             ctx.close();
                             return;
                         case "/ipcamera0.ts":
-                            // TimeUnit.MILLISECONDS.sleep(10);// Give time for file to be created.
                         default:
                             if (httpRequest.uri().contains(".ts")) {
                                 TimeUnit.MILLISECONDS.sleep(75);// Give time for file to be created.

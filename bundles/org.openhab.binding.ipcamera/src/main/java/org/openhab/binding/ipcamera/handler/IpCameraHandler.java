@@ -1294,7 +1294,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_TILT:
                     if (onvifCamera.supportsPTZ()) {
                         if (command instanceof IncreaseDecreaseType) {
-                            if ("INCREASE".equals(command.toString())) {
+                            if (IncreaseDecreaseType.INCREASE.equals(command)) {
                                 if (cameraConfig.getPtzContinuous()) {
                                     onvifCamera.sendPTZRequest("ContinuousMoveUp");
                                 } else {
@@ -1319,7 +1319,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 case CHANNEL_ZOOM:
                     if (onvifCamera.supportsPTZ()) {
                         if (command instanceof IncreaseDecreaseType) {
-                            if ("INCREASE".equals(command.toString())) {
+                            if (IncreaseDecreaseType.INCREASE.equals(command)) {
                                 if (cameraConfig.getPtzContinuous()) {
                                     onvifCamera.sendPTZRequest("ContinuousMoveIn");
                                 } else {

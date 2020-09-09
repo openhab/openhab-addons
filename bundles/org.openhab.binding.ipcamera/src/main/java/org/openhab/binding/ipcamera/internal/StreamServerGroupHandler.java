@@ -87,7 +87,6 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
         try {
             if (msg instanceof HttpRequest) {
                 HttpRequest httpRequest = (HttpRequest) msg;
-                // logger.debug("Stream Server recieved request \t{}:{}", httpRequest.method(), httpRequest.uri());
                 String requestIP = "("
                         + ((InetSocketAddress) ctx.channel().remoteAddress()).getAddress().getHostAddress() + ")";
                 if (!whiteList.contains(requestIP) && !whiteList.equals("DISABLE")) {
@@ -102,7 +101,6 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                                 String debugMe = ipCameraGroupHandler.getPlayList();
                                 logger.debug("playlist is:{}", debugMe);
                                 sendString(ctx, debugMe, "application/x-mpegurl");
-                                // ctx.close();
                                 return;
                             } else {
                                 logger.warn(
@@ -115,7 +113,6 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                             break;
                         case "/ipcamera.jpg":
                             sendSnapshotImage(ctx, "image/jpg");
-                            // ctx.close();
                             return;
                         default:
                             if (httpRequest.uri().contains(".ts")) {
