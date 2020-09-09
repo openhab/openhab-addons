@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class CameraConfig {
     String ipAddress = "";
-    BigDecimal port = new BigDecimal(0);
+    int port;
     BigDecimal onvifPort = new BigDecimal(0);
     BigDecimal serverPort = new BigDecimal(0);
     String username = "";

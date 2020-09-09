@@ -27,7 +27,7 @@
 				<advanced>false</advanced>
 			</parameter-group>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings" unit="ms">
 				<label>Time Before Rotating to Next Camera</label>
 				<description>Time in milliseconds of how long to display a camera before changing to the next camera in the group.
 				</description>
@@ -35,7 +35,7 @@
 			</parameter>
 
 			<parameter name="motionChangesOrder" type="boolean" required="true" groupName="Settings">
-				<label>motionChangesOrder</label>
+				<label>Motion Changes Order</label>
 				<description>When switched ON motion on a camera will make it skip ahead in the queue of cameras that have no
 					motion.
 				</description>
@@ -102,7 +102,7 @@
 	</thing-type>
 
 	<thing-type id="generic">
-		<label>"generic" - IP camera with RTSP or HTTP URLs.</label>
+		<label>RTSP/HTTP IP Camera</label>
 		<description>Use when your camera is not ONVIF compatible.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
@@ -364,7 +364,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 	</thing-type>
 
 	<thing-type id="onvif">
-		<label>"onvif" - IP camera with ONVIF support.</label>
+		<label>ONVIF IP Camera</label>
 		<description>Use when the binding does not list your brand of ONVIF camera.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
