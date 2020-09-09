@@ -27,7 +27,7 @@
 				<advanced>false</advanced>
 			</parameter-group>
 
-			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings">
+			<parameter name="pollTime" type="integer" required="true" min="1000" max="15000" groupName="Settings" unit="ms">
 				<label>Time Before Rotating to Next Camera</label>
 				<description>Time in milliseconds of how long to display a camera before changing to the next camera in the group.
 				</description>
