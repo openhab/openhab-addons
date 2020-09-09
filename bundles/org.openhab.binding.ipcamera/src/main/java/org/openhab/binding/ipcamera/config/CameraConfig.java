@@ -161,6 +161,6 @@ public class CameraConfig {
     }
 
     public int getPort() {
-        return port.intValue();
+        return port;
     }
 }
