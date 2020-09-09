@@ -31,12 +31,12 @@ import org.osgi.service.component.annotations.Reference;
 public class RadioThermostatStateDescriptionProvider extends BaseDynamicStateDescriptionProvider {
     @Reference
     protected void setChannelTypeI18nLocalizationService(
-            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService){
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.channelTypeI18nLocalizationService = channelTypeI18nLocalizationService;
     }
 
     protected void unsetChannelTypeI18nLocalizationService(
-            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService){
+            final ChannelTypeI18nLocalizationService channelTypeI18nLocalizationService) {
         this.channelTypeI18nLocalizationService = null;
     }
 }

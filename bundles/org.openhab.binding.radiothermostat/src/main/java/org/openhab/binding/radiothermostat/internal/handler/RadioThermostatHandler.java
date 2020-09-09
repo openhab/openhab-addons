@@ -113,7 +113,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
 
         if (hostName == null || hostName == "") {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "Thermostat Host Name must be specified");
+                    "Thermostat Host Name must be specified");
             return;
         }
 
@@ -121,7 +121,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
             this.refreshPeriod = refresh;
         }
 
-        if (logRefresh != null) { 
+        if (logRefresh != null) {
             this.logRefreshPeriod = logRefresh;
         }
 
