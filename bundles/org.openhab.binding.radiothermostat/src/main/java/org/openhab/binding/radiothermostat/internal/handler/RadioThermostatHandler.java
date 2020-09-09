@@ -111,7 +111,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         this.isCT80 = config.isCT80;
         this.disableLogs = config.disableLogs;
 
-        if (hostName == null || hostName == "") {
+        if (hostName.equals("")) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Thermostat Host Name must be specified");
             return;
