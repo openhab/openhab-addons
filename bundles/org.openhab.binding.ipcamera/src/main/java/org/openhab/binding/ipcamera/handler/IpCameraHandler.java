@@ -1622,6 +1622,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+        cameraConfig = getConfigAs(CameraConfig.class);
         ipAddress = cameraConfig.getIp();
         username = cameraConfig.getUser();
         password = cameraConfig.getPassword();
