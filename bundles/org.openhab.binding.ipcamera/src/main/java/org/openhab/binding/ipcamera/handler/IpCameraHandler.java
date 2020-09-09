@@ -1149,7 +1149,6 @@ public class IpCameraHandler extends BaseThingHandler {
         onvifCamera.sendPTZRequest("AbsoluteMove");
     }
 
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
