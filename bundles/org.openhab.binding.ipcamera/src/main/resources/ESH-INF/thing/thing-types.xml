@@ -102,7 +102,7 @@
 	</thing-type>
 
 	<thing-type id="generic">
-		<label>"generic" - IP camera with RTSP or HTTP URLs.</label>
+		<label>RTSP/HTTP IP Camera</label>
 		<description>Use when your camera is not ONVIF compatible.</description>
 		<channels>
 			<channel id="startStream" typeId="startStream"/>
