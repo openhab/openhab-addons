@@ -230,5 +230,4 @@ public class Chronothermostat {
                 function, mode, setPointTemperature, programs, temperatureFormat, loadState, time, activationTime,
                 thermometer, hygrometer, online, sender);
     }
-
 }

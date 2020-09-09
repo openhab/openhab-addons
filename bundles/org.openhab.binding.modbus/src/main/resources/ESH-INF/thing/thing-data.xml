@@ -110,13 +110,15 @@
 				</description>
 				<options>
 					<option value="int64">64bit positive or negative integer, 4 registers (int64, uint64)</option>
-					<option value="int64_swap">64bit positive or negative integer, 4 registers but with 16bit words/registers in reverse order (dcba)
+					<option value="int64_swap">64bit positive or negative integer, 4 registers but with 16bit words/registers in reverse
+						order (dcba)
 						(int64_swap, uint64_swap)</option>
 					<option value="float32">32bit floating point (float32)</option>
 					<option value="float32_swap">32bit floating point, 16bit words swapped (float32_swap)</option>
 					<option value="int32">32bit positive or negative integer, 2 registers (int32, uint32)</option>
-					<option value="int32_swap">32bit positive or negative integer, 2 registers but with 16bit words/registers in reverse order (ba)
-                        (int32_swap, uint32_swap)</option>
+					<option value="int32_swap">32bit positive or negative integer, 2 registers but with 16bit words/registers in reverse
+						order (ba)
+						(int32_swap, uint32_swap)</option>
 					<option value="int16">16bit positive or negative integer, 1 register (int16, uint16)</option>
 					<option value="bit">individual bit (bit)</option>
 				</options>

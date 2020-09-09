@@ -24,6 +24,7 @@ public enum NavigationMode {
     NORMAL(1),
     EXTRA_CARE(2),
     DEEP(3); // Note that navigationMode can only be set to 3 if mode is 2, otherwise an error will be returned.
+
     private final int navigationMode;
 
     NavigationMode(int navigationMode) {
@@ -33,5 +34,4 @@ public enum NavigationMode {
     public int getNavigationMode() {
         return navigationMode;
     }
-
 }

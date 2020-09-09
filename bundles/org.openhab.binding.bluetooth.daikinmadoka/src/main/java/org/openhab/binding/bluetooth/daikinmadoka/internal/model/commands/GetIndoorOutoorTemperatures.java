@@ -90,5 +90,4 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
     public int getCommandId() {
         return 272;
     }
-
 }

@@ -26,5 +26,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface IBridgeActions {
 
     public void reboot();
-
 }

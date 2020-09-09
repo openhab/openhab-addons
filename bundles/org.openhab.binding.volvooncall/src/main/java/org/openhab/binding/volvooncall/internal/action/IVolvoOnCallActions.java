@@ -37,5 +37,4 @@ public interface IVolvoOnCallActions {
     public void openCarCommand();
 
     public void closeCarCommand();
-
 }

@@ -74,5 +74,4 @@ public class GetSetpointCommand extends BRC1HCommand {
     public @Nullable DecimalType getCoolingSetpoint() {
         return coolingSetpoint;
     }
-
 }

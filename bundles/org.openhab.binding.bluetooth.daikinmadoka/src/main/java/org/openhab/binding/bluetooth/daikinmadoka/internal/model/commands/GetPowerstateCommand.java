@@ -65,5 +65,4 @@ public class GetPowerstateCommand extends BRC1HCommand {
     public @Nullable Boolean isPowerState() {
         return powerState;
     }
-
 }

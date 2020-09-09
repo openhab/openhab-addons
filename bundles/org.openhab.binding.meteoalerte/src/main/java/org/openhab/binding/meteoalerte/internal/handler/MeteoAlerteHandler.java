@@ -203,5 +203,4 @@ public class MeteoAlerteHandler extends BaseThingHandler {
             updateState(channelId, new DateTimeType(localDateTime));
         }
     }
-
 }

@@ -154,7 +154,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     protected void handleCommand(final ChannelUID channelUID, final Command command, final SensiboModel model) {
         model.findSensiboSkyByMacAddress(getMacAddress()).ifPresent(sensiboSky -> {
             if (sensiboSky.isAlive()) {
-                updateStatus(ThingStatus.ONLINE); // In case it has been offline
+                if (getThing().getStatus() != ThingStatus.ONLINE) {
+                    addDynamicChannelsAndProperties(sensiboSky);
+                    updateStatus(ThingStatus.ONLINE); // In case it has been offline
+                }
                 switch (channelUID.getId()) {
                     case CHANNEL_CURRENT_HUMIDITY:
                         handleCurrentHumidityCommand(channelUID, command, sensiboSky);
@@ -311,9 +314,9 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
         config = Optional.ofNullable(getConfigAs(SensiboSkyConfiguration.class));
         logger.debug("Initializing SensiboSky using config {}", config);
         getSensiboModel().findSensiboSkyByMacAddress(getMacAddress()).ifPresent(pod -> {
-            addDynamicChannelsAndProperties(pod);
 
             if (pod.isAlive()) {
+                addDynamicChannelsAndProperties(pod);
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
@@ -327,6 +330,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     }
 
     private void addDynamicChannelsAndProperties(final SensiboSky sensiboSky) {
+        logger.debug("Updating dynamic channels for {}", sensiboSky.getId());
         final List<Channel> newChannels = new ArrayList<>();
         for (final Channel channel : getThing().getChannels()) {
             final ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
@@ -335,8 +339,6 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
             }
         }
 
-        generatedChannelTypes.clear();
-
         newChannels.addAll(createDynamicChannels(sensiboSky));
         Map<String, String> properties = sensiboSky.getThingProperties();
         updateThing(editThing().withChannels(newChannels).withProperties(properties).build());
@@ -344,6 +346,7 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
 
     public List<Channel> createDynamicChannels(final SensiboSky sensiboSky) {
         final List<Channel> newChannels = new ArrayList<>();
+        generatedChannelTypes.clear();
 
         sensiboSky.getCurrentModeCapabilities().ifPresent(capabilities -> {
             // Not all modes have swing and fan level

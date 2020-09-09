@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class KeypadConfig {
-    public int addressMask = 0;
+    public String addressMask = "0";
     public boolean sendCommands = false;
     public boolean sendStar = false;
     public String commandMapping = DEFAULT_MAPPING;

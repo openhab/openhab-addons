@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.max.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * {@link CubeCommand} is the base class for commands to be send to the MAX! Cube.
  *
  * @author Marcel Verpaalen - Initial contribution
  *
  */
+@NonNullByDefault
 public abstract class CubeCommand {
 
     /**

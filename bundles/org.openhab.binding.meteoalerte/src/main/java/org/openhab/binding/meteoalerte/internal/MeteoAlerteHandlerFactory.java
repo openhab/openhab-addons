@@ -70,5 +70,4 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

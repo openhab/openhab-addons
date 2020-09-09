@@ -25,9 +25,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2HttpClient;
 import org.osgi.service.component.annotations.Component;
@@ -58,7 +58,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
         if (ipAddress != null && isEnigma2Device(ipAddress)) {
             logger.debug("Enigma2 device discovered: IP-Adress={}, name={}", ipAddress, info.getName());
             ThingUID uid = getThingUID(info);
-            if(uid != null) {
+            if (uid != null) {
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(Enigma2BindingConstants.CONFIG_HOST, ipAddress);
                 properties.put(Enigma2BindingConstants.CONFIG_REFRESH, 5);
@@ -73,7 +73,7 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
     public @Nullable ThingUID getThingUID(ServiceInfo info) {
         logger.debug("ServiceInfo {}", info);
         String ipAddress = getIPAddress(info);
-        if( ipAddress != null) {
+        if (ipAddress != null) {
             return new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, ipAddress.replace(".", "_"));
         }
         return null;
@@ -95,7 +95,8 @@ public class Enigma2DiscoveryParticipant implements MDNSDiscoveryParticipant {
     private @Nullable String getIPAddress(ServiceInfo info) {
         InetAddress[] addresses = info.getInet4Addresses();
         if (addresses.length > 1) {
-            logger.debug("Enigma2 device {} reports multiple addresses - using the first one! {}", info.getName(), addresses);
+            logger.debug("Enigma2 device {} reports multiple addresses - using the first one! {}", info.getName(),
+                    addresses);
         }
         return Stream.of(addresses).findFirst().map(InetAddress::getHostAddress).orElse(null);
     }

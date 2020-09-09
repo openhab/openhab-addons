@@ -9,7 +9,7 @@
 		<description>The Hue bridge represents the Philips Hue bridge.</description>
 
 		<channels>
-			<channel id="scene" typeId="scene" />
+			<channel id="scene" typeId="scene"/>
 		</channels>
 
 		<properties>
@@ -43,7 +43,8 @@
 			<parameter name="sensorPollingInterval" type="integer" min="0" step="1" unit="ms">
 				<label>Sensor Polling Interval</label>
 				<description>Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for
-					the sensor values, but a too low value can cause congestion on the Hue bridge. Use 0 to disable the polling for sensors. Default is 500.</description>
+					the sensor values, but a too low value can cause congestion on the Hue bridge. Use 0 to disable the polling for
+					sensors. Default is 500.</description>
 				<required>true</required>
 				<default>500</default>
 			</parameter>

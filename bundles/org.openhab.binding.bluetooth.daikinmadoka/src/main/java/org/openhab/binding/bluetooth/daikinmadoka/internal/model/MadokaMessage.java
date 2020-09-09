@@ -150,5 +150,4 @@ public class MadokaMessage {
         sb.append("] }");
         return sb.toString();
     }
-
 }

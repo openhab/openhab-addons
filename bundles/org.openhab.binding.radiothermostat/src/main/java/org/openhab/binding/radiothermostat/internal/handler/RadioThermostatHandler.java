@@ -76,8 +76,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private static final int DEFAULT_REFRESH_PERIOD = 2;
     private static final int DEFAULT_LOG_REFRESH_PERIOD = 10;
 
-    private @Nullable final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
-
+    private final RadioThermostatStateDescriptionProvider stateDescriptionProvider;
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatHandler.class);
 
     private final Gson gson;
@@ -87,37 +86,66 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> logRefreshJob;
 
-    private @Nullable RadioThermostatConfiguration config;
+    private int refreshPeriod = DEFAULT_REFRESH_PERIOD;
+    private int logRefreshPeriod = DEFAULT_LOG_REFRESH_PERIOD;
+    private boolean isCT80 = false;
+    private boolean disableLogs = false;
+    private String setpointCmdKeyPrefix = "t_";
 
-    public RadioThermostatHandler(Thing thing,
-            @Nullable RadioThermostatStateDescriptionProvider stateDescriptionProvider, HttpClient httpClient) {
+    public RadioThermostatHandler(Thing thing, RadioThermostatStateDescriptionProvider stateDescriptionProvider,
+            HttpClient httpClient) {
         super(thing);
         this.stateDescriptionProvider = stateDescriptionProvider;
         gson = new Gson();
         connector = new RadioThermostatConnector(httpClient);
     }
 
-    @SuppressWarnings("null")
     @Override
     public void initialize() {
         logger.debug("Initializing RadioThermostat handler.");
-        this.config = getConfigAs(RadioThermostatConfiguration.class);
-        connector.setThermostatHostName(config.hostName);
+        RadioThermostatConfiguration config = getConfigAs(RadioThermostatConfiguration.class);
+
+        final String hostName = config.hostName;
+        final Integer refresh = config.refresh;
+        final Integer logRefresh = config.logRefresh;
+        this.isCT80 = config.isCT80;
+        this.disableLogs = config.disableLogs;
+
+        if (hostName == null || hostName.equals("")) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Thermostat Host Name must be specified");
+            return;
+        }
+
+        if (refresh != null) {
+            this.refreshPeriod = refresh;
+        }
+
+        if (logRefresh != null) {
+            this.logRefreshPeriod = logRefresh;
+        }
+
+        connector.setThermostatHostName(hostName);
         connector.addEventListener(this);
 
+        // The setpoint mode is controlled by the name of setpoint attribute sent to the thermostat.
+        // Temporary mode uses setpoint names prefixed with "t_" while absolute mode uses "a_"
+        if (config.setpointMode.equals("absolute")) {
+            this.setpointCmdKeyPrefix = "a_";
+        }
+
         // populate fan mode options based on thermostat model
-        List<StateOption> fanModeOptions = getFanModeOptions(config.isCT80);
-        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), FAN_MODE), fanModeOptions);
+        stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), FAN_MODE), getFanModeOptions());
 
         // if we are not a CT-80, remove the humidity & program mode channel
-        if (!config.isCT80) {
+        if (!this.isCT80) {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
             channels.removeIf(c -> (c.getUID().getId().equals(HUMIDITY)));
             channels.removeIf(c -> (c.getUID().getId().equals(PROGRAM_MODE)));
             updateThing(editThing().withChannels(channels).build());
         }
         startAutomaticRefresh();
-        if (!config.disableLogs || config.isCT80) {
+        if (!this.disableLogs || this.isCT80) {
             startAutomaticLogRefresh();
         }
 
@@ -132,56 +160,58 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
     /**
      * Start the job to periodically update data from the thermostat
      */
-    @SuppressWarnings("null")
     private void startAutomaticRefresh() {
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
                 // send an async call to the thermostat to get the 'tstat' data
                 connector.getAsyncThermostatData(DEFAULT_RESOURCE);
             };
 
-            int delay = (config.refresh != null) ? config.refresh.intValue() : DEFAULT_REFRESH_PERIOD;
-            refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, delay, TimeUnit.MINUTES);
+            refreshJob = null;
+            this.refreshJob = scheduler.scheduleWithFixedDelay(runnable, 0, refreshPeriod, TimeUnit.MINUTES);
         }
     }
 
     /**
      * Start the job to periodically update humidity and runtime date from the thermostat
      */
-    @SuppressWarnings("null")
     private void startAutomaticLogRefresh() {
+        ScheduledFuture<?> logRefreshJob = this.logRefreshJob;
         if (logRefreshJob == null || logRefreshJob.isCancelled()) {
             Runnable runnable = () -> {
                 // Request humidity data from the thermostat if we are a CT80
-                if (config.isCT80) {
+                if (this.isCT80) {
                     // send an async call to the thermostat to get the humidity data
                     connector.getAsyncThermostatData(HUMIDITY_RESOURCE);
                 }
 
-                if (!config.disableLogs) {
+                if (!this.disableLogs) {
                     // send an async call to the thermostat to get the runtime data
                     connector.getAsyncThermostatData(RUNTIME_RESOURCE);
                 }
             };
 
-            int delay = ((config.logRefresh != null) ? config.logRefresh.intValue() : DEFAULT_LOG_REFRESH_PERIOD) * 60;
-            logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, 30, delay, TimeUnit.SECONDS);
+            logRefreshJob = null;
+            this.logRefreshJob = scheduler.scheduleWithFixedDelay(runnable, 1, logRefreshPeriod, TimeUnit.MINUTES);
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void dispose() {
         logger.debug("Disposing the RadioThermostat handler.");
         connector.removeEventListener(this);
 
+        ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
-            refreshJob = null;
+            this.refreshJob = null;
         }
+
+        ScheduledFuture<?> logRefreshJob = this.logRefreshJob;
         if (logRefreshJob != null) {
             logRefreshJob.cancel(true);
-            logRefreshJob = null;
+            this.logRefreshJob = null;
         }
     }
 
@@ -248,10 +278,10 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 case SET_POINT:
                     String cmdKey = null;
                     if (rthermData.getThermostatData().getMode() == 1) {
-                        cmdKey = "t_heat";
+                        cmdKey = this.setpointCmdKeyPrefix + "heat";
                         rthermData.getThermostatData().setHeatTarget(cmdInt);
                     } else if (rthermData.getThermostatData().getMode() == 2) {
-                        cmdKey = "t_cool";
+                        cmdKey = this.setpointCmdKeyPrefix + "cool";
                         rthermData.getThermostatData().setCoolTarget(cmdInt);
                     } else {
                         // don't do anything if we are not in heat or cool mode
@@ -429,11 +459,11 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
      * 
      * @return list of state options for thermostat fan modes
      */
-    private List<StateOption> getFanModeOptions(boolean isCT80) {
+    private List<StateOption> getFanModeOptions() {
         List<StateOption> fanModeOptions = new ArrayList<>();
 
         fanModeOptions.add(new StateOption("0", "Auto"));
-        if (isCT80) {
+        if (this.isCT80) {
             fanModeOptions.add(new StateOption("1", "Auto/Circulate"));
         }
         fanModeOptions.add(new StateOption("2", "On"));

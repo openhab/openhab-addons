@@ -88,5 +88,4 @@ public class NetworkActions implements ThingActions, INetworkActions {
         }
         throw new IllegalArgumentException("Actions is not an instance of " + NetworkActions.class.getName());
     }
-
 }

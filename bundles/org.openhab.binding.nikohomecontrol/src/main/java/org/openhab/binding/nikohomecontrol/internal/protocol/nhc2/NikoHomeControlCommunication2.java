@@ -403,7 +403,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         actionType, location, this);
                 actions.put(device.uuid, nhcAction);
             }
-        } else if ("thermostat".equals(device.type) || "hvac".contentEquals(device.type)) {
+        } else if ("thermostat".equals(device.type)) {
             if (!thermostats.containsKey(device.uuid)) {
                 logger.debug("Niko Home Control: adding thermostat device {}, {}", device.uuid, device.name);
 
@@ -507,15 +507,15 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         Optional<Boolean> overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive)
                 .filter(Objects::nonNull).map(t -> Boolean.parseBoolean(t)).findFirst();
         Optional<Integer> overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
         Optional<Integer> overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t))).findFirst();
+                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t))).findFirst();
         Optional<Integer> setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
         Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave).filter(Objects::nonNull)
                 .map(t -> Boolean.parseBoolean(t)).findFirst();
         Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+                .filter(s -> !(s == null || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
         Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
                 .filter(Objects::nonNull).findFirst();
         Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)

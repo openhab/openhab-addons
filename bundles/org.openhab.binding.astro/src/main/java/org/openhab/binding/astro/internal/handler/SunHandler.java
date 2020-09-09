@@ -119,5 +119,4 @@ public class SunHandler extends AstroThingHandler {
                 longitude != null ? longitude : 0, altitude != null ? altitude : 0, localSun);
         return localSun.getPosition();
     }
-
 }

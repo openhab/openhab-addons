@@ -44,5 +44,4 @@ public interface ResponseListener {
     public void receivedResponse(SetOperationmodeCommand command);
 
     public void receivedResponse(SetFanspeedCommand command);
-
 }

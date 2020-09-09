@@ -267,14 +267,12 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     InnogyWebSocket createWebSocket() throws IOException, AuthenticationException {
         final AccessTokenResponse accessTokenResponse = client.getAccessTokenResponse();
-        final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}",
-                accessTokenResponse.getAccessToken());
+        final String webSocketUrl = WEBSOCKET_API_URL_EVENTS.replace("{token}", accessTokenResponse.getAccessToken());
 
         logger.debug("WebSocket URL: {}...{}", webSocketUrl.substring(0, 70),
                 webSocketUrl.substring(webSocketUrl.length() - 10));
 
-        return new InnogyWebSocket(this, URI.create(webSocketUrl),
-                bridgeConfiguration.websocketidletimeout * 1000);
+        return new InnogyWebSocket(this, URI.create(webSocketUrl), bridgeConfiguration.websocketidletimeout * 1000);
     }
 
     @Override
@@ -286,11 +284,13 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
      * Schedules a re-initialization in the given future.
      *
      * @param delayed when it is scheduled delayed, it starts with a delay of
-     * {@link org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants#REINITIALIZE_DELAY_SECONDS} seconds,
-     * otherwise it starts directly
+     *            {@link org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants#REINITIALIZE_DELAY_SECONDS}
+     *            seconds,
+     *            otherwise it starts directly
      */
     private synchronized void scheduleRestartClient(final boolean delayed) {
-        @Nullable final ScheduledFuture<?> localReinitJob = reinitJob;
+        @Nullable
+        final ScheduledFuture<?> localReinitJob = reinitJob;
 
         if (localReinitJob != null && isAlreadyScheduled(localReinitJob)) {
             logger.debug("Scheduling reinitialize - ignored: already triggered in {} seconds.",
@@ -963,6 +963,7 @@ public class InnogyBridgeHandler extends BaseBridgeHandler
 
     /**
      * Checks if the job is already (re-)scheduled.
+     * 
      * @param job job to check
      * @return true, when the job is already (re-)scheduled, otherwise false
      */

@@ -46,12 +46,12 @@ public final class RequestLogger {
     private final String prefix;
 
     public RequestLogger(final String prefix, final Gson gson) {
-        this.parser = new JsonParser();
+        parser = new JsonParser();
         this.gson = gson;
         this.prefix = prefix;
     }
 
-    private void dump(final Request request) {
+    private void dump(final Request request, String[] stringsToRemove) {
         final long idV = nextId.getAndIncrement();
         if (logger.isDebugEnabled()) {
             final String id = prefix + "-" + idV;
@@ -65,14 +65,14 @@ public final class RequestLogger {
             });
             final StringBuilder contentBuffer = new StringBuilder();
             request.onRequestContent((theRequest, content) -> contentBuffer
-                    .append(reformatJson(getCharset(theRequest.getHeaders()).decode(content).toString())));
+                    .append(getCharset(theRequest.getHeaders()).decode(content).toString()));
             request.onRequestSuccess(theRequest -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(contentBuffer);
+                    group.append(reformatJson(contentBuffer.toString()));
                 }
                 String dataToLog = group.toString();
-                logger.debug(dataToLog);
+                scrambleAndLog(stringsToRemove, dataToLog);
                 contentBuffer.delete(0, contentBuffer.length());
                 group.delete(0, group.length());
             });
@@ -91,16 +91,25 @@ public final class RequestLogger {
                 }
             });
             request.onResponseContent((theResponse, content) -> contentBuffer
-                    .append(reformatJson(getCharset(theResponse.getHeaders()).decode(content).toString())));
+                    .append(getCharset(theResponse.getHeaders()).decode(content).toString()));
             request.onResponseSuccess(theResponse -> {
                 if (contentBuffer.length() > 0) {
                     group.append("\n");
-                    group.append(contentBuffer);
+                    group.append(reformatJson(contentBuffer.toString()));
                 }
+
                 String dataToLog = group.toString();
-                logger.debug(dataToLog);
+                scrambleAndLog(stringsToRemove, dataToLog);
             });
         }
+    }
+
+    private void scrambleAndLog(String[] stringsToRemove, String dataToLog) {
+        String modifiedData = dataToLog;
+        for (String stringToRemove : stringsToRemove) {
+            modifiedData = modifiedData.replace(stringToRemove, "<HIDDEN>");
+        }
+        logger.debug("{}", modifiedData);
     }
 
     private Charset getCharset(final HttpFields headers) {
@@ -117,8 +126,8 @@ public final class RequestLogger {
         return Charset.forName(encoding);
     }
 
-    public Request listenTo(final Request request) {
-        dump(request);
+    public Request listenTo(final Request request, String[] stringToRemove) {
+        dump(request, stringToRemove);
         return request;
     }
 
