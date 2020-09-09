@@ -103,5 +103,4 @@ public class VirtualThingHandler extends UPBThingHandler {
         }
         updateState(ch.getUID(), new DecimalType(linkId));
     }
-
 }

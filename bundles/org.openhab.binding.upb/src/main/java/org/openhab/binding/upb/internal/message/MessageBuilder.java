@@ -47,7 +47,7 @@ public final class MessageBuilder {
      * Sets where this message is for a device or a link.
      *
      * @param link
-     *                 set to true if this message is for a link.
+     *            set to true if this message is for a link.
      * @return this builder
      */
     public MessageBuilder link(boolean link) {
@@ -59,7 +59,7 @@ public final class MessageBuilder {
      * Sets the UPB network of the message.
      *
      * @param network
-     *                    the network of the message.
+     *            the network of the message.
      * @return this builder
      */
     public MessageBuilder network(byte network) {
@@ -71,7 +71,7 @@ public final class MessageBuilder {
      * Sets the source id of the message (defaults to 0xFF).
      *
      * @param source
-     *                   the source if of the message.
+     *            the source if of the message.
      * @return this builder
      */
     public MessageBuilder source(byte source) {
@@ -83,7 +83,7 @@ public final class MessageBuilder {
      * Sets the destination id of the message.
      *
      * @param destination
-     *                        the destination id.
+     *            the destination id.
      * @return this builder
      */
     public MessageBuilder destination(byte destination) {

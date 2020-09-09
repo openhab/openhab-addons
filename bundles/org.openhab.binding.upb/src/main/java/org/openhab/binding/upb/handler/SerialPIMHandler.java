@@ -164,9 +164,9 @@ public class SerialPIMHandler extends PIMHandler {
      * the given exception.
      *
      * @param throwable the exception
-     * @param <T>       an arbitrary type for the returned future; can be anything since the future
-     *                      will be exceptionally completed and thus there will never be a value of type
-     *                      {@code T}
+     * @param <T> an arbitrary type for the returned future; can be anything since the future
+     *            will be exceptionally completed and thus there will never be a value of type
+     *            {@code T}
      * @return a future that exceptionally completed with the supplied exception
      * @throws NullPointerException if the supplied throwable is {@code null}
      * @since 0.1.0

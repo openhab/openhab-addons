@@ -41,9 +41,9 @@ public class ControlWord {
      * Sets the two bytes of the control word.
      *
      * @param lo
-     *               the low-order byte.
+     *            the low-order byte.
      * @param hi
-     *               the high-order byte.
+     *            the high-order byte.
      */
     public void setBytes(final byte hi, final byte lo) {
         this.hi = hi;
@@ -73,7 +73,7 @@ public class ControlWord {
 
     /**
      * @param link
-     *                 the link to set
+     *            the link to set
      */
     public void setLink(boolean link) {
         hi = (byte) (link ? hi | LINK_MASK : hi & ~LINK_MASK);
@@ -88,7 +88,7 @@ public class ControlWord {
 
     /**
      * @param repeaterCount
-     *                          the repeaterCount to set
+     *            the repeaterCount to set
      */
     public void setRepeaterCount(int repeaterCount) {
         hi = (byte) (hi | (repeaterCount << REPEATER_COUNT_SHIFT));
@@ -103,7 +103,7 @@ public class ControlWord {
 
     /**
      * @param packetLength
-     *                         the packetLength to set
+     *            the packetLength to set
      */
     public void setPacketLength(int packetLength) {
         hi = (byte) (hi | packetLength);
@@ -118,7 +118,7 @@ public class ControlWord {
 
     /**
      * @param transmitCount
-     *                          the transmitCount to set
+     *            the transmitCount to set
      */
     public void setTransmitCount(int transmitCount) {
         lo = (byte) (lo | (transmitCount << TRANSMIT_COUNT_SHIFT));
@@ -133,7 +133,7 @@ public class ControlWord {
 
     /**
      * @param transmitSequence
-     *                             the transmitSequence to set
+     *            the transmitSequence to set
      */
     public void setTransmitSequence(int transmitSequence) {
         lo = (byte) (lo | transmitSequence);
@@ -148,7 +148,7 @@ public class ControlWord {
 
     /**
      * @param ackPulse
-     *                     the ackPulse to set
+     *            the ackPulse to set
      */
     public void setAckPulse(boolean ackPulse) {
         lo = (byte) (ackPulse ? lo | ACK_PULSE_MASK : lo & ~ACK_PULSE_MASK);
@@ -163,7 +163,7 @@ public class ControlWord {
 
     /**
      * @param idPulse
-     *                    the idPulse to set
+     *            the idPulse to set
      */
     public void setIdPulse(boolean idPulse) {
         lo = (byte) (idPulse ? lo | ID_PULSE_MASK : lo & ~ID_PULSE_MASK);
@@ -178,7 +178,7 @@ public class ControlWord {
 
     /**
      * @param ackMessage
-     *                       the ackMessage to set
+     *            the ackMessage to set
      */
     public void setAckMessage(boolean ackMessage) {
         lo = (byte) (ackMessage ? lo | ACK_MESSAGE_MASK : lo & ~ACK_MESSAGE_MASK);

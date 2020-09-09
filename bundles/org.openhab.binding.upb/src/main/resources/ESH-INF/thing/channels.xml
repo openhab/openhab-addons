@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="upb"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -15,10 +14,10 @@
 		<kind>trigger</kind>
 		<label>Scene Selection Events</label>
 		<event>
-		<options>
-			<option value="ACTIVATED">activated</option>
-			<option value="DEACTIVATED">deactivated</option>
-		</options>
+			<options>
+				<option value="ACTIVATED">activated</option>
+				<option value="DEACTIVATED">deactivated</option>
+			</options>
 		</event>
 		<config-description>
 			<parameter name="linkId" type="integer" min="1" max="250" required="true">

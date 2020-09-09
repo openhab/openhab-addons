@@ -91,7 +91,7 @@ public class UPBMessage {
      * Converts a hex string into a {@link UPBMessage}.
      *
      * @param commandString
-     *                          the string as returned by the modem.
+     *            the string as returned by the modem.
      * @return a new UPBMessage.
      */
     public static UPBMessage fromString(String commandString) {
@@ -137,7 +137,7 @@ public class UPBMessage {
 
     /**
      * @param controlWord
-     *                        the controlWord to set
+     *            the controlWord to set
      */
     public void setControlWord(ControlWord controlWord) {
         this.controlWord = controlWord;
@@ -152,7 +152,7 @@ public class UPBMessage {
 
     /**
      * @param network
-     *                    the network to set
+     *            the network to set
      */
     public void setNetwork(byte network) {
         this.network = network;
@@ -167,7 +167,7 @@ public class UPBMessage {
 
     /**
      * @param destination
-     *                        the destination to set
+     *            the destination to set
      */
     public void setDestination(byte destination) {
         this.destination = destination;
@@ -182,7 +182,7 @@ public class UPBMessage {
 
     /**
      * @param source
-     *                   the source to set
+     *            the source to set
      */
     public void setSource(byte source) {
         this.source = source;
@@ -197,7 +197,7 @@ public class UPBMessage {
 
     /**
      * @param command
-     *                    the command to set
+     *            the command to set
      */
     public void setCommand(Command command) {
         this.command = command;
@@ -212,7 +212,7 @@ public class UPBMessage {
 
     /**
      * @param arguments
-     *                      the arguments to set
+     *            the arguments to set
      */
     public void setArguments(byte[] arguments) {
         this.arguments = arguments;
