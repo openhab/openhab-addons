@@ -156,7 +156,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         try {
-            final DatagramSocket coeSocket = new DatagramSocket(coePort);
+            final DatagramSocket coeSocket = new DatagramSocket(COE_PORT);
             coeSocket.setBroadcast(true);
             coeSocket.setSoTimeout(330000); // 300 sec is default resent-time; so we wait 330 secs
             this.coeSocket = coeSocket;
@@ -181,7 +181,7 @@ public class TACmiCoEBridgeHandler extends BaseBridgeHandler {
     }
 
     public void sendData(final byte[] pkt, final @Nullable InetAddress cmiAddress) throws IOException {
-        final DatagramPacket packet = new DatagramPacket(pkt, pkt.length, cmiAddress, coePort);
+        final DatagramPacket packet = new DatagramPacket(pkt, pkt.length, cmiAddress, COE_PORT);
         @Nullable
         DatagramSocket sock = this.coeSocket;
         if (sock == null) {

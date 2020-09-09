@@ -262,6 +262,3 @@ A Popup with an option field will be shown showing all possible options, like in
 
 Please be also aware that there are field having more 'state' values than options, i.E. a manual output override: It has 'Auto/On', 'Auto/Off', 'Manual/On', 'Manual/Off' as state, but only 'Auto', 'Manual/On' and 'Manual/Off' as updateable option.
 You only set it to 'Auto' and the extension On/Off is added depending on the system's current state.
-
-
-Finally - It would be great to hear from your projects and ideas / solutions!

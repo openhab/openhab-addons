@@ -107,7 +107,7 @@ public class TACmiSchemaHandler extends BaseThingHandler {
             return;
         }
         this.online = false;
-        updateStatus(ThingStatus.UNKOWN);
+        updateStatus(ThingStatus.UNKNOWN);
 
         this.authHeader = "Basic "
                 + B64Code.encode(config.username + ":" + config.password, StandardCharsets.ISO_8859_1);
