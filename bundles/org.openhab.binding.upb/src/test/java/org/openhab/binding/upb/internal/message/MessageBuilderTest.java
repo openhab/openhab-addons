@@ -14,11 +14,13 @@ package org.openhab.binding.upb.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
  * @author Marcus Better - Initial contribution
  */
+@NonNullByDefault
 public class MessageBuilderTest {
     @Test
     public void testActivateCmd() {
