@@ -56,7 +56,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(OpenWebNetAutomationHandler.class);
 
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("ss.SSS");
+    private static final SimpleDateFormat FORMATTER = new SimpleDateFormat("ss.SSS");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = OpenWebNetBindingConstants.AUTOMATION_SUPPORTED_THING_TYPES;
 
@@ -119,7 +119,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 throw new NumberFormatException();
             }
         } catch (NumberFormatException e) {
-            logger.warn("Wrong configuration: {} setting must be {} or an integer >= 1000",
+            logger.debug("Wrong configuration: {} setting must be {} or an integer >= 1000",
                     OpenWebNetBindingConstants.CONFIG_PROPERTY_SHUTTER_RUN, AUTO_CALIBRATION);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.wrong-configuration");
@@ -137,7 +137,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             try {
                 send(Automation.requestStatus(w.value()));
             } catch (OWNException e) {
-                logger.warn("Exception while requesting channel {} state: {}", channel, e.getMessage());
+                logger.debug("Exception while requesting channel {} state: {}", channel, e.getMessage(), e);
             }
         }
     }
@@ -149,7 +149,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 handleShutterCommand(command);
                 break;
             default: {
-                logger.warn("Unsupported channel UID {}", channel);
+                logger.info("Unsupported channel UID {}", channel);
             }
         }
     }
@@ -184,10 +184,10 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                         }
                     }
                 } else {
-                    logger.warn("Unsupported command {} for thing {}", command, thing.getUID());
+                    logger.debug("Unsupported command {} for thing {}", command, thing.getUID());
                 }
             } catch (OWNException e) {
-                logger.warn("Exception while sending request for command {}: {}", command, e.getMessage());
+                logger.debug("Exception while sending request for command {}: {}", command, e.getMessage(), e);
             }
         }
     }
@@ -215,7 +215,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     calibrating = CALIBRATION_ACTIVATED;
                     send(Automation.requestMoveUp(w));
                     positionRequested = percent;
-                } else if (shutterRun > 0 && positionEstimation != POSITION_UNKNOWN) {
+                } else if (shutterRun >= 1000 && positionEstimation != POSITION_UNKNOWN) {
                     // these two must be known to calculate moveTime.
                     // Calculate how much time we have to move and set a deadline to stop after that time
                     int moveTime = Math
@@ -226,7 +226,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                         if (mSch != null && !mSch.isDone()) {
                             // a moveSchedule was already scheduled and is not done... let's cancel the schedule
                             mSch.cancel(false);
-                            logger.warn("# {} # new XX% requested, old moveSchedule cancelled", deviceWhere);
+                            logger.debug("# {} # new XX% requested, old moveSchedule cancelled", deviceWhere);
                         }
                         // send a requestFirmwareVersion message to BUS gateways to wake up the CMD connection before
                         // sending further cmds
@@ -248,8 +248,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                             try {
                                 sendHighPriority(Automation.requestStop(w));
                             } catch (OWNException ex) {
-                                logger.warn("Exception while sending request for command {}: {}", command,
-                                        ex.getMessage());
+                                logger.debug("Exception while sending request for command {}: {}", command,
+                                        ex.getMessage(), ex);
                             }
                         }, moveTime, TimeUnit.MILLISECONDS);
                         logger.debug("# {} # ...schedule started, now sending highPriority command...", deviceWhere);
@@ -264,12 +264,12 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     }
                 } else {
                     logger.info(
-                            "Command {} cannot be executed: unknown position or shutterRun configuration params not set (thing={})",
+                            "Command {} cannot be executed: unknown position or shutterRun configuration params not/wrongly set (thing={})",
                             command, thing.getUID());
                 }
             }
         } catch (OWNException e) {
-            logger.warn("Exception while sending request for command {}: {}", command, e.getMessage());
+            logger.debug("Exception while sending request for command {}: {}", command, e.getMessage(), e);
         }
     }
 
@@ -322,8 +322,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 logger.debug("& {} & CALIBRATION - COMPLETED, now going to {}%", deviceWhere, positionRequested);
                 handleShutterCommand(new PercentType(positionRequested));
                 Configuration configuration = editConfiguration();
-                configuration.put(org.openhab.binding.openwebnet.OpenWebNetBindingConstants.CONFIG_PROPERTY_SHUTTER_RUN,
-                        Integer.toString(shutterRun));
+                configuration.put(OpenWebNetBindingConstants.CONFIG_PROPERTY_SHUTTER_RUN, Integer.toString(shutterRun));
                 updateConfiguration(configuration);
                 logger.debug("& {} & CALIBRATION - configuration updated: shutterRun = {}ms", deviceWhere, shutterRun);
             } else if (calibrating == CALIBRATION_GOING_UP) {
@@ -335,7 +334,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                     try {
                         send(Automation.requestMoveDown(w));
                     } catch (OWNException e) {
-                        logger.warn("Exception while sending DOWN command during calibration: {}", e.getMessage());
+                        logger.debug("Exception while sending DOWN command during calibration: {}", e.getMessage(), e);
                         calibrating = CALIBRATION_INACTIVE;
                     }
                 }
@@ -348,7 +347,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                 }
             }
         } else {
-            logger.info("Frame {} not supported for thing {}, ignoring it.", msg, thing.getUID());
+            logger.debug("Frame {} not supported for thing {}, ignoring it.", msg, thing.getUID());
         }
     }
 
@@ -360,14 +359,14 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             if (newState != MOVING_STATE_STOPPED) { // moving after stop
                 startedMovingAt = System.currentTimeMillis();
                 logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
-                        formatter.format(new Date(startedMovingAt)));
+                        FORMATTER.format(new Date(startedMovingAt)));
             }
         } else { // we were moving
             updatePosition();
             if (newState != MOVING_STATE_STOPPED) { // moving after moving, take new timestamp
                 startedMovingAt = System.currentTimeMillis();
                 logger.debug("# {} # MOVING {} - startedMovingAt={} - {}", deviceWhere, newState, startedMovingAt,
-                        formatter.format(new Date(startedMovingAt)));
+                        FORMATTER.format(new Date(startedMovingAt)));
             }
             // cancel the schedule
             ScheduledFuture<?> mSc = moveSchedule;
