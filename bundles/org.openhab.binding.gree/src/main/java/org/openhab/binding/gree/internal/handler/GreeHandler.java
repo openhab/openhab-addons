@@ -519,7 +519,7 @@ public class GreeHandler extends BaseThingHandler {
 
     private @Nullable State updateCurrentTemp() throws GreeException {
         if (device.hasStatusValChanged(GREE_PROP_CURRENT_TEMP_SENSOR)) {
-            return new DecimalType(device.getIntStatusVal(GREE_PROP_CURRENT_TEMP_SENSOR) + config.currentTemperatureOffset.doubleValue());
+            return new DecimalType(device.getIntStatusVal(GREE_PROP_CURRENT_TEMP_SENSOR) + INTERNAL_TEMP_SENSOR_OFFSET + config.currentTemperatureOffset.doubleValue());
         }
         return null;
     }

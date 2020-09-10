@@ -36,7 +36,7 @@
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="currentTemperatureOffset" type="decimal" step="0.5" required="true" unit="C">
-				<default>-40</default>
+				<default>0</default>
 				<unitLabel>Degrees Celsius</unitLabel>
 				<advanced>true</advanced>
 			</parameter>

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.gree.internal;
 
-import static org.openhab.binding.gree.internal.GreeBindingConstants.CURRENT_TEMP_OFFSET_DEFAULT;
-
 import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -31,7 +29,7 @@ public class GreeConfiguration {
     /**
      * The currentTemperatureOffset is configureable in case the user wants to offset this temperature for calibration of the temperature sensor.
      */
-    public BigDecimal currentTemperatureOffset = CURRENT_TEMP_OFFSET_DEFAULT;
+    public BigDecimal currentTemperatureOffset = new BigDecimal(0.0);
 
     @Override
     public String toString() {

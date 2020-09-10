@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.gree.internal;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Set;
 
@@ -170,5 +169,5 @@ public class GreeBindingConstants {
      *
      * @See https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor for more details.
      */
-    public static final BigDecimal CURRENT_TEMP_OFFSET_DEFAULT = new BigDecimal(-40.0);
+    public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;
 }
