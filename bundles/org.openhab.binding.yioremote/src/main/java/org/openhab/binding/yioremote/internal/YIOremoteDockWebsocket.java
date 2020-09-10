@@ -50,12 +50,12 @@ public class YIOremoteDockWebsocket {
     private boolean boolean_sendir_status = false;
     private String string_receivedstatus = "";
     private String string_lastsendircode = "";
+    private boolean boolean_newmessagerecieved = false;
 
     CountDownLatch latch = new CountDownLatch(1);
 
     @OnWebSocketMessage
     public void onText(Session session, String message) throws IOException {
-        logger.debug("Message received from server: {}", message);
         string_receivedmessage = message;
         JsonObject_recievedJsonObject = convert_StringtoJsonObject(string_receivedmessage);
         if (decode_receivedMessage(JsonObject_recievedJsonObject)) {
@@ -63,6 +63,7 @@ public class YIOremoteDockWebsocket {
         } else {
             logger.debug("Error during message {} decoding", string_receivedmessage);
         }
+        boolean_newmessagerecieved = true;
     }
 
     public String get_string_receivedmessage() {
@@ -127,35 +128,26 @@ public class YIOremoteDockWebsocket {
         boolean boolean_result = false;
 
         if (JsonObject_recievedJsonObject.has("type")) {
-            logger.debug("json string has type member");
             if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_required\"")) {
-                logger.debug("auth required message");
                 boolean_authentication_required = true;
                 boolean_heartbeat = true;
                 boolean_result = true;
-
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
-                logger.debug("auth ok message");
                 boolean_authentication_required = false;
                 boolean_authentication_ok = true;
                 boolean_heartbeat = true;
                 boolean_result = true;
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"dock\"")
                     && JsonObject_recievedJsonObject.has("message")) {
-                logger.debug("dock message");
                 if (JsonObject_recievedJsonObject.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
-                    logger.debug("ir send message");
                     if (JsonObject_recievedJsonObject.get("success").toString().equalsIgnoreCase("true")) {
-                        logger.debug("Send IR Code successfully");
                         string_receivedstatus = "Send IR Code successfully";
                         boolean_sendir_status = true;
                         boolean_heartbeat = true;
                         boolean_result = true;
                     } else {
                         if (string_lastsendircode.equalsIgnoreCase("\"0;0x0;0;0\"")) {
-                            logger.debug("Send IR Code heartbeat");
                         } else {
-                            logger.debug("Send IR Code failure");
                             string_receivedstatus = "Send IR Code failure";
                         }
                         boolean_sendir_status = true;
@@ -193,7 +185,7 @@ public class YIOremoteDockWebsocket {
     }
 
     private JsonObject convert_StringtoJsonObject(String jsonString) {
-        logger.debug("StringtoJsonElement function called");
+
         JsonParser parser = new JsonParser();
         JsonElement jsonElement = parser.parse(jsonString);
 
@@ -243,6 +235,13 @@ public class YIOremoteDockWebsocket {
         boolean boolean_result = false;
         boolean_result = boolean_sendir_status;
         boolean_sendir_status = false;
+        return boolean_result;
+    }
+
+    public boolean get_boolean_newmessagerecieved() {
+        boolean boolean_result = false;
+        boolean_result = boolean_newmessagerecieved;
+        boolean_newmessagerecieved = false;
         return boolean_result;
     }
 }

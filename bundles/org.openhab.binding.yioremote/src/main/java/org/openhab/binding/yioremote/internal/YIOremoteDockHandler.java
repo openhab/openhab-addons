@@ -33,6 +33,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEMESSAGETYPE;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIO_REMOTE_DOCK_HANDLE_STATUS;
 import org.slf4j.Logger;
@@ -64,50 +66,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
-        Runnable heartbeatpolling = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus
-                            .equals(YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED)) {
-                        yioRemoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
-
-                        Thread.sleep(1000);
-
-                        if (yioRemoteDockwebSocketClient.get_boolean_heartbeat()) {
-                            logger.debug("heartbeat ok");
-                            // updateState(YIODOCKSTATUS, yioRemoteDockwebSocketClient.get_string_receivedstatus());
-
-                            //// (getChannelUuid(YIODOCKSTATUS,
-                            // int_iddstatus),yioRemoteDockwebSocketClient.get_string_receivedstatus());
-
-                            updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
-                                    yioRemoteDockwebSocketClient.get_string_receivedstatus());
-
-                        } else {
-                            YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.CONNECTION_FAILED;
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                    "Connection lost no ping from YIO DOCK");
-                            updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
-                            pollingJob.cancel(true);
-                        }
-                    } else {
-                        YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.CONNECTION_FAILED;
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Connection lost no ping from YIO DOCK");
-                        updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
-                        pollingJob.cancel(true);
-                    }
-                } catch (InterruptedException e) {
-                    logger.warn("Error during initializing the WebSocket polling Thread {}", e.getMessage());
-                }
-            }
-        };
-
-        // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
-        // the framework is then able to reuse the resources from the thing handler initialization.
-        // we set this upfront to reliably check status updates in unit tests.
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             try {
@@ -129,21 +87,71 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                             URI_yiodockwebsocketaddress, YIOremote_DockwebSocketClientrequest);
 
                     yioRemoteDockwebSocketClient.getLatch().await();
-                    Thread.sleep(1000);
 
+                    Thread.sleep(1000);
                     try {
                         if (yioRemoteDockwebSocketClient.get_boolean_authentication_required()) {
 
                             yioRemoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.AUTHENTICATE,
                                     localConfig.accesstoken);
-                            Thread.sleep(1000);
 
+                            Thread.sleep(1000);
                             if (yioRemoteDockwebSocketClient.get_boolean_authentication_ok()) {
                                 YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED;
                                 logger.debug("authentication to YIO dock ok");
+                                updateStatus(ThingStatus.ONLINE);
+                                try {
+                                    Runnable heartbeatpolling = new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                if (YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus
+                                                        .equals(YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED)) {
+                                                    yioRemoteDockwebSocketClient
+                                                            .sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
+
+                                                    Thread.sleep(1000);
+
+                                                    if (yioRemoteDockwebSocketClient.get_boolean_heartbeat()) {
+                                                        logger.debug("heartbeat ok");
+                                                        triggerChannel(getChannelUuid(GROUP_OUTPUT, YIODOCKSTATUS));
+                                                        updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
+                                                                yioRemoteDockwebSocketClient
+                                                                        .get_string_receivedstatus());
+
+                                                    } else {
+                                                        YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.CONNECTION_FAILED;
+                                                        updateStatus(ThingStatus.OFFLINE,
+                                                                ThingStatusDetail.CONFIGURATION_ERROR,
+                                                                "Connection lost no ping from YIO DOCK");
+                                                        updateState(GROUP_OUTPUT, YIODOCKSTATUS, UnDefType.UNDEF);
+                                                        pollingJob.cancel(true);
+                                                    }
+                                                } else {
+                                                    YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.CONNECTION_FAILED;
+                                                    updateStatus(ThingStatus.OFFLINE,
+                                                            ThingStatusDetail.CONFIGURATION_ERROR,
+                                                            "Connection lost no ping from YIO DOCK");
+                                                    updateState(GROUP_OUTPUT, YIODOCKSTATUS, UnDefType.UNDEF);
+                                                    pollingJob.cancel(true);
+                                                }
+                                            } catch (Exception e) {
+                                                logger.warn("Error during initializing the WebSocket polling Thread {}",
+                                                        e.getMessage());
+                                            }
+                                        }
+                                    };
+
+                                    pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30,
+                                            TimeUnit.SECONDS);
+                                } catch (Exception e) {
+                                    updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
+
+                                }
                             } else {
                                 logger.debug("authentication to YIO dock not ok");
                                 YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED_FAILED;
+                                updateStatus(ThingStatus.OFFLINE);
                             }
                         } else {
                             logger.debug("authentication error YIO dock");
@@ -163,20 +171,16 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 logger.debug("Initialize web socket failed {}", e.getMessage());
             }
 
-            if (YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus.equals(YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED)) {
-                updateStatus(ThingStatus.ONLINE);
-                try {
-                    pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
-
-                }
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
         });
+    }
 
-        logger.debug("Finished initializing!");
+    protected void updateState(String group, String channelId, State value) {
+
+        ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
+
+        if (isLinked(id)) {
+            updateState(id, value);
+        }
     }
 
     @Override
@@ -206,7 +210,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 }
 
             } else {
-                logger.warn("YIOremoteDockHandler not authenticated");
+
             }
         }
     }
@@ -223,8 +227,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         }
     }
 
-    private ChannelUID getChannelUuid(String group, String typeId, int warningNumber) {
-        return new ChannelUID(getThing().getUID(), group, typeId + (warningNumber + 1));
+    private ChannelUID getChannelUuid(String group, String typeId) {
+        return new ChannelUID(getThing().getUID(), group, typeId);
     }
 
     private void updateChannelString(String group, String channelId, String value) {

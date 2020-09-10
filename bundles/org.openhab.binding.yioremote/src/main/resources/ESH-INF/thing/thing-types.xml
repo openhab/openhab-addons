@@ -44,8 +44,12 @@
 		<description>The switch to enable disable the IR receiving diode/function</description>
 	</channel-type>
 	<channel-type id="status">
-		<item-type>String</item-type>
+		<kind>trigger</kind>
 		<label>YIO Remote Dock status</label>
-		<description>v</description>
+		<description>The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise
+			the IR send status is displayed of the last IR code send.</description>
+
+
+
 	</channel-type>
 </thing:thing-descriptions>
