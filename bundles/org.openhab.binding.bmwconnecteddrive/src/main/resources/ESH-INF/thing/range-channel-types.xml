@@ -7,21 +7,21 @@
 		<item-type>Number:Length</item-type>
 		<label>Total Distance Driven</label>
 	</channel-type>
-	<channel-type id="range-hybrid-channel">
-		<item-type>Number:Length</item-type>
-		<label>Hybrid Range</label>
-	</channel-type>
 	<channel-type id="range-electric-channel">
 		<item-type>Number:Length</item-type>
 		<label>Electric Range</label>
 	</channel-type>
-	<channel-type id="soc-channel">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Battery Charge Level</label>
-	</channel-type>
 	<channel-type id="range-fuel-channel">
 		<item-type>Number:Length</item-type>
 		<label>Fuel Range</label>
+	</channel-type>
+	<channel-type id="range-hybrid-channel">
+		<item-type>Number:Length</item-type>
+		<label>Hybrid Range</label>
+	</channel-type>
+	<channel-type id="soc-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Charge Level</label>
 	</channel-type>
 	<channel-type id="remaining-fuel-channel">
 		<item-type>Number:Volume</item-type>
