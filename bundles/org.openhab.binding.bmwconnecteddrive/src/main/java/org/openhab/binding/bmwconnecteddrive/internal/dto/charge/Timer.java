@@ -49,5 +49,4 @@ public class Timer {
         });
         return days.toString();
     }
-
 }

@@ -14,7 +14,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.util;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Locale;
 
@@ -24,6 +23,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.core.library.types.DateTimeType;
 
 import com.google.gson.Gson;
 
@@ -50,16 +50,20 @@ public class LocaleTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
         VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
-        assertEquals("Input  DateTime", "2020-08-24T15:55:32", vStatus.internalDataTimeUTC);
-        assertEquals("Output DateTime", "24.08.2020 17:55", Converter.getLocalDateTime(vStatus.internalDataTimeUTC));
-    }
 
-    @Test
-    public void testServiceDatePattern() {
-        String pattern = "2021-11-01";
-        LocalDate ldt = LocalDate.parse(pattern, Converter.SERVICE_DATE_INPUT_PATTERN);
-        assertEquals("Parsed Date", "2021-11-01", ldt.toString());
-        assertEquals("Parsed Date", "Nov 2021", ldt.format(Converter.SERVICE_DATE_OUTPUT_PATTERN));
+        String inputTime = vStatus.internalDataTimeUTC;
+        String localeTime = Converter.getLocalDateTime(inputTime);
+        String dateTimeType = DateTimeType.valueOf(localeTime).toString();
+        assertEquals("Input DateTime", "2020-08-24T15:55:32", inputTime);
+        assertEquals("Output DateTime", "2020-08-24T17:55:32", localeTime);
+        assertEquals("DateTimeType Value", "2020-08-24T17:55:32", dateTimeType);
+
+        inputTime = vStatus.updateTime;
+        localeTime = Converter.getLocalDateTime(inputTime);
+        dateTimeType = DateTimeType.valueOf(localeTime).toString();
+        assertEquals("Input DateTime", "2020-08-24T15:55:32+0000", inputTime);
+        assertEquals("Output DateTime", "2020-08-24T17:55:32", localeTime);
+        assertEquals("DateTimeType Value", "2020-08-24T17:55:32", dateTimeType);
     }
 
     @Test

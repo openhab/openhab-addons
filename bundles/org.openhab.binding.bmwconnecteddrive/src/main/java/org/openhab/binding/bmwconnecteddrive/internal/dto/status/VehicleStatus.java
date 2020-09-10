@@ -15,9 +15,10 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.*;
 
 import java.lang.reflect.Field;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 
 import com.google.gson.annotations.SerializedName;
@@ -88,13 +89,14 @@ public class VehicleStatus {
             return cbs;
         } else {
             int serviceMileage = Integer.MAX_VALUE;
-            LocalDate serviceDate = LocalDate.now().plusYears(100);
+            LocalDateTime serviceDate = LocalDateTime.now().plusYears(100);
 
             for (int i = 0; i < cbsData.size(); i++) {
                 CBSMessage entry = cbsData.get(i);
                 if (entry.cbsRemainingMileage != 0 && entry.cbsDueDate != null) {
-                    LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
-                            Converter.SERVICE_DATE_INPUT_PATTERN);
+                    LocalDateTime d = LocalDateTime.parse(entry.cbsDueDate + Constants.UTC_APPENDIX);
+                    // LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
+                    // Converter.SERVICE_DATE_INPUT_PATTERN);
                     if ((entry.cbsRemainingMileage < serviceMileage) || (d.isBefore(serviceDate))) {
                         serviceDate = d;
                         serviceMileage = entry.cbsRemainingMileage;
@@ -106,8 +108,9 @@ public class VehicleStatus {
                         cbs = entry;
                     }
                 } else if (entry.cbsDueDate != null) {
-                    LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
-                            Converter.SERVICE_DATE_INPUT_PATTERN);
+                    LocalDateTime d = LocalDateTime.parse(entry.cbsDueDate + Constants.UTC_APPENDIX);
+                    // LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
+                    // Converter.SERVICE_DATE_INPUT_PATTERN);
                     if (d.isBefore(serviceDate)) {
                         serviceDate = d;
                         cbs = entry;
@@ -134,6 +137,16 @@ public class VehicleStatus {
             return OK;
         } else {
             return Converter.toTitleCase(checkControlMessages.get(0).ccmDescriptionShort);
+        }
+    }
+
+    public String getUpdateTime() {
+        if (internalDataTimeUTC != null) {
+            return internalDataTimeUTC;
+        } else if (updateTime != null) {
+            return updateTime;
+        } else {
+            return Constants.NULL_DATE;
         }
     }
 
