@@ -52,8 +52,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
 
-    @Nullable
-    protected String unitId;
+    protected String unitId = "";
 
     @Nullable
     protected TouchWandBridgeHandler bridgeHandler;
