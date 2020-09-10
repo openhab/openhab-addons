@@ -35,11 +35,16 @@ You can add as much `uvindex` things for different locations to your setup as yo
 
 ### Onecall API Weather and Forecast 
 
-The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-api#how) for a specific location using the One Call API. It requires coordinates of the location of your interest. You can add as many `onecall` things for different locations to your setup as you like to observe. 
+The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-api#how) for a specific location using the One Call API.
+It requires coordinates of the location of your interest.
+You can add as many `onecall` things for different locations to your setup as you like to observe.
 
 ### Onecall API History Data
 
-The thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-api#history) for a specific location using the One Call API. It requires coordinates of the location of your interest. You can add as many `onecall-history` things for different locations to your setup as you like to observe. For every day in history you have to create a different thing.
+The thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-api#history) for a specific location using the One Call API.
+It requires coordinates of the location of your interest.
+You can add as many `onecall-history` things for different locations to your setup as you like to observe.
+For every day in history you have to create a different thing.
 
 ## Discovery
 
@@ -89,7 +94,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
 | location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
-| historyDay     | Number of days back in history. The API supports going back up to 5 days at the moment. **Mandatory**                           | 
+| historyDay     | Number of days back in history. The API supports going back up to 5 days at the moment. **Mandatory**                          | 
 
 ## Channels
 
@@ -117,7 +122,7 @@ This channel is not supported in the One Call API
 | current          | temperature          | Number:Temperature   | Current temperature.                                                    |
 | current          | apparent-temperature | Number:Temperature   | Current apparent temperature.                                           |
 | current          | pressure             | Number:Pressure      | Current barometric pressure.                                            |
-| current          | humidity             | Number:Dimensionless | Current atmospheric humidity.                                           /
+| current          | humidity             | Number:Dimensionless | Current atmospheric humidity.                                           |
 | current          | dew-point            | Number:Temperature   | Current dew-point. Only available in the One Call API                   |
 | current          | wind-speed           | Number:Speed         | Current wind speed.                                                     |
 | current          | wind-direction       | Number:Angle         | Current wind direction.                                                 |
@@ -166,11 +171,13 @@ Where available, the one call API provides a minutely precipitation forecast for
 | forecastHours03, forecastHours06, ... forecastHours120 | rain                 | Number:Length        | Expected rain volume.                                                      |
 | forecastHours03, forecastHours06, ... forecastHours120 | snow                 | Number:Length        | Expected snow volume.                                                      |
 | forecastHours01 ... forecastHours48                    | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                     |
-| forecastHours01 ... forecastHours48                    | precip-probability   | Number               | Precipitation probability. Only available in the One Call API            |
+| forecastHours01 ... forecastHours48                    | precip-probability   | Number               | Precipitation probability. Only available in the One Call API              |
 
 ### One Call API Hourly Forecast
 
-The One Call API provides hourly forecasts for 48 hours. The Channel Group IDs for those are `forecastHours01` to `forecastHours48`. See above for a description of the available channels.
+The One Call API provides hourly forecasts for 48 hours.
+The Channel Group IDs for those are `forecastHours01` to `forecastHours48`.
+See above for a description of the available channels.
 
 ### Daily Forecast
 
@@ -193,16 +200,16 @@ The One Call API provides hourly forecasts for 48 hours. The Channel Group IDs f
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | rain                 | Number:Length        | Expected rain volume of a day.                                             |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay16 | snow                 | Number:Length        | Expected snow volume of a day.                                             |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | dew-point            | Number:Temperature   | Expected dew-point. Only available in the One Call API                     |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | uvindex              | Number               | Forecasted Midday UV Index.  Only available in the One Call API                       |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number               | Precipitation probability. Only available in the One Call API            |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | uvindex              | Number               | Forecasted Midday UV Index.  Only available in the One Call API            |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | precip-probability   | Number               | Precipitation probability. Only available in the One Call API              |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | morning-temperature  | Number:Temperature   | Expected morning temperature. Only available in the One Call API           |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | day-temperature      | Number:Temperature   | Expected day-temperature. Only available in the One Call API               |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | evening-temperature  | Number:Temperature   | Expected evening-temperature. Only available in the One Call API           |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | night-temperature    | Number:Temperature   | Expected night-temperature. Only available in the One Call API             |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-morning     | Number:Temperature   | Expected apparent temperature in the morning. Only available in the One Call API  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-day         | Number:Temperature   | Expected apparent temperature in the day. Only available in the One Call API  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-day         | Number:Temperature   | Expected apparent temperature in the day. Only available in the One Call API      |
 | forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-evening     | Number:Temperature   | Expected apparent temperature in the evening. Only available in the One Call API  |
-| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-night       | Number:Temperature   | Expected apparent temperature in the night. Only available in the One Call API  |
+| forecastToday, forecastTomorrow, forecastDay2, ... forecastDay7  | apparent-night       | Number:Temperature   | Expected apparent temperature in the night. Only available in the One Call API    |
      
 ### UV Index
 
@@ -211,7 +218,7 @@ The One Call API provides hourly forecasts for 48 hours. The Channel Group IDs f
 | current, forecastTomorrow, forecastDay2, ... forecastDay7 | time-stamp | DateTime  | Date of data observation / forecast. |
 | current, forecastTomorrow, forecastDay2, ... forecastDay7 | uvindex    | Number    | Current or forecasted UV Index.      |
 
-The `uvindex` channel is also available in the current data and the daily forecast of the One Call API. 
+The `uvindex` channel is also available in the current data and the daily forecast of the One Call API.
 
 ## Full Example
 
@@ -593,7 +600,7 @@ sitemap demo label="OpenWeatherMap" {
 
 #### One Call API version
 
-Please not that this sitemap does not cover all items of the example above.
+Please note that this sitemap does not cover all items of the example above.
 
 ```perl
 sitemap demo label="OpenWeatherMapOneCall" {
