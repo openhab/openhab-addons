@@ -105,6 +105,7 @@ public class GreeAirDevice {
             columns.add(GREE_PROP_TEMPREC);
             columns.add(GREE_PROP_PWR_SAVING);
             columns.add(GREE_PROP_NOISESET);
+            columns.add(GREE_PROP_TEMP_SENSOR);
 
             // Convert the parameter map values to arrays
             String[] colArray = columns.toArray(new String[0]);
@@ -229,10 +230,6 @@ public class GreeAirDevice {
 
     public void setQuietMode(DatagramSocket clientSocket, int value) throws GreeException {
         setCommandValue(clientSocket, GREE_PROP_QUIET, value, 0, 2);
-    }
-
-    public int getDeviceTurbo() {
-        return getIntStatusVal(GREE_PROP_TURBO);
     }
 
     public void setDeviceLight(DatagramSocket clientSocket, int value) throws GreeException {

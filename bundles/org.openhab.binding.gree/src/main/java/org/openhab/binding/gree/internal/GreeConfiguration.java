@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.gree.internal;
 
+import java.math.BigDecimal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -25,9 +26,10 @@ public class GreeConfiguration {
     public String ipAddress = "";
     public String broadcastAddress = "";
     public int refresh = 60;
+    public BigDecimal currentTemperatureOffset = new BigDecimal(-40.0);
 
     @Override
     public String toString() {
-        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh;
+        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh + ", currentTemperatureOffset=" + currentTemperatureOffset;
     }
 }

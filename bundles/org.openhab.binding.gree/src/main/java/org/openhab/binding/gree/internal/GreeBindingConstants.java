@@ -45,7 +45,8 @@ public class GreeBindingConstants {
     public static final String MODE_CHANNEL = "mode";
     public static final String TURBO_CHANNEL = "turbo";
     public static final String LIGHT_CHANNEL = "light";
-    public static final String TEMP_CHANNEL = "temperature";
+    public static final String TARGET_TEMP_CHANNEL = "targetTemperature";
+    public static final String CURRENT_TEMP_CHANNEL = "currentTemperature";
     public static final String SWINGUD_CHANNEL = "swingUpDown";
     public static final String SWINGLR_CHANNEL = "swingLeftRight";
     public static final String WINDSPEED_CHANNEL = "windspeed";
@@ -137,6 +138,7 @@ public class GreeBindingConstants {
     public static final String GREE_PROP_HEAT = "StHt";
     public static final String GREE_PROP_HEATCOOL = "HeatCoolType";
     public static final String GREE_PROP_NOISESET = "NoiseSet";
+    public static final String GREE_PROP_TEMP_SENSOR = "TemSen";
 
     // Temperatur types and min/max ranges
     public static final int TEMP_UNIT_CELSIUS = 0;
