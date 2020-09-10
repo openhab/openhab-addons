@@ -28,9 +28,9 @@ public class CBSMessage {
 
     public String getDueDate() {
         if (cbsDueDate == null) {
-            return Constants.INVALID;
+            return Constants.NULL_DATE;
         } else {
-            return cbsDueDate;
+            return cbsDueDate + Constants.UTC_APPENDIX;
         }
     }
 

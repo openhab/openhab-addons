@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
+import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.UTC_APPENDIX;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -32,10 +34,14 @@ public class Converter {
     public static final DateTimeFormatter SERVICE_DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     public static final DateTimeFormatter SERVICE_DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("MMM yyyy");
 
-    public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    public static final String DATE_INPUT_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DATE_INPUT_ZONE_PATTERN_STRING = "yyyy-MM-dd'T'HH:mm:ssZ";
+    public static final DateTimeFormatter DATE_INPUT_PATTERN = DateTimeFormatter.ofPattern(DATE_INPUT_PATTERN_STRING);
+    public static final DateTimeFormatter DATE_INPUT_ZONE_PATTERN = DateTimeFormatter
+            .ofPattern(DATE_INPUT_ZONE_PATTERN_STRING);
     public static final DateTimeFormatter DATE_TIMEZONE_INPUT_PATTERN = DateTimeFormatter
             .ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-    private static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    public static final DateTimeFormatter DATE_OUTPUT_PATTERN = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     private static final Gson GSON = new Gson();
 
@@ -44,15 +50,27 @@ public class Converter {
         return Math.round(value * scale) / scale;
     }
 
-    public static String getLocalDateTime(@Nullable String input) {
-        if (input == null) {
-            return Converter.toTitleCase(Constants.UNKNOWN);
-        }
-
-        LocalDateTime ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
+    public static String serviceDateToUTC(@Nullable String input) {
+        LocalDateTime ldt = LocalDateTime.parse(input + UTC_APPENDIX);
         ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
         ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        return zdtLZ.format(Converter.DATE_OUTPUT_PATTERN);
+        return zdtLZ.toString();
+    }
+
+    public static String getLocalDateTime(@Nullable String input) {
+        if (input == null) {
+            return Constants.NULL_DATE;
+        }
+
+        LocalDateTime ldt;
+        if (input.contains(Constants.PLUS)) {
+            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);
+        } else {
+            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
+        }
+        ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
+        ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
+        return zdtLZ.format(Converter.DATE_INPUT_PATTERN);
     }
 
     public static String getZonedDateTime(@Nullable String input) {

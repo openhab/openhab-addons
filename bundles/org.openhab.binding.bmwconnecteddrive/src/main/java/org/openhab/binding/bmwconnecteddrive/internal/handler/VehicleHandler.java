@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -645,7 +646,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     return;
                 }
 
-                // Vehilce Status
+                // Vehicle Status
                 updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
                 Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
                 updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
@@ -654,7 +655,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
 
                 CBSMessage service = vStatus.getNextService(imperial);
-                updateState(serviceDate, StringType.valueOf(service.getDueDate()));
+                updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(service.getDueDate())));
                 updateState(serviceDescription, StringType.valueOf(Converter.toTitleCase(service.getType())));
                 if (imperial) {
                     updateState(serviceMilage,
@@ -722,11 +723,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     updateState(remainingFuel, QuantityType.valueOf(vStatus.remainingFuel, SmartHomeUnits.LITRE));
                 }
                 // last update Time
-                if (vStatus.internalDataTimeUTC != null) {
-                    updateState(lastUpdate, new StringType(Converter.getLocalDateTime(vStatus.internalDataTimeUTC)));
-                } else {
-                    updateState(lastUpdate, new StringType(Converter.getZonedDateTime(vStatus.updateTime)));
-                }
+                updateState(lastUpdate, DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime())));
 
                 // Charge Values
                 if (isElectric) {

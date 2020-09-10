@@ -24,6 +24,7 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -106,6 +107,7 @@ public class StatusWrapper {
         String cUid = channelUID.getIdWithoutGroup();
         QuantityType<Length> qt;
         StringType st;
+        DateTimeType dtt;
         DecimalType dt;
         switch (cUid) {
             case MILEAGE:
@@ -202,12 +204,14 @@ public class StatusWrapper {
                 }
                 break;
             case SERVICE_DATE:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
+                assertTrue(state instanceof DateTimeType);
+                dtt = (DateTimeType) state;
                 if (specialHandlingMap.containsKey(SERVICE_DATE)) {
-                    assertEquals("Next Service", specialHandlingMap.get(SERVICE_DATE).toString(), st.toString());
+                    assertEquals("Next Service", specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString());
                 } else {
-                    assertEquals("Next Service", vStatus.getNextService(imperial).getDueDate(), st.toString());
+                    String dueDateString = vStatus.getNextService(imperial).getDueDate();
+                    DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                    assertEquals("Next Service", expectedDTT.toString(), dtt.toString());
                 }
                 break;
             case SERVICE_MILEAGE:
@@ -242,13 +246,10 @@ public class StatusWrapper {
                 }
                 break;
             case LAST_UPDATE:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                if (vStatus.internalDataTimeUTC != null) {
-                    assertEquals("Last Update", Converter.getLocalDateTime(vStatus.internalDataTimeUTC), st.toString());
-                } else {
-                    assertEquals("Last Update", Converter.getZonedDateTime(vStatus.updateTime), st.toString());
-                }
+                assertTrue(state instanceof DateTimeType);
+                dtt = (DateTimeType) state;
+                DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime()));
+                assertEquals("Last Update", expected.toString(), dtt.toString());
                 break;
             case LATITUDE:
                 assertTrue(state instanceof DecimalType);

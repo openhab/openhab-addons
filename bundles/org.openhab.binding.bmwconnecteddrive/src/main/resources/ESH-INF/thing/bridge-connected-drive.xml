@@ -37,7 +37,7 @@
 
 	<channel-type id="discovery-fingerprint-channel">
 		<item-type>Switch</item-type>
-		<label>Log Discovery Fingerprint</label>
+		<label>Discovery Fingerprint</label>
 		<description>Forcing a log entry to analyze Discovery Problems</description>
 	</channel-type>
 
