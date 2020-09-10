@@ -45,7 +45,7 @@ The following channels are supported for fans:
 | mode               | String    | Sets the operating mode of the Air Conditioner                                                    |
 |                    |           | Mode can be one of auto/cool/eco/dry/fan/heat or on/off                                           |
 |                    |           | Check the Air Conditioner's operating manual for supported modes.                                 |
-| targetTemperature  | Number:Temperature | Sets the desired room temperature.                                                       |
+| temperature        | Number:Temperature | Sets the desired room temperature.                                                       |
 | currentTemperature | Number:Temperature | Displays the current room temperature.                                                   |
 | air                | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
 | dry                | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
@@ -80,7 +80,7 @@ Switch AirconPower                  { channel="gree:airconditioner:a1234561:powe
 String AirconMode                   { channel="gree:airconditioner:a1234561:mode" }
 Switch AirconTurbo                  { channel="gree:airconditioner:a1234561:turbo" }
 Switch AirconLight                  { channel="gree:airconditioner:a1234561:light" }
-Number AirconTargetTemp "Target Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:targetTemperature" }
+Number AirconTargetTemp "Target Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:temperature" }
 Number AirconCurrentTemp "Current Temperature [%.1f °C]" {channel="gree:airconditioner:a1234561:currentTemperature" }
 Number AirconSwingVertical          { channel="gree:airconditioner:a1234561:swingUpDown" }
 Number AirconSwingHorizontal        { channel="gree:airconditioner:a1234561:swingLeftRight" }
@@ -135,7 +135,7 @@ This example shows how to make a GREE Air Conditioner controllable by Google HA 
 Group Gree_Modechannel              "Gree"                { ga="Thermostat" } // allows mapping for Google Home Assistent
 Switch   GreeAirConditioner_Power   "Aircon"              {channel="gree:airconditioner:a1234561:power", ga="Switch"}
 String   GreeAirConditioner_Mode    "Aircon Mode"         {channel="gree:airconditioner:a1234561:mode", ga="thermostatMode"}
-Number   GreeAirConditioner_Temp    "Aircon Temperature"  {channel="gree:airconditioner:a1234561:targetTemperature}
+Number   GreeAirConditioner_Temp    "Aircon Temperature"  {channel="gree:airconditioner:a1234561:temperature}
 Switch   GreeAirConditioner_Light   "Light"               {channel="gree:airconditioner:a1234561:light"}
 ```
 
