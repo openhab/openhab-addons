@@ -110,7 +110,7 @@ public class OnvifConnection {
 
     public OnvifConnection(IpCameraHandler ipCameraHandler, String ipAddress, String user, String password) {
         this.ipCameraHandler = ipCameraHandler;
-        if (!ipAddress.equals("")) {
+        if (!ipAddress.isEmpty()) {
             this.user = user;
             this.password = password;
             getIPandPortFromUrl(ipAddress);
@@ -300,15 +300,15 @@ public class OnvifConnection {
         } else if (message.contains("GetDeviceInformationResponse")) {
             logger.debug("GetDeviceInformationResponse recieved");
         } else if (message.contains("GetSnapshotUriResponse")) {
-            snapshotUri = removeIPfromUrl(fetchXML(message, "MediaUri>", ":Uri>"));
+            snapshotUri = removeIPfromUrl(fetchXML(message, ":MediaUri", ":Uri"));
             logger.debug("GetSnapshotUri:{}", snapshotUri);
-            if (ipCameraHandler.snapshotUri.equals("")) {
+            if (ipCameraHandler.snapshotUri.isEmpty()) {
                 ipCameraHandler.snapshotUri = snapshotUri;
             }
         } else if (message.contains("GetStreamUriResponse")) {
-            rtspUri = fetchXML(message, "MediaUri>", ":Uri>");
+            rtspUri = fetchXML(message, ":MediaUri", ":Uri>");
             logger.debug("GetStreamUri:{}", rtspUri);
-            if (ipCameraHandler.rtspUri.equals("")) {
+            if (ipCameraHandler.rtspUri.isEmpty()) {
                 ipCameraHandler.rtspUri = rtspUri;
             }
         } else {
@@ -325,7 +325,7 @@ public class OnvifConnection {
                 || requestType.equals("Renew") || requestType.equals("Unsubscribe")) {
             headerTo = "<a:To s:mustUnderstand=\"1\">http://" + ipAddress + xAddr + "</a:To>";
         }
-        if (!password.equals("")) {
+        if (!password.isEmpty()) {
             String nonce = createNonce();
             String dateTime = getUTCdateTime();
             String digest = createDigest(nonce, dateTime);
@@ -367,6 +367,13 @@ public class OnvifConnection {
         return request;
     }
 
+    /**
+     * The {@link removeIPfromUrl} Will throw away all text before the cameras IP, also removes the IP and the PORT
+     * leaving just the
+     * URL.
+     *
+     * @author Matthew Skinner - Initial contribution
+     */
     String removeIPfromUrl(String url) {
         int index = url.indexOf(ipAddress);
         if (index != -1) {// now remove the :port
@@ -380,14 +387,25 @@ public class OnvifConnection {
     }
 
     void parseXAddr(String message) {
-        deviceXAddr = removeIPfromUrl(fetchXML(message, "<tt:Device>", "<tt:XAddr>"));
-        logger.debug("deviceXAddr:{}", deviceXAddr);
-        subscriptionXAddr = eventXAddr = removeIPfromUrl(fetchXML(message, "<tt:Events>", "<tt:XAddr>"));
-        logger.debug("eventsXAddr:{}", eventXAddr);
-        mediaXAddr = removeIPfromUrl(fetchXML(message, "<tt:Media>", "<tt:XAddr>"));
-        logger.debug("mediaXAddr:{}", mediaXAddr);
-        ptzXAddr = removeIPfromUrl(fetchXML(message, "<tt:PTZ>", "<tt:XAddr>"));
-        if (ptzXAddr == "") {
+        // Normally I would search '<tt:XAddr>' instead but Foscam needed this work around.
+        String temp = removeIPfromUrl(fetchXML(message, "<tt:Device", "tt:XAddr"));
+        if (!temp.isEmpty()) {
+            deviceXAddr = temp;
+            logger.debug("deviceXAddr:{}", deviceXAddr);
+        }
+        temp = removeIPfromUrl(fetchXML(message, "<tt:Events", "tt:XAddr"));
+        if (!temp.isEmpty()) {
+            subscriptionXAddr = eventXAddr = temp;
+            logger.debug("eventsXAddr:{}", eventXAddr);
+        }
+        temp = removeIPfromUrl(fetchXML(message, "<tt:Media", "tt:XAddr"));
+        if (!temp.isEmpty()) {
+            mediaXAddr = temp;
+            logger.debug("mediaXAddr:{}", mediaXAddr);
+        }
+
+        ptzXAddr = removeIPfromUrl(fetchXML(message, "<tt:PTZ", "tt:XAddr"));
+        if (ptzXAddr.isEmpty()) {
             ptzDevice = false;
             logger.trace("Camera must not support PTZ, it failed to give a <tt:PTZ><tt:XAddr>:{}", message);
         } else {
@@ -510,11 +528,10 @@ public class OnvifConnection {
     }
 
     public void eventRecieved(String eventMessage) {
-        // logger.trace("Onvif eventRecieved : {}", eventMessage);
         String topic = fetchXML(eventMessage, "Topic", "tns1:");
         String dataName = fetchXML(eventMessage, "tt:Data", "Name=\"");
         String dataValue = fetchXML(eventMessage, "tt:Data", "Value=\"");
-        if (!topic.equals("")) {
+        if (!topic.isEmpty()) {
             logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
         }
         switch (topic) {
@@ -668,7 +685,7 @@ public class OnvifConnection {
             startLookingFromIndex = message.indexOf(heading, startLookingFromIndex);
             if (startLookingFromIndex >= 0) {
                 temp = fetchXML(message.substring(startLookingFromIndex), heading, key);
-                if (!temp.equals("")) {
+                if (!temp.isEmpty()) {
                     logger.trace("String was found:{}", temp);
                     results.add(temp);
                     ++startLookingFromIndex;
@@ -681,16 +698,14 @@ public class OnvifConnection {
     public static String fetchXML(String message, String sectionHeading, String key) {
         String result = "";
         int sectionHeaderBeginning = 0;
-        if (!sectionHeading.equals("")) {// looking for a sectionHeading
+        if (!sectionHeading.isEmpty()) {// looking for a sectionHeading
             sectionHeaderBeginning = message.indexOf(sectionHeading);
         }
         if (sectionHeaderBeginning == -1) {
-            // logger.trace("{} was not found in :{}", sectionHeading, message);
             return "";
         }
         int startIndex = message.indexOf(key, sectionHeaderBeginning + sectionHeading.length());
         if (startIndex == -1) {
-            // logger.trace("{} was not found in :{}", key, message);
             return "";
         }
         int endIndex = message.indexOf("<", startIndex + key.length());
@@ -802,7 +817,6 @@ public class OnvifConnection {
             } catch (InterruptedException e) {
                 logger.info("Onvif was not shutdown correctly due to being interrupted");
             } finally {
-                // logger.debug("Onvif Shutdown");
                 mainEventLoopGroup = new NioEventLoopGroup();
                 bootstrap = null;
             }
