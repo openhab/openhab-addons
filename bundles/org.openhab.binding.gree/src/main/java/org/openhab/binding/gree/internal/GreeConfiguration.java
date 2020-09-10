@@ -13,6 +13,7 @@
 package org.openhab.binding.gree.internal;
 
 import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -27,12 +28,14 @@ public class GreeConfiguration {
     public String broadcastAddress = "";
     public int refresh = 60;
     /**
-     * The currentTemperatureOffset is configureable in case the user wants to offset this temperature for calibration of the temperature sensor.
+     * The currentTemperatureOffset is configureable in case the user wants to offset this temperature for calibration
+     * of the temperature sensor.
      */
     public BigDecimal currentTemperatureOffset = new BigDecimal(0.0);
 
     @Override
     public String toString() {
-        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh + ", currentTemperatureOffset=" + currentTemperatureOffset;
+        return "Config: ipAddress=" + ipAddress + ", broadcastAddress=" + broadcastAddress + ", refresh=" + refresh
+                + ", currentTemperatureOffset=" + currentTemperatureOffset;
     }
 }

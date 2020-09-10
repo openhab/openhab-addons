@@ -7,20 +7,20 @@
 	<thing-type id="airconditioner">
 		<label>@text/thing-type.gree.airconditioner.label</label>
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="mode" typeId="mode" />
-			<channel id="temperature" typeId="targetTemperature" />
-			<channel id="currentTemperature" typeId="currentTemperature" />
-			<channel id="air" typeId="air" />
-			<channel id="dry" typeId="dry" />
-			<channel id="turbo" typeId="turbo" />
-			<channel id="windspeed" typeId="windspeed" />
-			<channel id="quiet" typeId="quiet" />
-			<channel id="swingUpDown" typeId="swingUpDown" />
-			<channel id="swingLeftRight" typeId="swingLeftRight" />
-			<channel id="powersave" typeId="powersave" />
-			<channel id="light" typeId="light" />
-			<channel id="health" typeId="health" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="temperature" typeId="targetTemperature"/>
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="air" typeId="air"/>
+			<channel id="dry" typeId="dry"/>
+			<channel id="turbo" typeId="turbo"/>
+			<channel id="windspeed" typeId="windspeed"/>
+			<channel id="quiet" typeId="quiet"/>
+			<channel id="swingUpDown" typeId="swingUpDown"/>
+			<channel id="swingLeftRight" typeId="swingLeftRight"/>
+			<channel id="powersave" typeId="powersave"/>
+			<channel id="light" typeId="light"/>
+			<channel id="health" typeId="health"/>
 		</channels>
 
 		<config-description>

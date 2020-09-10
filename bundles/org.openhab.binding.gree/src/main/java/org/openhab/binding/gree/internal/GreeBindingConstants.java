@@ -163,11 +163,13 @@ public class GreeBindingConstants {
     public static final int DIGITS_TEMP = 1;
 
     /**
-     * The internal offset for the temperature sensor which is set to a constant of -40 degrees Celsius. GREE airconditioners usually
-     * return a value from the temperature sensor which is offset by +40 degrees Celsius. The temperature value shown on the device
-     * LCD display should match the value shown by this binding when the config parameter currentTemperatureOffset is set to 0.
+     * The internal offset for the temperature sensor which is set to a constant of -40 degrees Celsius. GREE
+     * airconditioners usually return a value from the temperature sensor which is offset by +40 degrees Celsius. The
+     * temperature value shown on the device LCD display should match the value shown by this binding when the config
+     * parameter currentTemperatureOffset is set to 0.
      *
-     * @See https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor for more details.
+     * @See https://github.com/tomikaa87/gree-remote#getting-the-current-temperature-reading-from-the-internal-sensor
+     *      for more details.
      */
     public static final double INTERNAL_TEMP_SENSOR_OFFSET = -40.0;
 }
