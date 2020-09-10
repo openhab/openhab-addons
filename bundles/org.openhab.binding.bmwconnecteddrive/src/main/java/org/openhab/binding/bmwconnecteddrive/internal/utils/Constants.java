@@ -31,7 +31,8 @@ public class Constants {
     public static final String CLOSED = "CLOSED";
     public static final String UNKNOWN = "UNKOWN";
     public static final String NO_SERVICE_REQUEST = "No Service Requests";
-    public static final String APPENDIX_DAY = "-01"; // needed to complete Service Date
+    public static final String UTC_APPENDIX = "-01T12:00:00";
+    public static final String NULL_DATE = "1900-01-01T00:00:00";
     public static final String MILES_SHORT = "mi";
     public static final String KM_SHORT = "km";
 
@@ -50,6 +51,7 @@ public class Constants {
     public static final String SPACE = " ";
     public static final String UNDERLINE = "_";
     public static final String HYPHEN = " - ";
+    public static final String PLUS = "+";
     public static final String EMPTY = "";
     public static final String COMMA = ",";
 
@@ -69,5 +71,4 @@ public class Constants {
             put("SUNDAY", "Sun");
         }
     };
-
 }

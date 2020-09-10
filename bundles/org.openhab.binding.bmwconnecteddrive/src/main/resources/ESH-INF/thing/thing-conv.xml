@@ -14,10 +14,10 @@
 
 		<channel-groups>
 			<channel-group id="status" typeId="vehicle-status"/>
-			<channel-group id="range" typeId="conv-range-values"/>
+			<channel-group id="range" typeId="hybrid-range-values"/>
 			<channel-group id="location" typeId="location-values"/>
-			<channel-group id="destination" typeId="destination-values"/>
 			<channel-group id="remote" typeId="remote-services"/>
+			<channel-group id="destination" typeId="destination-values"/>
 			<channel-group id="image" typeId="image-values"/>
 			<channel-group id="troubleshoot" typeId="troubleshoot-control"/>
 		</channel-groups>
