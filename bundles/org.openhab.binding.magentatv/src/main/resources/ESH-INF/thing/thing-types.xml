@@ -21,7 +21,7 @@
 		</channel-groups>
 
 
-		<config-description>
+		<config-description uri="thing-type:magentatv:receiver">
 			<parameter name="ipAddress" type="text">
 				<label>Device IP Address</label>
 				<description>IP address of the receiver</description>
@@ -59,11 +59,11 @@
 		<label>Control</label>
 		<description>Control function for your Media Receiver</description>
 		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="channel" typeId="channelNumber"/>
-			<channel id="player" typeId="system.media-control"/>
-			<channel id="mute" typeId="system.mute"/>
-			<channel id="key" typeId="key"/>
+			<channel id="power" typeId="system.power" />
+			<channel id="channel" typeId="channelNumber" />
+			<channel id="player" typeId="system.media-control" />
+			<channel id="mute" typeId="system.mute" />
+			<channel id="key" typeId="key" />
 		</channels>
 	</channel-group-type>
 
@@ -71,11 +71,11 @@
 		<label>Program Information</label>
 		<description>Information on the running program</description>
 		<channels>
-			<channel id="title" typeId="system.media-title"/>
-			<channel id="text" typeId="programText"/>
-			<channel id="start" typeId="programStart"/>
-			<channel id="duration" typeId="programDuration"/>
-			<channel id="position" typeId="programPosition"/>
+			<channel id="title" typeId="system.media-title" />
+			<channel id="text" typeId="programText" />
+			<channel id="start" typeId="programStart" />
+			<channel id="duration" typeId="programDuration" />
+			<channel id="position" typeId="programPosition" />
 		</channels>
 	</channel-group-type>
 
@@ -83,9 +83,9 @@
 		<label>Play Status</label>
 		<description>Status information on media play</description>
 		<channels>
-			<channel id="channelCode" typeId="channelCode"/>
-			<channel id="runStatus" typeId="runStatus"/>
-			<channel id="playMode" typeId="playMode"/>
+			<channel id="channelCode" typeId="channelCode" />
+			<channel id="runStatus" typeId="runStatus" />
+			<channel id="playMode" typeId="playMode" />
 		</channels>
 	</channel-group-type>
 
