@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private final int HYBRID_CALL_TIMES = 21;
-    private final int CONV_CALL_TIMES = 15;
-    private final int EV_CALL_TIMES = 16;
+    private static final int HYBRID_CALL_TIMES = 21;
+    private static final int CONV_CALL_TIMES = 15;
+    private static final int EV_CALL_TIMES = 16;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
