@@ -16,6 +16,8 @@ import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.*
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOTEMESSAGETYPE;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIO_REMOTE_DOCK_HANDLE_STATUS;
@@ -173,6 +176,11 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         });
 
         logger.debug("Finished initializing!");
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(YIOremoteDockActions.class);
     }
 
     @Override
