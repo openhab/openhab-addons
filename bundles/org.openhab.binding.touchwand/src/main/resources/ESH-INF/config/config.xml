@@ -10,17 +10,15 @@
 			<label>Username</label>
 			<description>Username for TouchWand Wanderfull Hub</description>
 		</parameter>
-		<parameter name="password" type="text">
+		<parameter name="password" type="text" required="true">
 			<context>password</context>
 			<label>Password</label>
 			<description>Password for TouchWand Wanderfull Hub </description>
-			<required>true</required>
 		</parameter>
-		<parameter name="ipAddress" type="text">
+		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>Network Address</label>
 			<description>Network address of this TouchWand Wanderfull Hub </description>
-			<required>true</required>
 		</parameter>
 		<parameter name="port" type="integer" min="80" max="65535">
 			<label>Port</label>
