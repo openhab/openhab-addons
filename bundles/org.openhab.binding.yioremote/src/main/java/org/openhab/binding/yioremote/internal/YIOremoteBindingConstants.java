@@ -24,7 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class YIOremoteBindingConstants {
 
-    private static final String BINDING_ID = "yioremote";
+    public static final String BINDING_ID = "yioremote";
 
     // List of all used global variables
     public static enum YIO_REMOTE_DOCK_HANDLE_STATUS {
@@ -54,7 +54,6 @@ public class YIOremoteBindingConstants {
 
     // List of all Channel ids
     public static final String YIODOCKRECEIVERSWITCH = "receiverswitch";
-    public static final String YIODOCKSENDIRCODE = "sendircode";
     public static final String YIODOCKSTATUS = "status";
 
     // Configuration elements

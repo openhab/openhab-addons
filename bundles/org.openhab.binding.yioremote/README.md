@@ -28,7 +28,6 @@ The YIO Dock has the following channels:
 | Channel 		     		| Input/Output 	| Item Type    | Description                                                                                																			|
 |---------------------------|---------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | 	receiverswitch     		| Input         | Switch       | The switch to enable disable the IR receiving diode/function                                 																			|
-| 	sendircode		    	| Input         | String       | The IR Code Format(3;0x20DF40BF;32;0) which will send by the YIO Dock                     																				|
 | 	status			    	| Output        | String       | The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise the IR send status is displayed of the last IR code send.	|
 
 

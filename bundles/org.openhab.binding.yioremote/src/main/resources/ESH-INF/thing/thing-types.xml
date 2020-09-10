@@ -29,7 +29,6 @@
 		<description>The channels used for Input</description>
 		<channels>
 			<channel id="receiverswitch" typeId="receiverswitch"/>
-			<channel id="sendircode" typeId="sendircode"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="output">
@@ -46,12 +45,7 @@
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
-		<label>YIO Remote Dock  status</label>
+		<label>YIO Remote Dock status</label>
 		<description>v</description>
-	</channel-type>
-	<channel-type id="sendircode">
-		<item-type>String</item-type>
-		<label>YIO Dock sendircode</label>
-		<description>The IR Code Format(3;0x20DF40BF;32;0) which will send by the YIO Dock</description>
 	</channel-type>
 </thing:thing-descriptions>

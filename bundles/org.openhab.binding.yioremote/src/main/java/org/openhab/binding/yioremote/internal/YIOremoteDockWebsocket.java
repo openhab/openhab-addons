@@ -179,13 +179,13 @@ public class YIOremoteDockWebsocket {
                 boolean_heartbeat = true;
                 boolean_result = true;
             } else {
-                logger.debug("No known message {}", string_receivedmessage);
+                logger.warn("No known message {}", string_receivedmessage);
                 boolean_heartbeat = false;
                 boolean_result = false;
             }
 
         } else {
-            logger.debug("No known message {}", string_receivedmessage);
+            logger.warn("No known message {}", string_receivedmessage);
             boolean_heartbeat = false;
             boolean_result = false;
         }
