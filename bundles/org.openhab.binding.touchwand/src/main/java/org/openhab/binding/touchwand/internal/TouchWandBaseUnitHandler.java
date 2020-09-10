@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -51,10 +52,10 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_SHUTTER, THING_TYPE_SWITCH, THING_TYPE_WALLCONTROLLER, THING_TYPE_DIMMER));
 
-    @NonNullByDefault({})
+    @Nullable
     protected String unitId;
 
-    @NonNullByDefault({})
+    @Nullable
     protected TouchWandBridgeHandler bridgeHandler;
 
     public TouchWandBaseUnitHandler(Thing thing) {
