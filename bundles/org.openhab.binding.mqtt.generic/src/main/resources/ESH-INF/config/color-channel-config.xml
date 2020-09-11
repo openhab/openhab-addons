@@ -16,11 +16,11 @@
 			<label>Color Mode</label>
 			<description>Defines the color representation format of the payload. "HSB" by default.</description>
 			<options>
-				<option value="hsb">HSB (Hue, Saturation, Brightness)</option>
-				<option value="rgb">RGB (Red, Green, Blue)</option>
-				<option value="xyY">CIE xyY (x, y, Brightness)</option>
+				<option value="HSB">HSB (Hue, Saturation, Brightness)</option>
+				<option value="RGB">RGB (Red, Green, Blue)</option>
+				<option value="XYY">CIE xyY (x, y, Brightness)</option>
 			</options>
-			<default>hsb</default>
+			<default>HSB</default>
 		</parameter>
 
 		<parameter name="stateTopic" type="text">

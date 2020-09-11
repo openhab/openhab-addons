@@ -62,6 +62,20 @@
 		<config-description-ref uri="thing-type:mqtt:rollershutter_channel"></config-description-ref>
 	</channel-type>
 
+	<channel-type id="colorRGB">
+		<item-type>Color</item-type>
+		<label>Color Value (Red,Green,Blue)</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
+	</channel-type>
+
+	<channel-type id="colorHSB">
+		<item-type>Color</item-type>
+		<label>Color Value (Hue,Saturation,Brightness)</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
+	</channel-type>
+
 	<channel-type id="color">
 		<item-type>Color</item-type>
 		<label>Color Value (HSB, RGB or CIE xyY)</label>

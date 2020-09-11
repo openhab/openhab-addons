@@ -30,6 +30,8 @@ public class MqttBindingConstants {
     public static final ThingTypeUID GENERIC_MQTT_THING = new ThingTypeUID(BINDING_ID, "topic");
 
     // Generic thing channel types
+    public static final String COLOR_RGB = "colorRGB";
+    public static final String COLOR_HSB = "colorHSB";
     public static final String COLOR = "color";
     public static final String CONTACT = "contact";
     public static final String DIMMER = "dimmer";

@@ -53,6 +53,12 @@ public class ValueFactory {
             case MqttBindingConstants.DIMMER:
                 value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);
                 break;
+            case MqttBindingConstants.COLOR_HSB:
+                value = new ColorValue(ColorMode.HSB, config.on, config.off, config.onBrightness);
+                break;
+            case MqttBindingConstants.COLOR_RGB:
+                value = new ColorValue(ColorMode.RGB, config.on, config.off, config.onBrightness);
+                break;
             case MqttBindingConstants.COLOR:
                 value = new ColorValue(ColorMode.valueOf(config.colorMode), config.on, config.off, config.onBrightness);
                 break;
