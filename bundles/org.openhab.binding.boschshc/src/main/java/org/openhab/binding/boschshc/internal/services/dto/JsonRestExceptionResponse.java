@@ -10,16 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.boschshc.internal.services.dto;
 
 /**
  * Generic error response of the Bosch REST API.
  * 
  * @author Christian Oeing - Initial contribution
  */
-@NonNullByDefault
 public class JsonRestExceptionResponse extends BoschSHCServiceState {
     public JsonRestExceptionResponse() {
         super("JsonRestExceptionResponseEntity");

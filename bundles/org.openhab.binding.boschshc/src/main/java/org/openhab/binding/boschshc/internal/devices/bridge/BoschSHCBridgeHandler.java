@@ -41,7 +41,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
-import org.openhab.binding.boschshc.internal.services.JsonRestExceptionResponse;
+import org.openhab.binding.boschshc.internal.services.dto.JsonRestExceptionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -10,9 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services;
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
+package org.openhab.binding.boschshc.internal.services.dto;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,7 +19,6 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Christian Oeing - Initial contribution
  */
-@NonNullByDefault
 public class BoschSHCServiceState {
     @SerializedName("@type")
     private final String type;

@@ -10,28 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.roomclimatecontrol;
+package org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * State for {@link RoomClimateControlService} to get and set the desired temperature of a room.
  * 
  * @author Christian Oeing - Initial contribution
  */
-@NonNullByDefault
 public class RoomClimateControlServiceState extends BoschSHCServiceState {
 
-    private static final String Type = "climateControlState";
+    private static final String TYPE = "climateControlState";
 
     public RoomClimateControlServiceState() {
-        super(Type);
+        super(TYPE);
     }
 
     /**
@@ -40,7 +38,7 @@ public class RoomClimateControlServiceState extends BoschSHCServiceState {
      * @param setpointTemperature Desired temperature (in degree celsius).
      */
     public RoomClimateControlServiceState(double setpointTemperature) {
-        super(Type);
+        super(TYPE);
         this.setpointTemperature = setpointTemperature;
     }
 
