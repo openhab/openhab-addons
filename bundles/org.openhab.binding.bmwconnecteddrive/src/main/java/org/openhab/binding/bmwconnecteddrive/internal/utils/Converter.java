@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.utils;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.UTC_APPENDIX;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -50,13 +48,6 @@ public class Converter {
         return Math.round(value * scale) / scale;
     }
 
-    public static String serviceDateToUTC(@Nullable String input) {
-        LocalDateTime ldt = LocalDateTime.parse(input + UTC_APPENDIX);
-        ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
-        ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
-        return zdtLZ.toString();
-    }
-
     public static String getLocalDateTime(@Nullable String input) {
         if (input == null) {
             return Constants.NULL_DATE;
@@ -71,16 +62,6 @@ public class Converter {
         ZonedDateTime zdtUTC = ldt.atZone(ZoneId.of("UTC"));
         ZonedDateTime zdtLZ = zdtUTC.withZoneSameInstant(ZoneId.systemDefault());
         return zdtLZ.format(Converter.DATE_INPUT_PATTERN);
-    }
-
-    public static String getZonedDateTime(@Nullable String input) {
-        if (input == null) {
-            return Converter.toTitleCase(Constants.UNKNOWN);
-        }
-
-        ZonedDateTime zdt = ZonedDateTime.parse(input, Converter.DATE_TIMEZONE_INPUT_PATTERN);
-        ZonedDateTime zdtLZ = zdt.withZoneSameInstant(ZoneId.systemDefault());
-        return zdtLZ.format(Converter.DATE_OUTPUT_PATTERN);
     }
 
     public static String toTitleCase(@Nullable String input) {

@@ -31,6 +31,10 @@
 		<item-type>String</item-type>
 		<label>Check Control</label>
 	</channel-type>
+	<channel-type id="charging-status-channel">
+		<item-type>String</item-type>
+		<label>Charging Status</label>
+	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>
 		<label>Last Status Update</label>

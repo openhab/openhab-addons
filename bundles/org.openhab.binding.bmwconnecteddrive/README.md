@@ -138,9 +138,10 @@ Available for all Vehicles.
 | Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                 |
 | Next Service Description  | status           | service-name        | String        | Description of Upcoming Service                                      |
 | Check Control             | status           | check-control       | String        | Description of actual Check Control message, Ok if none is activated |
+| Charging Status           | status           | charge              | String        | Only available for PHEV, BEV_REX and BEV 
 | Last Status Update        | status           | last-update         | DateTime      | Date and Time of last status updateDescription of actual Check Control message, Ok if none is activated |
 
-See [further details for DateTime](# Last Status Update Timestamp) in case of wrong timestamp values
+See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
 
 #### Channel Group _Range Data_
 
@@ -160,15 +161,14 @@ Hybrid Vehicles have both and in addition *Hybrid Range*
 | Electric Range Radius | range            | range-radius-electric | Number:Length        |      |  X   |    X    |  X  | 
 | Hybrid Range Radius   | range            | range-radius-hybrid   | Number:Length        |      |  X   |    X    |     | 
 
-See Description [Range vs. Range Radius](#Range vs. Range Radius) to get more information
+See Description [Range vs. Range Radius](#range-vs.-range-radius) to get more information
 
-#### Channel Group _Electric Charging_
+#### Channel Group _Charge Profile_
 
 Valid for Electric and Hybrid Vehicles
 
 | Channel Label                      | Channel Group ID | Channel ID          | Type   | 
 |------------------------------------|------------------|---------------------|--------|
-| Charging Status                    | charge           | status              | String | 
 | Air Conditioning at Departure Time | charge           | profile-climate     | Switch | 
 | Charging Mode for Profile          | charge           | profile-mode        | String | 
 | Charging Window Start Time         | charge           | window-start        | String | 
@@ -285,7 +285,7 @@ While Range is indicating the possible distance to be driven on roads the range 
 The right picture shows the distance between Kassel and Frankfurt in Germany. 
 While the Air-line Distance is ~ 145 Kilometer the Route Distance is ~ 192 Kilometer.
 So Range value is the normal remaining range.
-See the Section [OpenStreetMap](#OpenstreetMap Widget) how the Range Radius is used to indicate the reachable Range on Map.
+See the Section [OpenStreetMap](#openstreetMap-widget) how the Range Radius is used to indicate the reachable Range on Map.
 Please note this is just an indicator and the effective range, especially for Electric Vehicles, depends on many factors like driving style and electric consumers 
  
 ### Last Status Update Timestamp
