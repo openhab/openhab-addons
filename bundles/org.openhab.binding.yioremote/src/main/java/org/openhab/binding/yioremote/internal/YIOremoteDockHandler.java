@@ -190,7 +190,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
         pollingJob.cancel(true);
     }
 
