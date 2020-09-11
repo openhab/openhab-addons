@@ -30,7 +30,6 @@ import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -483,8 +482,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     public <T extends @NonNull Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass) {
         ContentResponse contentResponse;
         try {
-            String url = this.createServiceUrl(stateName, deviceId);
-            Request request = this.createRequest(httpClient, url, GET).header("Accept", "application/json");
+            String url = this.httpClient.createServiceUrl(stateName, deviceId);
+            Request request = this.httpClient.createRequest(url, GET).header("Accept", "application/json");
 
             logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
 
@@ -525,8 +524,8 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      */
     public <T extends @NonNull Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
         // Create request
-        String url = this.createServiceUrl(serviceName, deviceId);
-        Request request = this.createRequest(httpClient, url, PUT, state);
+        String url = this.httpClient.createServiceUrl(serviceName, deviceId);
+        Request request = this.httpClient.createRequest(url, PUT, state);
 
         // Send request
         try {
@@ -582,24 +581,5 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 logger.warn("HTTP request failed", e);
             }
         }
-    }
-
-    private String createServiceUrl(String serviceName, String deviceId) {
-        return "https://" + config.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/" + serviceName
-                + "/state";
-    }
-
-    private Request createRequest(BoschHttpClient httpClient, String url, HttpMethod method) {
-        return this.createRequest(httpClient, url, method, null);
-    }
-
-    private Request createRequest(BoschHttpClient httpClient, String url, HttpMethod method, @Nullable Object content) {
-        Gson gson = new Gson();
-        Request request = httpClient.newRequest(url).method(method).header("Content-Type", "application/json");
-        if (content != null) {
-            String body = gson.toJson(content);
-            request = request.content(new StringContentProvider(body));
-        }
-        return request;
     }
 }
