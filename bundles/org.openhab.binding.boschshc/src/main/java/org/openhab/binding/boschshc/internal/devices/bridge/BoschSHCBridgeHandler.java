@@ -150,41 +150,39 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      */
     private boolean getDevices() {
         BoschHttpClient httpClient = this.httpClient;
-        if (httpClient != null) {
+        if (httpClient == null) {
+            return false;
+        }
 
-            try {
-                logger.debug("Sending http request to Bosch to request clients: {}", config.ipAddress);
-                String url = httpClient.createSmartHomeUrl("devices");
-                ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
+        try {
+            logger.debug("Sending http request to Bosch to request clients: {}", config.ipAddress);
+            String url = httpClient.createSmartHomeUrl("devices");
+            ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
-                String content = contentResponse.getContentAsString();
-                logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
+            String content = contentResponse.getContentAsString();
+            logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
-                Type collectionType = new TypeToken<ArrayList<Device>>() {
-                }.getType();
-                ArrayList<Device> devices = gson.fromJson(content, collectionType);
+            Type collectionType = new TypeToken<ArrayList<Device>>() {
+            }.getType();
+            ArrayList<Device> devices = gson.fromJson(content, collectionType);
 
-                if (devices != null) {
-                    for (Device d : devices) {
-                        // Write found devices into openhab.log until we have implemented auto discovery
-                        logger.info("Found device: name={} id={}", d.name, d.id);
-                        if (d.deviceSerivceIDs != null) {
-                            for (String s : d.deviceSerivceIDs) {
-                                logger.info(".... service: {}", s);
-                            }
+            if (devices != null) {
+                for (Device d : devices) {
+                    // Write found devices into openhab.log until we have implemented auto discovery
+                    logger.info("Found device: name={} id={}", d.name, d.id);
+                    if (d.deviceSerivceIDs != null) {
+                        for (String s : d.deviceSerivceIDs) {
+                            logger.info(".... service: {}", s);
                         }
                     }
                 }
-
-                return true;
-
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.debug("HTTP request failed with exception {}", e.getMessage());
-                return false;
             }
-        } else {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.debug("HTTP request failed with exception {}", e.getMessage());
             return false;
         }
+
+        return true;
     }
 
     /**
