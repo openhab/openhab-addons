@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.shuttercontrol;
+package org.openhab.binding.boschshc.internal.devices.shuttercontrol.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.shuttercontrol.OperationState;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -21,7 +21,6 @@ import com.google.gson.annotations.SerializedName;
  * 
  * @author Christian Oeing - Initial contribution
  */
-@NonNullByDefault
 public class ShutterControlState {
     @SerializedName("@type")
     public String type = "shutterControlState";
