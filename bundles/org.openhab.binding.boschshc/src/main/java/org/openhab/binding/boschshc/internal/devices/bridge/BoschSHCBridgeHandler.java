@@ -74,7 +74,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     private BoschSHCBridgeConfiguration config;
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     @Override
     public void initialize() {
