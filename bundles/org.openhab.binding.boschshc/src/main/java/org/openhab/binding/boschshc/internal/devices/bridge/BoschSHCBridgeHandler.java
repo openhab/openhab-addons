@@ -29,7 +29,6 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
-import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -48,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -63,22 +61,23 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
     public BoschSHCBridgeHandler(Bridge bridge) {
         super(bridge);
+
+        // Read configuration
+        this.config = getConfigAs(BoschSHCBridgeConfiguration.class);
     }
 
     private final Logger logger = LoggerFactory.getLogger(BoschSHCBridgeHandler.class);
 
-    @NonNullByDefault({})
-    private BoschHttpClient httpClient;
+    private @Nullable BoschHttpClient httpClient;
 
     private @Nullable String subscriptionId;
 
-    @NonNullByDefault({})
     private BoschSHCBridgeConfiguration config;
+
+    private Gson gson = new Gson();
 
     @Override
     public void initialize() {
-        // Read configuration
-        this.config = getConfigAs(BoschSHCBridgeConfiguration.class);
 
         if (this.config.ipAddress.isEmpty()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address set");
@@ -91,13 +90,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         // Instantiate HttpClient with the SslContextFactory
-        this.httpClient = new BoschHttpClient(config.ipAddress, config.password,
+        BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(config.ipAddress, config.password,
                 // prepare SSL key and certificates
                 new BoschSslUtil(config.password).getSslContextFactory());
 
         // Initialize bridge in the background.
         scheduler.execute(() -> {
-
             try {
                 try {
                     httpClient.start();
@@ -109,11 +107,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         config.ipAddress, this.httpClient);
 
                 // check access and pair if necessary
-                if (!this.httpClient.isAccessPossible()) {
+                if (!httpClient.isAccessPossible()) {
                     // update status already if access is not possible
                     updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.UNKNOWN.NONE,
                             "@text/offline.conf-error-pairing");
-                    this.httpClient.checkAccessAndPairIfNecessary();
+                    httpClient.checkAccessAndPairIfNecessary();
                 }
 
                 boolean thingReachable = true;
@@ -124,7 +122,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     updateStatus(ThingStatus.ONLINE);
 
                     // Start long polling to receive updates from Bosch SHC.
-                    this.longPoll();
+                    this.longPoll(httpClient);
 
                 } else {
                     // TODO add offline conf-error description
@@ -154,17 +152,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient != null) {
 
-            ContentResponse contentResponse;
             try {
                 logger.debug("Sending http request to Bosch to request clients: {}", config.ipAddress);
-                contentResponse = httpClient.newRequest("https://" + config.ipAddress + ":8444/smarthome/devices")
-                        .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
-                        .send();
+                String url = httpClient.createSmartHomeUrl("devices");
+                ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
                 String content = contentResponse.getContentAsString();
                 logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
-                Gson gson = new GsonBuilder().create();
                 Type collectionType = new TypeToken<ArrayList<Device>>() {
                 }.getType();
                 ArrayList<Device> devices = gson.fromJson(content, collectionType);
@@ -197,20 +192,17 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      *
      * Method is synchronous.
      */
-    private void subscribe() {
+    private void subscribe(BoschHttpClient httpClient) {
         logger.debug("Sending subscribe request to Bosch");
 
         String[] params = { "com/bosch/sh/remote/*", null }; // TODO Not sure about the tailing null, copied
                                                              // from NodeJs
         JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/subscribe", params);
 
-        Gson gson = new Gson();
-        String content = gson.toJson(r);
-
         // XXX Maybe we should use a different httpClient here, to avoid a race with
         // concurrent use from other
         // functions.
-        logger.debug("Subscribe: Sending content: {} - using httpClient {}", content, this.httpClient);
+        logger.debug("Subscribe: Sending content: {} - using httpClient {}", gson.toJson(r), httpClient);
 
         class SubscribeListener extends BufferingResponseListener {
             private BoschSHCBridgeHandler bridgeHandler;
@@ -246,14 +238,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                         subscribeResult.getJsonrpc());
 
                 bridgeHandler.subscriptionId = subscribeResult.getResult();
-                longPoll();
+                longPoll(httpClient);
             }
         }
 
-        this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
-                .header("Content-Type", "application/json").header("Accept", "application/json")
-                .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST) // TODO What's this Gateway ID
-                .content(new StringContentProvider(content)).send(new SubscribeListener(this));
+        String url = httpClient.createUrl("remote/json-rpc");
+        httpClient.createRequest(url, POST, r).send(new SubscribeListener(this));
     }
 
     /**
@@ -267,7 +257,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      *
      * Return whether to retry getting a new subscription and restart polling.
      */
-    private void longPoll() {
+    private void longPoll(BoschHttpClient httpClient) {
         /*
          * // TODO Change hard-coded Gateway ID // TODO Change hard-coded port
          */
@@ -276,7 +266,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         if (subscriptionId == null) {
 
             logger.debug("longPoll: Subscription outdated, requesting .. ");
-            this.subscribe();
+            this.subscribe(httpClient);
             return;
         }
 
@@ -284,11 +274,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
         String[] params = { subscriptionId, "20" };
         JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/longPoll", params);
-
-        Gson gson = new Gson();
-        String content = gson.toJson(r);
-
-        logger.debug("Sending content: {}", content);
 
         /**
          * TODO Move this to separate file?
@@ -402,14 +387,12 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 }
 
                 // TODO Is this call okay? Should we use scheduler.execute instead?
-                bridgeHandler.longPoll();
+                bridgeHandler.longPoll(httpClient);
             }
         }
 
-        this.httpClient.newRequest("https://" + config.ipAddress + ":8444/remote/json-rpc")
-                .header("Content-Type", "application/json").header("Accept", "application/json")
-                .header("Gateway-ID", "64-DA-A0-02-14-9B").method(POST).content(new StringContentProvider(content))
-                .send(new LongPollListener(this));
+        String url = httpClient.createUrl("remote/json-rpc");
+        httpClient.createRequest(url, POST, r).send(new LongPollListener(this));
     }
 
     /**
@@ -419,17 +402,14 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient != null) {
 
-            ContentResponse contentResponse;
             try {
                 logger.debug("Sending http request to Bosch to request rooms");
-                contentResponse = httpClient.newRequest("https://" + config.ipAddress + ":8444/smarthome/rooms")
-                        .header("Content-Type", "application/json").header("Accept", "application/json").method(GET)
-                        .send();
+                String url = httpClient.createSmartHomeUrl("rooms");
+                ContentResponse contentResponse = httpClient.createRequest(url, GET).send();
 
                 String content = contentResponse.getContentAsString();
                 logger.debug("Response complete: {} - return code: {}", content, contentResponse.getStatus());
 
-                Gson gson = new GsonBuilder().create();
                 Type collectionType = new TypeToken<ArrayList<Room>>() {
                 }.getType();
 
@@ -480,20 +460,23 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @param stateClass Class to convert the resulting JSON to
      */
     public <T extends @NonNull Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass) {
-        ContentResponse contentResponse;
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return null;
+        }
+
         try {
-            String url = this.httpClient.createServiceUrl(stateName, deviceId);
-            Request request = this.httpClient.createRequest(url, GET).header("Accept", "application/json");
+            String url = httpClient.createServiceUrl(stateName, deviceId);
+            Request request = httpClient.createRequest(url, GET).header("Accept", "application/json");
 
             logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
 
-            contentResponse = request.send();
+            ContentResponse contentResponse = request.send();
 
             String content = contentResponse.getContentAsString();
             logger.debug("refreshState: Request complete: [{}] - return code: {}", content,
                     contentResponse.getStatus());
-
-            Gson gson = new GsonBuilder().create();
 
             int statusCode = contentResponse.getStatus();
             if (statusCode != 200) {
@@ -523,9 +506,15 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @return Response of request
      */
     public <T extends @NonNull Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return null;
+        }
+
         // Create request
-        String url = this.httpClient.createServiceUrl(serviceName, deviceId);
-        Request request = this.httpClient.createRequest(url, PUT, state);
+        String url = httpClient.createServiceUrl(serviceName, deviceId);
+        Request request = httpClient.createRequest(url, PUT, state);
 
         // Send request
         try {
@@ -543,6 +532,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * etc.
      */
     public void updateSwitchState(Thing thing, String command) {
+        BoschHttpClient httpClient = this.httpClient;
+        if (httpClient == null) {
+            logger.warn("HttpClient not initialized");
+            return;
+        }
 
         BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
         if (handler != null) {
@@ -550,6 +544,11 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             try {
 
                 String boschID = handler.getBoschID();
+                if (boschID == null) {
+                    logger.warn("PowerSwitch has no device id");
+                    return;
+                }
+
                 logger.debug("Sending update request to Bosch device {}: update: {}", boschID, command);
 
                 // PUT request
@@ -560,19 +559,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 // TODO This should be different for other kinds of devices.
                 PowerSwitchStateUpdate state = new PowerSwitchStateUpdate("powerSwitchState", command);
 
-                Gson gson = new Gson();
-                String content = gson.toJson(state);
-
-                // hdm:HomeMaticIP:3014F711A0001916D859A8A9
-                logger.warn("Sending content: {}", content);
-
                 // TODO Path should be different for other kinds of device updates
-                contentResponse = httpClient
-                        .newRequest("https://" + config.ipAddress + ":8444/smarthome/devices/" + boschID
-                                + "/services/PowerSwitch/state")
-                        .header("Content-Type", "application/json").header("Accept", "application/json")
-                        .header("Gateway-ID", "64-DA-A0-02-14-9B").method(PUT)
-                        .content(new StringContentProvider(content)).send();
+                String url = httpClient.createServiceUrl("PowerSwitch", boschID);
+                contentResponse = httpClient.createRequest(url, PUT, state).send();
 
                 String responseContent = contentResponse.getContentAsString();
                 logger.debug("Response complete: [{}] - return code: {}", responseContent, contentResponse.getStatus());

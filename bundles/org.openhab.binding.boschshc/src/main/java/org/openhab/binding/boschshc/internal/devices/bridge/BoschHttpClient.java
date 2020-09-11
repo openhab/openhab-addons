@@ -96,7 +96,7 @@ public class BoschHttpClient extends HttpClient {
 
     public boolean isAccessPossible() {
         try {
-            String url = this.createUrl("devices");
+            String url = this.createSmartHomeUrl("devices");
             Request request = this.createRequest(url, GET);
             ContentResponse contentResponse = request.send();
             String content = contentResponse.getContentAsString();
@@ -127,7 +127,7 @@ public class BoschHttpClient extends HttpClient {
             items.put("primaryRole", "ROLE_RESTRICTED_CLIENT");
             items.put("certificate", "-----BEGIN CERTIFICATE-----\r" + publicCert + "\r-----END CERTIFICATE-----");
 
-            String url = this.createUrl("clients");
+            String url = this.createSmartHomeUrl("clients");
             Request request = this.createRequest(url, HttpMethod.POST, new StringContentProvider(gson.toJson(items)))
                     .header("Systempassword",
                             Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)));
@@ -156,11 +156,15 @@ public class BoschHttpClient extends HttpClient {
     }
 
     public String createUrl(String endpoint) {
-        return String.format("https://{}:8444/smarthome/{]", this.ipAddress, endpoint);
+        return String.format("https://{}:8444/{}", this.ipAddress, endpoint);
+    }
+
+    public String createSmartHomeUrl(String endpoint) {
+        return this.createUrl(String.format("smarthome/{}", endpoint));
     }
 
     public String createServiceUrl(String serviceName, String deviceId) {
-        return this.createUrl(String.format("devices/{}/services/{}/state", deviceId, serviceName));
+        return this.createSmartHomeUrl(String.format("devices/{}/services/{}/state", deviceId, serviceName));
     }
 
     public Request createRequest(String url, HttpMethod method) {
