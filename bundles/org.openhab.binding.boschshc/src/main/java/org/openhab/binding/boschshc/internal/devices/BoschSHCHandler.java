@@ -202,18 +202,35 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> TService createService(
             Supplier<TService> newService, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
             throws BoschSHCException {
+        TService service = newService.get();
+        this.registerService(service, stateUpdateListener, affectedChannels);
+        return service;
+    }
+
+    /**
+     * Registers a service for this device.
+     * 
+     * @param <TService> Type of service.
+     * @param <TState> Type of service state.
+     * @param service Service to register.
+     * @param stateUpdateListener Function to call when a state update was received
+     *            from the device.
+     * @param affectedChannels Channels which are affected by the state of this
+     *            service.
+     * @throws BoschSHCException
+     */
+    protected <TService extends BoschSHCService<TState>, TState extends BoschSHCServiceState> void registerService(
+            TService service, Consumer<TState> stateUpdateListener, Collection<String> affectedChannels)
+            throws BoschSHCException {
         BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
 
         String deviceId = this.getBoschID();
         if (deviceId == null) {
-            throw new Error(String.format("Could not create service for {}, no device id set", this.getThing()));
+            throw new Error(String.format("Could not register service for {}, no device id set", this.getThing()));
         }
 
-        TService service = newService.get();
         service.initialize(bridgeHandler, deviceId, stateUpdateListener);
         this.registerService(service, affectedChannels);
-
-        return service;
     }
 
     /**

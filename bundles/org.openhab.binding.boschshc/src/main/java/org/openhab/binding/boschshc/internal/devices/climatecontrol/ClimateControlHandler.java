@@ -38,7 +38,6 @@ import org.openhab.binding.boschshc.internal.services.temperaturelevel.Temperatu
 @NonNullByDefault
 public final class ClimateControlHandler extends BoschSHCHandler {
 
-    @NonNullByDefault({})
     private RoomClimateControlService roomClimateControlService;
 
     /**
@@ -48,12 +47,13 @@ public final class ClimateControlHandler extends BoschSHCHandler {
      */
     public ClimateControlHandler(Thing thing) {
         super(thing);
+        this.roomClimateControlService = new RoomClimateControlService();
     }
 
     @Override
     protected void initializeServices() throws BoschSHCException {
         super.createService(TemperatureLevelService::new, this::updateChannels, Arrays.asList(CHANNEL_TEMPERATURE));
-        this.roomClimateControlService = super.createService(RoomClimateControlService::new, this::updateChannels,
+        super.registerService(this.roomClimateControlService, this::updateChannels,
                 Arrays.asList(CHANNEL_SETPOINT_TEMPERATURE));
     }
 
