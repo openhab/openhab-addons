@@ -13,10 +13,8 @@
 package org.openhab.binding.luftdateninfo.internal.handler;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,17 +38,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class BaseSensorHandler extends BaseThingHandler {
+    private static final LuftdatenInfoConfiguration DEFAULT_CONFIG = new LuftdatenInfoConfiguration();
+    private static final String EMPTY = "";
 
     protected static final int REFRESH_INTERVAL_MIN = 5;
-    private static final LuftdatenInfoConfiguration DEFAULT_CONFIG = new LuftdatenInfoConfiguration();
     protected final Logger logger = LoggerFactory.getLogger(BaseSensorHandler.class);
-
     protected LuftdatenInfoConfiguration config = DEFAULT_CONFIG;
-    protected @Nullable ScheduledFuture<?> refreshJob;
-
     protected ConfigStatus configStatus = ConfigStatus.UNKNOWN;
     protected ThingStatus myThingStatus = ThingStatus.UNKNOWN;
     protected UpdateStatus lastUpdateStatus = UpdateStatus.UNKNOWN;
+    protected @Nullable ScheduledFuture<?> refreshJob;
 
     public enum ConfigStatus {
         OK,
@@ -155,19 +152,20 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     }
 
     protected void dataUpdate() {
-        String details = null;
-        try {
-            String response = HTTPHandler.getHandler().getResponse(config.sensorid);
-            lastUpdateStatus = updateChannels(response);
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            // no valid HTTP result - report COM error in UI and start schedule for recovery
-            details = e.getMessage() + " / " + LocalDateTime.now().format(DateTimeUtils.DTF);
-            lastUpdateStatus = UpdateStatus.CONNECTION_EXCEPTION;
-        }
-        statusUpdate(lastUpdateStatus, details);
+        HTTPHandler.getHandler().request(config.sensorid, this);
     }
 
-    protected void statusUpdate(UpdateStatus updateStatus, @Nullable String details) {
+    public void onResponse(String data) {
+        lastUpdateStatus = updateChannels(data);
+        statusUpdate(lastUpdateStatus, EMPTY);
+    }
+
+    public void onError(String errorReason) {
+        statusUpdate(UpdateStatus.CONNECTION_EXCEPTION,
+                errorReason + " / " + LocalDateTime.now().format(DateTimeUtils.DTF));
+    }
+
+    protected void statusUpdate(UpdateStatus updateStatus, String details) {
         if (updateStatus == UpdateStatus.OK) {
             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
             startSchedule();

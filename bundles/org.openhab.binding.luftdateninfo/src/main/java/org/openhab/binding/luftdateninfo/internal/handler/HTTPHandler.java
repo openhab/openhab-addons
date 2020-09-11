@@ -14,14 +14,13 @@ package org.openhab.binding.luftdateninfo.internal.handler;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorData;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
@@ -65,24 +64,24 @@ public class HTTPHandler {
         return HTTP_HANDLER;
     }
 
-    public @Nullable String getResponse(int sensorId)
-            throws InterruptedException, TimeoutException, ExecutionException {
+    public synchronized void request(int sensorId, BaseSensorHandler callback) {
         HttpClient localClient = commonHttpClient;
         if (localClient == null) {
             logger.warn("HTTP Client not initialized");
-            return null;
         } else {
             String url = sensorUrl + sensorId + "/";
-            ContentResponse contentResponse = localClient.newRequest(url).timeout(15, TimeUnit.SECONDS).send();
-            int httpStatus = contentResponse.getStatus();
-            String content = contentResponse.getContentAsString();
-            switch (httpStatus) {
-                case 200:
-                    return content;
-                default:
-                    logger.debug("Sensor response: {}", httpStatus);
-                    return null;
-            }
+            Request req = localClient.newRequest(url);
+            req.timeout(15, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+                @NonNullByDefault({})
+                @Override
+                public void onComplete(org.eclipse.jetty.client.api.Result result) {
+                    if (result.getResponse().getStatus() != 200) {
+                        callback.onError(result.getResponse().getReason());
+                    } else {
+                        callback.onResponse(getContentAsString());
+                    }
+                }
+            });
         }
     }
 
