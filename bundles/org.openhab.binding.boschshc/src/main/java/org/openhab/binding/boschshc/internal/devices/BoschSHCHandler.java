@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
-import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

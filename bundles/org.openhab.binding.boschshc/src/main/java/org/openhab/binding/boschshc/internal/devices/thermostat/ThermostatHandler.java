@@ -22,9 +22,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
-import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
+import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
 import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetService;
-import org.openhab.binding.boschshc.internal.services.valvetappet.ValveTappetServiceState;
+import org.openhab.binding.boschshc.internal.services.valvetappet.dto.ValveTappetServiceState;
 
 /**
  * Handler for a thermostat device.

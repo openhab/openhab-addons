@@ -10,19 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.valvetappet;
+package org.openhab.binding.boschshc.internal.services.valvetappet.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Valve Tappet service state.
  * 
  * @author Christian Oeing - Initial contribution
  */
-@NonNullByDefault
 public class ValveTappetServiceState extends BoschSHCServiceState {
     public ValveTappetServiceState() {
         super("valveTappetState");

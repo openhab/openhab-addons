@@ -10,22 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.temperaturelevel;
+package org.openhab.binding.boschshc.internal.services.temperaturelevel.dto;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.boschshc.internal.services.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * TemperatureLevel service state.
  * 
  * @author Christian Oeing - Initial contribution
  */
-@NonNullByDefault
 public class TemperatureLevelServiceState extends BoschSHCServiceState {
 
     public TemperatureLevelServiceState() {

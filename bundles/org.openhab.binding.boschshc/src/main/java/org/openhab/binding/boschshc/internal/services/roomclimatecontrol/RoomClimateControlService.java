@@ -14,6 +14,7 @@ package org.openhab.binding.boschshc.internal.services.roomclimatecontrol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
+import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto.RoomClimateControlServiceState;
 
 /**
  * Service of a virtual device which controls the radiator thermostats in a room.

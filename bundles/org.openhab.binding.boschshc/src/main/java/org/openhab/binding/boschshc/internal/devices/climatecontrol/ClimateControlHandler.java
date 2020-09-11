@@ -26,9 +26,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
-import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlServiceState;
+import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto.RoomClimateControlServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
-import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelServiceState;
+import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
 
 /**
  * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.
