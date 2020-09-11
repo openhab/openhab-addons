@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.gce.internal;
 
-import java.util.Collections;
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -29,17 +26,12 @@ public class GCEBindingConstants {
 
     public static final String BINDING_ID = "gce";
 
-    // List of Bridge Type UIDs
+    // Bridge Type UID
     public static final ThingTypeUID IPXV3_THING_TYPE = new ThingTypeUID(BINDING_ID, "ipx800v3");
 
-    // Module Properties
-    public static final String DIGITAL_INPUT = "I";
-    public static final String ANALOG_INPUT = "A";
-    public static final String COUNTER = "C";
-    public static final String RELAY_OUTPUT = "O";
-
-    public static final String LAST_STATE_DURATION_CHANNEL_NAME = "duration";
-    public static final String CHANNEL_TYPE_PUSH_BUTTON_TRIGGER = "pushButtonTrigger";
+    public static final String CHANNEL_LAST_STATE_DURATION = "duration";
+    public static final String CHANNEL_VOLTAGE = "voltage";
+    public static final String TRIGGER_CONTACT = "contact-trigger";
 
     public static final String EVENT_PRESSED = "PRESSED";
     public static final String EVENT_RELEASED = "RELEASED";
@@ -47,6 +39,6 @@ public class GCEBindingConstants {
     public static final String EVENT_LONG_PRESS = "LONG_PRESS";
     public static final String EVENT_PULSE = "PULSE";
 
-    // List of adressable things
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(IPXV3_THING_TYPE);
+    // Adressable thing
+
 }

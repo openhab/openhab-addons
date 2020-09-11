@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * The {Ipx800Actions } defines rule actions for the GCE binding.
  * <p>
  * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
- * the test <i>actions instanceof AstroActions</i> fails. This test can fail
+ * the test <i>actions instanceof Ipx800Actions</i> fails. This test can fail
  * due to an issue in openHAB core v2.5.0 where the {@link Ipx800Actions} class
  * can be loaded by a different classloader than the <i>actions</i> instance.
  *
@@ -39,8 +39,8 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "gce")
 @NonNullByDefault
 public class Ipx800Actions implements ThingActions, IIpx800Actions {
-
     private final Logger logger = LoggerFactory.getLogger(Ipx800Actions.class);
+
     protected @Nullable Ipx800v3Handler handler;
 
     public Ipx800Actions() {

@@ -18,37 +18,49 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Channel;
+import org.eclipse.smarthome.core.thing.ChannelGroupUID;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
+import org.eclipse.smarthome.core.thing.type.ChannelKind;
+import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gce.internal.action.Ipx800Actions;
 import org.openhab.binding.gce.internal.config.AnalogInputConfiguration;
-import org.openhab.binding.gce.internal.config.CounterConfiguration;
 import org.openhab.binding.gce.internal.config.DigitalInputConfiguration;
 import org.openhab.binding.gce.internal.config.Ipx800Configuration;
 import org.openhab.binding.gce.internal.config.RelayOutputConfiguration;
+import org.openhab.binding.gce.model.M2MMessageParser;
+import org.openhab.binding.gce.model.PortData;
+import org.openhab.binding.gce.model.PortDefinition;
+import org.openhab.binding.gce.model.StatusFileInterpreter;
+import org.openhab.binding.gce.model.StatusFileInterpreter.StatusEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +73,15 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventListener {
     private static final String PROPERTY_SEPARATOR = "-";
+    private static final double ANALOG_SAMPLING = 0.000050354;
 
     private final Logger logger = LoggerFactory.getLogger(Ipx800v3Handler.class);
 
     private @NonNullByDefault({}) Ipx800Configuration configuration;
     private @NonNullByDefault({}) Ipx800DeviceConnector connector;
-    private Optional<Ipx800MessageParser> parser = Optional.empty();
+    private @Nullable M2MMessageParser parser;
+    private @NonNullByDefault({}) StatusFileInterpreter statusFile;
+    private @Nullable ScheduledFuture<?> refreshJob;
 
     private final Map<String, @Nullable PortData> portDatas = new HashMap<>();
 
@@ -78,7 +93,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         public LongPressEvaluator(Channel channel, String port, PortData portData) {
             this.referenceTime = portData.getTimestamp();
             this.port = port;
-            this.eventChannelId = channel.getUID().getId() + PROPERTY_SEPARATOR + CHANNEL_TYPE_PUSH_BUTTON_TRIGGER;
+            this.eventChannelId = channel.getUID().getId() + PROPERTY_SEPARATOR + TRIGGER_CONTACT;
         }
 
         @Override
@@ -102,29 +117,102 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         logger.debug("Initializing IPX800 handler for uid '{}'", getThing().getUID());
 
-        connector = new Ipx800DeviceConnector(configuration.hostname, configuration.portNumber);
-        connector.setName("OH-binding-" + getThing().getUID());
-        connector.setDaemon(true);
+        statusFile = new StatusFileInterpreter(configuration.hostname, this);
 
-        parser = Optional.of(new Ipx800MessageParser(connector, this));
+        if (thing.getProperties().isEmpty()) {
+            discoverAttributes();
+        }
+
+        connector = new Ipx800DeviceConnector(configuration.hostname, configuration.portNumber, getThing().getUID());
+        parser = new M2MMessageParser(connector, this);
 
         updateStatus(ThingStatus.UNKNOWN);
+
+        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
+            statusFile.read();
+        }, 3000, configuration.pullInterval, TimeUnit.MILLISECONDS);
+
         connector.start();
     }
 
     @Override
     public void dispose() {
+        if (refreshJob != null) {
+            refreshJob.cancel(true);
+            refreshJob = null;
+        }
+
         if (connector != null) {
             connector.destroyAndExit();
         }
+        parser = null;
 
         portDatas.values().stream().forEach(portData -> {
             if (portData != null) {
                 portData.destroy();
             }
         });
-
         super.dispose();
+    }
+
+    protected void discoverAttributes() {
+        final Map<String, String> properties = new HashMap<>();
+
+        properties.put(Thing.PROPERTY_VENDOR, "GC Electronics");
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, statusFile.getElement(StatusEntry.VERSION));
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, statusFile.getElement(StatusEntry.CONFIG_MAC));
+        updateProperties(properties);
+
+        ThingBuilder thingBuilder = editThing();
+        List<Channel> channels = new ArrayList<>(getThing().getChannels());
+
+        PortDefinition.asStream().forEach(portDefinition -> {
+            int nbElements = statusFile.getMaxNumberofNodeType(portDefinition);
+            for (int i = 0; i < nbElements; i++) {
+                createChannels(portDefinition, i, channels);
+            }
+        });
+
+        thingBuilder.withChannels(channels);
+        updateThing(thingBuilder.build());
+    }
+
+    private void createChannels(PortDefinition portDefinition, int portIndex, List<Channel> channels) {
+        String ndx = Integer.toString(portIndex + 1);
+        String advancedChannelTypeName = portDefinition.toString()
+                + (portDefinition.isAdvanced(portIndex) ? "Advanced" : "");
+        ChannelGroupUID groupUID = new ChannelGroupUID(thing.getUID(), portDefinition.toString());
+        ChannelUID mainChannelUID = new ChannelUID(groupUID, ndx);
+        ChannelTypeUID channelType = new ChannelTypeUID(BINDING_ID, advancedChannelTypeName);
+        switch (portDefinition) {
+            case ANALOG:
+                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.NUMBER)
+                        .withLabel("Analog Input " + ndx).withType(channelType).build());
+                channels.add(ChannelBuilder
+                        .create(new ChannelUID(groupUID, ndx + "-voltage"), "Number:ElectricPotential")
+                        .withLabel("Voltage " + ndx).withType(new ChannelTypeUID(BINDING_ID, CHANNEL_VOLTAGE)).build());
+                break;
+            case CONTACT:
+                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.CONTACT).withLabel("Contact " + ndx)
+                        .withType(channelType).build());
+                channels.add(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-event"), null)
+                        .withLabel("Contact " + ndx + " Event").withKind(ChannelKind.TRIGGER)
+                        .withType(new ChannelTypeUID(BINDING_ID, TRIGGER_CONTACT + (portIndex < 8 ? "" : "Advanced")))
+                        .build());
+                break;
+            case COUNTER:
+                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.NUMBER).withLabel("Counter " + ndx)
+                        .withType(channelType).build());
+                break;
+            case RELAY:
+                channels.add(ChannelBuilder.create(mainChannelUID, CoreItemFactory.SWITCH).withLabel("Relay " + ndx)
+                        .withType(channelType).build());
+                break;
+        }
+        channels.add(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-duration"), "Number:Time")
+                .withLabel("Previous state duration " + ndx)
+                .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_LAST_STATE_DURATION)).build());
+
     }
 
     @Override
@@ -132,85 +220,97 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
     }
 
-    private @Nullable Channel getChannelForPort(String port) {
-        String portKind = port.substring(0, 1);
-        String portNum = port.replace(portKind, "");
-        return thing.getChannel(portKind + "#" + portNum);
+    private boolean ignoreCondition(double newValue, PortData portData, Configuration configuration,
+            PortDefinition portDefinition, ZonedDateTime now) {
+        if (!portData.isInitializing()) { // Always accept if portData is not initialized
+            double prevValue = portData.getValue();
+            if (newValue == prevValue) { // Always reject if the value did not change
+                return true;
+            }
+            if (portDefinition == PortDefinition.ANALOG) { // For analog values, check histeresis
+                AnalogInputConfiguration config = configuration.as(AnalogInputConfiguration.class);
+                long hysteresis = config.hysteresis / 2;
+                if (newValue <= prevValue + hysteresis && newValue >= prevValue - hysteresis) {
+                    return true;
+                }
+            }
+            if (portDefinition == PortDefinition.CONTACT) { // For contact values, check debounce
+                DigitalInputConfiguration config = configuration.as(DigitalInputConfiguration.class);
+                if (config.debouncePeriod != 0
+                        && now.isBefore(portData.getTimestamp().plus(config.debouncePeriod, ChronoUnit.MILLIS))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public void dataReceived(String port, double value) {
         updateStatus(ThingStatus.ONLINE);
-        Channel channel = getChannelForPort(port);
+        Channel channel = thing.getChannel(PortDefinition.asChannelId(port));
         if (channel != null) {
-            PortData portData = portDatas.get(channel.getUID().getId());
-            if (portData != null) {
-                if (value == portData.getValue()) {
-                    return;
-                }
-
+            String channelId = channel.getUID().getId();
+            String groupId = channel.getUID().getGroupId();
+            PortData portData = portDatas.get(channelId);
+            if (portData != null && groupId != null) {
                 ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
                 long sinceLastChange = Duration.between(portData.getTimestamp(), now).toMillis();
                 Configuration configuration = channel.getConfiguration();
+                PortDefinition portDefinition = PortDefinition.fromGroupId(groupId);
+                if (ignoreCondition(value, portData, configuration, portDefinition, now)) {
+                    logger.debug("Ignore condition met for port '{}' with data '{}'", port, value);
+                    return;
+                }
+                logger.debug("About to update port '{}' with data '{}'", port, value);
                 State state = UnDefType.UNDEF;
-                String groupId = channel.getUID().getGroupId();
-                if (groupId != null) {
-                    switch (groupId) {
-                        case COUNTER:
-                            state = new DecimalType(value);
-                            break;
-                        case ANALOG_INPUT:
-                            AnalogInputConfiguration config = configuration.as(AnalogInputConfiguration.class);
-                            long hysteresis = config.hysteresis / 2;
-                            if (portData.isInitializing() || value > portData.getValue() + hysteresis
-                                    || value < portData.getValue() - hysteresis) {
-                                state = new DecimalType(value);
-                            } else {
-                                return;
-                            }
-                            break;
-                        case DIGITAL_INPUT:
-                            DigitalInputConfiguration config2 = configuration.as(DigitalInputConfiguration.class);
-                            if (config2.debouncePeriod != 0 && now.isBefore(
-                                    portData.getTimestamp().plus(config2.debouncePeriod, ChronoUnit.MILLIS))) {
-                                return;
-                            }
-                            portData.cancelPulsing();
-                            if (value == 1) {
-                                state = OpenClosedType.CLOSED;
-                                if (portData.getValue() != -1) {
-                                    triggerPushButtonChannel(channel, EVENT_PRESSED);
-                                }
-                                if (config2.longPressTime != 0 && !portData.isInitializing()) {
+                switch (portDefinition) {
+                    case COUNTER:
+                        state = new DecimalType(value);
+                        break;
+                    case RELAY:
+                        state = value == 1 ? OnOffType.ON : OnOffType.OFF;
+                        break;
+                    case ANALOG:
+                        state = new DecimalType(value);
+                        updateState(channelId + PROPERTY_SEPARATOR + CHANNEL_VOLTAGE,
+                                new QuantityType<>(value * ANALOG_SAMPLING, SmartHomeUnits.VOLT));
+                        break;
+                    case CONTACT:
+                        DigitalInputConfiguration config = configuration.as(DigitalInputConfiguration.class);
+                        portData.cancelPulsing();
+                        state = value == 1 ? OpenClosedType.CLOSED : OpenClosedType.OPEN;
+                        switch ((OpenClosedType) state) {
+                            case CLOSED:
+                                if (config.longPressTime != 0 && !portData.isInitializing()) {
                                     scheduler.schedule(new LongPressEvaluator(channel, port, portData),
-                                            config2.longPressTime, TimeUnit.MILLISECONDS);
-                                } else if (config2.pulsePeriod != 0) {
+                                            config.longPressTime, TimeUnit.MILLISECONDS);
+                                } else if (config.pulsePeriod != 0) {
                                     portData.setPulsing(scheduler.scheduleWithFixedDelay(() -> {
                                         triggerPushButtonChannel(channel, EVENT_PULSE);
-                                    }, config2.pulsePeriod, config2.pulsePeriod, TimeUnit.MILLISECONDS));
-                                    if (config2.pulseTimeout != 0) {
-                                        scheduler.schedule(portData::cancelPulsing, config2.pulseTimeout,
+                                    }, config.pulsePeriod, config.pulsePeriod, TimeUnit.MILLISECONDS));
+                                    if (config.pulseTimeout != 0) {
+                                        scheduler.schedule(portData::cancelPulsing, config.pulseTimeout,
                                                 TimeUnit.MILLISECONDS);
                                     }
                                 }
-                            } else {
-                                state = OpenClosedType.OPEN;
-                                if (!portData.isInitializing()) {
-                                    triggerPushButtonChannel(channel, EVENT_RELEASED);
-                                    if (config2.longPressTime != 0 && sinceLastChange < config2.longPressTime) {
-                                        triggerPushButtonChannel(channel, EVENT_SHORT_PRESS);
-                                    }
+                                break;
+                            case OPEN:
+                                if (!portData.isInitializing() && config.longPressTime != 0
+                                        && sinceLastChange < config.longPressTime) {
+                                    triggerPushButtonChannel(channel, EVENT_SHORT_PRESS);
                                 }
-                            }
-                            break;
-                        case RELAY_OUTPUT:
-                            state = value == 1 ? OnOffType.ON : OnOffType.OFF;
-                            break;
-                    }
+                                break;
+                        }
+                        if (!portData.isInitializing()) {
+                            triggerPushButtonChannel(channel, value == 1 ? EVENT_PRESSED : EVENT_RELEASED);
+                        }
+                        break;
                 }
-                updateState(channel.getUID().getId(), state);
+
+                updateState(channelId, state);
                 if (!portData.isInitializing()) {
-                    updateState(channel.getUID().getId() + PROPERTY_SEPARATOR + LAST_STATE_DURATION_CHANNEL_NAME,
+                    updateState(channelId + PROPERTY_SEPARATOR + CHANNEL_LAST_STATE_DURATION,
                             new QuantityType<>(sinceLastChange / 1000, SmartHomeUnits.SECOND));
                 }
                 portData.setData(value, now);
@@ -224,7 +324,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
     protected void triggerPushButtonChannel(Channel channel, String event) {
         logger.debug("Triggering event '{}' on channel '{}'", event, channel.getUID());
-        triggerChannel(channel.getUID().getId() + PROPERTY_SEPARATOR + CHANNEL_TYPE_PUSH_BUTTON_TRIGGER, event);
+        triggerChannel(channel.getUID().getId() + PROPERTY_SEPARATOR + TRIGGER_CONTACT, event);
     }
 
     @Override
@@ -232,11 +332,18 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         logger.debug("Received channel: {}, command: {}", channelUID, command);
 
         Channel channel = thing.getChannel(channelUID.getId());
-        if (isValidPortId(channelUID) && RELAY_OUTPUT.equalsIgnoreCase(channelUID.getGroupId())
-                && command instanceof OnOffType && channel != null) {
+        String groupId = channelUID.getGroupId();
+
+        if (channel == null || groupId == null) {
+            return;
+        }
+        if (command instanceof OnOffType && isValidPortId(channelUID)
+                && PortDefinition.fromGroupId(groupId) == PortDefinition.RELAY) {
             RelayOutputConfiguration config = channel.getConfiguration().as(RelayOutputConfiguration.class);
-            parser.ifPresent(p -> p.setOutput(channelUID.getIdWithoutGroup(),
-                    (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse));
+            String id = channelUID.getIdWithoutGroup();
+            if (parser != null) {
+                parser.setOutput(id, (OnOffType) command == OnOffType.ON ? 1 : 0, config.pulse);
+            }
             return;
         }
         logger.debug("Can not handle command '{}' on channel '{}'", command, channelUID);
@@ -249,14 +356,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         if (isValidPortId(channelUID)) {
             Channel channel = thing.getChannel(channelUID);
             if (channel != null) {
-                Configuration configuration = channel.getConfiguration();
                 PortData data = new PortData();
-                if (configuration.get("pullInterval") != null) {
-                    int pullInterval = configuration.as(CounterConfiguration.class).pullInterval;
-                    data.setPullJob(scheduler.scheduleWithFixedDelay(() -> {
-                        parser.ifPresent(p -> p.getValue(channelId));
-                    }, pullInterval, pullInterval, TimeUnit.MILLISECONDS));
-                }
                 portDatas.put(channelId, data);
             }
         }
@@ -276,11 +376,15 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     }
 
     public void resetCounter(int counter) {
-        parser.ifPresent(p -> p.resetCounter(counter));
+        if (parser != null) {
+            parser.resetCounter(counter);
+        }
     }
 
     public void reset() {
-        parser.ifPresent(Ipx800MessageParser::reset);
+        if (parser != null) {
+            parser.resetPLC();
+        }
     }
 
     @Override

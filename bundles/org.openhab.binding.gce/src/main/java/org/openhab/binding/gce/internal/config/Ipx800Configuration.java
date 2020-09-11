@@ -24,4 +24,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Ipx800Configuration {
     public String hostname = "";
     public int portNumber = 9870;
+    public int pullInterval = 5000;
 }

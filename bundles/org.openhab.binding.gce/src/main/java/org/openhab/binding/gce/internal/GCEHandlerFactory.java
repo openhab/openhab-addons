@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.gce.internal;
 
-import static org.openhab.binding.gce.internal.GCEBindingConstants.*;
+import static org.openhab.binding.gce.internal.GCEBindingConstants.IPXV3_THING_TYPE;
+
+import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,18 +36,16 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.gce")
 public class GCEHandlerFactory extends BaseThingHandlerFactory {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(IPXV3_THING_TYPE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID));
+        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (thingTypeUID.equals(IPXV3_THING_TYPE)) {
-            return new Ipx800v3Handler(thing);
-        }
-        return null;
+        return IPXV3_THING_TYPE.equals(thingTypeUID) ? new Ipx800v3Handler(thing) : null;
     }
 }

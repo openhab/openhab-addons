@@ -35,10 +35,36 @@ The IPX800v3 (ID : 'ipx800v3') accepts the following configuration parameters :
 |---------------------|---------|----------|-----------------------------|
 | hostname            |         | Yes      | IP address or hostname.     |
 | portNumber          | 9870    | No       | TCP client connection port. |
+| pullInterval*       | 5000    | No       | Refresh interval (in ms)    |
+
+The binding will query periodically the 'globalstatus.xml' page of the IPX to get fresh informations, this is
+especially usefull for Analog inputs and Counter as modification of these values on PLC side does not trigger any M2M message.
 
 The thing provides four groups of channels.
 
 ### Digital Inputs
+
+This represents the inputs of the PLC. Each can be open or closed. They are usually commuted by physical devices like pushbuttons, magnets...
+
+#### Digital Input Channels (contacts)
+
+Each input will have these associated channels:
+
+| Group    | Channel Name           | Item Type   | R/W | Description                                                                 |
+|----------|------------------------|-------------|-----|-----------------------------------------------------------------------------|
+| contact  | `portnumber`           | Contact     |  R  | Status of the actual port (OPEN, CLOSED)                                    |
+| contact  | `portnumber`-duration  | Number:Time |  R  | Updated when the port status changes to the duration of the previous state. |
+
+Associated events:
+
+| Channel Type ID    | Options           | Description                                      | Conf Dependency |
+|--------------------|-------------------|--------------------------------------------------|-----------------|
+| `portnumber`-event |                   | Triggered on or after a port status change       |                 |
+|                    | PRESSED           | Triggered when state changes from OPEN to CLOSED |                 |
+|                    | RELEASED          | Triggered when state changes from CLOSED to OPEN |                 |
+|                    | LONG_PRESS        | Triggered when RELEASED after a long period      | longPressTime   |
+|                    | SHORT_PRESS       | Triggered when RELEASED before a long period     | longPressTime   |
+|                    | PULSE             | Triggered during CLOSED state                    | pulsePeriod     |
 
 #### Configuration
 
@@ -49,46 +75,54 @@ The thing provides four groups of channels.
 | pulsePeriod     |    0(*) | ms   | Period of pulse event triggering while the entry is closed. Ignored if '0'.     |
 | pulseTimeout    |    0(*) | ms   | Period of time after pulsing will be stopped. None if '0'.                      |
 
-(*) Values below 100ms should be avoided as the JVM could skip them and proceed in the same time slice.
+* Values below 100ms should be avoided as the JVM could skip them and proceed in the same time slice.
 
-### Digital Outputs (relays)
 
-#### Configuration
+### Digital Outputs Channels (relays)
 
-| Property        | Default | Description                                                                     |
-|-----------------|---------|---------------------------------------------------------------------------------|
-| pulse           |  false  |     |
+Each output will have these associated channels:
 
-### Counters
-
-#### Configuration
-
-| Property     | Default | Description                                                                     |
-|--------------|---------|---------------------------------------------------------------------------------|
-| pullInterval |  5000   | Counter value refreshing frequency (in ms).                                     |
-
-### Analog Inputs
+| Group    | Channel Name           | Item Type   | R/W | Description                                                                 |
+|----------|------------------------|-------------|-----|-----------------------------------------------------------------------------|
+| relay    | `portnumber`           | Switch      | R/W | Status of the actual port (ON, OFF)                                         |
+| relay    | `portnumber`-duration  | Number:Time |  R  | Updated when the port status changes to the duration of the previous state. |
 
 #### Configuration
 
-| Property     | Default | Unit |  Description                                                                            |
-|--------------|---------|------|-----------------------------------------------------------------------------------------|
-| pullInterval |  5000   | ms   | Counter value refreshing frequency.                                                     |
-| hysteresis   |  0      |      | Threshold that must be reached between two refreshes to trigger an update of the value. |
+| Property        | Default | Description                                                              |
+|-----------------|---------|--------------------------------------------------------------------------|
+| pulse           |  false  | If set, the output will be in pulse mode, releasing it after the contact |
 
-## Item Configuration
+### Counters Channels
 
-### Syntax
+Each counter will have these associated channels:
 
+| Group    | Channel Name             | Item Type   | R/W | Description                                                                    |
+|----------|--------------------------|-------------|-----|--------------------------------------------------------------------------------|
+| counter  | `counternumber`          | Number      |  R  | Actual value of the counter                                                    |
+| counter  | `counternumber`-duration | Number:Time |  R  | Updated when the counter status changes to the duration of the previous state. |
 
-### Item Types
+#### Configuration
 
-#### Output
+This channel has no configuration setting.
 
+### Analog Inputs Channels
 
-#### To be done
+Each analog port will have these associated channels:
 
-* Long press
+| Group  | Channel Name          | Item Type                | R/W | Description                                                                 |
+|--------|-----------------------|--------------------------|-----|-----------------------------------------------------------------------------|
+| analog | `portnumber`          | Number                   |  R  | Value of the port.                                                          |
+| analog | `portnumber`-duration | Number:Time              |  R  | Updated when the port status changes to the duration of the previous state. |
+| analog | `portnumber`-voltage  | Number:ElectricPotential |  R  | Electrical equivalency of the analogic value                                |
+
+#### Configuration
+
+| Property   | Default | Description                                                              |
+|------------|---------|--------------------------------------------------------------------------|
+| histeresis |    0    | If set, the channel will ignore status changes below state + histeresis/2|
+|            |         |    or higher than state - histeresis sur 2                               |
+
 
 
 ## Rule Actions

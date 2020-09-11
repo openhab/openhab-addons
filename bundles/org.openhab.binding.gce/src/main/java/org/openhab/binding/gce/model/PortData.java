@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gce.internal.handler;
+package org.openhab.binding.gce.model;
 
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
@@ -28,7 +28,6 @@ public class PortData {
     private double value = -1;
     private ZonedDateTime timestamp = ZonedDateTime.now();
     private @Nullable ScheduledFuture<?> pulsing;
-    private @Nullable ScheduledFuture<?> pullJob;
 
     public void cancelPulsing() {
         if (pulsing != null) {
@@ -39,10 +38,6 @@ public class PortData {
 
     public void destroy() {
         cancelPulsing();
-        if (pullJob != null) {
-            pullJob.cancel(true);
-        }
-        pullJob = null;
     }
 
     public void setData(double value, ZonedDateTime timestamp) {
@@ -58,16 +53,8 @@ public class PortData {
         return timestamp;
     }
 
-    public @Nullable ScheduledFuture<?> getPulsing() {
-        return pulsing;
-    }
-
     public void setPulsing(ScheduledFuture<?> pulsing) {
         this.pulsing = pulsing;
-    }
-
-    public void setPullJob(ScheduledFuture<?> pullJob) {
-        this.pullJob = pullJob;
     }
 
     public boolean isInitializing() {

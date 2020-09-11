@@ -18,9 +18,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.binding.gce.model.M2MMessageParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +30,7 @@ import org.slf4j.LoggerFactory;
  * The {@link Ipx800DeviceConnector} is responsible for connecting,
  * reading, writing and disconnecting from the Ipx800.
  *
- * @author Seebag - Initial contribution on OH1
+ * @author Seebag - Initial Contribution
  * @author Gaël L'hopital - Ported and adapted for OH2
  */
 @NonNullByDefault
@@ -41,9 +43,7 @@ public class Ipx800DeviceConnector extends Thread {
 
     private final String hostname;
     public final int portNumber;
-    private Optional<Ipx800MessageParser> parser = Optional.empty();
-
-    private boolean connected = false;
+    private @Nullable M2MMessageParser parser;
 
     private @NonNullByDefault({}) Socket client;
     private @NonNullByDefault({}) BufferedReader in;
@@ -52,9 +52,11 @@ public class Ipx800DeviceConnector extends Thread {
     private int failedKeepalive = 0;
     private boolean waitingKeepaliveResponse = false;
 
-    public Ipx800DeviceConnector(String hostname, int portNumber) {
+    public Ipx800DeviceConnector(String hostname, int portNumber, ThingUID uid) {
+        super("OH-binding-" + uid);
         this.hostname = hostname;
         this.portNumber = portNumber;
+        setDaemon(true);
     }
 
     public synchronized void send(String message) {
@@ -76,33 +78,40 @@ public class Ipx800DeviceConnector extends Thread {
         client.getInputStream().skip(client.getInputStream().available());
         in = new BufferedReader(new InputStreamReader(client.getInputStream()));
         out = new PrintWriter(client.getOutputStream(), true);
-        connected = true;
-        logger.debug("Connected to {}:{}", hostname, portNumber);
     }
 
     /**
      * Disconnect the device
      */
     private void disconnect() {
-        if (connected) {
-            logger.debug("Disconnecting");
+        logger.debug("Disconnecting");
+
+        if (in != null) {
             try {
                 in.close();
-                out.close();
-                client.close();
-            } catch (IOException e) {
-                logger.warn("Unable to disconnect {}", e.getMessage());
+            } catch (IOException ignore) {
             }
-            connected = false;
-            logger.debug("Disconnected");
+            this.in = null;
         }
+        if (out != null) {
+            out.close();
+            this.out = null;
+        }
+        if (client != null) {
+            try {
+                client.close();
+            } catch (IOException ignore) {
+            }
+            this.client = null;
+        }
+        logger.debug("Disconnected");
     }
 
     /**
      * Stop the device thread
      */
     public void destroyAndExit() {
-        Thread.currentThread().interrupt();
+        interrupt();
         disconnect();
     }
 
@@ -111,60 +120,66 @@ public class Ipx800DeviceConnector extends Thread {
      * If we don't receive the update maxKeepAliveFailure time, the connection is closed and reopened
      */
     private void sendKeepalive() {
-        if (waitingKeepaliveResponse) {
-            failedKeepalive++;
-            logger.debug("Sending keepalive, attempt {}", failedKeepalive);
-        } else {
-            failedKeepalive = 0;
-            logger.debug("Sending keepalive");
+        if (out != null) {
+            if (waitingKeepaliveResponse) {
+                failedKeepalive++;
+                logger.debug("Sending keepalive, attempt {}", failedKeepalive);
+            } else {
+                failedKeepalive = 0;
+                logger.debug("Sending keepalive");
+            }
+            out.println("GetIn01");
+            out.flush();
+            waitingKeepaliveResponse = true;
         }
-        out.println("GetIn01");
-        out.flush();
-        waitingKeepaliveResponse = true;
     }
 
     @Override
     public void run() {
-        while (!interrupted()) {
-            try {
-                waitingKeepaliveResponse = false;
-                failedKeepalive = 0;
-                connect();
-                while (!interrupted()) {
-                    if (failedKeepalive > MAX_KEEPALIVE_FAILURE) {
-                        throw new IOException("Max keep alive attempts has been reached");
-                    }
-                    try {
-                        String command = in.readLine();
-                        waitingKeepaliveResponse = false;
-                        parser.ifPresent(parser -> parser.unsolicitedUpdate(command));
-                    } catch (SocketTimeoutException e) {
-                        handleException(e);
-                    }
+        try {
+            waitingKeepaliveResponse = false;
+            failedKeepalive = 0;
+            connect();
+            while (!interrupted()) {
+                if (failedKeepalive > MAX_KEEPALIVE_FAILURE) {
+                    throw new IOException("Max keep alive attempts has been reached");
                 }
-                disconnect();
-            } catch (IOException e) {
-                handleException(e);
+                try {
+                    String command = in.readLine();
+                    waitingKeepaliveResponse = false;
+                    if (parser != null) {
+                        parser.unsolicitedUpdate(command);
+                    }
+                } catch (SocketTimeoutException e) {
+                    handleException(e);
+                }
             }
-            try {
-                Thread.sleep(DEFAULT_RECONNECT_TIMEOUT_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            disconnect();
+        } catch (IOException e) {
+            handleException(e);
+        }
+        try {
+            Thread.sleep(DEFAULT_RECONNECT_TIMEOUT_MS);
+        } catch (InterruptedException e) {
+            destroyAndExit();
         }
     }
 
     private void handleException(Exception e) {
-        if (e instanceof SocketTimeoutException) {
-            sendKeepalive();
-            return;
-        } else if (e instanceof IOException) {
-            logger.warn("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
+        if (!interrupted()) {
+            if (e instanceof SocketTimeoutException) {
+                sendKeepalive();
+                return;
+            } else if (e instanceof IOException) {
+                logger.warn("Communication error : '{}', will retry in {} ms", e, DEFAULT_RECONNECT_TIMEOUT_MS);
+            }
+            if (parser != null) {
+                parser.errorOccurred(e);
+            }
         }
-        parser.ifPresent(parser -> parser.errorOccurred(e));
     }
 
-    public void setParser(Ipx800MessageParser parser) {
-        this.parser = Optional.of(parser);
+    public void setParser(M2MMessageParser parser) {
+        this.parser = parser;
     }
 }
