@@ -121,10 +121,10 @@ public class ConnectedDriveConstants {
     public static final String SERVICE_MILEAGE = "service-mileage";
     public static final String SERVICE_NAME = "service-name";
     public static final String CHECK_CONTROL = "check-control";
+    public static final String CHARGE_STATUS = "charge";
     public static final String LAST_UPDATE = "last-update";
 
-    // Chraging
-    public static final String CHARGE_STATUS = "status";
+    // Charge Profile
     public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
     public static final String CHARGE_PROFILE_MODE = "profile-mode";
     public static final String CHARGE_WINDOW_START = "window-start";

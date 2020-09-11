@@ -7,7 +7,6 @@
 		<label>Electric Charging</label>
 		<description>Charge Status and Charge Profiles of Vehicle</description>
 		<channels>
-			<channel id="status" typeId="charging-status-channel"/>
 			<channel id="profile-climate" typeId="profile-climate-channel"/>
 			<channel id="profile-mode" typeId="profile-mode-channel"/>
 			<channel id="window-start" typeId="window-start-channel"/>

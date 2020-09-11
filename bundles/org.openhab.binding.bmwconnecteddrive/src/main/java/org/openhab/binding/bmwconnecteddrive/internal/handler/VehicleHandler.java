@@ -104,6 +104,9 @@ public class VehicleHandler extends VehicleChannelHandler {
     private Optional<String> chargeProfileCache = Optional.empty();
     private Optional<String> rangeMapCache = Optional.empty();
     private Optional<String> destinationCache = Optional.empty();
+    private Optional<byte[]> imageCache = Optional.empty();
+    private int imageFailCounter = 0;
+    private final int imageFailConuterMax = 5;
 
     public VehicleHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
         super(thing);
@@ -133,6 +136,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                 vehicleStatusCallback.onResponse(vehicleStatusCache);
             } else if (CHANNEL_GROUP_CHARGE.equals(group)) {
                 vehicleStatusCallback.onResponse(chargeProfileCache);
+            } else if (CHANNEL_GROUP_TROUBLESHOOT.equals(group)) {
+                imageCallback.onResponse(imageCache);
             }
         } else {
             // Executing Remote Services
@@ -304,7 +309,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 switchRemoteServicesOff();
                 updateState(vehicleFingerPrint, OnOffType.OFF);
 
-                // get Vehicle Image one time at the beginning
+                // get Vehicle Image - if not successful 5 times retry is established
                 proxy.get().requestImage(configuration.get(), imageCallback);
 
                 // check imperial setting is different to AutoDetect
@@ -342,6 +347,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     @Override
     public void dispose() {
+        logger.info("Dispose Thing {}", thing.getUID());
         if (refreshJob.isPresent()) {
             refreshJob.get().cancel(true);
         }
@@ -359,6 +365,10 @@ public class VehicleHandler extends VehicleChannelHandler {
             }
             if (isElectric) {
                 proxy.get().requestChargingProfile(configuration.get(), chargeProfileCallback);
+            }
+            if (imageFailCounter <= imageFailConuterMax) {
+                // get Vehicle Image a few times - then refuse
+                proxy.get().requestImage(configuration.get(), imageCallback);
             }
         } else {
             logger.warn("ConnectedDrive Proxy isn't present");
@@ -532,9 +542,12 @@ public class VehicleHandler extends VehicleChannelHandler {
     public class ImageCallback implements ByteResponseCallback {
         @Override
         public void onResponse(Optional<byte[]> content) {
+            imageCache = content;
             if (content.isPresent()) {
                 String contentType = HttpUtil.guessContentTypeFromData(content.get());
                 updateState(imageChannel, new RawType(content.get(), contentType));
+            } else {
+                imageFailCounter++;
             }
         }
 
@@ -544,6 +557,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         @Override
         public void onError(NetworkError error) {
             logger.debug("{}", error.toString());
+            imageFailCounter++;
         }
     }
 
@@ -636,6 +650,7 @@ public class VehicleHandler extends VehicleChannelHandler {
 
         @Override
         public void onResponse(Optional<String> content) {
+            logger.info("Update Thing {}", thing.getUID());
             if (content.isPresent()) {
                 setThingStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, Constants.EMPTY);
                 vehicleStatusCache = content;
