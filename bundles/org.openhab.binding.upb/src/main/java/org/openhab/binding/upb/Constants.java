@@ -49,6 +49,7 @@ public final class Constants {
     public static final String OFFLINE_SERIAL_INUSE = "@text/upb.thingstate.serial_inuse";
     public static final String OFFLINE_SERIAL_UNSUPPORTED = "@text/upb.thingstate.serial_unsupported";
     public static final String OFFLINE_SERIAL_LISTENERS = "@text/upb.thingstate.serial_listeners";
+    public static final String OFFLINE_SERIAL_PORT_NOT_SET = "@text/upb.thingstate.serial_cfg_port";
 
     private Constants() {
         // static class

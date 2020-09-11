@@ -63,7 +63,9 @@ public class SerialPIMHandler extends PIMHandler {
 
         final String portId = (String) getConfig().get(Constants.CONFIGURATION_PORT);
         if (portId == null || portId.isEmpty()) {
-            logger.warn("serial port is not set");
+            logger.debug("serial port is not set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    Constants.OFFLINE_SERIAL_PORT_NOT_SET);
             return;
         }
 
@@ -140,7 +142,7 @@ public class SerialPIMHandler extends PIMHandler {
                 // ignore - not supported for RFC2217 ports
             }
         } catch (final UnsupportedCommOperationException e) {
-            logger.warn("cannot open serial port", e);
+            logger.debug("cannot open serial port", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
                     Constants.OFFLINE_SERIAL_UNSUPPORTED);
             return null;
