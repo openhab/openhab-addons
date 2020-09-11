@@ -307,7 +307,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                 if ((relay.isValid == null) || relay.isValid) {
                     String groupName = profile.getControlGroup(i);
                     ShellySettingsRelay rs = profile.settings.relays.get(i);
-                    updated |= updateChannel(groupName, CHANNEL_NAME, getStringType(rs.name));
+                    updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(rs.name));
 
                     if (getBool(relay.overpower)) {
                         postEvent(ALARM_TYPE_OVERPOWER, false);
@@ -367,7 +367,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                     createRollerChannels(control);
 
                     if (control.name != null) {
-                        updated |= updateChannel(groupName, CHANNEL_NAME, getStringType(control.name));
+                        updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(control.name));
                     }
 
                     String state = getString(control.state);

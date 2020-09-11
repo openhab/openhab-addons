@@ -182,7 +182,7 @@ public class ShellyBindingConstants {
 
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
-    public static final String CHANNEL_NAME = "channelName";
+    public static final String CHANNEL_OUTPUT_NAME = "outputName";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUT1 = "input1";

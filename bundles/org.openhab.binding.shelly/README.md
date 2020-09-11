@@ -331,7 +331,7 @@ Depending on the device type and firmware release channels might be not availabl
 |----------|-------------|---------|---------|---------------------------------------------------------------------------------|
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |sensors   |temperature1 |Number   |yes      |Temperature value of external sensor #1 (if connected to temp/hum addon)         |
 |          |temperature2 |Number   |yes      |Temperature value of external sensor #2 (if connected to temp/hum addon)         |
 |          |temperature3 |Number   |yes      |Temperature value of external sensor #3 (if connected to temp/hum addon)         |
@@ -344,7 +344,7 @@ Depending on the device type and firmware release channels might be not availabl
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -363,7 +363,7 @@ Depending on the device type and firmware release channels might be not availabl
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -387,7 +387,7 @@ The thing id is derived from the service name, so that's the reason why the thin
 |relay     |output       |Switch   |r/w      |Controls the relay's output channel (on/off)                                     |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter1    |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
 |          |returnedKWH  |Number   |yes      |Total returned energy, kw/h                                                      |
@@ -424,14 +424,14 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |autoOff      |Number   |r/w      |Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #1: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |relay2    |output       |Switch   |r/w      |Relay #2: Controls the relay's output channel (on/off)                           |
 |          |input        |Switch   |yes      |ON: Input/Button is powered, see General Notes on Channels                       |
 |          |autoOn       |Number   |r/w      |Relay #2: Sets a  timer to turn the device ON after every OFF command; in seconds|
 |          |autoOff      |Number   |r/w      |Relay #2: Sets a  timer to turn the device OFF after every ON command; in seconds|
 |          |timerActive  |Switch   |yes      |Relay #2: ON: An auto-on/off timer is active                                     |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (resets on restart)|
@@ -447,7 +447,6 @@ The thing id is derived from the service name, so that's the reason why the thin
 |          |state        |String   |yes      |Roller state: open/close/stop                                                         |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                  |
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP            |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                                    |
 |          |lastPower1   |Number   |yes      |Accumulated energy consumption in Watts for the full last minute                      |
 |          |totalKWH     |Number   |yes      |Total energy consumption in Watts since the device powered up (reset on restart)      |
@@ -480,7 +479,6 @@ For this the binding aggregates the power consumption of both relays and include
 |          |state        |String   |yes      |Roller state: open/close/stop                                                        |
 |          |stopReason   |String   |yes      |Last stop reasons: normal, safety_switch or obstacle                                 |
 |          |event        |Trigger  |yes      |Roller event/trigger with payload ROLLER_OPEN / ROLLER_CLOSE / ROLLER_STOP           |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
 |meter     |             |         |         |See group meter1 for Shelly 2                                                        |
 
 The roller positioning calibration has to be performed using the Shelly App before the position can be set in percent. 
@@ -517,10 +515,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds          |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
-|status    |loaderror    |Switch   |yes      |Last error, "no" if none                                                         |
-|          |overload     |Switch   |yes      |Overload condition detected, switch dimmer off or reduce load!                   |
-|          |overtemperature |Switch|yes      |Internal device temperature over maximum. Switch off, check physical installation|
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |
@@ -538,10 +533,7 @@ The Shelly 4Pro provides 4 relays and 4 power meters.
 |          |autoOn       |Number   |r/w      |Sets a  timer to turn the device ON after every OFF command; in seconds          |
 |          |autoOff      |Number   |r/w      |Sets a  timer to turn the device OFF after every ON command; in seconds          |
 |          |button       |Trigger  |yes      |Event trigger with payload SHORT_PRESSED or LONG_PRESSED (FW 1.5.6+)             |
-|          |channelName  |String   |yes      |Logical name of this channel as configured in the Shelly App                    ||
-|status    |loaderror    |Switch   |yes      |Last error, "no" if none                                                         |
-|          |overload     |Switch   |yes      |Overload condition detected, switch dimmer off or reduce load!                   |
-|          |overtemperature |Switch|yes      |Internal device temperature over maximum. Switch off, check physical installation|
+|          |outputName   |String   |yes      |Logical name of this relay output as configured in the Shelly App                |
 |meter     |currentWatts |Number   |yes      |Current power consumption in Watts                                               |
 |          |lastPower1   |Number   |yes      |Energy consumption in Watts for a round minute, 1 minute  ago                    |
 |          |lastPower2   |Number   |yes      |Energy consumption in Watts for a round minute, 2 minutes ago                    |

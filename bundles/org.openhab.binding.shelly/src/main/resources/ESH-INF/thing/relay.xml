@@ -296,10 +296,10 @@
 		<description>Temperatures from external sensors connected to the optional Addon</description>
 	</channel-group-type>
 
-	<channel-type id="channelName">
+	<channel-type id="outputName">
 		<item-type>String</item-type>
-		<label>@text/channel-type.shelly.channelName.label</label>
-		<description>@text/channel-type.shelly.channelName.description</description>
+		<label>@text/channel-type.shelly.outputName.label</label>
+		<description>@text/channel-type.shelly.outputName.description</description>
 		<state readOnly="true">
 		</state>
 	</channel-type>

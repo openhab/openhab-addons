@@ -95,10 +95,9 @@ public class ShellyChannelDefinitionsDTO {
                 .add(new ShellyChannel(m, CHGR_DEVST, CHANNEL_DEVST_UPDATE, "updateAvailable", ITEM_TYPE_SWITCH))
 
                 // Relay
-                .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_NAME, "channelName", ITEM_TYPE_STRING))
+                .add(new ShellyChannel(m, CHGR_RELAY, CHANNEL_OUTPUT_NAME, "outputName", ITEM_TYPE_STRING))
 
                 // Roller
-                .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_NAME, "name", ITEM_TYPE_STRING))
                 .add(new ShellyChannel(m, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE, "rollerState", ITEM_TYPE_STRING))
 
                 // RGBW2
@@ -220,7 +219,7 @@ public class ShellyChannelDefinitionsDTO {
         String group = profile.getControlGroup(idx);
 
         ShellySettingsRelay rs = profile.settings.relays.get(idx);
-        addChannel(thing, add, rs.name != null, group, CHANNEL_NAME);
+        addChannel(thing, add, rs.name != null, group, CHANNEL_OUTPUT_NAME);
 
         // Shelly 1/1PM Addon
         if (relay.extTemperature != null) {
@@ -237,7 +236,6 @@ public class ShellyChannelDefinitionsDTO {
 
     public static Map<String, Channel> createRollerChannels(Thing thing, final ShellyControlRoller roller) {
         Map<String, Channel> add = new LinkedHashMap<>();
-        addChannel(thing, add, roller.name != null, CHGR_ROLLER, CHANNEL_NAME);
         addChannel(thing, add, roller.state != null, CHGR_ROLLER, CHANNEL_ROL_CONTROL_STATE);
         return add;
     }
