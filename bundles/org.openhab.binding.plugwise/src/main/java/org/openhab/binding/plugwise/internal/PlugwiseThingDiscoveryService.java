@@ -125,9 +125,10 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
 
     private DiscoveryResult createDiscoveryResult(DiscoveredNode node) {
         String mac = node.macAddress.toString();
-        ThingUID thingUID = new ThingUID(PlugwiseUtils.getThingTypeUID(node.deviceType), mac);
+        ThingUID bridgeUID = stickHandler.getThing().getUID();
+        ThingUID thingUID = new ThingUID(PlugwiseUtils.getThingTypeUID(node.deviceType), bridgeUID, mac);
 
-        return DiscoveryResultBuilder.create(thingUID).withBridge(stickHandler.getThing().getUID())
+        return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                 .withLabel("Plugwise " + node.deviceType.toString())
                 .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
                 .withProperties(new HashMap<>(node.properties))
