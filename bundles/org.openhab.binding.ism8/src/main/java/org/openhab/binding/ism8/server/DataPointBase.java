@@ -102,8 +102,8 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
         byte[] val = this.convertWriteValue(value);
         byte length = (byte) (val.length + 20);
         ByteBuffer list = ByteBuffer.allocate(length);
-        list.put(KnxNetFrame.knxHeader);
-        list.put(KnxNetFrame.connectionHeader);
+        list.put(KnxNetFrame.KNX_HEADER);
+        list.put(KnxNetFrame.CONNECTION_HEADER);
         list.put((byte) 0xF0); // Main Service
         list.put(SubServiceType.DATAPOINT_VALUE_WRITE); // Sub Service
         byte low = (byte) (this.getId() & 0xFF);

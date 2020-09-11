@@ -97,34 +97,32 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         this.config = getConfigAs(Ism8Configuration.class);
         Ism8Configuration cfg = this.config;
         final String uid = this.getThing().getUID().getAsString();
-        if (cfg != null) {
-            Server svr = new Server(cfg.getPortNumber(), uid);
-            for (Channel channel : getThing().getChannels()) {
-                if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("type")) {
-                    try {
-                        int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
-                        String type = channel.getConfiguration().get("type").toString();
-                        String description = channel.getLabel();
-                        if (type != null && description != null) {
-                            svr.addDataPoint(id, type, description);
-                        }
-                    } catch (NumberFormatException e) {
-                        this.logger.warn(
-                                "Ism8 initialize: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}",
-                                channel.getLabel(), channel.getConfiguration());
+        Server svr = new Server(cfg.getPortNumber(), uid);
+        for (Channel channel : getThing().getChannels()) {
+            if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("type")) {
+                try {
+                    int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
+                    String type = channel.getConfiguration().get("type").toString();
+                    String description = channel.getLabel();
+                    if (type != null && description != null) {
+                        svr.addDataPoint(id, type, description);
                     }
-                } else {
-                    this.logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
-                            channel.getConfiguration());
+                } catch (NumberFormatException e) {
+                    this.logger.warn(
+                            "Ism8 initialize: ID couldn't be converted correctly. Check the configuration of channel {}. Cfg={}",
+                            channel.getLabel(), channel.getConfiguration());
                 }
-                this.logger.debug("Ism8: Channel={}", channel.getConfiguration().toString());
+            } else {
+                this.logger.debug("Ism8: ID or type missing - Channel={}  Cfg={}", channel.getLabel(),
+                        channel.getConfiguration());
             }
-
-            this.updateStatus(ThingStatus.UNKNOWN);
-            svr.addDataPointChangeListener(this);
-            scheduler.execute(svr::start);
-            this.server = svr;
+            this.logger.debug("Ism8: Channel={}", channel.getConfiguration().toString());
         }
+
+        this.updateStatus(ThingStatus.UNKNOWN);
+        svr.addDataPointChangeListener(this);
+        scheduler.execute(svr::start);
+        this.server = svr;
     }
 
     @Override

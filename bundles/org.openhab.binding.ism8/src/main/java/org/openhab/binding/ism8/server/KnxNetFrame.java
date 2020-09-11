@@ -27,27 +27,27 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class KnxNetFrame {
-    public static byte[] knxHeader = new byte[6];
-    public static byte[] connectionHeader = new byte[4];
+    public static byte[] KNX_HEADER = new byte[6];
+    public static byte[] CONNECTION_HEADER = new byte[4];
 
-    private static final Logger logger = LoggerFactory.getLogger(KnxNetFrame.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KnxNetFrame.class);
     private ArrayList<SetDatapointValueMessage> valueMessages = new ArrayList<SetDatapointValueMessage>();
     private byte mainService;
     private byte subService = SubServiceType.SET_DATAPOINT_VALUE_REQUEST;
     private int startDataPoint;
 
     static {
-        knxHeader[0] = (byte) 0x06; // Header size
-        knxHeader[1] = (byte) 0x20; // Version (2.0)
-        knxHeader[2] = (byte) 0xF0; // Object server request
-        knxHeader[3] = (byte) 0x80; // Object server request
-        knxHeader[4] = (byte) 0x00; // Frame size
-        knxHeader[5] = (byte) 0x00; // Frame size
+        KNX_HEADER[0] = (byte) 0x06; // Header size
+        KNX_HEADER[1] = (byte) 0x20; // Version (2.0)
+        KNX_HEADER[2] = (byte) 0xF0; // Object server request
+        KNX_HEADER[3] = (byte) 0x80; // Object server request
+        KNX_HEADER[4] = (byte) 0x00; // Frame size
+        KNX_HEADER[5] = (byte) 0x00; // Frame size
 
-        connectionHeader[0] = (byte) 0x04; // Structure length
-        connectionHeader[1] = (byte) 0x00; // Reserved
-        connectionHeader[2] = (byte) 0x00; // Reserved
-        connectionHeader[3] = (byte) 0x00; // Reserved
+        CONNECTION_HEADER[0] = (byte) 0x04; // Structure length
+        CONNECTION_HEADER[1] = (byte) 0x00; // Reserved
+        CONNECTION_HEADER[2] = (byte) 0x00; // Reserved
+        CONNECTION_HEADER[3] = (byte) 0x00; // Reserved
     }
 
     public KnxNetFrame() {
@@ -119,18 +119,19 @@ public class KnxNetFrame {
     @Nullable
     public static KnxNetFrame createKnxNetPackage(byte[] data, int amount) {
         if (data.length < 16 || amount < 16 || data.length < amount) {
-            logger.debug("Length of the data too short for a KNXnet/IP package ({}).", data.length);
+            LOGGER.debug("Length of the data too short for a KNXnet/IP package ({}).", data.length);
             return null;
         }
 
-        if (data[0] != knxHeader[0] || data[1] != knxHeader[1] || data[2] != knxHeader[2] || data[3] != knxHeader[3]) {
-            logger.debug("Incorrect KNXnet/IP header.");
+        if (data[0] != KNX_HEADER[0] || data[1] != KNX_HEADER[1] || data[2] != KNX_HEADER[2]
+                || data[3] != KNX_HEADER[3]) {
+            LOGGER.debug("Incorrect KNXnet/IP header.");
             return null;
         }
 
         int frameSize = Byte.toUnsignedInt(data[4]) * 256 + Byte.toUnsignedInt(data[5]);
         if (frameSize != amount) {
-            logger.debug("CreateKnxNetPackage: Error TelegrammLength/FrameSize missmatch. ({}/{})", data.length,
+            LOGGER.debug("CreateKnxNetPackage: Error TelegrammLength/FrameSize missmatch. ({}/{})", data.length,
                     frameSize);
             return null;
         }
@@ -138,7 +139,7 @@ public class KnxNetFrame {
         KnxNetFrame frame = new KnxNetFrame();
         frame.setMainService(data[10]);
         if (frame.getMainService() != (byte) 0xF0) {
-            logger.debug("CreateKnxNetPackage: Main-Service not supported. ({})", frame.getMainService());
+            LOGGER.debug("CreateKnxNetPackage: Main-Service not supported. ({})", frame.getMainService());
             return null;
         }
 
@@ -151,7 +152,7 @@ public class KnxNetFrame {
         } else if (data[11] == (byte) 0xD0) {
             frame.setSubService(SubServiceType.REQUEST_ALL_DATAPOINTS);
         } else {
-            logger.debug("CreateKnxNetPackage: Sub-Service not supported. ({})", frame.getSubService());
+            LOGGER.debug("CreateKnxNetPackage: Sub-Service not supported. ({})", frame.getSubService());
             return null;
         }
 
@@ -174,7 +175,7 @@ public class KnxNetFrame {
                 }
                 return frame;
             } catch (IllegalArgumentException e) {
-                logger.debug("Error creating KnxNetPackage. {}", e.getMessage());
+                LOGGER.debug("Error creating KnxNetPackage. {}", e.getMessage());
             }
         }
 
@@ -188,9 +189,9 @@ public class KnxNetFrame {
     public byte[] createFrameAnswer() {
         ByteBuffer answer = ByteBuffer.allocate(17);
         if (this.getSubService() == SubServiceType.SET_DATAPOINT_VALUE_REQUEST) {
-            answer.put(knxHeader);
+            answer.put(KNX_HEADER);
             answer.put(5, (byte) 0x11); // static size (17 bytes)
-            answer.put(connectionHeader);
+            answer.put(CONNECTION_HEADER);
 
             answer.put(this.getMainService());
             answer.put(SubServiceType.SET_DATAPOINT_VALUE_RESULT);

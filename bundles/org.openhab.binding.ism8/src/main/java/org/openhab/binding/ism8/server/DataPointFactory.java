@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataPointFactory {
-    private static final Logger logger = LoggerFactory.getLogger(DataPointFactory.class);
-    private static ArrayList<IDataPoint> dataPoints = new ArrayList<>();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataPointFactory.class);
+    private static ArrayList<IDataPoint> DATA_POINTS = new ArrayList<>();
 
     /**
      * Creates the concrete data-point based on the type.
@@ -62,13 +62,13 @@ public class DataPointFactory {
         }
 
         if (dataPoint != null) {
-            for (IDataPoint dp : dataPoints) {
+            for (IDataPoint dp : DATA_POINTS) {
                 if (dp.getId() == dataPoint.getId()) {
-                    logger.debug("Data point already exists ({}).", id);
+                    LOGGER.debug("Data point already exists ({}).", id);
                     return null;
                 }
             }
-            dataPoints.add(dataPoint);
+            DATA_POINTS.add(dataPoint);
             return dataPoint;
         }
         return null;
