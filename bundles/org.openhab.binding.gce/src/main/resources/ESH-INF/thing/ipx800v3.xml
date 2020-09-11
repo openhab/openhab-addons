@@ -16,21 +16,21 @@
 
 		<config-description-ref uri="thing-type:gce:ipx800v3Config"/>
 	</thing-type>
-	
+
 	<channel-group-type id="contact">
 		<label>Digital Inputs</label>
 	</channel-group-type>
-	
+
 	<channel-group-type id="relay">
 		<label>Digital Outputs</label>
 	</channel-group-type>
-		
+
 	<channel-group-type id="counter">
 		<label>Counters</label>
 	</channel-group-type>
-	
+
 	<channel-group-type id="analog">
 		<label>Analog Inputs</label>
 	</channel-group-type>
-   
+
 </thing:thing-descriptions>

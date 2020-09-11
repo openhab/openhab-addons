@@ -23,7 +23,7 @@
 			<default>5000</default>
 		</parameter>
 	</config-description>
-	
+
 	<config-description uri="channel-type:gce:contactConfig">
 		<parameter name="debouncePeriod" type="integer" min="0" max="3000" unit="ms">
 			<label>Debounce Time</label>
@@ -45,19 +45,19 @@
 			<default>0</default>
 		</parameter>
 	</config-description>
-	
+
 	<config-description uri="channel-type:gce:relayConfig">
 		<parameter name="pulse" type="boolean">
 			<label>Pulse Output</label>
 			<default>false</default>
 		</parameter>
 	</config-description>
-		
+
 	<config-description uri="channel-type:gce:analogConfig">
 		<parameter name="hysteresis" type="integer" min="0">
 			<label>Hysteresis</label>
 			<default>0</default>
 		</parameter>
 	</config-description>
-	
+
 </config-description:config-descriptions>

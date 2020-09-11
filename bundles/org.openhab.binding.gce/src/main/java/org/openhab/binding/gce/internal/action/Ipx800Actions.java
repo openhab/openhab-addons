@@ -111,5 +111,4 @@ public class Ipx800Actions implements ThingActions, IIpx800Actions {
         }
         throw new IllegalArgumentException("Actions is not an instance of Ipx800Actions");
     }
-
 }

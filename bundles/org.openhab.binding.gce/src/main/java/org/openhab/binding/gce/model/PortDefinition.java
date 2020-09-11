@@ -83,5 +83,4 @@ public enum PortDefinition {
         PortDefinition result = asStream().filter(v -> v.portName.startsWith(portKind)).findFirst().get();
         return result.toString() + "#" + portDefinition.substring(1);
     }
-
 }

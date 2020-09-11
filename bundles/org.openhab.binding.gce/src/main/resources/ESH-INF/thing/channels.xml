@@ -10,7 +10,7 @@
 		<state pattern="%s" readOnly="true"/>
 		<config-description-ref uri="channel-type:gce:contactConfig"/>
 	</channel-type>
-	
+
 	<channel-type id="contactAdvanced" advanced="true">
 		<item-type>Contact</item-type>
 		<label>Digital Input</label>
@@ -24,7 +24,7 @@
 		<label>Digital Output</label>
 		<config-description-ref uri="channel-type:gce:relayConfig"/>
 	</channel-type>
-	
+
 	<channel-type id="relayAdvanced" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Digital Output</label>
@@ -43,7 +43,7 @@
 		<state readOnly="true" pattern="%d %unit%"/>
 		<config-description-ref uri="channel-type:gce:analogConfig"/>
 	</channel-type>
-	
+
 	<channel-type id="analogAdvanced" advanced="true">
 		<item-type>Number</item-type>
 		<label>Analog Input</label>
@@ -70,7 +70,7 @@
 			</options>
 		</event>
 	</channel-type>
-	
+
 	<channel-type id="contact-triggerAdvanced" advanced="true">
 		<kind>trigger</kind>
 		<label>Push Button Trigger Channel</label>
@@ -84,7 +84,7 @@
 			</options>
 		</event>
 	</channel-type>
-	
+
 	<channel-type id="voltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Voltage</label>

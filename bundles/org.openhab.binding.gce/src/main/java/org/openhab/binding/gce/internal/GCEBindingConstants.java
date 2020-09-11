@@ -40,5 +40,4 @@ public class GCEBindingConstants {
     public static final String EVENT_PULSE = "PULSE";
 
     // Adressable thing
-
 }

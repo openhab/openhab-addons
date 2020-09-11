@@ -212,7 +212,6 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
         channels.add(ChannelBuilder.create(new ChannelUID(groupUID, ndx + "-duration"), "Number:Time")
                 .withLabel("Previous state duration " + ndx)
                 .withType(new ChannelTypeUID(BINDING_ID, CHANNEL_LAST_STATE_DURATION)).build());
-
     }
 
     @Override
