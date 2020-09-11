@@ -64,6 +64,7 @@ public class JablotronBindingConstants {
     public static final String AUTHENTICATION_CHALLENGE = "Authentication challenge without WWW-Authenticate header";
     public static final String PROPERTY_SERVICE_ID = "serviceId";
     public static final int DISCOVERY_TIMEOUT_SEC = 10;
+    public static final int CACHE_TIMEOUT_MS = 10000;
 
     // supported thing types for discovery
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(

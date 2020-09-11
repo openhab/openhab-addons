@@ -12,9 +12,13 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
+import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
+import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -25,6 +29,7 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
@@ -45,20 +50,38 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
 
     public JablotronJa100Handler(Thing thing, String alarmName) {
         super(thing, alarmName);
+        dataCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetStatusRequest);
+        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().startsWith("STATE_") && command instanceof StringType) {
-            scheduler.execute(() -> {
-                controlSTATESection(channelUID.getId(), command.toString());
-            });
-        }
+        if (RefreshType.REFRESH.equals(command)) {
+            logger.debug("refreshing channel: {}", channelUID.getId());
+            updateChannel(channelUID.getId());
+        } else {
+            if (channelUID.getId().startsWith("STATE_") && command instanceof StringType) {
+                scheduler.execute(() -> {
+                    controlSTATESection(channelUID.getId(), command.toString());
+                });
+            }
 
-        if (channelUID.getId().startsWith("PGM_") && command instanceof OnOffType) {
-            scheduler.execute(() -> {
-                controlPGMSection(channelUID.getId(), command.equals(OnOffType.ON) ? "set" : "unset");
-            });
+            if (channelUID.getId().startsWith("PGM_") && command instanceof OnOffType) {
+                scheduler.execute(() -> {
+                    controlPGMSection(channelUID.getId(), command.equals(OnOffType.ON) ? "set" : "unset");
+                });
+            }
+        }
+    }
+
+    private void updateChannel(String channel) {
+        if (channel.startsWith("STATE_") || channel.startsWith("PGM_") || channel.startsWith("THERMOMETER_")
+                || channel.startsWith("THERMOSTAT_")) {
+            updateSegmentStatus(channel, dataCache.getValue());
+        } else if (CHANNEL_LAST_CHECK_TIME.equals(channel)) {
+            // not updating
+        } else {
+            updateEventChannel(channel);
         }
     }
 

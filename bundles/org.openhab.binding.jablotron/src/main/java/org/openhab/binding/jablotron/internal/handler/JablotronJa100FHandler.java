@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.jablotron.internal.handler;
 
+import static org.openhab.binding.jablotron.JablotronBindingConstants.CACHE_TIMEOUT_MS;
 import static org.openhab.binding.jablotron.JablotronBindingConstants.CHANNEL_LAST_CHECK_TIME;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Channel;
@@ -26,8 +29,10 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.model.JablotronHistoryDataEvent;
+import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetPGResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronGetSectionsResponse;
 import org.openhab.binding.jablotron.internal.model.ja100f.JablotronSection;
@@ -46,22 +51,56 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JablotronJa100FHandler.class);
 
+    private @Nullable ExpiringCache<JablotronGetSectionsResponse> sectionCache;
+    private @Nullable ExpiringCache<JablotronGetPGResponse> pgCache;
+
     public JablotronJa100FHandler(Thing thing, String alarmName) {
         super(thing, alarmName);
+        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
+        sectionCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetSections);
+        pgCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetProgrammableGates);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().startsWith("SEC-") && command instanceof StringType) {
-            if ("PARTIAL_ARM".equals(command.toString())) {
-                controlComponent(channelUID.getId(), "CONTROL-SECTION", "DISARM");
+        if (RefreshType.REFRESH.equals(command)) {
+            logger.debug("refreshing channel: {}", channelUID.getId());
+            updateChannel(channelUID.getId());
+        } else {
+            if (channelUID.getId().startsWith("SEC-") && command instanceof StringType) {
+                if ("PARTIAL_ARM".equals(command.toString())) {
+                    controlComponent(channelUID.getId(), "CONTROL-SECTION", "DISARM");
+                }
+                scheduler.execute(() -> controlComponent(channelUID.getId(), "CONTROL-SECTION", command.toString()));
             }
-            scheduler.execute(() -> controlComponent(channelUID.getId(), "CONTROL-SECTION", command.toString()));
-        }
 
-        if (channelUID.getId().startsWith("PG-") && command instanceof OnOffType) {
-            scheduler.execute(() -> controlComponent(channelUID.getId(), "CONTROL-PG", command.toString()));
+            if (channelUID.getId().startsWith("PG-") && command instanceof OnOffType) {
+                scheduler.execute(() -> controlComponent(channelUID.getId(), "CONTROL-PG", command.toString()));
+            }
         }
+    }
+
+    private void updateChannel(String channel) {
+        if (channel.startsWith("SEC-")) {
+            JablotronGetSectionsResponse sections = sectionCache.getValue();
+            if (sections != null) {
+                updateSectionState(channel, sections.getData().getStates());
+            }
+        } else if (channel.startsWith("PG-")) {
+            JablotronGetPGResponse pgs = pgCache.getValue();
+            if (pgs != null) {
+                updateSectionState(channel, pgs.getData().getStates());
+            }
+        } else if (CHANNEL_LAST_CHECK_TIME.equals(channel)) {
+            // not updating
+        } else {
+            updateEventChannel(channel);
+        }
+    }
+
+    @Override
+    protected void updateSegmentStatus(JablotronServiceDetailSegment segment) {
+        // nothing
     }
 
     private void controlComponent(String componentId, String action, String value) {
@@ -101,6 +140,22 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         updateThing(thingBuilder.build());
     }
 
+    private @Nullable JablotronGetSectionsResponse sendGetSections() {
+        JablotronBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            return handler.sendGetSections(getThing(), alarmName);
+        }
+        return null;
+    }
+
+    protected @Nullable JablotronGetPGResponse sendGetProgrammableGates() {
+        JablotronBridgeHandler handler = getBridgeHandler();
+        if (handler != null) {
+            return handler.sendGetProgrammableGates(getThing(), alarmName);
+        }
+        return null;
+    }
+
     @Override
     protected synchronized boolean updateAlarmStatus() {
         JablotronBridgeHandler handler = getBridgeHandler();
@@ -122,7 +177,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             }
 
             // update events
-            List<JablotronHistoryDataEvent> events = sendGetEventHistory(alarmName);
+            List<JablotronHistoryDataEvent> events = sendGetEventHistory();
             if (events != null && events.size() > 0) {
                 JablotronHistoryDataEvent event = events.get(0);
                 updateLastEvent(event);
@@ -157,26 +212,40 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
         }
     }
 
+    private void updateSectionState(String section, List<JablotronState> states) {
+        for (JablotronState state : states) {
+            String id = state.getCloudComponentId();
+            if (id.equals(section)) {
+                updateSection(id, state);
+                break;
+            }
+        }
+    }
+
     private void updateSectionState(List<JablotronState> states) {
         for (JablotronState state : states) {
             String id = state.getCloudComponentId();
-            logger.debug("component id: {} with state: {}", id, state.getState());
-            State newState;
+            updateSection(id, state);
+        }
+    }
 
-            if (id.startsWith("SEC-")) {
-                newState = new StringType(state.getState());
-            } else if (id.startsWith("PG-")) {
-                newState = "ON".equals(state.getState()) ? OnOffType.ON : OnOffType.OFF;
-            } else {
-                logger.debug("unknown component id: {}", id);
-                break;
-            }
-            Channel channel = getThing().getChannel(id);
-            if (channel != null) {
-                updateState(channel.getUID(), newState);
-            } else {
-                logger.debug("The channel: {} still doesn't exist!", id);
-            }
+    private void updateSection(String id, JablotronState state) {
+        logger.debug("component id: {} with state: {}", id, state.getState());
+        State newState;
+
+        if (id.startsWith("SEC-")) {
+            newState = new StringType(state.getState());
+        } else if (id.startsWith("PG-")) {
+            newState = "ON".equals(state.getState()) ? OnOffType.ON : OnOffType.OFF;
+        } else {
+            logger.debug("unknown component id: {}", id);
+            return;
+        }
+        Channel channel = getThing().getChannel(id);
+        if (channel != null) {
+            updateState(channel.getUID(), newState);
+        } else {
+            logger.debug("The channel: {} still doesn't exist!", id);
         }
     }
 }

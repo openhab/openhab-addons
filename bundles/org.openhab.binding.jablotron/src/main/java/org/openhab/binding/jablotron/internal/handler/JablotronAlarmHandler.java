@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.*;
@@ -58,6 +59,9 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     private boolean inService = false;
 
     protected @Nullable ScheduledFuture<?> future = null;
+
+    protected @Nullable ExpiringCache<JablotronDataUpdateResponse> dataCache;
+    protected @Nullable ExpiringCache<List<JablotronHistoryDataEvent>> eventCache;
 
     public JablotronAlarmHandler(Thing thing, String alarmName) {
         super(thing);
@@ -94,7 +98,27 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         return alarmName;
     }
 
-    protected void updateSegmentStatus(JablotronServiceDetailSegment segment) {
+    protected abstract void updateSegmentStatus(JablotronServiceDetailSegment segment);
+
+    protected void updateSegmentStatus(String segmentName, @Nullable JablotronDataUpdateResponse dataUpdate) {
+        if (dataUpdate == null || !dataUpdate.isStatus()) {
+            return;
+        }
+        List<JablotronServiceData> serviceData = dataUpdate.getData().getServiceData();
+        for (JablotronServiceData data : serviceData) {
+            if (!thingConfig.getServiceId().equals(data.getServiceId())) {
+                continue;
+            }
+            List<JablotronService> services = data.getData();
+            for (JablotronService service : services) {
+                JablotronServiceDetail detail = service.getData();
+                for (JablotronServiceDetailSegment segment : detail.getSegments()) {
+                    if (segmentName.equals(segment.getSegmentId())) {
+                        updateSegmentStatus(segment);
+                    }
+                }
+            }
+        }
     }
 
     private void cleanup() {
@@ -127,6 +151,9 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
             updateState(CHANNEL_LAST_CHECK_TIME, getCheckTime());
             List<JablotronServiceData> serviceData = dataUpdate.getData().getServiceData();
             for (JablotronServiceData data : serviceData) {
+                if (!thingConfig.getServiceId().equals(data.getServiceId())) {
+                    continue;
+                }
                 List<JablotronService> services = data.getData();
                 for (JablotronService service : services) {
                     JablotronServiceDetail detail = service.getData();
@@ -140,7 +167,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
             logger.debug("Error during alarm status update: {}", dataUpdate.getErrorMessage());
         }
 
-        List<JablotronHistoryDataEvent> events = sendGetEventHistory(alarmName);
+        List<JablotronHistoryDataEvent> events = sendGetEventHistory();
         if (events != null && events.size() > 0) {
             JablotronHistoryDataEvent event = events.get(0);
             updateLastEvent(event);
@@ -149,7 +176,11 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         return true;
     }
 
-    protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(String alarm) {
+    protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory() {
+        return sendGetEventHistory(alarmName);
+    }
+
+    private @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(String alarm) {
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
             return handler.sendGetEventHistory(getThing(), alarm);
@@ -166,6 +197,30 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
         // oasis does not have sections
         if (getThing().getChannel(CHANNEL_LAST_EVENT_SECTION) != null) {
             updateState(CHANNEL_LAST_EVENT_SECTION, new StringType(event.getSectionName()));
+        }
+    }
+
+    protected void updateEventChannel(String channel) {
+        List<JablotronHistoryDataEvent> events = eventCache != null ? eventCache.getValue() : null;
+        if (events != null && events.size() > 0) {
+            JablotronHistoryDataEvent event = events.get(0);
+            switch (channel) {
+                case CHANNEL_LAST_EVENT_TIME:
+                    updateState(CHANNEL_LAST_EVENT_TIME, new DateTimeType(getZonedDateTime(event.getDate())));
+                    break;
+                case CHANNEL_LAST_EVENT:
+                    updateState(CHANNEL_LAST_EVENT, new StringType(event.getEventText()));
+                    break;
+                case CHANNEL_LAST_EVENT_CLASS:
+                    updateState(CHANNEL_LAST_EVENT_CLASS, new StringType(event.getIconType()));
+                    break;
+                case CHANNEL_LAST_EVENT_INVOKER:
+                    updateState(CHANNEL_LAST_EVENT_INVOKER, new StringType(event.getInvokerName()));
+                    break;
+                case CHANNEL_LAST_EVENT_SECTION:
+                    updateState(CHANNEL_LAST_EVENT_SECTION, new StringType(event.getSectionName()));
+                    break;
+            }
         }
     }
 

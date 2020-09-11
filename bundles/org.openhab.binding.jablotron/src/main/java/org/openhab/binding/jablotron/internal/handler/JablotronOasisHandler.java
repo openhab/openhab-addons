@@ -18,11 +18,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
@@ -42,26 +44,64 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
 
     public JablotronOasisHandler(Thing thing, String alarmName) {
         super(thing, alarmName);
+        dataCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetStatusRequest);
+        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_COMMAND) && command instanceof StringType) {
-            scheduler.execute(() -> {
-                sendCommand(command.toString());
-            });
+        if (RefreshType.REFRESH.equals(command)) {
+            logger.debug("refreshing channel: {}", channelUID.getId());
+            updateChannel(channelUID.getId());
+        } else {
+            switch (channelUID.getId()) {
+                case CHANNEL_COMMAND:
+                    if (command instanceof StringType) {
+                        scheduler.execute(() -> {
+                            sendCommand(command.toString());
+                        });
+                    }
+                    break;
+                case CHANNEL_STATUS_PGX:
+                    if (command instanceof OnOffType) {
+                        scheduler.execute(() -> {
+                            controlSection("PGM_1", command.equals(OnOffType.ON) ? "set" : "unset");
+                        });
+                    }
+                    break;
+                case CHANNEL_STATUS_PGY:
+                    if (command instanceof OnOffType) {
+                        scheduler.execute(() -> {
+                            controlSection("PGM_2", command.equals(OnOffType.ON) ? "set" : "unset");
+                        });
+                    }
+                    break;
+            }
         }
+    }
 
-        if (channelUID.getId().equals(CHANNEL_STATUS_PGX) && command instanceof OnOffType) {
-            scheduler.execute(() -> {
-                controlSection("PGM_1", command.equals(OnOffType.ON) ? "set" : "unset");
-            });
-        }
-
-        if (channelUID.getId().equals(CHANNEL_STATUS_PGY) && command instanceof OnOffType) {
-            scheduler.execute(() -> {
-                controlSection("PGM_2", command.equals(OnOffType.ON) ? "set" : "unset");
-            });
+    private void updateChannel(String channel) {
+        switch (channel) {
+            case CHANNEL_STATUS_A:
+                updateSegmentStatus("STATE_1", dataCache.getValue());
+                break;
+            case CHANNEL_STATUS_B:
+                updateSegmentStatus("STATE_2", dataCache.getValue());
+                break;
+            case CHANNEL_STATUS_ABC:
+                updateSegmentStatus("STATE_3", dataCache.getValue());
+                break;
+            case CHANNEL_STATUS_PGX:
+                updateSegmentStatus("PGM_1", dataCache.getValue());
+                break;
+            case CHANNEL_STATUS_PGY:
+                updateSegmentStatus("PGM_2", dataCache.getValue());
+                break;
+            case CHANNEL_LAST_CHECK_TIME:
+                // not updating
+                break;
+            default:
+                updateEventChannel(channel);
         }
     }
 
