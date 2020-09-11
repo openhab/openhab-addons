@@ -50,8 +50,14 @@ Binding itself doesn't require specific configuration.
 | JA-80/JA-100/JA-100F | lastCheckTime    | the time of the last checking                             |
 | JA-80/JA-100/JA-100F | alarm            | the alarm trigger, might fire ALARM or TAMPER events      |
 | JA-100/JA-100F       | lastEventSection | the section of the last event                             |
+| JA-100               | STATE_%nr%       | the section %nr% status/control                           |
+| JA-100               | PGM_%nr%         | the PG section %nr% status/control                        |
+| JA-100               | THERMOMETER_%nr% | the thermometer %nr% value                                |
+| JA-100               | THERMOSTAT_%nr%  | the thermostat %nr% value                                 |
+| JA-100F              | SEC-%nr%         | the section %nr% status/control                           |
+| JA-100F              | PG-%nr%          | the PG section %nr% status/control                        |
 
-all other channels for the JA-100/JA-100F alarms (sections, PGs and thermometers for JA-100) are dynamically created according to your configuration
+The STATE, PGM, THERMOMETER, THERMOSTAT, SEC and PG channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
 
 * The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and 
 possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
@@ -59,7 +65,7 @@ possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
 
 ## Full Example
 
-#items file for JA80
+# items file for JA80
 
 ```
 String  HouseAlarm "Alarm [%s]" <alarm>
@@ -76,7 +82,7 @@ Switch	ArmControlPGX	"PGX"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5
 Switch	ArmControlPGY	"PGY"	<jablotron>	(Alarm)	{ channel="jablotron:oasis:8c93a5ed:50139:statusPGY" }
 ```
 
-#sitemap example for JA80
+# sitemap example for JA80
 
 ```
 Text item=HouseAlarm icon="alarm" {
@@ -95,7 +101,7 @@ Text item=HouseAlarm icon="alarm" {
       }
 ```
 
-#rule example for JA80
+# rule example for JA80
 
 ```
 rule "Alarm"

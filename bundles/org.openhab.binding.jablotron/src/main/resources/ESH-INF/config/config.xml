@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:jablotron:device">
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="refresh" type="integer" required="false" min="30" unit="s">
 			<label>Refresh</label>
 			<description>Specifies the refresh time of thing channels in seconds</description>
 			<default>60</default>

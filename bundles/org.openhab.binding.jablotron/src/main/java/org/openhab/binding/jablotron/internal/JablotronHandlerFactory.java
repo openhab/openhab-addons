@@ -14,15 +14,11 @@ package org.openhab.binding.jablotron.internal;
 
 import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
@@ -31,7 +27,6 @@ import org.openhab.binding.jablotron.internal.handler.JablotronBridgeHandler;
 import org.openhab.binding.jablotron.internal.handler.JablotronJa100FHandler;
 import org.openhab.binding.jablotron.internal.handler.JablotronJa100Handler;
 import org.openhab.binding.jablotron.internal.handler.JablotronOasisHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;

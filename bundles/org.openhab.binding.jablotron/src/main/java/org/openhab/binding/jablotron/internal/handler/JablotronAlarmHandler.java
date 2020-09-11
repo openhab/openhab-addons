@@ -14,10 +14,10 @@ package org.openhab.binding.jablotron.internal.handler;
 
 import static org.openhab.binding.jablotron.JablotronBindingConstants.*;
 
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingStatusInfo;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.config.JablotronDeviceConfig;
@@ -84,7 +81,8 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         thingConfig = getConfigAs(JablotronDeviceConfig.class);
-        scheduler.execute(this::doInit);
+        future = scheduler.scheduleWithFixedDelay(this::updateAlarmStatus, 1, thingConfig.getRefresh(),
+                TimeUnit.SECONDS);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -107,13 +105,8 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected State getCheckTime() {
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(Calendar.getInstance().toInstant(), ZoneId.systemDefault());
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.now(), ZoneId.systemDefault());
         return new DateTimeType(zdt);
-    }
-
-    protected void doInit() {
-        future = scheduler.scheduleWithFixedDelay(this::updateAlarmStatus, 1, thingConfig.getRefresh(),
-                TimeUnit.SECONDS);
     }
 
     protected synchronized @Nullable JablotronDataUpdateResponse sendGetStatusRequest() {
@@ -195,8 +188,9 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected @Nullable JablotronBridgeHandler getBridgeHandler() {
-        if (getBridge() != null && getBridge().getHandler() != null) {
-            return (JablotronBridgeHandler) getBridge().getHandler();
+        Bridge br = getBridge();
+        if (br != null && br.getHandler() != null) {
+            return (JablotronBridgeHandler) br.getHandler();
         }
         return null;
     }

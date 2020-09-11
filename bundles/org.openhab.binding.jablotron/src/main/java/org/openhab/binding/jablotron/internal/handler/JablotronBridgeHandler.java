@@ -60,8 +60,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     final HttpClient httpClient;
 
-    @Nullable
-    ScheduledFuture<?> future = null;
+    private @Nullable ScheduledFuture<?> future = null;
 
     /**
      * Our configuration
@@ -102,7 +101,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     private void updateAlarmThing(JablotronDiscoveredService service) {
         for (Thing th : getThing().getThings()) {
-            @Nullable
             JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
             if (handler == null) {
@@ -112,7 +110,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
             if (String.valueOf(service.getId()).equals(handler.thingConfig.getServiceId())) {
                 if ("ENABLED".equals(service.getStatus())) {
-                    if (!"".equals(service.getWarning())) {
+                    if (!service.getWarning().isEmpty()) {
                         logger.debug("Alarm with service id: {} warning: {}", service.getId(), service.getWarning());
                     }
                     handler.setStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, service.getWarning());
@@ -160,16 +158,13 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
             logger.trace("Response: {}", line);
             return gson.fromJson(line, classOfT);
         } catch (TimeoutException e) {
-            logger.debug("Timeout during calling url: {}", url, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Timeout during calling url: " + url);
         } catch (InterruptedException e) {
-            logger.debug("Interrupt during calling url: {}", url, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Interrupt during calling url: " + url);
             Thread.currentThread().interrupt();
         } catch (JsonSyntaxException e) {
-            logger.debug("Syntax error during calling url: {}", url, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Syntax error during calling url: " + url);
         } catch (ExecutionException e) {
@@ -190,7 +185,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         String url = JABLOTRON_API_URL + "userAuthorize.json";
         String urlParameters = "{\"login\":\"" + bridgeConfig.getLogin() + "\", \"password\":\""
                 + bridgeConfig.getPassword() + "\"}";
-        @Nullable
         JablotronLoginResponse response = sendJsonMessage(url, urlParameters, JablotronLoginResponse.class, false);
 
         if (response == null) {
@@ -227,7 +221,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     public @Nullable List<JablotronDiscoveredService> discoverServices() {
         String url = JABLOTRON_API_URL + "serviceListGet.json";
         String urlParameters = "{\"list-type\": \"EXTENDED\",\"visibility\": \"VISIBLE\"}";
-        @Nullable
         JablotronGetServiceResponse response = sendJsonMessage(url, urlParameters, JablotronGetServiceResponse.class);
 
         if (response == null) {
@@ -241,9 +234,8 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         return response.getData().getServices();
     }
 
-    protected @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key,
-            String status, String code) throws SecurityException {
-        @Nullable
+    protected @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key, String status,
+            String code) throws SecurityException {
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -261,7 +253,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
                 + handler.thingConfig.getServiceId() + "&segmentId=" + section + "&segmentKey=" + key
                 + "&expected_status=" + status + "&control_time=0&control_code=" + code + "&system=" + SYSTEM;
 
-        @Nullable
         JablotronControlResponse response = sendUrlEncodedMessage(url, urlParameters, JablotronControlResponse.class);
 
         if (response == null) {
@@ -276,7 +267,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     protected @Nullable List<JablotronHistoryDataEvent> sendGetEventHistory(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/eventHistoryGet.json";
-        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -285,7 +275,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         }
 
         String urlParameters = "{\"limit\":1, \"service-id\":" + handler.thingConfig.getServiceId() + "}";
-        @Nullable
         JablotronGetEventHistoryResponse response = sendJsonMessage(url, urlParameters,
                 JablotronGetEventHistoryResponse.class);
 
@@ -301,7 +290,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     protected @Nullable JablotronDataUpdateResponse sendGetStatusRequest(Thing th) {
         String url = JABLOTRON_API_URL + "dataUpdate.json";
-        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -318,7 +306,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     protected @Nullable JablotronGetPGResponse sendGetProgrammableGates(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/programmableGatesGet.json";
-        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -334,7 +321,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     protected @Nullable JablotronGetSectionsResponse sendGetSections(Thing th, String alarm) {
         String url = JABLOTRON_API_URL + alarm + "/sectionsGet.json";
-        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {
@@ -350,7 +336,6 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
 
     protected @Nullable JablotronGetSectionsResponse controlComponent(Thing th, String code, String action,
             String value, String componentId) throws SecurityException {
-        @Nullable
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {

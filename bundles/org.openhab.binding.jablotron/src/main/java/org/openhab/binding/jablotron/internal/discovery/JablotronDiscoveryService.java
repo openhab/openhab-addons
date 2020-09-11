@@ -147,7 +147,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
         List<JablotronDiscoveredService> services = bridgeHandler.discoverServices();
 
         if (services == null || services.isEmpty()) {
-            logger.info("Cannot find any Jablotron device");
+            logger.debug("Cannot find any Jablotron device");
             return;
         }
 
@@ -165,6 +165,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
             } else {
                 logger.info("Unsupported device type discovered: {} with serviceId: {} and type: {}", service.getName(),
                         serviceId, service.getServiceType());
+                logger.info("Please create a new issue and attach the above information");
             }
         }
     }

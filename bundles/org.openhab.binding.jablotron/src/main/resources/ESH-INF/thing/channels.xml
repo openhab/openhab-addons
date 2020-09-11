@@ -62,6 +62,12 @@
 		<label>Alarm</label>
 		<description>Status of the alarm of your alarm</description>
 		<state readOnly="true"/>
+		<event>
+			<options>
+				<option value="TAMPER">tamper</option>
+				<option value="ALARM">alarm</option>
+			</options>
+		</event>
 	</channel-type>
 
 	<!-- Command -->
