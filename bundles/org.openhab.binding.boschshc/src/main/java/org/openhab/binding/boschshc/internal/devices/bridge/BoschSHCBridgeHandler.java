@@ -287,6 +287,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             @Override
             public void onComplete(@Nullable Result result) {
+
                 try {
                     if (result != null && !result.isFailed()) {
                         String content = getContentAsString();
@@ -309,7 +310,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
                                         // All children of this should implement BoschSHCHandler
                                         ThingHandler baseHandler = childThing.getHandler();
-                                        if (baseHandler != null && BoschSHCHandler.class.isInstance(baseHandler)) {
+                                        if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
                                             BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
                                             String deviceId = handler.getBoschID();
 
