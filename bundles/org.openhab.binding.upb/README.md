@@ -27,9 +27,9 @@ The following binding configuration parameters are supported:
 
 ### Serial PIM
 
-You need a Powerline Interface Module (PIM) for the binding to work. This is a piece of equipment
-that connects a computer to the powerline. There are a few different PIM interfaces but this binding
-only supports serial PIMs
+You need a Powerline Interface Module (PIM) for the binding to work.
+This is a piece of equipment that connects a computer to the powerline.
+There are a few different PIM interfaces but this binding only supports serial PIMs.
 
 The `serial-pim` takes the following configuration parameters:
 
@@ -42,18 +42,20 @@ The `serial-pim` takes the following configuration parameters:
 The `generic` thing type supports most UPB devices such as dimmers, light switches,
 and appliance modules. It has the following configuration parameters:
 
-| Parameter                | Description                                    | Config   | Default |
-| ------------------------ | ---------------------------------------------- |--------- | ------- |
+| Parameter                | Description                                    | Config   | Default        |
+| ------------------------ | ---------------------------------------------- |--------- | -------------- |
 | networkId                | ID of the UPB network (0-255)                  | Optional | binding config |
-| unitId                   | Unit ID (unique address) of the device (1-250) | Required | -       |
+| unitId                   | Unit ID (unique address) of the device (1-250) | Required | -              |
 
 ### Virtual device
 
-The `virtual` pseudo-device does not correspond to any real device on the UPB network. It is
-nevertheless useful for reading and setting the current scene. The device has two channels,
-`linkActivated` and `linkDeactivated`. If a device on the UPB network activates or de-activates
-a scene by broadcasting a link activation command, the link ID (or scene number) can be read from
-the corresponding channel. Similarly, updating the channel with a link ID will send out the
+The `virtual` pseudo-device does not correspond to any real device on the UPB network.
+It is nevertheless useful for reading and setting the current scene.
+The device has two channels, `linkActivated` and `linkDeactivated`.
+If a device on the UPB network activates or de-activates a scene by broadcasting a link
+activation command, the link ID (or scene number) can be read from
+the corresponding channel.
+Similarly, updating the channel with a link ID will send out the
 corresponding link command on the UPB network.
 
 ## Channels
@@ -61,11 +63,11 @@ corresponding link command on the UPB network.
 
 These channels are available for generic devices:
 
-| Channel Type | Item type | Description                                     |
-| ------------ | --------- | ----------------------------------------------- |
-| switch       | Switch    | On/off switch for lights and appliance switches |
-| dimmer       | Dimmer    | Dimmer brightness                               |
-| scene-selection | -      | Trigger channel for scene selection             |
+| Channel Type    | Item type | Description                                     |
+| --------------- | --------- | ----------------------------------------------- |
+| switch          | Switch    | On/off switch for lights and appliance switches |
+| dimmer          | Dimmer    | Dimmer brightness                               |
+| scene-selection | -         | Trigger channel for scene selection             |
 
 The virtual device supports the `link` channel type:
 
@@ -98,4 +100,15 @@ Bridge upb:serial-pim:pim "UPB PIM" @ "Basement" [port="/dev/ttyUSB0"] {
   }
 }
 
+```
+
+And the items:
+
+```
+// for a switch:
+Switch LivingRoomLight "UPB Light Switch" {channel="upb:generic:pim:light-switch:switch"}
+// for a dimmer:
+Dimmer LivingRoomDimmer "UPB Dimmer" {channel="upb:generic:pim:light-switch:dimmer"}
+// an item that can be used for scene selection
+Number UPB_Active_Scene "Active UPB Scene" {channel="upb:virtual:pim:upb-scene:linkActivated"}
 ```
