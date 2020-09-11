@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.common.NamedThreadFactory;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
@@ -72,7 +73,8 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
         try {
             List<String> ipList = getIpAddressScanList();
 
-            ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE);
+            ExecutorService discoverySearchPool = Executors.newFixedThreadPool(DISCOVERY_THREAD_POOL_SIZE,
+                    new NamedThreadFactory("OH-binding-discovery.kaleidescape", true));
 
             for (String ip : ipList) {
                 discoverySearchPool.execute(new KaleidescapeDiscoveryJob(this, ip));

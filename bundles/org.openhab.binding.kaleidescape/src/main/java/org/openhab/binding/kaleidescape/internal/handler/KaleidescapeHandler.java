@@ -151,6 +151,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             this.updatePeriod = updatePeriod;
         }
 
+        boolean channelsRemoved = false;
         List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
         // check if volume is enabled, if not remove the volume & mute channels
@@ -160,12 +161,14 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             this.updateState(VOLUME, new PercentType(this.volume));
             this.updateState(MUTE, OnOffType.OFF);
         } else {
+            channelsRemoved = true;
             channels.removeIf(c -> (c.getUID().getId().equals(VOLUME)));
             channels.removeIf(c -> (c.getUID().getId().equals(MUTE)));
         }
 
         // remove music channels if we are not a Premiere Player or Cinema One
         if (!(PLAYER.equals(this.componentType) || CINEMA_ONE.equals(this.componentType))) {
+            channelsRemoved = true;
             channels.removeIf(c -> (c.getUID().getId().contains(MUSIC)));
             channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_ALBUM_TITLE)));
             channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_ARTIST)));
@@ -174,18 +177,22 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
         // premiere players do not support SYSTEM_READINESS_STATE
         if (PLAYER.equals(this.componentType)) {
+            channelsRemoved = true;
             channels.removeIf(c -> (c.getUID().getId().equals(SYSTEM_READINESS_STATE)));
         }
 
         // remove VIDEO_COLOR and CONTENT_COLOR if not a Strato
         if (!STRATO.equals(this.componentType)) {
+            channelsRemoved = true;
             channels.removeIf(c -> (c.getUID().getId().equals(VIDEO_COLOR)));
             channels.removeIf(c -> (c.getUID().getId().equals(VIDEO_COLOR_EOTF)));
             channels.removeIf(c -> (c.getUID().getId().equals(CONTENT_COLOR)));
             channels.removeIf(c -> (c.getUID().getId().equals(CONTENT_COLOR_EOTF)));
         }
 
-        updateThing(editThing().withChannels(channels).build());
+        if (channelsRemoved) {
+            updateThing(editThing().withChannels(channels).build());
+        }
 
         if (serialPort != null) {
             connector = new KaleidescapeSerialConnector(serialPortManager, serialPort, uid);

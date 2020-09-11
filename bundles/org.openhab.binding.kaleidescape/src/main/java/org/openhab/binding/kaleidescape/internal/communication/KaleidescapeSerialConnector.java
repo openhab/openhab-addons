@@ -84,6 +84,7 @@ public class KaleidescapeSerialConnector extends KaleidescapeConnector {
                 try {
                     dataIn.reset();
                 } catch (IOException e) {
+                    logger.debug("Caught IOException at dataIn.reset(): {}", e.getMessage());
                 }
             }
 

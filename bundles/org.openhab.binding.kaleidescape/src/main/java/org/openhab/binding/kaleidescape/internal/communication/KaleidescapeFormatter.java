@@ -27,27 +27,30 @@ public class KaleidescapeFormatter {
             // convert || back to :
             input = input.replace("||", ":");
 
-            // fix escaped :
-            input = input.replace("\\:", ":");
+            // if input does not have any escaped characters, bypass all the replace()'s
+            if (input.contains("\\")) {
+                // fix escaped :
+                input = input.replace("\\:", ":");
 
-            // fix escaped /
-            input = input.replace("\\/", "/");
+                // fix escaped /
+                input = input.replace("\\/", "/");
 
-            // convert \r into comma space
-            input = input.replace("\\r", ", ");
+                // convert \r into comma space
+                input = input.replace("\\r", ", ");
 
-            // convert \d146 from review text into apostrophe
-            input = input.replace("\\d146", "'");
-            // convert \d147 & \d148 from review text into double quote
-            input = input.replace("\\d147", "\"");
-            input = input.replace("\\d148", "\"");
+                // convert \d146 from review text into apostrophe
+                input = input.replace("\\d146", "'");
+                // convert \d147 & \d148 from review text into double quote
+                input = input.replace("\\d147", "\"");
+                input = input.replace("\\d148", "\"");
 
-            // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
-            // I.e. characters with accent, umlaut, etc., they need to be restored to the correct character
-            // example: Noel (with umlaut 'o') comes in as N\d246el
-            input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
-            // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
-            return StringEscapeUtils.unescapeHtml(input);
+                // fix the encoding for k mangled extended ascii characters (chars coming in as \dnnn)
+                // I.e. characters with accent, umlaut, etc., they need to be restored to the correct character
+                // example: Noel (with umlaut 'o') comes in as N\d246el
+                input = input.replaceAll("(?i)\\\\d([0-9]{3})", "\\&#$1;"); // first convert to html escaped codes
+                // then convert with unescapeHtml, not sure how to do this without the Apache libraries :(
+                return StringEscapeUtils.unescapeHtml(input);
+            }
         }
         return input;
     }
