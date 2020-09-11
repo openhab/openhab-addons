@@ -14,9 +14,7 @@
 		<channels>
 			<channel id="pumpEnable" typeId="system.power"/>
 			<channel id="pumpSpeed" typeId="pumpSpeed"/>
-
 		</channels>
-
 
 		<properties>
 			<property name="vendor">Hayward</property>
@@ -29,15 +27,8 @@
 
 	</thing-type>
 
-	<channel-type id="powerStatus">
-		<item-type>Number</item-type>
-		<label>Filter Power Status</label>
-		<description>Filter Power Status</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="pumpSpeed">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Pump Speed</label>
 		<description>Pump Speed</description>
 		<state min="0" max="100" step="1.0" pattern="%1f" readOnly="false"/>

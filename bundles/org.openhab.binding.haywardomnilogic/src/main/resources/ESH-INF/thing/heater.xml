@@ -18,7 +18,6 @@
 
 		<properties>
 			<property name="vendor">Hayward</property>
-			<property name="vendor">Hayward</property>
 		</properties>
 		<representation-property>systemID</representation-property>
 	</thing-type>
@@ -31,15 +30,10 @@
 	</channel-type>
 
 	<channel-type id="enable">
-		<item-type>String</item-type>
+		<item-type>system.power</item-type>
 		<label>Heater Enable</label>
 		<description>Heater Enable</description>
-		<state readOnly="true">
-			<options>
-				<option value="yes">On</option>
-				<option value="no">Off</option>
-			</options>
-		</state>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

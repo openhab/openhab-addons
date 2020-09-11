@@ -560,7 +560,8 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
         handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
                 HaywardBindingConstants.CHANNEL_CHLORINATOR_OPERATINGMODE, data.get(0));
-        this.chlorState = data.get(0);
+        // chlorState is used to set the chlorinator cfgState in the timedPercent command
+        // this.chlorState = data.get(0);
 
         // Timed Percent
         data = evaluateXPath("//Chlorinator/@Timed-Percent", xmlResponse);
@@ -608,10 +609,12 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         if (data.get(0).equals("0")) {
             handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
                     HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "0");
+            // chlorState is used to set the chlorinator cfgState in the timedPercent command
             this.chlorState = "2";
         } else {
             handleHaywardTelemetry(HaywardTypeToRequest.CHLORINATOR, systemIDs.get(0),
                     HaywardBindingConstants.CHANNEL_CHLORINATOR_ENABLE, "1");
+            // chlorState is used to set the chlorinator cfgState in the timedPercent command
             this.chlorState = "3";
         }
 
@@ -689,8 +692,13 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
         // Enable
         data = evaluateXPath("//Heater/@enable", xmlResponse);
-        handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
-                HaywardBindingConstants.CHANNEL_HEATER_ENABLE, data.get(0));
+        if (data.get(0).equals("0")) {
+            handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
+                    HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
+        } else {
+            handleHaywardTelemetry(HaywardTypeToRequest.HEATER, systemIDs.get(0),
+                    HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
+        }
 
         // ******************
         // ***Relays***
@@ -905,12 +913,15 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
         int cmdValue = 0;
         String cmdBool = null;
         String cmdString = null;
+        String cmdChlorState = null;
         if (command == OnOffType.OFF) {
             cmdValue = 0;
             cmdBool = "false";
+            cmdChlorState = "2";
         } else if (command == OnOffType.ON) {
             cmdValue = 1;
             cmdBool = "True";
+            cmdChlorState = "3";
         } else if (command instanceof DecimalType) {
             cmdValue = ((DecimalType) command).intValue();
         } else if (command instanceof StringType) {
@@ -978,7 +989,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                         urlParameters = urlParameters + "<Name>SetCHLORParams</Name><Parameters>" + urlTokenMspPoolID
                                 + "<Parameter name=\"ChlorID\" dataType=\"int\" alias=\"EquipmentID\">" + systemID
                                 + "</Parameter>" + "<Parameter name=\"CfgState\" dataType=\"byte\" alias=\"Data1\">"
-                                + cmdValue + "</Parameter>"
+                                + cmdChlorState + "</Parameter>"
                                 + "<Parameter name=\"OpMode\" dataType=\"byte\" alias=\"Data2\">1</Parameter>"
                                 + "<Parameter name=\"BOWType\" dataType=\"byte\" alias=\"Data3\">1</Parameter>"
                                 + "<Parameter name=\"CellType\" dataType=\"byte\" alias=\"Data4\">4</Parameter>"

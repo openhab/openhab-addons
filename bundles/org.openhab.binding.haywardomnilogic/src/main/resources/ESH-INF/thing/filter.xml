@@ -29,14 +29,7 @@
 		<representation-property>systemID</representation-property>
 
 	</thing-type>
-
-	<channel-type id="powerStatus">
-		<item-type>Number</item-type>
-		<label>Filter Power Status</label>
-		<description>Filter Power Status</description>
-		<state readOnly="true"/>
-	</channel-type>
-
+	
 	<channel-type id="valvePosition">
 		<item-type>String</item-type>
 		<label>Valve Position</label>

@@ -74,6 +74,8 @@ public class HaywardThingHandler extends BaseThingHandler {
             return Integer.parseInt(value) > 0 ? OnOffType.ON : OnOffType.OFF;
         } else if ("Number:Dimensionless".equals(type)) {
             return new DecimalType(value);
+        } else if ("Number:Temperature".equals(type)) {
+            return new DecimalType(value);
         } else {
             return StringType.valueOf(value);
         }
