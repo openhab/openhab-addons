@@ -539,9 +539,10 @@ You're now able to receive your Vehicle Data in openHAB. Continue the work and c
 
 ### Notification
 
-Beginning with a small rule which is quite handy if you aren't the _permanent Driver_ of the Car but you're somehow responsible for the Vehicle of your Kids / Wife / Parents.
-As soon as a check control message is raised you'll be notified e.g. via Android App and you can work on a solution.
-Here the short rule, just insert your Mail Adress which you are using for openHAB Cloud Connector
+A quite handy rule if you aren't the _permanent Driver_ of the Car but you're somehow responsible for it for e.g one of your family Members.
+As soon as a check control message occurs a message notification is sent to the Android App.
+Below the rule as an example. 
+just insert your Mail Address which you are using for openHAB Cloud Connector.
 
 ```
 // App Notification if Check Control Message is active
@@ -553,6 +554,27 @@ rule "CheckControl"
         if(i3CheckControl.state.toString != "Ok") {
             sendNotification("YOUR_OPENHAB_CLOUD_EMAIL","BMW i3 Check Control: "+i3CheckControl.state)
         }                                                    
+end
+```
+
+Besides the CheckControl the next upcoming Service can be monitored.
+The below rule checks every Monday at 9:00 o'clock if the next Service is required in the next 30 days.
+Time enough to schedule a date at your favorite Garage. 
+
+```
+rule "Service"
+    when
+        System started or
+        Time cron "0 0 9 ? * MON *"
+    then
+        val DateTime dt = new DateTime(i3ServiceDate.state.toString)
+        val Number daysToService = (dt.getMillis - now.millis) / 1000 / 60 / 60 / 24
+        if(daysToService < 30) {
+            logInfo("Service Date","Time to schedule Service")
+                sendNotification("YOUR_OPENHAB_CLOUD_EMAIL", i3ServiceName.state.toString + " Service required in " + daysToService + " days")
+        } else {
+            logInfo("Service Date","{} days to {} Service",daysToService,i3ServiceName.state.toString)
+        }
 end
 ```
 
