@@ -84,6 +84,13 @@ public abstract class PIMHandler extends BaseBridgeHandler implements MessageLis
         controller.incomingMessage(msg);
     }
 
+    @Override
+    public void onError(final Throwable t) {
+        // Currently all PIM errors are unrecoverable, either a bug or
+        // the serial thread had an I/O error.
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, Constants.OFFLINE_COMM_ERROR);
+    }
+
     public @Nullable UPBDevice getDevice(byte networkId, byte unitId) {
         return controller.getDevice(networkId, unitId);
     }

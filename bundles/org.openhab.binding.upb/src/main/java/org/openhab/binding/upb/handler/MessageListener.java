@@ -24,4 +24,6 @@ import org.openhab.binding.upb.internal.message.UPBMessage;
 @NonNullByDefault
 public interface MessageListener {
     void incomingMessage(UPBMessage msg);
+
+    void onError(Throwable t);
 }

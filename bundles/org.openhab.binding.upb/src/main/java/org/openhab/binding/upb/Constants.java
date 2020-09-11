@@ -42,6 +42,7 @@ public final class Constants {
     public static final String CONFIGURATION_LINK_ID = "linkId";
 
     public static final String OFFLINE_CTLR_OFFLINE = "@text/upb.thingstate.controller_offline";
+    public static final String OFFLINE_COMM_ERROR = "@text/upb.thingstate.controller_comm_error";
     public static final String OFFLINE_NODE_DEAD = "@text/upb.thingstate.node_dead";
     public static final String OFFLINE_NODE_NOTFOUND = "@text/upb.thingstate.node_notfound";
     public static final String OFFLINE_SERIAL_EXISTS = "@text/upb.thingstate.serial_notfound";

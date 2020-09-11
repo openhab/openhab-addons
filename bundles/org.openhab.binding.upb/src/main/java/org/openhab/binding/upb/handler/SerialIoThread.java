@@ -120,7 +120,6 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
         } finally {
             logger.debug("shutting down receive thread");
             shutdownAndAwaitTermination(writeExecutor);
-            serialPort.removeEventListener();
             try {
                 serialPort.close();
             } catch (final RuntimeException e) {
