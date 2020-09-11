@@ -44,7 +44,6 @@ import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.services.JsonRestExceptionResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -474,10 +473,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             int statusCode = contentResponse.getStatus();
             if (statusCode != 200) {
                 JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
-                throw new BoschSHCException(MessageFormatter.arrayFormat(
+                throw new BoschSHCException(String.format(
                         "State request for service {} of device {} failed with status code {} and error code {}",
-                        new Object[] { stateName, deviceId, errorResponse.statusCode, errorResponse.errorCode })
-                        .getMessage());
+                        stateName, deviceId, errorResponse.statusCode, errorResponse.errorCode));
             }
 
             T state = gson.fromJson(content, stateClass);
