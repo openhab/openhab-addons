@@ -225,8 +225,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                 // body: [ [
                 // '{"jsonrpc":"2.0","method":"RE/longPoll","params":["e71k823d0-16",20]}' ] ]
 
-                byte[] responseContent = getContent();
-                String content = new String(responseContent);
+                String content = getContentAsString();
 
                 logger.debug("Subscribe: response complete: {} - return code: {}", content,
                         result.getResponse().getStatus());
@@ -288,14 +287,9 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
             @Override
             public void onComplete(@Nullable Result result) {
-
-                String content = null;
-
                 try {
                     if (result != null && !result.isFailed()) {
-
-                        byte[] responseContent = getContent();
-                        content = new String(responseContent);
+                        String content = getContentAsString();
 
                         logger.debug("Response complete: {} - return code: {}", content,
                                 result.getResponse().getStatus());
