@@ -109,7 +109,7 @@ public class UPBMessage {
                     msg.setArguments(Arrays.copyOfRange(data, index, data.length - 1));
                 }
             }
-        } catch (Exception e) {
+        } catch (final RuntimeException e) {
             throw new MessageParseException("failed to parse message", e);
         }
 

@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.NamedThreadFactory;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
@@ -68,10 +69,10 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
     private volatile @Nullable WriteRunnable currentWrite;
     private volatile boolean done;
 
-    public SerialIoThread(final SerialPort serialPort, final MessageListener listener) {
+    public SerialIoThread(final SerialPort serialPort, final MessageListener listener, final ThingUID thingUID) {
         this.serialPort = serialPort;
         this.listener = listener;
-        setName("upb-serial-reader");
+        setName("OH-binding-" + thingUID + "-serial-reader");
         setDaemon(true);
     }
 
@@ -114,7 +115,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
                     }
                 }
             }
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             logger.warn("Exception in UPB read thread", e);
         } finally {
             logger.debug("shutting down receive thread");
@@ -122,7 +123,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
             serialPort.removeEventListener();
             try {
                 serialPort.close();
-            } catch (final Exception e) {
+            } catch (final RuntimeException e) {
                 // ignore
             }
         }
@@ -230,7 +231,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
         done = true;
         try {
             serialPort.close();
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             logger.warn("failed to close serial port", e);
         }
     }
@@ -291,7 +292,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
                 } else {
                     completion.complete(CmdStatus.NAK);
                 }
-            } catch (final Exception e) {
+            } catch (final IOException | InterruptedException e) {
                 logger.warn("error writing message", e);
                 completion.complete(CmdStatus.WRITE_FAILED);
             }

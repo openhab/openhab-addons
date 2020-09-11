@@ -101,13 +101,13 @@ public class SerialPIMHandler extends PIMHandler {
                 return;
             }
             logger.debug("Starting receive thread");
-            final SerialIoThread receiveThread = new SerialIoThread(serialPort, this);
+            final SerialIoThread receiveThread = new SerialIoThread(serialPort, this, getThing().getUID());
             this.receiveThread = receiveThread;
             // Once the receiver starts, it may set the PIM status to ONLINE
             // so we must ensure all initialization is finished at that point.
             receiveThread.start();
             updateStatus(ThingStatus.ONLINE);
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             logger.warn("failed to open serial port", e);
         }
     }
