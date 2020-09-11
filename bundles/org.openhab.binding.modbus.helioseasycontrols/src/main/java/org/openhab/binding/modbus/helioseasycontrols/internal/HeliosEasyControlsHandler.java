@@ -718,6 +718,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     this.updateSysDate(this.toDateTime(parts[1]));
                 } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME)) {
                     this.updateSysTime(this.toDateTime(parts[1]));
+                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT)) {
+                    this.updateUtcOffset(Integer.parseInt(parts[1]));
                     // Bypass
                 } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY)) {
                     this.updateBypass(true, false, Integer.parseInt(parts[1]));
@@ -732,10 +734,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     String itemType;
                     if (channel != null) {
                         itemType = channel.getAcceptedItemType();
-                        if (itemType.startsWith("Number:")) {
-                            itemType = "Number";
-                        }
                         if (itemType != null) {
+                            if (itemType.startsWith("Number:")) {
+                                itemType = "Number";
+                            }
                             switch (itemType) {
                                 case "Number":
                                     if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
@@ -753,9 +755,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                             // update date format and UTC offset upon read
                                             if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT)) {
                                                 this.dateFormat = Integer.parseInt(parts[1]);
-                                            } else if (v.getName().equals(
-                                                    HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT)) {
-                                                this.updateUtcOffset(Integer.parseInt(parts[1]));
                                             }
                                         }
                                     }
