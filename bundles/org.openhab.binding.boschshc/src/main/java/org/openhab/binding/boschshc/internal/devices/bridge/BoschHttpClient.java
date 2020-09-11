@@ -22,6 +22,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -95,7 +96,7 @@ public class BoschHttpClient extends HttpClient {
 
     public boolean isAccessPossible() {
         try {
-            String url = "https://" + ipAddress + ":8444/smarthome/devices";
+            String url = this.createUrl("devices");
             Request request = this.createRequest(url, GET);
             ContentResponse contentResponse = request.send();
             String content = contentResponse.getContentAsString();
@@ -126,11 +127,12 @@ public class BoschHttpClient extends HttpClient {
             items.put("primaryRole", "ROLE_RESTRICTED_CLIENT");
             items.put("certificate", "-----BEGIN CERTIFICATE-----\r" + publicCert + "\r-----END CERTIFICATE-----");
 
-            contentResponse = this.POST("https://" + ipAddress + ":8443/smarthome/clients")
+            String url = this.createUrl("clients");
+            Request request = this.createRequest(url, HttpMethod.POST, new StringContentProvider(gson.toJson(items)))
                     .header("Systempassword",
-                            Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)))
-                    .header("Content-Type", "application/json").header("Accept", "application/json")
-                    .content(new StringContentProvider(new Gson().toJson(items))).send();
+                            Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)));
+
+            contentResponse = request.send();
 
             logger.debug("Pairing response complete: {} - return code: {}", contentResponse.getContentAsString(),
                     contentResponse.getStatus());
@@ -153,9 +155,12 @@ public class BoschHttpClient extends HttpClient {
         }
     }
 
+    public String createUrl(String endpoint) {
+        return String.format("https://{}:8444/smarthome/{]", this.ipAddress, endpoint);
+    }
+
     public String createServiceUrl(String serviceName, String deviceId) {
-        return "https://" + this.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/" + serviceName
-                + "/state";
+        return this.createUrl(String.format("devices/{}/services/{}/state", deviceId, serviceName));
     }
 
     public Request createRequest(String url, HttpMethod method) {
@@ -168,6 +173,10 @@ public class BoschHttpClient extends HttpClient {
             String body = gson.toJson(content);
             request = request.content(new StringContentProvider(body));
         }
+
+        // Set default timeout
+        request.timeout(10, TimeUnit.SECONDS);
+
         return request;
     }
 }
