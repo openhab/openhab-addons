@@ -68,13 +68,13 @@ public class UPBThingHandler extends BaseThingHandler {
             // use value from binding config
             final Byte defaultNetworkId = this.defaultNetworkId;
             if (defaultNetworkId == null) {
-                logger.warn("missing network ID for {}", getThing().getUID());
+                logger.debug("missing network ID for {}", getThing().getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing network ID");
                 return;
             }
             networkId = defaultNetworkId.byteValue();
         } else if (val.compareTo(BigDecimal.ZERO) < 0 || val.compareTo(BigDecimal.valueOf(255)) > 0) {
-            logger.warn("invalid network ID {} for {}", val, getThing().getUID());
+            logger.debug("invalid network ID {} for {}", val, getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid network ID");
             return;
         } else {
@@ -83,13 +83,13 @@ public class UPBThingHandler extends BaseThingHandler {
 
         final BigDecimal cfgUnitId = (BigDecimal) getConfig().get(Constants.CONFIGURATION_UNIT_ID);
         if (cfgUnitId == null) {
-            logger.warn("Unit ID is not set in {}", getThing().getUID());
+            logger.debug("Unit ID is not set in {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing unit ID");
             return;
         }
         unitId = cfgUnitId.intValue();
         if (unitId < 1 || unitId > 250) {
-            logger.warn("Unit ID ({}) out of range for {}", cfgUnitId, getThing().getUID());
+            logger.debug("Unit ID ({}) out of range for {}", cfgUnitId, getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid unit ID");
             return;
         }
