@@ -120,6 +120,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         serviceMilage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_MILEAGE);
         serviceDescription = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_NAME);
         checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
+        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGE_STATUS);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
 
         // range Channels
@@ -152,7 +153,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
         heading = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LOCATION, HEADING);
 
         // Charge Channels
-        chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_STATUS);
         chargeProfileClimate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_CLIMATE);
         chargeProfileChargeMode = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_PROFILE_MODE);
         chargeWindowStart = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHARGE, CHARGE_WINDOW_START);
