@@ -12,15 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.discovery;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_FAMILY;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_SERIAL_NUMBER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.SUPPORTED_ECHO_THING_TYPES_UIDS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ECHO;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ECHO_SHOW;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ECHO_SPOT;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_ECHO_WHA;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.THING_TYPE_FLASH_BRIEFING_PROFILE;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -160,13 +152,13 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
                         continue;
                     }
 
-                    ThingUID brigdeThingUID = this.accountHandler.getThing().getUID();
-                    ThingUID thingUID = new ThingUID(thingTypeId, brigdeThingUID, serialNumber);
+                    ThingUID bridgeThingUID = this.accountHandler.getThing().getUID();
+                    ThingUID thingUID = new ThingUID(thingTypeId, bridgeThingUID, serialNumber);
 
                     DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withLabel(device.accountName)
                             .withProperty(DEVICE_PROPERTY_SERIAL_NUMBER, serialNumber)
                             .withProperty(DEVICE_PROPERTY_FAMILY, deviceFamily)
-                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(brigdeThingUID)
+                            .withRepresentationProperty(DEVICE_PROPERTY_SERIAL_NUMBER).withBridge(bridgeThingUID)
                             .build();
 
                     logger.debug("Device [{}: {}] found. Mapped to thing type {}", device.deviceFamily, serialNumber,
@@ -184,8 +176,8 @@ public class AmazonEchoDiscovery extends AbstractDiscoveryService {
         }
 
         if (!discoveredFlashBriefings.contains(currentFlashBriefingJson)) {
-            ThingUID brigdeThingUID = this.accountHandler.getThing().getUID();
-            ThingUID freeThingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, brigdeThingUID,
+            ThingUID bridgeThingUID = this.accountHandler.getThing().getUID();
+            ThingUID freeThingUID = new ThingUID(THING_TYPE_FLASH_BRIEFING_PROFILE, bridgeThingUID,
                     Integer.toString(currentFlashBriefingJson.hashCode()));
             DiscoveryResult result = DiscoveryResultBuilder.create(freeThingUID).withLabel("FlashBriefing")
                     .withProperty(DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE, currentFlashBriefingJson)
