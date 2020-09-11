@@ -69,32 +69,23 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             try {
-
                 URI_yiodockwebsocketaddress = new URI("ws://" + localConfig.host + ":946");
-
                 YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATION_PROCESS;
                 try {
-
                     yioRemoteDockHandler_webSocketClient.start();
-
                 } catch (Exception e) {
                     logger.warn("Web socket start failed {}", e.getMessage());
                     // throw new IOException("Web socket start failed");
                 }
                 try {
-
                     yioRemoteDockHandler_webSocketClient.connect(yioRemoteDockwebSocketClient,
                             URI_yiodockwebsocketaddress, YIOremote_DockwebSocketClientrequest);
-
                     yioRemoteDockwebSocketClient.getLatch().await();
-
                     Thread.sleep(1000);
                     try {
                         if (yioRemoteDockwebSocketClient.get_boolean_authentication_required()) {
-
                             yioRemoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.AUTHENTICATE,
                                     localConfig.accesstoken);
-
                             Thread.sleep(1000);
                             if (yioRemoteDockwebSocketClient.get_boolean_authentication_ok()) {
                                 YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED;
@@ -118,7 +109,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                                         updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
                                                                 yioRemoteDockwebSocketClient
                                                                         .get_string_receivedstatus());
-
                                                     } else {
                                                         YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus = YIO_REMOTE_DOCK_HANDLE_STATUS.CONNECTION_FAILED;
                                                         updateStatus(ThingStatus.OFFLINE,
@@ -146,7 +136,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                             TimeUnit.SECONDS);
                                 } catch (Exception e) {
                                     updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
-
                                 }
                             } else {
                                 logger.debug("authentication to YIO dock not ok");
@@ -156,28 +145,20 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                         } else {
                             logger.debug("authentication error YIO dock");
                         }
-
                     } catch (IllegalArgumentException e) {
                         logger.warn("JSON convertion failure {}", e.getMessage());
                     }
-
-                } catch (
-
-                Exception e) {
+                } catch (Exception e) {
                     logger.warn("Web socket connect failed {}", e.getMessage());
-                    // throw new IOException("Web socket start failed");
                 }
             } catch (URISyntaxException e) {
                 logger.debug("Initialize web socket failed {}", e.getMessage());
             }
-
         });
     }
 
     protected void updateState(String group, String channelId, State value) {
-
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
-
         if (isLinked(id)) {
             updateState(id, value);
         }
@@ -195,7 +176,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         if (YIODOCKRECEIVERSWITCH.equals(channelUID.getIdWithoutGroup())) {
             if (YIO_REMOTE_DOCK_HANDLE_STATUS_actualstatus.equals(YIO_REMOTE_DOCK_HANDLE_STATUS.AUTHENTICATED)) {
                 if (command.toString().equals("ON")) {
@@ -207,9 +187,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 } else {
                     logger.debug("YIODOCKRECEIVERSWITCH no procedure");
                 }
-
             } else {
-
             }
         }
     }
@@ -232,15 +210,12 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     private void updateChannelString(String group, String channelId, String value) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
-
         if (isLinked(id)) {
             updateState(id, new StringType(value));
         }
     }
 
     private void updateChannelString(ChannelUID channelId, String value) {
-        // ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
-
         if (isLinked(channelId)) {
             updateState(channelId, new StringType(value));
         }

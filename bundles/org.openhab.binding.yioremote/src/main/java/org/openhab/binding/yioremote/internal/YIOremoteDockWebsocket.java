@@ -39,7 +39,6 @@ import com.google.gson.JsonParser;
 @NonNullByDefault
 @WebSocket
 public class YIOremoteDockWebsocket {
-
     private @Nullable Session session;
     private String string_receivedmessage = "";
     private final Logger logger = LoggerFactory.getLogger(YIOremoteDockWebsocket.class);
@@ -161,7 +160,6 @@ public class YIOremoteDockWebsocket {
                 }
             } else if (JsonObject_recievedJsonObject.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
                 string_receivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
-
                 if (string_receivedstatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                     string_receivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
                 } else {
@@ -175,7 +173,6 @@ public class YIOremoteDockWebsocket {
                 boolean_heartbeat = false;
                 boolean_result = false;
             }
-
         } else {
             logger.warn("No known message {}", string_receivedmessage);
             boolean_heartbeat = false;
@@ -185,7 +182,6 @@ public class YIOremoteDockWebsocket {
     }
 
     private JsonObject convert_StringtoJsonObject(String jsonString) {
-
         JsonParser parser = new JsonParser();
         JsonElement jsonElement = parser.parse(jsonString);
 
