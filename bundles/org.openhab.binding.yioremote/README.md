@@ -8,7 +8,7 @@ Since this binding allows actual you to trigger IR send/receive actions on YIO D
 
 ## Supported Things
 
-* Thing: YIO Dock.
+* Thing: YIOREMOTEDOCK
 
 The following are the configurations available to each of the bridges/things:
 
