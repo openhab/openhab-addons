@@ -28,50 +28,21 @@ The following channels are supported:
 
 | Channel                          | Channel Group   | Description                                                                                                                      | Item Type                | RW | 
 | -------------------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | -- | 
-| articleDescription               | general         | The KWL's article description                                                                                                    | String                   | RW | 
-| refNo                            | general         | The KWL's reference number                                                                                                       | String                   | RW | 
-| macAddress                       | general         | The KWL's MAC Address                                                                                                            | String                   | R  | 
-| language                         | general         | The KWL user interface's language (de, en, fr, hr, hu, it, pl, sk, sl)                                                           | String                   | RW | 
-| date                             | general         | The KWL's system date                                                                                                            | DateTime                 | RW | 
-| time                             | general         | The KWL's system time                                                                                                            | DateTime                 | RW | 
+| sysdate                          | general         | The KWL's system date and time                                                                                                   | DateTime                 | RW | 
 | summerWinter                     | general         | Indicates if summertime or wintertime is active (OFF = wintertime, ON = summertime)                                              | Switch                   | RW | 
 | autoSwUpdate                     | general         | Indicates if automatic software updates are enable                                                                               | Switch                   | RW | 
 | accessHeliosPortal               | general         | Indicates if access to Helios portal is enabled                                                                                  | Switch                   | RW | 
-| voltageFanStage1ExtractAir       | unitConfig      | Voltage of extract air fan mapped to fan stage 1 (1.6 - 10 V)                                                                    | Number:ElectricPotential | RW | 
-| voltageFanStage2ExtractAir       | unitConfig      | Voltage of extract air fan mapped to fan stage 2 (1.6 - 10 V)                                                                    | Number:ElectricPotential | RW | 
-| voltageFanStage3ExtractAir       | unitConfig      | Voltage of extract air fan mapped to fan stage 3 (1.6 - 10 V)                                                                    | Number:ElectricPotential | RW | 
-| voltageFanStage4ExtractAir       | unitConfig      | Voltage of extract air fan mapped to fan stage 4 (1.6 - 10 V)                                                                    | Number:ElectricPotential | RW | 
-| voltageFanStage1SupplyAir        | unitConfig      | Voltage of supply air fan mapped to fan stage 1 (1.6 - 10 V)                                                                     | Number:ElectricPotential | RW | 
-| voltageFanStage2SupplyAir        | unitConfig      | Voltage of supply air fan mapped to fan stage 2 (1.6 - 10 V)                                                                     | Number:ElectricPotential | RW | 
-| voltageFanStage3SupplyAir        | unitConfig      | Voltage of supply air fan mapped to fan stage 3 (1.6 - 10 V)                                                                     | Number:ElectricPotential | RW | 
-| voltageFanStage4SupplyAir        | unitConfig      | Voltage of supply air fan mapped to fan stage 4 (1.6 - 10 V)                                                                     | Number:ElectricPotential | RW | 
 | minFanStage                      | unitConfig      | Minimum fan stage (0 or 1) (0, 1)                                                                                                | Number                   | RW | 
-| kwlBe                            | unitConfig      | Slide switch controller KWL-BE activated                                                                                         | Switch                   | RW | 
-| kwlBec                           | unitConfig      | Comfort controller KWL-BEC activated                                                                                             | Switch                   | RW | 
-| unitConfig                       | unitConfig      | Ventilation unit configuration (type of house) (1 = DiBt, 2 = passive-house)                                                     | Number                   | RW | 
 | preHeaterStatus                  | general         | Pre-Heater Status                                                                                                                | Switch                   | RW | 
-| kwlFtfConfig0                    | humidityControl | Humidity/temperature sensor configuration 0 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig1                    | humidityControl | Humidity/temperature sensor configuration 1 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig2                    | humidityControl | Humidity/temperature sensor configuration 2 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig3                    | humidityControl | Humidity/temperature sensor configuration 3 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig4                    | humidityControl | Humidity/temperature sensor configuration 4 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig5                    | humidityControl | Humidity/temperature sensor configuration 5 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig6                    | humidityControl | Humidity/temperature sensor configuration 6 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| kwlFtfConfig7                    | humidityControl | Humidity/temperature sensor configuration 7 (1 = only humidity, 2 = only temperature, 3 = combined)                              | Number                   | RW | 
-| humidityControlStatus            | humidityControl | Humidity control status (0 = off, 1 = stepped, 2 = stepless)                                                                     | Number                   | RW | 
 | humidityControlSetValue          | humidityControl | Humidity control set value (in percent) (20 - 80 %)                                                                              | Number:Dimensionless     | RW | 
 | humidityControlSteps             | humidityControl | Humidity control steps (in percent) (5 - 20 %)                                                                                   | Number:Dimensionless     | RW | 
 | humidityStopTime                 | humidityControl | Humidity stop time in hours (0-24) (0 - 24 h)                                                                                    | Number:Time              | RW | 
-| co2ControlStatus                 | co2Control      | CO2 control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | Number                   | RW | 
 | co2ControlSetValue               | co2Control      | CO2 control set value (in ppm) (300 - 2000 ppm)                                                                                  | Number:Dimensionless     | RW | 
 | co2ControlSteps                  | co2Control      | CO2 control steps (in ppm) (50 - 400 ppm)                                                                                        | Number:Dimensionless     | RW | 
 | vocControlStatus                 | vocControl      | VOC control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | Number                   | RW | 
 | vocControlSetValue               | vocControl      | VOC control set value (in ppm) (300 - 2000 ppm)                                                                                  | Number:Dimensionless     | RW | 
 | vocControlSteps                  | vocControl      | VOC control steps (in ppm) (50 - 400 ppm)                                                                                        | Number:Dimensionless     | RW | 
 | comfortTemp                      | unitConfig      | Comfort Temperature (10.0 - 25.0 °C)                                                                                             | Number:Temperature       | RW | 
-| timeZoneDifferenceToGmt          | general         | Time Zone Difference to GMT (-12 - 14 h)                                                                                         | Number:Time              | RW | 
-| dateFormat                       | general         | Date format (0 = dd.mm.yyyy, 1 = mm.dd.yyyy, 2 = yyyy.mm.dd)                                                                     | Number                   | RW | 
-| heatExchangerType                | unitConfig      | Heat exchanger type (0 = plastic, 1 = aluminium, 2 = enthalpy)                                                                   | Number                   | RW | 
 | partyModeDuration                | operation       | Party mode duration (in minutes) (5 - 180 min)                                                                                   | Number:Time              | RW | 
 | partyModeFanStage                | operation       | Party mode fan stage (0 - 4)                                                                                                     | Number                   | RW | 
 | partyModeRemainingTime           | operation       | Party mode remaining time (0 - 180 min)                                                                                          | Number:Time              | R  | 
@@ -123,72 +94,29 @@ The following channels are supported:
 | externalSensorKwlVoc8            | vocControl      | External VOC sensor 8 (-0.0 - 9998.9 ppm)                                                                                        | Number:Dimensionless     | R  | 
 | nhzDuctSensor                    | general         | After-heater intake temperature in °C (-27.0 - 9998.9 °C)                                                                        | Number:Temperature       | R  | 
 | weekProfileNhz                   | profiles        | Week profile after-heater (0 = standard 1, 1 = standard 2, 2 = fixed value, 3 = individual 1, 4 = individual 2, 5 = NA, 6 = off) | Number                   | RW | 
-| serNo                            | general         | Serial number                                                                                                                    | String                   | RW | 
-| prodCode                         | general         | Production Code                                                                                                                  | String                   | RW | 
 | supplyAirRpm                     | general         | Supply air fan RPM (0 - 9999)                                                                                                    | Number                   | R  | 
 | extractAirRpm                    | general         | Extract air fan RPM (0 - 9999)                                                                                                   | Number                   | R  | 
-| logout                           | general         | Logout (ON = logout)                                                                                                             | Switch                   | W  | 
 | holidayProgramme                 | operation       | Holiday programme (0 = off, 1 = interval, 2 = constant)                                                                          | Number                   | RW | 
 | holidayProgrammeFanStage         | operation       | Holiday programme fan stage (0 - 4)                                                                                              | Number                   | RW | 
 | holidayProgrammeStart            | operation       | Holiday programme start                                                                                                          | DateTime                 | RW | 
 | holidayProgrammeEnd              | operation       | Holiday programme end                                                                                                            | DateTime                 | RW | 
 | holidayProgrammeInterval         | operation       | Holiday programme interval in hours (1 - 24 h)                                                                                   | Number:Time              | RW | 
 | holidayProgrammeActivationTime   | operation       | Holiday programme activation time in minutes (5 - 300 min)                                                                       | Number:Time              | RW | 
-| vhzType                          | unitConfig      | Pre-heater type (1 = EH-Basis, 2 EH-ERW, 3 = SEWT, 4 = LEWT)                                                                     | Number                   | RW | 
-| functionTypeKwlEm                | unitConfig      | Function KWL-EM (1 = function 1, 2 = function 2)                                                                                 | Number                   | RW | 
 | runOnTimeVhzNhz                  | unitConfig      | Stopping time preheater/afterheater in seconds (60 - 120 s)                                                                      | Number:Time              | RW | 
-| externalContact                  | unitConfig      | External contact (1 -6 (function 1-6))                                                                                           | Number                   | RW | 
 | errorOutputFunction              | unitConfig      | Error output function (collective error or just error) (1 = collective error, 2 = only error)                                    | Number                   | RW | 
 | filterChange                     | unitConfig      | Filter change                                                                                                                    | Switch                   | RW | 
 | filterChangeInterval             | unitConfig      | Filter change interval in months (1 - 12)                                                                                        | Number                   | RW | 
 | filterChangeRemainingTime        | general         | Filter change remaining time in minutes (1 - 55000 min)                                                                          | Number:Time              | R  | 
-| filterChangeReset                | general         | Reset filter change remaining time (ON = reset)                                                                                  | Switch                   | W  | 
 | bypassRoomTemperature            | unitConfig      | Bypass room temperature in °C (10 - 40 °C)                                                                                       | Number:Temperature       | RW | 
 | bypassMinOutsideTemperature      | unitConfig      | Bypass outside temperature in °C (5 - 20 °C)                                                                                     | Number:Temperature       | RW | 
-| tbd                              | general         | No description available for this parameter in the specification (3 - 10 °C)                                                     | Number:Temperature       | RW | 
-| factorySettingWzu                | general         | Factory setting WZU (ON = reset individual switching times)                                                                      | Switch                   | RW | 
-| factoryReset                     | general         | Factory reset (ON = reset start)                                                                                                 | Switch                   | RW | 
 | supplyAirFanStage                | operation       | Supply air fan stage (0 - 4)                                                                                                     | Number                   | RW | 
 | extractAirFanStage               | operation       | Extract air fan stage (0 - 4)                                                                                                    | Number                   | RW | 
-| fanStageStepped0to2v             | unitConfig      | Fan stage for stepped mode - range 0-2V (0 - 2)                                                                                  | Number                   | RW | 
-| fanStageStepped2to4v             | unitConfig      | Fan stage for stepped mode - range 2-4V (0 - 4)                                                                                  | Number                   | RW | 
-| fanStageStepped4to6v             | unitConfig      | Fan stage for stepped mode - range 4-6V (0 - 4)                                                                                  | Number                   | RW | 
-| fanStageStepped6to8v             | unitConfig      | Fan stage for stepped mode - range 6-8V (0 - 4)                                                                                  | Number                   | RW | 
-| fanStageStepped8to10v            | unitConfig      | Fan stage for stepped mode - range 8-10V (0 - 4)                                                                                 | Number                   | RW | 
-| offsetExtractAir                 | unitConfig      | Offset extract air (float)                                                                                                       | Number                   | RW | 
-| assignmentFanStages              | unitConfig      | Assignment fan stages - stepped or 0-10V (OFF = 0-10V, ON = stepped)                                                             | Switch                   | RW | 
-| sensorNameHumidityAndTemp1       | humidityControl | Sensor name - humidity and temperature 1                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp2       | humidityControl | Sensor name - humidity and temperature 2                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp3       | humidityControl | Sensor name - humidity and temperature 3                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp4       | humidityControl | Sensor name - humidity and temperature 4                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp5       | humidityControl | Sensor name - humidity and temperature 5                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp6       | humidityControl | Sensor name - humidity and temperature 6                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp7       | humidityControl | Sensor name - humidity and temperature 7                                                                                         | String                   | RW | 
-| sensorNameHumidityAndTemp8       | humidityControl | Sensor name - humidity and temperature 8                                                                                         | String                   | RW | 
-| sensorNameCo21                   | co2Control      | Sensor name - CO2 1                                                                                                              | String                   | RW | 
-| sensorNameCo22                   | co2Control      | Sensor name - CO2 2                                                                                                              | String                   | RW | 
-| sensorNameCo23                   | co2Control      | Sensor name - CO2 3                                                                                                              | String                   | RW | 
-| sensorNameCo24                   | co2Control      | Sensor name - CO2 4                                                                                                              | String                   | RW | 
-| sensorNameCo25                   | co2Control      | Sensor name - CO2 5                                                                                                              | String                   | RW | 
-| sensorNameCo26                   | co2Control      | Sensor name - CO2 6                                                                                                              | String                   | RW | 
-| sensorNameCo27                   | co2Control      | Sensor name - CO2 7                                                                                                              | String                   | RW | 
-| sensorNameCo28                   | co2Control      | Sensor name - CO2 8                                                                                                              | String                   | RW | 
-| sensorNameVoc1                   | vocControl      | Sensor name - VOC 1                                                                                                              | String                   | RW | 
-| sensorNameVoc2                   | vocControl      | Sensor name - VOC 2                                                                                                              | String                   | RW | 
-| sensorNameVoc3                   | vocControl      | Sensor name - VOC 3                                                                                                              | String                   | RW | 
-| sensorNameVoc4                   | vocControl      | Sensor name - VOC 4                                                                                                              | String                   | RW | 
-| sensorNameVoc5                   | vocControl      | Sensor name - VOC 5                                                                                                              | String                   | RW | 
-| sensorNameVoc6                   | vocControl      | Sensor name - VOC 6                                                                                                              | String                   | RW | 
-| sensorNameVoc7                   | vocControl      | Sensor name - VOC 7                                                                                                              | String                   | RW | 
-| sensorNameVoc8                   | vocControl      | Sensor name - VOC 8                                                                                                              | String                   | RW | 
-| softwareVersionBasis             | general         | Software version basis (format xx.xx)                                                                                            | String                   | R  | 
 | operatingHoursSupplyAirVent      | general         | Operating hours supply air fan (in minutes) (0 - 2^32-1 min)                                                                     | Number:Time              | R  | 
 | operatingHoursExtractAirVent     | general         | Operating hours extract air fan (in minutes) (0 - 2^32-1 min)                                                                    | Number:Time              | R  | 
 | operatingHoursVhz                | general         | Operating hours preheater (in minutes) (0 - 2^32-1 min)                                                                          | Number:Time              | R  | 
 | operatingHoursNhz                | general         | Operating hours afterheater (in minutes) (0 - 2^32-1 min)                                                                        | Number:Time              | R  | 
 | outputPowerVhz                   | general         | Output power of preheater (in percent) (0 - 2^32-1 %)                                                                            | Number:Dimensionless     | R  | 
 | outputPowerNhz                   | general         | Output power of afterheater (in percent) (0 - 2^32-1 %)                                                                          | Number:Dimensionless     | R  | 
-| resetFlag                        | general         | Reset errors (ON = reset flag)                                                                                                   | Switch                   | W  | 
 | errors                           | general         | Errors as integer value (0 - 2^32-1)                                                                                             | Number                   | R  | 
 | warnings                         | general         | Warnings as integer value (0 - 2^32-1)                                                                                           | Number                   | R  | 
 | infos                            | general         | Infos as integer value (0 - 2^32-1)                                                                                              | Number                   | R  | 
@@ -199,25 +127,158 @@ The following channels are supported:
 | warningsMsg                      | general         | Warnings as string                                                                                                               | String                   | R  | 
 | infosMsg                         | general         | Infos as string                                                                                                                  | String                   | R  | 
 | statusFlags                      | general         | Status flags                                                                                                                     | String                   | R  | 
-| sensorConfigKwlFtf1              | humidityControl | Sensor configuration (installed or not) KWL-FTF 1 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf2              | humidityControl | Sensor configuration (installed or not) KWL-FTF 2 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf3              | humidityControl | Sensor configuration (installed or not) KWL-FTF 3 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf4              | humidityControl | Sensor configuration (installed or not) KWL-FTF 4 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf5              | humidityControl | Sensor configuration (installed or not) KWL-FTF 5 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf6              | humidityControl | Sensor configuration (installed or not) KWL-FTF 6 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf7              | humidityControl | Sensor configuration (installed or not) KWL-FTF 7 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| sensorConfigKwlFtf8              | humidityControl | Sensor configuration (installed or not) KWL-FTF 8 (OFF = no sensor, ON = sensor installed)                                       | Switch                   | R  | 
-| globalManualWebUpdate            | general         | Manual update of data (profile 8LXGP, XWP, firmware, SD files) (ON = start update)                                               | Switch                   | RW | 
-| portalGlobalsErrorForWeb         | general         | Always the latest error that has occurred (1 - 255)                                                                              | Number                   | R  | 
-| clearError                       | general         | Clear error (PortalGlobals.ErrorForWeb) (ON = reset error)                                                                       | Switch                   | W  | 
 | bypassStatus                     | general         | Status of the bypass (OFF = closed, ON = open)                                                                                   | Switch                   | R  | 
-| bypassFromDay                    | unitConfig      | Bypass active from day (1 - 31)                                                                                                  | Number                   | RW | 
-| bypassFromMonth                  | unitConfig      | Bypass active from month (1 - 12)                                                                                                | Number                   | RW | 
-| bypassToDay                      | unitConfig      | Bypass active to day (1 - 31)                                                                                                    | Number                   | RW | 
-| bypassToMonth                    | unitConfig      | Bypass active to month (1 - 12)                                                                                                  | Number                   | RW | 
+| bypassFrom                       | unitConfig      | Bypass active from                                                                                                               | DateTime                 | RW | 
+| bypassTo                         | unitConfig      | Bypass active to                                                                                                                 | DateTime                 | RW | 
 
 
 Please also see `variables.json` for further details: https://github.com/openhab/openhab-addons/blob/2.5.x/bundles/org.openhab.binding.modbus.helioseasycontrols/src/main/java/org/openhab/binding/modbus/helioseasycontrols/internal/variables.json
+
+## Thing Actions
+
+### Reset Filter Change Timer
+
+Resets the timer for the next filter change back to 0.
+
+```
+public void resetFilterChangeTimer()
+```
+
+### Reset Errors
+
+Resets the error messages.
+
+```
+public void resetErrors()
+```
+
+### Reset To Factory Defaults
+
+Resets the device to its factory defaults.
+
+```
+public void presetToFactoryDefaults()
+```
+
+### Reset Switching Times
+
+Resets the device's individual switching times back to the default values.
+
+```
+public void resetSwitchingTimes()
+```
+
+
+### Set System Date and Time
+
+Sets the device's system date and time to the openHAB server's system date and time.
+
+```
+public void setSysDateTime()
+```
+
+### Set Bypass Dates
+
+Sets the devices start and end date for the active bypass functionality.
+
+```
+public void setBypassFrom(int day, int month)
+```
+
+*Parameters:*
+* *day:* The day from when the bypass should be active
+* *month:* The month from when the bypass should be active
+
+
+```
+public void setBypassTo(int day, int month)
+```
+
+*Parameters:*
+* *day:* The day until when the bypass should be active
+* *month:* The month until when the bypass should be active
+
+
+## Properties
+
+The binding provides the following properties:
+
+| Property                         | Description                                                                                                                      | 
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | 
+| articleDescription               | The KWL's article description                                                                                                    | 
+| refNo                            | The KWL's reference number                                                                                                       | 
+| macAddress                       | The KWL's MAC Address                                                                                                            | 
+| language                         | The KWL user interface's language (de, en, fr, hr, hu, it, pl, sk, sl)                                                           | 
+| voltageFanStage1ExtractAir       | Voltage of extract air fan mapped to fan stage 1 (1.6 - 10 V)                                                                    | 
+| voltageFanStage2ExtractAir       | Voltage of extract air fan mapped to fan stage 2 (1.6 - 10 V)                                                                    | 
+| voltageFanStage3ExtractAir       | Voltage of extract air fan mapped to fan stage 3 (1.6 - 10 V)                                                                    | 
+| voltageFanStage4ExtractAir       | Voltage of extract air fan mapped to fan stage 4 (1.6 - 10 V)                                                                    | 
+| voltageFanStage1SupplyAir        | Voltage of supply air fan mapped to fan stage 1 (1.6 - 10 V)                                                                     | 
+| voltageFanStage2SupplyAir        | Voltage of supply air fan mapped to fan stage 2 (1.6 - 10 V)                                                                     | 
+| voltageFanStage3SupplyAir        | Voltage of supply air fan mapped to fan stage 3 (1.6 - 10 V)                                                                     | 
+| voltageFanStage4SupplyAir        | Voltage of supply air fan mapped to fan stage 4 (1.6 - 10 V)                                                                     | 
+| kwlBe                            | Slide switch controller KWL-BE activated                                                                                         | 
+| kwlBec                           | Comfort controller KWL-BEC activated                                                                                             | 
+| unitConfig                       | Ventilation unit configuration (type of house) (1 = DiBt, 2 = passive-house)                                                     | 
+| kwlFtfConfig0                    | Humidity/temperature sensor configuration 0 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig1                    | Humidity/temperature sensor configuration 1 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig2                    | Humidity/temperature sensor configuration 2 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig3                    | Humidity/temperature sensor configuration 3 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig4                    | Humidity/temperature sensor configuration 4 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig5                    | Humidity/temperature sensor configuration 5 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig6                    | Humidity/temperature sensor configuration 6 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| kwlFtfConfig7                    | Humidity/temperature sensor configuration 7 (1 = only humidity, 2 = only temperature, 3 = combined)                              | 
+| humidityControlStatus            | Humidity control status (0 = off, 1 = stepped, 2 = stepless)                                                                     | 
+| co2ControlStatus                 | CO2 control status (0 = off, 1 = stepped, 2 = stepless)                                                                          | 
+| dateFormat                       | Date format (0 = dd.mm.yyyy, 1 = mm.dd.yyyy, 2 = yyyy.mm.dd)                                                                     | 
+| heatExchangerType                | Heat exchanger type (0 = plastic, 1 = aluminium, 2 = enthalpy)                                                                   | 
+| serNo                            | Serial number                                                                                                                    | 
+| prodCode                         | Production Code                                                                                                                  | 
+| vhzType                          | Pre-heater type (1 = EH-Basis, 2 EH-ERW, 3 = SEWT, 4 = LEWT)                                                                     | 
+| functionTypeKwlEm                | Function KWL-EM (1 = function 1, 2 = function 2)                                                                                 | 
+| externalContact                  | External contact (1 -6 (function 1-6))                                                                                           | 
+| fanStageStepped0to2v             | Fan stage for stepped mode - range 0-2V (0 - 2)                                                                                  | 
+| fanStageStepped2to4v             | Fan stage for stepped mode - range 2-4V (0 - 4)                                                                                  | 
+| fanStageStepped4to6v             | Fan stage for stepped mode - range 4-6V (0 - 4)                                                                                  | 
+| fanStageStepped6to8v             | Fan stage for stepped mode - range 6-8V (0 - 4)                                                                                  | 
+| fanStageStepped8to10v            | Fan stage for stepped mode - range 8-10V (0 - 4)                                                                                 | 
+| offsetExtractAir                 | Offset extract air (float)                                                                                                       | 
+| assignmentFanStages              | Assignment fan stages - stepped or 0-10V (OFF = 0-10V, ON = stepped)                                                             | 
+| sensorNameHumidityAndTemp1       | Sensor name - humidity and temperature 1                                                                                         | 
+| sensorNameHumidityAndTemp2       | Sensor name - humidity and temperature 2                                                                                         | 
+| sensorNameHumidityAndTemp3       | Sensor name - humidity and temperature 3                                                                                         | 
+| sensorNameHumidityAndTemp4       | Sensor name - humidity and temperature 4                                                                                         | 
+| sensorNameHumidityAndTemp5       | Sensor name - humidity and temperature 5                                                                                         | 
+| sensorNameHumidityAndTemp6       | Sensor name - humidity and temperature 6                                                                                         | 
+| sensorNameHumidityAndTemp7       | Sensor name - humidity and temperature 7                                                                                         | 
+| sensorNameHumidityAndTemp8       | Sensor name - humidity and temperature 8                                                                                         | 
+| sensorNameCo21                   | Sensor name - CO2 1                                                                                                              | 
+| sensorNameCo22                   | Sensor name - CO2 2                                                                                                              | 
+| sensorNameCo23                   | Sensor name - CO2 3                                                                                                              | 
+| sensorNameCo24                   | Sensor name - CO2 4                                                                                                              | 
+| sensorNameCo25                   | Sensor name - CO2 5                                                                                                              | 
+| sensorNameCo26                   | Sensor name - CO2 6                                                                                                              | 
+| sensorNameCo27                   | Sensor name - CO2 7                                                                                                              | 
+| sensorNameCo28                   | Sensor name - CO2 8                                                                                                              | 
+| sensorNameVoc1                   | Sensor name - VOC 1                                                                                                              | 
+| sensorNameVoc2                   | Sensor name - VOC 2                                                                                                              | 
+| sensorNameVoc3                   | Sensor name - VOC 3                                                                                                              | 
+| sensorNameVoc4                   | Sensor name - VOC 4                                                                                                              | 
+| sensorNameVoc5                   | Sensor name - VOC 5                                                                                                              | 
+| sensorNameVoc6                   | Sensor name - VOC 6                                                                                                              | 
+| sensorNameVoc7                   | Sensor name - VOC 7                                                                                                              | 
+| sensorNameVoc8                   | Sensor name - VOC 8                                                                                                              | 
+| softwareVersionBasis             | Software version basis (format xx.xx)                                                                                            | 
+| sensorConfigKwlFtf1              | Sensor configuration (installed or not) KWL-FTF 1 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf2              | Sensor configuration (installed or not) KWL-FTF 2 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf3              | Sensor configuration (installed or not) KWL-FTF 3 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf4              | Sensor configuration (installed or not) KWL-FTF 4 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf5              | Sensor configuration (installed or not) KWL-FTF 5 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf6              | Sensor configuration (installed or not) KWL-FTF 6 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf7              | Sensor configuration (installed or not) KWL-FTF 7 (OFF = no sensor, ON = sensor installed)                                       | 
+| sensorConfigKwlFtf8              | Sensor configuration (installed or not) KWL-FTF 8 (OFF = no sensor, ON = sensor installed)                                       | 
+
+
 
 ## Full Example
 

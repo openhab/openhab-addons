@@ -13,11 +13,15 @@
 package org.openhab.binding.modbus.helioseasycontrols.internal;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,6 +46,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -68,83 +73,82 @@ import com.google.gson.reflect.TypeToken;
 @NonNullByDefault
 public class HeliosEasyControlsHandler extends BaseThingHandler {
 
-    /**
-     * Logger instance
-     */
     private final Logger logger = LoggerFactory.getLogger(HeliosEasyControlsHandler.class);
 
-    /**
-     * Configuration instance
-     */
     private @Nullable HeliosEasyControlsConfiguration config;
 
-    /**
-     * Used to poll the variables' status based on the configured refresh interval
-     */
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    /**
-     * The map holding the variable meta info by variable name
-     */
-    private @Nullable Map<String, HeliosVariable> vMap;
+    private @Nullable Map<String, HeliosVariable> variableMap;
 
     /**
      * This flag is used to ensure read requests (consisting of a write and subsequent read) are not influenced by
      * another transaction
      */
-    private static ConcurrentHashMap<ModbusSlaveEndpoint, Semaphore> transactionLocks = new ConcurrentHashMap<ModbusSlaveEndpoint, Semaphore>();
+    private Map<ModbusSlaveEndpoint, Semaphore> transactionLocks = new ConcurrentHashMap<>();
 
-    /**
-     * Communication interface to the endpoint
-     */
+    private Gson gson = new Gson();
+
     private @Nullable ModbusCommunicationInterface comms;
 
-    /**
-     * The date format used by the device
-     */
     private int dateFormat = -1;
+    private ZonedDateTime sysDate = ZonedDateTime.now(); // initialize with local system time as a best guess
+                                                         // before reading from device
 
-    /**
-     * The UTC offset of the device
-     */
-    private int utcOffset = 0;
+    private class BypassDate {
+        // initialization to avoid issues when updating before all variables were read
+        private int month = 1;
+        private int day = 1;
 
-    /**
-     * Constructor
-     *
-     * @param thing
-     * @param managerRef
-     */
+        public void setMonth(int month) {
+            this.month = month;
+        }
+
+        public void setDay(int day) {
+            this.day = day;
+        }
+
+        public DateTimeType toDateTimeType() {
+            return new DateTimeType(ZonedDateTime.of(1900, this.month, this.day, 0, 0, 0, 0, ZoneId.of("UTC+00:00")));
+        }
+    }
+
+    private @Nullable BypassDate bypassFrom, bypassTo;
+
     public HeliosEasyControlsHandler(Thing thing) {
         super(thing);
     }
 
     /**
-     * Reads variable definitions from JSON file and store them in vMap
+     * Reads variable definitions from JSON file and store them in variableMap
      */
     private void readVariableDefinition() {
-        Gson gson = new Gson();
         Type vMapType = new TypeToken<Map<String, HeliosVariable>>() {
         }.getType();
-        this.vMap = gson.fromJson(
-                new BufferedReader(new InputStreamReader(
-                        getClass().getResourceAsStream(HeliosEasyControlsBindingConstants.VARIABLES_DEFINITION_FILE))),
-                vMapType);
-        if (vMap != null) {
+        try {
+            InputStreamReader jsonFile = new InputStreamReader(
+                    getClass().getResourceAsStream(HeliosEasyControlsBindingConstants.VARIABLES_DEFINITION_FILE));
+            BufferedReader reader = new BufferedReader(jsonFile);
+            this.variableMap = gson.fromJson(reader, vMapType);
+            reader.close();
+            jsonFile.close();
+        } catch (IOException e) {
+            this.handleError("Error reading variable definition file", ThingStatusDetail.CONFIGURATION_ERROR);
+        }
+        if (variableMap != null) {
             // add the name to the variable itself
-            for (Map.Entry<String, HeliosVariable> entry : this.vMap.entrySet()) {
+            for (Map.Entry<String, HeliosVariable> entry : this.variableMap.entrySet()) {
                 entry.getValue().setName(entry.getKey()); // workaround to set the variable name inside the
                                                           // HeliosVariable object
                 if (!entry.getValue().isOk()) {
-                    this.handleError("Variables definition file contains inconsistent data.",
+                    this.handleError("Variables definition file contains inconsistent data",
                             ThingStatusDetail.CONFIGURATION_ERROR);
                 }
             }
         } else {
-            this.handleError("Variables definition file not found or of illegal format.",
+            this.handleError("Variables definition file not found or of illegal format",
                     ThingStatusDetail.CONFIGURATION_ERROR);
         }
-
     }
 
     /**
@@ -213,8 +217,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         this.config = getConfigAs(HeliosEasyControlsConfiguration.class);
         this.readVariableDefinition();
         this.connectEndpoint();
-        if ((this.comms != null) && (this.vMap != null) && (this.config != null)) {
-            HeliosEasyControlsHandler.transactionLocks.putIfAbsent(this.comms.getEndpoint(), new Semaphore(1, true));
+        if ((this.comms != null) && (this.variableMap != null) && (this.config != null)) {
+            this.transactionLocks.putIfAbsent(this.comms.getEndpoint(), new Semaphore(1, true));
             updateStatus(ThingStatus.UNKNOWN);
 
             // background initialization
@@ -224,38 +228,32 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             });
 
             // poll for status updates regularly
-            Runnable runnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    if (vMap != null) {
-                        for (Map.Entry<String, HeliosVariable> entry : vMap.entrySet()) {
-                            if (isLinked(entry.getKey())
-                                    || (entry.getKey().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT))
-                                    || (entry.getKey()
-                                            .equals(HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT))) {
+            HeliosEasyControlsConfiguration config = this.config;
+            if (config != null) {
+                this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    if (variableMap != null) {
+                        for (Map.Entry<String, HeliosVariable> entry : variableMap.entrySet()) {
+                            if (this.isProperty(entry.getKey()) || isLinked(entry.getValue().getGroupAndName())
+                                    || HeliosEasyControlsBindingConstants.ALWAYS_UPDATE_VARIABLES
+                                            .contains(entry.getKey())) {
                                 readValue(entry.getKey());
                             }
                         }
-
                     } else {
                         handleError("Variable definition is null", ThingStatusDetail.CONFIGURATION_ERROR);
                     }
-                }
-            };
-            this.pollingJob = scheduler.scheduleAtFixedRate(runnable, this.config.getRefreshInterval(),
-                    this.config.getRefreshInterval(), TimeUnit.MILLISECONDS);
-
+                }, config.getRefreshInterval(), config.getRefreshInterval(), TimeUnit.MILLISECONDS);
+            }
         } else { // at least one null assertion has failed, let's log the problem and update the thing status
             if (this.comms == null) {
-                this.handleError("Modbus communication interface is unavailable.",
+                this.handleError("Modbus communication interface is unavailable",
                         ThingStatusDetail.COMMUNICATION_ERROR);
             }
-            if (this.vMap == null) {
-                this.handleError("Variable definition is unavailable.", ThingStatusDetail.CONFIGURATION_ERROR);
+            if (this.variableMap == null) {
+                this.handleError("Variable definition is unavailable", ThingStatusDetail.CONFIGURATION_ERROR);
             }
             if (this.config == null) {
-                this.handleError("Binding configuration is unavailable.", ThingStatusDetail.CONFIGURATION_ERROR);
+                this.handleError("Binding configuration is unavailable", ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
     }
@@ -272,62 +270,96 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         String channelId = channelUID.getIdWithoutGroup();
         if (command instanceof RefreshType) {
-            scheduler.submit(new Runnable() {
-                @Override
-                public void run() {
-                    readValue(channelId);
-                }
-            });
+            if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
+                scheduler.submit(() -> readValue(HeliosEasyControlsBindingConstants.DATE));
+                scheduler.submit(() -> readValue(HeliosEasyControlsBindingConstants.TIME));
+            } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
+                scheduler.submit(() -> readValue(HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY));
+                scheduler.submit(() -> readValue(HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH));
+            } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
+                scheduler.submit(() -> readValue(HeliosEasyControlsBindingConstants.BYPASS_TO_DAY));
+                scheduler.submit(() -> readValue(HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH));
+            } else {
+                scheduler.submit(() -> readValue(channelId));
+            }
         } else { // write command
             String value = null;
             if (command instanceof OnOffType) {
                 value = command == OnOffType.ON ? "1" : "0";
             } else if (command instanceof DateTimeType) {
-                value = formatDate(channelId, ((DateTimeType) command).getZonedDateTime());
+                ZonedDateTime d = ((DateTimeType) command).getZonedDateTime();
+                if (channelId.equals(HeliosEasyControlsBindingConstants.SYS_DATE)) {
+                    setSysDateTime(d);
+                } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_FROM)) {
+                    this.setBypass(true, d.getDayOfMonth(), d.getMonthValue());
+                } else if (channelId.equals(HeliosEasyControlsBindingConstants.BYPASS_TO)) {
+                    this.setBypass(false, d.getDayOfMonth(), d.getMonthValue());
+                } else {
+                    value = formatDate(channelId, ((DateTimeType) command).getZonedDateTime());
+                }
             } else if ((command instanceof DecimalType) || (command instanceof StringType)) {
                 value = command.toString();
             } else if (command instanceof QuantityType<?>) {
                 // convert item's unit to the Helios device's unit
-                String unit = this.vMap.get(channelId).getUnit();
-                QuantityType<?> val = (QuantityType<?>) command;
-                if (unit != null) {
-                    if (unit.equals(HeliosVariable.UNIT_DAY)) {
-                        val = val.toUnit(SmartHomeUnits.DAY);
-                    } else if (unit.equals(HeliosVariable.UNIT_HOUR)) {
-                        val = val.toUnit(SmartHomeUnits.HOUR);
-                    } else if (unit.equals(HeliosVariable.UNIT_MIN)) {
-                        val = val.toUnit(SmartHomeUnits.MINUTE);
-                    } else if (unit.equals(HeliosVariable.UNIT_SEC)) {
-                        val = val.toUnit(SmartHomeUnits.SECOND);
-                    } else if (unit.equals(HeliosVariable.UNIT_VOLT)) {
-                        val = val.toUnit(SmartHomeUnits.VOLT);
-                    } else if (unit.equals(HeliosVariable.UNIT_PERCENT)) {
-                        val = val.toUnit(SmartHomeUnits.PERCENT);
-                    } else if (unit.equals(HeliosVariable.UNIT_PPM)) {
-                        val = val.toUnit(SmartHomeUnits.PARTS_PER_MILLION);
-                    } else if (unit.equals(HeliosVariable.UNIT_TEMP)) {
-                        val = val.toUnit(SIUnits.CELSIUS);
+                Map<String, HeliosVariable> variableMap = this.variableMap;
+                if (variableMap != null) {
+                    String unit = variableMap.get(channelId).getUnit();
+                    QuantityType<?> val = (QuantityType<?>) command;
+                    if (unit != null) {
+                        if (unit.equals(HeliosVariable.UNIT_DAY)) {
+                            val = val.toUnit(SmartHomeUnits.DAY);
+                        } else if (unit.equals(HeliosVariable.UNIT_HOUR)) {
+                            val = val.toUnit(SmartHomeUnits.HOUR);
+                        } else if (unit.equals(HeliosVariable.UNIT_MIN)) {
+                            val = val.toUnit(SmartHomeUnits.MINUTE);
+                        } else if (unit.equals(HeliosVariable.UNIT_SEC)) {
+                            val = val.toUnit(SmartHomeUnits.SECOND);
+                        } else if (unit.equals(HeliosVariable.UNIT_VOLT)) {
+                            val = val.toUnit(SmartHomeUnits.VOLT);
+                        } else if (unit.equals(HeliosVariable.UNIT_PERCENT)) {
+                            val = val.toUnit(SmartHomeUnits.PERCENT);
+                        } else if (unit.equals(HeliosVariable.UNIT_PPM)) {
+                            val = val.toUnit(SmartHomeUnits.PARTS_PER_MILLION);
+                        } else if (unit.equals(HeliosVariable.UNIT_TEMP)) {
+                            val = val.toUnit(SIUnits.CELSIUS);
+                        }
+                        value = val != null ? String.valueOf(val.doubleValue()) : null; // ignore the UoM
                     }
-                    value = val != null ? String.valueOf(val.doubleValue()) : null; // ignore the UoM
                 }
             }
             if (value != null) {
                 final String v = value;
-                scheduler.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            writeValue(channelId, v);
-                            updateStatus(ThingStatus.ONLINE);
-                        } catch (HeliosException e) {
-                            logger.warn("Writing value {} to channel {} failed: {}", v, channelId, e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "Writing to device failed.");
+                scheduler.submit(() -> {
+                    try {
+                        writeValue(channelId, v);
+                        // ensure the openHAB item is updated with the device's actual value
+                        if (variableMap != null) {
+                            scheduler.schedule(() -> readValue(variableMap.get(channelId).getName()), 1,
+                                    TimeUnit.SECONDS);
                         }
+                        updateStatus(ThingStatus.ONLINE);
+                    } catch (HeliosException e) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Writing value " + v + "to channel " + channelId + " failed: " + e.getMessage());
                     }
                 });
             }
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(HeliosEasyControlsActions.class);
+    }
+
+    /**
+     * Checks if the provided variable name is a property
+     *
+     * @param variableName The variable's name
+     * @return true if the variable is a property
+     */
+    private boolean isProperty(String variableName) {
+        return HeliosEasyControlsBindingConstants.PROPERTY_NAMES.contains(variableName);
     }
 
     /**
@@ -339,54 +371,51 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @throws HeliosException Thrown if the variable is read-only or the provided value is out of range
      */
     public void writeValue(String variableName, String value) throws HeliosException {
-        if (this.vMap == null) {
+        if (this.variableMap == null) {
             this.handleError("Variable definition is unavailable.", ThingStatusDetail.CONFIGURATION_ERROR);
             return;
         } else {
-            HeliosVariable v = this.vMap.get(variableName);
-            if (!v.hasWriteAccess()) {
-                throw new HeliosException("Variable " + variableName + " is read-only");
-            } else if (!v.isInAllowedRange(value)) {
-                throw new HeliosException(
-                        "Value " + value + " is outside of allowed range of variable " + variableName);
-            } else if (this.comms != null) {
-                // write to device
-                String payload = v.getVariableString() + "=" + value;
-                final Semaphore lock = transactionLocks.get(this.comms.getEndpoint());
-                try {
-                    lock.acquire();
-                    this.comms.submitOneTimeWrite(
-                            new ModbusWriteRegisterRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
-                                    HeliosEasyControlsBindingConstants.START_ADDRESS,
-                                    new ModbusRegisterArray(preparePayload(payload)), true,
-                                    HeliosEasyControlsBindingConstants.MAX_TRIES),
-                            result -> {
-                                lock.release();
-                                updateStatus(ThingStatus.ONLINE);
-                            }, failureInfo -> {
-                                String errorMsg = failureInfo.getCause().getMessage();
-                                logger.warn("{} encountered error writing to device: {}",
-                                        HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
-                                lock.release();
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
-                            });
-                    // ensure the openHAB item is updated with the device's actual value
-                    scheduler.schedule(new Runnable() {
-                        @Override
-                        public void run() {
-                            readValue(variableName);
+            Map<String, HeliosVariable> variableMap = this.variableMap;
+            if (variableMap != null) {
+                HeliosVariable v = variableMap.get(variableName);
+
+                if (!v.hasWriteAccess()) {
+                    throw new HeliosException("Variable " + variableName + " is read-only");
+                } else if (!v.isInAllowedRange(value)) {
+                    throw new HeliosException(
+                            "Value " + value + " is outside of allowed range of variable " + variableName);
+                } else if (this.comms != null) {
+                    // write to device
+                    String payload = v.getVariableString() + "=" + value;
+                    ModbusCommunicationInterface comms = this.comms;
+                    if (comms != null) {
+                        final Semaphore lock = transactionLocks.get(comms.getEndpoint());
+                        try {
+                            lock.acquire();
+                            comms.submitOneTimeWrite(
+                                    new ModbusWriteRegisterRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
+                                            HeliosEasyControlsBindingConstants.START_ADDRESS,
+                                            new ModbusRegisterArray(preparePayload(payload)), true,
+                                            HeliosEasyControlsBindingConstants.MAX_TRIES),
+                                    result -> {
+                                        lock.release();
+                                        updateStatus(ThingStatus.ONLINE);
+                                    }, failureInfo -> {
+                                        lock.release();
+                                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                                "Error writing to device: " + failureInfo.getCause().getMessage());
+                                    });
+                        } catch (InterruptedException e) {
+                            logger.warn(
+                                    "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
+                                    HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
                         }
-                    }, 1, TimeUnit.SECONDS);
-                } catch (InterruptedException e) {
-                    logger.warn(
-                            "{} encountered Exception when trying to lock Semaphore for writing variable {} to the device: {}",
-                            HeliosEasyControlsHandler.class.getSimpleName(), variableName, e.getMessage());
+                    }
+                } else { // comms is null
+                    this.handleError("Modbus communication interface is null", ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-            } else { // comms is null
-                this.handleError("Modbus communication interface is null.", ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
-
     }
 
     /**
@@ -396,9 +425,11 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return The value
      */
     public void readValue(String variableName) {
-        if ((this.comms != null) && (this.vMap != null)) {
-            final Semaphore lock = transactionLocks.get(this.comms.getEndpoint());
-            HeliosVariable v = this.vMap.get(variableName);
+        Map<String, HeliosVariable> variableMap = this.variableMap;
+        ModbusCommunicationInterface comms = this.comms;
+        if ((comms != null) && (variableMap != null)) {
+            final Semaphore lock = transactionLocks.get(comms.getEndpoint());
+            HeliosVariable v = variableMap.get(variableName);
             if (v.hasReadAccess()) {
                 try {
                     lock.acquire(); // will block until lock is available
@@ -409,11 +440,11 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 }
                 // write variable name to register
                 String payload = v.getVariableString();
-                this.comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
+                comms.submitOneTimeWrite(new ModbusWriteRegisterRequestBlueprint(
                         HeliosEasyControlsBindingConstants.UNIT_ID, HeliosEasyControlsBindingConstants.START_ADDRESS,
                         new ModbusRegisterArray(preparePayload(payload)), true,
                         HeliosEasyControlsBindingConstants.MAX_TRIES), result -> {
-                            this.comms.submitOneTimePoll(
+                            comms.submitOneTimePoll(
                                     new ModbusReadRequestBlueprint(HeliosEasyControlsBindingConstants.UNIT_ID,
                                             ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS,
                                             HeliosEasyControlsBindingConstants.START_ADDRESS, v.getCount(),
@@ -425,34 +456,105 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                                             processResponse(v, registers.get());
                                         }
                                     }, failureInfo -> {
-                                        String errorMsg = failureInfo.getCause().getMessage();
-                                        logger.warn("{} encountered error reading from device: {}",
-                                                HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
                                         lock.release();
                                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                                errorMsg);
+                                                "Error reading from device: " + failureInfo.getCause().getMessage());
                                     });
                         }, failureInfo -> {
-                            String errorMsg = failureInfo.getCause().getMessage();
-                            logger.warn("{} encountered error writing to device: {}",
-                                    HeliosEasyControlsHandler.class.getSimpleName(), errorMsg);
                             lock.release();
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMsg);
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Error writing to device: " + failureInfo.getCause().getMessage());
 
                         });
             }
+
         } else {
             if (this.comms == null) {
-                this.handleError("Modbus communication interface is unavailable.",
+                this.handleError("Modbus communication interface is unavailable",
                         ThingStatusDetail.COMMUNICATION_ERROR);
             }
-            if (this.vMap == null) {
-                this.handleError("Variable definition is unavailable.", ThingStatusDetail.CONFIGURATION_ERROR);
+            if (variableMap == null) {
+                this.handleError("Variable definition is unavailable", ThingStatusDetail.CONFIGURATION_ERROR);
             }
         }
     }
 
-    // TODO: set time incl. timezone, update time channels based on timezone read from device
+    private void updateSysDate(DateTimeType dateTime) {
+        this.updateSysDateTime(dateTime.getZonedDateTime(), true, sysDate.getOffset().getTotalSeconds() / 60 / 60);
+    }
+
+    private void updateSysTime(DateTimeType dateTime) {
+        this.updateSysDateTime(dateTime.getZonedDateTime(), false, sysDate.getOffset().getTotalSeconds() / 60 / 60);
+    }
+
+    private void updateUtcOffset(int utcOffset) {
+        this.updateSysDateTime(this.sysDate, true, sysDate.getOffset().getTotalSeconds() / 60 / 60);
+    }
+
+    private void updateSysDateTime(ZonedDateTime dateTime, boolean updateDate, int utcOffset) {
+        ZonedDateTime sysDate = this.sysDate;
+        sysDate = ZonedDateTime.of(updateDate ? dateTime.getYear() : sysDate.getYear(),
+                updateDate ? dateTime.getMonthValue() : sysDate.getMonthValue(),
+                updateDate ? dateTime.getDayOfMonth() : sysDate.getDayOfMonth(),
+                updateDate ? sysDate.getHour() : dateTime.getHour(),
+                updateDate ? sysDate.getMinute() : dateTime.getMinute(),
+                updateDate ? sysDate.getSecond() : dateTime.getSecond(), 0,
+                ZoneId.of("UTC" + (utcOffset >= 0 ? "+" : "") + String.format("%02d", utcOffset) + ":00"));
+        updateState("general#" + HeliosEasyControlsBindingConstants.SYS_DATE, new DateTimeType(sysDate));
+        this.sysDate = sysDate;
+    }
+
+    private void setSysDateTime(ZonedDateTime date) {
+        try {
+            this.writeValue(HeliosEasyControlsBindingConstants.DATE,
+                    this.formatDate(HeliosEasyControlsBindingConstants.DATE, date));
+            this.writeValue(HeliosEasyControlsBindingConstants.TIME,
+                    date.getHour() + ":" + date.getMinute() + ":" + date.getSecond());
+            this.writeValue(HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT,
+                    Integer.toString(date.getOffset().getTotalSeconds() / 60 / 60));
+        } catch (HeliosException e) {
+            logger.warn("{} encountered Exception when trying to set system date: {}",
+                    HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
+        }
+
+    }
+
+    protected void setSysDateTime() {
+        this.setSysDateTime(ZonedDateTime.now());
+    }
+
+    private void updateBypass(boolean from, boolean month, int val) {
+        BypassDate bypassDate = from ? this.bypassFrom : this.bypassTo;
+        if (bypassDate == null) {
+            bypassDate = new BypassDate();
+        }
+        if (month) {
+            bypassDate.setMonth(val);
+
+        } else {
+            bypassDate.setDay(val);
+        }
+        updateState("unitConfig#" + (from ? HeliosEasyControlsBindingConstants.BYPASS_FROM
+                : HeliosEasyControlsBindingConstants.BYPASS_TO), bypassDate.toDateTimeType());
+        if (from) {
+            this.bypassFrom = bypassDate;
+
+        } else {
+            this.bypassTo = bypassDate;
+        }
+    }
+
+    protected void setBypass(boolean from, int day, int month) {
+        try {
+            this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY
+                    : HeliosEasyControlsBindingConstants.BYPASS_TO_DAY, Integer.toString(day));
+            this.writeValue(from ? HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH
+                    : HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH, Integer.toString(month));
+        } catch (HeliosException e) {
+            logger.warn("{} encountered Exception when trying to set bypass period: {}",
+                    HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
+        }
+    }
 
     /**
      * Formats the provided date to a string in the device's configured date format
@@ -461,7 +563,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @param date the date to be formatted
      * @return a string in the device's configured date format
      */
-    private String formatDate(String variableName, ZonedDateTime date) {
+    public String formatDate(String variableName, ZonedDateTime date) {
         String y = Integer.toString(date.getYear());
         String m = Integer.toString(date.getMonthValue());
         if (m.length() == 1) {
@@ -496,39 +598,29 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     private DateTimeType toDateTime(String date) {
         String[] dateTimeParts = null;
         String dateTime = date;
-        try { // date
-            dateTimeParts = date.split("\\."); // try to split date components
-            if (dateTimeParts.length == 1) { // time
-                return DateTimeType.valueOf(date);
-            } else { // date - we'll try the device's date format
-                switch (this.dateFormat) {
-                    case 0: // dd.mm.yyyy
-                        dateTime = dateTimeParts[2] + "-" + dateTimeParts[1] + "-" + dateTimeParts[0];
-                        break;
-                    case 1: // mm.dd.yyyy
-                        dateTime = dateTimeParts[2] + "-" + dateTimeParts[0] + "-" + dateTimeParts[1];
-                        break;
-                    case 2: // yyyy.mm.dd
-                        dateTime = dateTimeParts[0] + "-" + dateTimeParts[1] + "-" + dateTimeParts[2];
-                        break;
-                    default:
-                        dateTime = dateTimeParts[2] + "-" + dateTimeParts[1] + "-" + dateTimeParts[0];
-                        break;
-                }
-                return DateTimeType.valueOf(dateTime);
+        dateTimeParts = date.split("\\."); // try to split date components
+        if (dateTimeParts.length == 1) { // time
+            return DateTimeType.valueOf(date);
+        } else if (dateTimeParts.length == 3) { // date - we'll try the device's date format
+            switch (this.dateFormat) {
+                case 0: // dd.mm.yyyy
+                    dateTime = dateTimeParts[2] + "-" + dateTimeParts[1] + "-" + dateTimeParts[0];
+                    break;
+                case 1: // mm.dd.yyyy
+                    dateTime = dateTimeParts[2] + "-" + dateTimeParts[0] + "-" + dateTimeParts[1];
+                    break;
+                case 2: // yyyy.mm.dd
+                    dateTime = dateTimeParts[0] + "-" + dateTimeParts[1] + "-" + dateTimeParts[2];
+                    break;
+                default:
+                    dateTime = dateTimeParts[2] + "-" + dateTimeParts[1] + "-" + dateTimeParts[0];
+                    break;
             }
-        } catch (Exception e) {
-            // falling back to default date format (apparently using the configured format has failed)
-            if (dateTimeParts != null) {
-                dateTime = dateTimeParts[2] + "-" + dateTimeParts[1] + "-" + dateTimeParts[0];
-                return DateTimeType.valueOf(dateTime);
-            } else {
-                logger.warn("{} couldn't parse the provided date string: {}",
-                        HeliosEasyControlsHandler.class.getSimpleName(), date);
-                return new DateTimeType(); // return at least a valid DateTimeType object
-            }
-
+            return DateTimeType.valueOf(dateTime);
         }
+        // falling back to default date format (apparently using the configured format has failed)
+        dateTime = dateTimeParts[2] + "-" + dateTimeParts[1] + "-" + dateTimeParts[0];
+        return DateTimeType.valueOf(dateTime);
     }
 
     private @Nullable QuantityType<?> toQuantityType(String value, @Nullable String unit) {
@@ -612,58 +704,88 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         String[] parts = r.split("=", 2); // remove the part "vXXXX=" from the string
         // making sure we have a proper response and the response matches the requested variable
         if ((parts.length == 2) && (v.getVariableString().equals(parts[0]))) {
-            String variableType = v.getType();
-            Channel channel = getThing().getChannel(v.getGroupAndName());
-            String itemType;
-            if (channel != null) {
-                itemType = channel.getAcceptedItemType();
-                if (itemType != null) {
-                    switch (itemType) {
-                        case "Number":
-                            if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
-                                    || (variableType == HeliosVariable.TYPE_FLOAT)) && (!parts[1].equals("-"))) {
-                                State state = null;
-                                if (v.getUnit() == null) {
-                                    state = DecimalType.valueOf(parts[1]);
-                                } else { // QuantityType
-                                    state = this.toQuantityType(parts[1], v.getUnit());
-                                }
-                                if (state != null) {
-                                    updateState(v.getGroupAndName(), state);
-                                    updateStatus(ThingStatus.ONLINE);
-                                    // update date format and UTC offset upon read
-                                    if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT)) {
-                                        this.dateFormat = Integer.parseInt(parts[1]);
-                                    } else if (v.getName()
-                                            .equals(HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT)) {
-                                        this.utcOffset = Integer.parseInt(parts[1]);
-                                    }
-                                }
-                            }
-                            break;
-                        case "Switch":
-                            if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
-                                updateState(v.getGroupAndName(), parts[1].equals("1") ? OnOffType.ON : OnOffType.OFF);
-                            }
-                            break;
-                        case "String":
-                            if (variableType.equals(HeliosVariable.TYPE_STRING)) {
-                                updateState(v.getGroupAndName(), StringType.valueOf(parts[1]));
-                            }
-                            break;
-                        case "DateTime":
-                            if (variableType.equals(HeliosVariable.TYPE_STRING)) {
-                                updateState(v.getGroupAndName(), toDateTime(parts[1]));
-                            }
-                            break;
-                    }
-                } else { // itemType was null
-                    logger.warn("{} couldn't determine item type of variable {}",
-                            HeliosEasyControlsHandler.class.getSimpleName(), v.getName());
+            if (this.isProperty(v.getName())) {
+                try {
+                    updateProperty(v.getName(), v.formatPropertyValue(parts[1]));
+                } catch (HeliosException e) {
+                    logger.warn("{} encountered Exception when trying to update property: {}",
+                            HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
                 }
-            } else { // channel was null
-                logger.warn("{} couldn't find channel for variable {}", HeliosEasyControlsHandler.class.getSimpleName(),
-                        v.getName());
+            } else {
+                String variableType = v.getType();
+                // System date and time
+                if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE)) {
+                    this.updateSysDate(this.toDateTime(parts[1]));
+                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME)) {
+                    this.updateSysTime(this.toDateTime(parts[1]));
+                    // Bypass
+                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY)) {
+                    this.updateBypass(true, false, Integer.parseInt(parts[1]));
+                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH)) {
+                    this.updateBypass(true, true, Integer.parseInt(parts[1]));
+                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_TO_DAY)) {
+                    this.updateBypass(false, false, Integer.parseInt(parts[1]));
+                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH)) {
+                    this.updateBypass(false, true, Integer.parseInt(parts[1]));
+                } else {
+                    Channel channel = getThing().getChannel(v.getGroupAndName());
+                    String itemType;
+                    if (channel != null) {
+                        itemType = channel.getAcceptedItemType();
+                        if (itemType.startsWith("Number:")) {
+                            itemType = "Number";
+                        }
+                        if (itemType != null) {
+                            switch (itemType) {
+                                case "Number":
+                                    if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
+                                            || (variableType == HeliosVariable.TYPE_FLOAT))
+                                            && (!parts[1].equals("-"))) {
+                                        State state = null;
+                                        if (v.getUnit() == null) {
+                                            state = DecimalType.valueOf(parts[1]);
+                                        } else { // QuantityType
+                                            state = this.toQuantityType(parts[1], v.getUnit());
+                                        }
+                                        if (state != null) {
+                                            updateState(v.getGroupAndName(), state);
+                                            updateStatus(ThingStatus.ONLINE);
+                                            // update date format and UTC offset upon read
+                                            if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT)) {
+                                                this.dateFormat = Integer.parseInt(parts[1]);
+                                            } else if (v.getName().equals(
+                                                    HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT)) {
+                                                this.updateUtcOffset(Integer.parseInt(parts[1]));
+                                            }
+                                        }
+                                    }
+                                    break;
+                                case "Switch":
+                                    if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
+                                        updateState(v.getGroupAndName(),
+                                                parts[1].equals("1") ? OnOffType.ON : OnOffType.OFF);
+                                    }
+                                    break;
+                                case "String":
+                                    if (variableType.equals(HeliosVariable.TYPE_STRING)) {
+                                        updateState(v.getGroupAndName(), StringType.valueOf(parts[1]));
+                                    }
+                                    break;
+                                case "DateTime":
+                                    if (variableType.equals(HeliosVariable.TYPE_STRING)) {
+                                        updateState(v.getGroupAndName(), toDateTime(parts[1]));
+                                    }
+                                    break;
+                            }
+                        } else { // itemType was null
+                            logger.warn("{} couldn't determine item type of variable {}",
+                                    HeliosEasyControlsHandler.class.getSimpleName(), v.getName());
+                        }
+                    } else { // channel was null
+                        logger.warn("{} couldn't find channel for variable {}",
+                                HeliosEasyControlsHandler.class.getSimpleName(), v.getName());
+                    }
+                }
             }
         } else { // another variable was read
             logger.warn("{} tried to read value from variable {} and the result provided by the device was {}",
@@ -678,7 +800,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @param status The Thing's new status
      */
     private void handleError(String errorMsg, ThingStatusDetail status) {
-        logger.warn("{}", errorMsg);
+        // logger.warn("{}", errorMsg);
         updateStatus(ThingStatus.OFFLINE, status, errorMsg);
     }
 }

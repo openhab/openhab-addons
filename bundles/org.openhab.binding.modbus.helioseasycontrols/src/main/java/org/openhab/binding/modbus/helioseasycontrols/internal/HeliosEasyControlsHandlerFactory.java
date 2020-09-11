@@ -25,8 +25,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HeliosEasyControlsHandlerFactory} is responsible for creating things and thing
@@ -40,11 +38,6 @@ public class HeliosEasyControlsHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS);
-
-    /**
-     * Logger instance
-     */
-    private final Logger logger = LoggerFactory.getLogger(HeliosEasyControlsHandlerFactory.class);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
