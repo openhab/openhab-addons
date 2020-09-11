@@ -27,7 +27,7 @@ public class YIOremoteBindingConstants {
     public static final String BINDING_ID = "yioremote";
 
     // List of all used global variables
-    public static enum YIO_REMOTE_DOCK_HANDLE_STATUS {
+    public static enum YIOREMOTEDOCKHANDLESTATUS {
         UNINITIALIZED,
         AUTHENTICATION_PROCESS,
         AUTHENTICATION_PROCESS_FAILED,

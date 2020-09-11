@@ -40,33 +40,33 @@ import com.google.gson.JsonParser;
 @WebSocket
 public class YIOremoteDockWebsocket {
     private @Nullable Session session;
-    private String string_receivedmessage = "";
+    private String stringreceivedmessage = "";
     private final Logger logger = LoggerFactory.getLogger(YIOremoteDockWebsocket.class);
-    private JsonObject JsonObject_recievedJsonObject = new JsonObject();
-    private boolean boolean_authentication_required = false;
-    private boolean boolean_heartbeat = false;
-    private boolean boolean_authentication_ok = false;
-    private boolean boolean_sendir_status = false;
-    private String string_receivedstatus = "";
-    private String string_lastsendircode = "";
-    private boolean boolean_newmessagerecieved = false;
+    private JsonObject jsonobjectrecievedJsonObject = new JsonObject();
+    private boolean booleanauthenticationrequired = false;
+    private boolean booleanheartbeat = false;
+    private boolean booleanauthenticationok = false;
+    private boolean booleansendirstatus = false;
+    private String stringreceivedstatus = "";
+    private String stringlastsendircode = "";
+    private boolean booleannewmessagerecieved = false;
 
     CountDownLatch latch = new CountDownLatch(1);
 
     @OnWebSocketMessage
     public void onText(Session session, String message) throws IOException {
-        string_receivedmessage = message;
-        JsonObject_recievedJsonObject = convert_StringtoJsonObject(string_receivedmessage);
-        if (decode_receivedMessage(JsonObject_recievedJsonObject)) {
-            logger.debug("Message {} decoded", string_receivedmessage);
+        stringreceivedmessage = message;
+        jsonobjectrecievedJsonObject = convertStringtoJsonObject(stringreceivedmessage);
+        if (decodereceivedMessage(jsonobjectrecievedJsonObject)) {
+            logger.debug("Message {} decoded", stringreceivedmessage);
         } else {
-            logger.debug("Error during message {} decoding", string_receivedmessage);
+            logger.debug("Error during message {} decoding", stringreceivedmessage);
         }
-        boolean_newmessagerecieved = true;
+        booleannewmessagerecieved = true;
     }
 
-    public String get_string_receivedmessage() {
-        return this.string_receivedmessage;
+    public String getstringreceivedmessage() {
+        return this.stringreceivedmessage;
     }
 
     @OnWebSocketConnect
@@ -78,7 +78,7 @@ public class YIOremoteDockWebsocket {
     @OnWebSocketError
     public void onError(Throwable cause) {
         try {
-            boolean_heartbeat = false;
+            booleanheartbeat = false;
         } catch (Exception ex) {
             logger.debug("WebSocketError");
         }
@@ -99,7 +99,7 @@ public class YIOremoteDockWebsocket {
                 logger.debug("sending authenticating message: \"{\"type\":\"auth\", \"token\":\"{}\"}\"",
                         messagepyload);
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.HEARTBEAT)) {
-                string_lastsendircode = "\"0;0x0;0;0\"";
+                stringlastsendircode = "\"0;0x0;0;0\"";
                 session.getRemote().sendString(
                         "{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
                 logger.debug(
@@ -113,7 +113,7 @@ public class YIOremoteDockWebsocket {
             } else if (messagetype.equals(YIOREMOTEMESSAGETYPE.IRSEND)) {
                 session.getRemote().sendString("{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"" + messagepyload
                         + "\", \"format\":\"hex\"}");
-                string_lastsendircode = messagepyload;
+                stringlastsendircode = messagepyload;
                 logger.debug(
                         "sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"{}\", \"format\":\"hex\"}",
                         messagepyload);
@@ -123,65 +123,66 @@ public class YIOremoteDockWebsocket {
         }
     }
 
-    private boolean decode_receivedMessage(JsonObject JsonObject_recievedJsonObject) {
-        boolean boolean_result = false;
+    private boolean decodereceivedMessage(JsonObject JsonObject_recievedJsonObject) {
+        boolean booleanresult = false;
 
         if (JsonObject_recievedJsonObject.has("type")) {
             if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_required\"")) {
-                boolean_authentication_required = true;
-                boolean_heartbeat = true;
-                boolean_result = true;
+                booleanauthenticationrequired = true;
+                booleanheartbeat = true;
+                booleanresult = true;
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
-                boolean_authentication_required = false;
-                boolean_authentication_ok = true;
-                boolean_heartbeat = true;
-                boolean_result = true;
+                booleanauthenticationrequired = false;
+                booleanauthenticationok = true;
+                booleanheartbeat = true;
+                booleanresult = true;
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"dock\"")
                     && JsonObject_recievedJsonObject.has("message")) {
                 if (JsonObject_recievedJsonObject.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
                     if (JsonObject_recievedJsonObject.get("success").toString().equalsIgnoreCase("true")) {
-                        string_receivedstatus = "Send IR Code successfully";
-                        boolean_sendir_status = true;
-                        boolean_heartbeat = true;
-                        boolean_result = true;
+                        stringreceivedstatus = "Send IR Code successfully";
+                        booleansendirstatus = true;
+                        booleanheartbeat = true;
+                        booleanresult = true;
                     } else {
-                        if (string_lastsendircode.equalsIgnoreCase("\"0;0x0;0;0\"")) {
+                        if (stringlastsendircode.equalsIgnoreCase("\"0;0x0;0;0\"")) {
+                            logger.debug("Send heartbeat Code success");
                         } else {
-                            string_receivedstatus = "Send IR Code failure";
+                            stringreceivedstatus = "Send IR Code failure";
                         }
-                        boolean_sendir_status = true;
-                        boolean_heartbeat = true;
-                        boolean_result = true;
+                        booleansendirstatus = true;
+                        booleanheartbeat = true;
+                        booleanresult = true;
                     }
                 } else {
-                    logger.warn("No known message {}", string_receivedmessage);
-                    boolean_heartbeat = false;
-                    boolean_result = false;
+                    logger.warn("No known message {}", stringreceivedmessage);
+                    booleanheartbeat = false;
+                    booleanresult = false;
                 }
             } else if (JsonObject_recievedJsonObject.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
-                string_receivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
-                if (string_receivedstatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
-                    string_receivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
+                stringreceivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
+                if (stringreceivedstatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                    stringreceivedstatus = JsonObject_recievedJsonObject.get("code").toString().replace("\"", "");
                 } else {
-                    string_receivedstatus = "";
+                    stringreceivedstatus = "";
                 }
-                logger.debug("ir_receive message {}", string_receivedstatus);
-                boolean_heartbeat = true;
-                boolean_result = true;
+                logger.debug("ir_receive message {}", stringreceivedstatus);
+                booleanheartbeat = true;
+                booleanresult = true;
             } else {
-                logger.warn("No known message {}", string_receivedmessage);
-                boolean_heartbeat = false;
-                boolean_result = false;
+                logger.warn("No known message {}", stringreceivedmessage);
+                booleanheartbeat = false;
+                booleanresult = false;
             }
         } else {
-            logger.warn("No known message {}", string_receivedmessage);
-            boolean_heartbeat = false;
-            boolean_result = false;
+            logger.warn("No known message {}", stringreceivedmessage);
+            booleanheartbeat = false;
+            booleanresult = false;
         }
-        return boolean_result;
+        return booleanresult;
     }
 
-    private JsonObject convert_StringtoJsonObject(String jsonString) {
+    private JsonObject convertStringtoJsonObject(String jsonString) {
         JsonParser parser = new JsonParser();
         JsonElement jsonElement = parser.parse(jsonString);
 
@@ -199,45 +200,45 @@ public class YIOremoteDockWebsocket {
         return latch;
     }
 
-    public boolean get_boolean_heartbeat() {
-        boolean boolean_result = false;
-        boolean_result = boolean_heartbeat;
-        boolean_heartbeat = false;
-        return boolean_result;
+    public boolean getbooleanheartbeat() {
+        boolean booleanresult = false;
+        booleanresult = booleanheartbeat;
+        booleanheartbeat = false;
+        return booleanresult;
     }
 
-    public boolean get_boolean_authentication_required() {
-        boolean boolean_result = false;
-        boolean_result = boolean_authentication_required;
-        boolean_authentication_required = false;
-        return boolean_result;
+    public boolean getbooleanauthenticationrequired() {
+        boolean booleanresult = false;
+        booleanresult = booleanauthenticationrequired;
+        booleanauthenticationrequired = false;
+        return booleanresult;
     }
 
-    public String get_string_receivedstatus() {
-        String string_result = "";
-        string_result = string_receivedstatus;
-        string_receivedstatus = "";
-        return string_result;
+    public String getstringreceivedstatus() {
+        String stringresult = "";
+        stringresult = stringreceivedstatus;
+        stringreceivedstatus = "";
+        return stringresult;
     }
 
-    public boolean get_boolean_authentication_ok() {
-        boolean boolean_result = false;
-        boolean_result = boolean_authentication_ok;
-        boolean_authentication_ok = false;
-        return boolean_result;
+    public boolean getbooleanauthenticationok() {
+        boolean booleanresult = false;
+        booleanresult = booleanauthenticationok;
+        booleanauthenticationok = false;
+        return booleanresult;
     }
 
-    public boolean get_boolean_sendir_status() {
-        boolean boolean_result = false;
-        boolean_result = boolean_sendir_status;
-        boolean_sendir_status = false;
-        return boolean_result;
+    public boolean getbooleansendirstatus() {
+        boolean booleanresult = false;
+        booleanresult = booleansendirstatus;
+        booleansendirstatus = false;
+        return booleanresult;
     }
 
-    public boolean get_boolean_newmessagerecieved() {
-        boolean boolean_result = false;
-        boolean_result = boolean_newmessagerecieved;
-        boolean_newmessagerecieved = false;
-        return boolean_result;
+    public boolean getbooleannewmessagerecieved() {
+        boolean booleanresult = false;
+        booleanresult = booleannewmessagerecieved;
+        booleannewmessagerecieved = false;
+        return booleanresult;
     }
 }
