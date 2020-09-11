@@ -42,6 +42,9 @@ public class PanasonicBindingConstants {
     public static final String BUTTON = "button";
     public static final String PLAY_MODE = "play_mode";
     public static final String TIME_ELAPSED = "time_elapsed";
+    public static final String TIME_TOTAL = "time_total";
+    public static final String CHAPTER_CURRENT = "chapter_current";
+    public static final String CHAPTER_TOTAL = "chapter_total";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
     public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(BUTTON, PLAY_MODE, TIME_ELAPSED)

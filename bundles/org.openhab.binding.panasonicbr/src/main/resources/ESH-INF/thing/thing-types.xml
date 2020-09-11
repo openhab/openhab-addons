@@ -15,6 +15,9 @@
 			<channel id="button" typeId="button"/>
 			<channel id="play_mode" typeId="play_mode"/>
 			<channel id="time_elapsed" typeId="time_elapsed"/>
+			<channel id="time_total" typeId="time_total"/>
+			<channel id="chapter_current" typeId="chapter_current"/>
+			<channel id="chapter_total" typeId="chapter_total"/>
 		</channels>
 
 		<config-description>
@@ -23,10 +26,11 @@
 				<label>Player Host Name/IP Address</label>
 				<description>Host Name or IP Address of the Player</description>
 			</parameter>
-			<parameter name="refresh" type="integer" min="10" required="false" unit="min">
+			<parameter name="refresh" type="integer" min="10" required="false" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the Refresh Interval in Seconds</description>
 				<default>10</default>
+				<unitLabel>s</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -34,14 +38,57 @@
 	<channel-type id="button">
 		<item-type>String</item-type>
 		<label>Remote Button</label>
-		<description>A Remote Button Press to send to the player</description>
+		<description>A Remote Button Press to Send to The Player</description>
 		<state>
 			<options>
 				<option value="RC_POWER">Power</option>
+				<option value="RC_OP_CL">Open/Close</option>
+				<option value="RC_D1">1</option>
+				<option value="RC_D2">2</option>
+				<option value="RC_D3">3</option>
+				<option value="RC_D4">4</option>
+				<option value="RC_D5">5</option>
+				<option value="RC_D6">6</option>
+				<option value="RC_D7">7</option>
+				<option value="RC_D8">8</option>
+				<option value="RC_D9">9</option>
+				<option value="RC_D0">0</option>
+				<option value="RC_D12">12</option>
+				<option value="RC_CLEAR">Cancel</option>
+				<option value="RC_SHARP">#</option>
+				<option value="RC_SKYPE">Skype</option>
+				<option value="RC_3D">3D</option>
+				<option value="RC_AUDIOSEL">Audio</option>
+				<option value="RC_NETFLIX">Netflix</option>
+				<option value="RC_NETWORK">Network</option>
+				<option value="RC_CUE">Fast Fwd</option>
+				<option value="RC_REV">Reverse</option>
 				<option value="RC_PLAYBACK">Play</option>
-				<option value="RC_PAUSE">Pause</option>
-				<option value="RC_SKIPREV">Skip Prev</option>
 				<option value="RC_SKIPFWD">Skip Fwd</option>
+				<option value="RC_SKIPREV">Skip Back</option>
+				<option value="RC_PAUSE">Pause</option>
+				<option value="RC_STOP">Stop</option>
+				<option value="RC_DSPSEL">Status</option>
+				<option value="RC_EXIT">Exit</option>
+				<option value="RC_TITLE">Top Menu</option>
+				<option value="RC_PUPMENU">Pop-up Menu</option>
+				<option value="RC_V_CAST">Viera Cast</option>
+				<option value="RC_MLTNAV">Home</option>
+				<option value="RC_UP">Up</option>
+				<option value="RC_DOWN">Down</option>
+				<option value="RC_LEFT">Left</option>
+				<option value="RC_RIGHT">Right</option>
+				<option value="RC_SELECT">OK</option>
+				<option value="RC_MENU">Submenu</option>
+				<option value="RC_RETURN">Return</option>
+				<option value="RC_RED">Red</option>
+				<option value="RC_GREEN">Green</option>
+				<option value="RC_BLUE">Blue</option>
+				<option value="RC_YELLOW">Yellow</option>
+				<option value="RC_P_IN_P">PIP</option>
+				<option value="RC_OSDONOFF">OSD</option>
+				<option value="RC_SHFWD2">(swipe in CW circle)</option>
+				<option value="RC_SHREV2">(swipe in CCW circle)</option>
 			</options>
 		</state>
 	</channel-type>
@@ -56,8 +103,29 @@
 	<channel-type id="time_elapsed">
 		<item-type>Number:Time</item-type>
 		<label>Playback Time</label>
-		<description>The current playback time elapsed</description>
+		<description>The Current Playback Time Elapsed</description>
 		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="time_total">
+		<item-type>Number:Time</item-type>
+		<label>Total Time</label>
+		<description>The Total Length of the Current Title</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="chapter_current">
+		<item-type>Number</item-type>
+		<label>Current Chaper</label>
+		<description>The Current Chapter Number</description>
+		<state readOnly="true" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="chapter_total">
+		<item-type>Number</item-type>
+		<label>Total Chapters</label>
+		<description>The Total Number of Chapters in the Current Title</description>
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>

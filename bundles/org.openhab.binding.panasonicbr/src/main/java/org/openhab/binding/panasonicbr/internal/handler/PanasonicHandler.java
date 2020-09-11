@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -36,6 +37,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.panasonicbr.internal.PanasonicConfiguration;
 import org.openhab.binding.panasonicbr.internal.PanasonicHttpException;
 import org.slf4j.Logger;
@@ -52,10 +54,16 @@ public class PanasonicHandler extends BaseThingHandler {
     private static final int DEFAULT_REFRESH_PERIOD_SEC = 10;
 
     // pre-define the POST body for status update calls
-    private static final Fields CONFIG_POST_CMD = new Fields();
+    private static final Fields PST_POST_CMD = new Fields();
     static {
-        CONFIG_POST_CMD.add("cCMD_PST.x", "100");
-        CONFIG_POST_CMD.add("cCMD_PST.y", "100");
+        PST_POST_CMD.add("cCMD_PST.x", "100");
+        PST_POST_CMD.add("cCMD_PST.y", "100");
+    }
+
+    private static final Fields STATUS_POST_CMD = new Fields();
+    static {
+        STATUS_POST_CMD.add("cCMD_GET_STATUS.x", "100");
+        STATUS_POST_CMD.add("cCMD_GET_STATUS.y", "100");
     }
 
     private final Logger logger = LoggerFactory.getLogger(PanasonicHandler.class);
@@ -65,7 +73,8 @@ public class PanasonicHandler extends BaseThingHandler {
 
     private String urlStr = "http://%host%/WAN/dvdr/dvdr_ctrl.cgi";
     private int refreshInterval = DEFAULT_REFRESH_PERIOD_SEC;
-    private String playerStatus = "";
+    private String playMode = "";
+    private String timeCode = "0";
 
     public PanasonicHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -79,7 +88,7 @@ public class PanasonicHandler extends BaseThingHandler {
         @Nullable
         final String host = config.hostName;
 
-        if (host != null) {
+        if (host != null && !host.equals("")) {
             urlStr = urlStr.replace("%host%", host);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Host Name must be specified");
@@ -89,8 +98,8 @@ public class PanasonicHandler extends BaseThingHandler {
         if (config.refresh >= 10)
             refreshInterval = config.refresh;
 
-        startAutomaticRefresh();
         updateStatus(ThingStatus.UNKNOWN);
+        startAutomaticRefresh();
     }
 
     /**
@@ -100,22 +109,55 @@ public class PanasonicHandler extends BaseThingHandler {
         ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob == null || refreshJob.isCancelled()) {
             Runnable runnable = () -> {
-                final String response = sendCommand(null, CONFIG_POST_CMD);
-                logger.debug("Blu-ray status: {}", response);
+                final String[] statusLines = sendCommand(null, PST_POST_CMD).split(CRLF);
 
-                final String[] statusLines = response.split(CRLF);
-
-                // get the second line of the status message
-                if (statusLines[1] != null) {
+                // a valid response will have at least two lines
+                if (statusLines.length >= 2) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
 
-                    // if new status is different than the previous, cache the status and update the channels
-                    if (!playerStatus.equals(statusLines[1])) {
-                        playerStatus = statusLines[1];
-                        updateStatus();
-                    } else {
-                        // otherwise don't do anything
-                        return;
+                    // statusLines second line: 1,1543,0,00000000 (play mode, current time, ?, ?)
+                    final String statusArr[] = statusLines[1].split(COMMA);
+
+                    if (statusArr.length >= 2) {
+                        // update play mode if different
+                        if (!playMode.equals(statusArr[0])) {
+                            playMode = statusArr[0];
+
+                            switch (playMode) {
+                                case ZERO:
+                                    updateState(PLAY_MODE, new StringType(STOP));
+                                    updateState(TIME_ELAPSED, UnDefType.UNDEF);
+                                    updateState(TIME_TOTAL, UnDefType.UNDEF);
+                                    updateState(CHAPTER_CURRENT, UnDefType.UNDEF);
+                                    updateState(CHAPTER_TOTAL, UnDefType.UNDEF);
+                                    // update cached time code with current time code so update below will not occur
+                                    // necessary because the player does not clear reported time code when stopped
+                                    timeCode = statusArr[1];
+                                    break;
+                                case ONE:
+                                    updateState(PLAY_MODE, new StringType(PLAY));
+                                    break;
+                                case TWO:
+                                    updateState(PLAY_MODE, new StringType(PAUSE));
+                                    break;
+                                default:
+                                    logger.debug("Unknown playMode type: {}", playMode);
+                                    updateState(PLAY_MODE, new StringType(UNKNOWN));
+                                    updateState(TIME_ELAPSED, UnDefType.UNDEF);
+                                    updateState(TIME_TOTAL, UnDefType.UNDEF);
+                                    updateState(CHAPTER_CURRENT, UnDefType.UNDEF);
+                                    updateState(CHAPTER_TOTAL, UnDefType.UNDEF);
+                                    return;
+                            }
+                        }
+
+                        // update time code and playback status if time code changes
+                        // it stops changing when paused or stopped, preventing the second http call running needlessly
+                        if (!timeCode.equals(statusArr[1])) {
+                            timeCode = statusArr[1];
+                            updateState(TIME_ELAPSED, new QuantityType<>(Integer.parseInt(timeCode), API_SECONDS_UNIT));
+                            updatePlaybackStatus();
+                        }
                     }
                 }
             };
@@ -137,7 +179,7 @@ public class PanasonicHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            updateStatus();
+            logger.debug("Unsupported refresh command: {}", command.toString());
         } else if (channelUID.getId().equals(BUTTON)) {
             sendCommand(command.toString(), null);
         } else {
@@ -146,13 +188,13 @@ public class PanasonicHandler extends BaseThingHandler {
     }
 
     /**
-     * Sends a command to the player
+     * Sends a command to the player (must send one or the other parameters, not both)
      *
      * @param the command to be sent to the player
-     * @param a pre-built post body to send to to the player
+     * @param a pre-built post body to send to the player
      * @return the response string from the player
      */
-    public String sendCommand(@Nullable String command, @Nullable Fields fields) {
+    private String sendCommand(@Nullable String command, @Nullable Fields fields) {
         String output = "";
 
         // if we were not sent the fields to post, build them from the string
@@ -161,12 +203,14 @@ public class PanasonicHandler extends BaseThingHandler {
             fields.add("cCMD_" + command + ".x", "100");
             fields.add("cCMD_" + command + ".y", "100");
         }
+        logger.debug("Blu-ray command: {}", command != null ? command : fields.getNames().iterator().next());
 
         try {
             ContentResponse response = httpClient.POST(urlStr).agent(USER_AGENT).method(HttpMethod.POST)
                     .content(new FormContentProvider(fields)).send();
 
             output = response.getContentAsString();
+            logger.debug("Blu-ray response: {}", output);
 
             if (response.getStatus() != OK_200) {
                 throw new PanasonicHttpException("Player response: " + response.getStatus() + " - " + output);
@@ -181,27 +225,18 @@ public class PanasonicHandler extends BaseThingHandler {
         return output;
     }
 
-    private void updateStatus() {
-        if (playerStatus != "") {
-            // response string: 0,0,0,00000000
-            final String statusArr[] = playerStatus.split(COMMA);
+    // secondary call to get additional playback status info
+    private void updatePlaybackStatus() {
+        final String[] statusLines = sendCommand(null, STATUS_POST_CMD).split(CRLF);
 
-            switch (statusArr[0]) {
-                case ZERO:
-                    updateState(PLAY_MODE, new StringType(STOP));
-                    break;
-                case ONE:
-                    updateState(PLAY_MODE, new StringType(PLAY));
-                    break;
-                case TWO:
-                    updateState(PLAY_MODE, new StringType(PAUSE));
-                    break;
-                default:
-                    updateState(PLAY_MODE, new StringType(UNKNOWN));
-            }
-
-            if (statusArr[1] != null) {
-                updateState(TIME_ELAPSED, new QuantityType<>(Integer.parseInt(statusArr[1]), API_SECONDS_UNIT));
+        // get the second line of the status message
+        // 1,0,0,1,5999,61440,500,1,16,00000000 (?, ?, ?, cur time, total time, title#?, ?, chapt #, total chapt, ?)
+        if (statusLines.length >= 2) {
+            final String statusArr[] = statusLines[1].split(COMMA);
+            if (statusArr.length >= 10) {
+                updateState(TIME_TOTAL, new QuantityType<>(Integer.parseInt(statusArr[4]), API_SECONDS_UNIT));
+                updateState(CHAPTER_CURRENT, new DecimalType(Integer.parseInt(statusArr[7])));
+                updateState(CHAPTER_TOTAL, new DecimalType(Integer.parseInt(statusArr[8])));
             }
         }
     }

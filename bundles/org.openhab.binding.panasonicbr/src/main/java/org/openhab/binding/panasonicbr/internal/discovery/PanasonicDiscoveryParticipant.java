@@ -46,8 +46,8 @@ public class PanasonicDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(PanasonicDiscoveryParticipant.class);
 
     private static final String MANUFACTURER = "panasonic";
-    private static final List<String> MODELS = Arrays.asList("BDT110", "BDT210", "BDT310", "BDT-120", "BDT220",
-            "BDT320", "BBT01", "BDT500", "UB420", "UB820", "UB9000");
+    private static final List<String> MODELS = Arrays.asList("BDT110", "BDT210", "BDT310", "BDT120", "BDT220", "BDT320",
+            "BBT01", "BDT500", "UB420", "UB820", "UB9000");
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -65,8 +65,8 @@ public class PanasonicDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
             properties.put("hostName", url.getHost());
 
-            final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
-                    .build();
+            final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
+                    .withLabel(label).build();
 
             logger.debug("Created a DiscoveryResult for device '{}' with UDN '{}'",
                     device.getDetails().getFriendlyName(), device.getIdentity().getUdn().getIdentifierString());
