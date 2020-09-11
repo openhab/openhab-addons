@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.shuttercontrol.dto.ShutterControlState;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 
 import com.google.gson.JsonElement;
