@@ -29,8 +29,6 @@ enum PS4ErrorStatus {
     STATUS_OK(0x00, "Status OK."),
     STATUS_UPDATE_APP(0x02, "Plugin needs to be updated."),
     STATUS_UPDATE_PS4(0x03, "PS4 needs to update."),
-    // STATUS_HTTPD_RUNNING(0x03, "HTTPD running."),
-    // STATUS_OSK_OPEN(0x04, "On screen keyboard open."), // Maybe part of status mask?
     STATUS_DO_LOGIN(0x06, "Log in on PS4."),
     STATUS_MAX_USERS(0x07, "Max users logged in on PS4."),
     STATUS_RESTART_APP(0x08, "Can not log in, restart plugin."),
@@ -63,10 +61,10 @@ enum PS4ErrorStatus {
     }
 
     /**
-     * Get command from value
+     * Get error status from value
      *
-     * @param tag the tag string
-     * @return accessoryType or null if not found
+     * @param value the integer value of the status
+     * @return error status or null if unknown
      */
     public static @Nullable PS4ErrorStatus valueOfTag(int value) {
         return TAG_MAP.get(value);

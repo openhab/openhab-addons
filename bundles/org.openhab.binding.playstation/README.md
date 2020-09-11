@@ -19,7 +19,7 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker.
 The result file is called ".ps4-wake.credentials.json" in your home directory.
 
-Then you need to pair your OpenHAB device with the PS4.
+Then you need to pair your openHAB device with the PS4.
 This can be done by saving the Thing while the pairing screen is open on the PS4. The code is only needed during pairing.
 
 Then, if you have a pass code when you log in to your PS4 you have to specify that as well.
@@ -52,7 +52,8 @@ Example of how to configure a thing.
 demo.thing
 
 ```
-Thing playstation:PS4:123456789ABC "PlayStation4" @ "Living Room" [ ipAddress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678" ]
+Thing playstation:PS4:123456789ABC "PlayStation4" @ "Living Room" [ ipAddress="192.168.0.2", userCredential="0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF", passCode="1234", pairingCode="12345678",
+connectionTimeout="60", autoConnect="false", artworkSize="320", outboundIP="192.168.0.3", ipPort="997" ]
 
 Thing playstation:PS3:123456789ABC "PlayStation3" @ "Living Room" [ ipAddress="192.168.0.2" ]
 ```
@@ -114,4 +115,4 @@ sitemap demo label="Main Menu"
 
 ## Any custom content here!
 
-I tried my hardest to figure out how to turn on the PS3 through WakeOnLan but it looks likeSony never got it to work properly, the only way I've seen it turn on is via WiFi, but if you hook up your PS3 through WiFi to your router and enable WakeOnLan it turns itself on randomly.
+I tried my hardest to figure out how to turn on the PS3 through WakeOnLan but it looks like Sony never got it to work properly, the only way I've seen it turn on is via WiFi, but if you hook up your PS3 through WiFi to your router and enable WakeOnLan it turns itself on randomly.

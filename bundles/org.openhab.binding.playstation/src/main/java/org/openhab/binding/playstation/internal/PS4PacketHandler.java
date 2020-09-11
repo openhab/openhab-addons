@@ -27,8 +27,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class PS4PacketHandler {
 
-    private static final String APPLICATION_NAME = "OpenHAB PlayStation 4 Binding";
-    private static final String DEVICE_NAME = "OpenHAB Server";
+    private static final String APPLICATION_NAME = "openHAB PlayStation 4 Binding";
+    private static final String DEVICE_NAME = "openHAB Server";
 
     private static final String OS_VERSION = "8.1.0";
     private static final String DDP_VERSION = "device-discovery-protocol-version:00020020\n";

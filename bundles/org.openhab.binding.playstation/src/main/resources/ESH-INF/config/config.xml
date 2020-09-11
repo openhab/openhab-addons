@@ -25,7 +25,7 @@
 		</parameter>
 		<parameter name="pairingCode" type="text" min="8" max="8" pattern="[0-9]*">
 			<label>Pairing code</label>
-			<description>Code to pair OpenHAB device to PlayStation 4. Only needed during pairing.</description>
+			<description>Code to pair openHAB device to PlayStation 4. Only needed during pairing.</description>
 		</parameter>
 		<parameter name="connectionTimeout" type="integer" min="0">
 			<label>Connection timeout</label>
@@ -46,12 +46,6 @@
 			<default>320</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="outboundIP" type="text">
-			<context>network-address</context>
-			<label>Outbound IP</label>
-			<description>IP address of the network interface to use.</description>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="ipAddress" type="text" required="true">
 			<context>network-address</context>
 			<label>IP address</label>
@@ -62,6 +56,12 @@
 			<label>IP port</label>
 			<description>The IP port used to communicate with the PlayStation 4.</description>
 			<default>997</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="outboundIP" type="text">
+			<context>network-address</context>
+			<label>Outbound IP</label>
+			<description>IP address of the network interface to use.</description>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

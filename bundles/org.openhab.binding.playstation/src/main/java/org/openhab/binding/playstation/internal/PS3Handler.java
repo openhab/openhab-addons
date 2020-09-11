@@ -115,7 +115,7 @@ public class PS3Handler extends BaseThingHandler {
             } else if (message.contains("timed out") || message.contains("is down")) {
                 updateState(CHANNEL_POWER, OnOffType.OFF);
             } else {
-                logger.info("PS3 read power, IOException: {}", e.getMessage());
+                logger.debug("PS3 read power, IOException: {}", e.getMessage());
             }
         }
     }

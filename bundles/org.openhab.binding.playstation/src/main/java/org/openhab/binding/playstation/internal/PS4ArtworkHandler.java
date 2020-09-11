@@ -120,37 +120,37 @@ public class PS4ArtworkHandler {
         String artworkFilename = titleId + "_" + size.toString() + ".jpg";
         File artworkFileInCache = new File(ARTWORK_CACHE_FOLDER, artworkFilename);
         if (artworkFileInCache.exists() && !forceRefetch) {
-            LOGGER.debug("Artwork file {} was found in cache.", artworkFileInCache.getName());
+            LOGGER.trace("Artwork file {} was found in cache.", artworkFileInCache.getName());
             int length = (int) artworkFileInCache.length();
             byte[] fileBuffer = new byte[length];
             try (FileInputStream fis = new FileInputStream(artworkFileInCache)) {
                 fis.read(fileBuffer, 0, length);
                 artwork = new RawType(fileBuffer, "image/jpeg");
             } catch (FileNotFoundException ex) {
-                LOGGER.debug("Could not find {} in cache. ", artworkFileInCache, ex);
+                LOGGER.debug("Could not find {} in cache. {}", artworkFileInCache, ex.getMessage());
             } catch (IOException ex) {
-                LOGGER.warn("Could not read {} from cache. ", artworkFileInCache, ex);
+                LOGGER.info("Could not read {} from cache. {}", artworkFileInCache, ex.getMessage());
             }
             if (artwork != null) {
                 return artwork;
             }
         }
         String request = buildArtworkRequest(locale, titleId, size);
-        artwork = HttpUtil.downloadImage(request, 1000);
+        artwork = HttpUtil.downloadImage(request);
         if (artwork == null) {
             // If artwork is not found for specified language/"en", try the other way around.
             useLanguageEn = !useLanguageEn;
             request = buildArtworkRequest(locale, titleId, size);
-            artwork = HttpUtil.downloadImage(request, 1000);
+            artwork = HttpUtil.downloadImage(request);
         }
         if (artwork != null) {
             try (FileOutputStream fos = new FileOutputStream(artworkFileInCache)) {
                 LOGGER.debug("Caching artwork file {}", artworkFileInCache.getName());
                 fos.write(artwork.getBytes(), 0, artwork.getBytes().length);
             } catch (FileNotFoundException ex) {
-                LOGGER.info("Could not create {} in cache. ", artworkFileInCache, ex);
+                LOGGER.info("Could not create {} in cache. {}", artworkFileInCache, ex.getMessage());
             } catch (IOException ex) {
-                LOGGER.warn("Could not write {} to cache. ", artworkFileInCache, ex);
+                LOGGER.info("Could not write {} to cache. {}", artworkFileInCache, ex.getMessage());
             }
         } else {
             LOGGER.debug("Could not download artwork file from {}", request);

@@ -34,6 +34,7 @@ import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.util.HexUtils;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -150,11 +151,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
 
             NetworkInterface nic = NetworkInterface.getByInetAddress(localAddress);
             byte[] macAdr = nic.getHardwareAddress();
-            StringBuilder macBuilder = new StringBuilder();
-            for (int macIndex = 0; macIndex < macAdr.length; macIndex++) {
-                macBuilder.append(String.format("%02x", macAdr[macIndex]));
-            }
-            String macString = macBuilder.toString();
+            String macString = HexUtils.bytesToHex(macAdr);
             // send discover
             StringBuilder srchBuilder = new StringBuilder("SRCH3 * HTTP/1.1\n");
             srchBuilder.append("device-id:");
@@ -178,43 +175,6 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                 try {
                     socket.receive(packet);
                     parsePS3Packet(packet);
-                } catch (SocketTimeoutException e) {
-                    break; // leave the endless loop
-                }
-            }
-        } catch (IOException e) {
-            logger.debug("No PS3 device found. Diagnostic: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * This method is used to find all PS3 devices that are in Remote-Play mode.
-     * Unused as of now.
-     */
-    @SuppressWarnings("unused")
-    private synchronized void discoverPS3Old() {
-        logger.debug("Trying to discover all PS3 devices in Remote-Play mode.");
-
-        try (DatagramSocket socket = new DatagramSocket(0, getIPv4Adress())) {
-            socket.setBroadcast(true);
-            socket.setSoTimeout(DISCOVERY_TIMEOUT_SECONDS * 1000);
-
-            InetAddress bcAddress = getBroadcastAdress();
-
-            // send discover
-            byte[] discover = "SRCH".getBytes();
-            DatagramPacket packet = new DatagramPacket(discover, discover.length, bcAddress,
-                    DEFAULT_PS3_REMOTE_PLAY_PORT);
-            socket.send(packet);
-            logger.debug("Discover message sent: '{}'", discover);
-
-            // wait for responses
-            while (true) {
-                byte[] rxbuf = new byte[256];
-                packet = new DatagramPacket(rxbuf, rxbuf.length);
-                try {
-                    socket.receive(packet);
-                    parsePS3PacketOld(packet);
                 } catch (SocketTimeoutException e) {
                     break; // leave the endless loop
                 }
@@ -298,7 +258,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                 : new ThingUID(THING_TYPE_PS4, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
-                .build();
+                .withRepresentationProperty(hostId).build();
         thingDiscovered(result);
         return true;
     }
@@ -376,7 +336,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
-                .build();
+                .withRepresentationProperty(hostId).build();
         thingDiscovered(result);
         return true;
     }

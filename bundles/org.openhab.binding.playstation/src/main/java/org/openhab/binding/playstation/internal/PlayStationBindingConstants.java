@@ -55,8 +55,6 @@ public class PlayStationBindingConstants {
     static final String CHANNEL_KEY_PS = "keyPS";
     static final String CHANNEL_DISCONNECT = "disconnect";
     static final String CHANNEL_2ND_SCREEN = "secondScreen";
-    static final String CHANNEL_LOG_OUT = "logOut";
-    static final String CHANNEL_SCREEN_SHOT = "screenShot";
 
     // List of all known properties in the response from the PS3/PS4
     public static final String RESPONSE_HOST_ID = "host-id";

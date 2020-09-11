@@ -62,9 +62,12 @@ public class PS4Handler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(PS4Handler.class);
     private final PS4Crypto ps4Crypto = new PS4Crypto();
     private static final int SOCKET_TIMEOUT_SECONDS = 5;
-    private static final int POST_CONNECT_SENDKEY_DELAY = 500;
-    private static final int MIN_SENDKEY_DELAY = 250; // min delay between sendKey sends
-    private static final int MIN_HOLDKEY_DELAY = 300; // min delay after Key set
+    /** Time after connect that we can start to send key events, milli seconds */
+    private static final int POST_CONNECT_SENDKEY_DELAY_MS = 500;
+    /** Minimum delay between sendKey sends, milli seconds */
+    private static final int MIN_SENDKEY_DELAY_MS = 250;
+    /** Minimum delay after Key set, milli seconds */
+    private static final int MIN_HOLDKEY_DELAY_MS = 300;
 
     private PS4Configuration config = new PS4Configuration();
 
@@ -98,10 +101,12 @@ public class PS4Handler extends BaseThingHandler {
         SocketChannelHandler scHandler = socketChannelHandler;
         if (!config.pairingCode.isEmpty() && (scHandler == null || !loggedIn)) {
             // Try to log in then remove pairing code as it's one use only.
-            login();
-            Configuration editedConfig = editConfiguration();
-            editedConfig.put(PAIRING_CODE, "");
-            updateConfiguration(editedConfig);
+            scheduler.execute(() -> {
+                login();
+                Configuration editedConfig = editConfiguration();
+                editedConfig.put(PAIRING_CODE, "");
+                updateConfiguration(editedConfig);
+            });
         }
         setupConnectionTimeout(config.connectionTimeout);
     }
@@ -156,12 +161,6 @@ public class PS4Handler extends BaseThingHandler {
                         break;
                     case CHANNEL_DISCONNECT:
                         sendByeBye();
-                        break;
-                    case CHANNEL_LOG_OUT:
-                        logOut();
-                        break;
-                    case CHANNEL_SCREEN_SHOT:
-                        takeScreenShot();
                         break;
 
                     default:
@@ -262,7 +261,7 @@ public class PS4Handler extends BaseThingHandler {
                 break;
             case CHANNEL_OSK_TEXT:
             case CHANNEL_2ND_SCREEN:
-                updateState(channelUID, StringType.valueOf(""));
+                updateState(channelUID, UnDefType.UNDEF);
                 break;
             case CHANNEL_KEY_UP:
             case CHANNEL_KEY_DOWN:
@@ -298,7 +297,6 @@ public class PS4Handler extends BaseThingHandler {
             parseSearchResponse(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Fetch status exception: {}", e.getMessage());
         }
     }
 
@@ -320,7 +318,6 @@ public class PS4Handler extends BaseThingHandler {
             socket.send(packet);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Wake up PS4 exception: {}", e.getMessage());
         }
     }
 
@@ -336,7 +333,6 @@ public class PS4Handler extends BaseThingHandler {
             return true;
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Open coms exception: {}", e.getMessage());
         } catch (InterruptedException e) {
             return true;
         }
@@ -423,12 +419,12 @@ public class PS4Handler extends BaseThingHandler {
                     }
                 }
             } catch (IOException e) {
-                logger.info("Connection read exception: {}", e.getMessage());
+                logger.debug("Connection read exception: {}", e.getMessage());
             } finally {
                 try {
                     channel.close();
                 } catch (IOException e) {
-                    logger.info("Connection close exception: {}", e.getMessage());
+                    logger.debug("Connection close exception: {}", e.getMessage());
                 }
             }
             logger.debug("SocketHandler done.");
@@ -442,7 +438,7 @@ public class PS4Handler extends BaseThingHandler {
         final int buffSize = rBuffer.remaining();
         final int size = rBuffer.getInt();
         if (size > buffSize || size < 12) {
-            logger.info("Response size ({}) not good, buffer size ({}).", size, buffSize);
+            logger.debug("Response size ({}) not good, buffer size ({}).", size, buffSize);
             return null;
         }
         int cmdValue = rBuffer.getInt();
@@ -461,7 +457,7 @@ public class PS4Handler extends BaseThingHandler {
             switch (command) {
                 case LOGIN_RSP:
                     if (status == null) {
-                        logger.info("Unhandled Login status value: {}", statValue);
+                        logger.debug("Unhandled Login status value: {}", statValue);
                         return command;
                     }
                     // Read login response
@@ -470,11 +466,11 @@ public class PS4Handler extends BaseThingHandler {
                             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
                             loggedIn = true;
                             if (isLinked(CHANNEL_2ND_SCREEN)) {
-                                scheduler.schedule(() -> {
+                                scheduler.execute(() -> {
                                     ByteBuffer outPacket = PS4PacketHandler
                                             .makeClientIDPacket("com.playstation.mobile2ndscreen", "18.9.3");
                                     sendPacketEncrypted(outPacket, false);
-                                }, 10, TimeUnit.MILLISECONDS);
+                                });
                             }
                             break;
                         case STATUS_NOT_PAIRED:
@@ -488,7 +484,7 @@ public class PS4Handler extends BaseThingHandler {
                         case STATUS_WRONG_USER_CREDENTIAL:
                             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_ERROR, status.message);
                             loggedIn = false;
-                            logger.info("Not logged in: {}", status.message);
+                            logger.debug("Not logged in: {}", status.message);
                             break;
                         case STATUS_CAN_NOT_PLAY_NOW:
                         case STATUS_CLOSE_OTHER_APP:
@@ -503,21 +499,21 @@ public class PS4Handler extends BaseThingHandler {
                         case STATUS_UPDATE_PS4:
                             updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, status.message);
                             loggedIn = false;
-                            logger.info("Not logged in: {}", status.message);
+                            logger.debug("Not logged in: {}", status.message);
                             break;
                         default:
-                            logger.info("Unhandled Login response status:{}, message:{}", status, status.message);
+                            logger.debug("Unhandled Login response status:{}, message:{}", status, status.message);
                             break;
                     }
                     break;
                 case APP_START_RSP:
                     if (status != null && status != PS4ErrorStatus.STATUS_OK) {
-                        logger.info("App start response: {}", status.message);
+                        logger.debug("App start response: {}", status.message);
                     }
                     break;
                 case STANDBY_RSP:
                     if (status != null && status != PS4ErrorStatus.STATUS_OK) {
-                        logger.info("Standby response: {}", status.message);
+                        logger.debug("Standby response: {}", status.message);
                     }
                     break;
                 case SERVER_STATUS_RSP:
@@ -554,11 +550,11 @@ public class PS4Handler extends BaseThingHandler {
                 case LOGOUT_RSP:
                     break;
                 default:
-                    logger.info("Unknown response, command:{}. Missing case.", command);
+                    logger.debug("Unknown response, command:{}. Missing case.", command);
                     break;
             }
         } else {
-            logger.info("Unknown resp-cmd, size:{}, command:{}, status:{}, data:{}.", size, cmdValue, statValue,
+            logger.debug("Unknown resp-cmd, size:{}, command:{}, status:{}, data:{}.", size, cmdValue, statValue,
                     respBuff);
         }
         return command;
@@ -602,7 +598,7 @@ public class PS4Handler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Send packet {} exception: {}", cmd, e.getMessage());
+            logger.debug("Send packet {} exception: {}", cmd, e.getMessage());
         }
     }
 
@@ -625,7 +621,7 @@ public class PS4Handler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Send packet exception: {}", e.getMessage());
+            logger.debug("Send packet exception: {}", e.getMessage());
         }
     }
 
@@ -650,18 +646,8 @@ public class PS4Handler extends BaseThingHandler {
             login(channel);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("Send packet exception: {}", e.getMessage());
+            logger.debug("Send packet exception: {}", e.getMessage());
         }
-    }
-
-    private void logOut() {
-        ByteBuffer outPacket = PS4PacketHandler.makeLogoutPacket();
-        sendPacketEncrypted(outPacket);
-    }
-
-    private void takeScreenShot() {
-        ByteBuffer outPacket = PS4PacketHandler.makeScreenShotPacket();
-        sendPacketEncrypted(outPacket);
     }
 
     /**
@@ -723,7 +709,7 @@ public class PS4Handler extends BaseThingHandler {
     private void sendRemoteKey(int pushedKey) {
         try {
             SocketChannelHandler scHandler = socketChannelHandler;
-            int preWait = (scHandler == null || !loggedIn) ? POST_CONNECT_SENDKEY_DELAY : 0;
+            int preWait = (scHandler == null || !loggedIn) ? POST_CONNECT_SENDKEY_DELAY_MS : 0;
             SocketChannel channel = getConnection();
 
             scheduler.schedule(() -> {
@@ -742,17 +728,17 @@ public class PS4Handler extends BaseThingHandler {
                         scheduler.schedule(() -> {
                             ByteBuffer closePacket = PS4PacketHandler.makeRemoteControlPacket(PS4_KEY_CLOSE_RC);
                             sendPacketEncrypted(closePacket, channel);
-                        }, MIN_SENDKEY_DELAY, TimeUnit.MILLISECONDS);
+                        }, MIN_SENDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
 
-                    }, MIN_HOLDKEY_DELAY, TimeUnit.MILLISECONDS);
+                    }, MIN_HOLDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
 
-                }, MIN_SENDKEY_DELAY, TimeUnit.MILLISECONDS);
+                }, MIN_SENDKEY_DELAY_MS, TimeUnit.MILLISECONDS);
 
             }, preWait, TimeUnit.MILLISECONDS);
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.info("RemoteKey exception: {}", e.getMessage());
+            logger.debug("RemoteKey exception: {}", e.getMessage());
         }
     }
 
@@ -804,7 +790,7 @@ public class PS4Handler extends BaseThingHandler {
                     int port = Integer.parseInt(value);
                     if (currentComPort != port) {
                         currentComPort = port;
-                        logger.info("Host request port: {}", port);
+                        logger.debug("Host request port: {}", port);
                     }
                     break;
                 case RESPONSE_SYSTEM_VERSION:
@@ -825,6 +811,12 @@ public class PS4Handler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Sets the cached TitleId and tries to download artwork
+     * for application if CHANNEL_APPLICATION_IMAGE is linked.
+     *
+     * @param titleId Id of application.
+     */
     private void updateApplicationTitleid(String titleId) {
         currentApplicationId = titleId;
         logger.debug("Current application title id: {}", titleId);
@@ -839,7 +831,7 @@ public class PS4Handler extends BaseThingHandler {
             currentArtwork = artWork;
             updateState(CHANNEL_APPLICATION_IMAGE, artWork);
         } else if (!titleId.isEmpty()) {
-            logger.info("Couldn't fetch artwork for title id: {}", titleId);
+            logger.debug("Couldn't fetch artwork for title id: {}", titleId);
         }
     }
 }
