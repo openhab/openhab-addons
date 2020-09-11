@@ -25,9 +25,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.slf4j.Logger;
@@ -50,6 +53,8 @@ public class BoschHttpClient extends HttpClient {
 
     private String ipAddress;
     private String systempassword;
+
+    private Gson gson = new Gson();
 
     public BoschHttpClient(String ipAddress, String systempassword, SslContextFactory sslContextFactory) {
         super(sslContextFactory);
@@ -90,8 +95,9 @@ public class BoschHttpClient extends HttpClient {
 
     public boolean isAccessPossible() {
         try {
-            ContentResponse contentResponse = newRequest("https://" + ipAddress + ":8444/smarthome/devices")
-                    .header("Content-Type", "application/json").header("Accept", "application/json").method(GET).send();
+            String url = "https://" + ipAddress + ":8444/smarthome/devices";
+            Request request = this.createRequest(url, GET);
+            ContentResponse contentResponse = request.send();
             String content = contentResponse.getContentAsString();
             logger.debug("Access check response complete: {} - return code: {}", content, contentResponse.getStatus());
             return true;
@@ -145,5 +151,23 @@ public class BoschHttpClient extends HttpClient {
             logger.warn("Pairing failed with exception {}, was the Bosch SHC button pressed?", e.getMessage());
             return false;
         }
+    }
+
+    public String createServiceUrl(String serviceName, String deviceId) {
+        return "https://" + this.ipAddress + ":8444/smarthome/devices/" + deviceId + "/services/" + serviceName
+                + "/state";
+    }
+
+    public Request createRequest(String url, HttpMethod method) {
+        return this.createRequest(url, method, null);
+    }
+
+    public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
+        Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
+        if (content != null) {
+            String body = gson.toJson(content);
+            request = request.content(new StringContentProvider(body));
+        }
+        return request;
     }
 }
