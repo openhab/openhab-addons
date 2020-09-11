@@ -180,19 +180,14 @@ public class UPBThingHandler extends BaseThingHandler {
                     return;
                 }
                 final int level = msg.getArguments()[0];
-                if (level == 100) {
-                    state = OnOffType.ON;
-                } else {
-                    state = OnOffType.OFF;
-                }
-                updateState(Constants.DIMMER_TYPE_ID, new PercentType(level));
+                state = new PercentType(level);
                 break;
 
             default:
                 logger.debug("DEV {}: Message {} ignored", unitId, msg.getCommand());
                 return;
         }
-        updateState(Constants.SWITCH_TYPE_ID, state);
+        updateState(Constants.DIMMER_TYPE_ID, state);
     }
 
     private void handleLinkMessage(final UPBMessage msg) {

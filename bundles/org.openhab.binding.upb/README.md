@@ -83,7 +83,6 @@ Here is a sample `.things configuration file:
 Bridge upb:serial-pim:pim "UPB PIM" @ "Basement" [port="/dev/ttyUSB0"] {
   Thing generic light-switch "Living Room Light" [networkId=1, unitId=1] {
     Channels:
-      Type switch : power
       Type dimmer : level
   }
 
@@ -105,10 +104,9 @@ Bridge upb:serial-pim:pim "UPB PIM" @ "Basement" [port="/dev/ttyUSB0"] {
 And the items:
 
 ```
-// for a switch:
-Switch LivingRoomLight "UPB Light Switch" {channel="upb:generic:pim:light-switch:switch"}
-// for a dimmer:
-Dimmer LivingRoomDimmer "UPB Dimmer" {channel="upb:generic:pim:light-switch:dimmer"}
-// an item that can be used for scene selection
+// Configure as either Switch or Dimmer
+Dimmer LivingRoomLight "UPB Light Switch" {channel="upb:generic:pim:light-switch:dimmer"}
+
+// A scene selector (does not correspond to a physical device)
 Number UPB_Active_Scene "Active UPB Scene" {channel="upb:virtual:pim:upb-scene:linkActivated"}
 ```

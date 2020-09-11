@@ -12,7 +12,6 @@
 		<category>WallSwitch</category>
 
 		<channels>
-			<channel id="switch" typeId="switch"/>
 			<channel id="dimmer" typeId="dimmer"/>
 		</channels>
 
