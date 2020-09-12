@@ -132,7 +132,7 @@ public class OpenSprinklerDiscoveryService extends AbstractDiscoveryService {
         for (InterfaceAddress address : networkInterface.getInterfaceAddresses()) {
             InetAddress ipAddress = address.getAddress();
 
-            String cidrSubnet = ipAddress.getHostAddress() + "/" + DISCOVERY_SUBNET_MASK;
+            String cidrSubnet = ipAddress.getHostAddress() + "/" + address.getNetworkPrefixLength();
 
             /* Apache Subnet Utils only supports IP v4 for creating string list of IP's */
             if (ipAddress instanceof Inet4Address) {
