@@ -167,7 +167,7 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
     }
 
     private SOAPElement moduleParameters(final String moduleID) throws SOAPException {
-        return soapFactory.createElement("ModuleID").addTextNode(moduleID);
+        return newSOAPElement("ModuleID", moduleID);
     }
 
     private State getState() {
@@ -194,9 +194,8 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         try {
             final String encodedState = OnOffType.ON.equals(state) ? "true" : "false";
             final String response = soapAction("SetSocketSettings", "SetSocketSettingsResult", moduleParameters("1"),
-                    soapFactory.createElement("NickName").addTextNode("Socket 1"),
-                    soapFactory.createElement("Description").addTextNode("Socket 1"),
-                    soapFactory.createElement("OPStatus").addTextNode(encodedState));
+                    newSOAPElement("NickName", "Socket 1"), newSOAPElement("Description", "Socket 1"),
+                    newSOAPElement("OPStatus", encodedState));
             if (!"ok".equals(response.toLowerCase())) {
                 logger.error("Failed to set state.");
             }
