@@ -259,8 +259,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
                 } else {
                     ipCameraHandler.motionAlarmEnabled = true;
-                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
-                    ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
+                    ipCameraHandler.motionThreshold = Double.valueOf(command.toString()) / 10000;
                 }
                 ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.RTSPHELPER);
                 return;
