@@ -73,7 +73,7 @@ public class Property implements AttributeChanged {
     private final String topic;
     private final DeviceCallback callback;
     protected boolean initialized = false;
-    private AtomicBoolean started = new AtomicBoolean(false);
+    private AtomicBoolean starting = new AtomicBoolean(false);
 
     /**
      * Creates a Homie Property.
@@ -249,9 +249,9 @@ public class Property implements AttributeChanged {
     public CompletableFuture<@Nullable Void> stop() {
         final ChannelState channelState = this.channelState;
         if (channelState != null) {
-            return channelState.stop().thenCompose(b -> attributes.unsubscribe()).thenRun(() -> started.set(false));
+            return channelState.stop().thenCompose(b -> attributes.unsubscribe());
         }
-        return attributes.unsubscribe().thenRun(() -> started.set(false));
+        return attributes.unsubscribe();
     }
 
     /**
@@ -274,10 +274,8 @@ public class Property implements AttributeChanged {
      */
     public CompletableFuture<@Nullable Void> startChannel(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
-        if (started.get()) {
-            CompletableFuture<@Nullable Void> c = new CompletableFuture<>();
-            c.complete(null);
-            return c;
+        if (starting.getAndSet(true)) {
+            return CompletableFuture.completedFuture(null);
         }
 
         final ChannelState channelState = this.channelState;
@@ -288,7 +286,7 @@ public class Property implements AttributeChanged {
         }
         // Make sure we set the callback again which might have been nulled during an stop
         channelState.setChannelStateUpdateListener(this.callback);
-        return channelState.start(connection, scheduler, timeout).thenRun(() -> started.set(true));
+        return channelState.start(connection, scheduler, timeout).thenRun(() -> starting.set(false));
     }
 
     /**
