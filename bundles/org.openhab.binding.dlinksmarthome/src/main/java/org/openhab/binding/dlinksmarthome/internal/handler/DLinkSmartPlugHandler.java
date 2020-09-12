@@ -13,6 +13,7 @@
 package org.openhab.binding.dlinksmarthome.internal.handler;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -29,10 +30,15 @@ import javax.measure.Unit;
 import javax.naming.CommunicationException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPMessage;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.HttpRequest;
 import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -74,6 +80,8 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
     private ScheduledFuture<?> pollFuture;
     private boolean invalidConfiguration = false;
     Authentication authentication;
+    MessageFactory soapMessageFactory;
+    SOAPFactory soapFactory;
     private static final int DETECT_POLL_S = 1;
     private final Runnable poller = new Runnable() {
         @Override
@@ -159,6 +167,10 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         return getQuantity("GetCurrentTemperature", "CurrentTemperature", "3", SIUnits.CELSIUS);
     }
 
+    private SOAPElement moduleParameters(final String moduleID) throws SOAPException {
+        return soapFactory.createElement("ModuleID").addTextNode(moduleID);
+    }
+
     private State getState() {
         try {
             String state = soapAction("GetSocketSettings", "OPStatus", moduleParameters("1")).toLowerCase();
@@ -172,6 +184,9 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         } catch (CommunicationException e) {
             logger.error("Failed to get state (communication error).");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } catch (SOAPException e) {
+            logger.error("Unexpected internal error.");
+            updateStatus(ThingStatus.OFFLINE);
         }
         return UnDefType.UNDEF;
     }
@@ -179,20 +194,19 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
     private void setState(final OnOffType state) {
         try {
             final String encodedState = OnOffType.ON.equals(state) ? "true" : "false";
-            final String controlParameters = moduleParameters("1")
-                    + "<NickName>Socket 1</NickName><Description>Socket 1</Description>" + "<OPStatus>" + encodedState
-                    + "</OPStatus>";
-            final String response = soapAction("SetSocketSettings", "SetSocketSettingsResult", controlParameters);
+            final String response = soapAction("SetSocketSettings", "SetSocketSettingsResult", moduleParameters("1"),
+                    soapFactory.createElement("NickName").addTextNode("Socket 1"),
+                    soapFactory.createElement("Description").addTextNode("Socket 1"),
+                    soapFactory.createElement("OPStatus").addTextNode(encodedState));
             if (!"ok".equals(response.toLowerCase())) {
                 logger.error("Failed to set state.");
             }
+        } catch (SOAPException e) {
+            logger.error("Unexpected internal error.");
+            updateStatus(ThingStatus.OFFLINE);
         } catch (Exception e) {
             // pass
         }
-    }
-
-    private String moduleParameters(final String module) {
-        return "<ModuleID>" + module + "</ModuleID>";
     }
 
     private State getQuantity(final String action, final String name, final String module, final Unit<?> unit) {
@@ -210,13 +224,45 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         } catch (CommunicationException e) {
             logger.error("Failed to get quantity (communication error).");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+        } catch (SOAPException e) {
+            logger.error("Unexpected internal error.");
+            updateStatus(ThingStatus.OFFLINE);
         }
         return UnDefType.UNDEF;
     }
 
-    private String soapAction(final String action, final String name, final String params)
-            throws CommunicationException {
-        Document document = post(action, requestBody(action, params), authentication);
+    private SOAPMessage newMessage(final String action, final SOAPElement... params) throws SOAPException {
+        if (soapMessageFactory == null) {
+            soapMessageFactory = MessageFactory.newInstance();
+        }
+        final SOAPMessage message = soapMessageFactory.createMessage();
+        message.getSOAPHeader().detachNode();
+        final SOAPElement actionElement = message.getSOAPBody().addChildElement(action, "",
+                "http://purenetworks.com/HNAP1/");
+        for (SOAPElement param : params) {
+            actionElement.addChildElement(param);
+        }
+        return message;
+    }
+
+    private SOAPElement newSOAPElement(final String name) throws SOAPException {
+        return newSOAPElement(name, null);
+    }
+
+    private SOAPElement newSOAPElement(final String name, final String text) throws SOAPException {
+        if (soapFactory == null) {
+            soapFactory = SOAPFactory.newInstance();
+        }
+        SOAPElement element = soapFactory.createElement(name);
+        if (text != null) {
+            element.addTextNode(text);
+        }
+        return element;
+    }
+
+    private String soapAction(final String action, final String name, final SOAPElement... params)
+            throws CommunicationException, SOAPException {
+        final Document document = post(action, newMessage(action, params), authentication);
         return getElementByTagName(document, name);
     }
 
@@ -232,7 +278,10 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         }
 
         try {
-            final Document challengeDocument = post("Login", INITIAL_AUTH_PAYLOAD);
+            final SOAPMessage initialAuthPayload = newMessage("Login", newSOAPElement("Action", "request"),
+                    newSOAPElement("Username", USER), newSOAPElement("LoginPassword"), newSOAPElement("Captcha"));
+
+            final Document challengeDocument = post("Login", initialAuthPayload);
             final String challenge = getElementByTagName(challengeDocument, "Challenge");
             final String cookie = getElementByTagName(challengeDocument, "Cookie");
             final String publicKey = getElementByTagName(challengeDocument, "PublicKey");
@@ -240,7 +289,10 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
             final String loginPassword = calculateHMAC(challenge, privateKey);
 
             authentication = new Authentication(privateKey, cookie);
-            final Document loginDocument = post("Login", authPayload(loginPassword), authentication);
+            final SOAPMessage payload = newMessage("Login", newSOAPElement("Action", "login"),
+                    newSOAPElement("Username", USER), newSOAPElement("LoginPassword", loginPassword),
+                    newSOAPElement("Captcha"));
+            final Document loginDocument = post("Login", payload, authentication);
             final String loginStatus = getElementByTagName(loginDocument, "LoginResult").toLowerCase();
             if ("success".equals(loginStatus)) {
                 updateStatus(ThingStatus.ONLINE);
@@ -256,16 +308,21 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
             authentication = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to authenticate.");
             return false;
+        } catch (SOAPException e) {
+            authentication = null;
+            logger.error("Unexpected internal error.");
+            updateStatus(ThingStatus.OFFLINE);
+            return false;
         }
     }
 
-    private Document post(final String action, final String payload) throws CommunicationException {
-        return post(action, payload, null);
+    private Document post(final String action, final SOAPMessage message) throws CommunicationException {
+        return post(action, message, null);
     }
 
-    private Document post(final String action, final String payload, final Authentication authentication)
+    private Document post(final String action, final SOAPMessage message, final Authentication authentication)
             throws CommunicationException {
-        HttpRequest request = (HttpRequest) httpClient.newRequest(url);
+        Request request = httpClient.newRequest(url);
         request.timeout(5, TimeUnit.SECONDS);
         request.method("POST");
         request.header("Content-Type", "\"text/xml; charset=utf-8\"");
@@ -275,8 +332,8 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
             request.header("HNAP_AUTH", computeHnapAuth(actionUrl, authentication.privateKey));
             request.header("Cookie", "uid=" + authentication.cookie);
         }
-        request.content(new BytesContentProvider(payload.getBytes()));
         try {
+            request.content(new BytesContentProvider(encodeSOAPMessage(message)));
             final ContentResponse response = request.send();
             final byte[] content = response.getContent();
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(content));
@@ -285,8 +342,20 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
             throw new CommunicationException("Post request failed: " + e.getMessage());
         } catch (ParserConfigurationException e) {
             logger.error("Failed to create XML parser.");
+            updateStatus(ThingStatus.OFFLINE);
             return null;
         }
+    }
+
+    private byte[] encodeSOAPMessage(final SOAPMessage message) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        try {
+            message.writeTo(stream);
+        } catch (SOAPException | IOException e) {
+            logger.error("Unexpected internal Error.");
+            updateStatus(ThingStatus.OFFLINE);
+        }
+        return stream.toByteArray();
     }
 
     private String getElementByTagName(final Document document, final String name) throws CommunicationException {
@@ -382,28 +451,4 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         // if it was incorrect, the `authenticate()`-method will set the flag.
         invalidConfiguration = false;
     }
-
-    private static String requestBody(final String action, final String params) {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-                + "<soap:Body>" + String.format("<%s xmlns=\"http://purenetworks.com/HNAP1/\">", action) + params
-                + String.format("</%s>", action) + "</soap:Body>" + "</soap:Envelope>";
-    }
-
-    private static String authPayload(final String loginPassword) {
-        return "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-                + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                + "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" "
-                + "xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">" + "<soap:Body>"
-                + "<Login xmlns=\"http://purenetworks.com/HNAP1/\">" + "<Action>login</Action>" + "<Username>" + USER
-                + "</Username>" + "<LoginPassword>" + loginPassword + "</LoginPassword>" + "<Captcha/>" + "</Login>"
-                + "</soap:Body>" + "</soap:Envelope>";
-    }
-
-    private static final String INITIAL_AUTH_PAYLOAD = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-            + "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
-            + "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
-            + "<soap:Body>" + "<Login xmlns=\"http://purenetworks.com/HNAP1/\">" + "<Action>request</Action>"
-            + "<Username>admin</Username>" + "<LoginPassword/>" + "<Captcha/>" + "</Login>" + "</soap:Body>"
-            + "</soap:Envelope>";
 }
