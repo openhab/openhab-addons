@@ -74,7 +74,6 @@
 		<item-type>String</item-type>
 		<label>Overcast</label>
 		<description>Overcast</description>
-		<category>Wind</category>
 		<state readOnly="true" pattern="%s">
 		    <options>
                 <option value="CLEAR_SKY">Clear sky</option>
@@ -88,7 +87,6 @@
 		<item-type>String</item-type>
 		<label>Horizontal Visibility</label>
 		<description>Horizontal visibility range</description>
-		<category>Wind</category>
 		<state readOnly="true" pattern="%s">
 		    <options>
                 <option value="LESS_THAN_1"> Less than 1 km</option>
