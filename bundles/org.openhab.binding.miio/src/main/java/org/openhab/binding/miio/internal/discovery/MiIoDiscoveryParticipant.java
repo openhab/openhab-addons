@@ -29,7 +29,11 @@ import org.eclipse.smarthome.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.miio.internal.MiIoDevices;
+import org.openhab.binding.miio.internal.cloud.CloudConnector;
+import org.openhab.binding.miio.internal.cloud.CloudDeviceDTO;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +47,15 @@ import org.slf4j.LoggerFactory;
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
+    @Nullable
+    @Reference
+    CloudConnector cloudConnector;
     private Logger logger = LoggerFactory.getLogger(MiIoDiscoveryParticipant.class);
+
+    @Activate
+    private void miIoDiscoveryParticipantStart() {
+        logger.debug("Start Xiaomi Mi IO mDNS discovery");
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -105,6 +117,20 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             String inetAddress = ip.toString().substring(1); // trim leading slash
             String id = uid.getId();
             String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ") " + service.getName();
+            final CloudConnector cloudConnector = this.cloudConnector;
+            if (cloudConnector != null && cloudConnector.isConnected()) {
+                cloudConnector.getDevicesList();
+                CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
+                if (cloudInfo != null) {
+                    logger.debug("Cloud Info: {}", cloudInfo);
+                    properties.put(PROPERTY_TOKEN, cloudInfo.getToken());
+                    label = label + " with token";
+                    String country = cloudInfo.getServer();
+                    if (!country.isEmpty() && cloudInfo.getIsOnline()) {
+                        properties.put(PROPERTY_CLOUDSERVER, country);
+                    }
+                }
+            }
             properties.put(PROPERTY_HOST_IP, inetAddress);
             properties.put(PROPERTY_DID, id);
             result = DiscoveryResultBuilder.create(uid).withProperties(properties)
