@@ -92,7 +92,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
                 if (!whiteList.contains(requestIP) && !whiteList.equals("DISABLE")) {
                     logger.warn("The request made from {} was not in the whitelist and will be ignored.", requestIP);
                     return;
-                } else if ("GET".equalsIgnoreCase(httpRequest.method().toString())) {
+                } else if (HttpMethod.GET.equals(httpRequest.method())) {
                     // Some browsers send a query string after the path when refreshing a picture.
                     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(httpRequest.uri());
                     switch (queryStringDecoder.path()) {
