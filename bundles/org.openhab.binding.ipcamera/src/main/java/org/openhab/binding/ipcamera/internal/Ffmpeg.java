@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +41,8 @@ public class Ffmpeg {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IpCameraHandler ipCameraHandler;
     private @Nullable Process process = null;
-    private String ffmpegCommand = "", format = "";
+    private String ffmpegCommand = "";
+    private ffmpegFormat format;
     private String[] commandArray;
     private StreamRunning streamRunning = new StreamRunning();
     private int keepAlive = 8;
@@ -65,9 +67,9 @@ public class Ffmpeg {
         return;
     }
 
-    public Ffmpeg(IpCameraHandler handle, IpCameraHandler.ffmpegFormat format, String ffmpegLocation,
-            String inputArguments, String input, String outArguments, String output, String username, String password) {
-        this.format = format.toString();
+    public Ffmpeg(IpCameraHandler handle, ffmpegFormat format, String ffmpegLocation, String inputArguments,
+            String input, String outArguments, String output, String username, String password) {
+        this.format = format;
         ipCameraHandler = handle;
         String altInput = input;
         // Input can be snapshots not just rtsp or http
@@ -80,7 +82,6 @@ public class Ffmpeg {
         commandArray = ffmpegCommand.trim().split("\\s+");
     }
 
-    @NonNullByDefault
     private class StreamRunning extends Thread {
         public int countOfMotions = 0;
 
@@ -124,7 +125,7 @@ public class Ffmpeg {
                 logger.warn("An error occured trying to process the messages from FFmpeg.");
             } finally {
                 switch (format) {
-                    case "GIF":
+                    case GIF:
                         try {
                             // Without a small delay, Pushover sends no file 10% of time.
                             Thread.sleep(800);
@@ -135,7 +136,7 @@ public class Ffmpeg {
                         ipCameraHandler.setChannelState(CHANNEL_GIF_HISTORY_LENGTH,
                                 new DecimalType(++ipCameraHandler.gifHistoryLength));
                         break;
-                    case "RECORD":
+                    case RECORD:
                         try {
                             Thread.sleep(800);
                         } catch (InterruptedException e) {
@@ -144,6 +145,8 @@ public class Ffmpeg {
                         ipCameraHandler.setChannelState(CHANNEL_RECORD_MP4, DecimalType.ZERO);
                         ipCameraHandler.setChannelState(CHANNEL_MP4_HISTORY_LENGTH,
                                 new DecimalType(++ipCameraHandler.mp4HistoryLength));
+                        break;
+                    default:
                         break;
                 }
             }

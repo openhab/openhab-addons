@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -70,7 +71,7 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
                     ipCameraHandler.audioAlarmEnabled = true;
                     ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
                 }
-                ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.RTSPHELPER);
+                ipCameraHandler.setupFfmpegFormat(ffmpegFormat.RTSPHELPER);
                 return;
         }
     }

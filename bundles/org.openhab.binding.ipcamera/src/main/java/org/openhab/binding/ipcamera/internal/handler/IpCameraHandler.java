@@ -61,6 +61,7 @@ import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.HikvisionHandler;
 import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
@@ -197,15 +198,6 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean ffmpegSnapshotGeneration = false;
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
-
-    public static enum ffmpegFormat {
-        HLS,
-        GIF,
-        RECORD,
-        RTSPHELPER,
-        MJPEG,
-        SNAPSHOT
-    }
 
     // These methods handle the response from all camera brands, nothing specific to
     // any brand should be in here //
@@ -1753,7 +1745,6 @@ public class IpCameraHandler extends BaseThingHandler {
         openChannels.close();
 
         if (ffmpegHLS != null) {
-            ffmpegHLS.setKeepAlive(8);
             ffmpegHLS.stopConverting();
             ffmpegHLS = null;
         }

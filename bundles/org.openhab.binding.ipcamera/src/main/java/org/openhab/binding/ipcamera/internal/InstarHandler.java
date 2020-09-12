@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -211,7 +212,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     ipCameraHandler.motionThreshold = Double.valueOf(command.toString());
                     ipCameraHandler.motionThreshold = ipCameraHandler.motionThreshold / 10000;
                 }
-                ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.RTSPHELPER);
+                ipCameraHandler.setupFfmpegFormat(ffmpegFormat.RTSPHELPER);
                 return;
         }
     }

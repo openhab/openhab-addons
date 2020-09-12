@@ -35,6 +35,15 @@ public class IpCameraBindingConstants {
     public final static String COMMON_HANDLER = "commonHandler";
     public final static String INSTAR_HANDLER = "instarHandler";
 
+    public static enum ffmpegFormat {
+        HLS,
+        GIF,
+        RECORD,
+        RTSPHELPER,
+        MJPEG,
+        SNAPSHOT
+    }
+
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GROUP = new ThingTypeUID(BINDING_ID, "group");
     public static final String GENERIC_THING = "generic";

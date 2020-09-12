@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +104,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
                                     }
                                 }
                             } else {
-                                ipCameraHandler.setupFfmpegFormat(IpCameraHandler.ffmpegFormat.HLS);
+                                ipCameraHandler.setupFfmpegFormat(ffmpegFormat.HLS);
                             }
                             if (ipCameraHandler.ffmpegHLS != null) {
                                 ipCameraHandler.ffmpegHLS.setKeepAlive(8);
