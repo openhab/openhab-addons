@@ -108,7 +108,6 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
     public DLinkSmartPlugHandler(final Thing thing) {
         super(thing);
         httpClient = new HttpClient();
-        url = "http://" + ip + "/HNAP1/";
     }
 
     @Override
