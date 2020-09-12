@@ -63,7 +63,6 @@ public class EmbeddedBrokerTools {
                 @Override
                 public void brokerRemoved(@NonNull String brokerID, @NonNull MqttBrokerConnection broker) {
                 }
-
             };
             mqttService.addBrokersListener(observer);
             assertTrue("Wait for embedded connection client failed", semaphore.tryAcquire(700, TimeUnit.MILLISECONDS));
@@ -89,5 +88,4 @@ public class EmbeddedBrokerTools {
                 + embeddedConnection.connectionState(), semaphore.tryAcquire(500, TimeUnit.MILLISECONDS));
         return embeddedConnection;
     }
-
 }

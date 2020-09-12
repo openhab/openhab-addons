@@ -165,8 +165,8 @@ public class HomieImplementationTest extends JavaOSGiTest {
     public void retrieveAllTopics() throws InterruptedException, ExecutionException, TimeoutException {
         // four topics are not under /testnode !
         CountDownLatch c = new CountDownLatch(registeredTopics - 4);
-        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown())
-                .get(5000, TimeUnit.MILLISECONDS);
+        connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5000,
+                TimeUnit.MILLISECONDS);
         assertTrue("Connection " + connection.getClientId() + " not retrieving all topics ",
                 c.await(5000, TimeUnit.MILLISECONDS));
     }
