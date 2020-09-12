@@ -893,8 +893,7 @@ public class IpCameraHandler extends BaseThingHandler {
         // Need to lock as fifoSnapshotBuffer is not thread safe and new snapshots can be incoming.
         lockCurrentSnapshot.lock();
         try {
-            for (Object incomingJpeg : fifoSnapshotBuffer) {
-                byte[] foo = (byte[]) incomingJpeg;
+            for (byte[] foo : fifoSnapshotBuffer) {
                 File file = new File(ffmpegOutputFolder + "snapshot" + count + ".jpg");
                 count++;
                 try {
