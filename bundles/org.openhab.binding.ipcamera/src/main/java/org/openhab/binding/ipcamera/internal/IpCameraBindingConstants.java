@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.ipcamera;
+package org.openhab.binding.ipcamera.internal;
 
 import java.util.Arrays;
 import java.util.HashSet;

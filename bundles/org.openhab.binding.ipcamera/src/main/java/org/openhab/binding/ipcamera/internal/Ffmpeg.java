@@ -13,7 +13,7 @@
 
 package org.openhab.binding.ipcamera.internal;
 
-import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;

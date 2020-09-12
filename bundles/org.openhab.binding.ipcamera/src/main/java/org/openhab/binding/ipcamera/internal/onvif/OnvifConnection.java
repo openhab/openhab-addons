@@ -13,7 +13,7 @@
 
 package org.openhab.binding.ipcamera.internal.onvif;
 
-import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;

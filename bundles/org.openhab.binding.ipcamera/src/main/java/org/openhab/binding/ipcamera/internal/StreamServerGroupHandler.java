@@ -13,7 +13,7 @@
 
 package org.openhab.binding.ipcamera.internal;
 
-import static org.openhab.binding.ipcamera.IpCameraBindingConstants.CHANNEL_START_STREAM;
+import static org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.CHANNEL_START_STREAM;
 
 import java.io.File;
 import java.io.IOException;
