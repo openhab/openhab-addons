@@ -95,7 +95,7 @@ public class Ffmpeg {
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
                     while ((line = bufferedReader.readLine()) != null) {
-                        if (format.equals("RTSPHELPER")) {
+                        if (format.equals(ffmpegFormat.RTSPHELPER)) {
                             logger.debug("{}", line);
                             if (line.contains("lavfi.")) {
                                 if (countOfMotions == 4) {
@@ -159,7 +159,7 @@ public class Ffmpeg {
             logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
             streamRunning.start();
             running = true;
-            if (format.equals("HLS")) {
+            if (format.equals(ffmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
                 if (keepAlive > -1) {
                     try {
@@ -185,7 +185,7 @@ public class Ffmpeg {
             if (process != null) {
                 process.destroyForcibly();
             }
-            if (format.equals("HLS")) {
+            if (format.equals(ffmpegFormat.HLS)) {
                 if (keepAlive == -1) {
                     logger.warn("HLS stopped when Stream should be running non stop, restarting HLS now.");
                     startConverting();
