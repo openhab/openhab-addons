@@ -830,13 +830,13 @@ public class IpCameraHandler extends BaseThingHandler {
                         channelTracking.getRequestUrl());
                 if (!channelTracking.getChannel().isOpen() && channelTracking.getReply().isEmpty()) {
                     localTracking = channelTracking;// Seems to create a deadlock if we remove whilst in loop
-                    return;
+                    break;
                 }
             }
-        } finally {
             if (localTracking != null) {
                 channelTracker.remove(localTracking);// clean up one closed channel.
             }
+        } finally {
             lock.unlock();
         }
     }
