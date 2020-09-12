@@ -23,6 +23,7 @@ public class SensorDataValue {
     private long id;
     @SerializedName("value_type")
     private String valueType;
+    private String value;
 
     @Override
     public String toString() {
@@ -52,6 +53,4 @@ public class SensorDataValue {
     public void setValue(String value) {
         this.value = value;
     }
-
-    private String value;
 }

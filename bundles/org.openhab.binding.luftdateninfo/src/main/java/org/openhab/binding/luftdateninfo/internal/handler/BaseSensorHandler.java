@@ -89,9 +89,7 @@ public abstract class BaseSensorHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         lifecycleStatus = LifecycleStatus.INITIALIZING;
-        scheduler.execute(() -> {
-            startUp();
-        });
+        scheduler.execute(this::startUp);
     }
 
     private void startUp() {
