@@ -53,7 +53,6 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
                 for (final String channelID : DLinkSmartHomeBindingConstants.SMART_PLUG_CHANNEL_IDS) {
                     updateState(getChannelUID(channelID), getNewChannelState(channelID));
                 }
-
             }
 
             @Override
@@ -67,7 +66,6 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
                         logger.error("Unexpected command type for channel '{}'.", DLinkSmartHomeBindingConstants.STATE);
                     }
                 }
-
             }
 
             @Override
