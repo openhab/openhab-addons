@@ -29,6 +29,7 @@ import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
 import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -44,10 +45,12 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
     private static final String SUBCMD_BACKUP = "backup";
     private static final String SUBCMD_REBOOT = "reboot";
 
-    private @Nullable ThingRegistry thingRegistry;
+    private final ThingRegistry thingRegistry;
 
-    public MaxConsoleCommandExtension() {
+    @Activate
+    public MaxConsoleCommandExtension(@Reference ThingRegistry thingRegistry) {
         super("max", "Additional EQ3 MAX! commands.");
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -87,22 +90,20 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
             if (handler != null) {
                 handler.cubeReboot();
             } else {
-                console.println(String.format("Could not find cube %s", args[1]));
+                console.println(String.format("Could not find MAX! cube %s", args[1]));
                 printMaxDevices(console, SUPPORTED_BRIDGE_THING_TYPES_UIDS);
             }
         } else {
-            console.println("Specify cube to reboot.");
+            console.println("Specify MAX! cube to reboot.");
             printMaxDevices(console, SUPPORTED_BRIDGE_THING_TYPES_UIDS);
         }
     }
 
     private List<Thing> findDevices(Set<ThingTypeUID> deviceTypes) {
         List<Thing> devs = new ArrayList<>();
-        if (thingRegistry != null) {
-            for (Thing thing : thingRegistry.getAll()) {
-                if (deviceTypes.contains(thing.getThingTypeUID())) {
-                    devs.add(thing);
-                }
+        for (Thing thing : thingRegistry.getAll()) {
+            if (deviceTypes.contains(thing.getThingTypeUID())) {
+                devs.add(thing);
             }
         }
         return devs;
@@ -112,12 +113,10 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
         MaxCubeBridgeHandler handler = null;
         try {
             ThingUID bridgeUID = new ThingUID(thingId);
-            if (thingRegistry != null) {
-                Thing thing = thingRegistry.get(bridgeUID);
-                if ((thing != null) && (thing.getHandler() != null)
-                        && (thing.getHandler() instanceof MaxCubeBridgeHandler)) {
-                    handler = (MaxCubeBridgeHandler) thing.getHandler();
-                }
+            Thing thing = thingRegistry.get(bridgeUID);
+            if ((thing != null) && (thing.getHandler() != null)
+                    && (thing.getHandler() instanceof MaxCubeBridgeHandler)) {
+                handler = (MaxCubeBridgeHandler) thing.getHandler();
             }
         } catch (Exception e) {
             handler = null;
@@ -135,16 +134,7 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] { buildCommandUsage(SUBCMD_BACKUP, "Backup cube data"),
-                buildCommandUsage(SUBCMD_REBOOT + " <thingUID>", "Reset cube") });
-    }
-
-    @Reference
-    protected void setThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = thingRegistry;
-    }
-
-    protected void unsetThingRegistry(ThingRegistry thingRegistry) {
-        this.thingRegistry = null;
+        return Arrays.asList(new String[] { buildCommandUsage(SUBCMD_BACKUP, "Backup MAX! cube data"),
+                buildCommandUsage(SUBCMD_REBOOT + " <thingUID>", "Reset MAX! cube") });
     }
 }
