@@ -41,7 +41,7 @@ The following channels are supported for fans:
 |                    |           | Mode can be one of auto/cool/eco/dry/fan/heat or on/off                                           |
 |                    |           | Check the Air Conditioner's operating manual for supported modes.                                 |
 | temperature        | Number:Temperature | Sets the desired room temperature.                                                       |
-| currentTemperature | Number:Temperature | Displays the current room temperature.                                                   |
+| currentTemperature | Number:Temperature | Displays the current room temperature (if supported by unit, otherwise NaN).                                                   |
 | air                | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
 | dry                | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
 | health             | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |
