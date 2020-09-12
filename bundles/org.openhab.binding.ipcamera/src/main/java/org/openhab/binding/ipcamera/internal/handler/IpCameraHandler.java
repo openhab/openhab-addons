@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.ipcamera.handler;
+package org.openhab.binding.ipcamera.internal.handler;
 
 import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 
@@ -49,8 +49,8 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
-import org.openhab.binding.ipcamera.config.CameraConfig;
 import org.openhab.binding.ipcamera.internal.AmcrestHandler;
+import org.openhab.binding.ipcamera.internal.CameraConfig;
 import org.openhab.binding.ipcamera.internal.ChannelTracking;
 import org.openhab.binding.ipcamera.internal.DahuaHandler;
 import org.openhab.binding.ipcamera.internal.DoorBirdHandler;
@@ -63,7 +63,7 @@ import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
-import org.openhab.binding.ipcamera.onvif.OnvifConnection;
+import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

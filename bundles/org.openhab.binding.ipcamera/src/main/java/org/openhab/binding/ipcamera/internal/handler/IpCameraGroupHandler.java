@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.ipcamera.handler;
+package org.openhab.binding.ipcamera.internal.handler;
 
 import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 

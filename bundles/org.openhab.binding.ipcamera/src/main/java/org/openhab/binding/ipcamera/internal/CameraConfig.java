@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ipcamera.config;
+package org.openhab.binding.ipcamera.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

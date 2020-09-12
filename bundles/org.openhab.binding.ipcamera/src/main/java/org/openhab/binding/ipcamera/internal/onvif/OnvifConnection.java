@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.ipcamera.onvif;
+package org.openhab.binding.ipcamera.internal.onvif;
 
 import static org.openhab.binding.ipcamera.IpCameraBindingConstants.*;
 
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.ipcamera.handler.IpCameraHandler;
+import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

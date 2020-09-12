@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.openhab.binding.ipcamera.onvif;
+package org.openhab.binding.ipcamera.internal.onvif;
 
 import java.io.BufferedReader;
 import java.io.IOException;

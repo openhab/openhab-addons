@@ -16,8 +16,8 @@ package org.openhab.binding.ipcamera.internal;
 import java.util.ArrayList;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.ipcamera.handler.IpCameraGroupHandler;
-import org.openhab.binding.ipcamera.handler.IpCameraHandler;
+import org.openhab.binding.ipcamera.internal.handler.IpCameraGroupHandler;
+import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 
 /**
  * The {@link GroupTracker} is used so a 'group' thing can get a handle to each cameras handler, and the group and

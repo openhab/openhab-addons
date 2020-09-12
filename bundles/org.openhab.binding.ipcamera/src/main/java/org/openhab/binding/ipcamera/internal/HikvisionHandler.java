@@ -27,8 +27,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.ipcamera.handler.IpCameraHandler;
-import org.openhab.binding.ipcamera.onvif.OnvifConnection;
+import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
+import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
