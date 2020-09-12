@@ -70,7 +70,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 uriyiodockwebsocketaddress = new URI("ws://" + localConfig.host + ":946");
-                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_PROCESS;
+                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATIONPROCESS;
                 try {
                     yioremoteDockHandlerwebSocketClient.start();
                 } catch (Exception e) {
@@ -109,7 +109,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                                         updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
                                                                 yioremoteDockwebSocketClient.getstringreceivedstatus());
                                                     } else {
-                                                        yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTION_FAILED;
+                                                        yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTIONFAILED;
                                                         updateStatus(ThingStatus.OFFLINE,
                                                                 ThingStatusDetail.CONFIGURATION_ERROR,
                                                                 "Connection lost no ping from YIO DOCK");
@@ -117,7 +117,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                                         pollingJob.cancel(true);
                                                     }
                                                 } else {
-                                                    yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTION_FAILED;
+                                                    yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTIONFAILED;
                                                     updateStatus(ThingStatus.OFFLINE,
                                                             ThingStatusDetail.CONFIGURATION_ERROR,
                                                             "Connection lost no ping from YIO DOCK");
@@ -138,7 +138,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                 }
                             } else {
                                 logger.debug("authentication to YIO dock not ok");
-                                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATED_FAILED;
+                                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATEDFAILED;
                                 updateStatus(ThingStatus.OFFLINE);
                             }
                         } else {
