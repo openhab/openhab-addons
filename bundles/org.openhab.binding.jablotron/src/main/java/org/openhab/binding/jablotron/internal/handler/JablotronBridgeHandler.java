@@ -235,7 +235,7 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     }
 
     protected @Nullable JablotronControlResponse sendUserCode(Thing th, String section, String key, String status,
-            String code) throws SecurityException {
+            String code) {
         JablotronAlarmHandler handler = (JablotronAlarmHandler) th.getHandler();
 
         if (handler == null) {

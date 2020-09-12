@@ -55,7 +55,7 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     private void startDiscovery() {
-        if (this.bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (bridgeHandler != null && ThingStatus.ONLINE == bridgeHandler.getThing().getStatus()) {
             discoverServices();
         }
     }

@@ -61,11 +61,12 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     protected @Nullable ScheduledFuture<?> future = null;
 
     protected @Nullable ExpiringCache<JablotronDataUpdateResponse> dataCache;
-    protected @Nullable ExpiringCache<List<JablotronHistoryDataEvent>> eventCache;
+    protected ExpiringCache<List<JablotronHistoryDataEvent>> eventCache;
 
     public JablotronAlarmHandler(Thing thing, String alarmName) {
         super(thing);
         this.alarmName = alarmName;
+        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
     }
 
     @Override
@@ -201,7 +202,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected void updateEventChannel(String channel) {
-        List<JablotronHistoryDataEvent> events = eventCache != null ? eventCache.getValue() : null;
+        List<JablotronHistoryDataEvent> events = eventCache.getValue();
         if (events != null && events.size() > 0) {
             JablotronHistoryDataEvent event = events.get(0);
             switch (channel) {
@@ -230,16 +231,11 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
     }
 
     protected @Nullable JablotronControlResponse sendUserCode(String section, String key, String status, String code) {
-        JablotronControlResponse response = null;
         JablotronBridgeHandler handler = getBridgeHandler();
         if (handler != null) {
-            try {
-                response = handler.sendUserCode(getThing(), section, key, status, code);
-            } catch (SecurityException se) {
-                response = handler.sendUserCode(getThing(), section, key, status, code);
-            }
+            return handler.sendUserCode(getThing(), section, key, status, code);
         }
-        return response;
+        return null;
     }
 
     protected @Nullable JablotronBridgeHandler getBridgeHandler() {

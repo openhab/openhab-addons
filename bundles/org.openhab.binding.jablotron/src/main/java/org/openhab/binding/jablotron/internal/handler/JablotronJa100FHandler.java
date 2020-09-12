@@ -51,12 +51,11 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
     private final Logger logger = LoggerFactory.getLogger(JablotronJa100FHandler.class);
 
-    private @Nullable ExpiringCache<JablotronGetSectionsResponse> sectionCache;
-    private @Nullable ExpiringCache<JablotronGetPGResponse> pgCache;
+    private ExpiringCache<JablotronGetSectionsResponse> sectionCache;
+    private ExpiringCache<JablotronGetPGResponse> pgCache;
 
     public JablotronJa100FHandler(Thing thing, String alarmName) {
         super(thing, alarmName);
-        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
         sectionCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetSections);
         pgCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetProgrammableGates);
     }

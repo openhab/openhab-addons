@@ -45,7 +45,6 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
     public JablotronOasisHandler(Thing thing, String alarmName) {
         super(thing, alarmName);
         dataCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetStatusRequest);
-        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
     }
 
     @Override

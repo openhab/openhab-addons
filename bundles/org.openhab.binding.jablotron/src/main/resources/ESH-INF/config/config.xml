@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:jablotron:device">
-		<parameter name="refresh" type="integer" required="false" min="30" unit="s">
+		<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 			<label>Refresh</label>
 			<description>Specifies the refresh time of thing channels in seconds</description>
 			<default>60</default>
@@ -18,7 +18,7 @@
 	</config-description>
 
 	<config-description uri="thing-type:jablotron:ja100device">
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 			<label>Refresh</label>
 			<description>Specifies the refresh time of thing channels in seconds</description>
 			<default>60</default>
@@ -77,7 +77,7 @@
 			</options>
 		</parameter>
 
-		<parameter name="refresh" type="integer" required="false">
+		<parameter name="refresh" type="integer" required="false" min="10" unit="s">
 			<label>Refresh</label>
 			<description>Specifies the refresh time for all alarm warnings (alarm, service mode, ...)</description>
 			<default>30</default>

@@ -51,7 +51,6 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     public JablotronJa100Handler(Thing thing, String alarmName) {
         super(thing, alarmName);
         dataCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetStatusRequest);
-        eventCache = new ExpiringCache<>(CACHE_TIMEOUT_MS, this::sendGetEventHistory);
     }
 
     @Override
@@ -188,18 +187,13 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void updateTemperatureChannel(Channel channel, JablotronServiceDetailSegment segment) {
-        String segmentId = segment.getSegmentId();
-        if (channel != null) {
-            List<JablotronServiceDetailSegmentInfo> infos = segment.getSegmentInfos();
-            if (infos.size() > 0) {
-                logger.debug("Found value: {} and type: {}", infos.get(0).getValue(), infos.get(0).getType());
-                DecimalType newState = new DecimalType(infos.get(0).getValue());
-                updateState(channel.getUID(), newState);
-            } else {
-                logger.debug("No segment information received");
-            }
+        List<JablotronServiceDetailSegmentInfo> infos = segment.getSegmentInfos();
+        if (infos.size() > 0) {
+            logger.debug("Found value: {} and type: {}", infos.get(0).getValue(), infos.get(0).getType());
+            DecimalType newState = new DecimalType(infos.get(0).getValue());
+            updateState(channel.getUID(), newState);
         } else {
-            logger.debug("The channel: {} still doesn't exist!", segmentId);
+            logger.debug("No segment information received");
         }
     }
 

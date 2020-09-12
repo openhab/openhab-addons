@@ -38,7 +38,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.jablotron", service = ThingHandlerFactory.class)
 public class JablotronHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClientFactory httpClientFactory;
