@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gce.model;
+package org.openhab.binding.gce.internal.model;
 
 import java.io.IOException;
 import java.net.URL;
@@ -68,6 +68,7 @@ public class StatusFileInterpreter {
             document.getDocumentElement().normalize();
             doc = document;
             pushDatas();
+            conn.getInputStream().close();
         } catch (IOException | SAXException | ParserConfigurationException e) {
             logger.warn("Unable to read IPX800 status page : {}", e.getMessage());
             doc = null;

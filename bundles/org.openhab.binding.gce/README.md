@@ -4,7 +4,7 @@ This binding aims to handle various GCE Electronics equipments.
 IPX800 is a 8 relay webserver from gce-electronics with a lot of possibilities:
 
 * 8 Digital Input
-* 8 Relay (250v/ 10A / channel)
+* 8 Relay (250V / 10A / channel)
 * 4 Analog Input
 * 8 Counters
 * Ability to cascade up to 3 extensions for a total of 32 inputs / 32 relay
@@ -119,11 +119,9 @@ Each analog port will have these associated channels:
 
 #### Configuration
 
-| Property   | Default | Description                                                              |
-|------------|---------|--------------------------------------------------------------------------|
-| histeresis |    0    | If set, the channel will ignore status changes below state + histeresis/2|
-|            |         |    or higher than state - histeresis sur 2                               |
-
+| Property   | Default | Description                                                                         |
+|------------|---------|-------------------------------------------------------------------------------------|
+| hysteresis |    0    | If set, the channel will ignore status if change (+ or -) is less than hysteresis/2 |
 
 
 ## Rule Actions

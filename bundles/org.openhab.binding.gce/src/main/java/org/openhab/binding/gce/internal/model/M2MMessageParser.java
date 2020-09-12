@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.gce.model;
+package org.openhab.binding.gce.internal.model;
 
 import java.util.regex.Pattern;
 

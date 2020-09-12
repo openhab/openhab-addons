@@ -56,11 +56,11 @@ import org.openhab.binding.gce.internal.config.AnalogInputConfiguration;
 import org.openhab.binding.gce.internal.config.DigitalInputConfiguration;
 import org.openhab.binding.gce.internal.config.Ipx800Configuration;
 import org.openhab.binding.gce.internal.config.RelayOutputConfiguration;
-import org.openhab.binding.gce.model.M2MMessageParser;
-import org.openhab.binding.gce.model.PortData;
-import org.openhab.binding.gce.model.PortDefinition;
-import org.openhab.binding.gce.model.StatusFileInterpreter;
-import org.openhab.binding.gce.model.StatusFileInterpreter.StatusEntry;
+import org.openhab.binding.gce.internal.model.M2MMessageParser;
+import org.openhab.binding.gce.internal.model.PortData;
+import org.openhab.binding.gce.internal.model.PortDefinition;
+import org.openhab.binding.gce.internal.model.StatusFileInterpreter;
+import org.openhab.binding.gce.internal.model.StatusFileInterpreter.StatusEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -158,7 +158,7 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
     protected void discoverAttributes() {
         final Map<String, String> properties = new HashMap<>();
 
-        properties.put(Thing.PROPERTY_VENDOR, "GC Electronics");
+        properties.put(Thing.PROPERTY_VENDOR, "GCE Electronics");
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, statusFile.getElement(StatusEntry.VERSION));
         properties.put(Thing.PROPERTY_MAC_ADDRESS, statusFile.getElement(StatusEntry.CONFIG_MAC));
         updateProperties(properties);
