@@ -114,7 +114,7 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
             for (JablotronService service : services) {
                 JablotronServiceDetail detail = service.getData();
                 for (JablotronServiceDetailSegment segment : detail.getSegments()) {
-                    if (segmentName.equals(segment.getSegmentId())) {
+                    if (segmentName.toUpperCase().equals(segment.getSegmentId())) {
                         updateSegmentStatus(segment);
                     }
                 }

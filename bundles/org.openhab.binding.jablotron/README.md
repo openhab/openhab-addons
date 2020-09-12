@@ -50,18 +50,17 @@ Binding itself doesn't require specific configuration.
 | JA-80/JA-100/JA-100F | lastCheckTime    | DateTime  | the time of the last checking                             |
 | JA-80/JA-100/JA-100F | alarm            | N/A       | the alarm trigger, might fire ALARM or TAMPER events      |
 | JA-100/JA-100F       | lastEventSection | String    | the section of the last event                             |
-| JA-100               | STATE_%nr%       | String    | the section %nr% status/control                           |
-| JA-100               | PGM_%nr%         | Switch    | the PG switch %nr% status/control                        |
-| JA-100               | THERMOMETER_%nr% | Number    | the thermometer %nr% value                                |
-| JA-100               | THERMOSTAT_%nr%  | Number    | the thermostat %nr% value                                 |
-| JA-100F              | SEC-%nr%         | String    | the section %nr% status/control                           |
-| JA-100F              | PG-%nr%          | Switch    | the PG switch %nr% status/control                        |
+| JA-100               | state_%nr%       | String    | the section %nr% status/control                           |
+| JA-100               | pgm_%nr%         | Switch    | the PG switch %nr% status/control                        |
+| JA-100               | thermometer_%nr% | Number    | the thermometer %nr% value                                |
+| JA-100               | thermostat_%nr%  | Number    | the thermostat %nr% value                                 |
+| JA-100F              | sec-%nr%         | String    | the section %nr% status/control                           |
+| JA-100F              | pg-%nr%          | Switch    | the PG switch %nr% status/control                        |
 
-The STATE, PGM, THERMOMETER, THERMOSTAT, SEC and PG channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
+The state, pgm, thermometer, thermostat, sec and pg channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
 
 * The sections are represented by String channels (with possible values "set", "unset", "partialSet" for JA-100 and 
 possible values "ARM", "PARTIAL_ARM" and "DISARM" for JA100-F)
-* The PGs (programmable gates) are represented by Switch channels 
 
 ## Full Example
 

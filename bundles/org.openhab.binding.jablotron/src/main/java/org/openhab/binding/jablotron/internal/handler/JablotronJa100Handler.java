@@ -59,23 +59,23 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
             logger.debug("refreshing channel: {}", channelUID.getId());
             updateChannel(channelUID.getId());
         } else {
-            if (channelUID.getId().startsWith("STATE_") && command instanceof StringType) {
+            if (channelUID.getId().startsWith("state_") && command instanceof StringType) {
                 scheduler.execute(() -> {
-                    controlSTATESection(channelUID.getId(), command.toString());
+                    controlSTATESection(channelUID.getId().toUpperCase(), command.toString());
                 });
             }
 
-            if (channelUID.getId().startsWith("PGM_") && command instanceof OnOffType) {
+            if (channelUID.getId().startsWith("pgm_") && command instanceof OnOffType) {
                 scheduler.execute(() -> {
-                    controlPGMSection(channelUID.getId(), command.equals(OnOffType.ON) ? "set" : "unset");
+                    controlPGMSection(channelUID.getId().toUpperCase(), command.equals(OnOffType.ON) ? "set" : "unset");
                 });
             }
         }
     }
 
     private void updateChannel(String channel) {
-        if (channel.startsWith("STATE_") || channel.startsWith("PGM_") || channel.startsWith("THERMOMETER_")
-                || channel.startsWith("THERMOSTAT_")) {
+        if (channel.startsWith("state_") || channel.startsWith("pgm_") || channel.startsWith("thermometer_")
+                || channel.startsWith("thermostat_")) {
             updateSegmentStatus(channel, dataCache.getValue());
         } else if (CHANNEL_LAST_CHECK_TIME.equals(channel)) {
             // not updating
@@ -86,9 +86,9 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
 
     private void createChannel(JablotronServiceDetailSegment section) {
         if (section.getSegmentId().startsWith("PGM_")) {
-            createPGMChannel(section.getSegmentId(), section.getSegmentName());
+            createPGMChannel(section.getSegmentId().toLowerCase(), section.getSegmentName());
         } else {
-            createStateChannel(section.getSegmentId(), section.getSegmentName());
+            createStateChannel(section.getSegmentId().toLowerCase(), section.getSegmentName());
         }
     }
 
@@ -145,7 +145,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void processSection(JablotronServiceDetailSegment segment) {
-        String segmentId = segment.getSegmentId();
+        String segmentId = segment.getSegmentId().toLowerCase();
         Channel channel = getThing().getChannel(segmentId);
         if (channel == null) {
             logger.debug("Creating a new channel: {}", segmentId);
@@ -167,7 +167,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void processThermometer(JablotronServiceDetailSegment segment) {
-        String segmentId = segment.getSegmentId();
+        String segmentId = segment.getSegmentId().toLowerCase();
         Channel channel = getThing().getChannel(segmentId);
         if (channel == null) {
             logger.debug("Creating a new temperature channel: {}", segmentId);
@@ -177,7 +177,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void processThermostat(JablotronServiceDetailSegment segment) {
-        String segmentId = segment.getSegmentId();
+        String segmentId = segment.getSegmentId().toLowerCase();
         Channel channel = getThing().getChannel(segmentId);
         if (channel == null) {
             logger.debug("Creating a new thermostat channel: {}", segmentId);

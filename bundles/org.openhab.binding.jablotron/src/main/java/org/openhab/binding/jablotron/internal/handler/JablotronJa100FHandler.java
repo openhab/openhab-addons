@@ -66,26 +66,28 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             logger.debug("refreshing channel: {}", channelUID.getId());
             updateChannel(channelUID.getId());
         } else {
-            if (channelUID.getId().startsWith("SEC-") && command instanceof StringType) {
+            if (channelUID.getId().startsWith("sec-") && command instanceof StringType) {
                 if ("PARTIAL_ARM".equals(command.toString())) {
                     controlComponent(channelUID.getId(), "CONTROL-SECTION", "DISARM");
                 }
-                scheduler.execute(() -> controlComponent(channelUID.getId(), "CONTROL-SECTION", command.toString()));
+                scheduler.execute(() -> controlComponent(channelUID.getId().toUpperCase(), "CONTROL-SECTION",
+                        command.toString()));
             }
 
-            if (channelUID.getId().startsWith("PG-") && command instanceof OnOffType) {
-                scheduler.execute(() -> controlComponent(channelUID.getId(), "CONTROL-PG", command.toString()));
+            if (channelUID.getId().startsWith("pg-") && command instanceof OnOffType) {
+                scheduler.execute(
+                        () -> controlComponent(channelUID.getId().toUpperCase(), "CONTROL-PG", command.toString()));
             }
         }
     }
 
     private void updateChannel(String channel) {
-        if (channel.startsWith("SEC-")) {
+        if (channel.startsWith("sec-")) {
             JablotronGetSectionsResponse sections = sectionCache.getValue();
             if (sections != null) {
                 updateSectionState(channel, sections.getData().getStates());
             }
-        } else if (channel.startsWith("PG-")) {
+        } else if (channel.startsWith("pg-")) {
             JablotronGetPGResponse pgs = pgCache.getValue();
             if (pgs != null) {
                 updateSectionState(channel, pgs.getData().getStates());
@@ -189,7 +191,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
     private void createPGChannels(List<JablotronSection> programmableGates) {
         for (JablotronSection gate : programmableGates) {
-            String id = gate.getCloudComponentId();
+            String id = gate.getCloudComponentId().toLowerCase();
             logger.trace("component id: {} with name: {}", id, gate.getName());
             Channel channel = getThing().getChannel(id);
             if (channel == null) {
@@ -201,7 +203,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
 
     private void createSectionChannels(List<JablotronSection> sections) {
         for (JablotronSection section : sections) {
-            String id = section.getCloudComponentId();
+            String id = section.getCloudComponentId().toLowerCase();
             logger.trace("component id: {} with name: {}", id, section.getName());
             Channel channel = getThing().getChannel(id);
             if (channel == null) {
@@ -214,7 +216,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
     private void updateSectionState(String section, List<JablotronState> states) {
         for (JablotronState state : states) {
             String id = state.getCloudComponentId();
-            if (id.equals(section)) {
+            if (id.equals(section.toUpperCase())) {
                 updateSection(id, state);
                 break;
             }
@@ -240,7 +242,7 @@ public class JablotronJa100FHandler extends JablotronAlarmHandler {
             logger.debug("unknown component id: {}", id);
             return;
         }
-        Channel channel = getThing().getChannel(id);
+        Channel channel = getThing().getChannel(id.toLowerCase());
         if (channel != null) {
             updateState(channel.getUID(), newState);
         } else {

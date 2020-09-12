@@ -192,11 +192,9 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
         }
 
         if (response.getHttpCode() != 200) {
-            logger.debug("Error during login, got http error: {}", response.getHttpCode());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Http error: " + response.getHttpCode());
         } else {
-            logger.debug("Successfully logged in");
             updateStatus(ThingStatus.ONLINE);
         }
     }
