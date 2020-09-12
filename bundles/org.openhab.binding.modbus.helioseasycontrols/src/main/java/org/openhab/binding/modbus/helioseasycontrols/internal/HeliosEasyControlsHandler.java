@@ -332,12 +332,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 scheduler.submit(() -> {
                     try {
                         writeValue(channelId, v);
-                        // ensure the openHAB item is updated with the device's actual value
                         if (variableMap != null) {
-                            scheduler.schedule(() -> readValue(variableMap.get(channelId).getName()), 1,
-                                    TimeUnit.SECONDS);
+                            updateState(variableMap.get(channelId), v);
+                            updateStatus(ThingStatus.ONLINE);
                         }
-                        updateStatus(ThingStatus.ONLINE);
                     } catch (HeliosException e) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                 "Writing value " + v + "to channel " + channelId + " failed: " + e.getMessage());
@@ -712,83 +710,85 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                             HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
                 }
             } else {
-                String variableType = v.getType();
-                // System date and time
-                if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE)) {
-                    this.updateSysDate(this.toDateTime(parts[1]));
-                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME)) {
-                    this.updateSysTime(this.toDateTime(parts[1]));
-                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT)) {
-                    this.updateUtcOffset(Integer.parseInt(parts[1]));
-                    // Bypass
-                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY)) {
-                    this.updateBypass(true, false, Integer.parseInt(parts[1]));
-                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH)) {
-                    this.updateBypass(true, true, Integer.parseInt(parts[1]));
-                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_TO_DAY)) {
-                    this.updateBypass(false, false, Integer.parseInt(parts[1]));
-                } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH)) {
-                    this.updateBypass(false, true, Integer.parseInt(parts[1]));
-                } else {
-                    Channel channel = getThing().getChannel(v.getGroupAndName());
-                    String itemType;
-                    if (channel != null) {
-                        itemType = channel.getAcceptedItemType();
-                        if (itemType != null) {
-                            if (itemType.startsWith("Number:")) {
-                                itemType = "Number";
-                            }
-                            switch (itemType) {
-                                case "Number":
-                                    if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
-                                            || (variableType == HeliosVariable.TYPE_FLOAT))
-                                            && (!parts[1].equals("-"))) {
-                                        State state = null;
-                                        if (v.getUnit() == null) {
-                                            state = DecimalType.valueOf(parts[1]);
-                                        } else { // QuantityType
-                                            state = this.toQuantityType(parts[1], v.getUnit());
-                                        }
-                                        if (state != null) {
-                                            updateState(v.getGroupAndName(), state);
-                                            updateStatus(ThingStatus.ONLINE);
-                                            // update date format and UTC offset upon read
-                                            if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT)) {
-                                                this.dateFormat = Integer.parseInt(parts[1]);
-                                            }
-                                        }
-                                    }
-                                    break;
-                                case "Switch":
-                                    if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
-                                        updateState(v.getGroupAndName(),
-                                                parts[1].equals("1") ? OnOffType.ON : OnOffType.OFF);
-                                    }
-                                    break;
-                                case "String":
-                                    if (variableType.equals(HeliosVariable.TYPE_STRING)) {
-                                        updateState(v.getGroupAndName(), StringType.valueOf(parts[1]));
-                                    }
-                                    break;
-                                case "DateTime":
-                                    if (variableType.equals(HeliosVariable.TYPE_STRING)) {
-                                        updateState(v.getGroupAndName(), toDateTime(parts[1]));
-                                    }
-                                    break;
-                            }
-                        } else { // itemType was null
-                            logger.warn("{} couldn't determine item type of variable {}",
-                                    HeliosEasyControlsHandler.class.getSimpleName(), v.getName());
-                        }
-                    } else { // channel was null
-                        logger.warn("{} couldn't find channel for variable {}",
-                                HeliosEasyControlsHandler.class.getSimpleName(), v.getName());
-                    }
-                }
+                this.updateState(v, parts[1]);
             }
         } else { // another variable was read
             logger.warn("{} tried to read value from variable {} and the result provided by the device was {}",
                     HeliosEasyControlsHandler.class.getSimpleName(), v.getName(), r);
+        }
+    }
+
+    private void updateState(HeliosVariable v, String value) {
+        String variableType = v.getType();
+        // System date and time
+        if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE)) {
+            this.updateSysDate(this.toDateTime(value));
+        } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME)) {
+            this.updateSysTime(this.toDateTime(value));
+        } else if (v.getName().equals(HeliosEasyControlsBindingConstants.TIME_ZONE_DIFFERENCE_TO_GMT)) {
+            this.updateUtcOffset(Integer.parseInt(value));
+            // Bypass
+        } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_DAY)) {
+            this.updateBypass(true, false, Integer.parseInt(value));
+        } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_FROM_MONTH)) {
+            this.updateBypass(true, true, Integer.parseInt(value));
+        } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_TO_DAY)) {
+            this.updateBypass(false, false, Integer.parseInt(value));
+        } else if (v.getName().equals(HeliosEasyControlsBindingConstants.BYPASS_TO_MONTH)) {
+            this.updateBypass(false, true, Integer.parseInt(value));
+        } else {
+            Channel channel = getThing().getChannel(v.getGroupAndName());
+            String itemType;
+            if (channel != null) {
+                itemType = channel.getAcceptedItemType();
+                if (itemType != null) {
+                    if (itemType.startsWith("Number:")) {
+                        itemType = "Number";
+                    }
+                    switch (itemType) {
+                        case "Number":
+                            if (((variableType.equals(HeliosVariable.TYPE_INTEGER))
+                                    || (variableType == HeliosVariable.TYPE_FLOAT)) && (!value.equals("-"))) {
+                                State state = null;
+                                if (v.getUnit() == null) {
+                                    state = DecimalType.valueOf(value);
+                                } else { // QuantityType
+                                    state = this.toQuantityType(value, v.getUnit());
+                                }
+                                if (state != null) {
+                                    updateState(v.getGroupAndName(), state);
+                                    updateStatus(ThingStatus.ONLINE);
+                                    // update date format and UTC offset upon read
+                                    if (v.getName().equals(HeliosEasyControlsBindingConstants.DATE_FORMAT)) {
+                                        this.dateFormat = Integer.parseInt(value);
+                                    }
+                                }
+                            }
+                            break;
+                        case "Switch":
+                            if (variableType.equals(HeliosVariable.TYPE_INTEGER)) {
+                                updateState(v.getGroupAndName(), value.equals("1") ? OnOffType.ON : OnOffType.OFF);
+                            }
+                            break;
+                        case "String":
+                            if (variableType.equals(HeliosVariable.TYPE_STRING)) {
+                                updateState(v.getGroupAndName(), StringType.valueOf(value));
+                            }
+                            break;
+                        case "DateTime":
+                            if (variableType.equals(HeliosVariable.TYPE_STRING)) {
+                                updateState(v.getGroupAndName(), toDateTime(value));
+                            }
+                            break;
+                    }
+                } else { // itemType was null
+                    logger.warn("{} couldn't determine item type of variable {}",
+                            HeliosEasyControlsHandler.class.getSimpleName(), v.getName());
+                }
+            } else { // channel was null
+                logger.warn("{} couldn't find channel for variable {}", HeliosEasyControlsHandler.class.getSimpleName(),
+                        v.getName());
+            }
         }
     }
 
