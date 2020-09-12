@@ -38,6 +38,8 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This DTO is used to parse the JSON
+ * Class is auto-generated from JSON using http://www.jsonschema2pojo.org/
+ * Be careful to not overwrite the setState/getState/getTrigger function mapping the Data to OH channels!
  *
  * @author Christian Schlipp - Initial contribution
  */

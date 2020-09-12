@@ -20,6 +20,7 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This DTO is used to parse the JSON
+ * Class is auto-generated from JSON using http://www.jsonschema2pojo.org/
  *
  * @author Christian Schlipp - Initial contribution
  */
