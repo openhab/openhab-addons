@@ -1,7 +1,7 @@
 # IP Camera Binding
 
-This binding allows you to use most IP cameras in openHAB and has many features, so please take the time to read through this guide to learn the many hidden features and different ways to work with cameras that you may not know about. 
-I recommend purchasing a brand of camera that has an open API, as many of the features use far less CPU when done with an API camera.
+This binding allows you to use most IP cameras in openHAB and has many hidden features, so please take the time to read through this guide to learn the different ways to work with cameras that you may not know about. 
+I recommend purchasing a brand of camera that has an open API, as many features use far less CPU when done with an API camera.
 They usually have better picture quality and more features compared to lower priced cameras.
 
 To see what features each brand has implemented from their APIs, please see this post:
@@ -10,11 +10,11 @@ To see what features each brand has implemented from their APIs, please see this
 
 ## How to Get Help
 
-+ Check this readme to see if there are any special setup steps for your brand of camera.
++ Check this readme to see if there are any special setup steps for your brand.
 + Check to see if the camera is offline, if so there will be a reason listed.
 + Always look at the log files with TRACE enabled.
 To enable TRACE logging, enter this in the openHAB console `log:set TRACE org.openhab.binding.ipcamera`.
-+ Search the forum using any messages to find how others with the same problem have already solved it.
++ Search the forum using any log messages to find how others with the same problem have already solved it.
 + Only after doing the above ask for help in the forum and create a new thread.
 
 ## Special Notes for Different Brands
@@ -47,6 +47,32 @@ All other features should be the same between the two.
 ### Dahua
 
 For MJPEG to work you need to set the first sub-stream to be in MJPEG format for the default settings to work, otherwise you can override the default with mjpegUrl with a valid URL for MJPEG streams.
+
+### Foscam
+
+* If the user/pass is wrong the camera can lockout and refuse to answer the binding requiring a reboot of the camera, so be sure the details are correct.
+* To use MJPEG streaming you need to enable one of the streams to use this format. This can be done by entering this into any browser:`http://ip:88/cgi-bin/CGIProxy.fcgi?cmd=setSubStreamFormat&format=1&usr=admin&pwd=password`
+* If your camera does not support MJPEG as some Foscams no longer do, then you can set `mjpegUrl="ffmpeg"` to use your CPU to generate a MJPEG stream.
+* Some foscam cameras need to have a detection area listed in the URL when you enable the motion alarm.
+
+As each Foscam model has a different resolution and two different URLs, this makes it difficult to automate, so an override feature was added to create your own "enable the alarm" URL. 
+This setting is called `customMotionAlarmUrl` and the steps to using it are:
+
+1. Enable the motion alarm in the web interface of your camera and setup any areas you wish movement to be ignored in. E.g. tree branches moving in the wind.
+2. Use any web browser to fetch this URL `https://x.x.x.x/cgi-bin/CGIProxy.fcgi?cmd=getMotionDetectConfig1&usr=xxxxx&pwd=xxxxx`
+3. Use the information returned by the above URL to create the override settings.
+
+An example for a Foscam C2 is...
+
+```
+/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig1&isEnable=1&snapInterval=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&x1=0&y1=0&width1=10000&height1=10000&sensitivity1=1&valid1=1&linkage=6&usr=xxxxx&pwd=xxxxx
+```
+
+Another example is:
+
+```
+/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=0001&sensitivity=1&triggerInterval=15&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area7=1023&area8=1023&area9=1023&usr=username&pwd=password
+```
 
 ### Hikvision
 
@@ -95,32 +121,6 @@ Thing ipcamera:hikvision:West "West Camera"
 ]
 ```
 
-### Foscam
-
-* If the user/pass is wrong the camera can lockout and refuse to answer the binding requiring a reboot of the camera, so be sure the details are correct.
-* To use MJPEG streaming you need to enable one of the streams to use this format. This can be done by entering this into any browser:`http://ip:88/cgi-bin/CGIProxy.fcgi?cmd=setSubStreamFormat&format=1&usr=admin&pwd=password`
-* If your camera does not support MJPEG as some Foscams no longer do, then you can set `mjpegUrl="ffmpeg"` to use your CPU to generate a MJPEG stream.
-* Some foscam cameras need to have a detection area listed in the URL when you enable the motion alarm.
-
-As each Foscam model has a different resolution and two different URLs, this makes it difficult to automate, so an override feature was added to create your own "enable the alarm" URL. 
-This setting is called `customMotionAlarmUrl` and the steps to using it are:
-
-1. Enable the motion alarm in the web interface of your camera and setup any areas you wish movement to be ignored in. E.g. tree branches moving in the wind.
-2. Use any web browser to fetch this URL `https://x.x.x.x/cgi-bin/CGIProxy.fcgi?cmd=getMotionDetectConfig1&usr=xxxxx&pwd=xxxxx`
-3. Use the information returned by the above URL to create the override settings.
-
-An example for a Foscam C2 is...
-
-```
-/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig1&isEnable=1&snapInterval=1&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&x1=0&y1=0&width1=10000&height1=10000&sensitivity1=1&valid1=1&linkage=6&usr=xxxxx&pwd=xxxxx
-```
-
-Another example is:
-
-```
-/cgi-bin/CGIProxy.fcgi?cmd=setMotionDetectConfig&isEnable=1&linkage=0001&sensitivity=1&triggerInterval=15&schedule0=281474976710655&schedule1=281474976710655&schedule2=281474976710655&schedule3=281474976710655&schedule4=281474976710655&schedule5=281474976710655&schedule6=281474976710655&area0=1023&area1=1023&area2=1023&area3=1023&area4=1023&area5=1023&area6=1023&area7=1023&area7=1023&area8=1023&area9=1023&usr=username&pwd=password
-```
-
 ### Instar
 
 + For MJPEG to work you need to set the first sub-stream to be MJPEG format for the default settings to work, otherwise you can override the default with mjpegUrl with a valid URL for MJPEG streams.
@@ -129,9 +129,9 @@ Another example is:
 ## Discovery
 
 The discovery feature of openHAB can be used to find any ONVIF cameras. 
-This method should be preferred as it will discover the ports and URLs for you, making the setup much easier.
+This method should be preferred as it will discover the camera, ports and URLs for you, making the setup much easier.
 To use the discovery, just press the `+` icon located in the Inbox, then select the IpCamera binding from the list of installed bindings.
-After the camera is discovered and added as a thing, you will need to provide the username and password for any cameras that require a login to work.
+If your camera is not found, it may not be ONVIF and in this case you will need to manually add via the UI your camera as a `generic` thing type and provide the URLs manually.
 
 ## Supported Things
 
@@ -141,7 +141,7 @@ Example: The thing type for a camera with no ONVIF support is "generic".
 
 | Thing Type ID | Description |
 |-|-|
-| `generic` | For any camera that is not ONVIF compatible yet has working RTSP or HTTP URLs. |
+| `generic` | For any camera that is not ONVIF compatible, yet has working RTSP or HTTP URLs. |
 | `onvif` | Use for all ONVIF cameras that do not have an API. |
 | `amcrest` | Only use for if your Amcrest cameras wont work as a `dahua` thing. This uses an older polling based method for alarms that is not as efficient as the newer method used in `dahua`. Amcrest are made by Dahua and hence the API is similar. |
 | `dahua` | Use for all Dahua and Amcrest cameras that support the API. |
@@ -153,11 +153,11 @@ Example: The thing type for a camera with no ONVIF support is "generic".
 
 ## Thing Configuration
 
-After a camera is added, the first step is to provide login details for your camera.
-If your camera is not ONVIF or API based, you will also need to provide the binding with the cameras URLs to the relevant URL field/s.
-For ONVIF cameras that auto detect the wrong URL, the same fields can be used to force a URL of your choosing.
+After a camera is added, the first step is to provide login details and a valid serverPort for your camera before it will come online.
+If your camera is not ONVIF/API based, you will also need to provide the binding with the cameras URLs to the relevant URL field/s.
+For ONVIF cameras that auto detect the wrong URL, these same fields can be used to force a URL of your choosing.
 
-Leave any `user:pass@` out of any URLs, the binding will handle this for you.
+NOTE: Leave any `user:pass@` out of any URLs, the binding will handle this for you.
 Not only does this hide your login details, it will also make changing your password much easier if it is only located in 1 field.
 
 Below is a list of all configuration parameters (useful for textual config) with a short description. 
@@ -276,16 +276,18 @@ To move a camera with this binding you need an ONVIF camera that supports one of
 + Presets
 
 To test your cameras compatibility and also to create some preset locations, use a free program called `ONVIF Device Manager` (ODM for short).
-Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets can not be created with the binding, only loaded after they are already created.
-After creating new or changing existing presets, it may be necessary to restart the binding before they can be used. 
+Not all ONVIF cameras work with all of the methods, so testing first to confirm what works is a good idea and the presets can not be created with the binding, only loaded after they are already created in a program like ODM.
+After creating new or changing existing presets, it is necessary to send the REFRESH command to the `gotoPreset` channel or you can restart the binding if that is easier. 
 You can create names using the mappings feature of the selection element.
 See docs here <https://www.openhab.org/docs/configuration/sitemaps.html#mappings>
 
-Moving the camera using Relative or Continuous (the config `ptzContinuous` must be true) movements can be done by sending the INCREASE and DECREASE commands to the Pan, Tilt and Zoom channels.
-When the config is set to false (the default if not specified) the binding will send Relative movements. 
+Moving the camera using *Relative* or *Continuous* (config `ptzContinuous` must be true) movements can be done by sending the INCREASE and DECREASE commands to the Pan, Tilt and Zoom channels.
+The OFF command (to any of the PTZ channels) will stop the cameras movements in the case of continuous being selected.
+When the config is set to false (the default if not specified) the binding will send relative movements. 
 There are some widgets created in the HABpanel widget gallery that you can download and use right away saving you time if your camera supports either presets, relative or continuous modes.
-For sitemaps the below example can be used.
-The OFF command (can be sent to any of the PTZ channels) will stop the cameras movements in the case of continuous being selected in the things config setup.
+
+For sitemaps, the below examples can be used.
+
 
 item:
 
@@ -687,7 +689,7 @@ There is also a HABpanel Widget worth checking out that uses the history feature
 
 This section is about how to get things working in HABpanel.
 
-I highly recommend you check out the easy to use WIDGETS of which there are now 3 ready made ones that are discussed on the forum here.
+I highly recommend you check out the easy to use WIDGETS of which there are now 3 that are discussed on the forum here.
 <https://community.openhab.org/t/custom-widget-camera-clickable-thumbnails-that-open-a-stream/101275>
 
 The widgets in the link above are the easiest way to get an advanced stream working in openHAB and you are welcome to open them up, look at how they work and change them to something even better that suits your needs.
