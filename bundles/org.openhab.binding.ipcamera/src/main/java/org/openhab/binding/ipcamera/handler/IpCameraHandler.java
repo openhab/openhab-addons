@@ -124,9 +124,9 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // ChannelGroup is thread safe
     public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    final ChannelGroup snapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    final ChannelGroup autoSnapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final ChannelGroup snapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final ChannelGroup autoSnapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public @Nullable Ffmpeg ffmpegHLS = null;
     public @Nullable Ffmpeg ffmpegRecord = null;
     public @Nullable Ffmpeg ffmpegGIF = null;
@@ -134,7 +134,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public @Nullable Ffmpeg ffmpegMjpeg = null;
     public @Nullable Ffmpeg ffmpegSnapshot = null;
     public boolean streamingAutoFps = false;
-    boolean motionDetected = false;
+    public boolean motionDetected = false;
 
     private @Nullable ScheduledFuture<?> cameraConnectionJob = null;
     private @Nullable ScheduledFuture<?> pollCameraJob = null;
@@ -156,8 +156,8 @@ public class IpCameraHandler extends BaseThingHandler {
     public int gifHistoryLength = 0;
     public int mp4HistoryLength = 0;
     private String mp4Filename = "ipcamera";
-    int mp4RecordTime = 0;
-    int mp4Preroll = 0;
+    private int mp4RecordTime = 0;
+    private int mp4Preroll = 0;
     private LinkedList<byte[]> fifoSnapshotBuffer = new LinkedList<byte[]>();
     private int preroll, postroll, snapCount = 0;
     private boolean updateImageChannel = false;
@@ -183,15 +183,15 @@ public class IpCameraHandler extends BaseThingHandler {
     public String ipAddress = "empty";
     public String updateImageEvents = "";
     public boolean audioAlarmUpdateSnapshot = false;
-    boolean motionAlarmUpdateSnapshot = false;
-    boolean isOnline = false; // Used so only 1 error is logged when a network issue occurs.
-    boolean firstAudioAlarm = false;
-    boolean firstMotionAlarm = false;
+    private boolean motionAlarmUpdateSnapshot = false;
+    private boolean isOnline = false; // Used so only 1 error is logged when a network issue occurs.
+    private boolean firstAudioAlarm = false;
+    private boolean firstMotionAlarm = false;
     public Double motionThreshold = 0.0016;
     public int audioThreshold = 35;
     @SuppressWarnings("unused")
     private @Nullable StreamServerHandler streamServerHandler;
-    boolean streamingSnapshotMjpeg = false;
+    private boolean streamingSnapshotMjpeg = false;
     public boolean motionAlarmEnabled = false;
     public boolean audioAlarmEnabled = false;
     public boolean ffmpegSnapshotGeneration = false;
@@ -230,7 +230,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 return;
             }
             try {
-                // logger.trace("{}", msg.toString());
                 if (msg instanceof HttpResponse) {
                     HttpResponse response = (HttpResponse) msg;
                     if (response.status().code() != 401) {

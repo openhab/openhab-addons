@@ -67,7 +67,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 public class IpCameraGroupHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Configuration config;
-    BigDecimal pollTimeInSeconds = new BigDecimal(2);
+    private BigDecimal pollTimeInSeconds = new BigDecimal(2);
     public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
     private EventLoopGroup serversLoopGroup = new NioEventLoopGroup();
     private final ScheduledExecutorService pollCameraGroup = Executors.newSingleThreadScheduledExecutor();
@@ -75,17 +75,16 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     private @Nullable ServerBootstrap serverBootstrap;
     private @Nullable ChannelFuture serverFuture = null;
     public String hostIp;
-    boolean motionChangesOrder = true;
+    private boolean motionChangesOrder = true;
     public int serverPort = 0;
     public String playList = "";
-    String playingNow = "";
+    private String playingNow = "";
     public int cameraIndex = 0;
     public boolean hlsTurnedOn = false;
-    int entries = 0;
-    BigDecimal numberOfFiles = new BigDecimal(1);
-    int mediaSequence = 1;
-    int discontinuitySequence = 0;
-    GroupTracker groupTracker;
+    private int entries = 0;
+    private int mediaSequence = 1;
+    private int discontinuitySequence = 0;
+    private GroupTracker groupTracker;
 
     public IpCameraGroupHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
         super(thing);

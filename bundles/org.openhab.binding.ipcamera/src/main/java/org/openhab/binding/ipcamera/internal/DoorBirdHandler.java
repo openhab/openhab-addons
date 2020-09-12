@@ -40,7 +40,7 @@ import io.netty.util.ReferenceCountUtil;
 
 @NonNullByDefault
 public class DoorBirdHandler extends ChannelDuplexHandler {
-    IpCameraHandler ipCameraHandler;
+    private IpCameraHandler ipCameraHandler;
 
     public DoorBirdHandler(ThingHandler handler) {
         ipCameraHandler = (IpCameraHandler) handler;

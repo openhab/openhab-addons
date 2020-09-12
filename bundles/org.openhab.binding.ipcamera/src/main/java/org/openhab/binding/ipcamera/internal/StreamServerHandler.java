@@ -58,11 +58,10 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
     private boolean handlingMjpeg = false; // used to remove ctx from group when handler is removed.
     private boolean handlingSnapshotStream = false; // used to remove ctx from group when handler is removed.
     private byte[] incomingJpeg = new byte[0];
-    String whiteList = "";
-    int recievedBytes = 0;
-    int count = 0;
-    boolean updateSnapshot = false;
-    boolean onvifEvent = false;
+    private String whiteList = "";
+    private int recievedBytes = 0;
+    private boolean updateSnapshot = false;
+    private boolean onvifEvent = false;
 
     public StreamServerHandler(IpCameraHandler ipCameraHandler) {
         this.ipCameraHandler = ipCameraHandler;

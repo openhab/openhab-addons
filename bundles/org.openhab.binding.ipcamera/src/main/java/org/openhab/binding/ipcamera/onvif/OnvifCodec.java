@@ -34,8 +34,8 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class OnvifCodec extends ChannelDuplexHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    String incomingMessage = "";
-    OnvifConnection onvifConnection;
+    private String incomingMessage = "";
+    private OnvifConnection onvifConnection;
 
     OnvifCodec(OnvifConnection onvifConnection) {
         this.onvifConnection = onvifConnection;

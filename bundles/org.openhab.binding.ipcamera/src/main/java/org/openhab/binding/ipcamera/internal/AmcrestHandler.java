@@ -43,7 +43,7 @@ import io.netty.util.ReferenceCountUtil;
 @NonNullByDefault
 public class AmcrestHandler extends ChannelDuplexHandler {
     private String requestUrl = "Empty";
-    IpCameraHandler ipCameraHandler;
+    private IpCameraHandler ipCameraHandler;
 
     public AmcrestHandler(ThingHandler handler) {
         ipCameraHandler = (IpCameraHandler) handler;

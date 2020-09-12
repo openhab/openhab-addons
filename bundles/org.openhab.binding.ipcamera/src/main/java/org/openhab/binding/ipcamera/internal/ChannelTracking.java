@@ -27,9 +27,9 @@ import io.netty.channel.Channel;
 
 @NonNullByDefault
 public class ChannelTracking {
-    String storedReply = "";
-    String requestUrl = "";
-    Channel channel;
+    private String storedReply = "";
+    private String requestUrl = "";
+    private Channel channel;
 
     public ChannelTracking(Channel channel, String requestUrl) {
         this.channel = channel;

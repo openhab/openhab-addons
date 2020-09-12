@@ -66,46 +66,47 @@ import io.netty.handler.timeout.IdleStateHandler;
 @NonNullByDefault
 public class OnvifConnection {
     @Nullable
-    Bootstrap bootstrap;
-    EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
-    String ipAddress = "";
-    String user = "";
+    private Bootstrap bootstrap;
+    private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
+    private String ipAddress = "";
+    private String user = "";
     private String password = "";
-    int onvifPort = 80;
-    String deviceXAddr = "/onvif/device_service";
-    String eventXAddr = "/onvif/device_service";
-    String mediaXAddr = "/onvif/device_service";
-    String imagingXAddr = "/onvif/device_service";
-    String ptzXAddr = "/onvif/ptz_service";
-    String subscriptionXAddr = "/onvif/device_service";
-    boolean isConnected = false;
-    int mediaProfileIndex = 0;
-    String snapshotUri = "";
-    String rtspUri = "";
-    IpCameraHandler ipCameraHandler;
-    boolean usingEvents = false;
+    private int onvifPort = 80;
+    private String deviceXAddr = "/onvif/device_service";
+    private String eventXAddr = "/onvif/device_service";
+    private String mediaXAddr = "/onvif/device_service";
+    @SuppressWarnings("unused")
+    private String imagingXAddr = "/onvif/device_service";
+    private String ptzXAddr = "/onvif/ptz_service";
+    private String subscriptionXAddr = "/onvif/device_service";
+    private boolean isConnected = false;
+    private int mediaProfileIndex = 0;
+    private String snapshotUri = "";
+    private String rtspUri = "";
+    private IpCameraHandler ipCameraHandler;
+    private boolean usingEvents = false;
 
     // These hold the cameras PTZ position in the range that the camera uses, ie
     // mine is -1 to +1
-    Float panRangeMin = -1.0f;
-    Float panRangeMax = 1.0f;
-    Float tiltRangeMin = -1.0f;
-    Float tiltRangeMax = 1.0f;
-    Float zoomMin = 0.0f;
-    Float zoomMax = 1.0f;
+    private Float panRangeMin = -1.0f;
+    private Float panRangeMax = 1.0f;
+    private Float tiltRangeMin = -1.0f;
+    private Float tiltRangeMax = 1.0f;
+    private Float zoomMin = 0.0f;
+    private Float zoomMax = 1.0f;
     // These hold the PTZ values for updating Openhabs controls in 0-100 range
-    Float currentPanPercentage = 0.0f;
-    Float currentTiltPercentage = 0.0f;
-    Float currentZoomPercentage = 0.0f;
-    Float currentPanCamValue = 0.0f;
-    Float currentTiltCamValue = 0.0f;
-    Float currentZoomCamValue = 0.0f;
-    String ptzNodeToken = "000";
-    String ptzConfigToken = "000";
-    int presetTokenIndex = 0;
-    LinkedList<String> presetTokens = new LinkedList<>();
-    LinkedList<String> mediaProfileTokens = new LinkedList<>();
-    boolean ptzDevice = true;
+    private Float currentPanPercentage = 0.0f;
+    private Float currentTiltPercentage = 0.0f;
+    private Float currentZoomPercentage = 0.0f;
+    private Float currentPanCamValue = 0.0f;
+    private Float currentTiltCamValue = 0.0f;
+    private Float currentZoomCamValue = 0.0f;
+    private String ptzNodeToken = "000";
+    private String ptzConfigToken = "000";
+    private int presetTokenIndex = 0;
+    private LinkedList<String> presetTokens = new LinkedList<>();
+    private LinkedList<String> mediaProfileTokens = new LinkedList<>();
+    private boolean ptzDevice = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public OnvifConnection(IpCameraHandler ipCameraHandler, String ipAddress, String user, String password) {

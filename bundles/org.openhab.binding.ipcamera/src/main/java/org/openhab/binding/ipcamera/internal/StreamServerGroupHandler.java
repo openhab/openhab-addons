@@ -25,6 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.openhab.binding.ipcamera.handler.IpCameraGroupHandler;
+import org.openhab.binding.ipcamera.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +36,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultHttpResponse;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
+import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -57,10 +59,7 @@ import io.netty.util.ReferenceCountUtil;
 public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private IpCameraGroupHandler ipCameraGroupHandler;
-    String whiteList = "";
-    int recievedBytes = 0;
-    int count = 0;
-    boolean updateSnapshot = false;
+    private String whiteList = "";
 
     public StreamServerGroupHandler(IpCameraGroupHandler ipCameraGroupHandler) {
         this.ipCameraGroupHandler = ipCameraGroupHandler;
@@ -140,8 +139,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
         IpCameraHandler handler = ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex);
         handler.lockCurrentSnapshot.lock();
         try {
-            ByteBuf snapshotData = Unpooled.copiedBuffer(
-                    handler.currentSnapshot);
+            ByteBuf snapshotData = Unpooled.copiedBuffer(handler.currentSnapshot);
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
             response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);

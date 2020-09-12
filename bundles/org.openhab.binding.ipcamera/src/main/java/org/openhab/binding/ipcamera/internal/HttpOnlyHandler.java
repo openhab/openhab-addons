@@ -38,7 +38,7 @@ import io.netty.util.ReferenceCountUtil;
 
 @NonNullByDefault
 public class HttpOnlyHandler extends ChannelDuplexHandler {
-    IpCameraHandler ipCameraHandler;
+    private IpCameraHandler ipCameraHandler;
 
     public HttpOnlyHandler(IpCameraHandler handler) {
         ipCameraHandler = handler;

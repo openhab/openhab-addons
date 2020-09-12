@@ -42,8 +42,8 @@ import io.netty.util.ReferenceCountUtil;
 
 @NonNullByDefault
 public class FoscamHandler extends ChannelDuplexHandler {
-    IpCameraHandler ipCameraHandler;
-    String username, password;
+    private IpCameraHandler ipCameraHandler;
+    private String password, username;
 
     public FoscamHandler(ThingHandler handler, String username, String password) {
         ipCameraHandler = (IpCameraHandler) handler;
