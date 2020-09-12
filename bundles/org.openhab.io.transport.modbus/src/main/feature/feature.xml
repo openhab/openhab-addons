@@ -5,7 +5,7 @@
 	<feature name="openhab-transport-modbus" description="Modbus Transport" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-serial</feature>
-		<bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.4.3</bundle>
+		<bundle dependency="true">mvn:org.apache.commons/commons-pool2/2.8.1</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.io.transport.modbus/${project.version}</bundle>
 	</feature>
 </features>
