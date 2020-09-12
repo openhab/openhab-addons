@@ -1168,6 +1168,11 @@ public class IpCameraHandler extends BaseThingHandler {
                         updateState(CHANNEL_ZOOM, new PercentType(Math.round(onvifCamera.getAbsoluteZoom())));
                     }
                     return;
+                case CHANNEL_GOTO_PRESET:
+                    if (onvifCamera.supportsPTZ()) {
+                        onvifCamera.sendPTZRequest("GetPresets");
+                    }
+                    return;
             }
         } // caution "REFRESH" can still progress to brand Handlers below the else.
         else {

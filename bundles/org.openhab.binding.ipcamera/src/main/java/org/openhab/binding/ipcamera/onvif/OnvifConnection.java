@@ -70,7 +70,7 @@ public class OnvifConnection {
     EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
     String ipAddress = "";
     String user = "";
-    String password = "";
+    private String password = "";
     int onvifPort = 80;
     String deviceXAddr = "/onvif/device_service";
     String eventXAddr = "/onvif/device_service";
@@ -103,8 +103,8 @@ public class OnvifConnection {
     String ptzNodeToken = "000";
     String ptzConfigToken = "000";
     int presetTokenIndex = 0;
-    LinkedList<String> presetTokens = new LinkedList<String>();
-    LinkedList<String> mediaProfileTokens = new LinkedList<String>();
+    LinkedList<String> presetTokens = new LinkedList<>();
+    LinkedList<String> mediaProfileTokens = new LinkedList<>();
     boolean ptzDevice = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -510,7 +510,7 @@ public class OnvifConnection {
             onvifPort = Integer.parseInt(url.substring(beginIndex + 1, endIndex));
         } else {// 192.168.1.1
             ipAddress = url;
-            logger.warn("No Onvif Port found when parsing:{}", url);
+            logger.debug("No Onvif Port found when parsing:{}", url);
         }
     }
 
@@ -518,7 +518,8 @@ public class OnvifConnection {
         if (ptzDevice) {
             if (index > 0) {// 0 is reserved for HOME as cameras seem to start at preset 1.
                 if (presetTokens.isEmpty()) {
-                    logger.warn("Camera did not report any ONVIF preset locations to the binding");
+                    logger.warn("Camera did not report any ONVIF preset locations, updating preset tokens now.");
+                    sendPTZRequest("GetPresets");
                 } else {
                     presetTokenIndex = index - 1;
                     sendPTZRequest("GotoPreset");
