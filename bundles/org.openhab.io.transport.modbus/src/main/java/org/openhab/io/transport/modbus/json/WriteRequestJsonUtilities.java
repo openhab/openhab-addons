@@ -21,6 +21,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.io.transport.modbus.BitArray;
+import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
@@ -84,7 +85,8 @@ public final class WriteRequestJsonUtilities {
      * @param unitId unit id for the constructed {@link ModbusWriteRequestBlueprint}
      * @param jsonString json to be parsed in string format
      * @return collection of {@link ModbusWriteRequestBlueprint} representing the json
-     * @throws IllegalArgumentException in case of unexpected function codes
+     * @throws IllegalArgumentException in case of unexpected function codes, or too large payload exceeding modbus
+     *             protocol specification
      * @throws IllegalStateException in case of parsing errors and unexpected json structure
      *
      * @see WriteRequestJsonUtilities.JSON_FUNCTION_CODE
@@ -177,6 +179,10 @@ public final class WriteRequestJsonUtilities {
             case WRITE_MULTIPLE_COILS:
                 if (valuesElem.size() == 0) {
                     throw new IllegalArgumentException("Must provide at least one coil");
+                } else if (valuesElem.size() > ModbusConstants.MAX_BITS_WRITE_COUNT) {
+                    throw new IllegalArgumentException(
+                            String.format("Trying to write too many coils (%d). Maximum is %s", valuesElem.size(),
+                                    ModbusConstants.MAX_BITS_WRITE_COUNT));
                 }
                 BitArray bits = new BitArray(valuesElem.size());
                 for (int i = 0; i < valuesElem.size(); i++) {
@@ -194,6 +200,10 @@ public final class WriteRequestJsonUtilities {
                 ModbusRegister[] registers = new ModbusRegister[valuesElem.size()];
                 if (registers.length == 0) {
                     throw new IllegalArgumentException("Must provide at least one register");
+                } else if (valuesElem.size() > ModbusConstants.MAX_REGISTERS_WRITE_COUNT) {
+                    throw new IllegalArgumentException(
+                            String.format("Trying to write too many registers (%d). Maximum is %s", valuesElem.size(),
+                                    ModbusConstants.MAX_REGISTERS_WRITE_COUNT));
                 }
                 for (int i = 0; i < valuesElem.size(); i++) {
                     registers[i] = new ModbusRegister(valuesElem.get(i).getAsInt());
