@@ -137,10 +137,11 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
             logger.debug("WARN: Openhab may still be starting, or all cameras in the group are OFFLINE.");
             return;
         }
-        ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).lockCurrentSnapshot.lock();
+        IpCameraHandler handler = ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex);
+        handler.lockCurrentSnapshot.lock();
         try {
             ByteBuf snapshotData = Unpooled.copiedBuffer(
-                    ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).currentSnapshot);
+                    handler.currentSnapshot);
             response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
             response.headers().set(HttpHeaderNames.CACHE_CONTROL, HttpHeaderValues.NO_CACHE);
             response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
@@ -152,7 +153,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
             ByteBuf footerBbuf = Unpooled.copiedBuffer("\r\n", 0, 2, StandardCharsets.UTF_8);
             ctx.channel().writeAndFlush(footerBbuf);
         } finally {
-            ipCameraGroupHandler.cameraOrder.get(ipCameraGroupHandler.cameraIndex).lockCurrentSnapshot.unlock();
+            handler.lockCurrentSnapshot.unlock();
         }
     }
 
