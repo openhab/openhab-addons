@@ -16,7 +16,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link WlanThermoMiniConfiguration} class contains fields mapping thing configuration parameters.

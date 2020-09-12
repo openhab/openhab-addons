@@ -76,7 +76,8 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
             logger.debug("Finished initializing WlanThermo Mini!");
         } catch (Exception e) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to initialize WlanThermo Mini!");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Failed to initialize WlanThermo Mini!");
             logger.debug("Failed to initialize WlanThermo Mini!", e);
         }
     }

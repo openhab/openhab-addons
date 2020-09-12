@@ -93,7 +93,8 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
 
             logger.debug("Finished initializing WlanThermo Nano!");
         } catch (Exception e) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR, "Failed to initialize WlanThermo Nano!");
+            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Failed to initialize WlanThermo Nano!");
             logger.debug("Failed to initialize WlanThermo Nano!", e);
         }
     }
@@ -135,8 +136,8 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
-                logger.warn("Could not handle command of type {} for channel {}!",
-                        command.getClass().toGenericString(), channelUID.getId());
+                logger.warn("Could not handle command of type {} for channel {}!", command.getClass().toGenericString(),
+                        channelUID.getId());
             }
         }
     }
@@ -190,18 +191,21 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 int status = httpClient.POST(uri).content(new StringContentProvider(json), "application/json")
                         .timeout(5, TimeUnit.SECONDS).send().getStatus();
                 if (status == 401) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                     logger.warn(
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                 } else if (status != 200) {
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "+c.getName()+" on device, Statuscode "+status+" on URI "+uri.toString());
+                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
+                            + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
                     logger.warn("Failed to update channel {} on device, Statuscode {} on URI {}", c.getName(), status,
                             uri.toString());
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,"Failed to update channel "+c.getName()+" on device!");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Failed to update channel " + c.getName() + " on device!");
                 logger.warn("Failed to update channel {} on device", c.getName(), e);
             }
         }

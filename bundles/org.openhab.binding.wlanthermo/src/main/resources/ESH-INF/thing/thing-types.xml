@@ -198,6 +198,7 @@
 
 	<!-- Temperature Group Nano -->
 	<channel-group-type id="cg_temperature_nano">
+		<label>Sensor Nano</label>
 		<category>Sensor</category>
 		<channels>
 			<channel id="name" typeId="name"/>
@@ -217,6 +218,7 @@
 
 	<!-- Channel Group Temperature Mini -->
 	<channel-group-type id="cg_temperature_mini">
+		<label>Sensor Mini</label>
 		<category>Sensor</category>
 		<channels>
 			<channel id="name" typeId="name_ro"/>
@@ -373,6 +375,7 @@
 
 	<!-- Pitmaster Mini -->
 	<channel-group-type id="cg_pitmaster_mini">
+		<label>Pitmaster Mini</label>
 		<category>Sensor</category>
 		<channels>
 			<channel id="enabled" typeId="enabled"/>
@@ -417,6 +420,7 @@
 
 	<!-- Pitmaster Nano -->
 	<channel-group-type id="cg_pitmaster_nano">
+		<label>Pitmaster Nano</label>
 		<category>Sensor</category>
 		<channels>
 			<channel id="state" typeId="pitmaster_type"/>
