@@ -421,7 +421,7 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
                 try {
                     tcpConnection.connect();
                 } catch (IOException e) {
-                    logger.trace("Connection failed", e.getMessage());
+                    logger.trace("Connection failed: {}", e.getMessage());
                     unconnectedReason = e.getMessage();
                     isConnected = false;
                 }

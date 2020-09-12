@@ -88,7 +88,7 @@ public class ResolThingHandler extends BaseThingHandler {
 
         Bridge bridge = getBridge();
         if (bridge == null) {
-            logger.debug("Required bridge not defined for device {}.");
+            logger.debug("Required bridge not defined for device.");
             return null;
         } else {
             return getBridgeHandler(bridge);
