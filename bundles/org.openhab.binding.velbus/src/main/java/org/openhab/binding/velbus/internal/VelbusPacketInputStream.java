@@ -15,8 +15,9 @@ package org.openhab.binding.velbus.internal;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +28,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusPacketInputStream {
-    private Logger logger = LoggerFactory.getLogger(VelbusPacketInputStream.class);
+    private final Logger logger = LoggerFactory.getLogger(VelbusPacketInputStream.class);
 
     public InputStream inputStream;
 
-    private Byte currentSTX = null;
-    private Byte currentPriority = null;
-    private Byte currentAddress = null;
-    private Byte currentDataLength = null;
-    private List<Byte> currentData = new ArrayList<>();
-    private Byte currentChecksum = null;
+    private ArrayList<Byte> currentData = new ArrayList<Byte>();
+    private @Nullable Byte currentSTX = null;
+    private @Nullable Byte currentPriority = null;
+    private @Nullable Byte currentAddress = null;
+    private @Nullable Byte currentDataLength = null;
+    private @Nullable Byte currentChecksum = null;
 
     public VelbusPacketInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
@@ -69,7 +71,7 @@ public class VelbusPacketInputStream {
             } else if (currentDataLength == null) {
                 currentDataLength = 1;
                 currentData.add((byte) currentDataByte);
-            } else if (currentData.size() < currentDataLength) {
+            } else if (currentDataLength != null && (currentData.size() < currentDataLength)) {
                 currentData.add((byte) currentDataByte);
             } else if (currentChecksum == null) {
                 currentChecksum = (byte) currentDataByte;
@@ -93,24 +95,33 @@ public class VelbusPacketInputStream {
             }
         }
 
-        return null;
+        return new byte[0];
+    }
+
+    public void close() throws IOException {
+        inputStream.close();
     }
 
     protected byte[] getCurrentPacket() {
-        byte[] packet = new byte[6 + currentDataLength];
-        packet[0] = currentSTX;
-        packet[1] = currentPriority;
-        packet[2] = currentAddress;
-        packet[3] = currentDataLength;
+        if (currentDataLength != null && currentSTX != null && currentPriority != null && currentAddress != null
+                && currentChecksum != null) {
+            byte[] packet = new byte[6 + currentDataLength];
+            packet[0] = currentSTX;
+            packet[1] = currentPriority;
+            packet[2] = currentAddress;
+            packet[3] = currentDataLength;
 
-        for (int i = 0; i < currentDataLength; i++) {
-            packet[4 + i] = currentData.get(i);
+            for (int i = 0; i < currentDataLength; i++) {
+                packet[4 + i] = currentData.get(i);
+            }
+
+            packet[4 + currentDataLength] = currentChecksum;
+            packet[5 + currentDataLength] = VelbusPacket.ETX;
+
+            return packet;
         }
 
-        packet[4 + currentDataLength] = currentChecksum;
-        packet[5 + currentDataLength] = VelbusPacket.ETX;
-
-        return packet;
+        return new byte[0];
     }
 
     protected void resetCurrentState() {

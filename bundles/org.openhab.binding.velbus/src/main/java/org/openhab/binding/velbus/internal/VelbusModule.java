@@ -14,9 +14,12 @@ package org.openhab.binding.velbus.internal;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
@@ -28,16 +31,19 @@ import org.openhab.binding.velbus.internal.packets.VelbusChannelNameRequestPacke
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusModule {
+    private final HashMap<Integer, String[]> channelNames = new HashMap<>();
+
     private VelbusModuleAddress velbusModuleAddress;
     private byte highByteOfSerialNumber;
     private byte lowByteOfSerialNumber;
     private byte memoryMapVersion;
     private byte buildYear;
     private byte buildWeek;
+    private int numberOfChannels;
 
     private ThingTypeUID thingTypeUID;
-    private String[][] channelNames;
 
     public VelbusModule(VelbusModuleAddress velbusModuleAddress, byte moduleType, byte highByteOfSerialNumber,
             byte lowByteOfSerialNumber, byte memoryMapVersion, byte buildYear, byte buildWeek,
@@ -49,7 +55,7 @@ public class VelbusModule {
         this.buildYear = buildYear;
         this.buildWeek = buildWeek;
         this.thingTypeUID = thingTypeUID;
-        this.channelNames = new String[numberOfChannels][3];
+        this.numberOfChannels = numberOfChannels;
     }
 
     public VelbusModuleAddress getModuleAddress() {
@@ -87,14 +93,17 @@ public class VelbusModule {
     protected String getChannelName(int channelIndex) {
         String channelName = "";
 
-        for (int i = 0; i < 3; i++) {
-            String channelNamePart = channelNames[channelIndex - 1][i];
-            if (channelNamePart != null) {
-                channelName = channelName + channelNamePart;
+        Integer key = channelIndex - 1;
+        if (channelNames.containsKey(key)) {
+            for (int i = 0; i < 3; i++) {
+                String channelNamePart = channelNames.get(key)[i];
+                if (channelNamePart != null) {
+                    channelName = channelName + channelNamePart;
+                }
             }
         }
 
-        return channelName.length() > 0 ? channelName : null;
+        return channelName;
     }
 
     public void sendChannelNameRequests(VelbusBridgeHandler bridgeHandler) {
@@ -112,26 +121,30 @@ public class VelbusModule {
             }
         }
 
-        if (channelNames.length <= 8) {
-            channelNames[channelIdentifier.getChannelNumberFromBitNumber() - 1][namePartNumber - 1] = contents
-                    .toString();
-        } else {
-            channelNames[channelIdentifier.getChannelByte() - 1][namePartNumber - 1] = contents.toString();
+        Integer key = numberOfChannels <= 8 ? velbusModuleAddress.getChannelIndex(channelIdentifier)
+                : channelIdentifier.getChannelByte() - 1;
+        if (!channelNames.containsKey(key)) {
+            channelNames.put(key, new String[3]);
         }
+
+        channelNames.get(key)[namePartNumber - 1] = contents.toString();
     }
 
     public Map<String, Object> getProperties() {
         Map<String, Object> properties = new TreeMap<>();
 
-        properties.put(MODULE_ADDRESS, getAddress());
+        properties.put(ADDRESS, getAddress());
         properties.put(MODULE_SERIAL_NUMBER, getModuleSerialNumber());
         properties.put(MODULE_MEMORY_MAP_VERSION, getMemoryMapVersion());
         properties.put(MODULE_BUILD, getModuleBuild());
 
-        for (int i = 1; i <= channelNames.length; i++) {
-            String channelName = getChannelName(i);
-            if (channelName != null) {
-                properties.put(CHANNEL + i, channelName);
+        Integer[] keys = channelNames.keySet().toArray(new Integer[0]);
+        Arrays.sort(keys);
+
+        for (Integer key : keys) {
+            String channelName = getChannelName(key);
+            if (channelName.length() > 0) {
+                properties.put(CHANNEL + key, channelName);
             }
         }
 

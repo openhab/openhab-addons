@@ -12,29 +12,29 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SWITCH_BLIND_OFF;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 
 /**
- * The {@link VelbusBlindOffPacket} represents a Velbus packet that can be used to
- * stop a moving blind.
+ * The {@link VelbusFeedbackLEDPacket} represents a Velbus packet that can be used to
+ * set the feedback led (clear/set/slow blink/fast blink/very fast blink) of the given Velbus module.
  *
  * @author Cedric Boon - Initial contribution
  */
 @NonNullByDefault
-public class VelbusBlindOffPacket extends VelbusPacket {
+public class VelbusFeedbackLEDPacket extends VelbusPacket {
+    private byte command;
     private byte channel;
 
-    public VelbusBlindOffPacket(VelbusChannelIdentifier velbusChannelIdentifier) {
-        super(velbusChannelIdentifier.getAddress(), PRIO_HI);
+    public VelbusFeedbackLEDPacket(VelbusChannelIdentifier velbusChannelIdentifier, byte command) {
+        super(velbusChannelIdentifier.getAddress(), PRIO_LOW);
 
         this.channel = velbusChannelIdentifier.getChannelByte();
+        this.command = command;
     }
 
     @Override
     protected byte[] getDataBytes() {
-        return new byte[] { COMMAND_SWITCH_BLIND_OFF, channel };
+        return new byte[] { command, channel };
     }
 }

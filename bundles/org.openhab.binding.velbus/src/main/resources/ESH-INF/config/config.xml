@@ -12,6 +12,62 @@
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 			<required>true</required>
 		</parameter>
+		<parameter name="timeUpdateInterval" type="integer">
+			<label>Time Update interval</label>
+			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
+				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<default>360</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="reconnectionInterval" type="integer">
+			<label>Reconnection interval</label>
+			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
+				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="bridge-type:velbus:networkbridge">
+		<parameter name="address" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address or Hostname</label>
+			<description>IP Address or hostname of Velbus server</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="port" type="integer" required="false">
+			<label>Port</label>
+			<description>Network port to communicate with Velbus server</description>
+			<required>true</required>
+		</parameter>
+		<parameter name="timeUpdateInterval" type="integer">
+			<label>Time Update interval</label>
+			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
+				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
+			<default>360</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="reconnectionInterval" type="integer">
+			<label>Reconnection interval</label>
+			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
+				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
+			<default>15</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:temperatureSensorDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 
 	<config-description uri="thing-type:velbus:1channelDevice">
@@ -23,6 +79,25 @@
 			<label>CH1 Name</label>
 			<description>The name of CH1.</description>
 			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:1channelDeviceWithDimspeed">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="dimspeed" type="integer">
+			<label>Dimspeed</label>
+			<description>The time (in seconds) needed for dimming from 0 to 100%.</description>
+			<default>0</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -73,6 +148,43 @@
 			<label>CH4 Name</label>
 			<description>The name of CH4.</description>
 			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:4channelDeviceWithDimspeed">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="dimspeed" type="integer">
+			<label>Dimspeed</label>
+			<description>The time (in seconds) needed for dimming from 0 to 100%.</description>
+			<default>0</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
@@ -157,10 +269,165 @@
 		</parameter>
 	</config-description>
 
-	<config-description uri="thing-type:velbus:7channelDevice">
+	<config-description uri="thing-type:velbus:7channelDeviceWithCounters">
 		<parameter name="address" type="text" required="true">
 			<label>Address</label>
 			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh interval</label>
+			<description>Refresh interval for the counters (in seconds), default 300. If set to 0 or left empty, no refresh will
+				be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 Name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER1_UNIT" type="text">
+			<label>Counter 1 Unit</label>
+			<description>The unit for Counter 1.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER1_PULSE_MULTIPLIER" type="decimal">
+			<label>Counter 1 Pulse multiplier</label>
+			<description>The pulse multiplier for counter 1</description>
+			<default>1</default>
+			<options>
+				<option value="1">x1</option>
+				<option value="2.5">x2.5</option>
+				<option value="0.05">x0.05</option>
+				<option value="0.01">x0.01</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER2_UNIT" type="text">
+			<label>Counter 2 Unit</label>
+			<description>The unit for Counter 2.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER2_PULSE_MULTIPLIER" type="decimal">
+			<label>Counter 2 Pulse multiplier</label>
+			<description>The pulse multiplier for counter 2</description>
+			<default>1</default>
+			<options>
+				<option value="1">x1</option>
+				<option value="2.5">x2.5</option>
+				<option value="0.05">x0.05</option>
+				<option value="0.01">x0.01</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER3_UNIT" type="text">
+			<label>Counter 3 Unit</label>
+			<description>The unit for Counter 3.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER3_PULSE_MULTIPLIER" type="decimal">
+			<label>Counter 3 Pulse multiplier</label>
+			<description>The pulse multiplier for counter 3</description>
+			<default>1</default>
+			<options>
+				<option value="1">x1</option>
+				<option value="2.5">x2.5</option>
+				<option value="0.05">x0.05</option>
+				<option value="0.01">x0.01</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER4_UNIT" type="text">
+			<label>Counter 4 Unit</label>
+			<description>The unit for Counter 4.</description>
+			<default>kWh</default>
+			<options>
+				<option value="kWh">kWh</option>
+				<option value="liters">liters</option>
+				<option value="m³">m³</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="COUNTER4_PULSE_MULTIPLIER" type="decimal">
+			<label>Counter 4 Pulse multiplier</label>
+			<description>The pulse multiplier for counter 4</description>
+			<default>1</default>
+			<options>
+				<option value="1">x1</option>
+				<option value="2.5">x2.5</option>
+				<option value="0.05">x0.05</option>
+				<option value="0.01">x0.01</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:7channelDeviceWithTemperatureSensor">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH1" type="text">
 			<label>CH1 Name</label>
@@ -325,6 +592,98 @@
 			<label>CH9 Name</label>
 			<description>The name of CH9 (temperature sensor channel).</description>
 			<default>Temperature</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velbus:13channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="refresh" type="integer">
+			<label>Refresh interval</label>
+			<description>Refresh interval for the sensors (in seconds), default 300. If set to 0 or left empty, no refresh will
+				be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 name</label>
+			<description>The name of CH1.</description>
+			<default>CH1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 name</label>
+			<description>The name of CH2.</description>
+			<default>CH2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 name</label>
+			<description>The name of CH3.</description>
+			<default>CH3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>CH4 name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 name</label>
+			<description>The name of CH5.</description>
+			<default>CH5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 name</label>
+			<description>The name of CH6.</description>
+			<default>CH6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 name</label>
+			<description>The name of CH7.</description>
+			<default>CH7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 name</label>
+			<description>The name of CH8.</description>
+			<default>CH8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 name</label>
+			<description>The name of CH9.</description>
+			<default>CH9</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH10" type="text">
+			<label>CH10 name</label>
+			<description>The name of CH10.</description>
+			<default>CH10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH11" type="text">
+			<label>CH11 name</label>
+			<description>The name of CH11.</description>
+			<default>CH11</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH12" type="text">
+			<label>CH12 name</label>
+			<description>The name of CH12.</description>
+			<default>CH12</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH13" type="text">
+			<label>CH13 name</label>
+			<description>The name of CH13.</description>
+			<default>CH13</default>
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>

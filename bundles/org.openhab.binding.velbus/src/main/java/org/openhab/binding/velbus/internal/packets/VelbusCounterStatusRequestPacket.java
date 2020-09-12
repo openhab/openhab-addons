@@ -12,29 +12,31 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SWITCH_BLIND_OFF;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_COUNTER_STATUS_REQUEST;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 
 /**
- * The {@link VelbusBlindOffPacket} represents a Velbus packet that can be used to
- * stop a moving blind.
+ * The {@link VelbusCounterStatusRequestPacket} represents a Velbus packet that can be used to
+ * request the counter status of the given Velbus module.
  *
  * @author Cedric Boon - Initial contribution
  */
 @NonNullByDefault
-public class VelbusBlindOffPacket extends VelbusPacket {
+public class VelbusCounterStatusRequestPacket extends VelbusPacket {
     private byte channel;
 
-    public VelbusBlindOffPacket(VelbusChannelIdentifier velbusChannelIdentifier) {
-        super(velbusChannelIdentifier.getAddress(), PRIO_HI);
+    private final byte autosendTimeInterval = 0x00;
+
+    public VelbusCounterStatusRequestPacket(VelbusChannelIdentifier velbusChannelIdentifier) {
+        super(velbusChannelIdentifier.getAddress(), PRIO_LOW);
 
         this.channel = velbusChannelIdentifier.getChannelByte();
     }
 
     @Override
     protected byte[] getDataBytes() {
-        return new byte[] { COMMAND_SWITCH_BLIND_OFF, channel };
+        return new byte[] { COMMAND_COUNTER_STATUS_REQUEST, channel, autosendTimeInterval };
     }
 }

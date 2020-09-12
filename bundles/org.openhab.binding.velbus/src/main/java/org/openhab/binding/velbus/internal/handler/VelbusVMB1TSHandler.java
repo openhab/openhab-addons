@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.THING_TYPE_VMB1TS;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,18 +24,16 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
- * The {@link VelbusVMBGPHandler} is responsible for handling commands, which are
+ * The {@link VelbusVMB1TSHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Cedric Boon - Initial contribution
  */
 @NonNullByDefault
-public class VelbusVMBGPHandler extends VelbusThermostatHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMBGP1, THING_TYPE_VMBGP1_2, THING_TYPE_VMBGP2, THING_TYPE_VMBGP2_2,
-                    THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2));
+public class VelbusVMB1TSHandler extends VelbusThermostatHandler {
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB1TS));
 
-    public VelbusVMBGPHandler(Thing thing) {
-        super(thing, 4, new ChannelUID(thing.getUID(), "input#CH9"));
+    public VelbusVMB1TSHandler(Thing thing) {
+        super(thing, 0, new ChannelUID(thing.getUID(), "input#CH1"));
     }
 }

@@ -12,29 +12,31 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SWITCH_BLIND_OFF;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SENSOR_READOUT_REQUEST;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 
 /**
- * The {@link VelbusBlindOffPacket} represents a Velbus packet that can be used to
- * stop a moving blind.
+ * The {@link VelbusSensorReadoutRequestPacket} represents a Velbus packet that can be used to
+ * request the value of a sensor channel of the given Velbus module.
  *
  * @author Cedric Boon - Initial contribution
  */
 @NonNullByDefault
-public class VelbusBlindOffPacket extends VelbusPacket {
+public class VelbusSensorReadoutRequestPacket extends VelbusPacket {
+
+    private final byte autosendTimeInterval = 0x00;
+
     private byte channel;
 
-    public VelbusBlindOffPacket(VelbusChannelIdentifier velbusChannelIdentifier) {
-        super(velbusChannelIdentifier.getAddress(), PRIO_HI);
+    public VelbusSensorReadoutRequestPacket(byte address, byte channel) {
+        super(address, PRIO_LOW);
 
-        this.channel = velbusChannelIdentifier.getChannelByte();
+        this.channel = channel;
     }
 
     @Override
     protected byte[] getDataBytes() {
-        return new byte[] { COMMAND_SWITCH_BLIND_OFF, channel };
+        return new byte[] { COMMAND_SENSOR_READOUT_REQUEST, channel, autosendTimeInterval };
     }
 }

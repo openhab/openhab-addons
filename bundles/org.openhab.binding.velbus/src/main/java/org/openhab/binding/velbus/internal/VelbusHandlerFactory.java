@@ -33,10 +33,19 @@ import org.openhab.binding.velbus.internal.discovery.VelbusThingDiscoveryService
 import org.openhab.binding.velbus.internal.handler.VelbusBlindsHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusDimmerHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusNetworkBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusRelayHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusSensorHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusSensorWithAlarmClockHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusSerialBridgeHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMB1TSHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMB4ANHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMB7INHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMBELHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMBELOHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBGPHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBGPOHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMBMeteoHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBPIROHandler;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -71,7 +80,9 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
         ThingHandler thingHandler = null;
 
         if (BRIDGE_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            VelbusBridgeHandler velbusBridgeHandler = new VelbusBridgeHandler((Bridge) thing, serialPortManager);
+            VelbusBridgeHandler velbusBridgeHandler = thingTypeUID.equals(NETWORK_BRIDGE_THING_TYPE)
+                    ? new VelbusNetworkBridgeHandler((Bridge) thing)
+                    : new VelbusSerialBridgeHandler((Bridge) thing, serialPortManager);
             registerDiscoveryService(velbusBridgeHandler);
             thingHandler = velbusBridgeHandler;
         } else if (VelbusRelayHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
@@ -82,12 +93,26 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusBlindsHandler(thing);
         } else if (VelbusSensorHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusSensorHandler(thing);
+        } else if (VelbusSensorWithAlarmClockHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusSensorWithAlarmClockHandler(thing);
+        } else if (VelbusVMBMeteoHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMBMeteoHandler(thing);
         } else if (VelbusVMBGPHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBGPHandler(thing);
         } else if (VelbusVMBGPOHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBGPOHandler(thing);
         } else if (VelbusVMBPIROHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMBPIROHandler(thing);
+        } else if (VelbusVMB7INHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMB7INHandler(thing);
+        } else if (VelbusVMBELHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMBELHandler(thing);
+        } else if (VelbusVMBELOHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMBELOHandler(thing);
+        } else if (VelbusVMB4ANHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMB4ANHandler(thing);
+        } else if (VelbusVMB1TSHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMB1TSHandler(thing);
         }
 
         return thingHandler;
@@ -109,13 +134,11 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
         ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
-        if (serviceReg != null) {
-            VelbusThingDiscoveryService service = (VelbusThingDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            serviceReg.unregister();
-            if (service != null) {
-                service.deactivate();
-            }
+        VelbusThingDiscoveryService service = (VelbusThingDiscoveryService) bundleContext
+                .getService(serviceReg.getReference());
+        serviceReg.unregister();
+        if (service != null) {
+            service.deactivate();
         }
     }
 }

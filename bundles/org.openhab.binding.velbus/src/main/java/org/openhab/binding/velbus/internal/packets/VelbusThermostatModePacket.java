@@ -12,27 +12,27 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SENSOR_READOUT_REQUEST;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VelbusSensorTemperatureRequestPacket} represents a Velbus packet that can be used to
- * request the value of the temperature sensor of the given Velbus module.
+ * The {@link VelbusThermostatModePacket} represents a Velbus packet that can be used to
+ * set the mode (comfort/day/night/safe) of the given Velbus thermostat module.
  *
  * @author Cedric Boon - Initial contribution
  */
 @NonNullByDefault
-public class VelbusSensorTemperatureRequestPacket extends VelbusPacket {
+public class VelbusThermostatModePacket extends VelbusPacket {
 
-    private final byte autosendTimeInterval = 0x00;
+    private byte commandByte;
 
-    public VelbusSensorTemperatureRequestPacket(byte address) {
+    public VelbusThermostatModePacket(byte address, byte commandByte) {
         super(address, PRIO_LOW);
+
+        this.commandByte = commandByte;
     }
 
     @Override
     protected byte[] getDataBytes() {
-        return new byte[] { COMMAND_SENSOR_READOUT_REQUEST, autosendTimeInterval };
+        return new byte[] { commandByte, 0x00, 0x00 };
     }
 }

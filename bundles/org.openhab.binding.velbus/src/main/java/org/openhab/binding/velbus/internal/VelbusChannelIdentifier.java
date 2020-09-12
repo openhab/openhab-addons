@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.velbus.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VelbusChannelIdentifier} represents a class with properties that uniquely identify a channel.
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusChannelIdentifier {
 
     private byte address;

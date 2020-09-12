@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.velbus.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VelbusPacketListener} is notified when a Velbus packet for
  * the listener's address is sent on the bus.
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public interface VelbusPacketListener {
     /**
      * This method is called whenever the state of the given relay has changed.
