@@ -599,6 +599,8 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellySettingsStatus {
+        public String name; // FW 1.8: Symbolic Device name is configurable
+
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi client configuration. See /settings/sta for details
 
@@ -687,6 +689,7 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyShortStatusRelay {
+        public String name; // FW 1.8+: Channel could now have a logical name
         @SerializedName("is_valid")
         public Boolean isValid;
         public Boolean ison; // Whether output channel is on or off
@@ -712,6 +715,8 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyStatusRelay {
+        public String name; // FW 1.8: Symbolic channel name is configurable
+
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi status
         // public ShellyStatusCloud cloud; // Cloud status
@@ -780,6 +785,8 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyControlRoller {
+        public String name; // FW 1.8: Symbolic name is configurable
+
         @SerializedName("roller_pos")
         public Integer rollerPos; // number Desired position in percent
         public Integer duration; // If specified, the motor will move for this period in seconds. If missing, the
