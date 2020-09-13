@@ -129,6 +129,25 @@
 		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
 	</thing-type>
 
+	<thing-type id="vmb1rys">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="networkbridge"/>
+		</supported-bridge-type-refs>
+
+		<label>VMB1RYS</label>
+		<description>1-channel relay module</description>
+		<channels>
+			<channel id="CH1" typeId="switch"/>
+			<channel id="CH2" typeId="switch"/>
+			<channel id="CH3" typeId="switch"/>
+			<channel id="CH4" typeId="switch"/>
+			<channel id="CH5" typeId="switch"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:velbus:5channelDevice"/>
+	</thing-type>
+
 	<thing-type id="vmb1ts">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>

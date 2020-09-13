@@ -1,10 +1,11 @@
 # Velbus Binding
 
-The Velbus binding integrates with a [Velbus](https://www.velbus.eu/) system through a Velbus configuration module (VMB1USB or VMB1RS) or a network connection (TCP/IP).
+The Velbus binding integrates with a [Velbus](https://www.velbus.eu/) system through a Velbus configuration module (VMBRSUSB, VMB1USB or VMB1RS) or a network connection (TCP/IP).
 
 The binding has been tested with a USB configuration module for universal mounting (VMB1USB).
+For optimal stability, the preferred configuration module is the VMBRSUSB module.
 
-The binding exposes basic actions from the Velbus System that can be triggered from the smartphone/tablet interface, as defined by the Velbus Protocol info sheets.
+The binding exposes basic actions from the Velbus System that can be triggered from the smartphone/tablet interface, as defined by the [Velbus Protocol info sheets](https://github.com/velbus).
 
 Supported item types are switches, dimmers and rollershutters.
 Pushbutton, temperature sensors and input module states are retrieved and made available in the binding.
@@ -12,12 +13,12 @@ Pushbutton, temperature sensors and input module states are retrieved and made a
 ## Supported Things
 
 
-A Velbus configuration module (e.g. VMB1USB) or a network server (e.g. [velserv](https://github.com/StefCoene/velserver/wiki/TCP-server-for-Velbus)) is required as a "bridge" for accessing any other Velbus devices.
+A Velbus configuration module (e.g. VMBRSUSB) or a network server (e.g. [velserv](https://github.com/StefCoene/velserver/wiki/TCP-server-for-Velbus)) is required as a "bridge" for accessing any other Velbus devices.
 
 The supported Velbus devices are:
 
 ```
-vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
+vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
 ```
 
 The type of a specific device can be found in the configuration section for things in the Paper UI. It is part of the unique thing id which could look like:
@@ -89,7 +90,7 @@ or nested in the bridge configuration:
 The following thing types are valid for configuration:
 
 ```
-vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
+vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
 ```
 
 `thingId` is the hexadecimal Velbus address of the thing.
@@ -142,7 +143,7 @@ OnOff command types are supported.
 For thing type `vmb4ry` 4 channels are available `CH1` ... `CH4`.
 OnOff command types are supported.
 
-For thing types `vmb1ryno`, `vmb1rynos`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
+For thing types `vmb1ryno`, `vmb1rynos`, `vmb1rys`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
 OnOff command types are supported.
 
 The module `vmb1ts` has a number of channels to set the module's thermostat (`thermostat:CURRENTTEMPERATURESETPOINT`, `thermostat:HEATINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEDAYTEMPERATURESETPOINT`, `thermostat:HEATINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEANTIFROSTTEMPERATURESETPOINT`, `thermostat:COOLINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:COOLINGMODEDAYTEMPERATURESETPOINT`, `thermostat:COOLINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:COOLINGMODESAFETEMPERATURESETPOINT`, `thermostat:OPERATINGMODE` and `thermostat:MODE`) and thermostat trigger channels: `thermostat:HEATER`, `thermostat:BOOST`, `thermostat:PUMP`, `thermostat:COOLER`, `thermostat:ALARM1`, `thermostat:ALARM2`, `thermostat:ALARM3`, `thermostat:ALARM4`.

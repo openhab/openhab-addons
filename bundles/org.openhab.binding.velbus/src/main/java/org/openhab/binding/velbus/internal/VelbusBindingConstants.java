@@ -43,6 +43,7 @@ public class VelbusBindingConstants {
     public static final ThingTypeUID THING_TYPE_VMB1RY = new ThingTypeUID(BINDING_ID, "vmb1ry");
     public static final ThingTypeUID THING_TYPE_VMB1RYNO = new ThingTypeUID(BINDING_ID, "vmb1ryno");
     public static final ThingTypeUID THING_TYPE_VMB1RYNOS = new ThingTypeUID(BINDING_ID, "vmb1rynos");
+    public static final ThingTypeUID THING_TYPE_VMB1RYS = new ThingTypeUID(BINDING_ID, "vmb1rys");
     public static final ThingTypeUID THING_TYPE_VMB1TS = new ThingTypeUID(BINDING_ID, "vmb1ts");
     public static final ThingTypeUID THING_TYPE_VMB2BL = new ThingTypeUID(BINDING_ID, "vmb2bl");
     public static final ThingTypeUID THING_TYPE_VMB2BLE = new ThingTypeUID(BINDING_ID, "vmb2ble");
@@ -85,9 +86,9 @@ public class VelbusBindingConstants {
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(BRIDGE_THING_TYPE, NETWORK_BRIDGE_THING_TYPE)));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB1DM,
-                    THING_TYPE_VMB1LED, THING_TYPE_VMB1RY, THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS, THING_TYPE_VMB1TS,
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB1DM, THING_TYPE_VMB1LED,
+                    THING_TYPE_VMB1RY, THING_TYPE_VMB1RYNO, THING_TYPE_VMB1RYNOS, THING_TYPE_VMB1RYS, THING_TYPE_VMB1TS,
                     THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE, THING_TYPE_VMB2PBN, THING_TYPE_VMB4AN, THING_TYPE_VMB4DC,
                     THING_TYPE_VMB4RY, THING_TYPE_VMB4RYLD, THING_TYPE_VMB4RYNO, THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN,
                     THING_TYPE_VMB7IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB, THING_TYPE_VMB8PBU, THING_TYPE_VMBDME,
@@ -143,6 +144,7 @@ public class VelbusBindingConstants {
     public static final byte MODULE_TYPE_VMBGP4_2 = 0x3C;
     public static final byte MODULE_TYPE_VMBGPOD_2 = 0x3D;
     public static final byte MODULE_TYPE_VMBGP4PIR_2 = 0x3E;
+    public static final byte MODULE_TYPE_VMB1RYS = 0x41;
 
     // Velbus commands
     public static final byte COMMAND_PUSH_BUTTON_STATUS = 0x00;
