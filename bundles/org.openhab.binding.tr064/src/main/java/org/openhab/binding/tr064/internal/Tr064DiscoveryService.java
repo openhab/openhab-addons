@@ -18,13 +18,16 @@ import static org.openhab.binding.tr064.internal.Tr064BindingConstants.THING_TYP
 import java.util.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.util.UIDUtils;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
+import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
+import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,17 +37,27 @@ import org.slf4j.LoggerFactory;
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public class Tr064DiscoveryService extends AbstractDiscoveryService {
+public class Tr064DiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
     private static final int SEARCH_TIME = 5;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_SUBDEVICE);
 
     private final Logger logger = LoggerFactory.getLogger(Tr064DiscoveryService.class);
+    private @Nullable Tr064RootHandler bridgeHandler;
 
-    private final Tr064RootHandler bridgeHandler;
-
-    public Tr064DiscoveryService(Tr064RootHandler bridgeHandler) {
+    public Tr064DiscoveryService() {
         super(SEARCH_TIME);
-        this.bridgeHandler = bridgeHandler;
+    }
+
+    @Override
+    public void setThingHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof Tr064RootHandler) {
+            this.bridgeHandler = (Tr064RootHandler) thingHandler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 
     @Override
@@ -59,6 +72,11 @@ public class Tr064DiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
+        Tr064RootHandler bridgeHandler = this.bridgeHandler;
+        if (bridgeHandler == null) {
+            logger.warn("Could not start discovery, bridge handler not set");
+            return;
+        }
         List<SCPDDeviceType> devices = bridgeHandler.getAllSubDevices();
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
         devices.forEach(device -> {
@@ -66,12 +84,10 @@ public class Tr064DiscoveryService extends AbstractDiscoveryService {
             String udn = device.getUDN();
             if (udn != null) {
                 ThingTypeUID thingTypeUID;
-                switch (device.getDeviceType()) {
-                    case "urn:dslforum-org:device:LANDevice:1":
-                        thingTypeUID = THING_TYPE_SUBDEVICE_LAN;
-                        break;
-                    default:
-                        thingTypeUID = THING_TYPE_SUBDEVICE;
+                if ("urn:dslforum-org:device:LANDevice:1".equals(device.getDeviceType())) {
+                    thingTypeUID = THING_TYPE_SUBDEVICE_LAN;
+                } else {
+                    thingTypeUID = THING_TYPE_SUBDEVICE;
                 }
                 ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, UIDUtils.encode(udn));
 

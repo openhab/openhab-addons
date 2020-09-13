@@ -20,8 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.tr064.internal.Tr064BindingConstants;
 import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescription;
 
@@ -48,13 +48,13 @@ public class ChannelListUtilTest {
                         try {
                             writer.write(channelString);
                         } catch (IOException e) {
-                            Assert.fail(e.getMessage());
+                            Assertions.fail(e.getMessage());
                         }
                     });
 
             writer.close();
         } catch (IOException e) {
-            Assert.fail(e.getMessage());
+            Assertions.fail(e.getMessage());
         }
     }
 }

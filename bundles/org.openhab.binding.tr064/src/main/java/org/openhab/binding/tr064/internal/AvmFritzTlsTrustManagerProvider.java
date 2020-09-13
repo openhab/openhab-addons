@@ -15,8 +15,8 @@ package org.openhab.binding.tr064.internal;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.io.net.http.TlsTrustManagerProvider;
-import org.eclipse.smarthome.io.net.http.TrustAllTrustMananger;
+import org.openhab.core.io.net.http.TlsTrustManagerProvider;
+import org.openhab.core.io.net.http.TrustAllTrustMananger;
 import org.osgi.service.component.annotations.Component;
 
 /**

@@ -16,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.tr064.internal.dto.config.ChannelTypeDescription;
 import org.openhab.binding.tr064.internal.util.Util;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link Tr064BindingConstants} class defines common constants, which are

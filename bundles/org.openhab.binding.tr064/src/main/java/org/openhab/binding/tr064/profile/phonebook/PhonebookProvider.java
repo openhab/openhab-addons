@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link PhonebookProvider} interface provides methods to lookup a phone number from a phonebook

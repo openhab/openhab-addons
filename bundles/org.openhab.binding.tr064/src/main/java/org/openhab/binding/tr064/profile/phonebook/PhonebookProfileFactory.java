@@ -20,16 +20,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.profiles.Profile;
-import org.eclipse.smarthome.core.thing.profiles.ProfileCallback;
-import org.eclipse.smarthome.core.thing.profiles.ProfileContext;
-import org.eclipse.smarthome.core.thing.profiles.ProfileFactory;
-import org.eclipse.smarthome.core.thing.profiles.ProfileType;
-import org.eclipse.smarthome.core.thing.profiles.ProfileTypeBuilder;
-import org.eclipse.smarthome.core.thing.profiles.ProfileTypeProvider;
-import org.eclipse.smarthome.core.thing.profiles.ProfileTypeUID;
 import org.openhab.binding.tr064.profile.phonebook.internal.PhonebookProfile;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.profiles.Profile;
+import org.openhab.core.thing.profiles.ProfileCallback;
+import org.openhab.core.thing.profiles.ProfileContext;
+import org.openhab.core.thing.profiles.ProfileFactory;
+import org.openhab.core.thing.profiles.ProfileType;
+import org.openhab.core.thing.profiles.ProfileTypeBuilder;
+import org.openhab.core.thing.profiles.ProfileTypeProvider;
+import org.openhab.core.thing.profiles.ProfileTypeUID;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +59,8 @@ public class PhonebookProfileFactory implements ProfileFactory, ProfileTypeProvi
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return Collections
-                .singleton(ProfileTypeBuilder.newState(PhonebookProfile.PHONEBOOK_PROFILE_TYPE_UID,
-                        PhonebookProfile.PHONEBOOK_PROFILE_TYPE_UID.getId()).build());
+        return Collections.singleton(ProfileTypeBuilder.newState(PhonebookProfile.PHONEBOOK_PROFILE_TYPE_UID,
+                PhonebookProfile.PHONEBOOK_PROFILE_TYPE_UID.getId()).build());
     }
 
     /**
