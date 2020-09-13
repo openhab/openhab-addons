@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
@@ -44,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.resol.vbus.Connection;
+import de.resol.vbus.Connection.ConnectionState;
 import de.resol.vbus.ConnectionAdapter;
 import de.resol.vbus.Packet;
 import de.resol.vbus.Specification;
@@ -141,40 +141,33 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
     private Map<String, ResolThingHandler> thingHandlerMap = new HashMap<String, ResolThingHandler>();
 
     public void registerResolThingListener(ResolThingHandler thingHandler) {
-        if (thingHandler == null) {
-            throw new IllegalArgumentException("It's not allowed to pass a null ThingHandler.");
+        Thing t = thingHandler.getThing();
+
+        String thingType = t.getUID().getId();
+
+        if (!thingHandlerMap.containsKey(thingType)) {
+            thingHandlerMap.put(thingType, thingHandler);
+            logger.trace("register thingHandler for thing: {}", thingType);
+            updateThingHandlerStatus(thingHandler, this.getStatus());
         } else {
-            Thing t = thingHandler.getThing();
-
-            String thingType = t.getProperties().get("type");
-
-            if (thingHandlerMap.get(thingType) == null) {
-                thingHandlerMap.put(thingType, thingHandler);
-                logger.trace("register thingHandler for thing: {}", thingType);
-                updateThingHandlerStatus(thingHandler, this.getStatus());
-            } else {
-                logger.trace("thingHandler for thing: '{}' allready registerd", thingType);
-            }
-
+            logger.trace("thingHandler for thing: '{}' allready registerd", thingType);
         }
     }
 
     public void unregisterThingListener(ResolThingHandler thingHandler) {
-        if (thingHandler != null) {
-            String thingID = thingHandler.getThing().getUID().getId();
-            if (thingHandlerMap.remove(thingID) == null) {
-                logger.trace("thingHandler for thing: {} not registered", thingID);
-            } else {
-                thingHandler.updateStatus(ThingStatus.OFFLINE);
-            }
+        String thingID = thingHandler.getThing().getUID().getId();
+        if (!thingHandlerMap.containsKey(thingID)) {
+            logger.trace("thingHandler for thing: {} not registered", thingID);
+        } else {
+            thingHandler.updateStatus(ThingStatus.OFFLINE);
         }
     }
 
-    private void updateThingHandlerStatus(@NonNull ResolThingHandler thingHandler, @NonNull ThingStatus status) {
+    private void updateThingHandlerStatus(ResolThingHandler thingHandler, ThingStatus status) {
         thingHandler.updateStatus(status);
     }
 
-    private void updateThingHandlersStatus(@NonNull ThingStatus status) {
+    private void updateThingHandlersStatus(ThingStatus status) {
         for (Map.Entry<String, ResolThingHandler> entry : thingHandlerMap.entrySet()) {
             entry.getValue().updateStatus(status);
         }
@@ -220,8 +213,8 @@ public class ResolBridgeHandler extends BaseBridgeHandler {
 
                             @Override
                             public void connectionStateChanged(@Nullable Connection connection) {
-                                isConnected = (tcpConnection.getConnectionState()
-                                        .equals(Connection.ConnectionState.CONNECTED));
+                                ConnectionState x = tcpConnection.getConnectionState();
+                                isConnected = (x.equals(Connection.ConnectionState.CONNECTED));
                                 logger.trace("Connection state changed to: {} isConnected = {}",
                                         tcpConnection.getConnectionState().toString(), isConnected);
                                 if (isConnected) {
