@@ -18,7 +18,7 @@
 				<context>network-address</context>
 				<label>VBus-LAN adapter live data port</label>
 				<description>Port for live data on the LAN gateway</description>
-				<default>3000</default>
+				<default>7053</default>
 			</parameter>
 			<parameter name="adapterSerial" type="text" required="true">
 				<label>AdapterSerial</label>
