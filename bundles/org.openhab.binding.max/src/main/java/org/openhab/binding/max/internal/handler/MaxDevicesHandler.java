@@ -44,7 +44,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.max.internal.actions.MaxDevicesActions;
+import org.openhab.binding.max.actions.MaxDevicesActions;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.QCommand;
 import org.openhab.binding.max.internal.command.SConfigCommand;

@@ -54,7 +54,7 @@ public class MaxDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
+    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
         if (handler instanceof MaxCubeBridgeHandler) {
             this.maxCubeBridgeHandler = (MaxCubeBridgeHandler) handler;
         }

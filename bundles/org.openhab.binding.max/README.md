@@ -144,7 +144,10 @@ On the MAX! devices you can trigger the following action
 
 *   `deleteFromCube()`: _Delete Device from Cube_ deletes the device from the MAX! Cube. Device will need to be included again!
 
-### Example rule:
+Note: In Paper UI there are no action buttons.
+You can trigger these actions changing from 'No Action' in the dropdown to the action value.
+
+### Example Rule
 
 demo.rules:
 

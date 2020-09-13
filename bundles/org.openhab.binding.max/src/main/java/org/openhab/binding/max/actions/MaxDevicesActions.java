@@ -10,13 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.max.internal.actions;
+package org.openhab.binding.max.actions;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.max.internal.actions.IMaxDevicesActions;
 import org.openhab.binding.max.internal.handler.MaxDevicesHandler;
 import org.openhab.core.automation.annotation.ActionOutput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -30,7 +34,7 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "max-devices")
 @NonNullByDefault
-public class MaxDevicesActions implements ThingActions {
+public class MaxDevicesActions implements ThingActions, IMaxDevicesActions {
 
     private final Logger logger = LoggerFactory.getLogger(MaxDevicesActions.class);
 
@@ -48,22 +52,38 @@ public class MaxDevicesActions implements ThingActions {
         return this.handler;
     }
 
+    @Override
     @RuleAction(label = "Delete Device from Cube", description = "Deletes the device from the MAX! Cube. Device will need to be included again!")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean deleteFromCube() {
-        MaxDevicesHandler localHandler = handler;
-        if (localHandler == null) {
+        MaxDevicesHandler actionsHandler = handler;
+        if (actionsHandler == null) {
             logger.info("MaxDevicesActions: Action service ThingHandler is null!");
             return false;
         }
-        localHandler.deviceDelete();
+        actionsHandler.deviceDelete();
         return true;
     }
 
     public static boolean deleteFromCube(@Nullable ThingActions actions) {
-        if (actions instanceof MaxDevicesActions) {
-            return ((MaxDevicesActions) actions).deleteFromCube();
-        } else {
-            throw new IllegalArgumentException("Instance is not of class MaxCubeActions.");
+        return invokeMethodOf(actions).deleteFromCube();
+    }
+
+    private static IMaxDevicesActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(MaxDevicesActions.class.getName())) {
+            if (actions instanceof IMaxDevicesActions) {
+                return (IMaxDevicesActions) actions;
+            } else {
+                return (IMaxDevicesActions) Proxy.newProxyInstance(IMaxDevicesActions.class.getClassLoader(),
+                        new Class[] { IMaxDevicesActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of MaxDevicesActions");
     }
 }
