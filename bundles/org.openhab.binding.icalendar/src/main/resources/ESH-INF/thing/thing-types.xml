@@ -133,7 +133,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="calendar"/>
 		</supported-bridge-type-refs>
-		<label>Filtered Events</label>
+		<label>Event filter</label>
 		<description>Filtered Events from the calendar</description>
 
 		<config-description>
@@ -166,7 +166,7 @@
 					<option value="WEEK">week</option>
 				</options>
 				<default>hour</default>
-				<label>Date or Time Unit</label>
+				<label>Date or Time Unit for start and end</label>
 			</parameter>
 			<parameter name="datetimeStart" type="integer" groupName="datetime_based">
 				<label>Start</label>
@@ -199,12 +199,12 @@
 			<parameter name="textValueType" type="text" groupName="text_based">
 				<limitToOptions>true</limitToOptions>
 				<options>
-					<option value="REGEX">regex</option>
+					<option value="REGEX">regular expression</option>
 					<option value="TEXT">text</option>
 				</options>
 				<default>text</default>
 				<label>Value type</label>
-				<description>"text" checks the value for containment, "regex" matches whole value</description>
+				<description>"text" checks the value for containment, "regular expression" matches whole value</description>
 			</parameter>
 		</config-description>
 	</thing-type>
