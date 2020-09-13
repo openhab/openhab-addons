@@ -29,9 +29,6 @@ public class UPBMessage {
 
     /**
      * An enum of possible modem response types.
-     *
-     * @author cvanorman
-     *
      */
     public enum Type {
         ACCEPT("PA"),
