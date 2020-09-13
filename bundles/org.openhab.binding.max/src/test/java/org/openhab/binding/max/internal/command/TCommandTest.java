@@ -14,7 +14,8 @@ package org.openhab.binding.max.internal.command;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.net.util.Base64;
+import java.util.Base64;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
@@ -44,7 +45,7 @@ public class TCommandTest {
         String commandStr = scmd.getCommandString();
 
         String base64Data = commandStr.split(",")[2];
-        byte[] bytes = Base64.decodeBase64(base64Data.getBytes());
+        byte[] bytes = Base64.getDecoder().decode(base64Data.trim().getBytes());
         int[] data = new int[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             data[i] = bytes[i] & 0xFF;
@@ -63,7 +64,7 @@ public class TCommandTest {
         String commandStr = scmd.getCommandString();
 
         String base64Data = commandStr.split(",")[2];
-        byte[] bytes = Base64.decodeBase64(base64Data.getBytes());
+        byte[] bytes = Base64.getDecoder().decode(base64Data.trim().getBytes());
         int[] data = new int[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             data[i] = bytes[i] & 0xFF;

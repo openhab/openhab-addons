@@ -19,13 +19,13 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.util.Base64;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -70,7 +70,7 @@ public final class CMessage extends Message {
 
         rfAddress = tokens[0];
 
-        byte[] bytes = Base64.decodeBase64(tokens[1].getBytes(StandardCharsets.UTF_8));
+        byte[] bytes = Base64.getDecoder().decode(tokens[1].getBytes(StandardCharsets.UTF_8));
 
         int[] data = new int[bytes.length];
 

@@ -44,7 +44,6 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
 
     private static final String SUBCMD_BACKUP = "backup";
     private static final String SUBCMD_REBOOT = "reboot";
-
     private final ThingRegistry thingRegistry;
 
     @Activate

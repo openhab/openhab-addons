@@ -14,9 +14,9 @@ package org.openhab.binding.max.internal.message;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
-import org.apache.commons.net.util.Base64;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceInformation;
@@ -51,7 +51,7 @@ public final class MMessage extends Message {
             return;
         }
         try {
-            byte[] bytes = Base64.decodeBase64(tokens[2].getBytes(StandardCharsets.UTF_8));
+            byte[] bytes = Base64.getDecoder().decode(tokens[2].trim().getBytes(StandardCharsets.UTF_8));
 
             hasConfiguration = true;
             logger.trace("*** M Message trace**** ");

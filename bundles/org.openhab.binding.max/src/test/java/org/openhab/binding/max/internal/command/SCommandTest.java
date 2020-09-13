@@ -14,7 +14,9 @@ package org.openhab.binding.max.internal.command;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.net.util.Base64;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
@@ -43,8 +45,8 @@ public class SCommandTest {
 
         String commandStr = scmd.getCommandString();
 
-        String base64Data = commandStr.substring(3);
-        byte[] bytes = Base64.decodeBase64(base64Data.getBytes());
+        String base64Data = commandStr.substring(2).trim();
+        byte[] bytes = Base64.getDecoder().decode(base64Data.getBytes(StandardCharsets.UTF_8));
 
         int[] data = new int[bytes.length];
 
@@ -54,7 +56,7 @@ public class SCommandTest {
 
         String decodedString = Utils.toHex(data);
         assertEquals("s:AARAAAAACw2jAWg=\r\n", commandStr);
-        assertEquals("011000000002C368C05A", decodedString);
+        assertEquals("0004400000000B0DA30168", decodedString);
     }
 
     @Test
