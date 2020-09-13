@@ -166,7 +166,9 @@ public class ConnectedDriveConstants {
     public static final String HEADING = "heading";
 
     // Image
-    public static final String IMAGE = "png";
+    public static final String IMAGE_FORMAT = "png";
+    public static final String IMAGE_VIEWPORT = "view";
+    public static final String IMAGE_SIZE = "size";
 
     // Remote Services
     public static final String REMOTE_SERVICE_LIGHT_FLASH = "light";

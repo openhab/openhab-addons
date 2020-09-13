@@ -14,6 +14,8 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -108,6 +110,17 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // Image
     protected ChannelUID imageChannel;
+    protected ChannelUID imageViewportChannel;
+    protected ChannelUID imageSizeChannel;
+
+    // Data Caches
+    protected Optional<String> vehicleStatusCache = Optional.empty();
+    protected Optional<String> lastTripCache = Optional.empty();
+    protected Optional<String> allTripsCache = Optional.empty();
+    protected Optional<String> chargeProfileCache = Optional.empty();
+    protected Optional<String> rangeMapCache = Optional.empty();
+    protected Optional<String> destinationCache = Optional.empty();
+    protected Optional<byte[]> imageCache = Optional.empty();
 
     public VehicleChannelHandler(Thing thing) {
         super(thing);
@@ -185,7 +198,9 @@ public class VehicleChannelHandler extends BaseThingHandler {
         destinationLat3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_3);
         destinationLon3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_3);
 
-        imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE);
+        imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT);
+        imageViewportChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT);
+        imageSizeChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_SIZE);
 
         vehicleFingerPrint = new ChannelUID(thing.getUID(), CHANNEL_GROUP_TROUBLESHOOT, VEHICLE_FINGERPRINT);
     }

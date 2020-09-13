@@ -121,14 +121,6 @@ public class VehicleStatus {
         return cbs;
     }
 
-    private Object getUnit(boolean imperial) {
-        if (imperial) {
-            return MILES_SHORT;
-        } else {
-            return KM_SHORT;
-        }
-    }
-
     public String getCheckControl() {
         if (checkControlMessages == null) {
             return Converter.toTitleCase(UNKNOWN);

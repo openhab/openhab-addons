@@ -16,7 +16,7 @@ Different Channel Groups are available so you are able to cross-check which grou
 
 Please note **this isn't a _real-time_ Binding**. 
 If you open the Door the state isn't transmitted immediately and shown in your GUI. 
-This isn't a flaw in the Binding itself because the state in BMWs own ConnectedDrive App is also updated with delay. 
+This isn't a flaw in the Binding itself because the state in BMWs own ConnectedDrive App is also updated with some delay. 
 
 ## Supported Things
 
@@ -56,7 +56,7 @@ Also _LastDestinations_ is mentioned in _Supported Services_ so it's valid to co
 Basically 3 Types of Information are registered as Properties
 
 * Informations regarding your Dealer with Address and Phone Number
-* Which services are available or not available
+* Which services are available / not available
 * Vehicle Properties like Color, Model Type, Drive Train and Construction Year
 
 ## Discovery
@@ -114,20 +114,23 @@ Possible values are
 
 There are many Channels available for each Vehicle. 
 For better overview they are clustered in different Channel Groups.
-The Channel Groups are different for the Vehicle Types but also depends on the build in Sensors of your Vehicle.
-This means also the Construction Year is relevant if some Channels are supported or not.
+The Channel Groups are different for the Vehicle Types, on the build in Sensors of your Vehicle and the activated Services.
 
 ### Bridge Channels
 
+If your Vehicle isn't found in the Discovery force a log of Fingerprint Data which helps analyzing the problem.
+Please check [TroubleShooting Section](#TroubleShooting) for further advice.
+
 | Channel Label         | Channel ID            | Type   | Description                                       |
 |-----------------------|-----------------------|--------|---------------------------------------------------|
-| Door Status           | discovery-fingerprint | Switch | Forcing a log entry to analyze Discovery Problems |
+| Discovery Fingerprint | discovery-fingerprint | Switch | Forcing a log entry to analyze Discovery Problems |
 
 ### Thing Channel Groups 
 
 #### Channel Group _Vehicle Status_
 
-Available for all Vehicles.
+Reflects Status of your Vehicle.
+Available for all Vehicles, Read-only.
 
 | Channel Label             | Channel Group ID | Channel ID          | Type          | Description                                                          |
 |---------------------------|------------------|---------------------|---------------|----------------------------------------------------------------------|
@@ -148,6 +151,7 @@ See [further details for DateTime](#last-status-update-timestamp) in case of wro
 Based on Vehicle Type (Thing Type ID) some Channels are presented or not. 
 For Conventional Fuel Vehicles the *Electric Range* isn't presented while for Battery Electric Vehicles *Range Fuel* isn't valid.
 Hybrid Vehicles have both and in addition *Hybrid Range*
+These are Read-only values.
 
 | Channel Label         | Channel Group ID | Channel ID            | Type                 | CONV | PHEV | BEV_REX | BEV |
 |-----------------------|------------------|-----------------------|----------------------|------|------|---------|-----|
@@ -166,6 +170,7 @@ See Description [Range vs. Range Radius](#range-vs.-range-radius) to get more in
 #### Channel Group _Charge Profile_
 
 Valid for Electric and Hybrid Vehicles
+These are Read-only values.
 
 | Channel Label                      | Channel Group ID | Channel ID          | Type   | 
 |------------------------------------|------------------|---------------------|--------|
@@ -187,6 +192,7 @@ Valid for Electric and Hybrid Vehicles
 #### Channel Group _Location_
 
 Available for all Vehicles.
+These are Read-only values.
 
 | Channel Label  | Channel Group ID | Channel ID          | Type         | 
 |----------------|------------------|---------------------|--------------|
@@ -194,12 +200,10 @@ Available for all Vehicles.
 | Longitude      | location         | longitude           | Number       |
 | Heading        | location         | heading             | Number:Angle | 
 
-#### Channel Group _Cha_
-
-
 #### Channel Group _Last Trip_
 
 Check in your Vehicle Thing Properties if *Statistics* is present in *Services Supported*
+These are Read-only values.
 
 | Channel Label               | Channel Group ID | Channel ID              | Type          | Description                                       |
 |-----------------------------|------------------|-------------------------|---------------|---------------------------------------------------|
@@ -212,6 +216,7 @@ Check in your Vehicle Thing Properties if *Statistics* is present in *Services S
 #### Channel Group _Lifetime Statistics_
 
 Check in your Vehicle Thing Properties if *Statistics* is present in *Services Supported*
+These are Read-only values.
 
 | Channel Label                      | Channel Group ID | Channel ID               | Type          | Description                                       |
 |------------------------------------|------------------|--------------------------|---------------|---------------------------------------------------|
@@ -242,6 +247,7 @@ State *Executed* is the final State when Execution is finished.
 #### Channel Group _Destinations_
 
 Check in your Vehicle Thing Properties if *LastDestinations* is present in *Services Supported*
+These are Read-only values.
 
 | Channel Label                        | Channel Group ID | Channel ID          | Type    | 
 |--------------------------------------|------------------|---------------------|---------|
@@ -259,15 +265,21 @@ Check in your Vehicle Thing Properties if *LastDestinations* is present in *Serv
 #### Channel Group _Image_
 
 Available for all Vehicles.
+Picture can be modified regarding *Viewport* and *Size*.
+See [Things Section](#Things) for Viewport possibilities and [Status Image](#status-image) for possible Use Cases.
 
 | Channel Label                 | Channel Group ID | Channel ID          | Type   | 
 |-------------------------------|------------------|---------------------|--------|
 | Rendered Image of your Vehicle| image            | png                 | Image  |
+| Image Viewport                | image            | view                | String |
+| Image Picture Size            | image            | size                | Number |
+
 
 #### Channel Group _Troubleshooting_
 
-Available for all Vehicles - really!
-Please check [TroubleShooting Section](#TroubleShooting) for further advice
+Available for all Vehicles!
+Switch will log a *Vehicle Data Fingerprint* into the openHAB log.
+Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 | Channel Label                       | Channel Group ID | Channel ID          | Type   | Description                                       |
 |-------------------------------------|------------------|---------------------|--------|---------------------------------------------------|
@@ -361,7 +373,7 @@ Exchange the 3 configuration parameters in the Things section
 * YOUR_PASSWORD - with your ConnectedDrive Password Credentials
 * VEHICLE_VIN - the Vehicle Identification Number
 
-and you're ready to go!
+In addition search for all occurences of *i3* and replace it with your Vehilce Identification like *x3* or *535d* and you're ready to go!
 
 ### Things
 
@@ -390,12 +402,13 @@ DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"  
 String                  i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-mileage" }
 String                  i3ServiceName             "Service Name [%s]"                           <text>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-name" }
 String                  i3CheckControl            "Check Control [%s]"                          <error>      (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#check-control" }
+String                  i3ChargingStatus          "Charging [%s]"                               <energy>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#charge" } 
 DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#last-update"}
 
-Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>     (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance" }                                                                           
-Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>     (i3,long)    {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance-since-charging" }                                                                           
-Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>   (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-consumption" }                                                                           
-Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>   (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-recuperation" }                                                                           
+Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>       (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance" }                                                                           
+Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>       (i3,long)    {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance-since-charging" }                                                                           
+Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>     (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-consumption" }                                                                           
+Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>     (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-recuperation" }                                                                           
 
 Number:Length           i3CumulatedElectric       "Electric Distance Driven [%d %unit%]"        <line>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#cumulated-driven-distance" }                                                                           
 Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#single-longest-distance" }                                                                           
@@ -424,9 +437,8 @@ String                  i3Dest3Name               "Destination 3 [%s]"          
 Number                  i3Dest3Lat                "Longitude [%.4f]"                            <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lat-3" }                                                                           
 Number                  i3Dest3Lon                "Latitude [%.4f]"                             <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lon-3" }                                                                           
  
-String                  i3ChargingStatus          "Charging [%s]"                               <power>         (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#status" } 
 Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-climate" }  
-String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <power>         (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-mode" } 
+String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-mode" } 
 String                  i3ChargeWindowStart       "Charge Window Start [%s]"                    <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#window-start" } 
 String                  i3ChargeWindowEnd         "Charge Window End [%s]"                      <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#window-end" } 
 String                  i3Timer1Departure         "Timer 1 Departure [%s]"                      <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-departure" } 
@@ -439,7 +451,9 @@ String                  i3Timer3Departure         "Timer 3 Departure [%s]"      
 String                  i3Timer3Days              "Timer 3 Days [%s]"                           <calendar>      (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-days" } 
 Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-enabled" }  
 
-Image                   i3Image                   "Vehilce Image"                               <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#png" }  
+Image                   i3Image                   "Image"                                                       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#png" }  
+String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#view" }  
+Number                  i3ImageSize               "Image Size [%d]"                             <zoom>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#size" }  
 
 Switch                  i3Troubleshoot            "Vehicle Fingerprint"                         <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:troubleshoot#vehicle-fingerprint" }  
 Switch                  i3DiscoveryTroubleshoot   "Discovery Fingerprint"                       <switch>        (i3)   {channel="bmwconnecteddrive:account:user:discovery-fingerprint" }  
@@ -470,6 +484,7 @@ sitemap BMW label="BMW" {
     Text    item=i3ServiceMileage       
     Text    item=i3ServiceName          
     Text    item=i3CheckControl         
+    Text    item=i3ChargingStatus           
     Text    item=i3LastUpdate               
   }
   Frame label="Remote Services" {
@@ -499,7 +514,6 @@ sitemap BMW label="BMW" {
     Text    item=i3Heading             
   }
   Frame label="Charge Profile" {    
-    Text    item=i3ChargingStatus           
     Switch  item=i3ChargeProfileClimate     
     Text    item=i3ChargeProfileMode        
     Text    item=i3ChargeWindowStart        
@@ -525,17 +539,20 @@ sitemap BMW label="BMW" {
     Text  item=i3Dest3Lat                                                                                        
     Text  item=i3Dest3Lon                                                                                         
   } 
-  Frame label="Troubleshooting" { 
+  Frame label="Troubleshooting & Image Properties" {
+    Text    item=i3ImageViewport
+    Text    item=i3ImageSize 
     Switch  item=i3DiscoveryTroubleshoot    
     Switch  item=i3Troubleshoot             
   } 
 }
 
+
 ```
 
 ## Going further
 
-You're now able to receive your Vehicle Data in openHAB. Continue the work and combine this data with other Powerful openHAB Bindings and Widgets.
+You're now able to receive your Vehicle Data in openHAB. Continue the work and combine this data with other Powerful openHAB Features, Bindings and Widgets.
 
 ### Notification
 
@@ -660,6 +677,60 @@ end
 
 ```
 
+### Status Image
+
+<img align="right" src="./doc/ChargingImage.png" width="200" height="150"/>
+
+<img align="right" src="./doc/CheckControlImage.png" width="200" height="150"/>
+
+<img align="right" src="./doc/UnlockImage.png" width="200" height="150"/>
+
+<img align="right" src="./doc/AwayImage.png" width="200" height="150"/>
+
+This Rule is aimed to improve the visibility of the Vehicle Status. 
+Therefore the Image is used to reflect _an overall status_ which can be identified at the first glance.
+As an example the Rule is reflecting the following status as Image
+
+* Side - Vehicle is charging
+* Driver Door - Doors are not locked
+* Dashboard - Check Control Message is available
+* Front - Vehicle is at the _Home_ Location
+* Rear - Vehicle is away from _Home_ Location
+
+```
+// Change Image according to Vehicle Status
+rule "Image Status"
+    when
+        System started or
+        Item i3ChargingStatus changed or
+        Item i3Latitude changed or
+        Item i3Longitude changed or
+        Item i3CheckControl changed or
+        Item i3LockStatus changed
+    then
+        if(i3ChargingStatus.state.toString == "Charging") {
+            logInfo("Vehicle Image","Charging")
+            i3ImageViewport.sendCommand("SIDE")
+        } else if(i3LockStatus.state.toString != "Secured") {
+            logInfo("Vehicle Image","Doors not locked")
+            i3ImageViewport.sendCommand("DRIVERDOOR")
+        } else if(i3CheckControl.state.toString != "Ok") {
+            logInfo("Vehicle Image","Check Control Active")
+            i3ImageViewport.sendCommand("DASHBOARD")
+        } else {
+            val latitudeNumber = i3Latitude.state as Number
+            val longitudeNumber = i3Longitude.state as Number
+            // Home Location Range
+            if((50.55 < latitudeNumber.floatValue) && ( latitudeNumber.floatValue < 50.56) && (8.49 < longitudeNumber.floatValue) && (longitudeNumber.floatValue < 8.50) ) {
+                logInfo("Vehicle Image","Home Location")
+                i3ImageViewport.sendCommand("FRONT")
+            } else {
+                logInfo("Vehicle Image","Vehicle is away")
+                i3ImageViewport.sendCommand("REAR")
+            }    
+        }
+end
+```
 
 ## Credits
 

@@ -38,6 +38,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.BimmerConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,13 +98,7 @@ public class ConnectedDriveProxy {
             if (params.isPresent()) {
                 String urlEncodedData = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
                 completeUrl.append("?").append(urlEncodedData);
-                // req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
-                // req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
-                // req.content(new StringContentProvider(urlEncodedData));
-                // logger.info("URL has parameters {}", urlEncodedData);
-                // logger.info("Params for request: {}", urlEncodedData);
             }
-            logger.info("Complete URL {}", completeUrl.toString());
             Request req = httpClient.newRequest(completeUrl.toString());
             req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
             req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
@@ -163,18 +158,12 @@ public class ConnectedDriveProxy {
         request(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
     }
 
-    public void requestImage(VehicleConfiguration config, ByteResponseCallback callback) {
-        // String localImageUrl = baseUrl + config.vin + imageAPI + "?width=" + config.imageSize + "&height="
-        // + config.imageSize + "&view=" + config.imageViewport;
-
-        // https://b2vapi.bmwgroup.com/webapi/v1/user/vehicles/WBY1Z81040V905639/image view=SIDE&width=2048&height=2048
-        // https://b2vapi.bmwgroup.com/webapi/v1/user/vehicles/WBY1Z81040V905639/image?view=SIDE&width=2048&height=2048
-
+    public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
         String localImageUrl = new StringBuffer(baseUrl).append(config.vin).append(imageAPI).toString();
         MultiMap<String> dataMap = new MultiMap<String>();
-        dataMap.add("width", Integer.toString(config.imageSize));
-        dataMap.add("height", Integer.toString(config.imageSize));
-        dataMap.add("view", config.imageViewport);
+        dataMap.add("width", Integer.toString(props.size));
+        dataMap.add("height", Integer.toString(props.size));
+        dataMap.add("view", props.viewport);
         request(localImageUrl, Optional.of(dataMap), callback);
     }
 
@@ -237,7 +226,6 @@ public class ConnectedDriveProxy {
         req.content(new StringContentProvider(urlEncodedData));
         try {
             ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
-            logger.info("Status {} ", contentResponse.getStatus());
             HttpFields fields = contentResponse.getHeaders();
             HttpField field = fields.getField(HttpHeader.LOCATION);
             httpClient.setFollowRedirects(true);
