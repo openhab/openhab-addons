@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="enera"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<bridge-type id="account">
+		<label>Enera Account</label>
+		<description>The Enera account created through the Enera app.</description>
+		<!-- <channels> </channels> -->
+		<config-description>
+			<parameter name="username" type="text" required="true">
+				<context>email</context>
+				<label>Enera Username</label>
+				<description>Account Username for Logging in to Enera.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Enera Password</label>
+				<description>Account Password for Logging in to Enera.</description>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+
+	<thing-type id="device">
+		<label>Enera Device</label>
+		<description>The SAM Device (power meter)</description>
+
+		<channels>
+			<channel id="meter-reading" typeId="meter-reading-channel">
+				<label>Meter Reading (Wh)</label>
+				<description>Contains the current meter reading for total consumption (in Wh)</description>
+			</channel>
+			<channel id="meter-reading-outbound" typeId="meter-reading-channel">
+				<label>Meter Reading Outbound (Wh)</label>
+				<description>Contains the current meter reading for total power infeed to the power grid, by PV etc. (in Wh) </description>
+			</channel>
+			<channel id="current-consumption" typeId="consumption-channel">
+				<label>Current Consumption (W)</label>
+				<description>Contains the current total consumption for this device (in W)</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="id"></property>
+			<property name="name"></property>
+			<property name="brand"></property>
+			<property name="serial"></property>
+			<property name="external-id"></property>
+			<property name="meter-id"></property>
+			<property name="registered-at"></property>
+		</properties>
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="rate" type="integer" required="true" min="1">
+				<default>60</default>
+				<label>Update Rate</label>
+				<description>Frequency of updates. This is roughly "every X seconds" but acutally means "handle every Xth update"
+					sent by Enera. Skipped messages will be averaged.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Sample Channel Type -->
+	<channel-type id="meter-reading-channel">
+		<item-type>Number</item-type>
+		<label>Meter Reading</label>
+		<description>Current meter reading</description>
+	</channel-type>
+	<channel-type id="consumption-channel">
+		<item-type>Number</item-type>
+		<label>Consumption</label>
+		<description>Consumption</description>
+	</channel-type>
+
+</thing:thing-descriptions>
