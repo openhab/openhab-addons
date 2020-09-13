@@ -48,7 +48,6 @@
 			<property name="name"></property>
 			<property name="brand"></property>
 			<property name="serial"></property>
-			<property name="external-id"></property>
 			<property name="meter-id"></property>
 			<property name="registered-at"></property>
 		</properties>
@@ -59,7 +58,7 @@
 				<default>60</default>
 				<label>Update Rate</label>
 				<description>Frequency of updates. This is roughly "every X seconds" but acutally means "handle every Xth update"
-					sent by Enera. Skipped messages will be averaged.</description>
+					sent by Enera. Skipped messages will be aggregated according to type (last value or average).</description>
 			</parameter>
 		</config-description>
 	</thing-type>

@@ -10,8 +10,6 @@ public class EneraDevice {
     private String Name;
     private String Brand;
     private String Serial;
-    private String ExternalID;
-    private String SalesforceMeterID;
     private String MeterID;
     private String HouseholdID;
     private EneraDevicePricing Pricing;
@@ -76,34 +74,6 @@ public class EneraDevice {
      */
     public void setSerial(String serial) {
         Serial = serial;
-    }
-
-    /**
-     * @return the externalID
-     */
-    public String getExternalId() {
-        return ExternalID;
-    }
-
-    /**
-     * @param externalID the externalID to set
-     */
-    public void setExternalId(String externalId) {
-        ExternalID = externalId;
-    }
-
-    /**
-     * @return the salesforceMeterID
-     */
-    public String getSalesforceMeterId() {
-        return SalesforceMeterID;
-    }
-
-    /**
-     * @param salesforceMeterID the salesforceMeterID to set
-     */
-    public void setSalesforceMeterId(String salesforceMeterId) {
-        SalesforceMeterID = salesforceMeterId;
     }
 
     /**

@@ -1,22 +1,35 @@
 package org.openhab.binding.enera.internal.model;
 
 public class DeviceValue {
-    private String Obis;
-    private float Value;
+    private String obis;
+    private float value;
 
+    /**
+     * @return the obis
+     */
     public String getObis() {
-        return Obis;
+        return obis;
     }
 
-    public float getValue() {
-        return Value;
-    }
-
-    public void setValue(float value) {
-        this.Value = value;
-    }
-
+    /**
+     * @param obis the obis to set
+     */
     public void setObis(String obis) {
-        this.Obis = obis;
+        this.obis = obis;
     }
+
+    /**
+     * @return the value
+     */
+    public float getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public void setValue(float value) {
+        this.value = value;
+    }
+
 }

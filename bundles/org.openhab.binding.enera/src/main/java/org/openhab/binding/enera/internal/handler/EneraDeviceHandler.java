@@ -15,6 +15,7 @@ package org.openhab.binding.enera.internal.handler;
 import static org.openhab.binding.enera.internal.EneraBindingConstants.*;
 
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -71,6 +73,9 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
     private MqttClient mqttClient;
     private LocalTime lastMessageReceived = LocalTime.now();
 
+    private String deviceSha256 = "";
+
+
     // save received values by Key for aggregation
     private Map<String, List<Float>> aggregatedValues = new HashMap<String, List<Float>>();
 
@@ -95,89 +100,114 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        // we don't have any commands to handle
     }
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN);
-
         scheduler.execute(() -> {
-            try {
-                this.mqttClient = new MqttClient(LIVE_CONSUMPTION_URL, this.mqttClientId);
-                MqttConnectOptions options = new MqttConnectOptions();
-                options.setUserName(LIVE_CONSUMPTION_USERNAME);
-                options.setPassword(LIVE_CONSUMPTION_PASSWORD.toCharArray());
-                options.setAutomaticReconnect(true);
-                if (mqttClient != null) {
-                    mqttClient.setCallback(this);
-                    mqttClient.connect(options);
-                }
-
-            } catch (MqttException ex) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
-            }
-
+            connectMqtt();
         });
     }
 
-    public void registerForRealtimeApi() {
-        MqttMessage message = new MqttMessage(getRegistrationMessage().getBytes(StandardCharsets.UTF_8));
+    public void connectMqtt() {
+        this.deviceSha256 = DigestUtils.sha256Hex(getThing().getProperties().get(PROPERTY_ID));
+
+        String serverUri = ((EneraAccountHandler) this.getBridge().getHandler()).getAccountData().getLiveURI();
+        while (serverUri == null || serverUri.equals("")) {
+            logger.trace("No liveUri could be determined. Retrying.");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                // doesn't matter
+            }
+            serverUri = ((EneraAccountHandler) this.getBridge().getHandler()).getAccountData().getLiveURI();
+        }
         try {
-            this.mqttClient.publish("RegisterForRealtimeApi", message);
-            this.firstMessageAfterInit = true;
+            // use pseudo host here, as Live URI contains many GET parameters which lead  to invalid persistence file names
+            // real hostname is set in connection options
+            logger.trace("Creating MqttClient with ID {}", this.mqttClientId);
+            this.mqttClient = new MqttClient("wss://eneramqtt", this.mqttClientId);
+            MqttConnectOptions options = new MqttConnectOptions();
+            logger.trace("MqttConnectOptions:");
+            logger.trace("* Server URI: {}", serverUri);
+            options.setServerURIs(new String[] { serverUri });
+            /*
+            logger.trace("* Username: {}", LIVE_CONSUMPTION_USERNAME);
+            options.setUserName(LIVE_CONSUMPTION_USERNAME);
+            // it's okay to dump the password because it's hardcoded and not user specific
+            logger.trace("* Password: {}", LIVE_CONSUMPTION_PASSWORD);
+            options.setPassword(LIVE_CONSUMPTION_PASSWORD.toCharArray());
+            */
+            options.setAutomaticReconnect(false);
+
+            mqttClient.setCallback(this);
+            logger.trace("Connecting...");
+            mqttClient.connect(options);
+            logger.trace("... done");
+
         } catch (MqttException ex) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            logger.trace("Caught MqttException:");
+            logger.trace(ex.toString());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.toString());
         }
     }
 
-    public String getRegistrationMessage() {
-        EneraAccountHandler bridgeHandler = (EneraAccountHandler) getBridge().getHandler();
-        AuthenticationHeaderValue authHeader = bridgeHandler.getAuthorizationHeader();
+public void reregisterForRealtimeApi() {
+            /*            
+        try {
+            if (this.mqttClient.isConnected()) {
+                mqttClient.disconnect();
+            }
+        } catch (MqttException ex) {
+            // doesn't matter
+        }
+        */
 
-        return new Gson().toJson(new RegistrationPayload(getThing().getProperties().get(PROPERTY_EXTERNAL_ID),
-                this.mqttClientId, authHeader.getParameter()));
+        connectMqtt();
     }
 
     @Override
     public void dispose() {
         logger.debug("Disposing myself");
-        super.dispose();
-        aliveChecker.cancel(true);
         scheduler.execute(() -> {
-            if (mqttClient != null && mqttClient.isConnected()) {
-                try {
-                    mqttClient.disconnectForcibly();
-                    mqttClient.close(true);
-                    logger.debug("mqttClient has been disconnected.");
-                } catch (MqttException ex) {
-                    logger.warn("Exception while disconnecting the MQTT client!");
-                    logger.warn(ex.getMessage());
-                }
+            if (aliveChecker != null && !aliveChecker.isCancelled()) {
+                aliveChecker.cancel(true);
             }
+            if (mqttClient != null && mqttClient.isConnected()) {
+            try {
+                mqttClient.disconnectForcibly();
+                mqttClient.close(true);
+                logger.debug("mqttClient has been disconnected.");
+            } catch (MqttException ex) {
+                logger.warn("Exception while disconnecting the MQTT client!");
+                logger.warn(ex.getMessage());
+            }
+        }
+
         });
+        super.dispose();
     }
 
     @Override
     public void connectComplete(boolean reconnect, @Nullable String serverURI) {
-        logger.debug(String.format("Connection to MQTT server established. Is Reconnect: %b", reconnect));
+        logger.debug("Connection to MQTT server established. Is Reconnect: {}", reconnect);
 
-        // subscribe to Live Consumption channel (md) and registration feedback (registration)
         try {
-            mqttClient.subscribe("md/" + mqttClientId);
-            mqttClient.subscribe("registration/" + mqttClientId);
+            mqttClient.subscribe(deviceSha256);
         } catch (MqttException ex) {
             logger.warn("Exception while subscribing to MQTT channels!");
             logger.warn(ex.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
         }
 
-        registerForRealtimeApi();
-
         aliveChecker = scheduler.scheduleWithFixedDelay(() -> {
-            // no data has been received for LIVEDATA_TIMEOUT seconds
-            if (lastMessageReceived.plusSeconds(LIVEDATA_TIMEOUT).isBefore(LocalTime.now())) {
-                logger.debug("Timeout exceeded for Live Data, trying to re-register");
-                registerForRealtimeApi();
+            synchronized(this) {
+                // no data has been received for LIVEDATA_TIMEOUT seconds
+                if (lastMessageReceived.plusSeconds(LIVEDATA_TIMEOUT).isBefore(LocalTime.now())) {
+                    logger.debug("Timeout exceeded for Live Data, trying to re-register");
+                    reregisterForRealtimeApi();
+                }
             }
         }, LIVEDATA_TIMEOUT / 3, LIVEDATA_TIMEOUT / 3, TimeUnit.SECONDS);
 
@@ -190,10 +220,12 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
         if (aliveChecker != null && !aliveChecker.isCancelled()) {
             aliveChecker.cancel(true);
         }
+        connectMqtt();
     }
 
     @Override
     public void deliveryComplete(@Nullable IMqttDeliveryToken token) {
+        // we don't publish any messages, so no need for this callback
     }
 
     @Override
@@ -205,7 +237,7 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
                 rate = 60;
             }
 
-            if (topic.equals("md/" + this.mqttClientId)) {
+            if (topic.equals(deviceSha256)) {
                 lastMessageReceived = LocalTime.now();
 
                 // live consumption message
@@ -214,7 +246,7 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
                 // this only gets the first message of DataMessages, because we are only subscribed to one single device
                 // in the future, if a test account with multiple devices is available, this could be refactored for
                 // efficiency
-                List<DeviceValue> deviceValues = dataMessage.getDeviceDataItems().get(0).getDeviceValues();
+                List<DeviceValue> deviceValues = dataMessage.getItems().get(0).getValues();
 
                 for (Map.Entry<String, ChannelDataSource> entry : channelToSourceMapping.entrySet()) {
                     Optional<DeviceValue> deviceValue = deviceValues.stream()
@@ -233,11 +265,11 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
                         AggregationType aggType = channelToSourceMapping.get(channelName).getAggregationType();
 
                         Double value;
-                        logger.debug("Aggregating values for channel {} as {}", channelName, aggType);
-                        if (logger.isTraceEnabled()) {
-                            logger.trace(String.format("Raw values are:"));
-                            logger.trace(Arrays.toString(values.toArray()));
-                        }
+                        //logger.debug("Aggregating values for channel {} as {}", channelName, aggType);
+                        //if (logger.isTraceEnabled()) {
+                            //logger.trace(String.format("Raw values are:"));
+                            //logger.trace(Arrays.toString(values.toArray()));
+                        //}
                         switch (aggType) {
                             case AVERAGE:
                                 value = values.stream().mapToDouble(d -> d).average().getAsDouble();
@@ -250,21 +282,14 @@ public class EneraDeviceHandler extends BaseThingHandler implements MqttCallback
                                 break;
                             default:
                                 value = 0.;
-                                logger.debug("Unsupported Aggregation Type requested: {}",
-                                        aggType.toString());
+                                logger.debug("Unsupported Aggregation Type requested: {}", aggType.toString());
                         }
-                        logger.trace(String.format("Resulting value is %.2f", value));
+                        //logger.trace(String.format("Resulting value is %.2f", value));
                         updateState(channelName, new DecimalType(value));
                         values.clear();
                     }
                 }
                 firstMessageAfterInit = false;
-
-            } else if (topic.equals("registration/" + this.mqttClientId)) {
-                // registration message
-                // this topic only seems to receive error messages regarding registration
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        new String(message.getPayload(), StandardCharsets.UTF_8));
             }
         } catch (Exception ex) {
             // safety net, because Exceptions in callbacks for MqttClient force disconnection

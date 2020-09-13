@@ -35,7 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.enera.internal.model.AuthenticationHeaderValue;
-import org.openhab.binding.enera.internal.model.EneraDevice;
+import org.openhab.binding.enera.internal.model.EneraAccount;
 import org.openhab.binding.enera.internal.util.AuthenticationHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +46,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 /**
  * The {@link EneraAccountHandler} is responsible for handling commands, which are
@@ -62,6 +61,15 @@ public class EneraAccountHandler extends BaseBridgeHandler {
     private Gson gson = new GsonBuilder().create();
 
     private AuthenticationResultType tokens = new AuthenticationResultType();
+    private String liveUri = new String();
+    /**
+     * @return the liveUri
+     */
+    public String getLiveUri() {
+        return liveUri;
+    }
+
+    
 
     public EneraAccountHandler(Bridge bridge) {
         super(bridge);
@@ -77,6 +85,8 @@ public class EneraAccountHandler extends BaseBridgeHandler {
 
         scheduler.execute(() -> {
             signin();
+            // needed to get Live URI
+            getAccountData();
         });
     }
 
@@ -95,7 +105,8 @@ public class EneraAccountHandler extends BaseBridgeHandler {
 
             if (authResult.getAccessToken() != null && !authResult.getAccessToken().isEmpty()) {
                 tokens = authResult;
-                updateStatus(ThingStatus.ONLINE);
+                // no setting ONLINE here, because we _need_ the live URL first!
+                //updateStatus(ThingStatus.ONLINE);
                 return tokens;
             } else {
                 tokens = new AuthenticationResultType();
@@ -144,64 +155,72 @@ public class EneraAccountHandler extends BaseBridgeHandler {
         return new AuthenticationHeaderValue(tokens.getTokenType(), tokens.getIdToken());
     }
 
-    public List<EneraDevice> getDevices() {
-        logger.trace("Retrieving Authorization token");
+    public EneraAccount getAccountData() {
+        logger.trace("Retrieving Authorization token to get account data");
         if (!this.isSignedIn()) {
-            return new ArrayList<EneraDevice>();
+            logger.trace("I am not signed in. Bailing out.");
+            return new EneraAccount();
         }
         AuthenticationHeaderValue auth = getAuthorizationHeader();
         HttpsURLConnection conn;
-        List<EneraDevice> emptyList = new ArrayList<EneraDevice>();
-        logger.trace("Creating HTTPS connection to '{}'", ENERA_DEVICES_URL);
+        logger.trace("Creating HTTPS connection to '{}'", ENERA_ACCOUNT_URL);
         try {
-            conn = (HttpsURLConnection) new URL(ENERA_DEVICES_URL).openConnection();
+            conn = (HttpsURLConnection) new URL(ENERA_ACCOUNT_URL).openConnection();
         } catch (IOException ex) {
             logger.warn("Exception while creating HttpsURLConnection");
             logger.warn(ex.getMessage());
-            return emptyList;
+            return new EneraAccount();
         }
 
         String jsonResult = "";
         int responseCode;
-        try {
-            conn.setRequestProperty("Authorization", String.format("%s %s", auth.getScheme(), auth.getParameter()));
+        
+        conn.setRequestProperty("Authorization", String.format("%s %s", auth.getScheme(), auth.getParameter()));
+        conn.setRequestProperty("X-Mandant", ENERA_MANDANT);
 
-            logger.trace("Connecting to '{}'", conn.getURL().toString());
-            try (InputStream in = conn.getInputStream(); ByteArrayOutputStream result = new ByteArrayOutputStream()) {
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = in.read(buffer)) != -1) {
-                    result.write(buffer, 0, length);
-                }
-                logger.trace("Read {} bytes", result.size());
-                jsonResult = result.toString(StandardCharsets.UTF_8.name());
-                responseCode = conn.getResponseCode();
-                logger.trace("Response code is {}", responseCode);
+        logger.trace("Connecting to '{}'", conn.getURL());
+        try (InputStream in = conn.getInputStream(); ByteArrayOutputStream result = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
             }
+            logger.trace("Read {} bytes", result.size());
+            jsonResult = result.toString(StandardCharsets.UTF_8.name());
+            responseCode = conn.getResponseCode();
+            logger.trace("Response code is {}", responseCode);
         } catch (IOException ex) {
-            logger.warn("Exception while receiving answer", ex);
-            return emptyList;
+            logger.debug("Could not connect.");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, ex.getMessage());
+            return new EneraAccount();
         } finally {
             conn.disconnect();
         }
 
         if (responseCode != Response.Status.OK.getStatusCode()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn("Got non-OK HTTP status code '{}'", responseCode);
-            return emptyList;
+            return new EneraAccount();
         }
-
+        /*
         Type listType = new TypeToken<ArrayList<EneraDevice>>() {
         }.getType();
-
+        
         ArrayList<EneraDevice> deviceList = gson.fromJson(jsonResult, listType);
-        if (deviceList == null) {
-            return new ArrayList<EneraDevice>();
+        */
+        
+        EneraAccount account = gson.fromJson(jsonResult, EneraAccount.class);
+        this.liveUri = account.getLiveURI();
+        if (this.liveUri != null && !this.liveUri.equals("")) {
+            updateStatus(ThingStatus.ONLINE);
         }
-        return deviceList;
+
+        return account;
     }
 
 
     private boolean isSignedIn() {
-        return this.tokens.getIdToken() != null && this.tokens.getIdToken().equals("");
+        return this.tokens.getIdToken() != null && !this.tokens.getIdToken().equals("");
     }
+
 }

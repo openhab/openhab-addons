@@ -35,13 +35,12 @@ public class EneraBindingConstants {
     public static final String PROPERTY_NAME = "name";
     public static final String PROPERTY_BRAND = "brand";
     public static final String PROPERTY_SERIAL = "serial";
-    public static final String PROPERTY_EXTERNAL_ID = "external-id";
     public static final String PROPERTY_METER_ID = "meter-id";
     public static final String PROPERTY_REGISTERED_AT = "registered-at";
 
     // AWS Cognito parameters of Enera
-    public static final String COGNITO_CLIENT_ID = "2iv53r55ahff70bcjo7f32a7lb";
-    public static final String COGNITO_USER_POOL_ID = "eu-central-1_m9ZZbQCTb";
+    public static final String COGNITO_CLIENT_ID = "6tl80kr6f0upi6q0f5ib7re69r";
+    public static final String COGNITO_USER_POOL_ID = "eu-central-1_dzqnDhz3G";
     public static final String COGNITO_REGION = "eu-central-1";
 
     // Enera Live Consumption API data
@@ -50,8 +49,10 @@ public class EneraBindingConstants {
     public static final String LIVE_CONSUMPTION_PASSWORD = "em-app";
 
     // Enera master data API
-    public static final String ENERA_BASE_URL = "https://api.enera.energie-vernetzen.de/Prod/v1";
-    public static final String ENERA_DEVICES_URL = ENERA_BASE_URL + "/Devices";
+    public static final String ENERA_BASE_URL = "https://krc71h6qkl.execute-api.eu-central-1.amazonaws.com/Prod";
+    //public static final String ENERA_DEVICES_URL = ENERA_BASE_URL + "/Devices";
+    public static final String ENERA_ACCOUNT_URL = ENERA_BASE_URL + "/Account";
+    public static final String ENERA_MANDANT = "enera";
 
     // OBIS keys
     public static final String OBIS_METER_READING = "1-0:1.8.0*255";

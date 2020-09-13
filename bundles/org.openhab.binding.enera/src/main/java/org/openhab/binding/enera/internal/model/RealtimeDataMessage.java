@@ -3,19 +3,35 @@ package org.openhab.binding.enera.internal.model;
 import java.util.List;
 
 public class RealtimeDataMessage {
-    private List<DeviceDataItem> DeviceDataItems;
+    private String meterSha;
+    private List<DeviceDataItem> items;
 
     /**
-     * @return the deviceDataItems
+     * @return the meterSha
      */
-    public List<DeviceDataItem> getDeviceDataItems() {
-        return DeviceDataItems;
+    public String getMeterSha() {
+        return meterSha;
     }
 
     /**
-     * @param deviceDataItems the deviceDataItems to set
+     * @param meterSha the meterSha to set
      */
-    public void setDeviceDataItems(List<DeviceDataItem> deviceDataItems) {
-        this.DeviceDataItems = deviceDataItems;
+    public void setMeterSha(String meterSha) {
+        this.meterSha = meterSha;
     }
+
+    /**
+     * @return the items
+     */
+    public List<DeviceDataItem> getItems() {
+        return items;
+    }
+
+    /**
+     * @param items the items to set
+     */
+    public void setItems(List<DeviceDataItem> items) {
+        this.items = items;
+    }
+
 }

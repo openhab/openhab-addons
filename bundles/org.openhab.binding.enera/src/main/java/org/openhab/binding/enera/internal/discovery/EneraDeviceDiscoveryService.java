@@ -33,7 +33,7 @@ public class EneraDeviceDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-        List<EneraDevice> deviceList = this.eneraAccountHandler.getDevices();
+        List<EneraDevice> deviceList = this.eneraAccountHandler.getAccountData().getDevices();
 
         ThingUID bridgeUID = eneraAccountHandler.getThing().getUID();
 
@@ -46,7 +46,6 @@ public class EneraDeviceDiscoveryService extends AbstractDiscoveryService {
             properties.put(PROPERTY_ID, d.getId());
             properties.put(PROPERTY_NAME, d.getName());
             properties.put(PROPERTY_BRAND, d.getBrand());
-            properties.put(PROPERTY_EXTERNAL_ID, d.getExternalId());
             properties.put(PROPERTY_METER_ID, d.getMeterId());
             properties.put(PROPERTY_SERIAL, d.getSerial());
             properties.put(PROPERTY_REGISTERED_AT, d.getRegisteredAt());
