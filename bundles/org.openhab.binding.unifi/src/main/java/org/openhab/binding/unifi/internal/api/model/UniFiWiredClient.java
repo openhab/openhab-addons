@@ -36,5 +36,4 @@ public class UniFiWiredClient extends UniFiClient {
     public String getDeviceMac() {
         return swMac;
     }
-
 }

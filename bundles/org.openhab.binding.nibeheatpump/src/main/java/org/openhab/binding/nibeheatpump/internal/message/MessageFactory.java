@@ -25,9 +25,7 @@ import org.openhab.binding.nibeheatpump.internal.protocol.NibeHeatPumpProtocol;
 public class MessageFactory {
 
     public static NibeHeatPumpMessage getMessage(byte[] message) throws NibeHeatPumpException {
-
         if (message != null) {
-
             byte messageTypeByte = NibeHeatPumpProtocol.getMessageType(message);
             MessageType messageType = NibeHeatPumpBaseMessage.getMessageType(messageTypeByte);
 

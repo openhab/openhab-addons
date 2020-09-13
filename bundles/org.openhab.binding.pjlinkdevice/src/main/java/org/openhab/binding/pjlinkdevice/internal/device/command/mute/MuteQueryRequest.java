@@ -27,5 +27,4 @@ public class MuteQueryRequest implements Request {
     public String getRequestString() {
         return "%1AVMT ?";
     }
-
 }

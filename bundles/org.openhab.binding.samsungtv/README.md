@@ -10,18 +10,22 @@ Because Samsung does not publish any documentation about the TV's UPnP interface
 
 Tested TV models:
 
-| Model       | State   | Notes                                                                                                                                                  |
-|-------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| UE48J5670SU | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
-| UE40J6300AU | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                           |
-| UE46E5505   | OK      | Initial contribution is done by this model                                                                                                             |
-| UE46D5700   | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
-| UE40F6500   | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
-| UN50J5200   | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
-| LE40D579    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
-| LE40C650    | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
-| UE55LS003   | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
-| UE43MU6199  | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                |
+| Model          | State   | Notes                                                                                                                                                  |
+|----------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| KU6519         | PARTIAL | Supported channels: `volume`, `mute`, `power`,  `keyCode` (at least)                                                                                   |
+| LE40D579       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `sourceName`,  `programTitle`, `channelName`,  `power`                                     |
+| LE40C650       | PARTIAL | Supported channels: `volume`, `mute`, `channel`, `keyCode`, `brightness`, `contrast`, `colorTemperature`, `power` (only power off, unable to power on) |
+| UE40F6500      | OK      | All channels except `colorTemperature`, `programTitle` and `channelName` are working                                                                   |
+| UE40J6300AU    | PARTIAL | Supported channels: `volume`, `mute`, `sourceName`, `power`                                                                                            |
+| UE43MU6199     | PARTIAL | Supported channels: `volume`, `mute`, `power` (at least)                                                                                               |
+| UE46D5700      | PARTIAL | Supports at my home only commands via the fake remote, no discovery                                                                                    |
+| UE46E5505      | OK      | Initial contribution is done by this model                                                                                                             |
+| UE46F6510SS    | PARTIAL | Supported channels: `volume`, `mute`, `channel` (at least)                                                                                             |
+| UE48J5670SU    | PARTIAL | Supported channels: `volume`, `sourceName`                                                                                                             |
+| UE50MU6179     | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode`, `channel`, `sourceApp`, `url`                                                                |
+| UE55LS003      | PARTIAL | Supported channels: `volume`, `mute`, `sourceApp`, `url`, `keyCode`, `power`, `artMode`                                                                |
+| UE58RU7179UXZG | PARTIAL | Supported channels: `volume`, `mute`, `power`, `keyCode` (at least)                                                                                    |
+| UN50J5200      | PARTIAL | Status is retrieved (confirmed `power`, `media title`). Operating device seems not working.                                                            |
 
 ## Discovery
 
@@ -43,6 +47,7 @@ E.g.
 ```
 Thing samsungtv:tv:livingroom [ hostName="192.168.1.10", port=55000, macAddress="78:bd:bc:9f:12:34", refreshInterval=1000 ]
 ```
+
 Different ports are used in different models. It may be 55000, 8001 or 8002.
 Try to scan for new Things in Paper UI to find TV easily.
 
@@ -84,3 +89,19 @@ String  TV_KeyCode       "Key Code"                            (gLivingRoomTV)  
 Switch  TV_Power         "Power"                               (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:power" }
 Switch  TV_ArtMode       "Art Mode"                            (gLivingRoomTV)   { channel="samsungtv:tv:livingroom:artMode" }
 ```
+
+### Apps
+
+List of known apps and the respective name that can be passed on to the `sourceApp` channel.
+Values are confirmed to work on UE50MU6179.
+
+| App           | Value in sourceApp | Description                       |
+|---------------|--------------------|-----------------------------------|
+| ARD Mediathek | `ARD Mediathek`    | German public TV broadcasting app |
+| Browser       | `Internet`         | Built-in WWW browser              |
+| Netflix       | `Netflix`          | Netflix App                       |
+| Prime Video   | `Prime Video`      | Prime Video App                   |
+| YouTube       | `YouTube`          | Prime Video App                   |
+| ZDF Mediathek | `ZDF mediathek`    | German public TV broadcasting app |
+
+As part of discovery, log file `/var/log/openhab2/openhab.log` will contain a debug line with installed apps.

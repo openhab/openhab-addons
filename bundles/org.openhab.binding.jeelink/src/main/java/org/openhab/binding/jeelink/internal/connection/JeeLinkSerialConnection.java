@@ -18,16 +18,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.TooManyListenersException;
 
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * Reads lines from serial port and propagates them to registered InputListeners.
@@ -37,16 +35,18 @@ import gnu.io.UnsupportedCommOperationException;
 public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
     private final Logger logger = LoggerFactory.getLogger(JeeLinkSerialConnection.class);
 
-    private int baudRate;
-
+    private final int baudRate;
     private SerialPort serialPort;
+    private final SerialPortIdentifier serialPortIdentifier;
     private boolean open;
 
-    public JeeLinkSerialConnection(String portName, int baudRate, ConnectionListener l) {
-        super(portName, l);
+    public JeeLinkSerialConnection(SerialPortIdentifier serialPortIdentifier, int baudRate,
+            ConnectionListener listener) {
+        super(serialPortIdentifier.getName(), listener);
 
-        logger.debug("Creating serial connection for port {} with baud rate {}...", portName, baudRate);
+        logger.debug("Creating serial connection for port {} with baud rate {}...", port, baudRate);
         this.baudRate = baudRate;
+        this.serialPortIdentifier = serialPortIdentifier;
     }
 
     @Override
@@ -68,11 +68,7 @@ public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
         try {
             if (!open) {
                 logger.debug("Opening serial connection to port {} with baud rate {}...", port, baudRate);
-
-                CommPortIdentifier portIdentifier;
-
-                portIdentifier = CommPortIdentifier.getPortIdentifier(port);
-                serialPort = portIdentifier.open("openhab", 3000);
+                serialPort = serialPortIdentifier.open("openhab", 3000);
                 open = true;
 
                 serialPort.setSerialPortParams(baudRate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
@@ -101,8 +97,6 @@ public class JeeLinkSerialConnection extends AbstractJeeLinkConnection {
         } catch (UnsupportedCommOperationException | IOException | TooManyListenersException ex) {
             closeConnection();
             notifyAbort(ex.getMessage());
-        } catch (NoSuchPortException ex) {
-            notifyAbort("Port not found: " + port);
         } catch (PortInUseException ex) {
             notifyAbort("Port in use: " + port);
         }

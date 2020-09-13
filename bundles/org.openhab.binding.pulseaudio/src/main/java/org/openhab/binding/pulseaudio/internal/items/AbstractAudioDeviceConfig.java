@@ -75,5 +75,4 @@ public abstract class AbstractAudioDeviceConfig extends AbstractDeviceConfig {
         return this.getClass().getSimpleName() + " #" + id + " (Module: " + module + ") " + name + ", muted: " + muted
                 + ", state: " + state + ", volume: " + volume;
     }
-
 }

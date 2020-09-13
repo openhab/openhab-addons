@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="tado" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="tado"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -24,7 +25,7 @@
 
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="home" />
+			<bridge-type-ref id="home"/>
 		</supported-bridge-type-refs>
 
 		<label>Zone</label>
@@ -45,7 +46,7 @@
 			<channel typeId="timerDuration" id="timerDuration"></channel>
 
 			<channel typeId="operationMode" id="operationMode"></channel>
-			
+
 			<channel typeId="system.low-battery" id="batteryLowAlarm">
 				<label>Battery Low Alarm</label>
 				<description>ON if one or more devices in the zone have a low battery</description>
@@ -83,7 +84,7 @@
 
 	<thing-type id="mobiledevice">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="home" />
+			<bridge-type-ref id="home"/>
 		</supported-bridge-type-refs>
 
 		<label>Mobile Device</label>
@@ -199,7 +200,7 @@
 		<item-type>DateTime</item-type>
 		<label>Overlay End Time</label>
 		<description>Time until when the overlay is active. Null if no overlay is set or overlay type is manual.</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="atHome">
@@ -214,7 +215,7 @@
 		<description>Indicates if the air-conditioning is Off or On</description>
 		<state readOnly="true"></state>
 	</channel-type>
-	
+
 	<channel-type id="openWindowDetected">
 		<item-type>Switch</item-type>
 		<label>Open Window Detected</label>

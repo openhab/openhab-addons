@@ -86,7 +86,7 @@ public interface AvrConnection {
      * @param zone
      * @return
      */
-    public boolean sendSourceInputQuery(int zone);
+    public boolean sendInputSourceQuery(int zone);
 
     /**
      * Send a listening mode state query to the AVR
@@ -147,5 +147,4 @@ public interface AvrConnection {
      * @return
      */
     public String getConnectionName();
-
 }

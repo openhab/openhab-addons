@@ -10,7 +10,7 @@
 		<description>Control a Denon/Marantz AVR.</description>
 
 		<channel-groups>
-			<channel-group id="general" typeId="general" />
+			<channel-group id="general" typeId="general"/>
 			<channel-group id="mainZone" typeId="zone">
 				<label>Main Zone Control</label>
 				<description>Channels for the main zone of this AVR.</description>
@@ -55,8 +55,7 @@
 				<default>2</default>
 			</parameter>
 
-			<parameter name="host" type="text" required="true"
-				groupName="connectionSettings">
+			<parameter name="host" type="text" required="true" groupName="connectionSettings">
 				<context>network-address</context>
 				<label>AVR Host or IP Address</label>
 				<description>Hostname or IP address of the AVR to control.</description>
@@ -64,7 +63,9 @@
 
 			<parameter name="telnetEnabled" type="boolean" groupName="connectionSettings">
 				<label>Use Telnet Port</label>
-				<description>By using telnet the AVR updates are received immediately. Also, some devices only support telnet. However, the AVR only allows 1 simultaneous connection. Uncheck if you are using dedicated apps to control the AVR. Then HTTP polling is used instead.</description>
+				<description>By using telnet the AVR updates are received immediately. Also, some devices only support telnet.
+					However, the AVR only allows 1 simultaneous connection. Uncheck if you are using dedicated apps to control the AVR.
+					Then HTTP polling is used instead.</description>
 			</parameter>
 
 			<parameter name="telnetPort" type="integer" groupName="telnetSettings">
@@ -81,8 +82,7 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="httpPollingInterval" type="integer"
-				groupName="httpSettings">
+			<parameter name="httpPollingInterval" type="integer" groupName="httpSettings">
 				<label>Polling Interval</label>
 				<description>Refresh interval of the HTTP API in seconds (minimal 5)</description>
 				<default>5</default>
@@ -95,12 +95,12 @@
 		<label>General Control</label>
 		<description>General channels for this AVR.</description>
 		<channels>
-			<channel id="power" typeId="mainPower" />
-			<channel id="surroundProgram" typeId="surroundProgram" />
-			<channel id="artist" typeId="artist" />
-			<channel id="album" typeId="album" />
-			<channel id="track" typeId="track" />
-			<channel id="command" typeId="command" />
+			<channel id="power" typeId="mainPower"/>
+			<channel id="surroundProgram" typeId="surroundProgram"/>
+			<channel id="artist" typeId="artist"/>
+			<channel id="album" typeId="album"/>
+			<channel id="track" typeId="track"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 	</channel-group-type>
 
@@ -108,11 +108,11 @@
 		<label>Zone Control</label>
 		<description>Channels for a zone of this AVR.</description>
 		<channels>
-			<channel id="power" typeId="zonePower" />
-			<channel id="volume" typeId="volume" />
-			<channel id="volumeDB" typeId="volumeDB" />
-			<channel id="mute" typeId="mute" />
-			<channel id="input" typeId="input" />
+			<channel id="power" typeId="zonePower"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="volumeDB" typeId="volumeDB"/>
+			<channel id="mute" typeId="mute"/>
+			<channel id="input" typeId="input"/>
 		</channels>
 	</channel-group-type>
 
@@ -140,7 +140,7 @@
 		<label>Volume (dB)</label>
 		<description>Set the volume level (dB). Same as [mainVolume - 80].</description>
 		<category>SoundVolume</category>
-		<state min="-80" max="18" step="0.5" pattern="%.1f dB" />
+		<state min="-80" max="18" step="0.5" pattern="%.1f dB"/>
 	</channel-type>
 
 	<channel-type id="mute">
@@ -203,28 +203,28 @@
 		<item-type>String</item-type>
 		<label>Surround Program</label>
 		<description>Select the surround program of the AVR</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="artist">
 		<item-type>String</item-type>
 		<label>Now Playing (artist)</label>
 		<description>Displays the artist of the now playing song.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="album">
 		<item-type>String</item-type>
 		<label>Now Playing (album)</label>
 		<description>Displays the album of the now playing song.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="track">
 		<item-type>String</item-type>
 		<label>Now Playing (track)</label>
 		<description>Displays the title of the now playing track.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="command" advanced="true">

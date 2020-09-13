@@ -171,7 +171,6 @@ public abstract class EEP {
 
     public final ERP1Message getERP1Message() {
         if (isValid()) {
-
             int optionalDataLength = 0;
             if (optionalData != null) {
                 optionalDataLength = optionalData.length;

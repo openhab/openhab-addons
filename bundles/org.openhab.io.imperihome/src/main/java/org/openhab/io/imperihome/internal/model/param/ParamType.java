@@ -52,7 +52,7 @@ public enum ParamType {
     STOPPABLE("stopable"),
     PULSEABLE("pulseable"),
 
-    //Thermostat parameters
+    // Thermostat parameters
     CUR_MODE("curmode"),
     CUR_SETPOINT("cursetpoint"),
     CUR_TEMP("curtemp"),
@@ -70,5 +70,4 @@ public enum ParamType {
     public String getApiString() {
         return apiString;
     }
-
 }

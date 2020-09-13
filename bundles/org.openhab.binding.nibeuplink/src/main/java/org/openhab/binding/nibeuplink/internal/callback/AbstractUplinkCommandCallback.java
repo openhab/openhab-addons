@@ -30,6 +30,7 @@ import org.openhab.binding.nibeuplink.internal.command.NibeUplinkCommand;
 import org.openhab.binding.nibeuplink.internal.config.NibeUplinkConfiguration;
 import org.openhab.binding.nibeuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.nibeuplink.internal.connector.StatusUpdateListener;
+import org.openhab.binding.nibeuplink.internal.model.GenericDataResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,13 +62,12 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     /**
      * listener to provide updates to the WebInterface class
      */
-    @Nullable
-    private StatusUpdateListener listener;
+    private @Nullable StatusUpdateListener listener;
 
     /**
      * JSON deserializer
      */
-    protected final Gson gson;
+    private final Gson gson;
 
     /**
      * the constructor
@@ -135,12 +135,20 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     }
 
     /**
+     * @Nullable wrapper of gson which does not 'understand' nonnull annotations
+     *
+     * @param json
+     * @return
+     */
+    protected @Nullable GenericDataResponse fromJson(String json) {
+        // gson is not able to handle @NonNull annotation, thus the return value can be null.
+        return gson.fromJson(json, GenericDataResponse.class);
+    }
+
+    /**
      * returns Http Status Code
      */
     public CommunicationStatus getCommunicationStatus() {
-        if (communicationStatus.getHttpCode() == null) {
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
-        }
         return communicationStatus;
     }
 
@@ -167,5 +175,4 @@ public abstract class AbstractUplinkCommandCallback extends BufferingResponseLis
     public final void setListener(StatusUpdateListener listener) {
         this.listener = listener;
     }
-
 }

@@ -464,5 +464,4 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
             updateState(channelUID, state);
         }
     }
-
 }

@@ -122,7 +122,7 @@ class OpenHabToDeviceConverter {
 
         }
 
-        if (channels.size() == 0) {
+        if (channels.isEmpty()) {
             logger.debug("No linked channels found for thing {} - ignoring", thing.getLabel());
             return null;
         }
@@ -197,7 +197,7 @@ class OpenHabToDeviceConverter {
 
         try {
             final Item item = context.getItemRegistry().getItem(itemName);
-            return NeeoDeviceChannel.from(item, null, null, NeeoCapabilityType.EXCLUDE, new HashSet<String>());
+            return NeeoDeviceChannel.from(item, null, null, NeeoCapabilityType.EXCLUDE, new HashSet<>());
         } catch (ItemNotFoundException e) {
             return null;
         }

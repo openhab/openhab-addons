@@ -39,16 +39,9 @@ public class InnogyBindingConstants {
     public static final String CLIENT_SECRET_INNOGY_SMARTHOME = "no secret";
     public static final String REDIRECT_URL_INNOGY_SMARTHOME = "https://www.openhab.org/oauth/innogy/innogy-smarthome.html";
 
-    // Bridge config parameters
-    public static final String CONFIG_BRAND = "brand";
-
     public static final String CONFIG_AUTH_CODE = "authcode";
-    public static final String CONFIG_ACCESS_TOKEN = "accesstoken";
-    public static final String CONFIG_REFRESH_TOKEN = "refreshtoken";
-    public static final String CONFIG_WEBSOCKET_IDLE_TIMEOUT = "websocketidletimeout";
 
     public static final long REINITIALIZE_DELAY_SECONDS = 30;
-    public static final long REINITIALIZE_RETRY_SECONDS = 60;
 
     // API URLs
     public static final String API_VERSION = "1.1";
@@ -75,7 +68,6 @@ public class InnogyBindingConstants {
     public static final String PROPERTY_BACKEND_CONNECTION_MONITORED = "Backend connection monitored";
     public static final String PROPERTY_RFCOM_FAILURE_NOTIFICATION = "RFComm failure notification";
     public static final String PROPERTY_DISPLAY_CURRENT_TEMPERATURE = "Display current temperature";
-    public static final String PROPERTY_UNDERLYING_DEVICE_IDS = "Underlying device IDs (thermostats)";
     public static final String PROPERTY_METER_ID = "Meter ID";
     public static final String PROPERTY_METER_FIRMWARE_VERSION = "Meter firmware version";
 
@@ -112,6 +104,10 @@ public class InnogyBindingConstants {
                     DEVICE_WSC2, DEVICE_BRC8, DEVICE_ISC2, DEVICE_ISD2, DEVICE_ISR2, DEVICE_PSD, DEVICE_ANALOG_METER,
                     DEVICE_GENERATION_METER, DEVICE_SMART_METER, DEVICE_TWO_WAY_METER)
             .collect(Collectors.toSet()));
+
+    public static final Set<String> BATTERY_POWERED_DEVICES = Collections
+            .unmodifiableSet(Stream.of(DEVICE_RST, DEVICE_RST2, DEVICE_WRT, DEVICE_WDS, DEVICE_WSD, DEVICE_WSD2,
+                    DEVICE_WMD, DEVICE_WMDO, DEVICE_WSC2, DEVICE_BRC8).collect(Collectors.toSet()));
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");

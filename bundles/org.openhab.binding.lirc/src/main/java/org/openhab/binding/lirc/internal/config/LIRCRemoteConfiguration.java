@@ -34,5 +34,4 @@ public class LIRCRemoteConfiguration {
     public void setRemote(String remote) {
         this.remote = remote;
     }
-
 }

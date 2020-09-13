@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.onewire.internal.device;
 
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_LOGIC;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_DIGITAL_MODE;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -50,7 +49,7 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
     protected @NonNullByDefault({}) OwserverDeviceParameter fullInParam;
     protected @NonNullByDefault({}) OwserverDeviceParameter fullOutParam;
 
-    protected final List<DigitalIoConfig> ioConfig = new ArrayList<DigitalIoConfig>();
+    protected final List<DigitalIoConfig> ioConfig = new ArrayList<>();
 
     public AbstractDigitalOwDevice(SensorId sensorId, OwBaseThingHandler callback) {
         super(sensorId, callback);
@@ -104,8 +103,12 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
         isConfigured = true;
     }
 
+    /**
+     * refreshes this sensor - note that the update interval check is not performed as its and i/o device
+     */
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
+        logger.trace("refresh of sensor {} started", sensorId);
         if (isConfigured) {
             State state;
 
@@ -152,5 +155,4 @@ public abstract class AbstractDigitalOwDevice extends AbstractOwDevice {
             throw new IllegalArgumentException("channel number out of range");
         }
     }
-
 }

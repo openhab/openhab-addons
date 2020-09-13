@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.junit.Test;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 
 /**
  * Test cases for the value classes. They should throw exceptions if the wrong command type is used
@@ -56,7 +57,7 @@ public class ValueTests {
     }
 
     public void colorUpdate() {
-        ColorValue v = new ColorValue(true, "fancyON", "fancyOFF", 77);
+        ColorValue v = new ColorValue(ColorMode.RGB, "fancyON", "fancyOFF", 77);
         v.update(p(v, "255, 255, 255"));
 
         v.update(p(v, "OFF"));
@@ -72,7 +73,7 @@ public class ValueTests {
 
     @Test(expected = IllegalArgumentException.class)
     public void illegalColorUpdate() {
-        ColorValue v = new ColorValue(true, null, null, 10);
+        ColorValue v = new ColorValue(ColorMode.RGB, null, null, 10);
         v.update(p(v, "255,255,abc"));
     }
 
@@ -230,7 +231,6 @@ public class ValueTests {
             v.update(new DecimalType(i));
             assertThat(v.getMQTTpublishValue(null), is("" + i));
         }
-
     }
 
     @Test

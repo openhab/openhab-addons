@@ -173,7 +173,7 @@ class KeContactTransceiver {
                         handlers.size());
             }
 
-            if (handlers.size() == 0) {
+            if (handlers.isEmpty()) {
                 stop();
             }
         }
@@ -398,7 +398,7 @@ class KeContactTransceiver {
                 } else {
                     return;
                 }
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | ClosedSelectorException e) {
                 Thread.currentThread().interrupt();
                 return;
             }

@@ -57,5 +57,4 @@ public class VeluxBindingProperties {
 
     public static final String PROPERTY_VSHUTTER_SCENELEVELS = "sceneLevels";
     public static final String PROPERTY_VSHUTTER_CURRENTLEVEL = "currentLevel";
-
 }

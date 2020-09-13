@@ -51,5 +51,4 @@ public enum DoorState implements StateType {
     public int getBytesCount(boolean extendedCmd) {
         return getPayloadLength(extendedCmd);
     }
-
 }

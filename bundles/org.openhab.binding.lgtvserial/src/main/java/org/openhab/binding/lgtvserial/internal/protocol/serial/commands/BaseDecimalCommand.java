@@ -27,9 +27,9 @@ public abstract class BaseDecimalCommand extends BaseLGSerialCommand {
     /**
      * Create a command.
      *
-     * @param command1  Command category
-     * @param command2  Command key
-     * @param setId     TV Set id this command is tied to
+     * @param command1 Command category
+     * @param command2 Command key
+     * @param setId TV Set id this command is tied to
      * @param updatable Define if this command is one that can update the TV or can only ever be a read status command.
      */
     protected BaseDecimalCommand(char command1, char command2, int setId, boolean updatable) {
@@ -41,7 +41,7 @@ public abstract class BaseDecimalCommand extends BaseLGSerialCommand {
      *
      * @param command1 Command category
      * @param command2 Command key
-     * @param setId    TV Set id this command is tied to
+     * @param setId TV Set id this command is tied to
      */
 
     protected BaseDecimalCommand(char command1, char command2, int setId) {
@@ -58,5 +58,4 @@ public abstract class BaseDecimalCommand extends BaseLGSerialCommand {
         String decimalValue = Integer.toString(Integer.parseInt(data, 16));
         return new DecimalResponse(set, success, DecimalType.valueOf(decimalValue));
     }
-
 }

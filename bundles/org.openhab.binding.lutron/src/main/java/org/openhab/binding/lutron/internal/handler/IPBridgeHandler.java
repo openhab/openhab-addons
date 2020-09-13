@@ -20,6 +20,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +32,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.lutron.internal.config.IPBridgeConfig;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
@@ -51,11 +53,13 @@ import org.slf4j.LoggerFactory;
  */
 public class IPBridgeHandler extends BaseBridgeHandler {
     private static final Pattern RESPONSE_REGEX = Pattern
-            .compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE),([0-9\\.:/]+),([0-9,\\.:/]*)\\Z");
+            .compile("~(OUTPUT|DEVICE|SYSTEM|TIMECLOCK|MODE|SYSVAR),([0-9\\.:/]+),([0-9,\\.:/]*)\\Z");
 
     private static final String DB_UPDATE_DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
     private static final Integer MONITOR_PROMPT = 12;
+    private static final Integer MONITOR_SYSVAR = 10;
+    private static final Integer MONITOR_ENABLE = 1;
     private static final Integer MONITOR_DISABLE = 2;
 
     private static final Integer SYSTEM_DBEXPORTDATETIME = 10;
@@ -90,6 +94,8 @@ public class IPBridgeHandler extends BaseBridgeHandler {
 
     private Date lastDbUpdateDate;
     private LutronDeviceDiscoveryService discoveryService;
+
+    private final AtomicBoolean requireSysvarMonitoring = new AtomicBoolean(false);
 
     public void setDiscoveryService(LutronDeviceDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
@@ -202,6 +208,10 @@ public class IPBridgeHandler extends BaseBridgeHandler {
         // Disable prompts
         sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MONITORING, -1, MONITOR_PROMPT,
                 MONITOR_DISABLE));
+
+        if (requireSysvarMonitoring.get()) {
+            setSysvarMonitoring(true);
+        }
 
         // Check the time device database was last updated. On the initial connect, this will trigger
         // a scan for paired devices.
@@ -440,6 +450,22 @@ public class IPBridgeHandler extends BaseBridgeHandler {
             }
         } catch (Exception e) {
             logger.warn("Error scanning for paired devices: {}", e.getMessage(), e);
+        }
+    }
+
+    private void setSysvarMonitoring(boolean enable) {
+        Integer setting = (enable) ? MONITOR_ENABLE : MONITOR_DISABLE;
+        sendCommand(
+                new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MONITORING, -1, MONITOR_SYSVAR, setting));
+    }
+
+    @Override
+    public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
+        // enable sysvar monitoring the first time a sysvar child thing initializes
+        if (childHandler instanceof SysvarHandler) {
+            if (requireSysvarMonitoring.compareAndSet(false, true)) {
+                setSysvarMonitoring(true);
+            }
         }
     }
 

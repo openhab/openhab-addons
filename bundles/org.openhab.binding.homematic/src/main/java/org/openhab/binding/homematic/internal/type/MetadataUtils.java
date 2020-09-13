@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 public class MetadataUtils {
     private static final Logger logger = LoggerFactory.getLogger(MetadataUtils.class);
     private static ResourceBundle descriptionsBundle;
-    private static Map<String, String> descriptions = new HashMap<String, String>();
-    private static Map<String, Set<String>> standardDatapoints = new HashMap<String, Set<String>>();
+    private static Map<String, String> descriptions = new HashMap<>();
+    private static Map<String, Set<String>> standardDatapoints = new HashMap<>();
 
     protected static void initialize() {
         // loads all Homematic device names
@@ -75,7 +75,6 @@ public class MetadataUtils {
         Bundle bundle = FrameworkUtil.getBundle(MetadataUtils.class);
         try (InputStream stream = bundle.getResource("homematic/standard-datapoints.properties").openStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-
             String line;
             while ((line = reader.readLine()) != null) {
                 if (StringUtils.trimToNull(line) != null && !StringUtils.startsWith(line, "#")) {
@@ -84,7 +83,7 @@ public class MetadataUtils {
 
                     Set<String> channelDatapoints = standardDatapoints.get(channelType);
                     if (channelDatapoints == null) {
-                        channelDatapoints = new HashSet<String>();
+                        channelDatapoints = new HashSet<>();
                         standardDatapoints.put(channelType, channelDatapoints);
                     }
 
@@ -108,7 +107,7 @@ public class MetadataUtils {
         if (dp.getOptions() == null) {
             logger.warn("No options for ENUM datapoint {}", dp);
         } else {
-            options = new ArrayList<T>();
+            options = new ArrayList<>();
             for (int i = 0; i < dp.getOptions().length; i++) {
                 String description = null;
                 if (!dp.isVariable() && !dp.isScript()) {
@@ -278,7 +277,8 @@ public class MetadataUtils {
 
         if (dp.isBooleanType()) {
             if (((dpName.equals(DATAPOINT_NAME_STATE) || dpName.equals(VIRTUAL_DATAPOINT_NAME_STATE_CONTACT))
-                    && channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT))
+                    && (channelType.equals(CHANNEL_TYPE_SHUTTER_CONTACT)
+                            || channelType.contentEquals(CHANNEL_TYPE_TILT_SENSOR)))
                     || (dpName.equals(DATAPOINT_NAME_SENSOR) && channelType.equals(CHANNEL_TYPE_SENSOR))) {
                 return ITEM_TYPE_CONTACT;
             } else {
@@ -345,8 +345,10 @@ public class MetadataUtils {
     public static boolean isRollerShutter(HmDatapoint dp) {
         String channelType = dp.getChannel().getType();
         return channelType.equals(CHANNEL_TYPE_BLIND) || channelType.equals(CHANNEL_TYPE_JALOUSIE)
+                || channelType.equals(CHANNEL_TYPE_BLIND_TRANSMITTER)
                 || channelType.equals(CHANNEL_TYPE_SHUTTER_TRANSMITTER)
-                || channelType.equals(CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER);
+                || channelType.equals(CHANNEL_TYPE_SHUTTER_VIRTUAL_RECEIVER)
+                || channelType.contentEquals(CHANNEL_TYPE_BLIND_VIRTUAL_RECEIVER);
     }
 
     /**
@@ -393,5 +395,4 @@ public class MetadataUtils {
             return null;
         }
     }
-
 }

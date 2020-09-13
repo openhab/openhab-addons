@@ -42,7 +42,8 @@ public class RFXComStreamReader extends Thread {
         }
     }
 
-    public RFXComStreamReader(RFXComBaseConnector connector) {
+    public RFXComStreamReader(RFXComBaseConnector connector, String threadName) {
+        super(threadName);
         this.connector = connector;
         setUncaughtExceptionHandler(new ExceptionHandler());
     }
@@ -67,6 +68,8 @@ public class RFXComStreamReader extends Thread {
                     logger.trace("Message length is {} bytes", packetLength);
                     processMessage(buf, packetLength);
                     connector.sendMsgToListeners(Arrays.copyOfRange(buf, 0, packetLength + 1));
+                } else if (bytesRead == -1) {
+                    throw new IOException("End of stream");
                 }
             }
         } catch (IOException | RFXComTimeoutException e) {

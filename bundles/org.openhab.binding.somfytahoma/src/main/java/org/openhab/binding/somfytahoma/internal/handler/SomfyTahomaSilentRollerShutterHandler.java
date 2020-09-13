@@ -45,25 +45,39 @@ public class SomfyTahomaSilentRollerShutterHandler extends SomfyTahomaRollerShut
             return;
         } else {
             String cmd = getTahomaCommand(command.toString());
-            if (COMMAND_MY.equals(cmd)) {
-                sendCommand(COMMAND_MY);
-            } else if (COMMAND_STOP.equals(cmd)) {
-                String executionId = getCurrentExecutions();
-                if (executionId != null) {
-                    //Check if the roller shutter is moving and STOP is sent => STOP it
-                    cancelExecution(executionId);
-                } else {
+            switch (cmd) {
+                case COMMAND_STOP:
+                    String executionId = getCurrentExecutions();
+                    if (executionId != null) {
+                        // Check if the roller shutter is moving and STOP is sent => STOP it
+                        cancelExecution(executionId);
+                        break;
+                    }
+                    // fall through
+                case COMMAND_MY:
                     sendCommand(COMMAND_MY);
-                }
-            } else {
-                if (CONTROL_SILENT.equals(channelUID.getId()) && COMMAND_SET_CLOSURE.equals(cmd)) {
-                    // move the roller shutter to the specific position at low speed
-                    String param = "[" + command.toString() + ", \"lowspeed\"]";
-                    sendCommand(COMMAND_SET_CLOSURESPEED, param);
-                } else {
-                    String param = COMMAND_SET_CLOSURE.equals(cmd) ? "[" + command.toString() + "]" : "[]";
-                    sendCommand(cmd, param);
-                }
+                    break;
+                case COMMAND_SET_CLOSURE:
+                    if (CONTROL_SILENT.equals(channelUID.getId())) {
+                        // move the roller shutter to the specific position at low speed
+                        String param = "[" + toInteger(command) + ", \"lowspeed\"]";
+                        sendCommand(COMMAND_SET_CLOSURESPEED, param);
+                    } else {
+                        String param = "[" + toInteger(command) + "]";
+                        sendCommand(cmd, param);
+                    }
+                    break;
+                case COMMAND_UP:
+                case COMMAND_DOWN:
+                    if (CONTROL_SILENT.equals(channelUID.getId())) {
+                        // move the roller shutter to the specific position at low speed
+                        String param = "[" + (COMMAND_UP.equals(cmd) ? 0 : 100) + ", \"lowspeed\"]";
+                        sendCommand(COMMAND_SET_CLOSURESPEED, param);
+                        break;
+                    }
+                    // fall through
+                default:
+                    sendCommand(cmd);
             }
         }
     }

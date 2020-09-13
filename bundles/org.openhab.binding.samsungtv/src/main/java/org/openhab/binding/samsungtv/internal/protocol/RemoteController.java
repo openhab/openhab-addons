@@ -46,5 +46,4 @@ public abstract class RemoteController implements AutoCloseable {
 
     @Override
     public abstract void close() throws RemoteControllerException;
-
 }

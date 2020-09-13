@@ -28,7 +28,7 @@ public class ZoneTemperatureEvent implements SatelEvent {
     /**
      * Constructs new event class.
      *
-     * @param zoneNbr     zone number
+     * @param zoneNbr zone number
      * @param temperature current temperature in the zone
      */
     public ZoneTemperatureEvent(int zoneNbr, float temperature) {

@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!--  TODO : auto configuration, channel tuning, channel add/del -->
-	<!--  Left not implemented on purpose : Remote control lock mode, so they don't lock themselves out -->
+	<!-- TODO : auto configuration, channel tuning, channel add/del -->
+	<!-- Left not implemented on purpose : Remote control lock mode, so they don't lock themselves out -->
 
 	<!-- These things supports the LG TV models from the document with P/NO : SAC34134216 -->
 	<thing-type id="lgtv-LV-series">
@@ -13,8 +13,8 @@
 		<description><![CDATA[This thing supports the LED LCD TV models <size>LV<type> and <size>LW<type> except *LV255C, *LV355B, *LV355C models]]></description>
 
 		<channels>
-			<channel id="3d" typeId="3d" />
-			<channel id="3d-extended" typeId="3d-extended" />
+			<channel id="3d" typeId="3d"/>
+			<channel id="3d-extended" typeId="3d-extended"/>
 			<channel id="aspect-ratio" typeId="aspect-ratio-SAC34134216"/>
 			<channel id="backlight" typeId="backlight"/>
 			<channel id="balance" typeId="balance"/>
@@ -25,7 +25,7 @@
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="energy-saving" typeId="energy-saving"/>
 			<channel id="input2" typeId="input-SAC34134216"/>
-			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216" />
+			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216"/>
 			<channel id="osd-select" typeId="osd-select"/>
 			<channel id="power" typeId="power"/>
 			<channel id="raw" typeId="raw"/>
@@ -36,17 +36,17 @@
 			<channel id="volume" typeId="volume"/>
 			<channel id="volume-mute" typeId="volume-mute"/>
 		</channels>
-		<!--  remote lock, auto conf, channel del, key, tuning-->
+		<!-- remote lock, auto conf, channel del, key, tuning -->
 
-		<config-description-ref uri="thing-type:lgtvserial:serial" />
+		<config-description-ref uri="thing-type:lgtvserial:serial"/>
 	</thing-type>
 
 	<thing-type id="lgtv-LVx55-series">
 		<label>LV/LW Series</label>
 		<description><![CDATA[This thing supports the *LV255C, *LV355B, *LV355C models.]]></description>
 		<channels>
-			<channel id="3d" typeId="3d" />
-			<channel id="3d-extended" typeId="3d-extended" />
+			<channel id="3d" typeId="3d"/>
+			<channel id="3d-extended" typeId="3d-extended"/>
 			<channel id="aspect-ratio" typeId="aspect-ratio-SAC34134216"/>
 			<channel id="backlight" typeId="backlight"/>
 			<channel id="balance" typeId="balance"/>
@@ -57,7 +57,7 @@
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="energy-saving" typeId="energy-saving"/>
 			<channel id="input2" typeId="input-SAC34134216"/>
-			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216-LV255C-LV355B-LV355C" />
+			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216-LV255C-LV355B-LV355C"/>
 			<channel id="osd-select" typeId="osd-select"/>
 			<channel id="power" typeId="power"/>
 			<channel id="raw" typeId="raw"/>
@@ -68,9 +68,9 @@
 			<channel id="volume" typeId="volume"/>
 			<channel id="volume-mute" typeId="volume-mute"/>
 		</channels>
-		<!--  remote lock, auto conf, channel del, key, tuning-->
+		<!-- remote lock, auto conf, channel del, key, tuning -->
 
-		<config-description-ref uri="thing-type:lgtvserial:serial" />
+		<config-description-ref uri="thing-type:lgtvserial:serial"/>
 	</thing-type>
 
 
@@ -79,8 +79,8 @@
 		<description><![CDATA[This thing supports the LCD TV models <size>LK<type>]]></description>
 
 		<channels>
-			<channel id="3d" typeId="3d" />
-			<channel id="3d-extended" typeId="3d-extended" />
+			<channel id="3d" typeId="3d"/>
+			<channel id="3d-extended" typeId="3d-extended"/>
 			<channel id="aspect-ratio" typeId="aspect-ratio-SAC34134216"/>
 			<channel id="backlight" typeId="backlight"/>
 			<channel id="balance" typeId="balance"/>
@@ -91,7 +91,7 @@
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="energy-saving" typeId="energy-saving"/>
 			<channel id="input2" typeId="input-SAC34134216"/>
-			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216" />
+			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216"/>
 			<channel id="osd-select" typeId="osd-select"/>
 			<channel id="power" typeId="power"/>
 			<channel id="raw" typeId="raw"/>
@@ -103,7 +103,7 @@
 			<channel id="volume-mute" typeId="volume-mute"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:lgtvserial:serial" />
+		<config-description-ref uri="thing-type:lgtvserial:serial"/>
 	</thing-type>
 
 	<thing-type id="lgtv-PW-series">
@@ -111,8 +111,8 @@
 		<description><![CDATA[This thing supports the PLASMA TV models <size>PW<type>]]></description>
 
 		<channels>
-			<channel id="3d" typeId="3d" />
-			<channel id="3d-extended" typeId="3d-extended" />
+			<channel id="3d" typeId="3d"/>
+			<channel id="3d-extended" typeId="3d-extended"/>
 			<channel id="aspect-ratio" typeId="aspect-ratio-SAC34134216"/>
 			<channel id="balance" typeId="balance"/>
 			<channel id="bass" typeId="bass"/>
@@ -122,7 +122,7 @@
 			<channel id="contrast" typeId="contrast"/>
 			<channel id="energy-saving" typeId="energy-saving"/>
 			<channel id="input2" typeId="input-SAC34134216"/>
-			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216" />
+			<channel id="ir-key-code" typeId="ir-key-code-SAC34134216"/>
 			<channel id="ism-method" typeId="ism-SAC34134216"/> <!-- only for plasma TVs -->
 			<channel id="osd-select" typeId="osd-select"/>
 			<channel id="power" typeId="power"/>
@@ -135,7 +135,7 @@
 			<channel id="volume-mute" typeId="volume-mute"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:lgtvserial:serial" />
+		<config-description-ref uri="thing-type:lgtvserial:serial"/>
 	</thing-type>
 
 	<channel-type id="aspect-ratio-SAC34134216">
@@ -355,4 +355,3 @@
 	</channel-type>
 
 </thing:thing-descriptions>
-

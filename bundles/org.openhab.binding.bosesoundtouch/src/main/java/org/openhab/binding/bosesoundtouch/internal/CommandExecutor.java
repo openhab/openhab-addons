@@ -82,9 +82,9 @@ public class CommandExecutor implements AvailableSources {
     /**
      * Adds a ContentItem to the PresetContainer
      *
-     * @param id          the id the ContentItem should be reached
+     * @param id the id the ContentItem should be reached
      * @param contentItem the contentItem that should be saved as PRESET. Note that a eventually set presetID of the
-     *                        ContentItem will be overwritten with id
+     *            ContentItem will be overwritten with id
      */
     public void addContentItemToPresetContainer(int id, ContentItem contentItem) {
         contentItem.setPresetID(id);
@@ -100,7 +100,7 @@ public class CommandExecutor implements AvailableSources {
      * Adds the current selected ContentItem to the PresetContainer
      *
      * @param command the command is a DecimalType, thats intValue will be used as id. The id the ContentItem should be
-     *                    reached
+     *            reached
      */
     public void addCurrentContentItemToPresetContainer(DecimalType command) {
         if (command.intValue() > 6) {

@@ -132,5 +132,4 @@ public class Transform {
     public void setWhitelevel(List<Double> whitelevel) {
         this.whitelevel = whitelevel;
     }
-
 }

@@ -126,5 +126,4 @@ public class ZoneMinderBridgeServerConfig extends ZoneMinderConfig {
     public void setAutodiscoverThings(Boolean autodiscoverThings) {
         this.autodiscover_things = autodiscoverThings;
     }
-
 }

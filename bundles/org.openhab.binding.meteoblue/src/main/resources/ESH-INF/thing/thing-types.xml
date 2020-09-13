@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="meteoblue"
-							xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-							xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-							xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- meteoblue Binding things -->
 	<thing-type id="weather">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Weather Information</label>
@@ -62,7 +62,8 @@
 			</parameter>
 			<parameter name="timeZone" type="text">
 				<label>Time Zone</label>
-				<description>Time Zone of this location (e.g. America/Louisville). See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</description>
+				<description>Time Zone of this location (e.g. America/Louisville). See
+					https://en.wikipedia.org/wiki/List_of_tz_database_time_zones</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="5" unit="min">
 				<label>Refresh Interval</label>
@@ -71,43 +72,43 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-group-type id="forecast">
 		<label>Weather Forecast</label>
 		<description>This is the weather forecast</description>
 		<channels>
-			<channel id="height" typeId="height" />
-			<channel id="forecastDate" typeId="forecastDate" />
-			<channel id="UVIndex" typeId="UVIndex" />
-			<channel id="minTemperature" typeId="minTemperature" />
-			<channel id="maxTemperature" typeId="maxTemperature" />
-			<channel id="meanTemperature" typeId="meanTemperature" />
-			<channel id="feltTemperatureMin" typeId="feltTemperatureMin" />
-			<channel id="feltTemperatureMax" typeId="feltTemperatureMax" />
-			<channel id="relativeHumidityMin" typeId="relativeHumidityMin" />
-			<channel id="relativeHumidityMax" typeId="relativeHumidityMax" />
-			<channel id="relativeHumidityMean" typeId="relativeHumidityMean" />
-			<channel id="precipitationProbability" typeId="precipitationProbability" />
-			<channel id="precipitation" typeId="precipitation" />
-			<channel id="convectivePrecipitation" typeId="convectivePrecipitation" />
-			<channel id="rainSpot" typeId="rainSpot" />
-			<channel id="rainArea" typeId="rainArea" />
-			<channel id="snowFraction" typeId="snowFraction" />
-			<channel id="snowFall" typeId="snowFall" />
-			<channel id="cardinalWindDirection" typeId="cardinalWindDirection" />
-			<channel id="windDirection" typeId="windDirection" />
-			<channel id="minWindSpeed" typeId="minWindSpeed" />
-			<channel id="maxWindSpeed" typeId="maxWindSpeed" />
-			<channel id="meanWindSpeed" typeId="meanWindSpeed" />
-			<channel id="minSeaLevelPressure" typeId="pressureMin" />
-			<channel id="maxSeaLevelPressure" typeId="pressureMax" />
-			<channel id="meanSeaLevelPressure" typeId="pressureMean" />
-			<channel id="condition" typeId="condition" />
-			<channel id="icon" typeId="icon" />
-			<channel id="predictability" typeId="predictability" />
-			<channel id="predictabilityClass" typeId="predictabilityClass" />
-			<channel id="precipitationHours" typeId="precipitationHours" />
-			<channel id="humidityGreater90Hours" typeId="humidityGreater90Hours" />
+			<channel id="height" typeId="height"/>
+			<channel id="forecastDate" typeId="forecastDate"/>
+			<channel id="UVIndex" typeId="UVIndex"/>
+			<channel id="minTemperature" typeId="minTemperature"/>
+			<channel id="maxTemperature" typeId="maxTemperature"/>
+			<channel id="meanTemperature" typeId="meanTemperature"/>
+			<channel id="feltTemperatureMin" typeId="feltTemperatureMin"/>
+			<channel id="feltTemperatureMax" typeId="feltTemperatureMax"/>
+			<channel id="relativeHumidityMin" typeId="relativeHumidityMin"/>
+			<channel id="relativeHumidityMax" typeId="relativeHumidityMax"/>
+			<channel id="relativeHumidityMean" typeId="relativeHumidityMean"/>
+			<channel id="precipitationProbability" typeId="precipitationProbability"/>
+			<channel id="precipitation" typeId="precipitation"/>
+			<channel id="convectivePrecipitation" typeId="convectivePrecipitation"/>
+			<channel id="rainSpot" typeId="rainSpot"/>
+			<channel id="rainArea" typeId="rainArea"/>
+			<channel id="snowFraction" typeId="snowFraction"/>
+			<channel id="snowFall" typeId="snowFall"/>
+			<channel id="cardinalWindDirection" typeId="cardinalWindDirection"/>
+			<channel id="windDirection" typeId="windDirection"/>
+			<channel id="minWindSpeed" typeId="minWindSpeed"/>
+			<channel id="maxWindSpeed" typeId="maxWindSpeed"/>
+			<channel id="meanWindSpeed" typeId="meanWindSpeed"/>
+			<channel id="minSeaLevelPressure" typeId="pressureMin"/>
+			<channel id="maxSeaLevelPressure" typeId="pressureMax"/>
+			<channel id="meanSeaLevelPressure" typeId="pressureMean"/>
+			<channel id="condition" typeId="condition"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="predictability" typeId="predictability"/>
+			<channel id="predictabilityClass" typeId="predictabilityClass"/>
+			<channel id="precipitationHours" typeId="precipitationHours"/>
+			<channel id="humidityGreater90Hours" typeId="humidityGreater90Hours"/>
 		</channels>
 	</channel-group-type>
 
@@ -130,7 +131,7 @@
 		<label>Minimum Temperature</label>
 		<description>The low temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxTemperature">
@@ -138,7 +139,7 @@
 		<label>Maximum Temperature</label>
 		<description>The high temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="meanTemperature">
@@ -146,7 +147,7 @@
 		<label>Mean Temperature</label>
 		<description>The average temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feltTemperatureMin" advanced="true">
@@ -154,7 +155,7 @@
 		<label>Minimum Felt Temperature</label>
 		<description>The low "feels like" temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feltTemperatureMax" advanced="true">
@@ -162,7 +163,7 @@
 		<label>Maximum Felt Temperature</label>
 		<description>The high "feels like" temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="relativeHumidityMin">
@@ -213,21 +214,21 @@
 		<label>Maximum Wind Speed</label>
 		<description>Maximum wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="minWindSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Minimum Wind Speed</label>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="meanWindSpeed">
 		<item-type>Number:Speed</item-type>
 		<label>Mean Wind Speed</label>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressureMin">
@@ -235,7 +236,7 @@
 		<label>Low Pressure</label>
 		<description>Low Pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressureMax">
@@ -243,7 +244,7 @@
 		<label>High Pressure</label>
 		<description>High Pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressureMean">
@@ -251,7 +252,7 @@
 		<label>Mean Pressure</label>
 		<description>Mean Pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="UVIndex" advanced="true">
@@ -267,7 +268,7 @@
 		<label>Precipitation</label>
 		<description>Prediction of total precipitation</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="convectivePrecipitation">
@@ -275,17 +276,18 @@
 		<label>Convective Precipitation</label>
 		<description>Prediction of convective precipitation (rainfall)</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainSpot">
 		<item-type>String</item-type>
 		<label>Rain Spot</label>
 		<description>Precipitation distribution around the location as a 7x7 array,
-		encoded from south to north and west to east
-		(e.g. 2112211093222219212110112229922133311912239022192).</description>
+			encoded from south to north and west to
+			east
+			(e.g. 2112211093222219212110112229922133311912239022192).</description>
 		<category>Rain</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rainArea">
@@ -293,7 +295,7 @@
 		<label>Rain Area</label>
 		<description>Image representing the Rain Spot precipitation distribution</description>
 		<category>Rain</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="snowFraction">
@@ -301,7 +303,7 @@
 		<label>Snow Fraction</label>
 		<description>Prediction of the fraction of total precipitation that will fall as snow</description>
 		<category>Rain</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="snowFall">
@@ -309,7 +311,7 @@
 		<label>Snowfall</label>
 		<description>Prediction of snowfall</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="precipitationProbability">
@@ -348,7 +350,7 @@
 		<item-type>Number</item-type>
 		<label>Forecast Predictability Class</label>
 		<description>The estimated certainty of the forecast (0 = very low, 5 = very high)</description>
-		<state readOnly="true" min="0" max="5" pattern="%d" />
+		<state readOnly="true" min="0" max="5" pattern="%d"/>
 	</channel-type>
 
 	<channel-type id="condition">

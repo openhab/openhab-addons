@@ -35,7 +35,6 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
         super(channelConfiguration, defaultDPT);
         if (channelConfiguration != null) {
             this.groupAddress = new GroupAddress(channelConfiguration.getMainGA().getGA());
-
         } else {
             this.groupAddress = null;
         }
@@ -51,5 +50,4 @@ public class WriteSpecImpl extends AbstractSpec implements OutboundSpec {
     public @Nullable GroupAddress getGroupAddress() {
         return groupAddress;
     }
-
 }

@@ -23,5 +23,4 @@ public class BrightnessCommand extends BasePercentCommand {
     protected BrightnessCommand(int setId) {
         super('k', 'h', setId);
     }
-
 }

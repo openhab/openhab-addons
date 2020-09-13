@@ -92,7 +92,7 @@
 		<label>Temperature</label>
 		<description>Current temperature in degree Celsius</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -100,14 +100,14 @@
 		<label>Humidity</label>
 		<description>Relative humidity level in percentages</description>
 		<category>Humidity</category>
-		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true" />
+		<state min="0" max="100" step="1" pattern="%d %%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="setPoint">
 		<item-type>Number</item-type>
 		<label>Set Point</label>
 		<description>linear set point</description>
-		<state readOnly="true" min="0" max="255" />
+		<state readOnly="true" min="0" max="255"/>
 	</channel-type>
 
 	<channel-type id="fanSpeedStage">
@@ -129,7 +129,7 @@
 		<label>Occupancy</label>
 		<description>Occupancy button pressed or released.</description>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="contact">
@@ -162,14 +162,14 @@
 		<item-type>Number:Power</item-type>
 		<label>Instant Power</label>
 		<description>Instant power consumption in Watts</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="totalusage">
 		<item-type>Number:Energy</item-type>
 		<label>Total Usage</label>
 		<description>Used energy in Kilowatt hours</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 		<config-description>
 			<parameter name="validateValue" type="boolean">
 				<label>Validate Value</label>
@@ -183,14 +183,14 @@
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Battery Voltage</label>
 		<description>Voltage of the battery</description>
-		<state pattern="%f %unit%" readOnly="true" />
+		<state pattern="%f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="energyStorage">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>Energy Storage</label>
 		<description>?</description>
-		<state pattern="%f %unit%" readOnly="true" />
+		<state pattern="%f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<!-- Teach in Channel -->
@@ -218,21 +218,21 @@
 		<item-type>Number</item-type>
 		<label>RSSI</label>
 		<description>Received Signal Strength Indication</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="repeatCount" advanced="true">
 		<item-type>Number</item-type>
 		<label>RepeatCount</label>
 		<description>Number of repeaters involved in the transmission of the telegram</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="lastReceived" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>LastReceived</label>
 		<description>Date and time the last telegram was received</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="vibration">
@@ -240,49 +240,49 @@
 		<label>Vibration Alarm</label>
 		<description>Vibration alarm state.</description>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="illumination">
 		<item-type>Number:Illuminance</item-type>
 		<label>Lux</label>
 		<description>Illumination in lux</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="illuminationWest">
 		<item-type>Number:Illuminance</item-type>
 		<label>Sun West</label>
 		<description>Illumination in lux</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="illuminationSouthNorth">
 		<item-type>Number:Illuminance</item-type>
 		<label>Sun South/North</label>
 		<description>Illumination in lux</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="illuminationEast">
 		<item-type>Number:Illuminance</item-type>
 		<label>Sun East</label>
 		<description>Illumination in lux</description>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="autoOFF" advanced="true">
 		<item-type>Number:Duration</item-type>
 		<label>Auto Off</label>
 		<description>Automatically switch to off</description>
-		<state pattern="%d %unit%" />
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="delayRadioOFF" advanced="true">
 		<item-type>Number:Duration</item-type>
 		<label>Delay Radio Off</label>
 		<description>Delay switch off by radio for given seconds</description>
-		<state pattern="%d %unit%" />
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="externalInterfaceMode" advanced="true">
@@ -317,33 +317,33 @@
 		<label>Angle</label>
 		<description>Blind Angle</description>
 		<category>Blinds</category>
-		<state pattern="%d %unit%" />
+		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="currentFlow">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Current Flow</label>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cumulativeValue">
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Value</label>
-		<state pattern="%d %unit%" readOnly="true" />
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="counter">
 		<item-type>Number</item-type>
 		<label>Counter</label>
 		<description>Counter</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="currentNumber">
 		<item-type>Number</item-type>
 		<label>Current</label>
 		<description>Current</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rainStatus">
@@ -351,7 +351,7 @@
 		<label>Rain</label>
 		<description>Rain indicator</description>
 		<category>Switch</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="valvePosition">
@@ -359,7 +359,7 @@
 		<label>Valve Position</label>
 		<description>Indicates the actual percent position of the valve.</description>
 		<category>thermostat</category>
-		<state min="0" max="100" step="1" pattern="%d %%" />
+		<state min="0" max="100" step="1" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="buttonLock">
@@ -395,14 +395,14 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Set Point</label>
 		<description>Desired temperature</description>
-		<state min="10" max="30" />
+		<state min="10" max="30"/>
 	</channel-type>
 
 	<channel-type id="feedTemperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Feed Temperature</label>
 		<description>Water temperature in the radiator input</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="failureCode">
@@ -410,7 +410,7 @@
 		<label>Failure Code</label>
 		<description>Failure code</description>
 		<category>thermostat</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="wakeUpCycle">
@@ -418,7 +418,7 @@
 		<label>Wakeup Cycle</label>
 		<description>Defines the cyclic wake-up time. The time corresponding to the number has to be looked up.</description>
 		<category>thermostat</category>
-		<state min="0" max="63" />
+		<state min="0" max="63"/>
 	</channel-type>
 
 	<channel-type id="serviceCommand" advanced="true">
@@ -440,7 +440,7 @@
 		<kind>trigger</kind>
 		<label>Status Request Event</label>
 		<description>Is triggered when the actuator wakes up from sleep and asks for the current status.</description>
-		<event />
+		<event/>
 	</channel-type>
 
 	<channel-type id="sendCommand">
@@ -454,49 +454,49 @@
 		<item-type>Switch</item-type>
 		<label>Smoke Detected</label>
 		<description>Smoke detection sensor state.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="sensorFault">
 		<item-type>Switch</item-type>
 		<label>Sensor Fault Mode</label>
 		<description>Sensor activated fault mode.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="maintenanceStatus">
 		<item-type>Switch</item-type>
 		<label>Maintenance Neccessary</label>
 		<description>Sensor maintenance status.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="saHumidityRange">
 		<item-type>Switch</item-type>
 		<label>Out of Humidity Range</label>
 		<description>Sensor analysis status: humidity out of range</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="saTemperatureRange">
 		<item-type>Switch</item-type>
 		<label>Out of Temperature Range</label>
 		<description>Sensor analysis status: temperature out of range</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timeSinceLastMaintenance">
 		<item-type>Number:Time</item-type>
 		<label>Time Since Last Maintenance</label>
 		<description>Time since last maintenance was done.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="remainingPLT">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Product Life Time</label>
 		<description>Countdown time until product end of life.</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="hygroComfortIndex">

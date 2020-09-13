@@ -20,12 +20,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.handler.HueSensorHandler;
 
@@ -36,17 +34,18 @@ import org.openhab.binding.hue.internal.handler.HueSensorHandler;
  */
 @NonNullByDefault
 public class ClipHandler extends HueSensorHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream.of(THING_TYPE_CLIP_GENERIC_STATUS, THING_TYPE_CLIP_GENERIC_FLAG).collect(Collectors.toSet());
-    
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
+            .of(THING_TYPE_CLIP_GENERIC_STATUS, THING_TYPE_CLIP_GENERIC_FLAG).collect(Collectors.toSet());
+
     public ClipHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     protected SensorConfigUpdate doConfigurationUpdate(Map<String, Object> configurationParameters) {
-         return new SensorConfigUpdate();
+        return new SensorConfigUpdate();
     }
 
-    protected void doSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor, Configuration config) {
+    protected void doSensorStateChanged(FullSensor sensor, Configuration config) {
     }
 }

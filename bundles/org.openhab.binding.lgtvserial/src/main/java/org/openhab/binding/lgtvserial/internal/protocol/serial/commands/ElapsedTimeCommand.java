@@ -23,5 +23,4 @@ public class ElapsedTimeCommand extends BaseDecimalCommand {
     protected ElapsedTimeCommand(int setId) {
         super('d', 'l', setId, false);
     }
-
 }

@@ -111,5 +111,4 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
             thingDiscovered(result);
         });
     }
-
 }

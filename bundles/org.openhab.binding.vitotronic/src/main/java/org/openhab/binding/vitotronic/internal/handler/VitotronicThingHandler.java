@@ -76,7 +76,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
         } else {
             return getBridgeHandler(bridge);
         }
-
     }
 
     private synchronized VitotronicBridgeHandler getBridgeHandler(Bridge bridge) {
@@ -106,7 +105,6 @@ public class VitotronicThingHandler extends BaseThingHandler {
         } else {
             logger.debug("Can't unregister {} at bridge bridgeHandler is null.", this.getThing().getUID());
         }
-
     }
 
     public void setChannelValue(String channelId, String value) {

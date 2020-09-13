@@ -21,6 +21,29 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Constants for Modbus transport
  *
+ * == Regarding maximum read and write limits ==
+ *
+ * Maximum number of registers that are allowed to be read.
+ *
+ * The Modbus protocol has many intepretation on maximum data size of messages. Good reference is here:
+ * https://wingpath.co.uk/manpage.php?product=modtest&page=message_limits.html
+ *
+ * We try to follow modern specification here (V1.1B3):
+ * https://modbus.org/docs/Modbus_Application_Protocol_V1_1b3.pdf. See section 4.1 Protocol Specification in the
+ * specification.
+ *
+ * According to V1.1B3, maximum size for PDU is 253 bytes, making maximum ADU size 256 (RTU) or 260 (TCP).
+ *
+ * In the spec section 6, one can see maximum values for read and write counts.
+ *
+ * Note that this is not the only interpretation -- some sources limit the ADU to 256 also with TCP.
+ * In some cases, slaves cannot take in so much data.
+ *
+ *
+ * Reads are limited by response PDU size.
+ * Writes (FC15 & FC16) are limited by write request ADU size.
+ *
+ *
  * @author Sami Salonen - Initial contribution
  *
  */
@@ -100,4 +123,24 @@ public class ModbusConstants {
         }
     }
 
+    /**
+     * Maximum number of coils or discrete inputs that are allowed to be read.
+     * Limitation by Modbus protocol V1.1B3, 6.1 definition of Read Holding registers.
+     */
+    public static final int MAX_BITS_READ_COUNT = 2000;
+    /**
+     * Maximum number of registers that are allowed to be read.
+     * Limitation by Modbus protocol V1.1B3, 6.3 definition of Read Coils.
+     */
+    public static final int MAX_REGISTERS_READ_COUNT = 125;
+    /**
+     * Maximum number of coils or discrete inputs that are allowed to be written.
+     * Limitation by Modbus protocol V1.1B3, 6.11 definition of Write Multiple coils.
+     */
+    public static final int MAX_BITS_WRITE_COUNT = 1968;
+    /**
+     * Maximum number of registers that are allowed to be written.
+     * Limitation by Modbus protocol V1.1B3, 6.12 definition of Write Multiple registers.
+     */
+    public static final int MAX_REGISTERS_WRITE_COUNT = 123;
 }

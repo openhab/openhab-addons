@@ -21,6 +21,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -34,10 +36,11 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  *
  */
+@NonNullByDefault
 public class RadioHelper {
-    private Logger logger = LoggerFactory.getLogger(RadioHelper.class);
+    private final Logger logger = LoggerFactory.getLogger(RadioHelper.class);
     private final List<Integer> signalThresholds;
-    private Object module;
+    private @Nullable Object module;
 
     public RadioHelper(String signalLevels) {
         signalThresholds = Stream.of(signalLevels.split(",")).map(Integer::parseInt).collect(Collectors.toList());
@@ -58,6 +61,7 @@ public class RadioHelper {
     }
 
     public Optional<State> getNAThingProperty(String channelId) {
+        Object module = this.module;
         if (module != null) {
             try {
                 switch (channelId) {
@@ -78,5 +82,4 @@ public class RadioHelper {
         }
         return Optional.empty();
     }
-
 }

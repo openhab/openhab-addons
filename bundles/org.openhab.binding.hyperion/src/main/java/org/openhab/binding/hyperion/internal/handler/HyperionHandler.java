@@ -139,7 +139,6 @@ public class HyperionHandler extends BaseThingHandler {
                 .findFirst();
 
         if (defaultTransform.isPresent()) {
-
             double luminanceGain = defaultTransform.get().getLuminanceGain();
             if (luminanceGain >= 0.0 && luminanceGain <= 1.0) {
                 PercentType luminanceGainPercentType = new PercentType((int) (luminanceGain * 100));

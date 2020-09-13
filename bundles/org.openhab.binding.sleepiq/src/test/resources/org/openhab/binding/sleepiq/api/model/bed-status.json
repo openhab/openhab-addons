@@ -1,0 +1,10 @@
+{
+  "status": 1,
+  "bedId": "-9999999999999999999",
+  "leftSide": {
+    "isInBed": true
+  },
+  "rightSide": {
+    "isInBed": false
+  }
+}

@@ -63,7 +63,7 @@ public enum ScanResponseType {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, ScanResponseType>();
+        codeMapping = new HashMap<>();
         for (ScanResponseType s : values()) {
             codeMapping.put(s.key, s);
         }

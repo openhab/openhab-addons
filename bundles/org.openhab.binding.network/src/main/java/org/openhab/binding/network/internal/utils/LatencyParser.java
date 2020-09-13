@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Examines output lines of the ping command and tries to extract the contained latency value.
@@ -42,14 +42,14 @@ public class LatencyParser {
      *
      * @param inputLine Single output line of the ping command.
      * @return Latency value provided by the ping command. Optional is empty if the provided line did not contain a
-     * latency value which matches the known patterns.
+     *         latency value which matches the known patterns.
      */
     public Optional<Double> parseLatency(String inputLine) {
         logger.debug("Parsing latency from input {}", inputLine);
 
         String pattern = ".*time=(.*) ms";
         Matcher m = Pattern.compile(pattern).matcher(inputLine);
-        if(m.find() && m.groupCount() == 1) {
+        if (m.find() && m.groupCount() == 1) {
             return Optional.of(Double.parseDouble(m.group(1)));
         }
 

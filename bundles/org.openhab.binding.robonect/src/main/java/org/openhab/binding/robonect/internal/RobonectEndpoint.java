@@ -20,13 +20,13 @@ import org.eclipse.jetty.util.StringUtil;
  * @author Marco Meyer - Initial contribution
  */
 public class RobonectEndpoint {
-    
+
     private final String ipAddress;
-    
+
     private final String user;
-    
+
     private final String password;
-    
+
     private boolean useAuthentication = false;
 
     public RobonectEndpoint(String ipAddress, String user, String password) {

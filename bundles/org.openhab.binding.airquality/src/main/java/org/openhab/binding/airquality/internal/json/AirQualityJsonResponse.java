@@ -12,27 +12,37 @@
  */
 package org.openhab.binding.airquality.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link AirQualityJsonResponse} is the Java class used to map the JSON
  * response to the aqicn.org request.
  *
  * @author Kuba Wolanin - Initial contribution
  */
+@NonNullByDefault
 public class AirQualityJsonResponse {
 
-    private String status;
-
-    private AirQualityJsonData data;
-
-    public AirQualityJsonResponse() {
+    public static enum ResponseStatus {
+        NONE,
+        @SerializedName("error")
+        ERROR,
+        @SerializedName("ok")
+        OK;
     }
 
-    public String getStatus() {
+    private ResponseStatus status = ResponseStatus.NONE;
+
+    @SerializedName("data")
+    private @NonNullByDefault({}) AirQualityJsonData data;
+
+    public ResponseStatus getStatus() {
         return status;
     }
 
     public AirQualityJsonData getData() {
         return data;
     }
-
 }

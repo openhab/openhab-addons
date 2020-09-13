@@ -24,7 +24,6 @@ import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
-
 import org.openhab.binding.tado.internal.TadoBindingConstants.HvacMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.OperationMode;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
@@ -49,7 +48,7 @@ import org.openhab.binding.tado.internal.api.model.ZoneState;
  *
  * @author Dennis Frommknecht - Initial contribution
  * @author Andrew Fiddian-Green - Added Low Battery Alarm, A/C Power and Open Window channels
- *  
+ * 
  */
 public class TadoZoneStateAdapter {
     private ZoneState zoneState;
@@ -235,5 +234,4 @@ public class TadoZoneStateAdapter {
         }
         return OnOffType.OFF;
     }
-        
 }

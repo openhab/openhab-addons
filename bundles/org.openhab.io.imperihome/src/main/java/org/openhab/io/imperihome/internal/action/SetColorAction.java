@@ -57,5 +57,4 @@ public class SetColorAction extends Action {
 
         eventPublisher.post(event);
     }
-
 }

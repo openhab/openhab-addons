@@ -40,7 +40,7 @@ public class IntegraStateCommand extends SatelCommandBase {
      * Constructs new command instance for specified type of state.
      *
      * @param stateType type of state
-     * @param extended  if <code>true</code> command will be sent as extended (256 zones or outputs)
+     * @param extended if <code>true</code> command will be sent as extended (256 zones or outputs)
      */
     public IntegraStateCommand(StateType stateType, boolean extended) {
         super(stateType.getRefreshCommand(), extended);
@@ -70,5 +70,4 @@ public class IntegraStateCommand extends SatelCommandBase {
         eventDispatcher.dispatchEvent(
                 new IntegraStateEvent(getResponse().getCommand(), getResponse().getPayload(), isExtended()));
     }
-
 }

@@ -16,9 +16,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velux.internal.bridge.common.SetSceneVelocity;
 import org.openhab.binding.velux.internal.bridge.slip.utils.KLF200Response;
 import org.openhab.binding.velux.internal.bridge.slip.utils.Packet;
-import org.openhab.binding.velux.internal.things.VeluxProductVelocity;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.Command;
 import org.openhab.binding.velux.internal.things.VeluxKLFAPI.CommandNumber;
+import org.openhab.binding.velux.internal.things.VeluxProductVelocity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,5 +171,4 @@ class SCsetSceneVelocity extends SetSceneVelocity implements SlipBridgeCommunica
                 : VeluxProductVelocity.FAST.getVelocity();
         return this;
     }
-
 }

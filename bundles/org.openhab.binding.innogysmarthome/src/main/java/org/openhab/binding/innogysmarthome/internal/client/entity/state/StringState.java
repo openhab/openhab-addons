@@ -32,5 +32,4 @@ public class StringState extends BaseState {
     public void setValue(String value) {
         this.value = value;
     }
-
 }

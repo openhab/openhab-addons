@@ -226,7 +226,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
 
         httpClient.setMaxConnectionsPerDestination(DEFAULT_LOCAL_OPENHAB_MAX_CONCURRENT_REQUESTS);
         httpClient.setConnectTimeout(DEFAULT_LOCAL_OPENHAB_REQUEST_TIMEOUT);
-
+        httpClient.setFollowRedirects(false);
         if (!httpClient.isRunning()) {
             try {
                 httpClient.start();
@@ -265,7 +265,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
         } catch (IOException ioe) {
             // no exception handling - we just return the empty String
         }
-        return lines != null && lines.size() > 0 ? lines.get(0) : "";
+        return lines != null && !lines.isEmpty() ? lines.get(0) : "";
     }
 
     /**
@@ -394,5 +394,4 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
             cloudClient.sendItemUpdate(ise.getItemName(), ise.getItemState().toString());
         }
     }
-
 }

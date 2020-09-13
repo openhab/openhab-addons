@@ -37,7 +37,7 @@ public interface LxServerHandlerApi {
     /**
      * Sends an action to a Loxone Miniserver's control.
      *
-     * @param id        identifier of the control
+     * @param id identifier of the control
      * @param operation identifier of the operation
      * @throws IOException when communication error with Miniserver occurs
      */
@@ -65,7 +65,7 @@ public interface LxServerHandlerApi {
      * Sets channel's state to a new value
      *
      * @param channelId channel ID
-     * @param state     new state value
+     * @param state new state value
      */
     void setChannelState(ChannelUID channelId, State state);
 
@@ -74,7 +74,7 @@ public interface LxServerHandlerApi {
      * interpreted and displayed. It is called when a dynamic state update is received from the Miniserver with a new
      * way of displaying control's state.
      *
-     * @param channelId   channel ID
+     * @param channelId channel ID
      * @param description a new state description
      */
     void setChannelStateDescription(ChannelUID channelId, StateDescription description);

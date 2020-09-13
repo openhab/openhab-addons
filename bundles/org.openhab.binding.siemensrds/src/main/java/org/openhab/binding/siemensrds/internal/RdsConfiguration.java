@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link RdsConfiguration} class contains the thing configuration
  * parameters for RDS thermostats
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
-
+@NonNullByDefault
 public class RdsConfiguration {
 
-        public String plantId;
-
+    public String plantId = "";
 }

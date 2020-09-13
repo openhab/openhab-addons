@@ -33,6 +33,8 @@ import org.eclipse.smarthome.core.types.UnDefType;
  * This class holds various channel values conversion methods
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
+ *
  */
 @NonNullByDefault
 public class ChannelTypeUtils {
@@ -41,13 +43,17 @@ public class ChannelTypeUtils {
         return (value == null) ? UnDefType.NULL : new StringType(value);
     }
 
-    public static ZonedDateTime toZonedDateTime(Integer netatmoTS) {
+    public static ZonedDateTime toZonedDateTime(Integer netatmoTS, ZoneId zoneId) {
         Instant i = Instant.ofEpochSecond(netatmoTS);
-        return ZonedDateTime.ofInstant(i, ZoneId.systemDefault());
+        return ZonedDateTime.ofInstant(i, zoneId);
     }
 
-    public static State toDateTimeType(@Nullable Integer netatmoTS) {
-        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS));
+    public static State toDateTimeType(@Nullable Float netatmoTS, ZoneId zoneId) {
+        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS.intValue(), zoneId));
+    }
+
+    public static State toDateTimeType(@Nullable Integer netatmoTS, ZoneId zoneId) {
+        return netatmoTS == null ? UnDefType.NULL : toDateTimeType(toZonedDateTime(netatmoTS, zoneId));
     }
 
     public static State toDateTimeType(@Nullable ZonedDateTime zonedDateTime) {
@@ -87,7 +93,11 @@ public class ChannelTypeUtils {
     }
 
     public static State toOnOffType(@Nullable Integer value) {
-        return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.NULL;
+        return value != null ? (value == 1 ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF;
+    }
+
+    public static State toOnOffType(@Nullable Boolean value) {
+        return value != null ? (value ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF;
     }
 
     public static State toQuantityType(@Nullable Float value, Unit<?> unit) {

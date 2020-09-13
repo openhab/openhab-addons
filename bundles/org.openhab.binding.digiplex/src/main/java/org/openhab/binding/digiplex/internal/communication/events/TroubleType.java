@@ -46,5 +46,4 @@ public enum TroubleType {
     public static TroubleType fromEventNumber(int eventNumber) {
         return TroubleType.values()[eventNumber];
     }
-
 }

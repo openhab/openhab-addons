@@ -39,12 +39,14 @@ public class ExecTransformationService implements TransformationService {
     @Activate
     public ExecTransformationService(
             @Reference ExecTransformationWhitelistWatchService execTransformationWhitelistWatchService) {
-        this.execTransformationWhitelistWatchService = execTransformationWhitelistWatchService; }
+        this.execTransformationWhitelistWatchService = execTransformationWhitelistWatchService;
+    }
 
     /**
      * Transforms the input <code>source</code> by the command line.
      *
-     * @param commandLine the command to execute. Command line should contain %s string, which will be replaced by the input data.
+     * @param commandLine the command to execute. Command line should contain %s string, which will be replaced by the
+     *            input data.
      * @param source the input to transform
      */
     @Override

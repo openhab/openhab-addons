@@ -36,13 +36,13 @@ import org.osgi.service.component.annotations.Component;
 public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected @Nullable ThingHandler createHandler(Thing thing) {
-        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+    protected @Nullable ThingHandler createHandler(final Thing thing) {
+        final ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(THING_TYPE_CONTROLLER)) {
             return new ControllerHandler((Bridge) thing);
@@ -52,5 +52,4 @@ public class CoolMasterNetHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

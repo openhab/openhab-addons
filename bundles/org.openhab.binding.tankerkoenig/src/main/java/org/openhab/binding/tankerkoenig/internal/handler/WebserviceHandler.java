@@ -32,11 +32,11 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants;
-import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
-import org.openhab.binding.tankerkoenig.internal.config.OpeningTime;
-import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
-import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigListResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
+import org.openhab.binding.tankerkoenig.internal.dto.LittleStation;
+import org.openhab.binding.tankerkoenig.internal.dto.OpeningTime;
+import org.openhab.binding.tankerkoenig.internal.dto.OpeningTimes;
+import org.openhab.binding.tankerkoenig.internal.dto.TankerkoenigListResult;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.slf4j.Logger;
@@ -49,24 +49,22 @@ import org.slf4j.LoggerFactory;
  * @author Jürgen Baginski - Initial contribution
  */
 public class WebserviceHandler extends BaseBridgeHandler {
+    private final Logger logger = LoggerFactory.getLogger(WebserviceHandler.class);
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private String apiKey;
     private int refreshInterval;
     private boolean modeOpeningTime;
     private String userAgent;
     private boolean isHoliday;
     private final TankerkoenigService service = new TankerkoenigService();
-
-    private Map<String, LittleStation> stationMap;
-
     private TankerkoenigListResult tankerkoenigListResult;
+
+    private final Map<String, LittleStation> stationMap = new HashMap<>();
 
     private ScheduledFuture<?> pollingJob;
 
     public WebserviceHandler(Bridge bridge) {
         super(bridge);
-        stationMap = new HashMap<>();
     }
 
     @Override
@@ -88,13 +86,13 @@ public class WebserviceHandler extends BaseBridgeHandler {
         // to set a custom UserAgent for the WebRequest as specifically requested by Tankerkoening.de!
         StringBuilder sb = new StringBuilder();
         sb.append("openHAB, Tankerkoenig-Binding Version ");
-        Version version = FrameworkUtil.getBundle(this.getClass()).getVersion();
+        Version version = FrameworkUtil.getBundle(getClass()).getVersion();
         sb.append(version.toString());
         userAgent = sb.toString();
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        int pollingPeriod = this.getRefreshInterval();
+        int pollingPeriod = getRefreshInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(() -> {
             logger.debug("Try to refresh data");
             try {
@@ -138,7 +136,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
                 logger.debug("No tankstellen id's found. Nothing to update");
                 return;
             }
-            TankerkoenigListResult result = service.getStationListData(this.getApiKey(), locationIDsString, userAgent);
+            TankerkoenigListResult result = service.getStationListData(getApiKey(), locationIDsString, userAgent);
             if (!result.isOk()) {
                 // two possibel reasons for result.isOK=false
                 // A-tankerkoenig returns false on a web-request
@@ -178,7 +176,7 @@ public class WebserviceHandler extends BaseBridgeHandler {
         logger.debug("UpdateStationThings: getThing().getThings().size {}", getThing().getThings().size());
         for (Thing thing : getThing().getThings()) {
             StationHandler tkh = (StationHandler) thing.getHandler();
-            LittleStation s = this.stationMap.get(tkh.getLocationID());
+            LittleStation s = stationMap.get(tkh.getLocationID());
             if (s == null) {
                 logger.debug("Station with id {}  is not updated!", tkh.getLocationID());
             } else {
@@ -367,5 +365,4 @@ public class WebserviceHandler extends BaseBridgeHandler {
     public String getUserAgent() {
         return userAgent;
     }
-
 }

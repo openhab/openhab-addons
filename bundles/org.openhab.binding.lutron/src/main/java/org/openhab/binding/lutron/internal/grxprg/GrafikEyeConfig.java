@@ -175,5 +175,4 @@ public class GrafikEyeConfig {
     public void setPolling(int polling) {
         this.polling = polling;
     }
-
 }

@@ -38,5 +38,4 @@ public class RotelThingConfiguration {
     public @NonNullByDefault({}) String inputLabelUsb;
     public @NonNullByDefault({}) String inputLabelMulti;
     public @NonNullByDefault({}) String protocol;
-
 }

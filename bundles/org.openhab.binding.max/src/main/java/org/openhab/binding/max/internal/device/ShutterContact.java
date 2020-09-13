@@ -43,5 +43,4 @@ public class ShutterContact extends Device {
     public DeviceType getType() {
         return DeviceType.ShutterContact;
     }
-
 }

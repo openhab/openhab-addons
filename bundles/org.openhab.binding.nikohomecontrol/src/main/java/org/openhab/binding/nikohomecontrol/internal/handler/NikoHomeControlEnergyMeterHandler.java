@@ -18,8 +18,6 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.measure.quantity.Power;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -104,8 +102,14 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
                 nhcComm.startEnergyMeter(energyMeterId);
             }
 
-            updateStatus(ThingStatus.ONLINE);
             logger.debug("Niko Home Control: energy meter intialized {}", energyMeterId);
+
+            Bridge bridge = getBridge();
+            if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
         });
     }
 
@@ -135,7 +139,7 @@ public class NikoHomeControlEnergyMeterHandler extends BaseThingHandler implemen
         if (power == null) {
             updateState(CHANNEL_POWER, UnDefType.UNDEF);
         } else {
-            updateState(CHANNEL_POWER, new QuantityType<Power>(power, SmartHomeUnits.WATT));
+            updateState(CHANNEL_POWER, new QuantityType<>(power, SmartHomeUnits.WATT));
         }
         updateStatus(ThingStatus.ONLINE);
     }

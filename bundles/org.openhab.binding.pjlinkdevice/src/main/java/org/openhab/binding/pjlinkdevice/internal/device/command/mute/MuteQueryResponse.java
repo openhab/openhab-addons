@@ -57,7 +57,7 @@ public class MuteQueryResponse extends PrefixedResponse<MuteQueryResponse.MuteQu
                 }
             }
 
-            throw new ResponseException("Cannot understand status: " + code);
+            throw new ResponseException("Cannot understand mute status: " + code);
         }
 
         public boolean isAudioMuted() {

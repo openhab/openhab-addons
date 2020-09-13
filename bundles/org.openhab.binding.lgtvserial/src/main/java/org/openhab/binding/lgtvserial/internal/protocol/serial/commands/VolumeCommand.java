@@ -23,5 +23,4 @@ public class VolumeCommand extends BasePercentCommand {
     protected VolumeCommand(int setId) {
         super('k', 'f', setId);
     }
-
 }

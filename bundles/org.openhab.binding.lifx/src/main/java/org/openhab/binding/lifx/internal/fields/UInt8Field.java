@@ -40,5 +40,4 @@ public class UInt8Field extends Field<Integer> {
     public ByteBuffer bytesInternal(Integer value) {
         return ByteBuffer.allocate(1).put((byte) (value & 0xFF));
     }
-
 }

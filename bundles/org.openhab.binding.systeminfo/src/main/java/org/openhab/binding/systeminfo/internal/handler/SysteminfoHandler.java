@@ -117,7 +117,6 @@ public class SysteminfoHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Thing cannot be initialized!");
         }
-
     }
 
     private boolean instantiateSysteminfoLibrary() {
@@ -168,7 +167,6 @@ public class SysteminfoHandler extends BaseThingHandler {
             logger.debug("Cannot get system properties! Please try to restart the binding.", e);
             return false;
         }
-
     }
 
     private void groupChannelsByPriority() {
@@ -236,7 +234,6 @@ public class SysteminfoHandler extends BaseThingHandler {
         scheduler.schedule(() -> {
             publishData(lowPriorityChannels);
         }, WAIT_TIME_CHANNEL_ITEM_LINK_INIT, TimeUnit.SECONDS);
-
     }
 
     private void publishData(Set<ChannelUID> channels) {
@@ -603,5 +600,4 @@ public class SysteminfoHandler extends BaseThingHandler {
     public void dispose() {
         stopScheduledUpdates();
     }
-
 }

@@ -1,184 +1,177 @@
 {
-  "deviceMapping": {
-    "id": [
-      "dmaker.airfresh.a1"
-    ],
-    "channels": [
-      {
-        "property": "power",
-        "friendlyName": "Power",
-        "channel": "power",
-        "type": "Switch",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_power",
-            "parameterType": "ONOFFBOOL"
-          }
-        ]
-      },
-      {
-        "property": "mode",
-        "friendlyName": "Mode",
-        "channel": "airFreshMode",
-        "type": "String",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_mode",
-            "parameterType": "STRING"
-          }
-        ]
-      },
-      {
-        "property": "ptc_on",
-        "friendlyName": "PTC",
-        "channel": "airFreshPTCPower",
-        "type": "Switch",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_ptc_on",
-            "parameterType": "ONOFFBOOL"
-          }
-        ]
-      },
-      {
-        "property": "ptc_status",
-        "friendlyName": "PTC Status",
-        "channel": "airFreshPTCStatus",
-        "type": "Switch",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "display",
-        "friendlyName": "Display",
-        "channel": "airFreshDisplay",
-        "type": "Switch",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_display",
-            "parameterType": "ONOFFBOOL"
-          }
-        ]
-      },
-      {
-        "property": "child_lock",
-        "friendlyName": "Child Lock",
-        "channel": "airFreshChildLock",
-        "type": "Switch",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_child_lock",
-            "parameterType": "ONOFFBOOL"
-          }
-        ]
-      },
-      {
-        "property": "sound",
-        "friendlyName": "Sound",
-        "channel": "airFreshSound",
-        "type": "Switch",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_sound",
-            "parameterType": "ONOFFBOOL"
-          }
-        ]
-      },
-      {
-        "property": "pm25",
-        "friendlyName": "PM2.5",
-        "channel": "airFreshPM25",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "co2",
-        "friendlyName": "CO2",
-        "channel": "airFreshCO2",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "control_speed",
-        "friendlyName": "Current Speed",
-        "channel": "airFreshCurrentSpeed",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "favourite_speed",
-        "friendlyName": "Favorite Speed",
-        "channel": "airFreshFavoriteSpeed",
-        "type": "Number",
-        "refresh": true,
-        "channelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_favourite_speed",
-            "parameterType": "NUMBER"
-          }
-        ]
-      },
-      {
-        "property": "temperature_outside",
-        "friendlyName": "Temperature Outside",
-        "channel": "airFreshTemperature",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "filter_rate",
-        "friendlyName": "Filter Percents Remaining",
-        "channel": "airFreshFilterPercents",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "",
-        "actions": []
-      },
-      {
-        "property": "filter_day",
-        "friendlyName": "Filter Days Remaining",
-        "channel": "airFreshFilterDays",
-        "type": "Number",
-        "refresh": true,
-        "ChannelGroup": "Status",
-        "actions": []
-      },
-      {
-        "property": "",
-        "friendlyName": "Reset Filter",
-        "channel": "airFreshResetFilterA1",
-        "type": "String",
-        "refresh": false,
-        "ChannelGroup": "actions",
-        "actions": [
-          {
-            "command": "set_filter_reset",
-            "parameterType": "STRING"
-          }
-        ]
-      }
-    ]
-  }
+	"deviceMapping": {
+		"id": [
+			"dmaker.airfresh.a1"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "mode",
+				"friendlyName": "Mode",
+				"channel": "airFreshMode",
+				"type": "String",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_mode",
+						"parameterType": "STRING"
+					}
+				]
+			},
+			{
+				"property": "ptc_on",
+				"friendlyName": "PTC",
+				"channel": "airFreshPTCPower",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_ptc_on",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "ptc_status",
+				"friendlyName": "PTC Status",
+				"channel": "airFreshPTCStatus",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "display",
+				"friendlyName": "Display",
+				"channel": "airFreshDisplay",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_display",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "child_lock",
+				"friendlyName": "Child Lock",
+				"channel": "airFreshChildLock",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_child_lock",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "sound",
+				"friendlyName": "Sound",
+				"channel": "airFreshSound",
+				"type": "Switch",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_sound",
+						"parameterType": "ONOFFBOOL"
+					}
+				]
+			},
+			{
+				"property": "pm25",
+				"friendlyName": "PM2.5",
+				"channel": "airFreshPM25",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "co2",
+				"friendlyName": "CO2",
+				"channel": "airFreshCO2",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "control_speed",
+				"friendlyName": "Current Speed",
+				"channel": "airFreshCurrentSpeed",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "favourite_speed",
+				"friendlyName": "Favorite Speed",
+				"channel": "airFreshFavoriteSpeed",
+				"type": "Number",
+				"refresh": true,
+				"actions": [
+					{
+						"command": "set_favourite_speed",
+						"parameterType": "NUMBER"
+					}
+				]
+			},
+			{
+				"property": "temperature_outside",
+				"friendlyName": "Temperature Outside",
+				"channel": "airFreshTemperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "filter_rate",
+				"friendlyName": "Filter Percents Remaining",
+				"channel": "airFreshFilterPercents",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "filter_day",
+				"friendlyName": "Filter Days Remaining",
+				"channel": "airFreshFilterDays",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "Status",
+				"actions": []
+			},
+			{
+				"property": "",
+				"friendlyName": "Reset Filter",
+				"channel": "airFreshResetFilterA1",
+				"type": "String",
+				"refresh": false,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_filter_reset",
+						"parameterType": "STRING"
+					}
+				]
+			}
+		]
+	}
 }

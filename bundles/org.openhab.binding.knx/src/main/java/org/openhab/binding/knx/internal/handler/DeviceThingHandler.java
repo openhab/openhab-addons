@@ -74,7 +74,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     private final Set<OutboundSpec> groupAddressesRespondingSpec = new HashSet<>();
     private final Map<GroupAddress, @Nullable ScheduledFuture<?>> readFutures = new HashMap<>();
     private final Map<ChannelUID, @Nullable ScheduledFuture<?>> channelFutures = new HashMap<>();
-    private @Nullable IndividualAddress address;
     private int readInterval;
 
     public DeviceThingHandler(Thing thing) {
@@ -95,6 +94,28 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
             groupAddresses.addAll(selector.getWriteAddresses(channelConfiguration));
             groupAddresses.addAll(selector.getListenAddresses(channelConfiguration));
         });
+    }
+
+    @Override
+    public void dispose() {
+        cancelChannelFutures();
+        freeGroupAdresses();
+        super.dispose();
+    }
+
+    private void cancelChannelFutures() {
+        for (ScheduledFuture<?> future : channelFutures.values()) {
+            if (future != null && !future.isDone()) {
+                future.cancel(true);
+            }
+        }
+        channelFutures.clear();
+    }
+
+    private void freeGroupAdresses() {
+        groupAddresses.clear();
+        groupAddressesWriteBlockedOnce.clear();
+        groupAddressesRespondingSpec.clear();
     }
 
     @Override
@@ -242,7 +263,6 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
                     break;
             }
         }
-
     }
 
     private boolean isControl(ChannelUID channelUID) {
@@ -261,7 +281,7 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     /** KNXIO */
     private void sendGroupValueResponse(Channel channel, GroupAddress destination) {
         Set<GroupAddress> rsa = getKNXChannelType(channel).getWriteAddresses(channel.getConfiguration());
-        if (rsa.size() > 0) {
+        if (!rsa.isEmpty()) {
             logger.trace("onGroupRead size '{}'", rsa.size());
             withKNXType(channel, (selector, configuration) -> {
                 Optional<OutboundSpec> os = groupAddressesRespondingSpec.stream().filter(spec -> {
@@ -412,5 +432,4 @@ public class DeviceThingHandler extends AbstractKNXThingHandler {
     private KNXChannelType getKNXChannelType(Channel channel) {
         return KNXChannelTypes.getType(channel.getChannelTypeUID());
     }
-
 }

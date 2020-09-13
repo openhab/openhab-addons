@@ -23,5 +23,4 @@ public class HVACConfiguration {
 
     public static final String UID = "uid";
     public String uid;
-
 }

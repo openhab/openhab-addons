@@ -74,5 +74,4 @@ public class VeluxProductReference {
     public String toString() {
         return String.format("Prod.ref. \"%s\"/%s", this.name, this.typeId);
     }
-
 }

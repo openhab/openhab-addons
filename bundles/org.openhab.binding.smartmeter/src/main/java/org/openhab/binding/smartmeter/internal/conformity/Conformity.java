@@ -45,7 +45,6 @@ public enum Conformity {
         @Override
         public <Q extends Quantity<Q>> State apply(Channel channel, QuantityType<Q> currentState, Thing thing,
                 MeterDevice<?> device) {
-
             return retrieveOverwrittenNegate(channel, currentState, thing, device, null);
         }
     },
@@ -70,21 +69,17 @@ public enum Conformity {
                 String channelObis = channel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS);
                 MeterValue<?> value = device.getMeterValue(channelObis);
                 if (value != null && SmartHomeUnits.WATT.isCompatible(value.getUnit())) {
-
                     for (String obis : device.getObisCodes()) {
                         try {
                             MeterValue<?> otherValue = device.getMeterValue(obis);
                             ObisCode obisCode = ObisCode.from(obis);
                             if (otherValue != null) {
-
                                 if (obisCode.matches((byte) 0x60, (byte) 0x05, (byte) 0x05)) {
-
                                     // we found status status obis 96.5.5
                                     if (NegateHandler.isNegateSet(otherValue.getValue(), 5)) {
                                         return currentState.negate();
                                     }
                                 } else if (obisCode.matches((byte) 0x01, (byte) 0x08, (byte) 0x00)) {
-
                                     // check obis 1.8.0 for status if status has negate bit set.
                                     String status = otherValue.getStatus();
                                     if (status != null && NegateHandler.isNegateSet(status, 5)) {
@@ -95,7 +90,6 @@ public enum Conformity {
                         } catch (Exception e) {
                             logger.warn("Failed to check negate status for obis {}", obis, e);
                         }
-
                     }
                 }
                 return currentState;
@@ -103,7 +97,7 @@ public enum Conformity {
         }
     };
 
-    private final static Logger logger = LoggerFactory.getLogger(Conformity.class);
+    private static final Logger logger = LoggerFactory.getLogger(Conformity.class);
 
     /**
      * Applies the overwritten negation setting for the channel.
@@ -119,7 +113,6 @@ public enum Conformity {
         boolean shouldNegateState = NegateHandler.shouldNegateState(negateProperty, channelId -> {
             Channel negateChannel = thing.getChannel(channelId);
             if (negateChannel != null) {
-
                 return device.getMeterValue(
                         negateChannel.getProperties().get(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS));
             }

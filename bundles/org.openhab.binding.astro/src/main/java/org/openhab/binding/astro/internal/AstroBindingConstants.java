@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.astro.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Made non-Instantiable
  */
+@NonNullByDefault
 public final class AstroBindingConstants {
 
     /** Constructor */
@@ -46,10 +48,6 @@ public final class AstroBindingConstants {
     public static final String EVENT_PHASE_THIRD_QUARTER = "THIRD_QUARTER";
     public static final String EVENT_PHASE_FULL = "FULL";
     public static final String EVENT_PHASE_NEW = "NEW";
-
-    public static final String EVENT_ECLIPSE_PARTIAL = "PARTIAL";
-    public static final String EVENT_ECLIPSE_TOTAL = "TOTAL";
-    public static final String EVENT_ECLIPSE_RING = "RING";
 
     public static final String EVENT_PERIGEE = "PERIGEE";
     public static final String EVENT_APOGEE = "APOGEE";

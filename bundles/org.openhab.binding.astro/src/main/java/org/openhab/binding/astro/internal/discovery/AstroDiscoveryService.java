@@ -18,9 +18,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -32,8 +35,6 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,41 +45,31 @@ import org.slf4j.LoggerFactory;
  * @author Gerhard Riegler - Initial Contribution
  * @author Stefan Triller - Use configured location
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.astro")
 public class AstroDiscoveryService extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(AstroDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
-    private LocationProvider locationProvider;
-    private ScheduledFuture<?> astroDiscoveryJob;
-    private PointType previousLocation;
-
+    private static final Set<String> METEO_BASED_COUNTRIES = new HashSet<>(Arrays.asList("NZ", "AU"));
     private static final ThingUID SUN_THING = new ThingUID(THING_TYPE_SUN, LOCAL);
     private static final ThingUID MOON_THING = new ThingUID(THING_TYPE_MOON, LOCAL);
 
-    /**
-     * Creates a AstroDiscoveryService with enabled autostart.
-     */
-    public AstroDiscoveryService() {
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
-    }
+    private final Logger logger = LoggerFactory.getLogger(AstroDiscoveryService.class);
 
-    @Override
+    private final LocationProvider locationProvider;
+
+    private @Nullable ScheduledFuture<?> astroDiscoveryJob;
+    private @Nullable PointType previousLocation;
+
     @Activate
-    protected void activate(Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    @Modified
-    protected void modified(Map<String, Object> configProperties) {
-        super.modified(configProperties);
-    }
-
-    @Override
-    @Deactivate
-    protected void deactivate() {
-        super.deactivate();
+    public AstroDiscoveryService(final @Reference LocationProvider locationProvider,
+            final @Reference LocaleProvider localeProvider, final @Reference TranslationProvider i18nProvider,
+            @Nullable Map<String, @Nullable Object> configProperties) {
+        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
+        this.locationProvider = locationProvider;
+        this.localeProvider = localeProvider;
+        this.i18nProvider = i18nProvider;
+        activate(configProperties);
     }
 
     @Override
@@ -97,7 +88,7 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
         if (astroDiscoveryJob == null) {
             astroDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 PointType currentLocation = locationProvider.getLocation();
-                if (!Objects.equals(currentLocation, previousLocation)) {
+                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
                     logger.debug("Location has been changed from {} to {}: Creating new discovery results",
                             previousLocation, currentLocation);
                     createResults(currentLocation);
@@ -111,49 +102,23 @@ public class AstroDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Astro device background discovery");
-        if (astroDiscoveryJob != null && !astroDiscoveryJob.isCancelled()) {
-            if (astroDiscoveryJob.cancel(true)) {
-                astroDiscoveryJob = null;
-                logger.debug("Stopped Astro device background discovery");
-            }
+        ScheduledFuture<?> discoveryJob = astroDiscoveryJob;
+        if (discoveryJob != null) {
+            discoveryJob.cancel(true);
         }
+        astroDiscoveryJob = null;
     }
 
     public void createResults(PointType location) {
         String propGeolocation;
+        String country = localeProvider.getLocale().getCountry();
         propGeolocation = String.format("%s,%s,%s", location.getLatitude(), location.getLongitude(),
                 location.getAltitude());
         thingDiscovered(DiscoveryResultBuilder.create(SUN_THING).withLabel("Local Sun")
-                .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
+                .withProperty("geolocation", propGeolocation)
+                .withProperty("useMeteorologicalSeason", METEO_BASED_COUNTRIES.contains(country))
+                .withRepresentationProperty("geolocation").build());
         thingDiscovered(DiscoveryResultBuilder.create(MOON_THING).withLabel("Local Moon")
                 .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
     }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    protected void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
-    }
-
 }

@@ -111,7 +111,6 @@ public class NeeoDeviceChannel {
         final ChannelUID uid = channel.getUID();
         return Arrays.asList(new NeeoDeviceChannel(NeeoDeviceChannelKind.get(channel.getKind()), uid.getId(), 1,
                 capabilityType, subType, NeeoUtil.getUniqueLabel(existingLabels, uid.getIdWithoutGroup()), "", null));
-
     }
 
     /**
@@ -154,7 +153,6 @@ public class NeeoDeviceChannel {
                             NeeoUtil.getUniqueLabel(existingLabels,
                                     NeeoUtil.getLabel(item, channelType) + " (Brightness)"),
                             NeeoUtil.getPattern(item, channelType), NeeoDeviceChannelRange.from(item)));
-
         } else {
             return Arrays.asList(new NeeoDeviceChannel(
                     NeeoDeviceChannelKind.get(channel == null ? ChannelKind.STATE : channel.getKind()), item.getName(),

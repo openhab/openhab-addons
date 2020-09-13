@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.bluegiga.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bluetooth.BaseBluetoothBridgeHandlerConfiguration;
 
 /**
  * Configuration class for {@link BlueGigaConfiguration} device.
@@ -20,8 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Pauli Anttila - Initial contribution
  */
 @NonNullByDefault
-public class BlueGigaConfiguration {
-    public boolean discovery;
+public class BlueGigaConfiguration extends BaseBluetoothBridgeHandlerConfiguration {
     public String port = "";
     public int passiveScanIdleTime;
     public int passiveScanInterval;
@@ -39,7 +39,7 @@ public class BlueGigaConfiguration {
                 "[discovery=%b, port=%s, passiveScanIdleTime=%d, passiveScanInterval=%d, passiveScanWindow=%d"
                         + ", activeScanInterval=%d, activeScanWindow=%d, connIntervalMin=%d, connIntervalMax=%d"
                         + ", connLatency=%d, connTimeout=%d]",
-                discovery, port, passiveScanIdleTime, passiveScanInterval, passiveScanWindow, activeScanInterval,
-                activeScanWindow, connIntervalMin, connIntervalMax, connLatency, connTimeout);
+                backgroundDiscovery, port, passiveScanIdleTime, passiveScanInterval, passiveScanWindow,
+                activeScanInterval, activeScanWindow, connIntervalMin, connIntervalMax, connLatency, connTimeout);
     }
 }

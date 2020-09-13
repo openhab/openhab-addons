@@ -36,7 +36,30 @@ public class SolarEdgeBindingConstants {
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_GENERIC = new ThingTypeUID(BINDING_ID, DEVICE_GENERIC);
 
-    // List of all Channel ids ==> see DataChannels
+    // List of all channel groups
+    public static final String CHANNEL_GROUP_LIVE = "live";
+    public static final String CHANNEL_GROUP_AGGREGATE_DAY = "aggregate_day";
+    public static final String CHANNEL_GROUP_AGGREGATE_WEEK = "aggregate_week";
+    public static final String CHANNEL_GROUP_AGGREGATE_MONTH = "aggregate_month";
+    public static final String CHANNEL_GROUP_AGGREGATE_YEAR = "aggregate_year";
+
+    // List of all channel ids
+    public static final String CHANNEL_ID_PRODUCTION = "production";
+    public static final String CHANNEL_ID_PV_STATUS = "pv_status";
+    public static final String CHANNEL_ID_CONSUMPTION = "consumption";
+    public static final String CHANNEL_ID_LOAD_STATUS = "load_status";
+    public static final String CHANNEL_ID_BATTERY_STATUS = "battery_status";
+    public static final String CHANNEL_ID_BATTERY_CRITICAL = "battery_critical";
+    public static final String CHANNEL_ID_BATTERY_LEVEL = "battery_level";
+    public static final String CHANNEL_ID_GRID_STATUS = "grid_status";
+    public static final String CHANNEL_ID_IMPORT = "import";
+    public static final String CHANNEL_ID_EXPORT = "export";
+    public static final String CHANNEL_ID_BATTERY_CHARGE = "battery_charge";
+    public static final String CHANNEL_ID_BATTERY_DISCHARGE = "battery_discharge";
+    public static final String CHANNEL_ID_BATTERY_CHARGE_DISCHARGE = "battery_charge_discharge";
+    public static final String CHANNEL_ID_SELF_CONSUMPTION_FOR_CONSUMPTION = "selfConsumptionForConsumption";
+    public static final String CHANNEL_ID_SELF_CONSUMPTION_COVERAGE = "selfConsumptionCoverage";
+    public static final String CHANNEL_ID_BATTERY_SELF_CONSUMPTION = "batterySelfConsumption";
 
     // PRIVATE API CONSTANTS
     // URLs
@@ -78,5 +101,4 @@ public class SolarEdgeBindingConstants {
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GENERIC);
-
 }

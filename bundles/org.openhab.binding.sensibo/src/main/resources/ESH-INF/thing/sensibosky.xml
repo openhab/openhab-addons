@@ -6,19 +6,19 @@
 
 	<thing-type id="sensibosky">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>HVAC controller</label>
 
 		<channels>
-			<channel id="currentTemperature" typeId="currentTemperature" />
-			<channel id="currentHumidity" typeId="currentHumidity" />
-			<channel id="masterSwitch" typeId="masterSwitch" />
-			<channel id="timer" typeId="timer" />
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="currentHumidity" typeId="currentHumidity"/>
+			<channel id="masterSwitch" typeId="masterSwitch"/>
+			<channel id="timer" typeId="timer"/>
 		</channels>
 
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:sensibo:sensibosky" />
+		<config-description-ref uri="thing-type:sensibo:sensibosky"/>
 	</thing-type>
 </thing:thing-descriptions>

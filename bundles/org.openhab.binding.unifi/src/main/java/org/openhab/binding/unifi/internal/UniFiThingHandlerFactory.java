@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.unifi.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -24,8 +26,9 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientInitializationException;
 import org.openhab.binding.unifi.internal.handler.UniFiClientThingHandler;
 import org.openhab.binding.unifi.internal.handler.UniFiControllerThingHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.ConfigurationPolicy;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link UniFiThingHandlerFactory} is responsible for creating things and thing
@@ -34,12 +37,15 @@ import org.osgi.service.component.annotations.ConfigurationPolicy;
  * @author Matthew Bowman - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.unifi")
+@NonNullByDefault
 public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
 
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
-    public UniFiThingHandlerFactory() {
-        // [wip] mgb: temporary work around until ssl issues are sorted
+    @Activate
+    public UniFiThingHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        // [wip] mgb: disabled due to missing common name attributes with certs
+        // this.httpClient = httpClientFactory.getCommonHttpClient();
         httpClient = new HttpClient(new SslContextFactory(true));
         try {
             httpClient.start();
@@ -55,7 +61,7 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (UniFiControllerThingHandler.supportsThingType(thingTypeUID)) {
             return new UniFiControllerThingHandler((Bridge) thing, httpClient);
@@ -64,14 +70,4 @@ public class UniFiThingHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
-    // @Reference // [wip] mgb: disabled due to missing common name attributes with certs
-    public void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    public void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        // nop
-    }
-
 }

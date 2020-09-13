@@ -17,6 +17,7 @@ import static org.openhab.binding.km200.internal.KM200BindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(KM200Utils.class);
 
@@ -55,10 +57,13 @@ public class KM200Utils {
             String currentService = KM200Utils
                     .translatesNameToPath(channel.getProperties().get(SWITCH_PROGRAM_CURRENT_PATH_NAME));
             if (device.containsService(currentService)) {
-                if ("stringValue".equals(device.getServiceObject(currentService).getServiceType())) {
-                    String val = (String) device.getServiceObject(currentService).getValue();
-                    service = service.replace(SWITCH_PROGRAM_REPLACEMENT, val);
-                    return service;
+                KM200ServiceObject curSerObj = device.getServiceObject(currentService);
+                if (null != curSerObj) {
+                    if (DATA_TYPE_STRING_VALUE.equals(curSerObj.getServiceType())) {
+                        String val = (String) curSerObj.getValue();
+                        service = service.replace(SWITCH_PROGRAM_REPLACEMENT, val);
+                        return service;
+                    }
                 }
             }
         }
@@ -70,7 +75,7 @@ public class KM200Utils {
      *
      */
     public static Map<String, String> getChannelConfigurationStrings(Channel channel) {
-        Map<String, String> paraNames = new HashMap<String, String>();
+        Map<String, String> paraNames = new HashMap<>();
         if (channel.getConfiguration().containsKey("on")) {
             paraNames.put("on", channel.getConfiguration().get("on").toString());
             LOGGER.debug("Added ON: {}", channel.getConfiguration().get("on"));

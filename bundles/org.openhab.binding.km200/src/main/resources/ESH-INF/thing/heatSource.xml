@@ -6,7 +6,7 @@
 
 	<thing-type id="heatSource" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Heat Source</label>
 		<description>This thing is representing the heat source.</description>

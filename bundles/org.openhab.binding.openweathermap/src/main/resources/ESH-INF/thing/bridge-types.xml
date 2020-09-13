@@ -11,7 +11,7 @@
 
 		<representation-property>apikey</representation-property>
 
-		<config-description-ref uri="bridge-type:openweathermap:weather-api" />
+		<config-description-ref uri="bridge-type:openweathermap:weather-api"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

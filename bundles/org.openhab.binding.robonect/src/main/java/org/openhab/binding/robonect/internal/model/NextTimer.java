@@ -18,7 +18,7 @@ package org.openhab.binding.robonect.internal.model;
  * @author Marco Meyer - Initial contribution
  */
 public class NextTimer {
-    
+
     private String date;
     private String time;
     private String unix;

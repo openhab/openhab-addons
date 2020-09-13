@@ -18,7 +18,7 @@ package org.openhab.binding.robonect.internal.model;
  * @author Marco Meyer - Initial contribution
  */
 public class Name extends RobonectAnswer {
-    
+
     private String name;
 
     /**

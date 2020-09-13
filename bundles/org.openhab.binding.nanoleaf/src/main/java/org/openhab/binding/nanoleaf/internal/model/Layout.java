@@ -74,7 +74,7 @@ public class Layout {
 
             final int noofDefinedPanels = positionData.size();
             for (int index = 0; index < noofDefinedPanels; index++) {
-                if (positionData != null ) {
+                if (positionData != null) {
                     @Nullable
                     PositionDatum panel = positionData.get(index);
 

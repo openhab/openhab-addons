@@ -54,6 +54,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
             .unmodifiableSet(Stream.of(DEVICE_THING_TYPE, NETWORK_THING_TYPE).collect(Collectors.toSet()));
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
     private @Nullable SerialPortManager serialPortManager;
 
@@ -77,7 +78,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
         if (NETWORK_THING_TYPE.equals(thingTypeUID)) {
             InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing, serialPortManager);
-            registerDeviceDiscoveryService(insteonNetworkHandler);
+            registerServices(insteonNetworkHandler);
 
             return insteonNetworkHandler;
         } else if (DEVICE_THING_TYPE.equals(thingTypeUID)) {
@@ -90,14 +91,23 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
         if (thingHandler instanceof InsteonNetworkHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-            if (serviceReg != null) {
-                serviceReg.unregister();
+            ThingUID uid = thingHandler.getThing().getUID();
+            ServiceRegistration<?> serviceRegs = this.serviceRegs.remove(uid);
+            if (serviceRegs != null) {
+                serviceRegs.unregister();
+            }
+
+            ServiceRegistration<?> discoveryServiceRegs = this.discoveryServiceRegs.remove(uid);
+            if (discoveryServiceRegs != null) {
+                discoveryServiceRegs.unregister();
             }
         }
     }
 
-    private synchronized void registerDeviceDiscoveryService(InsteonNetworkHandler handler) {
+    private synchronized void registerServices(InsteonNetworkHandler handler) {
+        this.serviceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(InsteonNetworkHandler.class.getName(), handler, new Hashtable<>()));
+
         InsteonDeviceDiscoveryService discoveryService = new InsteonDeviceDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));

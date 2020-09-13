@@ -100,12 +100,17 @@ public class MelCloudConnection {
             String response = HttpUtil.executeUrl("GET", DEVICE_LIST_URL, getHeaderProperties(), null, null,
                     TIMEOUT_MILLISECONDS);
             logger.debug("Device list response: {}", response);
-            List<Device> devices = new ArrayList<Device>();
+            List<Device> devices = new ArrayList<>();
             ListDevicesResponse[] buildings = gson.fromJson(response, ListDevicesResponse[].class);
             Arrays.asList(buildings).forEach(building -> {
                 if (building.getStructure().getDevices() != null) {
                     devices.addAll(building.getStructure().getDevices());
                 }
+                building.getStructure().getAreas().forEach(area -> {
+                    if (area.getDevices() != null) {
+                        devices.addAll(area.getDevices());
+                    }
+                });
                 building.getStructure().getFloors().forEach(floor -> {
                     if (floor.getDevices() != null) {
                         devices.addAll(floor.getDevices());
@@ -185,7 +190,6 @@ public class MelCloudConnection {
             setConnected(false);
             throw new MelCloudCommException("Error occurred during heatpump device command sending", e);
         }
-
     }
 
     public synchronized boolean isConnected() {

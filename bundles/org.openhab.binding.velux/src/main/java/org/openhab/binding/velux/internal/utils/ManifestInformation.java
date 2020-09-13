@@ -53,5 +53,4 @@ public class ManifestInformation {
                 .toString();
         return osgiBundleVersion;
     }
-
 }

@@ -6,7 +6,7 @@
 
 	<thing-type id="notification" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Notifications</label>
 		<description>This thing is representing the notifications.</description>

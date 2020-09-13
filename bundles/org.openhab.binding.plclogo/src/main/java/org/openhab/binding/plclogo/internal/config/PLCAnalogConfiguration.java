@@ -49,5 +49,4 @@ public class PLCAnalogConfiguration extends PLCDigitalConfiguration {
     public String getChannelType() {
         return ANALOG_ITEM;
     }
-
 }

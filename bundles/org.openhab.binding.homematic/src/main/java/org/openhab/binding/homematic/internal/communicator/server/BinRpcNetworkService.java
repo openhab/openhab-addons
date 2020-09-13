@@ -100,5 +100,4 @@ public class BinRpcNetworkService implements Runnable {
             // ignore
         }
     }
-
 }

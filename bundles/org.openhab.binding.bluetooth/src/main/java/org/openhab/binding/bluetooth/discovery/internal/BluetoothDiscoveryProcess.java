@@ -66,7 +66,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     private final Condition serviceDiscoveryCondition = serviceDiscoveryLock.newCondition();
     private final Condition infoDiscoveryCondition = serviceDiscoveryLock.newCondition();
 
-    private final BluetoothDevice device;
+    private final BluetoothDeviceSnapshot device;
     private final Collection<BluetoothDiscoveryParticipant> participants;
     private final Set<BluetoothAdapter> adapters;
 
@@ -77,8 +77,8 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
      */
     private volatile @Nullable GattCharacteristic ongoingGattCharacteristic;
 
-    public BluetoothDiscoveryProcess(BluetoothDevice device, Collection<BluetoothDiscoveryParticipant> participants,
-            Set<BluetoothAdapter> adapters) {
+    public BluetoothDiscoveryProcess(BluetoothDeviceSnapshot device,
+            Collection<BluetoothDiscoveryParticipant> participants, Set<BluetoothAdapter> adapters) {
         this.participants = participants;
         this.device = device;
         this.adapters = adapters;
@@ -107,24 +107,19 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
         DiscoveryResult result = null;
         if (!connectionParticipants.isEmpty()) {
             BluetoothAddress address = device.getAddress();
-            try {
-                BluetoothAddressLocker.lock(address);
-                if (isAddressAvailable(address)) {
-                    result = findConnectionResult(connectionParticipants);
-                    // make sure to disconnect before letting go of the device
-                    if (device.getConnectionState() == ConnectionState.CONNECTED) {
-                        try {
-                            if (!device.disconnect()) {
-                                logger.debug("Failed to disconnect from device {}", address);
-                            }
-                        } catch (RuntimeException ex) {
-                            logger.warn("Error occurred during bluetooth discovery for device {} on adapter {}",
-                                    address, device.getAdapter().getAddress(), ex);
+            if (isAddressAvailable(address)) {
+                result = findConnectionResult(connectionParticipants);
+                // make sure to disconnect before letting go of the device
+                if (device.getConnectionState() == ConnectionState.CONNECTED) {
+                    try {
+                        if (!device.disconnect()) {
+                            logger.debug("Failed to disconnect from device {}", address);
                         }
+                    } catch (RuntimeException ex) {
+                        logger.warn("Error occurred during bluetooth discovery for device {} on adapter {}", address,
+                                device.getAdapter().getAddress(), ex);
                     }
                 }
-            } finally {
-                BluetoothAddressLocker.unlock(address);
             }
         }
         if (result == null) {
@@ -135,11 +130,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
 
     private boolean isAddressAvailable(BluetoothAddress address) {
         // if a device with this address has a handler on any of the adapters, we abandon discovery
-        return adapters.stream().filter(adapter -> adapter.hasDevice(address))
-                // get adapter's corresponding device
-                .map(adapter -> adapter.getDevice(address))
-                // make sure nothing is listening to any of them
-                .noneMatch(d -> d.hasListeners());
+        return adapters.stream().noneMatch(adapter -> adapter.hasHandlerForDevice(address));
     }
 
     private DiscoveryResult createDefaultResult(BluetoothDevice device) {
@@ -380,5 +371,4 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
-
 }

@@ -109,7 +109,19 @@ public class PioneerAvrDiscoveryParticipant implements UpnpDiscoveryParticipant 
 
                     ThingTypeUID thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE;
 
-                    if (isSupportedDeviceModel(deviceModel, PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2016)) {
+                    if (isSupportedDeviceModel(deviceModel, PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2020)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2020;
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2019)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2019;
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2018)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2018;
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2017)) {
+                        thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2017;
+                    } else if (isSupportedDeviceModel(deviceModel,
+                            PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2016)) {
                         thingTypeUID = PioneerAvrBindingConstants.IP_AVR_THING_TYPE2016;
                     } else if (isSupportedDeviceModel(deviceModel,
                             PioneerAvrBindingConstants.SUPPORTED_DEVICE_MODELS2015)) {

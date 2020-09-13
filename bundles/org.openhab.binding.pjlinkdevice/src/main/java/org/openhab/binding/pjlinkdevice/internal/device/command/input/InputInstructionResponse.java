@@ -40,5 +40,4 @@ public class InputInstructionResponse extends PrefixedResponse<AcknowledgeRespon
             throws ResponseException {
         return AcknowledgeResponseValue.getValueForCode(responseWithoutPrefix);
     }
-
 }

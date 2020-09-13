@@ -196,7 +196,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         // We need to do this in a separate thread because we may have to wait for the communication to become active
         scheduler.submit(() -> {
             if (!nhcComm.communicationActive()) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Niko Home Control: no connection with Niko Home Control, could not initialize action "
                                 + actionId);
                 return;
@@ -221,6 +221,13 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             actionEvent(nhcAction.getState());
 
             logger.debug("Niko Home Control: action initialized {}", actionId);
+
+            Bridge bridge = getBridge();
+            if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
         });
     }
 

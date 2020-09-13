@@ -35,8 +35,10 @@ After installing this add-on, you will find configuration options in the Paper U
 
 ![Configuration](contrib/doc/cfg.png)
 
-Please note, that you don't need to expose all your items in this settings dialog.
-You just need to expose those items, which you want to be accessible by a third party service.
+Please note, that you should not expose all your items in this settings dialog.
+Also note that at present this feature is currently turned off.
+You just need to expose those items, which you want to be accessible by IFTTT.
+This setting has no affect on Alexa or Google Assistant functionality.
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 

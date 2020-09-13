@@ -269,11 +269,10 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             discoveryFutures.put(adapter, new SnapshotFuture(snapshot, future));
         }
 
-        private CompletableFuture<DiscoveryResult> startDiscoveryProcess(BluetoothDevice device) {
+        private CompletableFuture<DiscoveryResult> startDiscoveryProcess(BluetoothDeviceSnapshot device) {
             return CompletableFuture.supplyAsync(new BluetoothDiscoveryProcess(device, participants, adapters),
                     scheduler);
         }
-
     }
 
     private static class SnapshotFuture {
@@ -284,7 +283,5 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             this.snapshot = snapshot;
             this.future = future;
         }
-
     }
-
 }

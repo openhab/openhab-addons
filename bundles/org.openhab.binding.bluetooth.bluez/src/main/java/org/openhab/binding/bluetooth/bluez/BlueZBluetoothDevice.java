@@ -20,11 +20,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.util.HexUtils;
+import org.openhab.binding.bluetooth.BaseBluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCompletionStatus;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
-import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.bluez.handler.BlueZBridgeHandler;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
@@ -43,15 +43,13 @@ import tinyb.BluetoothGattService;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
-public class BlueZBluetoothDevice extends BluetoothDevice {
+public class BlueZBluetoothDevice extends BaseBluetoothDevice {
 
     private tinyb.BluetoothDevice device;
 
     private final Logger logger = LoggerFactory.getLogger(BlueZBluetoothDevice.class);
 
     private final ScheduledExecutorService scheduler = ThreadPoolManager.getScheduledPool("bluetooth");
-
-    private long lastSeenTime;
 
     /**
      * Constructor
@@ -115,12 +113,14 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
     private void enableNotifications() {
         logger.debug("Enabling notifications for device '{}'", device.getAddress());
         device.enableRSSINotifications(n -> {
+            updateLastSeenTime();
             rssi = (int) n;
             BluetoothScanNotification notification = new BluetoothScanNotification();
             notification.setRssi(n);
             notifyListeners(BluetoothEventType.SCAN_RECORD, notification);
         });
         device.enableManufacturerDataNotifications(n -> {
+            updateLastSeenTime();
             for (Map.Entry<Short, byte[]> entry : n.entrySet()) {
                 BluetoothScanNotification notification = new BluetoothScanNotification();
                 byte[] data = new byte[entry.getValue().length + 2];
@@ -135,12 +135,14 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             }
         });
         device.enableConnectedNotifications(connected -> {
+            updateLastSeenTime();
             connectionState = connected ? ConnectionState.CONNECTED : ConnectionState.DISCONNECTED;
             logger.debug("Connection state of '{}' changed to {}", address, connectionState);
             notifyListeners(BluetoothEventType.CONNECTION_STATE,
                     new BluetoothConnectionStatusNotification(connectionState));
         });
         device.enableServicesResolvedNotifications(resolved -> {
+            updateLastSeenTime();
             logger.debug("Received services resolved event for '{}': {}", address, resolved);
             if (resolved) {
                 refreshServices();
@@ -148,6 +150,7 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
             }
         });
         device.enableServiceDataNotifications(data -> {
+            updateLastSeenTime();
             if (logger.isDebugEnabled()) {
                 logger.debug("Received service data for '{}':", address);
                 for (Map.Entry<String, byte[]> entry : data.entrySet()) {
@@ -220,6 +223,11 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
                         e.getMessage());
             }
         }
+        return false;
+    }
+
+    @Override
+    public boolean discoverServices() {
         return false;
     }
 
@@ -376,17 +384,10 @@ public class BlueZBluetoothDevice extends BluetoothDevice {
         return null;
     }
 
-    private void updateLastSeenTime() {
-        this.lastSeenTime = System.currentTimeMillis();
-    }
-
-    public long getTimeSinceSeen(TimeUnit unit) {
-        return unit.convert(System.currentTimeMillis() - this.lastSeenTime, TimeUnit.MILLISECONDS);
-    }
-
     /**
      * Clean up and release memory.
      */
+    @Override
     public void dispose() {
         if (device == null) {
             return;

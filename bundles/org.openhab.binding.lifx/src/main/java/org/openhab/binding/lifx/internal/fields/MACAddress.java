@@ -147,5 +147,4 @@ public class MACAddress {
 
         return true;
     }
-
 }

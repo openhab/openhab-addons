@@ -27,5 +27,4 @@ public class MaintainedCcoHandler extends CcoHandler {
         super(thing);
         this.outputType = CcoOutputType.MAINTAINED;
     }
-
 }

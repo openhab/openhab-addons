@@ -24,5 +24,4 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class EndpointNotInitializedException extends Exception {
 
     private static final long serialVersionUID = -6721646244844348903L;
-
 }

@@ -14,13 +14,26 @@ package org.openhab.binding.yeelight.internal.lib.services;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.net.MulticastSocket;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.openhab.binding.yeelight.internal.lib.device.*;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceBase;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceFactory;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceStatus;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceWithAmbientLight;
+import org.openhab.binding.yeelight.internal.lib.device.DeviceWithNightlight;
 import org.openhab.binding.yeelight.internal.lib.enums.DeviceAction;
 import org.openhab.binding.yeelight.internal.lib.listeners.DeviceListener;
 import org.slf4j.Logger;
@@ -31,6 +44,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Coaster Li - Initial contribution
  * @author Joe Ho - Added duration
+ * @author Nikita Pogudalov - Added name for Ceiling 1
  */
 public class DeviceManager {
     private final Logger logger = LoggerFactory.getLogger(DeviceManager.class);
@@ -110,7 +124,6 @@ public class DeviceManager {
 
                 executorService.execute(() -> {
                     try (MulticastSocket multiSocket = new MulticastSocket(MULTI_CAST_PORT)) {
-
                         multiSocket.setSoTimeout(TIMEOUT);
                         multiSocket.setNetworkInterface(networkInterface);
                         multiSocket.joinGroup(multicastAddress);
@@ -307,9 +320,10 @@ public class DeviceManager {
         }
         switch (device.getDeviceType()) {
             case ceiling:
-            case ceiling1:
             case ceiling3:
                 return "Yeelight LED Ceiling";
+            case ceiling1:
+                return "Yeelight LED Ceiling with night mode";
             case ceiling4:
                 return "Yeelight LED Ceiling with ambient light";
             case color:

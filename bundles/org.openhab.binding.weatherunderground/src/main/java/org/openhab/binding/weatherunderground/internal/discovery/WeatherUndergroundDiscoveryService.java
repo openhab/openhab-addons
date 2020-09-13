@@ -141,7 +141,7 @@ public class WeatherUndergroundDiscoveryService extends AbstractDiscoveryService
     }
 
     private void createResults(PointType location, Locale locale) {
-        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER, LOCAL);
+        ThingUID localWeatherThing = new ThingUID(THING_TYPE_WEATHER, bridgeUID, LOCAL);
         Map<String, Object> properties = new HashMap<>(3);
         properties.put(LOCATION, String.format("%s,%s", location.getLatitude(), location.getLongitude()));
         String lang = WeatherUndergroundHandler.getCodeFromLanguage(locale);
@@ -151,5 +151,4 @@ public class WeatherUndergroundDiscoveryService extends AbstractDiscoveryService
         thingDiscovered(DiscoveryResultBuilder.create(localWeatherThing).withLabel("Local Weather")
                 .withProperties(properties).withBridge(bridgeUID).build());
     }
-
 }

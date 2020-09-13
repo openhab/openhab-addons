@@ -38,5 +38,4 @@ public class SOAPDeviceState extends SOAPDataField {
     public void setState(String state) {
         this.state = state;
     }
-
 }

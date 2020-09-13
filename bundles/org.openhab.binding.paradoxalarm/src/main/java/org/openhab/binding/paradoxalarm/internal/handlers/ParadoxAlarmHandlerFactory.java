@@ -56,24 +56,25 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        ThingUID thingUID = thing.getUID();
         if (COMMUNICATOR_THING_TYPE_UID.equals(thingTypeUID)) {
-            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+            logger.debug("createHandler(): ThingHandler created for {}", thingUID);
 
             ParadoxIP150BridgeHandler paradoxIP150BridgeHandler = new ParadoxIP150BridgeHandler((Bridge) thing);
             registerDiscoveryService(paradoxIP150BridgeHandler);
 
             return paradoxIP150BridgeHandler;
         } else if (PANEL_THING_TYPE_UID.equals(thingTypeUID)) {
-            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+            logger.debug("createHandler(): ThingHandler created for {}", thingUID);
             return new ParadoxPanelHandler(thing);
         } else if (PARTITION_THING_TYPE_UID.equals(thingTypeUID)) {
-            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+            logger.debug("createHandler(): ThingHandler created for {}", thingUID);
             return new ParadoxPartitionHandler(thing);
         } else if (ZONE_THING_TYPE_UID.equals(thingTypeUID)) {
-            logger.debug("createHandler(): ThingHandler created for {}", thingTypeUID);
+            logger.debug("createHandler(): ThingHandler created for {}", thingUID);
             return new ParadoxZoneHandler(thing);
         } else {
-            logger.warn("Handler implementation not found for Thing: {}", thing.getLabel());
+            logger.warn("Handler implementation not found for Thing: {}", thingUID);
         }
         return null;
     }
@@ -81,7 +82,7 @@ public class ParadoxAlarmHandlerFactory extends BaseThingHandlerFactory {
     private void registerDiscoveryService(ParadoxIP150BridgeHandler paradoxIP150BridgeHandler) {
         ParadoxDiscoveryService discoveryService = new ParadoxDiscoveryService(paradoxIP150BridgeHandler);
         ServiceRegistration<?> serviceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
-            discoveryService, new Hashtable<>());
+                discoveryService, new Hashtable<>());
         this.discoveryServiceRegs.put(paradoxIP150BridgeHandler.getThing().getUID(), serviceRegistration);
     }
 

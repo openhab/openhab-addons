@@ -20,7 +20,6 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +43,10 @@ public class PowermaxTcpConnector extends PowermaxConnector {
      * @param ip the IP address
      * @param port the TCP port number
      * @param timeout the timeout for socket communications
+     * @param readerThreadName the name of thread to be created
      */
-    public PowermaxTcpConnector(String ip, int port, int timeout) {
+    public PowermaxTcpConnector(String ip, int port, int timeout, String readerThreadName) {
+        super(readerThreadName);
         ipAddress = ip;
         tcpPort = port;
         connectTimeout = timeout;
@@ -64,7 +65,7 @@ public class PowermaxTcpConnector extends PowermaxConnector {
             setInput(tcpSocket.getInputStream());
             setOutput(tcpSocket.getOutputStream());
 
-            setReaderThread(new PowermaxReaderThread(this));
+            setReaderThread(new PowermaxReaderThread(this, readerThreadName));
             getReaderThread().start();
 
             setConnected(true);
@@ -87,10 +88,14 @@ public class PowermaxTcpConnector extends PowermaxConnector {
     public void close() {
         logger.debug("close(): Closing TCP Connection");
 
-        super.cleanup();
+        super.cleanup(false);
 
         if (tcpSocket != null) {
-            IOUtils.closeQuietly(tcpSocket);
+            try {
+                tcpSocket.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the socket: {}", e.getMessage());
+            }
         }
 
         tcpSocket = null;
@@ -107,5 +112,4 @@ public class PowermaxTcpConnector extends PowermaxConnector {
             return 0;
         }
     }
-
 }

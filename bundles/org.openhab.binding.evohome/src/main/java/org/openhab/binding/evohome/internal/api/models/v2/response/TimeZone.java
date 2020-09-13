@@ -36,5 +36,4 @@ public class TimeZone {
 
     @SerializedName("supportsDaylightSaving")
     private boolean supportsDaylightSaving;
-
 }

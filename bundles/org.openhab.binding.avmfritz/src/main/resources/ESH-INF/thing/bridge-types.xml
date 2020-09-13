@@ -7,29 +7,33 @@
 	<!-- Supported FRITZ!Box and FRITZ!Powerline -->
 	<bridge-type id="fritzbox">
 		<label>FRITZ!Box</label>
-		<description>This bridge represents a FRITZ!Box.</description>
+		<description>A FRITZ!Box router.</description>
 
 		<channels>
-			<channel id="apply_template" typeId="apply_template" />
+			<channel id="incoming_call" typeId="incoming_call"/>
+			<channel id="outgoing_call" typeId="outgoing_call"/>
+			<channel id="active_call" typeId="active_call"/>
+			<channel id="call_state" typeId="call_state"/>
+			<channel id="apply_template" typeId="apply_template"/>
 		</channels>
 
-		<config-description-ref uri="bridge-type:avmfritz:fritzbox" />
+		<config-description-ref uri="bridge-type:avmfritz:fritzbox"/>
 	</bridge-type>
 
 	<bridge-type id="FRITZ_Powerline_546E_Solo">
 		<label>FRITZ!Powerline 546E</label>
-		<description>FRITZ!Powerline 546E with switchable outlet in stand-alone mode.</description>
+		<description>A FRITZ!Powerline 546E with switchable outlet in stand-alone mode.</description>
 
 		<channels>
-			<channel id="mode" typeId="mode" />
-			<channel id="locked" typeId="locked" />
-			<channel id="device_locked" typeId="device_locked" />
-			<channel id="apply_template" typeId="apply_template" />
-			<channel id="energy" typeId="energy" />
-			<channel id="power" typeId="power" />
-			<channel id="outlet" typeId="outlet" />
+			<channel id="mode" typeId="mode"/>
+			<channel id="locked" typeId="locked"/>
+			<channel id="device_locked" typeId="device_locked"/>
+			<channel id="apply_template" typeId="apply_template"/>
+			<channel id="energy" typeId="energy"/>
+			<channel id="power" typeId="power"/>
+			<channel id="outlet" typeId="outlet"/>
 		</channels>
 
-		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline" />
+		<config-description-ref uri="bridge-type:avmfritz:fritzpowerline"/>
 	</bridge-type>
 </thing:thing-descriptions>

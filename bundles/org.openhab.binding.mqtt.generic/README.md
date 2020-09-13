@@ -61,8 +61,9 @@ You can add the following channels:
 * **dimmer**: This channel handles numeric values as percentages. It can have min, max and step values.
 * **contact**: This channel represents an open/close state of a given topic.
 * **switch**: This channel represents an on/off state of a given topic and can send an on/off value to a given topic.
-* **colorRGB**: This channel handles color values in RGB format.
-* **colorHSB**: This channel handles color values in HSB format.
+* **colorRGB**: This channel handles color values in RGB format. (Deprecated)
+* **colorHSB**: This channel handles color values in HSB format. (Deprecated)
+* **color**: This channel handles color values in HSB, RGB or xyY (x,y,brightness) formats.
 * **location**: This channel handles a location.
 * **image**: This channel handles binary images in common java supported formats (bmp,jpg,png).
 * **datetime**: This channel handles date/time values.
@@ -126,7 +127,25 @@ If **on** and **off** are not configured it publishes the strings mentioned befo
 
 You can connect this channel to a Contact or Switch item.
 
-### Channel Type "colorRGB", "colorHSB"
+### Channel Type "color"
+
+* __color_mode__: A required string that defines the color representation: "hsb", "rgb" or "xyY" (x,y,brightness).
+* __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
+* __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)
+* __onBrightness__: If you connect this channel to a Switch item and turn it on,
+
+color and saturation are preserved from the last state, but
+the brightness will be set to this configured initial brightness (default: 10%).
+
+You can connect this channel to a Color, Dimmer and Switch item.
+
+This channel will publish the color as comma separated list to the MQTT broker,
+e.g. "112,54,123" for the RGB color mode (0-255 per component), "360,100,100" for the HSB color mode (0-359 for hue and 0-100 for saturation and brightness),
+and "0.640074,0.329970,100" for the xyY color mode (0-1 for x and y, and 0-100 for brightness).
+
+The channel expects values on the corresponding MQTT topic to be in this format as well.
+
+### Channel Type "colorRGB", "colorHSB" (Deprecated)
 
 * __on__: An optional string (like "BRIGHT") that is recognized as on state. (ON will always be recognized.)
 * __off__: An optional string (like "DARK") that is recognized as off state. (OFF will always be recognized.)

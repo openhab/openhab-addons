@@ -91,5 +91,4 @@ public class TopLevelData {
                 .append(", structures=").append(structures).append("]");
         return builder.toString();
     }
-
 }

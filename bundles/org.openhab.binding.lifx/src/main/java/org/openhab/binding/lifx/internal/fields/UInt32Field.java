@@ -36,5 +36,4 @@ public class UInt32Field extends Field<Long> {
     public ByteBuffer bytesInternal(Long value) {
         return ByteBuffer.allocate(4).putInt((int) (value & 0xFFFFFFFFL));
     }
-
 }

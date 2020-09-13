@@ -76,7 +76,7 @@ Depending on your Tellstick model, different bridge-types are available:
 
 #### Telldus Core Bridge
 
-> To enable communication between openhab and tellstick-core service (Telldus center) they must use same architecture, eg. 32-bit or 64-bit. The supplied version from Telldus is compiled against 32-bit architecture. Therefore, it is better to use 32-bit java for openHAB. To check which version of Java is currently in use, run: `java -d32 -version`
+> To enable communication between openHAB and tellstick-core service (Telldus center) they must use same architecture, eg. 32-bit or 64-bit. The supplied version from Telldus is compiled against 32-bit architecture. Therefore, it is better to use 32-bit java for openHAB. To check which version of Java is currently in use, run: `java -d32 -version`
 >
 > *For changing architecture in Linux check out: `dpkg --add-architecture`* 
 

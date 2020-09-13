@@ -21,6 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-abstract public class BlueGigaPacket {
+public abstract class BlueGigaPacket {
 
 }

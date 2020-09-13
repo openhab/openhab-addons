@@ -97,7 +97,6 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         protected int getMinimalNumberOfSegments() {
             return 3;
         }
-
     }
 
     private static final String END_OF_TRANSMISSION = "\r#E1";

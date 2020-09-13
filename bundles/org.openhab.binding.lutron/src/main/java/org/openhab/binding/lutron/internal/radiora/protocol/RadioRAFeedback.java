@@ -28,5 +28,4 @@ public class RadioRAFeedback {
 
         return params;
     }
-
 }

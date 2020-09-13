@@ -74,7 +74,7 @@ public enum AttributeValueType {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, AttributeValueType>();
+        codeMapping = new HashMap<>();
         for (AttributeValueType s : values()) {
             codeMapping.put(s.key, s);
         }

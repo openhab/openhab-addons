@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.km200.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -20,6 +21,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Markus Eckhardt - Initial contribution
  */
+@NonNullByDefault
 public class KM200BindingConstants {
 
     public static final String BINDING_ID = "km200";
@@ -42,12 +44,24 @@ public class KM200BindingConstants {
     public static final ThingTypeUID THING_TYPE_NOTIFICATION = new ThingTypeUID(BINDING_ID, "notification");
     public static final ThingTypeUID THING_TYPE_SWITCH_PROGRAM = new ThingTypeUID(BINDING_ID, "switchProgram");
     public static final ThingTypeUID THING_TYPE_SYSTEMSTATES = new ThingTypeUID(BINDING_ID, "systemStates");
-    // Other constants
 
+    // KM200 DataTypes
+    public static final String DATA_TYPE_STRING_VALUE = "stringValue";
+    public static final String DATA_TYPE_FLOAT_VALUE = "floatValue";
+    public static final String DATA_TYPE_SWITCH_PROGRAM = "switchProgram";
+    public static final String DATA_TYPE_ERROR_LIST = "errorList";
+    public static final String DATA_TYPE_Y_RECORDING = "yRecording";
+    public static final String DATA_TYPE_SYSTEM_INFO = "systeminfo";
+    public static final String DATA_TYPE_ARRAY_DATA = "arrayData";
+    public static final String DATA_TYPE_E_MONITORING_LIST = "eMonitoringList";
+    public static final String DATA_TYPE_MODULE_LIST = "moduleList";
+    public static final String DATA_TYPE_REF_ENUM = "refEnum";
+    public static final String DATA_TYPE_PROTECTED = "$$PROTECTED$$";
+
+    // Other constants
     public static final String SWITCH_PROGRAM_REPLACEMENT = "__current__";
     public static final String SWITCH_PROGRAM_PATH_NAME = "switchPrograms";
     public static final String SWITCH_PROGRAM_CURRENT_PATH_NAME = "activeSwitchProgram";
     public static final String SWITCH_PROGRAM_POSITIVE = "activeSwitchProgramPos";
     public static final String SWITCH_PROGRAM_NEGATIVE = "activeSwitchProgramNeg";
-
 }

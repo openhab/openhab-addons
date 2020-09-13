@@ -60,5 +60,4 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
             }
         }
     }
-
 }

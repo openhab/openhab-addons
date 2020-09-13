@@ -14,11 +14,12 @@ package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -32,26 +33,26 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 
 /**
  * Tests for {@link AVMFritzThingHandlerOSGiTest}.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
-    private static HttpClient httpClient;
+    private static HttpClient httpClient = new HttpClient();
 
     private VolatileStorageService volatileStorageService = new VolatileStorageService();
-    private ManagedThingProvider managedThingProvider;
+    private @NonNullByDefault({}) ManagedThingProvider managedThingProvider;
 
-    protected Bridge bridge;
-    protected BoxHandler bridgeHandler;
+    protected @NonNullByDefault({}) Bridge bridge;
+    protected @NonNullByDefault({}) BoxHandler bridgeHandler;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        httpClient = new HttpClient();
         httpClient.start();
     }
 
@@ -69,7 +70,7 @@ public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-        bridgeHandler = new BoxHandler(bridge, httpClient, new AVMFritzDynamicStateDescriptionProvider());
+        bridgeHandler = new BoxHandler(bridge, httpClient, mock(AVMFritzDynamicCommandDescriptionProvider.class));
         assertNotNull(bridgeHandler);
 
         bridgeHandler.setCallback(callback);

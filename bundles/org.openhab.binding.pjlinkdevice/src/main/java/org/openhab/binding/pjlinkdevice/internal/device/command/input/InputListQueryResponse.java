@@ -45,5 +45,4 @@ public class InputListQueryResponse extends PrefixedResponse<Set<Input>> {
         }
         return result;
     }
-
 }

@@ -26,7 +26,7 @@ public class PingResult {
     private double executionTimeInMS;
 
     /**
-     * @param success     <code>true</code> if the device was reachable, <code>false</code> if not.
+     * @param success <code>true</code> if the device was reachable, <code>false</code> if not.
      * @param executionTimeInMS Execution time of the ping command in ms.
      */
     public PingResult(boolean success, double executionTimeInMS) {
@@ -43,7 +43,7 @@ public class PingResult {
 
     /**
      * @return Response time in ms which was returned by the ping command. Optional is empty if response time provided
-     * by ping command is not available.
+     *         by ping command is not available.
      */
     public Optional<Double> getResponseTimeInMS() {
         return responseTimeInMS == null ? Optional.empty() : Optional.of(responseTimeInMS);
@@ -58,11 +58,8 @@ public class PingResult {
 
     @Override
     public String toString() {
-        return "PingResult{" +
-                "success=" + success +
-                ", responseTimeInMS=" + responseTimeInMS +
-                ", executionTimeInMS=" + executionTimeInMS +
-                '}';
+        return "PingResult{" + "success=" + success + ", responseTimeInMS=" + responseTimeInMS + ", executionTimeInMS="
+                + executionTimeInMS + '}';
     }
 
     /**

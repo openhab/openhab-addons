@@ -102,7 +102,7 @@ public class MeterHandler extends BaseThingHandler {
         PixometerMeterConfiguration config = getConfigAs(PixometerMeterConfiguration.class);
         setRessourceID(config.resourceId);
 
-        cache = new ExpiringCache<@Nullable MeterState>(Duration.ofMinutes(60), this::refreshCache);
+        cache = new ExpiringCache<>(Duration.ofMinutes(60), this::refreshCache);
 
         Bridge b = this.getBridge();
         if (b == null) {

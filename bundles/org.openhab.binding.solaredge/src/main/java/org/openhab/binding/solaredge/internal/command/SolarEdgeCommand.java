@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solaredge.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Response.CompleteListener;
 import org.eclipse.jetty.client.api.Response.ContentListener;
@@ -24,6 +25,7 @@ import org.openhab.binding.solaredge.internal.connector.StatusUpdateListener;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public interface SolarEdgeCommand extends SuccessListener, FailureListener, ContentListener, CompleteListener {
 
     int MAX_RETRIES = 5;
@@ -36,11 +38,10 @@ public interface SolarEdgeCommand extends SuccessListener, FailureListener, Cont
     void performAction(HttpClient asyncclient);
 
     /**
-     * get the current listener
+     * updates the listener's status
      *
-     * @return
      */
-    StatusUpdateListener getListener();
+    void updateListenerStatus();
 
     /**
      * register a listener
@@ -48,5 +49,4 @@ public interface SolarEdgeCommand extends SuccessListener, FailureListener, Cont
      * @param listener
      */
     void setListener(StatusUpdateListener listener);
-
 }

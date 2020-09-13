@@ -15,6 +15,7 @@ package org.openhab.io.homekit.internal;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
 import org.eclipse.smarthome.core.items.StateChangeListener;
@@ -22,18 +23,18 @@ import org.eclipse.smarthome.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 
 /**
- * Subscribes and unsubscribes from Item changes to enable notification to Homekit
+ * Subscribes and unsubscribes from Item changes to enable notification to HomeKit
  * clients. Each item/key pair (key is optional) should be unique, as the underlying
- * Homekit library takes care of insuring only a single subscription exists for
+ * HomeKit library takes care of insuring only a single subscription exists for
  * each accessory.
  *
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAccessoryUpdater {
-    private Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
     private final ConcurrentMap<ItemKey, Subscription> subscriptionsByName = new ConcurrentHashMap<>();
 
     public void subscribe(GenericItem item, HomekitCharacteristicChangeCallback callback) {
@@ -55,7 +56,7 @@ public class HomekitAccessoryUpdater {
                 logger.debug("Received duplicate subscription for {} / {}", item, key);
                 unsubscribe(item, key);
             }
-            logger.debug("Adding subscription for {} / {}", item, key);
+            logger.trace("Adding subscription for {} / {}", item, key);
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
             item.addStateChangeListener(subscription);
             return subscription;
@@ -71,14 +72,15 @@ public class HomekitAccessoryUpdater {
             return;
         }
         subscriptionsByName.computeIfPresent(new ItemKey(item, key), (k, v) -> {
-            logger.debug("Removing existing subscription for {} / {}", item, key);
+            logger.trace("Removing existing subscription for {} / {}", item, key);
             item.removeStateChangeListener(v);
             return null;
         });
     }
 
     @FunctionalInterface
-    private static interface Subscription extends StateChangeListener {
+    @NonNullByDefault
+    private interface Subscription extends StateChangeListener {
 
         @Override
         void stateChanged(Item item, State oldState, State newState);
@@ -90,8 +92,8 @@ public class HomekitAccessoryUpdater {
     }
 
     private static class ItemKey {
-        public GenericItem item;
-        public String key;
+        public final GenericItem item;
+        public final String key;
 
         public ItemKey(GenericItem item, String key) {
             this.item = item;

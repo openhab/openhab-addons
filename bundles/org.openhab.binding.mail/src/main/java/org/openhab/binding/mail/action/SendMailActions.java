@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mail.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,8 @@ import org.slf4j.LoggerFactory;
  */
 @ThingActionsScope(name = "mail")
 @NonNullByDefault
-public class SendMailActions implements ThingActions {
+public class SendMailActions implements ThingActions, ISendMailActions {
+
     private final Logger logger = LoggerFactory.getLogger(SendMailActions.class);
 
     private @Nullable SMTPHandler handler;
@@ -49,7 +52,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "text") @Nullable String text) {
-        return sendMail(recipient, subject, text, new ArrayList<String>());
+        return sendMail(recipient, subject, text, new ArrayList<>());
     }
 
     @RuleAction(label = "Send Text Mail", description = "sends a text mail with URL attachment")
@@ -64,6 +67,7 @@ public class SendMailActions implements ThingActions {
         return sendMail(recipient, subject, text, urlList);
     }
 
+    @Override
     @RuleAction(label = "Send Text Mail", description = "sends a text mail with several URL attachments")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
@@ -89,19 +93,14 @@ public class SendMailActions implements ThingActions {
                 }
             }
 
+            final SMTPHandler handler = this.handler;
             if (handler == null) {
                 logger.info("Handler is null, cannot send mail.");
                 return false;
             } else {
                 return handler.sendMail(builder.build());
             }
-        } catch (AddressException e) {
-            logger.warn("Could not send mail: {}", e.getMessage());
-            return false;
-        } catch (MalformedURLException e) {
-            logger.warn("Could not send mail: {}", e.getMessage());
-            return false;
-        } catch (EmailException e) {
+        } catch (AddressException | MalformedURLException | EmailException e) {
             logger.warn("Could not send mail: {}", e.getMessage());
             return false;
         }
@@ -109,7 +108,7 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text) {
-        return SendMailActions.sendMail(actions, recipient, subject, text, new ArrayList<String>());
+        return SendMailActions.sendMail(actions, recipient, subject, text, new ArrayList<>());
     }
 
     public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
@@ -123,11 +122,7 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendMail(@Nullable ThingActions actions, @Nullable String recipient, @Nullable String subject,
             @Nullable String text, @Nullable List<String> urlStringList) {
-        if (actions instanceof SendMailActions) {
-            return ((SendMailActions) actions).sendMail(recipient, subject, text, urlStringList);
-        } else {
-            throw new IllegalArgumentException("Instance is not of class SendMailActions.");
-        }
+        return invokeMethodOf(actions).sendMail(recipient, subject, text, urlStringList);
     }
 
     @RuleAction(label = "Send HTML Mail", description = "sends a HTML mail")
@@ -135,7 +130,7 @@ public class SendMailActions implements ThingActions {
             @ActionInput(name = "recipient") @Nullable String recipient,
             @ActionInput(name = "subject") @Nullable String subject,
             @ActionInput(name = "html") @Nullable String html) {
-        return sendHtmlMail(recipient, subject, html, new ArrayList<String>());
+        return sendHtmlMail(recipient, subject, html, new ArrayList<>());
     }
 
     @RuleAction(label = "Send HTML Mail", description = "sends a HTML mail with URL attachment")
@@ -150,6 +145,7 @@ public class SendMailActions implements ThingActions {
         return sendHtmlMail(recipient, subject, html, urlList);
     }
 
+    @Override
     @RuleAction(label = "Send HTML Mail", description = "sends a HTML mail with several URL attachments")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendHtmlMail(
             @ActionInput(name = "recipient") @Nullable String recipient,
@@ -175,27 +171,22 @@ public class SendMailActions implements ThingActions {
                 }
             }
 
+            final SMTPHandler handler = this.handler;
             if (handler == null) {
                 logger.warn("Handler is null, cannot send mail.");
                 return false;
             } else {
                 return handler.sendMail(builder.build());
             }
-        } catch (AddressException e) {
+        } catch (AddressException | MalformedURLException | EmailException e) {
             logger.warn("Could not send mail: {}", e.getMessage());
-            return false;
-        } catch (MalformedURLException e) {
-            logger.warn("Could not send mail: {}", e.getMessage());
-            return false;
-        } catch (EmailException e) {
-            logger.warn("could not send mail: {}", e.getMessage());
             return false;
         }
     }
 
     public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String subject, @Nullable String html) {
-        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<String>());
+        return SendMailActions.sendHtmlMail(actions, recipient, subject, html, new ArrayList<>());
     }
 
     public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
@@ -209,11 +200,7 @@ public class SendMailActions implements ThingActions {
 
     public static boolean sendHtmlMail(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String subject, @Nullable String html, @Nullable List<String> urlStringList) {
-        if (actions instanceof SendMailActions) {
-            return ((SendMailActions) actions).sendHtmlMail(recipient, subject, html, urlStringList);
-        } else {
-            throw new IllegalArgumentException("Instance is not of class SendMailActions.");
-        }
+        return invokeMethodOf(actions).sendHtmlMail(recipient, subject, html, urlStringList);
     }
 
     @Override
@@ -226,5 +213,24 @@ public class SendMailActions implements ThingActions {
     @Override
     public @Nullable ThingHandler getThingHandler() {
         return this.handler;
+    }
+
+    private static ISendMailActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
+        }
+        if (actions.getClass().getName().equals(SendMailActions.class.getName())) {
+            if (actions instanceof ISendMailActions) {
+                return (ISendMailActions) actions;
+            } else {
+                return (ISendMailActions) Proxy.newProxyInstance(ISendMailActions.class.getClassLoader(),
+                        new Class[] { ISendMailActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of SendMailActions");
     }
 }

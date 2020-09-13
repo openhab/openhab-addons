@@ -26,8 +26,7 @@ public class ModbusPollerConfiguration {
     private long refresh;
     private int start;
     private int length;
-    @Nullable
-    private String type;
+    private @Nullable String type;
     private int maxTries = 3;// backwards compatibility and tests
     private long cacheMillis = 50L;
 
@@ -116,5 +115,4 @@ public class ModbusPollerConfiguration {
     public void setCacheMillis(long cacheMillis) {
         this.cacheMillis = cacheMillis;
     }
-
 }

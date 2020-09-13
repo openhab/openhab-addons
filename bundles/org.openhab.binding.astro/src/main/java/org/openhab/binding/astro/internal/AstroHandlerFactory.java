@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.scheduler.CronScheduler;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -30,7 +32,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.handler.MoonHandler;
 import org.openhab.binding.astro.internal.handler.SunHandler;
-import org.openhab.binding.astro.internal.util.PropertyUtils;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -39,6 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.astro", service = ThingHandlerFactory.class)
 public class AstroHandlerFactory extends BaseThingHandlerFactory {
 
@@ -46,7 +49,15 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
             .concat(SunHandler.SUPPORTED_THING_TYPES.stream(), MoonHandler.SUPPORTED_THING_TYPES.stream())
             .collect(Collectors.toSet());
     private static final Map<String, AstroThingHandler> ASTRO_THING_HANDLERS = new HashMap<>();
-    private CronScheduler scheduler;
+    private final CronScheduler scheduler;
+    private final TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public AstroHandlerFactory(final @Reference CronScheduler scheduler,
+            final @Reference TimeZoneProvider timeZoneProvider) {
+        this.scheduler = scheduler;
+        this.timeZoneProvider = timeZoneProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -54,13 +65,13 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         AstroThingHandler thingHandler = null;
         if (thingTypeUID.equals(THING_TYPE_SUN)) {
-            thingHandler = new SunHandler(thing, scheduler);
+            thingHandler = new SunHandler(thing, scheduler, timeZoneProvider);
         } else if (thingTypeUID.equals(THING_TYPE_MOON)) {
-            thingHandler = new MoonHandler(thing, scheduler);
+            thingHandler = new MoonHandler(thing, scheduler, timeZoneProvider);
         }
         if (thingHandler != null) {
             ASTRO_THING_HANDLERS.put(thing.getUID().toString(), thingHandler);
@@ -74,26 +85,7 @@ public class AstroHandlerFactory extends BaseThingHandlerFactory {
         ASTRO_THING_HANDLERS.remove(thing.getUID().toString());
     }
 
-    @Reference
-    protected void setTimeZoneProvider(TimeZoneProvider timeZone) {
-        PropertyUtils.setTimeZone(timeZone);
-    }
-
-    protected void unsetTimeZoneProvider(TimeZoneProvider timeZone) {
-        PropertyUtils.unsetTimeZone();
-    }
-
-    public static AstroThingHandler getHandler(String thingUid) {
+    public static @Nullable AstroThingHandler getHandler(String thingUid) {
         return ASTRO_THING_HANDLERS.get(thingUid);
     }
-
-    @Reference
-    protected void setCronScheduler(CronScheduler scheduler) {
-        this.scheduler = scheduler;
-    }
-
-    protected void unsetCronScheduler(CronScheduler scheduler) {
-        this.scheduler = null;
-    }
-
 }

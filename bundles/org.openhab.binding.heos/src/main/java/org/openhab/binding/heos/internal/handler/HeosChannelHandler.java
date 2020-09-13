@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
-import org.eclipse.smarthome.core.thing.ChannelUID;
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.types.Command;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.handler.HeosGroupHandler;
-import org.openhab.binding.heos.handler.HeosPlayerHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandler} handles the base class for the different
@@ -28,77 +27,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Johannes Einig - Initial contribution
  */
-public abstract class HeosChannelHandler {
-    protected final Logger logger = LoggerFactory.getLogger(HeosChannelHandler.class);
-
-    protected Object handler;
-    protected HeosBridgeHandler bridge;
-    protected HeosFacade api;
-    protected String id;
-    protected Command command;
-    protected ChannelUID channelUID;
-
-    /**
-     *
-     * @param bridge Requires the HeosBridgeHandler
-     * @param api    The HeosFacade class
-     */
-    public HeosChannelHandler(HeosBridgeHandler bridge, HeosFacade api) {
-        this.bridge = bridge;
-        this.api = api;
-    }
-
+@NonNullByDefault
+public interface HeosChannelHandler {
     /**
      * Handle a command received from a channel. Requires the class which
      * wants to handle the command to decide which subclass has to be used
-     *
-     * @param command    the command to handle
-     * @param id         of the group or player
-     * @param handler    The class which wants to handle the command
-     * @param channelUID the channelUID of the handleCommand function
+     * 
+     * @param command the command to handle
+     * @param id of the group or player
+     * @param uid
      */
-    public void handleCommand(Command command, String id, Object handler, ChannelUID channelUID) {
-        this.command = command;
-        this.id = id;
-        this.handler = handler;
-        this.channelUID = channelUID;
+    void handlePlayerCommand(Command command, String id, ThingUID uid) throws IOException, ReadException;
 
-        if (handler instanceof HeosPlayerHandler) {
-            handleCommandPlayer();
-        } else if (handler instanceof HeosGroupHandler) {
-            handleCommandGroup();
-        }
-    }
+    void handleGroupCommand(Command command, @Nullable String id, ThingUID uid, HeosGroupHandler heosGroupHandler)
+            throws IOException, ReadException;
 
     /**
      * Handles a command for classes without an id. Used
      * for BridgeHandler
      *
-     * @param command    the command to handle
-     * @param handler    The class which wants to handle the command
-     * @param channelUID the channelUID of the handleCommand function
+     * @param command the command to handle
+     * @param uid
      */
-    public void handleCommand(Command command, Object handler, ChannelUID channelUID) {
-        this.command = command;
-        this.handler = handler;
-        this.channelUID = channelUID;
-        if (handler instanceof HeosBridgeHandler) {
-            handleCommandBridge();
-        }
-    }
-
-    /**
-     * Handles the command for HEOS player
-     */
-    protected abstract void handleCommandPlayer();
-
-    /**
-     * Handles the command for HEOS groups
-     */
-    protected abstract void handleCommandGroup();
-
-    /**
-     * Handles the command for the HEOS bridge
-     */
-    protected abstract void handleCommandBridge();
+    void handleBridgeCommand(Command command, ThingUID uid) throws IOException, ReadException;
 }

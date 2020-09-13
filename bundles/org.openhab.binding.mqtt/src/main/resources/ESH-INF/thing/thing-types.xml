@@ -49,18 +49,16 @@
 
 			<parameter name="reconnectTime" type="integer">
 				<label>Reconnect Time</label>
-				<description>Reconnect time in ms. If a connection is lost, the
-					binding will wait this time before it tries to reconnect.</description>
+				<description>Reconnect time in ms. If a connection is lost, the binding will wait this time before it tries to
+					reconnect.</description>
 				<default>60000</default>
 				<advanced>true</advanced>
 			</parameter>
 
 			<parameter name="keepAlive" type="integer">
 				<label>Heartbeat</label>
-				<description>Keep alive / heartbeat timer in s. It can take up to
-					this time to determine if a server connection is lost. A lower
-					value may keep the broker unnecessarily busy for no or little
-					additional value.</description>
+				<description>Keep alive / heartbeat timer in s. It can take up to this time to determine if a server connection is
+					lost. A lower value may keep the broker unnecessarily busy for no or little additional value.</description>
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -109,60 +107,57 @@
 			</parameter>
 			<parameter name="certificatepin" type="boolean">
 				<label>Certificate Pinning</label>
-				<description>If this and SSL is set: After the next connection has
-					been successfully established, the certificate is pinned. The
-					connection will be refused if another certificate is used. Clear
-					**certificate** to allow a new certificate for the next connection
-					attempt. This option can increase security.</description>
+				<description>If this and SSL is set: After the next connection has been successfully established, the certificate is
+					pinned. The connection will be refused if another certificate is used. Clear **certificate** to allow a new
+					certificate for the next connection attempt. This option can increase security.</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="certificate" type="text">
 				<label>Certificate Hash</label>
-				<description>If **certificatepin** is set this hash is used to
-					verify the connection. Clear to allow a new certificate pinning on
-					the next connection attempt. If empty will be filled automatically
-					by the next successful connection. An example input would be
-					`SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.</description>
+				<description>If **certificatepin** is set this hash is used to verify the connection. Clear to allow a new
+					certificate pinning on the next connection attempt. If empty will be filled automatically by the next successful
+					connection. An example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="publickeypin" type="boolean">
 				<label>Public Key Pinning</label>
-				<description>If this and SSL is set: After the next connection has
-					been successfully established, the public key of the broker is
-					pinned. The connection will be refused if another public key is
-					used. Clear **publickey** to allow a new public key for the next
-					connection attempt. This option can increase security.</description>
+				<description>If this and SSL is set: After the next connection has been successfully established, the public key of
+					the broker is pinned. The connection will be refused if another public key is used. Clear **publickey** to allow a
+					new public key for the next connection attempt. This option can increase security.</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="publickey" type="text">
 				<label>Public Key Hash</label>
-				<description>If **publickeypin** is set this hash is used to verify
-					the connection. Clear to allow a new public key pinning on the next
-					connection attempt. If empty will be filled automatically by the
-					next successful connection. An example input would be
-					`SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`</description>
+				<description>If **publickeypin** is set this hash is used to verify the connection. Clear to allow a new public key
+					pinning on the next connection attempt. If empty will be filled automatically by the next successful connection. An
+					example input would be `SHA-256:83F9171E06A313118889F7D79302BD1B7A2042EE0CFD029ABF8DD06FFA6CD9D3`</description>
 				<advanced>true</advanced>
+			</parameter>
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>If set to true enables this broker for all discovery services.</description>
+				<advanced>true</advanced>
+				<default>true</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
 
 	<bridge-type id="systemBroker" extensible="publishTrigger">
 		<label>System MQTT Broker</label>
-		<description>A system configured and therefore read-only broker
-			connection. Properties are reflecting the configuration and internal
-			connection status.</description>
+		<description>A system configured and therefore read-only broker connection. Properties are reflecting the
+			configuration and internal connection status.</description>
 
 		<properties>
-			<property name="url" />
-			<property name="username" />
-			<property name="password" />
-			<property name="qos" />
-			<property name="retain" />
-			<property name="lastwill" />
-			<property name="reconnect_time_ms" />
-			<property name="keep_alive_time_ms" />
+			<property name="url"/>
+			<property name="username"/>
+			<property name="password"/>
+			<property name="qos"/>
+			<property name="retain"/>
+			<property name="lastwill"/>
+			<property name="reconnect_time_ms"/>
+			<property name="keep_alive_time_ms"/>
 		</properties>
 
 		<config-description>
@@ -170,18 +165,26 @@
 				<label>Broker ID</label>
 				<description>Each system wide configured MQTT broker has a unique broker ID.</description>
 			</parameter>
+			<parameter name="enableDiscovery" type="boolean">
+				<label>Enable Discovery</label>
+				<description>If set to true enables this broker for all discovery services.</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 
 	<channel-type id="publishTrigger">
 		<kind>trigger</kind>
 		<label>Publish Trigger</label>
-		<description>This channel is triggered when a value is published to the configured MQTT topic on this broker connection. The event payload will be the received MQTT topic value.</description>
+		<description>This channel is triggered when a value is published to the configured MQTT topic on this broker
+			connection. The event payload will be the received MQTT topic value.</description>
 		<event></event>
 		<config-description>
 			<parameter name="stateTopic" type="text" required="true">
 				<label>MQTT Topic</label>
-				<description>This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example "all/in/#" or "sensors/+/config".</description>
+				<description>This channel will trigger on this MQTT topic. This topic can contain wildcards like + and # for example
+					"all/in/#" or "sensors/+/config".</description>
 			</parameter>
 			<parameter name="payload" type="text" required="false">
 				<label>Payload Condition</label>
@@ -189,7 +192,9 @@
 			</parameter>
 			<parameter name="separator" type="text" required="false">
 				<label>Separator Character</label>
-				<description>The trigger channel payload usually only contains the received MQTT topic value. If you define a separator character, for example '#', the topic and received value will be in the trigger channel payload. For example: my_topic#my_received_value.</description>
+				<description>The trigger channel payload usually only contains the received MQTT topic value. If you define a
+					separator character, for example '#', the topic and received value will be in the trigger channel payload. For
+					example: my_topic#my_received_value.</description>
 			</parameter>
 		</config-description>
 	</channel-type>

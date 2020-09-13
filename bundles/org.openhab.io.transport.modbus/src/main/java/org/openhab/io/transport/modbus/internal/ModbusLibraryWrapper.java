@@ -19,10 +19,12 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
+import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
@@ -58,6 +60,7 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
 import net.wimpi.modbus.net.SerialConnection;
 import net.wimpi.modbus.net.TCPMasterConnection;
 import net.wimpi.modbus.net.UDPMasterConnection;
+import net.wimpi.modbus.procimg.InputRegister;
 import net.wimpi.modbus.procimg.Register;
 import net.wimpi.modbus.procimg.SimpleInputRegister;
 import net.wimpi.modbus.util.BitVector;
@@ -73,6 +76,22 @@ public class ModbusLibraryWrapper {
 
     private static Logger getLogger() {
         return LoggerFactory.getLogger(ModbusLibraryWrapper.class);
+    }
+
+    private static BitArray bitArrayFromBitVector(BitVector bitVector, int count) {
+        boolean[] bits = new boolean[count];
+        for (int i = 0; i < count; i++) {
+            bits[i] = bitVector.getBit(i);
+        }
+        return new BitArray(bits);
+    }
+
+    private static ModbusRegisterArray modbusRegisterArrayFromInputRegisters(InputRegister[] inputRegisters) {
+        ModbusRegister[] registers = new ModbusRegister[inputRegisters.length];
+        for (int i = 0; i < inputRegisters.length; i++) {
+            registers[i] = new ModbusRegister(inputRegisters[i].getValue());
+        }
+        return new ModbusRegisterArray(registers);
     }
 
     /**
@@ -303,18 +322,20 @@ public class ModbusLibraryWrapper {
             int dataItemsInResponse = getNumberOfItemsInResponse(response, request);
             if (request.getFunctionCode() == ModbusReadFunctionCode.READ_COILS) {
                 BitVector bits = ((ReadCoilsResponse) response).getCoils();
-                callback.onBits(request,
-                        new BitArrayWrappingBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength())));
+                BitArray payload = bitArrayFromBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()));
+                callback.handle(new AsyncModbusReadResult(request, payload));
             } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_DISCRETES) {
                 BitVector bits = ((ReadInputDiscretesResponse) response).getDiscretes();
-                callback.onBits(request,
-                        new BitArrayWrappingBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength())));
+                BitArray payload = bitArrayFromBitVector(bits, Math.min(dataItemsInResponse, request.getDataLength()));
+                callback.handle(new AsyncModbusReadResult(request, payload));
             } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_MULTIPLE_REGISTERS) {
-                callback.onRegisters(request, new RegisterArrayWrappingInputRegister(
-                        ((ReadMultipleRegistersResponse) response).getRegisters()));
+                ModbusRegisterArray payload = modbusRegisterArrayFromInputRegisters(
+                        ((ReadMultipleRegistersResponse) response).getRegisters());
+                callback.handle(new AsyncModbusReadResult(request, payload));
             } else if (request.getFunctionCode() == ModbusReadFunctionCode.READ_INPUT_REGISTERS) {
-                callback.onRegisters(request,
-                        new RegisterArrayWrappingInputRegister(((ReadInputRegistersResponse) response).getRegisters()));
+                ModbusRegisterArray payload = modbusRegisterArrayFromInputRegisters(
+                        ((ReadInputRegistersResponse) response).getRegisters());
+                callback.handle(new AsyncModbusReadResult(request, payload));
             } else {
                 throw new IllegalArgumentException(
                         String.format("Unexpected function code %s", request.getFunctionCode()));
@@ -324,5 +345,4 @@ public class ModbusLibraryWrapper {
                     response);
         }
     }
-
 }

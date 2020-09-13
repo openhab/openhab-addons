@@ -6,16 +6,16 @@
 
 	<thing-type id="PSSO">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Pluggable Smart Switch Outdoor (PSSO)</label>
 		<description>A pluggable outdoor switch that can be switched on and off.</description>
 
 		<channels>
-			<channel id="switch" typeId="SwitchActuator" />
+			<channel id="switch" typeId="SwitchActuator"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:innogysmarthome:config" />
+		<config-description-ref uri="thing-type:innogysmarthome:config"/>
 	</thing-type>
 </thing:thing-descriptions>

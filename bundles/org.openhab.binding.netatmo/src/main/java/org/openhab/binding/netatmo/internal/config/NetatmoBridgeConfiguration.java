@@ -12,21 +12,26 @@
  */
 package org.openhab.binding.netatmo.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link NetatmoBridgeConfiguration} is responsible for holding
  * configuration informations needed to access Netatmo API
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public class NetatmoBridgeConfiguration {
-    public String clientId;
-    public String clientSecret;
-    public String username;
-    public String password;
-    public Boolean readStation;
-    public Boolean readThermostat;
-    public Boolean readHealthyHomeCoach;
-    public Boolean readWelcome;
-    public String webHookUrl;
-    public Integer reconnectInterval;
+    public @Nullable String clientId;
+    public @Nullable String clientSecret;
+    public @Nullable String username;
+    public @Nullable String password;
+    public boolean readStation = true;
+    public boolean readThermostat = false;
+    public boolean readHealthyHomeCoach = false;
+    public boolean readWelcome = false;
+    public boolean readPresence = false;
+    public @Nullable String webHookUrl;
+    public int reconnectInterval = 5400;
 }

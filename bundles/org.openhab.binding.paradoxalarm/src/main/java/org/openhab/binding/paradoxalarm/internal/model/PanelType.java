@@ -79,5 +79,4 @@ public enum PanelType {
     public int getRamPagesNumber() {
         return ramPagesNumber;
     }
-
 }

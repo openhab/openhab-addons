@@ -31,7 +31,7 @@ import com.google.gson.JsonObject;
  */
 public class JSONApartmentImpl implements Apartment {
 
-    private Map<Integer, Zone> zoneMap = new HashMap<Integer, Zone>();
+    private Map<Integer, Zone> zoneMap = new HashMap<>();
 
     /**
      * Creates a new {@link JSONApartmentImpl} through the {@link JsonObject}.

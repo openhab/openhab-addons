@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="digitalstrom" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="digitalstrom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd"
->
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="zoneTemperatureControl">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dssBridge" />
+			<bridge-type-ref id="dssBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/zoneTemperatureControl_label</label>

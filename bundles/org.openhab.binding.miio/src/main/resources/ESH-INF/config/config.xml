@@ -35,5 +35,9 @@
 			<default>15000</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="cloudServer" type="text" required="false">
+			<label>Xiaomi cloud Server (county code)</label>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

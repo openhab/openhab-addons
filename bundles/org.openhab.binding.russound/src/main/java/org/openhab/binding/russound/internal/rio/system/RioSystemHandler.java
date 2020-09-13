@@ -119,20 +119,18 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
     /**
      * The protocol for favorites handling
      */
-    private final AtomicReference<RioSystemFavoritesProtocol> favoritesProtocol = new AtomicReference<RioSystemFavoritesProtocol>(
-            null);
+    private final AtomicReference<RioSystemFavoritesProtocol> favoritesProtocol = new AtomicReference<>(null);
 
     /**
      * The protocol for presets handling
      */
-    private final AtomicReference<RioPresetsProtocol> presetsProtocol = new AtomicReference<RioPresetsProtocol>(null);
+    private final AtomicReference<RioPresetsProtocol> presetsProtocol = new AtomicReference<>(null);
 
     /**
      * The discovery service to discover the zones/sources, etc
      * Will be null if not active.
      */
-    private final AtomicReference<RioSystemDeviceDiscoveryService> discoveryService = new AtomicReference<RioSystemDeviceDiscoveryService>(
-            null);
+    private final AtomicReference<RioSystemDeviceDiscoveryService> discoveryService = new AtomicReference<>(null);
 
     /**
      * Constructs the handler from the {@link Bridge}
@@ -299,7 +297,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
                 public void setProperty(String propertyName, String propertyValue) {
                     getThing().setProperty(propertyName, propertyValue);
                 }
-
             });
 
             setProtocolHandler(new RioSystemProtocol(session, callback));
@@ -505,7 +502,6 @@ public class RioSystemHandler extends AbstractBridgeHandler<RioSystemProtocol> {
         } else if (childHandler instanceof RioControllerHandler) {
             refreshNamedHandler(gson, RioControllerHandler.class, RioConstants.CHANNEL_SYSCONTROLLERS);
         }
-
     }
 
     /**

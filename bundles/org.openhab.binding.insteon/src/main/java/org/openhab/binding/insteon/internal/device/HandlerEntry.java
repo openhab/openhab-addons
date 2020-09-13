@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.insteon.internal.device;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,15 +25,15 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class HandlerEntry {
-    HashMap<String, @Nullable String> params;
+    Map<String, @Nullable String> params;
     String name;
 
-    HandlerEntry(String name, HashMap<String, @Nullable String> params) {
+    HandlerEntry(String name, Map<String, @Nullable String> params) {
         this.name = name;
         this.params = params;
     }
 
-    HashMap<String, @Nullable String> getParams() {
+    Map<String, @Nullable String> getParams() {
         return params;
     }
 

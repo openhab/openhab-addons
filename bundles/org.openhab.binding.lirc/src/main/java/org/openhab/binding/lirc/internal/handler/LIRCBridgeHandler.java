@@ -195,7 +195,5 @@ public class LIRCBridgeHandler extends BaseBridgeHandler {
             logger.error("Error occured: {}", error);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error);
         }
-
     }
-
 }

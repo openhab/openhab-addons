@@ -49,5 +49,4 @@ public class SOAPCardEntered extends SOAPDataField {
     public void setValid(String valid) {
         this.valid = valid;
     }
-
 }

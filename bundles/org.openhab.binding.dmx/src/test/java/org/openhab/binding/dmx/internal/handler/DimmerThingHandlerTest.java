@@ -32,11 +32,11 @@ import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.junit.Before;
 import org.junit.Test;
-import org.openhab.binding.dmx.internal.handler.DimmerThingHandler;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 
 /**
- * Tests cases for {@link DimmerThingHandler} in normal mode.
+ * Tests cases for {@link org.openhab.binding.dmx.internal.handler.DimmerThingHandler} in normal
+ * mode.
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -152,5 +152,4 @@ public class DimmerThingHandlerTest extends AbstractDmxThingTestParent {
     public void testPercentTypeCommand() {
         assertPercentTypeCommands(dimmerThingHandler, CHANNEL_UID_BRIGHTNESS, TEST_FADE_TIME);
     }
-
 }

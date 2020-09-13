@@ -12,10 +12,15 @@
  */
 package org.openhab.binding.paradoxalarm.internal.model;
 
+import java.time.DateTimeException;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.paradoxalarm.internal.communication.IDataUpdateListener;
 import org.openhab.binding.paradoxalarm.internal.communication.IParadoxCommunicator;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
@@ -33,6 +38,7 @@ public class ParadoxPanel implements IDataUpdateListener {
 
     private final Logger logger = LoggerFactory.getLogger(ParadoxPanel.class);
 
+    @NonNull
     private static ParadoxPanel paradoxPanel = new ParadoxPanel();
 
     private ParadoxInformation panelInformation;
@@ -40,6 +46,10 @@ public class ParadoxPanel implements IDataUpdateListener {
     private List<Zone> zones;
     private IParadoxParser parser;
     private IParadoxCommunicator communicator;
+    private double vdcLevel;
+    private double batteryLevel;
+    private double dcLevel;
+    private ZonedDateTime panelTime;
 
     private ParadoxPanel() {
         this.parser = new EvoParser();
@@ -53,7 +63,6 @@ public class ParadoxPanel implements IDataUpdateListener {
             logger.info("Paradox system is supported. Panel data retrieved={} ", panelInformation);
             createPartitions();
             createZones();
-            updateEntitiesStates();
         } else {
             throw new ParadoxRuntimeException(
                     "Unsupported panel type. Type: " + panelInformation.getPanelType().name());
@@ -78,13 +87,35 @@ public class ParadoxPanel implements IDataUpdateListener {
         List<byte[]> currentPartitionFlags = communicator.getPartitionFlags();
         for (int i = 0; i < partitions.size(); i++) {
             Partition partition = partitions.get(i);
-            partition.setState(parser.calculatePartitionState(currentPartitionFlags.get(i)));
+            if (i < currentPartitionFlags.size()) {
+                partition.setState(parser.calculatePartitionState(currentPartitionFlags.get(i)));
+            } else {
+                logger.debug("Partition flags collection is smaller than the number of partitions.");
+            }
         }
 
         ZoneStateFlags zoneStateFlags = communicator.getZoneStateFlags();
         for (int i = 0; i < zones.size(); i++) {
             Zone zone = zones.get(i);
             zone.setZoneState(parser.calculateZoneState(zone.getId(), zoneStateFlags));
+        }
+
+        byte[] firstRamPage = communicator.getMemoryMap().getElement(0);
+        panelTime = constructPanelTime(firstRamPage);
+        vdcLevel = Math.max(0, (firstRamPage[25] & 0xFF) * (20.3 - 1.4) / 255.0 + 1.4);
+        dcLevel = Math.max(0, (firstRamPage[27] & 0xFF) * 22.8 / 255);
+        batteryLevel = Math.max(0, (firstRamPage[26] & 0xFF) * 22.8 / 255);
+    }
+
+    protected ZonedDateTime constructPanelTime(byte[] firstPage) {
+        try {
+            int year = firstPage[18] * 100 + firstPage[19];
+            return ZonedDateTime.of(
+                    LocalDateTime.of(year, firstPage[20], firstPage[21], firstPage[22], firstPage[23], firstPage[24]),
+                    TimeZone.getDefault().toZoneId());
+        } catch (DateTimeException e) {
+            logger.debug("Received exception during parsing panel time. Falling back to old time.", e);
+            return panelTime;
         }
     }
 
@@ -109,6 +140,20 @@ public class ParadoxPanel implements IDataUpdateListener {
         return partitions;
     }
 
+    @Override
+    public void update() {
+        if (panelInformation == null || partitions == null || zones == null) {
+            createModelEntities();
+        }
+        updateEntitiesStates();
+    }
+
+    public void dispose() {
+        this.panelInformation = null;
+        this.partitions = null;
+        this.zones = null;
+    }
+
     public ParadoxInformation getPanelInformation() {
         return panelInformation;
     }
@@ -130,20 +175,35 @@ public class ParadoxPanel implements IDataUpdateListener {
     }
 
     public boolean isOnline() {
-        return communicator.isOnline();
+        return communicator != null && communicator.isOnline();
     }
 
-    @Override
-    public void update() {
-        if (panelInformation == null || partitions == null || zones == null) {
-            createModelEntities();
-        } else {
-            updateEntitiesStates();
-        }
+    public double getVdcLevel() {
+        return vdcLevel;
+    }
+
+    public double getBatteryLevel() {
+        return batteryLevel;
+    }
+
+    public double getDcLevel() {
+        return dcLevel;
+    }
+
+    public ZonedDateTime getPanelTime() {
+        return panelTime;
     }
 
     public void setCommunicator(IParadoxCommunicator communicator) {
         this.communicator = communicator;
     }
 
+    public IParadoxCommunicator getCommunicator() {
+        return communicator;
+    }
+
+    @Override
+    public String toString() {
+        return "ParadoxPanel [panelInformation=" + panelInformation + "]";
+    }
 }

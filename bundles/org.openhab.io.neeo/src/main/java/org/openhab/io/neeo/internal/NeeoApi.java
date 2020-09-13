@@ -116,8 +116,8 @@ public class NeeoApi implements AutoCloseable {
      * Constructs the APi from the given IP address, brain identifier and {@link ServiceContext}
      *
      * @param ipAddress the non-empty ip address
-     * @param brainId   the non-empty brain id
-     * @param context   the non-null {@link ServiceContext}
+     * @param brainId the non-empty brain id
+     * @param context the non-null {@link ServiceContext}
      * @throws IOException if an exception occurs connecting to the brain
      */
     public NeeoApi(String ipAddress, String brainId, ServiceContext context) throws IOException {
@@ -178,7 +178,6 @@ public class NeeoApi implements AutoCloseable {
 
         callbackUrl = new URL("http://" + primaryAddress + ":"
                 + (port == -1 ? NeeoConstants.DEFAULT_OPENHAB_PORT : port) + NeeoUtil.getServletUrl(brainId));
-
     }
 
     /**
@@ -502,7 +501,7 @@ public class NeeoApi implements AutoCloseable {
      * Executes a recipe for the given deviceKey
      *
      * @param deviceKey the non-empty device key
-     * @param on        true to start the recipe, false to stop
+     * @param on true to start the recipe, false to stop
      * @throws IOException Signals that an I/O exception has occurred.
      */
     public void executeRecipe(String deviceKey, boolean on) throws IOException {
@@ -557,14 +556,13 @@ public class NeeoApi implements AutoCloseable {
             NeeoUtil.close(request.get());
             setConnected(false);
         }
-
     }
 
     /**
      * Adds a {@link PropertyChangeListener} for the given propertyChange
      *
      * @param propertyName a non-null, non-empty property name
-     * @param listener     a non-null listener to add
+     * @param listener a non-null listener to add
      */
     public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         NeeoUtil.requireNotEmpty(propertyName, "propertyName must not be empty");

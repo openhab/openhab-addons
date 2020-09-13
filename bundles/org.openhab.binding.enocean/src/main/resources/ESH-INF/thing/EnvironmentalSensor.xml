@@ -6,7 +6,7 @@
 
 	<thing-type id="environmentalSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Environmental Sensor</label>

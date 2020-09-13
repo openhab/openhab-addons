@@ -48,5 +48,4 @@ public interface OutboundSpec {
      * @return the command/state
      */
     Type getType();
-
 }

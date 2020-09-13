@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="ambientweather" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="ambientweather"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,6 +8,6 @@
 	<bridge-type id="bridge">
 		<label>Ambient Weather Account</label>
 		<description>Represents an account at Ambient Weather (ambientweather.net)</description>
-		<config-description-ref uri="thing-type:ambientweather:bridge" />
+		<config-description-ref uri="thing-type:ambientweather:bridge"/>
 	</bridge-type>
 </thing:thing-descriptions>

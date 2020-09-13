@@ -32,5 +32,4 @@ public class NibeHeatPumpException extends Exception {
     public NibeHeatPumpException(Throwable cause) {
         super(cause);
     }
-
 }

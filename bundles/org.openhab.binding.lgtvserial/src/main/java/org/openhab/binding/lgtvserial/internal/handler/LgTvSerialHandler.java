@@ -28,6 +28,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommand;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialCommunicator;
 import org.openhab.binding.lgtvserial.internal.protocol.serial.LGSerialResponse;
@@ -62,6 +66,11 @@ public class LgTvSerialHandler extends BaseThingHandler {
     private final SerialCommunicatorFactory factory;
 
     /**
+     * Serial port manager used to get serial port identifiers.
+     */
+    private final SerialPortManager serialPortManager;
+
+    /**
      * Communicator used to send commands to the TV(s).
      */
     private LGSerialCommunicator communicator;
@@ -87,9 +96,10 @@ public class LgTvSerialHandler extends BaseThingHandler {
      * @param thing Thing associated to this handler
      * @param factory Factory to retrieve a communicator for a given port
      */
-    public LgTvSerialHandler(Thing thing, SerialCommunicatorFactory factory) {
+    public LgTvSerialHandler(Thing thing, SerialCommunicatorFactory factory, SerialPortManager serialPortManager) {
         super(thing);
         this.factory = factory;
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -118,11 +128,31 @@ public class LgTvSerialHandler extends BaseThingHandler {
             public void onFailure(ChannelUID channel, LGSerialResponse response) {
                 logger.debug("Received error response for channel {}: {}", channel, response.getState());
             }
-
         };
 
         if (portName != null) {
-            communicator = factory.getInstance(portName);
+            SerialPortIdentifier serialPortIdentifier = serialPortManager.getIdentifier(portName);
+            if (serialPortIdentifier == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "Serial port does not exist: " + portName);
+                return;
+            }
+
+            try {
+                communicator = factory.getInstance(serialPortIdentifier);
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                return;
+            } catch (PortInUseException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Serial port already used: " + portName);
+                return;
+            } catch (UnsupportedCommOperationException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unsupported operation on '" + portName + "': " + e.getMessage());
+                return;
+            }
+
             if (communicator != null) {
                 communicator.register(responseListener);
             } else {

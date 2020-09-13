@@ -13,6 +13,7 @@
 package org.openhab.binding.ftpupload.internal.ftp;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.ftpserver.ftplet.Authentication;
 import org.apache.ftpserver.ftplet.AuthenticationFailedException;
@@ -33,7 +34,7 @@ public class FTPUserManager implements UserManager {
     private final Logger logger = LoggerFactory.getLogger(FTPUserManager.class);
 
     private int idleTimeout;
-    private HashMap<String, UsernamePassword> authenticationData = new HashMap<String, UsernamePassword>();
+    private Map<String, UsernamePassword> authenticationData = new HashMap<>();
 
     @Override
     public User authenticate(final Authentication inAuth) throws AuthenticationFailedException {
@@ -70,7 +71,6 @@ public class FTPUserManager implements UserManager {
 
     public synchronized void addAuthenticationCredentials(String username, String password)
             throws IllegalArgumentException {
-
         if (authenticationData.containsKey(username)) {
             throw new IllegalArgumentException("Credentials for user '" + username + "' already exists!");
         }

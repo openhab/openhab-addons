@@ -56,4 +56,5 @@ public class ChannelConfig {
     public @Nullable String stop;
 
     public int onBrightness = 10;
+    public String colorMode = "";
 }

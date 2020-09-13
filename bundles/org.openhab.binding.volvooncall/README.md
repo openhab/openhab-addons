@@ -40,6 +40,7 @@ The 'VolvoOnCall API' bridge uses the owner's email address and password in orde
 
 
 ## Channels
+
 All numeric channels use the [UoM feature](https://www.eclipse.org/smarthome/blog/2018/02/22/units-of-measurement.html).
 This means you can easily change the desired unit e.g. miles/h instead of km/h just in your item definition.
 
@@ -82,6 +83,7 @@ Following channels are currently available:
 | other#brakeFluidLevel                         | String               | Brake fluid level                                | Normal / Low / VeryLow                                                 |
 | other#washerFluidLevel                        | String               | Washer fluid level                               | Normal / Low / VeryLow                                                 |
 | other#serviceWarning                          | String               | Warning if service is needed                     |                                                 |
+| other#bulbFailure                             | Switch               | ON if at least one bulb is reported as failed    |                                                 |
 | battery#batteryLevel                          | Number:Dimensionless | Battery level                                    | Only for Plugin hybrid / Twin Engine models     |
 | battery#batteryDistanceToEmpty                | Number:Length        | Distance until battery is empty                  | Only for Plugin hybrid / Twin Engine models     |
 | battery#chargeStatus                          | String               | Charging status                                  | Only for Plugin hybrid / Twin Engine models     |
@@ -180,6 +182,7 @@ Example 1a: If Thing has been created using autodiscovery
         actions.openCarCommand()
  }
 ```
+
 Example 1b: If Thing has been created using script
 
 ```

@@ -12,15 +12,7 @@
  */
 package org.openhab.binding.linuxinput.internal.evdev4j;
 
-import jnr.constants.platform.Errno;
-import jnr.constants.platform.OpenFlags;
-import jnr.enxio.channels.NativeDeviceChannel;
-import jnr.enxio.channels.NativeFileSelectorProvider;
-import jnr.ffi.byref.PointerByReference;
-import jnr.posix.POSIX;
-import jnr.posix.POSIXFactory;
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.linuxinput.internal.evdev4j.jnr.EvdevLibrary;
+import static org.openhab.binding.linuxinput.internal.evdev4j.Utils.combineFlags;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -37,7 +29,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static org.openhab.binding.linuxinput.internal.evdev4j.Utils.combineFlags;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.linuxinput.internal.evdev4j.jnr.EvdevLibrary;
+
+import jnr.constants.platform.Errno;
+import jnr.constants.platform.OpenFlags;
+import jnr.enxio.channels.NativeDeviceChannel;
+import jnr.enxio.channels.NativeFileSelectorProvider;
+import jnr.ffi.byref.PointerByReference;
+import jnr.posix.POSIX;
+import jnr.posix.POSIXFactory;
 
 /**
  * Classbased access to libevdev-input functionality.

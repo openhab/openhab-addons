@@ -20,13 +20,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.io.transport.modbus.BasicBitArray;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
-import org.openhab.io.transport.modbus.BasicModbusWriteCoilRequestBlueprint;
-import org.openhab.io.transport.modbus.BasicModbusWriteRegisterRequestBlueprint;
+import org.openhab.io.transport.modbus.BitArray;
+import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusRegister;
+import org.openhab.io.transport.modbus.ModbusRegisterArray;
+import org.openhab.io.transport.modbus.ModbusWriteCoilRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
+import org.openhab.io.transport.modbus.ModbusWriteRegisterRequestBlueprint;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 
 import com.google.gson.JsonArray;
@@ -85,7 +85,8 @@ public final class WriteRequestJsonUtilities {
      * @param unitId unit id for the constructed {@link ModbusWriteRequestBlueprint}
      * @param jsonString json to be parsed in string format
      * @return collection of {@link ModbusWriteRequestBlueprint} representing the json
-     * @throws IllegalArgumentException in case of unexpected function codes
+     * @throws IllegalArgumentException in case of unexpected function codes, or too large payload exceeding modbus
+     *             protocol specification
      * @throws IllegalStateException in case of parsing errors and unexpected json structure
      *
      * @see WriteRequestJsonUtilities.JSON_FUNCTION_CODE
@@ -178,12 +179,16 @@ public final class WriteRequestJsonUtilities {
             case WRITE_MULTIPLE_COILS:
                 if (valuesElem.size() == 0) {
                     throw new IllegalArgumentException("Must provide at least one coil");
+                } else if (valuesElem.size() > ModbusConstants.MAX_BITS_WRITE_COUNT) {
+                    throw new IllegalArgumentException(
+                            String.format("Trying to write too many coils (%d). Maximum is %s", valuesElem.size(),
+                                    ModbusConstants.MAX_BITS_WRITE_COUNT));
                 }
-                BasicBitArray bits = new BasicBitArray(valuesElem.size());
+                BitArray bits = new BitArray(valuesElem.size());
                 for (int i = 0; i < valuesElem.size(); i++) {
                     bits.setBit(i, valuesElem.get(i).getAsInt() != 0);
                 }
-                return new BasicModbusWriteCoilRequestBlueprint(unitId, address, bits, !writeSingle.get(), maxTries);
+                return new ModbusWriteCoilRequestBlueprint(unitId, address, bits, !writeSingle.get(), maxTries);
             case WRITE_SINGLE_REGISTER:
                 writeSingle.set(true);
                 if (valuesElem.size() != 1) {
@@ -195,16 +200,19 @@ public final class WriteRequestJsonUtilities {
                 ModbusRegister[] registers = new ModbusRegister[valuesElem.size()];
                 if (registers.length == 0) {
                     throw new IllegalArgumentException("Must provide at least one register");
+                } else if (valuesElem.size() > ModbusConstants.MAX_REGISTERS_WRITE_COUNT) {
+                    throw new IllegalArgumentException(
+                            String.format("Trying to write too many registers (%d). Maximum is %s", valuesElem.size(),
+                                    ModbusConstants.MAX_REGISTERS_WRITE_COUNT));
                 }
                 for (int i = 0; i < valuesElem.size(); i++) {
-                    registers[i] = new BasicModbusRegister(valuesElem.get(i).getAsInt());
+                    registers[i] = new ModbusRegister(valuesElem.get(i).getAsInt());
                 }
-                return new BasicModbusWriteRegisterRequestBlueprint(unitId, address,
-                        new BasicModbusRegisterArray(registers), !writeSingle.get(), maxTries);
+                return new ModbusWriteRegisterRequestBlueprint(unitId, address, new ModbusRegisterArray(registers),
+                        !writeSingle.get(), maxTries);
             }
             default:
                 throw new IllegalArgumentException("Unknown function code");
         }
     }
-
 }

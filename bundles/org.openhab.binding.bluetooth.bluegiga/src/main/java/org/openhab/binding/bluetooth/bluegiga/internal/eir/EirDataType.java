@@ -73,7 +73,7 @@ public enum EirDataType {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static Map<Integer, EirDataType> codeMapping = new HashMap<Integer, EirDataType>();
+    private static Map<Integer, EirDataType> codeMapping = new HashMap<>();
 
     private int key;
 

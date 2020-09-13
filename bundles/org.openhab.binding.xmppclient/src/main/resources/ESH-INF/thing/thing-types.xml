@@ -37,7 +37,8 @@
 	<channel-type id="publishTrigger">
 		<kind>trigger</kind>
 		<label>Publish Trigger</label>
-		<description>This channel is triggered when a message is received on the configured XMPP account. The event payload will be the received text.</description>
+		<description>This channel is triggered when a message is received on the configured XMPP account. The event payload
+			will be the received text.</description>
 		<event></event>
 		<config-description>
 			<parameter name="payload" type="text" required="false">
@@ -46,7 +47,9 @@
 			</parameter>
 			<parameter name="separator" type="text" required="false">
 				<label>Separator Character</label>
-				<description>The trigger channel payload usually only contains the received text. If you define a separator character, for example '#', the sender UID and received text will be in the trigger channel payload. For example: pavel@example.com#My Message Text.</description>
+				<description>The trigger channel payload usually only contains the received text. If you define a separator
+					character, for example '#', the sender UID and received text will be in the trigger channel payload. For example:
+					pavel@example.com#My Message Text.</description>
 			</parameter>
 		</config-description>
 	</channel-type>

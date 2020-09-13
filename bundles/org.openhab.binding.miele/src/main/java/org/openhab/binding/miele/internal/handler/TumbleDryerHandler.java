@@ -79,5 +79,4 @@ public class TumbleDryerHandler extends MieleApplianceHandler<TumbleDryerChannel
                     channelID, command.toString());
         }
     }
-
 }

@@ -46,6 +46,7 @@ import org.openhab.binding.harmonyhub.internal.discovery.HarmonyDeviceDiscoveryS
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyDeviceHandler;
 import org.openhab.binding.harmonyhub.internal.handler.HarmonyHubHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -68,10 +69,15 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
             .collect(Collectors.toSet());
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private @NonNullByDefault({}) HttpClient httpClient;
+    private final HttpClient httpClient;
 
     private final List<ChannelType> channelTypes = new CopyOnWriteArrayList<>();
     private final List<ChannelGroupType> channelGroupTypes = new CopyOnWriteArrayList<>();
+
+    @Activate
+    public HarmonyHubHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -147,15 +153,6 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
         return channelGroupTypes;
     }
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
     public HttpClient getHttpClient() {
         return this.httpClient;
     }
@@ -177,5 +174,4 @@ public class HarmonyHubHandlerFactory extends BaseThingHandlerFactory
         }
         channelTypes.removeAll(removes);
     }
-
 }

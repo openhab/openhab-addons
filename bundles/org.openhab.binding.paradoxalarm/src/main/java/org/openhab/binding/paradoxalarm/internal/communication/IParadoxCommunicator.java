@@ -38,4 +38,6 @@ public interface IParadoxCommunicator extends IParadoxInitialLoginCommunicator {
     Map<Integer, String> getZoneLabels();
 
     void initializeData();
+
+    MemoryMap getMemoryMap();
 }

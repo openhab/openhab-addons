@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.insteon.internal.handler;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -43,6 +45,10 @@ import org.openhab.binding.insteon.internal.device.InsteonDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
+
 /**
  * The {@link InsteonDeviceHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -55,15 +61,18 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     private static final Set<String> ALL_CHANNEL_IDS = Collections.unmodifiableSet(Stream.of(
             InsteonBindingConstants.AC_DELAY, InsteonBindingConstants.BACKLIGHT_DURATION,
-            InsteonBindingConstants.BATTERY_LEVEL, InsteonBindingConstants.BATTERY_WATERMARK_LEVEL,
-            InsteonBindingConstants.BEEP, InsteonBindingConstants.BOTTOM_OUTLET, InsteonBindingConstants.BUTTON_A,
-            InsteonBindingConstants.BUTTON_B, InsteonBindingConstants.BUTTON_C, InsteonBindingConstants.BUTTON_D,
-            InsteonBindingConstants.BUTTON_E, InsteonBindingConstants.BUTTON_F, InsteonBindingConstants.BUTTON_G,
-            InsteonBindingConstants.BUTTON_H, InsteonBindingConstants.BROADCAST_ON_OFF, InsteonBindingConstants.CONTACT,
+            InsteonBindingConstants.BATTERY_LEVEL, InsteonBindingConstants.BATTERY_PERCENT,
+            InsteonBindingConstants.BATTERY_WATERMARK_LEVEL, InsteonBindingConstants.BEEP,
+            InsteonBindingConstants.BOTTOM_OUTLET, InsteonBindingConstants.BUTTON_A, InsteonBindingConstants.BUTTON_B,
+            InsteonBindingConstants.BUTTON_C, InsteonBindingConstants.BUTTON_D, InsteonBindingConstants.BUTTON_E,
+            InsteonBindingConstants.BUTTON_F, InsteonBindingConstants.BUTTON_G, InsteonBindingConstants.BUTTON_H,
+            InsteonBindingConstants.BROADCAST_ON_OFF, InsteonBindingConstants.CONTACT,
             InsteonBindingConstants.COOL_SET_POINT, InsteonBindingConstants.DIMMER, InsteonBindingConstants.FAN,
             InsteonBindingConstants.FAN_MODE, InsteonBindingConstants.FAST_ON_OFF,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_A, InsteonBindingConstants.FAST_ON_OFF_BUTTON_B,
             InsteonBindingConstants.FAST_ON_OFF_BUTTON_C, InsteonBindingConstants.FAST_ON_OFF_BUTTON_D,
+            InsteonBindingConstants.FAST_ON_OFF_BUTTON_E, InsteonBindingConstants.FAST_ON_OFF_BUTTON_F,
+            InsteonBindingConstants.FAST_ON_OFF_BUTTON_G, InsteonBindingConstants.FAST_ON_OFF_BUTTON_H,
             InsteonBindingConstants.HEAT_SET_POINT, InsteonBindingConstants.HUMIDITY,
             InsteonBindingConstants.HUMIDITY_HIGH, InsteonBindingConstants.HUMIDITY_LOW,
             InsteonBindingConstants.IS_COOLING, InsteonBindingConstants.IS_HEATING,
@@ -79,31 +88,38 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             InsteonBindingConstants.LOAD_SWITCH_MANUAL_CHANGE, InsteonBindingConstants.LOWBATTERY,
             InsteonBindingConstants.MANUAL_CHANGE, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_A,
             InsteonBindingConstants.MANUAL_CHANGE_BUTTON_B, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_C,
-            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_D, InsteonBindingConstants.NOTIFICATION,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_D, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_E,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_F, InsteonBindingConstants.MANUAL_CHANGE_BUTTON_G,
+            InsteonBindingConstants.MANUAL_CHANGE_BUTTON_H, InsteonBindingConstants.NOTIFICATION,
             InsteonBindingConstants.ON_LEVEL, InsteonBindingConstants.RAMP_DIMMER, InsteonBindingConstants.RAMP_RATE,
             InsteonBindingConstants.RESET, InsteonBindingConstants.STAGE1_DURATION, InsteonBindingConstants.SWITCH,
-            InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TEMPERATURE,
+            InsteonBindingConstants.SYSTEM_MODE, InsteonBindingConstants.TAMPER_SWITCH,
+            InsteonBindingConstants.TEMPERATURE, InsteonBindingConstants.TEMPERATURE_LEVEL,
             InsteonBindingConstants.TOP_OUTLET, InsteonBindingConstants.UPDATE, InsteonBindingConstants.WATTS)
             .collect(Collectors.toSet()));
 
-    private static final String BROADCAST_ON_OFF = "broadcastonoff";
-    private static final String CMD = "cmd";
-    private static final String CMD_RESET = "reset";
-    private static final String CMD_UPDATE = "update";
-    private static final String DATA = "data";
-    private static final String FIELD = "field";
-    private static final String FIELD_BATTERY_LEVEL = "battery_level";
-    private static final String FIELD_BATTERY_WATERMARK_LEVEL = "battery_watermark_level";
-    private static final String FIELD_KWH = "kwh";
-    private static final String FIELD_LIGHT_LEVEL = "light_level";
-    private static final String FIELD_WATTS = "watts";
-    private static final String GROUP = "group";
-    private static final String METER = "meter";
+    public static final String BROADCAST_GROUPS = "broadcastGroups";
+    public static final String BROADCAST_ON_OFF = "broadcastonoff";
+    public static final String CMD = "cmd";
+    public static final String CMD_RESET = "reset";
+    public static final String CMD_UPDATE = "update";
+    public static final String DATA = "data";
+    public static final String FIELD = "field";
+    public static final String FIELD_BATTERY_LEVEL = "battery_level";
+    public static final String FIELD_BATTERY_PERCENTAGE = "battery_percentage";
+    public static final String FIELD_BATTERY_WATERMARK_LEVEL = "battery_watermark_level";
+    public static final String FIELD_KWH = "kwh";
+    public static final String FIELD_LIGHT_LEVEL = "light_level";
+    public static final String FIELD_TEMPERATURE_LEVEL = "temperature_level";
+    public static final String FIELD_WATTS = "watts";
+    public static final String GROUP = "group";
+    public static final String METER = "meter";
 
-    private static final String HIDDEN_DOOR_SENSOR_PRODUCT_KEY = "F00.00.03";
-    private static final String MOTION_SENSOR_PRODUCT_KEY = "0x00004A";
-    private static final String PLM_PRODUCT_KEY = "0x000045";
-    private static final String POWER_METER_PRODUCT_KEY = "F00.00.17";
+    public static final String HIDDEN_DOOR_SENSOR_PRODUCT_KEY = "F00.00.03";
+    public static final String MOTION_SENSOR_II_PRODUCT_KEY = "F00.00.24";
+    public static final String MOTION_SENSOR_PRODUCT_KEY = "0x00004A";
+    public static final String PLM_PRODUCT_KEY = "0x000045";
+    public static final String POWER_METER_PRODUCT_KEY = "F00.00.17";
 
     private final Logger logger = LoggerFactory.getLogger(InsteonDeviceHandler.class);
 
@@ -120,6 +136,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             if (getBridge() == null) {
                 String msg = "An Insteon network bridge has not been selected for this device.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
@@ -128,7 +146,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             if (!InsteonAddress.isValid(address)) {
                 String msg = "Unable to start Insteon device, the insteon or X10 address '" + address
                         + "' is invalid. It must be in the format 'AB.CD.EF' or 'H.U' (X10).";
-                logger.warn("{}", msg);
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
@@ -137,26 +155,44 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             String productKey = config.getProductKey();
             if (DeviceTypeLoader.instance().getDeviceType(productKey) == null) {
                 String msg = "Unable to start Insteon device, invalid product key '" + productKey + "'.";
-                logger.warn("{}", msg);
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
+            }
+
+            String deviceConfig = config.getDeviceConfig();
+            Map<String, @Nullable Object> deviceConfigMap;
+            if (deviceConfig != null) {
+                Type mapType = new TypeToken<Map<String, Object>>() {
+                }.getType();
+                try {
+                    deviceConfigMap = new Gson().fromJson(deviceConfig, mapType);
+                } catch (JsonParseException e) {
+                    String msg = "The device configuration parameter is not valid JSON.";
+                    logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    return;
+                }
+            } else {
+                deviceConfigMap = Collections.emptyMap();
             }
 
             InsteonBinding insteonBinding = getInsteonBinding();
             InsteonAddress insteonAddress = new InsteonAddress(address);
             if (insteonBinding.getDevice(insteonAddress) != null) {
-                String msg = "a device already exists with the address '" + address + "'.";
-                logger.warn("{}", msg);
+                String msg = "A device already exists with the address '" + address + "'.";
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
 
-            InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey);
+            InsteonDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey, deviceConfigMap);
 
             StringBuilder channelList = new StringBuilder();
-            List<Channel> channels = new ArrayList<Channel>();
+            List<Channel> channels = new ArrayList<>();
             String thingId = getThing().getUID().getAsString();
             for (String channelId : ALL_CHANNEL_IDS) {
                 String feature = channelId.toLowerCase();
@@ -169,6 +205,13 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 } else if (productKey.equals(MOTION_SENSOR_PRODUCT_KEY)) {
                     if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)
                             || feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)) {
+                        feature = DATA;
+                    }
+                } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
+                    if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)
+                            || feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_PERCENT)
+                            || feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)
+                            || feature.equalsIgnoreCase(InsteonBindingConstants.TEMPERATURE_LEVEL)) {
                         feature = DATA;
                     }
                 } else if (productKey.equals(PLM_PRODUCT_KEY)) {
@@ -190,10 +233,50 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 if (f != null) {
                     if (!f.isFeatureGroup()) {
                         if (channelId.equals(InsteonBindingConstants.BROADCAST_ON_OFF)) {
+                            Set<String> broadcastChannels = new HashSet<>();
                             for (Channel channel : thing.getChannels()) {
                                 String id = channel.getUID().getId();
                                 if (id.startsWith(InsteonBindingConstants.BROADCAST_ON_OFF)) {
                                     addChannel(channel, id, channels, channelList);
+                                    broadcastChannels.add(id);
+                                }
+                            }
+
+                            Object groups = deviceConfigMap.get(BROADCAST_GROUPS);
+                            if (groups != null) {
+                                boolean valid = false;
+                                if (groups instanceof List<?>) {
+                                    valid = true;
+                                    for (Object o : (List<?>) groups) {
+                                        if (o instanceof Double && (Double) o % 1 == 0) {
+                                            String id = InsteonBindingConstants.BROADCAST_ON_OFF + "#"
+                                                    + ((Double) o).intValue();
+                                            if (!broadcastChannels.contains(id)) {
+                                                ChannelUID channelUID = new ChannelUID(thing.getUID(), id);
+                                                ChannelTypeUID channelTypeUID = new ChannelTypeUID(
+                                                        InsteonBindingConstants.BINDING_ID,
+                                                        InsteonBindingConstants.SWITCH);
+                                                Channel channel = getCallback()
+                                                        .createChannelBuilder(channelUID, channelTypeUID).withLabel(id)
+                                                        .build();
+
+                                                addChannel(channel, id, channels, channelList);
+                                                broadcastChannels.add(id);
+                                            }
+                                        } else {
+                                            valid = false;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (!valid) {
+                                    String msg = "The value for key " + BROADCAST_GROUPS
+                                            + " must be an array of integers in the device configuration parameter.";
+                                    logger.warn("{} {}", thing.getUID().getAsString(), msg);
+
+                                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                                    return;
                                 }
                             }
                         } else {
@@ -214,18 +297,29 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 }
             }
 
-            if (!channels.isEmpty()) {
-                updateThing(editThing().withChannels(channels).build());
+            if (!channels.isEmpty() || device.isModem()) {
+                if (!channels.isEmpty()) {
+                    updateThing(editThing().withChannels(channels).build());
+                }
 
-                logger.debug("{} address = {} productKey = {} channels = {}", thingId, address, productKey,
-                        channelList.toString());
+                StringBuilder builder = new StringBuilder(thingId);
+                builder.append(" address = ");
+                builder.append(address);
+                builder.append(" productKey = ");
+                builder.append(productKey);
+                builder.append(" channels = ");
+                builder.append(channelList.toString());
+                String msg = builder.toString();
+                logger.debug("{}", msg);
+
+                getInsteonNetworkHandler().initialized(getThing().getUID(), msg);
 
                 updateStatus(ThingStatus.ONLINE);
             } else {
                 String msg = "Product key '" + productKey
                         + "' does not have any features that match existing channels.";
 
-                logger.warn("{}", msg);
+                logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
             }
@@ -250,6 +344,8 @@ public class InsteonDeviceHandler extends BaseThingHandler {
             logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
         }
 
+        getInsteonNetworkHandler().disposed(getThing().getUID());
+
         super.dispose();
     }
 
@@ -262,7 +358,7 @@ public class InsteonDeviceHandler extends BaseThingHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        HashMap<String, @Nullable String> params = new HashMap<String, @Nullable String>();
+        Map<String, @Nullable String> params = new HashMap<>();
         Channel channel = getThing().getChannel(channelUID.getId());
 
         Map<String, Object> channelProperties = channel.getConfiguration().getProperties();
@@ -297,6 +393,20 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 params.put(FIELD, FIELD_LIGHT_LEVEL);
                 feature = DATA;
             }
+        } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
+            if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_LEVEL)) {
+                params.put(FIELD, FIELD_BATTERY_LEVEL);
+                feature = DATA;
+            } else if (feature.equalsIgnoreCase(InsteonBindingConstants.BATTERY_PERCENT)) {
+                params.put(FIELD, FIELD_BATTERY_PERCENTAGE);
+                feature = DATA;
+            } else if (feature.equalsIgnoreCase(InsteonBindingConstants.LIGHT_LEVEL)) {
+                params.put(FIELD, FIELD_LIGHT_LEVEL);
+                feature = DATA;
+            } else if (feature.equalsIgnoreCase(InsteonBindingConstants.TEMPERATURE_LEVEL)) {
+                params.put(FIELD, FIELD_TEMPERATURE_LEVEL);
+                feature = DATA;
+            }
         } else if (productKey.equals(PLM_PRODUCT_KEY)) {
             String parts[] = feature.split("#");
             if (parts.length == 2 && parts[0].equalsIgnoreCase(InsteonBindingConstants.BROADCAST_ON_OFF)
@@ -322,18 +432,30 @@ public class InsteonDeviceHandler extends BaseThingHandler {
                 new InsteonAddress(config.getAddress()), productKey, params);
         getInsteonBinding().addFeatureListener(bindingConfig);
 
-        logger.debug("channel {} linked with the feature: {} parameters: {}", channelUID.getAsString(), feature,
-                params);
+        StringBuilder builder = new StringBuilder(channelUID.getAsString());
+        builder.append(" feature = ");
+        builder.append(feature);
+        builder.append(" parameters = ");
+        builder.append(params);
+        String msg = builder.toString();
+        logger.debug("{}", msg);
+
+        getInsteonNetworkHandler().linked(channelUID, msg);
     }
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
         getInsteonBinding().removeFeatureListener(channelUID);
+        getInsteonNetworkHandler().unlinked(channelUID);
 
         logger.debug("channel {} unlinked ", channelUID.getAsString());
     }
 
+    private @Nullable InsteonNetworkHandler getInsteonNetworkHandler() {
+        return (InsteonNetworkHandler) getBridge().getHandler();
+    }
+
     private @Nullable InsteonBinding getInsteonBinding() {
-        return ((InsteonNetworkHandler) getBridge().getHandler()).getInsteonBinding();
+        return getInsteonNetworkHandler().getInsteonBinding();
     }
 }

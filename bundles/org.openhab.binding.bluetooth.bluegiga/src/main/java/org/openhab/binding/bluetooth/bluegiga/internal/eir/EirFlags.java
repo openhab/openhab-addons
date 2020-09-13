@@ -47,7 +47,7 @@ public enum EirFlags {
      * A mapping between the integer code and its corresponding type to
      * facilitate lookup by code.
      */
-    private static Map<Integer, EirFlags> codeMapping = new HashMap<Integer, EirFlags>();
+    private static Map<Integer, EirFlags> codeMapping = new HashMap<>();
 
     private int key;
 
@@ -56,7 +56,7 @@ public enum EirFlags {
     }
 
     private static void initMapping() {
-        codeMapping = new HashMap<Integer, EirFlags>();
+        codeMapping = new HashMap<>();
         for (EirFlags s : values()) {
             codeMapping.put(s.key, s);
         }

@@ -333,7 +333,6 @@ public class AdorneHubController {
         cancelCommands();
         hubControllerConnected.cancel(false);
         logger.info("Exiting hub controller");
-
     }
 
     private boolean shouldStop() {

@@ -335,5 +335,4 @@ public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
 
         currentState = ledState;
     }
-
 }

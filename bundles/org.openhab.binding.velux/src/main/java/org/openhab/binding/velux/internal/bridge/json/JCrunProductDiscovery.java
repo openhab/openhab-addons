@@ -69,7 +69,7 @@ class JCrunProductDiscovery extends RunProductDiscovery implements JsonBridgeCom
 
         public Request() {
             this.action = "discover";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 
@@ -155,5 +155,4 @@ class JCrunProductDiscovery extends RunProductDiscovery implements JsonBridgeCom
     public String[] getErrors() {
         return response.getErrors();
     }
-
 }

@@ -34,7 +34,6 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     @Override
     public WSIntegerValue convertFromOHType(@NonNull OnOffType from, @NonNull WSIntegerValue value,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-
         int onLevel = Math.min(value.maximumValue, getCommandLevel(value, convertData, OnOffType.ON));
         int newVal = from == OnOffType.ON ? onLevel : value.minimumValue;
 

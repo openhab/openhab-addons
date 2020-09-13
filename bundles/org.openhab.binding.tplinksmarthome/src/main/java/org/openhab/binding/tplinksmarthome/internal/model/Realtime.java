@@ -57,5 +57,4 @@ public class Realtime extends ErrorResponse {
         return "current:" + getCurrent() + ", power:" + getPower() + ", total:" + getTotal() + ", voltage:"
                 + getVoltage() + super.toString();
     }
-
 }

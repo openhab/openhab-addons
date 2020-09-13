@@ -82,12 +82,12 @@ public class CcoHandler extends LutronHandler {
 
         // Determine output type from configuration if not pre-defined by subclass
         if (outputType == null) {
-            String oType = (String) getThing().getConfiguration().get(OUTPUT_TYPE);
+            String oType = (String) getThing().getConfiguration().get(CCO_TYPE);
 
-            if (oType == null || oType == OUTPUT_TYPE_PULSED) {
+            if (oType == null || oType == CCO_TYPE_PULSED) {
                 logger.debug("Setting CCO type Pulsed for device {}.", integrationId);
                 outputType = CcoOutputType.PULSED;
-            } else if (oType == OUTPUT_TYPE_MAINTAINED) {
+            } else if (oType == CCO_TYPE_MAINTAINED) {
                 logger.debug("Setting CCO type Maintained for device {}.", integrationId);
                 outputType = CcoOutputType.MAINTAINED;
             } else {
@@ -206,5 +206,4 @@ public class CcoHandler extends LutronHandler {
             }
         }
     }
-
 }

@@ -36,5 +36,4 @@ public class MiIoBasicDevice {
     public void setDevice(DeviceMapping deviceMapping) {
         this.deviceMapping = deviceMapping;
     }
-
 }

@@ -94,7 +94,7 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
      * the range where it fits i.e. [min..max]=value or ]min..max]=value
      *
      * @param properties the list of properties defining all the available ranges
-     * @param source     the input to transform
+     * @param source the input to transform
      *
      */
     @Override
@@ -129,8 +129,8 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
 
     private String getScaleResult(Map<Range, String> data, String source, final BigDecimal value)
             throws TransformationException {
-        return data.entrySet().stream().filter(entry -> entry.getKey().contains(value)).findFirst()
-                .map(Map.Entry::getValue)
+        return data.entrySet().stream().filter(entry -> entry.getKey() != null && entry.getKey().contains(value))
+                .findFirst().map(Map.Entry::getValue)
                 .orElseThrow(() -> new TransformationException("No matching range for '" + source + "'"));
     }
 
@@ -179,5 +179,4 @@ public class ScaleTransformationService extends AbstractFileTransformationServic
             throw new TransformationException("An error occurred while opening file.", ex);
         }
     }
-
 }

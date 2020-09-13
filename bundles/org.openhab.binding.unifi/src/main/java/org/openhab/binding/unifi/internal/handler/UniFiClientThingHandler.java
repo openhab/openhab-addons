@@ -16,6 +16,8 @@ import static org.eclipse.smarthome.core.thing.ThingStatus.*;
 import static org.eclipse.smarthome.core.thing.ThingStatusDetail.CONFIGURATION_ERROR;
 import static org.openhab.binding.unifi.internal.UniFiBindingConstants.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 
 import org.apache.commons.lang.StringUtils;
@@ -194,7 +196,8 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
             case CHANNEL_LAST_SEEN:
                 // mgb: we don't check clientOnline as lastSeen is also included in the Insights data
                 if (client.getLastSeen() != null) {
-                    state = new DateTimeType(client.getLastSeen());
+                    state = new DateTimeType(
+                            ZonedDateTime.ofInstant(client.getLastSeen().toInstant(), ZoneId.systemDefault()));
                 }
                 break;
 
@@ -296,5 +299,4 @@ public class UniFiClientThingHandler extends UniFiBaseThingHandler<UniFiClient, 
                     command, channelUID);
         }
     }
-
 }

@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.lirc.internal.LIRCResponseException;
 import org.openhab.binding.lirc.internal.messages.LIRCButtonEvent;
 import org.openhab.binding.lirc.internal.messages.LIRCResponse;
@@ -104,7 +103,11 @@ public class LIRCStreamReader extends Thread {
                 logger.error("Invalid message received", e);
             }
         }
-        IOUtils.closeQuietly(reader);
+        try {
+            reader.close();
+        } catch (IOException e) {
+            logger.debug("Error while closing the input stream: {}", e.getMessage());
+        }
     }
 
     private void processResponse(String responseText) throws LIRCResponseException {
@@ -137,5 +140,4 @@ public class LIRCStreamReader extends Thread {
         LIRCResponse response = new LIRCResponse(command, success, data);
         connector.sendMessageToListeners(response);
     }
-
 }

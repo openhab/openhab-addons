@@ -64,7 +64,6 @@ public class ModbusDataReadOutMessageTest {
 
     @Test
     public void parseModbusDataReadOutMessageTest() throws NibeHeatPumpException {
-
         final String message = "5C0020685001A81F0100A86400FDA7D003449C1E004F9CA000509C7800519C0301529C1B01879C14014E9CC601479C010115B9B0FF3AB94B00C9AF0000489C0D014C9CE7004B9C0000FFFF0000FFFF0000FFFF000045";
 
         @SuppressWarnings("serial")
@@ -201,7 +200,6 @@ public class ModbusDataReadOutMessageTest {
 
     private void checkRegisters(final String message, final ArrayList<ModbusValue> expectedRegs)
             throws NibeHeatPumpException {
-
         final byte[] msg = HexUtils.hexToBytes(message);
         final ModbusDataReadOutMessage m = (ModbusDataReadOutMessage) MessageFactory.getMessage(msg);
         assertNotNull(m);

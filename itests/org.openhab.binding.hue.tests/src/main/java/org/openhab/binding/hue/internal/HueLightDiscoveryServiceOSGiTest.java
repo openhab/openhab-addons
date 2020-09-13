@@ -135,7 +135,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
             }
         });
 
-        discoveryService.onLightAdded(null, light);
+        discoveryService.addLightDiscovery(light);
         waitForAssert(() -> {
             assertTrue(resultWrapper.get() != null);
         });
@@ -150,7 +150,6 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
 
     @Test
     public void startSearchIsCalled() {
-
         final AtomicBoolean searchHasBeenTriggered = new AtomicBoolean(false);
 
         MockedHttpClient mockedHttpClient = new MockedHttpClient() {
@@ -223,5 +222,4 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
         });
         hueBridgeHandler.initialize();
     }
-
 }

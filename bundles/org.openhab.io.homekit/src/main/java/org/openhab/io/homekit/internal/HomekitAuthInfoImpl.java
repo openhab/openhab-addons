@@ -18,40 +18,43 @@ import java.util.Base64;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.storage.Storage;
-import org.eclipse.smarthome.core.storage.StorageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.github.hapjava.HomekitAuthInfo;
-import io.github.hapjava.HomekitServer;
+import io.github.hapjava.server.HomekitAuthInfo;
+import io.github.hapjava.server.impl.HomekitServer;
 
 /**
- * Provides a mechanism to store authenticated homekit client details inside the
+ * Provides a mechanism to store authenticated HomeKit client details inside the
  * ESH StorageService, by implementing HomekitAuthInfo.
  *
  * @author Andy Lintner - Initial contribution
  */
 public class HomekitAuthInfoImpl implements HomekitAuthInfo {
     private final Logger logger = LoggerFactory.getLogger(HomekitAuthInfoImpl.class);
+    public static final String STORAGE_KEY = "homekit";
+    private static final String STORAGE_MAC = "mac";
+    private static final String STORAGE_SALT = "salt";
+    private static final String STORAGE_PRIVATE_KEY = "privateKey";
+    private static final String STORAGE_USER_PREFIX = "user_";
 
     private final Storage<String> storage;
-    private final String mac;
-    private final BigInteger salt;
-    private final byte[] privateKey;
+    private String mac;
+    private BigInteger salt;
+    private byte[] privateKey;
     private final String pin;
 
-    public HomekitAuthInfoImpl(StorageService storageService, String pin) throws InvalidAlgorithmParameterException {
-        storage = storageService.getStorage("homekit");
-        initializeStorage();
+    public HomekitAuthInfoImpl(Storage<String> storage, String pin) throws InvalidAlgorithmParameterException {
+        this.storage = storage;
         this.pin = pin;
-        mac = storage.get("mac");
-        salt = new BigInteger(storage.get("salt"));
-        privateKey = Base64.getDecoder().decode(storage.get("privateKey"));
+        initializeStorage();
     }
 
     @Override
     public void createUser(String username, byte[] publicKey) {
+        logger.trace("Create user {}", username);
         storage.put(createUserKey(username), Base64.getEncoder().encodeToString(publicKey));
     }
 
@@ -77,7 +80,7 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public byte[] getUserPublicKey(String username) {
-        String encodedKey = storage.get(createUserKey(username));
+        final String encodedKey = storage.get(createUserKey(username));
         if (encodedKey != null) {
             return Base64.getDecoder().decode(encodedKey);
         } else {
@@ -87,44 +90,55 @@ public class HomekitAuthInfoImpl implements HomekitAuthInfo {
 
     @Override
     public void removeUser(String username) {
+        logger.trace("Remove user {}", username);
         storage.remove(createUserKey(username));
     }
 
     @Override
     public boolean hasUser() {
         Collection<String> keys = storage.getKeys();
-        return keys.stream().filter(k -> isUserKey(k)).count() > 0;
+        return keys.stream().anyMatch(this::isUserKey);
     }
 
     public void clear() {
+        logger.trace("Clear all users");
         for (String key : new HashSet<>(storage.getKeys())) {
-            if (isUserKey("user_")) {
+            if (isUserKey(key)) {
                 storage.remove(key);
             }
         }
     }
 
     private String createUserKey(String username) {
-        return "user_" + username;
+        return STORAGE_USER_PREFIX + username;
     }
 
     private boolean isUserKey(String key) {
-        return key.startsWith("user_");
+        return key.startsWith(STORAGE_USER_PREFIX);
     }
 
     private void initializeStorage() throws InvalidAlgorithmParameterException {
-        if (storage.get("mac") == null) {
+        mac = storage.get(STORAGE_MAC);
+        final @Nullable Object saltConfig = storage.get(STORAGE_SALT);
+        final @Nullable Object privateKeyConfig = storage.get(STORAGE_PRIVATE_KEY);
+        if (mac == null) {
             logger.warn(
                     "Could not find existing MAC in {}. Generating new MAC. This will require re-pairing of iOS devices.",
                     storage.getClass().getName());
-            storage.put("mac", HomekitServer.generateMac());
+            mac = HomekitServer.generateMac();
+            storage.put(STORAGE_MAC, mac);
         }
-        if (storage.get("salt") == null) {
-            storage.put("salt", HomekitServer.generateSalt().toString());
+        if (saltConfig == null) {
+            salt = HomekitServer.generateSalt();
+            storage.put(STORAGE_SALT, salt.toString());
+        } else {
+            salt = new BigInteger(saltConfig.toString());
         }
-        if (storage.get("privateKey") == null) {
-            storage.put("privateKey", Base64.getEncoder().encodeToString(HomekitServer.generateKey()));
+        if (privateKeyConfig == null) {
+            privateKey = HomekitServer.generateKey();
+            storage.put(STORAGE_PRIVATE_KEY, Base64.getEncoder().encodeToString(privateKey));
+        } else {
+            privateKey = Base64.getDecoder().decode(privateKeyConfig.toString());
         }
     }
-
 }

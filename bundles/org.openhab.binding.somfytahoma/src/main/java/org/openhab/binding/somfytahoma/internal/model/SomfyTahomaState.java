@@ -41,10 +41,6 @@ public class SomfyTahomaState {
 
     @Override
     public String toString() {
-        return "{" +
-                "name='" + name + '\'' +
-                ", type=" + type +
-                ", value=" + value +
-                '}';
+        return "{" + "name='" + name + '\'' + ", type=" + type + ", value=" + value + '}';
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="boschindego"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="indego">
 		<label>Bosch Indego</label>
@@ -16,21 +16,21 @@
 			<channel id="ready" typeId="ready"/>
 		</channels>
 		<config-description>
-		<parameter name="username" type="text" required="true">
-			<label>Username</label>
-			<description>Username for the Bosch Indego account.</description>
-		</parameter>
-		<parameter name="password" type="text" required="true">
-			<context>password</context>
-			<label>Password</label>
-			<description>Password for the Bosch Indego account.</description>
-		</parameter>
-		<parameter name="refresh" type="integer" min="60">
-			<label>Refresh Interval</label>
-			<description>Specifies the refresh interval in seconds.</description>
-			<default>180</default>
-		</parameter>
-	</config-description>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for the Bosch Indego account.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password for the Bosch Indego account.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="60">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>180</default>
+			</parameter>
+		</config-description>
 	</thing-type>
 
 	<channel-type id="state">
@@ -55,38 +55,38 @@
 		<label>State Code</label>
 		<description>API-code of the Indego state</description>
 		<state readOnly="true">
-		<options>
-		<option value="0">Reading status</option>
-		<option value="257">Charging</option>
-		<option value="258">Docked</option>
-		<option value="259">Docked - Software update</option>
-		<option value="260">Docked</option>
-		<option value="261">Docked</option>
-		<option value="262">Docked - Loading map</option>
-		<option value="263">Docked - Saving map</option>
-		<option value="512">Mowing</option>
-		<option value="514">Relocalising</option>
-		<option value="515">Loading map</option>
-		<option value="516">Learning lawn</option>
-		<option value="517">Paused</option>
-		<option value="518">Border cut</option>
-		<option value="519">Idle in lawn</option>
-		<option value="769">Returning to Dock</option>
-		<option value="770">Returning to Dock</option>
-		<option value="771">Returning to Dock - Battery low</option>
-		<option value="772">Returning to Dock - Calendar timeslot ended</option>
-		<option value="773">Returning to Dock - Battery temp range</option>
-		<option value="774">Returning to Dock</option>
-		<option value="775">Returning to Dock - Lawn complete</option>
-		<option value="775">Returning to Dock - Relocalising</option>
-		</options>
+			<options>
+				<option value="0">Reading status</option>
+				<option value="257">Charging</option>
+				<option value="258">Docked</option>
+				<option value="259">Docked - Software update</option>
+				<option value="260">Docked</option>
+				<option value="261">Docked</option>
+				<option value="262">Docked - Loading map</option>
+				<option value="263">Docked - Saving map</option>
+				<option value="512">Mowing</option>
+				<option value="514">Relocalising</option>
+				<option value="515">Loading map</option>
+				<option value="516">Learning lawn</option>
+				<option value="517">Paused</option>
+				<option value="518">Border cut</option>
+				<option value="519">Idle in lawn</option>
+				<option value="769">Returning to Dock</option>
+				<option value="770">Returning to Dock</option>
+				<option value="771">Returning to Dock - Battery low</option>
+				<option value="772">Returning to Dock - Calendar timeslot ended</option>
+				<option value="773">Returning to Dock - Battery temp range</option>
+				<option value="774">Returning to Dock</option>
+				<option value="775">Returning to Dock - Lawn complete</option>
+				<option value="775">Returning to Dock - Relocalising</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="textualstate">
 		<item-type>String</item-type>
 		<label>Textual State</label>
 		<description></description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mowed">
 		<item-type>Dimmer</item-type>

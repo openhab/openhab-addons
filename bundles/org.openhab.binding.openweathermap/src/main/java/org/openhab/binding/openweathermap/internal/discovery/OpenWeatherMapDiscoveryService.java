@@ -79,7 +79,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Start manual OpenWeatherMap Location discovery scan.");
-        scanForNewLocation();
+        scanForNewLocation(false);
     }
 
     @Override
@@ -93,8 +93,9 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
         if (discoveryJob == null || discoveryJob.isCancelled()) {
             logger.debug("Start OpenWeatherMap Location background discovery job at interval {} s.",
                     DISCOVERY_INTERVAL_SECONDS);
-            discoveryJob = scheduler.scheduleWithFixedDelay(this::scanForNewLocation, 0, DISCOVERY_INTERVAL_SECONDS,
-                    TimeUnit.SECONDS);
+            discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
+                scanForNewLocation(true);
+            }, 0, DISCOVERY_INTERVAL_SECONDS, TimeUnit.SECONDS);
         }
     }
 
@@ -108,7 +109,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
         }
     }
 
-    private void scanForNewLocation() {
+    private void scanForNewLocation(boolean updateOnlyIfNewLocation) {
         PointType currentLocation = locationProvider.getLocation();
         if (currentLocation == null) {
             logger.debug("Location is not set -> Will not provide any discovery results.");
@@ -117,7 +118,7 @@ public class OpenWeatherMapDiscoveryService extends AbstractDiscoveryService {
                     currentLocation);
             createResults(currentLocation);
             previousLocation = currentLocation;
-        } else {
+        } else if (!updateOnlyIfNewLocation) {
             createResults(currentLocation);
         }
     }

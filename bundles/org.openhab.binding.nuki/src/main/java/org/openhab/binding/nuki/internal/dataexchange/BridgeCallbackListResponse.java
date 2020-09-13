@@ -45,5 +45,4 @@ public class BridgeCallbackListResponse extends NukiBaseResponse {
     public void setCallbacks(List<BridgeApiCallbackListCallbackDto> callbacks) {
         this.callbacks = callbacks;
     }
-
 }

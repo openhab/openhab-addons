@@ -81,7 +81,6 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
         }
 
         return updatedState;
-
     }
 
     @Override
@@ -102,5 +101,4 @@ public class PowermaxPanelMessage extends PowermaxBaseMessage {
 
         return str;
     }
-
 }

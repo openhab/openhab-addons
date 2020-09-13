@@ -12,8 +12,14 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
+
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
+import org.openhab.binding.avmfritz.internal.dto.GroupModel;
 
 /**
  * Handler for a FRITZ! group. Handles commands, which are sent to one of the channels.
@@ -23,12 +29,19 @@ import org.eclipse.smarthome.core.thing.Thing;
 @NonNullByDefault
 public class GroupHandler extends AVMFritzBaseThingHandler {
 
-    /**
-     * Constructor
-     *
-     * @param thing Thing object representing a FRITZ! group
-     */
     public GroupHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    protected void updateProperties(AVMFritzBaseModel device, Map<String, String> editProperties) {
+        if (device instanceof GroupModel) {
+            GroupModel groupModel = (GroupModel) device;
+            if (groupModel.getGroupinfo() != null) {
+                editProperties.put(PROPERTY_MASTER, groupModel.getGroupinfo().getMasterdeviceid());
+                editProperties.put(PROPERTY_MEMBERS, groupModel.getGroupinfo().getMembers());
+            }
+        }
+        super.updateProperties(device, editProperties);
     }
 }

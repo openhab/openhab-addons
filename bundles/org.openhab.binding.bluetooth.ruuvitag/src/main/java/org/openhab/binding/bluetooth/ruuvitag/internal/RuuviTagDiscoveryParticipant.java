@@ -25,7 +25,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.binding.bluetooth.BluetoothDevice;
+import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.osgi.service.component.annotations.Component;
 
@@ -47,8 +47,7 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
     }
 
     @Override
-    @Nullable
-    public ThingUID getThingUID(BluetoothDevice device) {
+    public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
         Integer manufacturerId = device.getManufacturerId();
         if (manufacturerId != null && manufacturerId == RUUVITAG_COMPANY_ID) {
             return new ThingUID(RuuviTagBindingConstants.THING_TYPE_BEACON, device.getAdapter().getUID(),
@@ -58,8 +57,7 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
     }
 
     @Override
-    @Nullable
-    public DiscoveryResult createResult(BluetoothDevice device) {
+    public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
         ThingUID thingUID = getThingUID(device);
         if (thingUID == null) {
             return null;
@@ -78,5 +76,4 @@ public class RuuviTagDiscoveryParticipant implements BluetoothDiscoveryParticipa
                 .withRepresentationProperty(BluetoothBindingConstants.CONFIGURATION_ADDRESS)
                 .withBridge(device.getAdapter().getUID()).withLabel(label).build();
     }
-
 }

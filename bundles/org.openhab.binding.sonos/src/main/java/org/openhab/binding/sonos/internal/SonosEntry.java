@@ -15,6 +15,8 @@ package org.openhab.binding.sonos.internal;
 import java.io.Serializable;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SonosEntry} is a datastructure to describe
@@ -22,9 +24,11 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class SonosEntry implements Serializable {
 
     private static final long serialVersionUID = -4543607156929701588L;
+
     private final String id;
     private final String title;
     private final String parentId;
@@ -34,8 +38,8 @@ public class SonosEntry implements Serializable {
     private final String albumArtUri;
     private final String creator;
     private final int originalTrackNumber;
-    private final SonosResourceMetaData resourceMetaData;
-    private String desc;
+    private final @Nullable SonosResourceMetaData resourceMetaData;
+    private @Nullable String desc;
 
     public SonosEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
             String upnpClass, String res) {
@@ -48,7 +52,7 @@ public class SonosEntry implements Serializable {
     }
 
     public SonosEntry(String id, String title, String parentId, String album, String albumArtUri, String creator,
-            String upnpClass, String res, int originalTrackNumber, SonosResourceMetaData resourceMetaData) {
+            String upnpClass, String res, int originalTrackNumber, @Nullable SonosResourceMetaData resourceMetaData) {
         this.id = id;
         this.title = title;
         this.parentId = parentId;
@@ -136,16 +140,15 @@ public class SonosEntry implements Serializable {
      *
      * @return
      */
-    public SonosResourceMetaData getResourceMetaData() {
+    public @Nullable SonosResourceMetaData getResourceMetaData() {
         return resourceMetaData;
     }
 
-    public String getDesc() {
+    public @Nullable String getDesc() {
         return desc;
     }
 
     public void setDesc(String desc) {
         this.desc = desc;
     }
-
 }

@@ -17,7 +17,7 @@
 		</parameter>
 		<parameter name="macAddress" type="text">
 			<label>MAC Address</label>
-			<description>MAC  Address of the Samsung TV.</description>
+			<description>MAC Address of the Samsung TV.</description>
 		</parameter>
 		<parameter name="refreshInterval" type="integer" unit="ms">
 			<label>Refresh Interval</label>

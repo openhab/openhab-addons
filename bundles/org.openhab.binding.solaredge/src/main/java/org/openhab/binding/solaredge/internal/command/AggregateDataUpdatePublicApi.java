@@ -18,6 +18,8 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
@@ -25,20 +27,22 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
 import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePublicApi;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponseTransformerPublicApi;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
-import org.openhab.binding.solaredge.internal.model.DataResponse;
 
 /**
  * command that retrieves status values for aggregate data channels via public API
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
     /**
      * the solaredge handler
      */
     private final SolarEdgeHandler handler;
+    private final AggregateDataResponseTransformerPublicApi transformer;
 
     /**
      * data aggregation level
@@ -61,6 +65,7 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
         super(handler.getConfiguration());
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         this.handler = handler;
+        this.transformer = new AggregateDataResponseTransformerPublicApi(handler);
         this.period = period;
     }
 
@@ -84,24 +89,22 @@ public class AggregateDataUpdatePublicApi extends AbstractCommandCallback implem
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            if (getListener() != null) {
-                getListener().update(getCommunicationStatus());
-            }
+            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }
-
         } else {
-
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                DataResponse jsonObject = gson.fromJson(json, AggregateDataResponsePublicApi.class);
-                handler.updateChannelStatus(jsonObject.getValues());
+                AggregateDataResponsePublicApi jsonObject = fromJson(json, AggregateDataResponsePublicApi.class);
+                if (jsonObject != null) {
+                    handler.updateChannelStatus(transformer.transform(jsonObject, period));
+                }
             }
         }
     }

@@ -13,10 +13,12 @@
 				<label>Port Name</label>
 				<description>The name of the port to which the Elero Transmitter Stick is connected.</description>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 			</parameter>
 			<parameter name="updateInterval" type="integer" min="5" max="3600" unit="s" step="5">
 				<label>Update Interval</label>
-				<description>The number of seconds to wait before requesting the status of the elero channels from the Elero Transmitter Stick.</description>
+				<description>The number of seconds to wait before requesting the status of the elero channels from the Elero
+					Transmitter Stick.</description>
 				<default>30</default>
 			</parameter>
 		</config-description>
@@ -24,15 +26,15 @@
 
 	<thing-type id="elerochannel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="elerostick" />
+			<bridge-type-ref id="elerostick"/>
 		</supported-bridge-type-refs>
 
 		<label>Elero Channel</label>
 		<description>One of the 15 elero channels available on an Elero Transmitter Stick.</description>
 
 		<channels>
-			<channel id="control" typeId="control" />
-			<channel id="status" typeId="status" />
+			<channel id="control" typeId="control"/>
+			<channel id="status" typeId="status"/>
 		</channels>
 
 		<config-description>
@@ -48,7 +50,8 @@
 	<channel-type id="control">
 		<item-type>Rollershutter</item-type>
 		<label>Control</label>
-		<description>Allows to control the devices connected to this elero channel or group by sending UP, DOWN, STOP commands.</description>
+		<description>Allows to control the devices connected to this elero channel or group by sending UP, DOWN, STOP
+			commands.</description>
 	</channel-type>
 
 	<!-- Status Channel Type -->
@@ -56,7 +59,7 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>Read only channel providing the current status of this elero channel or group.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

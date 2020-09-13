@@ -39,7 +39,6 @@ public class OpenSprinklerBindingConstants {
 
     public static final int DEFAULT_WAIT_BEFORE_INITIAL_REFRESH = 30;
     public static final int DEFAULT_REFRESH_RATE = 60;
-    public static final short DISCOVERY_SUBNET_MASK = 24;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
     public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
@@ -47,6 +46,8 @@ public class OpenSprinklerBindingConstants {
 
     // List of all Channel ids
     public static final String SENSOR_RAIN = "rainsensor";
+    public static final String SENSOR_WATERLEVEL = "waterlevel";
+    public static final String SENSOR_CURRENT_DRAW = "currentDraw";
     public static final String STATION_STATE = "stationState";
     public static final String STATION_QUEUED = "queued";
     public static final String REMAINING_WATER_TIME = "remainingWaterTime";

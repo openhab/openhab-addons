@@ -13,16 +13,19 @@
 package org.openhab.binding.plugwise.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Comparator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
@@ -82,9 +85,17 @@ public class PlugwiseCommunicationContext {
     private final ReentrantLock sentQueueLock = new ReentrantLock();
     private final PlugwiseFilteredMessageListenerList filteredListeners = new PlugwiseFilteredMessageListenerList();
 
-    private PlugwiseStickConfig configuration = new PlugwiseStickConfig();
-    private @Nullable SerialPortManager serialPortManager;
+    private final ThingUID bridgeUID;
+    private final Supplier<PlugwiseStickConfig> configurationSupplier;
+    private final SerialPortManager serialPortManager;
     private @Nullable SerialPort serialPort;
+
+    public PlugwiseCommunicationContext(ThingUID bridgeUID, Supplier<PlugwiseStickConfig> configurationSupplier,
+            SerialPortManager serialPortManager) {
+        this.bridgeUID = bridgeUID;
+        this.configurationSupplier = configurationSupplier;
+        this.serialPortManager = serialPortManager;
+    }
 
     public void clearQueues() {
         acknowledgedQueue.clear();
@@ -97,8 +108,22 @@ public class PlugwiseCommunicationContext {
         SerialPort localSerialPort = serialPort;
         if (localSerialPort != null) {
             try {
-                IOUtils.closeQuietly(localSerialPort.getInputStream());
-                IOUtils.closeQuietly(localSerialPort.getOutputStream());
+                InputStream inputStream = localSerialPort.getInputStream();
+                if (inputStream != null) {
+                    try {
+                        inputStream.close();
+                    } catch (IOException e) {
+                        logger.debug("Error while closing the input stream: {}", e.getMessage());
+                    }
+                }
+                OutputStream outputStream = localSerialPort.getOutputStream();
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        logger.debug("Error while closing the output stream: {}", e.getMessage());
+                    }
+                }
                 localSerialPort.close();
                 serialPort = null;
             } catch (IOException e) {
@@ -109,32 +134,31 @@ public class PlugwiseCommunicationContext {
     }
 
     private SerialPortIdentifier findSerialPortIdentifier() throws PlugwiseInitializationException {
-        SerialPortManager localSerialPortManager = serialPortManager;
-        if (localSerialPortManager == null) {
-            throw new PlugwiseInitializationException("serialPortManager is null");
-        }
-
-        SerialPortIdentifier identifier = localSerialPortManager.getIdentifier(configuration.getSerialPort());
+        SerialPortIdentifier identifier = serialPortManager.getIdentifier(getConfiguration().getSerialPort());
         if (identifier != null) {
-            logger.debug("Serial port '{}' has been found", configuration.getSerialPort());
+            logger.debug("Serial port '{}' has been found", getConfiguration().getSerialPort());
             return identifier;
         }
 
         // Build exception message when port not found
-        String availablePorts = localSerialPortManager.getIdentifiers().map(id -> id.getName())
+        String availablePorts = serialPortManager.getIdentifiers().map(id -> id.getName())
                 .collect(Collectors.joining(System.lineSeparator()));
 
         throw new PlugwiseInitializationException(
                 String.format("Serial port '%s' could not be found. Available ports are:%n%s",
-                        configuration.getSerialPort(), availablePorts));
+                        getConfiguration().getSerialPort(), availablePorts));
     }
 
     public BlockingQueue<@Nullable AcknowledgementMessage> getAcknowledgedQueue() {
         return acknowledgedQueue;
     }
 
+    public ThingUID getBridgeUID() {
+        return bridgeUID;
+    }
+
     public PlugwiseStickConfig getConfiguration() {
-        return configuration;
+        return configurationSupplier.get();
     }
 
     public PlugwiseFilteredMessageListenerList getFilteredListeners() {
@@ -179,13 +203,4 @@ public class PlugwiseCommunicationContext {
             throw new PlugwiseInitializationException("Failed to set serial port parameters", e);
         }
     }
-
-    public void setConfiguration(PlugwiseStickConfig configuration) {
-        this.configuration = configuration;
-    }
-
-    public void setSerialPortManager(SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
 }

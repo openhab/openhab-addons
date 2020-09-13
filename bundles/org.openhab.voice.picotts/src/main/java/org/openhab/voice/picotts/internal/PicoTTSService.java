@@ -83,5 +83,4 @@ public class PicoTTSService implements TTSService {
     public String getLabel(Locale locale) {
         return "PicoTTS";
     }
-
 }

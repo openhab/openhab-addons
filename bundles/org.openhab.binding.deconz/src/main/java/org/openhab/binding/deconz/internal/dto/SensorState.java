@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.deconz.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -58,6 +60,8 @@ public class SensorState {
     public @Nullable Boolean presence;
     /** Power sensors provide this value in Watts. */
     public @Nullable Float power;
+    /** Batttery sensors provide this value */
+    public @Nullable Integer battery;
     /** Consumption sensors provide this value in Watts/hour. */
     public @Nullable Float consumption;
     /** Power sensors provide this value in Volt. */
@@ -70,6 +74,22 @@ public class SensorState {
     public @Nullable Integer buttonevent;
     /** Switches may provide this value. */
     public @Nullable Integer gesture;
+    /** Thermostat may provide this value. */
+    public @Nullable Integer valve;
     /** deCONZ sends a last update string with every event. */
     public @Nullable String lastupdated;
+    /** color controllers send xy values */
+    public double @Nullable [] xy;
+
+    @Override
+    public String toString() {
+        return "SensorState{" + "dark=" + dark + ", daylight=" + daylight + ", lightlevel=" + lightlevel + ", lux="
+                + lux + ", temperature=" + temperature + ", humidity=" + humidity + ", open=" + open + ", fire=" + fire
+                + ", water=" + water + ", alarm=" + alarm + ", tampered=" + tampered + ", vibration=" + vibration
+                + ", carbonmonoxide=" + carbonmonoxide + ", pressure=" + pressure + ", presence=" + presence
+                + ", power=" + power + ", battery=" + battery + ", consumption=" + consumption + ", voltage=" + voltage
+                + ", current=" + current + ", status=" + status + ", buttonevent=" + buttonevent + ", gesture="
+                + gesture + ", valve=" + valve + ", lastupdated='" + lastupdated + '\'' + ", xy=" + Arrays.toString(xy)
+                + '}';
+    }
 }

@@ -36,5 +36,4 @@ public class FloatField extends Field<Float> {
     protected ByteBuffer bytesInternal(Float value) {
         return ByteBuffer.allocate(4).putFloat(value);
     }
-
 }

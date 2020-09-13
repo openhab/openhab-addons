@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="modbus" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="tcp">
@@ -23,10 +24,11 @@
 				<description>Slave id. Also known as station address or unit identifier.</description>
 				<default>1</default>
 			</parameter>
-			
+
 			<parameter name="enableDiscovery" type="boolean">
 				<label>Discovery Enabled</label>
-				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the supported devices.</description>
+				<description>When enabled we try to find a device specific handler. Turn this on if you're using one of the
+					supported devices.</description>
 				<default>false</default>
 			</parameter>
 

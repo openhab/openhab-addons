@@ -36,5 +36,4 @@ public class AvrStatusUpdateEvent {
     public String getData() {
         return data;
     }
-
 }

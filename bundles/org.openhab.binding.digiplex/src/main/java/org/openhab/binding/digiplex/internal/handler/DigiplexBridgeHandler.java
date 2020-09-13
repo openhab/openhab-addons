@@ -29,7 +29,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -43,6 +42,13 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.digiplex.internal.DigiplexBridgeConfiguration;
 import org.openhab.binding.digiplex.internal.communication.CommunicationStatus;
 import org.openhab.binding.digiplex.internal.communication.DigiplexMessageHandler;
@@ -55,15 +61,6 @@ import org.openhab.binding.digiplex.internal.communication.events.TroubleStatus;
 import org.openhab.binding.digiplex.internal.discovery.DigiplexDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.RXTXPort;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * The {@link DigiplexBridgeHandler} is responsible for handling communication with PRT3 module
@@ -81,11 +78,12 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
     private final Logger logger = LoggerFactory.getLogger(DigiplexBridgeHandler.class);
 
     private @Nullable DigiplexBridgeConfiguration config;
-    private @Nullable RXTXPort serialPort;
+    private @Nullable SerialPort serialPort;
     private @Nullable DigiplexReceiverThread receiverThread;
     private @Nullable DigiplexSenderThread senderThread;
-    private BlockingQueue<DigiplexRequest> sendQueue = new LinkedBlockingQueue<>();
-    private Set<DigiplexMessageHandler> handlers = ConcurrentHashMap.newKeySet();
+    private final BlockingQueue<DigiplexRequest> sendQueue = new LinkedBlockingQueue<>();
+    private final SerialPortManager serialPortManager;
+    private final Set<DigiplexMessageHandler> handlers = ConcurrentHashMap.newKeySet();
 
     @Nullable
     private ScheduledFuture<?> reinitializeTask;
@@ -94,8 +92,9 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
     private AtomicLong responsesReceived = new AtomicLong(0);
     private AtomicLong eventsReceived = new AtomicLong(0);
 
-    public DigiplexBridgeHandler(Bridge bridge) {
+    public DigiplexBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @SuppressWarnings("null")
@@ -107,8 +106,27 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
             return;
         }
 
+        SerialPortIdentifier portId = serialPortManager.getIdentifier(config.port);
+        if (portId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "No such port: " + config.port);
+            return;
+        }
+
         try {
-            serialPort = initializeSerialPort(config.port);
+            serialPort = initializeSerialPort(portId);
+
+            InputStream inputStream = serialPort.getInputStream();
+            OutputStream outputStream = serialPort.getOutputStream();
+
+            if (inputStream == null || outputStream == null) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Input/Output stream null");
+                return;
+            }
+
+            receiverThread = new DigiplexReceiverThread(inputStream);
+            senderThread = new DigiplexSenderThread(outputStream);
 
             registerMessageHandler(new BridgeMessageHandler());
 
@@ -116,30 +134,26 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
             responsesReceived.set(0);
             eventsReceived.set(0);
 
-            receiverThread = new DigiplexReceiverThread(serialPort.getInputStream());
-            senderThread = new DigiplexSenderThread(serialPort.getOutputStream());
-
             receiverThread.start();
             senderThread.start();
 
             updateStatus(ThingStatus.ONLINE);
         } catch (PortInUseException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Port is in use!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Port in use: " + config.port);
         } catch (Exception e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, "Communication error!");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    "Communication error: " + e.getMessage());
         }
-
     }
 
     @SuppressWarnings("null")
-    private @Nullable RXTXPort initializeSerialPort(String port) throws PortInUseException, NoSuchPortException,
-            TooManyListenersException, UnsupportedCommOperationException {
-        CommPortIdentifier portId = CommPortIdentifier.getPortIdentifier(port);
-
-        RXTXPort serialPort = portId.open(getThing().getUID().toString(), 2000);
+    private @Nullable SerialPort initializeSerialPort(SerialPortIdentifier portId)
+            throws PortInUseException, TooManyListenersException, UnsupportedCommOperationException {
+        SerialPort serialPort = portId.open(getThing().getUID().toString(), 2000);
         serialPort.setSerialPortParams(config.baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,
                 SerialPort.PARITY_NONE);
-        serialPort.disableReceiveThreshold();
+        serialPort.enableReceiveThreshold(0);
         serialPort.enableReceiveTimeout(1000);
 
         // RXTX serial port library causes high CPU load
@@ -200,8 +214,24 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
         senderThread = null;
         receiverThread = null;
         if (serialPort != null) {
-            IOUtils.closeQuietly(serialPort.getInputStream());
-            IOUtils.closeQuietly(serialPort.getOutputStream());
+            try {
+                InputStream inputStream = serialPort.getInputStream();
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            } catch (IOException e) {
+                logger.debug("Error closing input stream", e);
+            }
+
+            try {
+                OutputStream outputStream = serialPort.getOutputStream();
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (IOException e) {
+                logger.debug("Error closing output stream", e);
+            }
+
             serialPort.close();
             serialPort = null;
         }

@@ -114,7 +114,7 @@ This option allows you to override what addresses are used for the announcement.
 You can have multiple comma separated entries.
 
 ```
-org.openhab.hueemulation:discoveryIps=192.168.1.100,::FFFF:A9DB:0D85
+org.openhab.hueemulation:discoveryIp=192.168.1.100,::FFFF:A9DB:0D85
 ```
 
 The hue emulation service supports three types of emulated bulbs.

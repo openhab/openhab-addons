@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="evohome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="evohome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="systemMode">
 		<item-type>String</item-type>
 		<label>System Mode</label>
@@ -29,7 +32,7 @@
 		<label>Set Point</label>
 		<description>Gets or sets the set point of this zone (0 cancels the override).</description>
 		<category>heating</category>
-		<state min="0.0" max="35.0" step="0.5" pattern="%.1f °C" />
+		<state min="0.0" max="35.0" step="0.5" pattern="%.1f °C"/>
 	</channel-type>
 	<channel-type id="setpointstatus">
 		<item-type>String</item-type>

@@ -31,5 +31,4 @@ public interface ResponseListener {
     public void receivedResponse(GetPositionCommand command);
 
     public void receivedResponse(GetSpeedCommand command);
-
 }

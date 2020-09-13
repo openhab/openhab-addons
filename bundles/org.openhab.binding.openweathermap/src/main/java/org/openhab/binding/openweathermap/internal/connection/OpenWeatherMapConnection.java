@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -38,11 +37,11 @@ import org.eclipse.smarthome.core.library.types.PointType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapAPIConfiguration;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
 import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonDailyForecastData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonHourlyForecastData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonUVIndexData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonWeatherData;
 import org.openhab.binding.openweathermap.internal.utils.ByteArrayFileCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,7 +99,7 @@ public class OpenWeatherMapConnection {
         this.httpClient = httpClient;
 
         OpenWeatherMapAPIConfiguration config = handler.getOpenWeatherMapAPIConfig();
-        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.getRefreshInterval()));
+        cache = new ExpiringCacheMap<>(TimeUnit.MINUTES.toMillis(config.refreshInterval));
     }
 
     /**
@@ -216,7 +215,7 @@ public class OpenWeatherMapConnection {
      * @return the weather icon as {@link RawType}
      */
     public static @Nullable RawType getWeatherIcon(String iconId) {
-        if (StringUtils.isEmpty(iconId)) {
+        if (iconId.isEmpty()) {
             throw new IllegalArgumentException("Cannot download weather icon as icon id is null.");
         }
 
@@ -247,7 +246,11 @@ public class OpenWeatherMapConnection {
 
         Map<String, String> params = new HashMap<>();
         // API key (see http://openweathermap.org/appid)
-        params.put(PARAM_APPID, StringUtils.trimToEmpty(config.getApikey()));
+        String apikey = config.apikey;
+        if (apikey == null || (apikey = apikey.trim()).isEmpty()) {
+            throw new OpenWeatherMapConfigurationException("@text/offline.conf-error-missing-apikey");
+        }
+        params.put(PARAM_APPID, apikey);
 
         // Units format (see https://openweathermap.org/current#data)
         params.put(PARAM_UNITS, "metric");
@@ -257,8 +260,8 @@ public class OpenWeatherMapConnection {
         params.put(PARAM_LON, location.getLongitude().toString());
 
         // Multilingual support (see https://openweathermap.org/current#multi)
-        String language = StringUtils.trimToEmpty(config.getLanguage());
-        if (!language.isEmpty()) {
+        String language = config.language;
+        if (language != null && !(language = language.trim()).isEmpty()) {
             params.put(PARAM_LANG, language.toLowerCase());
         }
         return params;
@@ -266,7 +269,7 @@ public class OpenWeatherMapConnection {
 
     private String buildURL(String url, Map<String, String> requestParams) {
         return requestParams.keySet().stream().map(key -> key + "=" + encodeParam(requestParams.get(key)))
-                .collect(joining("&", url + "?", StringUtils.EMPTY));
+                .collect(joining("&", url + "?", ""));
     }
 
     private String encodeParam(String value) {
@@ -274,7 +277,7 @@ public class OpenWeatherMapConnection {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             logger.debug("UnsupportedEncodingException occurred during execution: {}", e.getLocalizedMessage(), e);
-            return StringUtils.EMPTY;
+            return "";
         }
     }
 
@@ -291,7 +294,7 @@ public class OpenWeatherMapConnection {
                     .send();
             int httpStatus = contentResponse.getStatus();
             String content = contentResponse.getContentAsString();
-            String errorMessage = StringUtils.EMPTY;
+            String errorMessage = "";
             logger.trace("OpenWeatherMap response: status = {}, content = '{}'", httpStatus, content);
             switch (httpStatus) {
                 case OK_200:

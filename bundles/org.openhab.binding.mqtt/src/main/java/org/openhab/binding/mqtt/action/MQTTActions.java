@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -25,14 +28,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This is the automation engine action handler service for the
- * publishMQTT action.
+ * This is the automation engine action handler service for the publishMQTT action.
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
+ * the test <i>actions instanceof MQTTActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link MQTTActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author David Graeff - Initial contribution
  */
 @ThingActionsScope(name = "mqtt")
 @NonNullByDefault
-public class MQTTActions implements ThingActions {
+public class MQTTActions implements ThingActions, IMQTTActions {
     private final Logger logger = LoggerFactory.getLogger(MQTTActions.class);
     private @Nullable AbstractBrokerHandler handler;
 
@@ -53,6 +60,7 @@ public class MQTTActions implements ThingActions {
         publishMQTT(topic, value, null);
     }
 
+    @Override
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void publishMQTT(
             @ActionInput(name = "topic", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String topic,
@@ -91,11 +99,27 @@ public class MQTTActions implements ThingActions {
         publishMQTT(actions, topic, value, null);
     }
 
-    public static void publishMQTT(@Nullable ThingActions actions, @Nullable String topic, @Nullable String value, @Nullable Boolean retain) {
-        if (actions instanceof MQTTActions) {
-            ((MQTTActions) actions).publishMQTT(topic, value, retain);
-        } else {
-            throw new IllegalArgumentException("Instance is not an MQTTActions class.");
+    public static void publishMQTT(@Nullable ThingActions actions, @Nullable String topic, @Nullable String value,
+            @Nullable Boolean retain) {
+        invokeMethodOf(actions).publishMQTT(topic, value, retain);
+    }
+
+    private static IMQTTActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(MQTTActions.class.getName())) {
+            if (actions instanceof IMQTTActions) {
+                return (IMQTTActions) actions;
+            } else {
+                return (IMQTTActions) Proxy.newProxyInstance(IMQTTActions.class.getClassLoader(),
+                        new Class[] { IMQTTActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of MQTTActions");
     }
 }

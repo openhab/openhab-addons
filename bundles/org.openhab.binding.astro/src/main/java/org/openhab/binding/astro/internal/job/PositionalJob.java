@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.astro.internal.job;
 
-import static org.openhab.binding.astro.internal.job.Job.checkNull;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.AstroHandlerFactory;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 
@@ -23,6 +22,7 @@ import org.openhab.binding.astro.internal.handler.AstroThingHandler;
  * @author Gerhard Riegler - Initial contribution
  * @author Amit Kumar Mondal - Implementation to be compliant with ESH Scheduler
  */
+@NonNullByDefault
 public final class PositionalJob extends AbstractJob {
 
     /**
@@ -39,15 +39,15 @@ public final class PositionalJob extends AbstractJob {
     @Override
     public void run() {
         AstroThingHandler astroHandler = AstroHandlerFactory.getHandler(getThingUID());
-        if (checkNull(astroHandler, "AstroThingHandler is null")) {
-            return;
+        if (astroHandler != null) {
+            astroHandler.publishPositionalInfo();
+        } else {
+            LOGGER.trace("AstroThingHandler is null");
         }
-        astroHandler.publishPositionalInfo();
     }
 
     @Override
     public String toString() {
         return "Positional job " + getThingUID();
     }
-
 }

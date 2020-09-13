@@ -64,5 +64,4 @@ public class IntlKeypadHandler extends BaseKeypadHandler {
         super(thing);
         kp = new KeypadConfigIntlSeetouch();
     }
-
 }

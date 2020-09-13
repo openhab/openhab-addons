@@ -85,9 +85,10 @@ public class YeelightDiscoveryService extends AbstractDiscoveryService implement
     private ThingUID getThingUID(DeviceBase device) {
         switch (device.getDeviceType()) {
             case ceiling:
-            case ceiling1:
             case ceiling3:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING, device.getDeviceId());
+            case ceiling1:
+                return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING1, device.getDeviceId());
             case ceiling4:
                 return new ThingUID(YeelightBindingConstants.THING_TYPE_CEILING4, device.getDeviceId());
             case color:

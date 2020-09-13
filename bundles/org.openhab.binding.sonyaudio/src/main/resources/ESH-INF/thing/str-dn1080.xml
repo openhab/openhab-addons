@@ -7,45 +7,45 @@
 	<channel-group-type id="masterControls">
 		<label>Master</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="soundField" typeId="sound-field-dn1080" />
+			<channel id="power" typeId="power"/>
+			<channel id="soundField" typeId="sound-field-dn1080"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone1Controls">
 		<label>Main Zone</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-dn1080-zone1" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-dn1080-zone1"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone2Controls">
 		<label>Zone 2</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-dn1080-zone2" />
-			<channel id="volume" typeId="volume" />
-			<channel id="mute" typeId="mute" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-dn1080-zone2"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="mute" typeId="mute"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="zone4Controls">
 		<label>HDMI Zone</label>
 		<channels>
-			<channel id="power" typeId="power" />
-			<channel id="input" typeId="input-dn1080-zone4" />
+			<channel id="power" typeId="power"/>
+			<channel id="input" typeId="input-dn1080-zone4"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="radioControls">
 		<label>Radio</label>
 		<channels>
-			<channel id="broadcastFreq" typeId="radioBroadcastFreq" />
-			<channel id="broadcastStation" typeId="radioBroadcastStation" />
-			<channel id="broadcastSeekStation" typeId="radioSeekBroadcastStation" />
+			<channel id="broadcastFreq" typeId="radioBroadcastFreq"/>
+			<channel id="broadcastStation" typeId="radioBroadcastStation"/>
+			<channel id="broadcastSeekStation" typeId="radioSeekBroadcastStation"/>
 		</channels>
 	</channel-group-type>
 
@@ -155,13 +155,13 @@
 		<description>SONY receiver STR-DN1080</description>
 
 		<channel-groups>
-			<channel-group typeId="masterControls" id="master" />
-			<channel-group typeId="zone1Controls" id="zone1" />
-			<channel-group typeId="zone2Controls" id="zone2" />
-			<channel-group typeId="zone4Controls" id="zone4" />
-			<channel-group typeId="radioControls" id="radio" />
+			<channel-group typeId="masterControls" id="master"/>
+			<channel-group typeId="zone1Controls" id="zone1"/>
+			<channel-group typeId="zone2Controls" id="zone2"/>
+			<channel-group typeId="zone4Controls" id="zone4"/>
+			<channel-group typeId="radioControls" id="radio"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:sonyaudio:config" />
+		<config-description-ref uri="thing-type:sonyaudio:config"/>
 	</thing-type>
 </thing:thing-descriptions>

@@ -12,10 +12,6 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-import org.openhab.binding.astro.internal.util.DateTimeUtils;
-
 /**
  * Holds the calculated moon data.
  *
@@ -26,7 +22,7 @@ public class Moon extends RiseSet implements Planet {
     private MoonDistance apogee = new MoonDistance();
     private MoonDistance perigee = new MoonDistance();
     private MoonDistance distance = new MoonDistance();
-    private Eclipse eclipse = new Eclipse();
+    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL);
     private Position position = new Position();
     private Zodiac zodiac = new Zodiac(null);
 
@@ -126,14 +122,5 @@ public class Moon extends RiseSet implements Planet {
      */
     public void setZodiac(Zodiac zodiac) {
         this.zodiac = zodiac;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                .append("rise", DateTimeUtils.getDate(getRise().getStart()))
-                .append("set", DateTimeUtils.getDate(getSet().getEnd())).append("phase", phase).append("apogee", apogee)
-                .append("perigee", perigee).append("distance", distance).append("eclipse", eclipse)
-                .append("position", position).append("zodiac", zodiac).toString();
     }
 }

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="org.openhab.binding.groheondus-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
-    <repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
 
-    <feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
-        <feature>openhab-runtime-base</feature>
-        <feature dependency="true">openhab.tp-jackson</feature>
-        <bundle dependency="true">mvn:org.apache.commons/commons-text/1.6</bundle>
-        <bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.8.1</bundle>
-        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.groheondus/${project.version}</bundle>
-    </feature>
+	<feature name="openhab-binding-groheondus" description="GROHE ONDUS Binding" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<feature dependency="true">openhab.tp-jackson</feature>
+		<bundle dependency="true">mvn:org.apache.commons/commons-text/1.6</bundle>
+		<bundle dependency="true">mvn:org.apache.commons/commons-lang3/3.8.1</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.groheondus/${project.version}</bundle>
+	</feature>
 </features>

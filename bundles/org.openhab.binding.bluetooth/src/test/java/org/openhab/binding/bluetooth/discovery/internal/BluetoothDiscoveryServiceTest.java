@@ -47,6 +47,7 @@ import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.MockBluetoothAdapter;
 import org.openhab.binding.bluetooth.MockBluetoothDevice;
 import org.openhab.binding.bluetooth.TestUtils;
+import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryDevice;
 import org.openhab.binding.bluetooth.discovery.BluetoothDiscoveryParticipant;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.slf4j.Logger;
@@ -60,6 +61,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @RunWith(MockitoJUnitRunner.class)
 public class BluetoothDiscoveryServiceTest {
+
+    private static final int TIMEOUT = 2000;
 
     private final Logger logger = LoggerFactory.getLogger(BluetoothDiscoveryServiceTest.class);
 
@@ -86,7 +89,7 @@ public class BluetoothDiscoveryServiceTest {
         // this second call should not produce another result
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)));
     }
@@ -103,63 +106,63 @@ public class BluetoothDiscoveryServiceTest {
         // this should not produce another result
         discoveryService.deviceDiscovered(device1);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(2)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)));
     }
 
     @Test
     public void ignoreRssiDuplicateTest() {
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // changing the rssi should not result in a new discovery
         device.setRssi(100);
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)));
     }
 
     @Test
     public void nonDuplicateNameTest() throws InterruptedException {
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // this second call should produce another result
         device.setName("sdfad");
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(2)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)));
     }
 
     @Test
     public void nonDuplicateTxPowerTest() {
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // this second call should produce another result
         device.setTxPower(10);
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(2)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)));
     }
 
     @Test
     public void nonDuplicateManufacturerIdTest() {
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         // this second call should produce another result
         device.setManufacturerId(100);
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(2)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)));
     }
@@ -174,7 +177,7 @@ public class BluetoothDiscoveryServiceTest {
         discoveryService.deviceDiscovered(mockAdapter2.getDevice(address));
 
         ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(2))
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2))
                 .thingDiscovered(ArgumentMatchers.same(discoveryService), resultCaptor.capture());
 
         List<DiscoveryResult> results = resultCaptor.getAllValues();
@@ -203,12 +206,12 @@ public class BluetoothDiscoveryServiceTest {
 
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(device, Mockito.timeout(1000).times(1)).connect();
-        Mockito.verify(device, Mockito.timeout(1000).times(1)).readCharacteristic(
+        Mockito.verify(device, Mockito.timeout(TIMEOUT).times(1)).connect();
+        Mockito.verify(device, Mockito.timeout(TIMEOUT).times(1)).readCharacteristic(
                 ArgumentMatchers.argThat(ch -> ch.getGattCharacteristic() == GattCharacteristic.DEVICE_NAME));
-        Mockito.verify(device, Mockito.timeout(1000).times(1)).disconnect();
+        Mockito.verify(device, Mockito.timeout(TIMEOUT).times(1)).disconnect();
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
                         && arg.getThingUID().getId().equals(deviceName)));
@@ -232,7 +235,7 @@ public class BluetoothDiscoveryServiceTest {
 
         discoveryService.deviceDiscovered(device1);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
                         && mockAdapter1.getUID().equals(arg.getBridgeUID())
@@ -245,7 +248,7 @@ public class BluetoothDiscoveryServiceTest {
 
         discoveryService.deviceDiscovered(device2);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
                         && mockAdapter2.getUID().equals(arg.getBridgeUID())
@@ -268,7 +271,7 @@ public class BluetoothDiscoveryServiceTest {
 
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant1.typeUID)
                         && !arg.getThingUID().getId().equals(deviceName)));
@@ -285,7 +288,7 @@ public class BluetoothDiscoveryServiceTest {
         BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1))
                 .thingDiscovered(ArgumentMatchers.same(discoveryService), ArgumentMatchers
                         .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
     }
@@ -298,24 +301,41 @@ public class BluetoothDiscoveryServiceTest {
         discoveryService.deviceDiscovered(device);
         discoveryService.deviceRemoved(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
-                .thingRemoved(ArgumentMatchers.same(discoveryService), ArgumentMatchers
-                        .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1))
+                .thingDiscovered(ArgumentMatchers.same(discoveryService), resultCaptor.capture());
+
+        DiscoveryResult result = resultCaptor.getValue();
+
+        Assert.assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
+
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingRemoved(
+                ArgumentMatchers.same(discoveryService),
+                ArgumentMatchers.argThat(arg -> arg.equals(result.getThingUID())));
     }
 
     @Test
     public void removeUpdatedDefaultDeviceTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
         discoveryService.deviceDiscovered(device);
         device.setName("somename");
         discoveryService.deviceDiscovered(device);
 
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2))
+                .thingDiscovered(ArgumentMatchers.same(discoveryService), resultCaptor.capture());
+
+        DiscoveryResult result = resultCaptor.getValue();
+
+        Assert.assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
+
         discoveryService.deviceRemoved(device);
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
-                .thingRemoved(ArgumentMatchers.same(discoveryService), ArgumentMatchers
-                        .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
+
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingRemoved(
+                ArgumentMatchers.same(discoveryService),
+                ArgumentMatchers.argThat(arg -> arg.equals(result.getThingUID())));
     }
 
     @Test
@@ -326,7 +346,7 @@ public class BluetoothDiscoveryServiceTest {
         BadConnectionDevice device = new BadConnectionDevice(mockAdapter1, TestUtils.randomAddress(), 100);
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1))
                 .thingDiscovered(ArgumentMatchers.same(discoveryService), ArgumentMatchers
                         .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
     }
@@ -335,12 +355,12 @@ public class BluetoothDiscoveryServiceTest {
     public void replaceOlderDiscoveryTest() {
         Mockito.doReturn(null).when(participant1).createResult(ArgumentMatchers.any());
 
-        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
-        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
 
         MockDiscoveryParticipant participant2 = new MockDiscoveryParticipant() {
             @Override
-            public @Nullable DiscoveryResult createResult(BluetoothDevice device) {
+            public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
                 Integer manufacturer = device.getManufacturerId();
                 if (manufacturer != null && manufacturer.equals(10)) {
                     // without a device name it should produce a random ThingUID
@@ -355,20 +375,24 @@ public class BluetoothDiscoveryServiceTest {
         // lets start with producing a default result
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
-                .thingDiscovered(ArgumentMatchers.same(discoveryService), ArgumentMatchers
-                        .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1))
+                .thingDiscovered(ArgumentMatchers.same(discoveryService), resultCaptor.capture());
+
+        DiscoveryResult result = resultCaptor.getValue();
+
+        Assert.assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
 
         device.setManufacturerId(10);
 
         // lets start with producing a default result
         discoveryService.deviceDiscovered(device);
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1))
-                .thingRemoved(ArgumentMatchers.same(discoveryService), ArgumentMatchers
-                        .argThat(arg -> arg.getThingTypeUID().equals(BluetoothBindingConstants.THING_TYPE_BEACON)));
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingRemoved(
+                ArgumentMatchers.same(discoveryService),
+                ArgumentMatchers.argThat(arg -> arg.equals(result.getThingUID())));
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(1)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant2.typeUID)));
     }
@@ -401,13 +425,13 @@ public class BluetoothDiscoveryServiceTest {
 
         MockDiscoveryParticipant participant2 = new MockDiscoveryParticipant() {
             @Override
-            public @Nullable DiscoveryResult createResult(BluetoothDevice device) {
+            public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
                 try {
                     pauseLatch.await();
                 } catch (InterruptedException e) {
                     // do nothing
                 }
-                device.setName(deviceName);
+                ((BluetoothDeviceSnapshot) device).setName(deviceName);
                 callCount.incrementAndGet();
                 return super.createResult(device);
             }
@@ -421,7 +445,7 @@ public class BluetoothDiscoveryServiceTest {
 
         pauseLatch.countDown();
 
-        Mockito.verify(mockDiscoveryListener, Mockito.timeout(1000).times(2)).thingDiscovered(
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2)).thingDiscovered(
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant2.typeUID)));
 
@@ -442,18 +466,17 @@ public class BluetoothDiscoveryServiceTest {
         }
 
         @Override
-        public @Nullable DiscoveryResult createResult(BluetoothDevice device) {
+        public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
             return DiscoveryResultBuilder.create(getThingUID(device)).withLabel(RandomStringUtils.randomAlphabetic(6))
                     .withRepresentationProperty(RandomStringUtils.randomAlphabetic(6))
                     .withBridge(device.getAdapter().getUID()).build();
         }
 
         @Override
-        public @NonNull ThingUID getThingUID(BluetoothDevice device) {
+        public @NonNull ThingUID getThingUID(BluetoothDiscoveryDevice device) {
             String id = device.getName() != null ? device.getName() : RandomStringUtils.randomAlphabetic(6);
             return new ThingUID(typeUID, device.getAdapter().getUID(), id);
         }
-
     }
 
     private class BadConnectionDevice extends MockBluetoothDevice {
@@ -479,5 +502,4 @@ public class BluetoothDiscoveryServiceTest {
             return false;
         }
     }
-
 }

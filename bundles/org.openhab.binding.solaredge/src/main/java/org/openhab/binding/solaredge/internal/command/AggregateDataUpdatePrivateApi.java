@@ -16,31 +16,31 @@ import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*
 
 import java.nio.charset.StandardCharsets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.solaredge.internal.callback.AbstractCommandCallback;
 import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
-import org.openhab.binding.solaredge.internal.model.AbstractAggregateDataResponsePrivateApi;
-import org.openhab.binding.solaredge.internal.model.AggregateDayDataResponsePrivateApi;
-import org.openhab.binding.solaredge.internal.model.AggregateMonthDataResponsePrivateApi;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponsePrivateApi;
+import org.openhab.binding.solaredge.internal.model.AggregateDataResponseTransformerPrivateApi;
 import org.openhab.binding.solaredge.internal.model.AggregatePeriod;
-import org.openhab.binding.solaredge.internal.model.AggregateWeekDataResponsePrivateApi;
-import org.openhab.binding.solaredge.internal.model.AggregateYearDataResponsePrivateApi;
-import org.openhab.binding.solaredge.internal.model.DataResponse;
 
 /**
  * command that retrieves status values for aggregate data channels via private API
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback implements SolarEdgeCommand {
 
     /**
      * the solaredge handler
      */
     private final SolarEdgeHandler handler;
+    private final AggregateDataResponseTransformerPrivateApi transformer;
 
     /**
      * data aggregation level
@@ -51,11 +51,6 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback imple
      * url suffix depending on aggregation level
      */
     private final String urlSuffix;
-
-    /**
-     * response class depending on aggregation level
-     */
-    private final Class<? extends AbstractAggregateDataResponsePrivateApi> responseClass;
     private int retries = 0;
 
     /**
@@ -67,27 +62,23 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback imple
     public AggregateDataUpdatePrivateApi(SolarEdgeHandler handler, AggregatePeriod period) {
         super(handler.getConfiguration());
         this.handler = handler;
+        this.transformer = new AggregateDataResponseTransformerPrivateApi(handler);
         this.period = period;
         switch (period) {
             case DAY:
-                this.responseClass = AggregateDayDataResponsePrivateApi.class;
                 this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX;
                 break;
             case WEEK:
-                this.responseClass = AggregateWeekDataResponsePrivateApi.class;
                 this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_DAY_WEEK_SUFFIX;
                 break;
             case MONTH:
                 this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX;
-                this.responseClass = AggregateMonthDataResponsePrivateApi.class;
                 break;
             case YEAR:
                 this.urlSuffix = PRIVATE_DATA_API_URL_AGGREGATE_DATA_MONTH_YEAR_SUFFIX;
-                this.responseClass = AggregateYearDataResponsePrivateApi.class;
                 break;
             default:
-                this.urlSuffix = null;
-                this.responseClass = null;
+                this.urlSuffix = "";
         }
     }
 
@@ -106,25 +97,21 @@ public class AggregateDataUpdatePrivateApi extends AbstractCommandCallback imple
     }
 
     @Override
-    public void onComplete(Result result) {
+    public void onComplete(@Nullable Result result) {
         logger.debug("onComplete()");
 
         if (!HttpStatus.Code.OK.equals(getCommunicationStatus().getHttpCode())) {
-            if (getListener() != null) {
-                getListener().update(getCommunicationStatus());
-            }
+            updateListenerStatus();
             if (retries++ < MAX_RETRIES) {
                 handler.getWebInterface().enqueueCommand(this);
             }
-
         } else {
-
             String json = getContentAsString(StandardCharsets.UTF_8);
             if (json != null) {
                 logger.debug("JSON String: {}", json);
-                DataResponse jsonObject = gson.fromJson(json, responseClass);
+                AggregateDataResponsePrivateApi jsonObject = fromJson(json, AggregateDataResponsePrivateApi.class);
                 if (jsonObject != null) {
-                    handler.updateChannelStatus(jsonObject.getValues());
+                    handler.updateChannelStatus(transformer.transform(jsonObject, period));
                 }
             }
         }

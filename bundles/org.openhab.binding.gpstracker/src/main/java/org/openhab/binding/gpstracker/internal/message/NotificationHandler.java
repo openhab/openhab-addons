@@ -30,7 +30,8 @@ public class NotificationHandler {
     private Map<String, LocationMessage> locationNotifications = new HashMap<>();
 
     /**
-     * TransitionMessage notification to send out to the own tracker. Notifications are saved in order they were received.
+     * TransitionMessage notification to send out to the own tracker. Notifications are saved in order they were
+     * received.
      */
     private Map<String, List<TransitionMessage>> transitionNotifications = new HashMap<>();
 
@@ -43,8 +44,8 @@ public class NotificationHandler {
         synchronized (this) {
             String trackerId = msg.getTrackerId();
             if (msg instanceof TransitionMessage) {
-                List<TransitionMessage> transitionMessages = transitionNotifications
-                        .computeIfAbsent(trackerId, k -> new ArrayList<>());
+                List<TransitionMessage> transitionMessages = transitionNotifications.computeIfAbsent(trackerId,
+                        k -> new ArrayList<>());
                 transitionMessages.add((TransitionMessage) msg);
             } else {
                 locationNotifications.put(trackerId, msg);

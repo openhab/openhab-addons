@@ -22,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.StringUtils;
+import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -73,6 +73,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private FreeboxApiManager apiManager;
     private long uptime;
     private List<FreeboxDataListener> dataListeners = new CopyOnWriteArrayList<>();
+    private FreeboxServerConfiguration configuration;
 
     public FreeboxHandler(Bridge bridge) {
         super(bridge);
@@ -137,10 +138,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("initializing Freebox Server handler for thing {}", getThing().getUID());
 
-        FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
+        configuration = getConfigAs(FreeboxServerConfiguration.class);
 
         // Update the discovery configuration
-        Map<String, Object> configDiscovery = new HashMap<String, Object>();
+        Map<String, Object> configDiscovery = new HashMap<>();
         configDiscovery.put(FreeboxServerConfiguration.DISCOVER_PHONE, configuration.discoverPhone);
         configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_DEVICE, configuration.discoverNetDevice);
         configDiscovery.put(FreeboxServerConfiguration.DISCOVER_NET_INTERFACE, configuration.discoverNetInterface);
@@ -150,8 +151,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
             dataListener.applyConfig(configDiscovery);
         }
 
-        if (StringUtils.isNotEmpty(configuration.fqdn)) {
-            updateStatus(ThingStatus.UNKNOWN);
+        if (configuration.fqdn != null && !configuration.fqdn.isEmpty()) {
+            if (configuration.appToken == null || configuration.appToken.isEmpty()) {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                        "Please accept pairing request directly on your freebox");
+            } else {
+                updateStatus(ThingStatus.UNKNOWN);
+            }
 
             logger.debug("Binding will schedule a job to establish a connection...");
             if (authorizeJob == null || authorizeJob.isCancelled()) {
@@ -196,7 +202,6 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private void authorize() {
         logger.debug("Authorize job...");
 
-        FreeboxServerConfiguration configuration = getConfigAs(FreeboxServerConfiguration.class);
         String fqdn = configuration.fqdn;
         FreeboxDiscoveryResponse result = null;
         boolean httpsRequestOk = false;
@@ -207,46 +212,56 @@ public class FreeboxHandler extends BaseBridgeHandler {
         if (!httpsRequestOk) {
             result = apiManager.checkApi(fqdn, false);
         }
+        String apiBaseUrl = result == null ? null : result.getApiBaseUrl();
+        String apiVersion = result == null ? null : result.getApiVersion();
+        String deviceType = result == null ? null : result.getDeviceType();
+        String apiDomain = result == null ? null : result.getApiDomain();
+        Integer httpsPort = result == null ? null : result.getHttpsPort();
         boolean useHttps = false;
         String errorMsg = null;
         if (result == null) {
             errorMsg = "Can't connect to " + fqdn;
-        } else if (StringUtils.isEmpty(result.getApiBaseUrl())) {
+        } else if (apiBaseUrl == null || apiBaseUrl.isEmpty()) {
             errorMsg = fqdn + " does not deliver any API base URL";
-        } else if (StringUtils.isEmpty(result.getApiVersion())) {
+        } else if (apiVersion == null || apiVersion.isEmpty()) {
             errorMsg = fqdn + " does not deliver any API version";
         } else if (Boolean.TRUE.equals(result.isHttpsAvailable()) && !Boolean.TRUE.equals(configuration.useOnlyHttp)) {
-            if (result.getHttpsPort() == null || StringUtils.isEmpty(result.getApiDomain())) {
+            if (httpsPort == null || apiDomain == null || apiDomain.isEmpty()) {
                 if (httpsRequestOk) {
                     useHttps = true;
                 } else {
                     logger.debug("{} does not deliver API domain or HTTPS port; use HTTP API", fqdn);
                 }
-            } else if (apiManager.checkApi(String.format("%s:%d", result.getApiDomain(), result.getHttpsPort()),
-                    true) != null) {
+            } else if (apiManager.checkApi(String.format("%s:%d", apiDomain, httpsPort), true) != null) {
                 useHttps = true;
-                fqdn = String.format("%s:%d", result.getApiDomain(), result.getHttpsPort());
+                fqdn = String.format("%s:%d", apiDomain, httpsPort);
             }
         }
 
         if (errorMsg != null) {
-            logger.debug("Thing {}: bad configuration: {}", getThing().getUID(), errorMsg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
-        } else if (!apiManager.authorize(useHttps, fqdn, result.getApiBaseUrl(), result.getApiVersion(),
-                configuration.appToken)) {
-            if (StringUtils.isEmpty(configuration.appToken)) {
-                errorMsg = "App token not set in the thing configuration";
+        } else if (!apiManager.authorize(useHttps, fqdn, apiBaseUrl, apiVersion, configuration.appToken)) {
+            if (configuration.appToken == null || configuration.appToken.isEmpty()) {
+                errorMsg = "Pairing request rejected or timeout";
             } else {
                 errorMsg = "Check your app token in the thing configuration; opening session with " + fqdn + " using "
-                        + (useHttps ? "HTTPS" : "HTTP") + " API version " + result.getApiVersion() + " failed";
+                        + (useHttps ? "HTTPS" : "HTTP") + " API version " + apiVersion + " failed";
             }
-            logger.debug("Thing {}: {}", getThing().getUID(), errorMsg);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMsg);
         } else {
             logger.debug("Thing {}: session opened with {} using {} API version {}", getThing().getUID(), fqdn,
-                    (useHttps ? "HTTPS" : "HTTP"), result.getApiVersion());
+                    (useHttps ? "HTTPS" : "HTTP"), apiVersion);
+            String appToken = apiManager.getAppToken();
+            if ((configuration.appToken == null || configuration.appToken.isEmpty()) && appToken != null) {
+                logger.debug("Store new app token in the thing configuration");
+                configuration.appToken = appToken;
+                Configuration thingConfig = editConfiguration();
+                thingConfig.put(FreeboxServerConfiguration.APP_TOKEN, appToken);
+                updateConfiguration(thingConfig);
+            }
+            updateStatus(ThingStatus.ONLINE);
             if (globalJob == null || globalJob.isCancelled()) {
-                long pollingInterval = getConfigAs(FreeboxServerConfiguration.class).refreshInterval;
+                long pollingInterval = configuration.refreshInterval;
                 logger.debug("Scheduling server state update every {} seconds...", pollingInterval);
                 globalJob = scheduler.scheduleWithFixedDelay(() -> {
                     try {
@@ -260,14 +275,14 @@ public class FreeboxHandler extends BaseBridgeHandler {
         }
 
         Map<String, String> properties = editProperties();
-        if (result != null && StringUtils.isNotEmpty(result.getApiBaseUrl())) {
-            properties.put(API_BASE_URL, result.getApiBaseUrl());
+        if (apiBaseUrl != null && !apiBaseUrl.isEmpty()) {
+            properties.put(API_BASE_URL, apiBaseUrl);
         }
-        if (result != null && StringUtils.isNotEmpty(result.getApiVersion())) {
-            properties.put(API_VERSION, result.getApiVersion());
+        if (apiVersion != null && !apiVersion.isEmpty()) {
+            properties.put(API_VERSION, apiVersion);
         }
-        if (result != null && StringUtils.isNotEmpty(result.getDeviceType())) {
-            properties.put(Thing.PROPERTY_HARDWARE_VERSION, result.getDeviceType());
+        if (deviceType != null && !deviceType.isEmpty()) {
+            properties.put(Thing.PROPERTY_HARDWARE_VERSION, deviceType);
         }
         updateProperties(properties);
     }
@@ -291,6 +306,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
         return apiManager;
     }
 
+    public String getAppToken() {
+        return configuration == null ? null : configuration.appToken;
+    }
+
     public boolean registerDataListener(FreeboxDataListener dataListener) {
         if (dataListener == null) {
             throw new IllegalArgumentException("It's not allowed to pass a null dataListener.");
@@ -308,11 +327,13 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private boolean fetchConnectionStatus() {
         try {
             FreeboxConnectionStatus connectionStatus = apiManager.getConnectionStatus();
-            if (StringUtils.isNotEmpty(connectionStatus.getState())) {
-                updateChannelStringState(LINESTATUS, connectionStatus.getState());
+            String state = connectionStatus.getState();
+            if (state != null && !state.isEmpty()) {
+                updateChannelStringState(LINESTATUS, state);
             }
-            if (StringUtils.isNotEmpty(connectionStatus.getIpv4())) {
-                updateChannelStringState(IPV4, connectionStatus.getIpv4());
+            String ipv4 = connectionStatus.getIpv4();
+            if (ipv4 != null && !ipv4.isEmpty()) {
+                updateChannelStringState(IPV4, ipv4);
             }
             updateChannelDecimalState(RATEUP, connectionStatus.getRateUp());
             updateChannelDecimalState(RATEDOWN, connectionStatus.getRateDown());
@@ -328,7 +349,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     private boolean fetchxDslStatus() {
         try {
             String status = apiManager.getxDslStatus();
-            if (StringUtils.isNotEmpty(status)) {
+            if (status != null && !status.isEmpty()) {
                 updateChannelStringState(XDSLSTATUS, status);
             }
             return true;
@@ -422,18 +443,22 @@ public class FreeboxHandler extends BaseBridgeHandler {
         try {
             FreeboxSystemConfig config = apiManager.getSystemConfig();
             Map<String, String> properties = editProperties();
-            if (StringUtils.isNotEmpty(config.getSerial())) {
-                properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.getSerial());
+            String value = config.getSerial();
+            if (value != null && !value.isEmpty()) {
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, value);
             }
-            if (StringUtils.isNotEmpty(config.getBoardName())) {
-                properties.put(Thing.PROPERTY_HARDWARE_VERSION, config.getBoardName());
+            value = config.getBoardName();
+            if (value != null && !value.isEmpty()) {
+                properties.put(Thing.PROPERTY_HARDWARE_VERSION, value);
             }
-            if (StringUtils.isNotEmpty(config.getFirmwareVersion())) {
-                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.getFirmwareVersion());
-                updateChannelStringState(FWVERSION, config.getFirmwareVersion());
+            value = config.getFirmwareVersion();
+            if (value != null && !value.isEmpty()) {
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, value);
+                updateChannelStringState(FWVERSION, value);
             }
-            if (StringUtils.isNotEmpty(config.getMac())) {
-                properties.put(Thing.PROPERTY_MAC_ADDRESS, config.getMac());
+            value = config.getMac();
+            if (value != null && !value.isEmpty()) {
+                properties.put(Thing.PROPERTY_MAC_ADDRESS, value);
             }
             updateProperties(properties);
 

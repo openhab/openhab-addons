@@ -75,5 +75,4 @@ public class MessageProperties {
     public void setLocationName(String locationName) {
         this.locationName = locationName;
     }
-
 }

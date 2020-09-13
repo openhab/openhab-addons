@@ -98,5 +98,4 @@ public interface KNXClient {
      * @throws KNXException if any problem with the communication arises.
      */
     void respondToKNX(OutboundSpec responseSpec) throws KNXException;
-
 }

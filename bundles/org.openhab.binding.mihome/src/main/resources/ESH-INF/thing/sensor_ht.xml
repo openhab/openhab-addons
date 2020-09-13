@@ -6,18 +6,19 @@
 
 	<thing-type id="sensor_ht">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Mi Temperature &amp; Humidity Sensor</label>
 		<description>Reports temperature and humidity. Operating temperature: −20°C to 60°C. Operating humidity: 0 to 100%.
-			Sensor reports the temperature when there's a difference of around 0.5°C. If there is no significant temperature change then the sensor reports temperature once every 50 minutes.
+			Sensor reports the temperature when there's a difference of around 0.5°C. If there is no significant temperature
+			change then the sensor reports temperature once every 50 minutes.
 		</description>
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

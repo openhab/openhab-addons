@@ -79,7 +79,6 @@ public class LGWebOSTVMouseSocket {
         public void onStateChanged(State oldState, State newState);
 
         public void onError(String errorMessage);
-
     }
 
     public void setListener(@Nullable WebOSTVMouseSocketListener listener) {
@@ -190,21 +189,17 @@ public class LGWebOSTVMouseSocket {
 
     public void button(String keyName) {
         sendMessage("type:button\n" + "name:" + keyName + "\n" + "\n");
-
     }
 
     public void move(double dx, double dy) {
         sendMessage("type:move\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "down:0\n" + "\n");
-
     }
 
     public void move(double dx, double dy, boolean drag) {
         sendMessage("type:move\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "down:" + (drag ? 1 : 0) + "\n" + "\n");
-
     }
 
     public void scroll(double dx, double dy) {
         sendMessage("type:scroll\n" + "dx:" + dx + "\n" + "dy:" + dy + "\n" + "\n");
     }
-
 }

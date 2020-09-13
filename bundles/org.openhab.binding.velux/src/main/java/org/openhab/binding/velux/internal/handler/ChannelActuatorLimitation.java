@@ -206,5 +206,4 @@ final class ChannelActuatorLimitation extends ChannelHandlerTemplate {
 
         return newValue;
     }
-
 }

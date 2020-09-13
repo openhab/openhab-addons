@@ -81,7 +81,5 @@ public class HDanywhereBindingConstants {
         public String channelID() {
             return this.id;
         }
-
     }
-
 }

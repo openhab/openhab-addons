@@ -128,5 +128,4 @@ public class WemoBindingConstants {
                             THING_TYPE_BRIDGE, THING_TYPE_MZ100, THING_TYPE_MAKER, THING_TYPE_COFFEE, THING_TYPE_DIMMER,
                             THING_TYPE_CROCKPOT, THING_TYPE_PURIFIER, THING_TYPE_HUMIDIFIER, THING_TYPE_HEATER)
                     .collect(Collectors.toSet()));
-
 }

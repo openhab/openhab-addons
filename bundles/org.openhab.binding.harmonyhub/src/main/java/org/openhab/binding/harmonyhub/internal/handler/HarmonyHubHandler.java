@@ -445,5 +445,4 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
     public void removeHubStatusListener(HubStatusListener listener) {
         listeners.remove(listener);
     }
-
 }

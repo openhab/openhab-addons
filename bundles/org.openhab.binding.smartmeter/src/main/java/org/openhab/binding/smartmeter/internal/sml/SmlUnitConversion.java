@@ -23,7 +23,7 @@ import org.openmuc.jsml.EUnit;
 
 /**
  * Converts a {@link EUnit} to an {@link Unit}.
- * 
+ *
  * @author Matthias Steigenberger - Initial contribution
  *
  */
@@ -34,7 +34,6 @@ public class SmlUnitConversion {
     public static @Nullable <Q extends Quantity<Q>> Unit<Q> getUnit(EUnit unit) {
         Unit<?> javaUnit = null;
         switch (unit) {
-
             case AMPERE:
                 javaUnit = SmartHomeUnits.AMPERE;
                 break;
@@ -211,7 +210,6 @@ public class SmlUnitConversion {
                 break;
             default:
                 break;
-
         }
         return (Unit<Q>) javaUnit;
     }

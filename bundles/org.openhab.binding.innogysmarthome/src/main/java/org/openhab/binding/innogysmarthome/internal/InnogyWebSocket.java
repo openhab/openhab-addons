@@ -52,7 +52,7 @@ public class InnogyWebSocket {
     /**
      * Constructs the {@link InnogyWebSocket}.
      *
-     * @param bridgeHandler the responsible {@link InnogyBridgeHandler}
+     * @param eventListener the responsible {@link InnogyBridgeHandler}
      * @param webSocketURI the {@link URI} of the websocket endpoint
      * @param maxIdleTimeout
      */
@@ -68,12 +68,8 @@ public class InnogyWebSocket {
      * @throws Exception
      */
     public synchronized void start() throws Exception {
-        final SslContextFactory sslContextFactory = new SslContextFactory();
-
         if (client == null || client.isStopped()) {
-            client = new WebSocketClient(sslContextFactory);
-            client.setMaxIdleTimeout(this.maxIdleTimeout);
-            client.start();
+            client = startWebSocketClient();
         }
 
         if (session != null) {
@@ -97,6 +93,15 @@ public class InnogyWebSocket {
             session = null;
             logger.trace("Stopping websocket ignored - was not running.");
         }
+        if (client != null) {
+            try {
+                client.stop();
+                client.destroy();
+            } catch (Exception e) {
+                logger.debug("Stopping websocket failed", e);
+            }
+            client = null;
+        }
     }
 
     /**
@@ -119,7 +124,8 @@ public class InnogyWebSocket {
     public void onClose(int statusCode, String reason) {
         if (statusCode == StatusCode.NORMAL) {
             logger.info("Connection to innogy Webservice was closed normally.");
-        } else {
+        } else if (!closing) {
+            // An additional reconnect attempt is only required when the close/stop wasn't executed by the binding.
             logger.info("Connection to innogy Webservice was closed abnormally (code: {}). Reason: {}", statusCode,
                     reason);
             eventListener.connectionClosed();
@@ -140,5 +146,12 @@ public class InnogyWebSocket {
         } else {
             eventListener.onEvent(msg);
         }
+    }
+
+    WebSocketClient startWebSocketClient() throws Exception {
+        WebSocketClient client = new WebSocketClient(new SslContextFactory());
+        client.setMaxIdleTimeout(this.maxIdleTimeout);
+        client.start();
+        return client;
     }
 }

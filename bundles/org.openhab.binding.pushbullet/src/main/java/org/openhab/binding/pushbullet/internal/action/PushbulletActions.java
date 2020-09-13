@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.pushbullet.internal.action;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -26,25 +29,33 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PushbulletActions} class defines rule actions for sending notifications
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
+ * the test <i>actions instanceof PushbulletActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link PushbulletActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author Hakan Tandogan - Initial contribution
  */
 @ThingActionsScope(name = "pushbullet")
 @NonNullByDefault
-public class PushbulletActions implements ThingActions {
+public class PushbulletActions implements ThingActions, IPushbulletActions {
 
     private final Logger logger = LoggerFactory.getLogger(PushbulletActions.class);
 
     private @Nullable PushbulletHandler handler;
 
-    @Override public void setThingHandler(@Nullable ThingHandler handler) {
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
         this.handler = (PushbulletHandler) handler;
     }
 
-    @Override public @Nullable ThingHandler getThingHandler() {
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
         return this.handler;
     }
 
+    @Override
     @RuleAction(label = "@text/actionSendPushbulletNoteLabel", description = "@text/actionSendPushbulletNoteDesc")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletNote(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc") @Nullable String recipient,
@@ -65,13 +76,10 @@ public class PushbulletActions implements ThingActions {
 
     public static boolean sendPushbulletNote(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String title, @Nullable String message) {
-        if (actions instanceof PushbulletActions) {
-            return ((PushbulletActions) actions).sendPushbulletNote(recipient, title, message);
-        } else {
-            throw new IllegalArgumentException("Instance is not a PushbulletActions class ( " + actions + " )");
-        }
+        return invokeMethodOf(actions).sendPushbulletNote(recipient, title, message);
     }
 
+    @Override
     @RuleAction(label = "@text/actionSendPushbulletNoteLabel", description = "@text/actionSendPushbulletNoteDesc")
     public @ActionOutput(name = "success", type = "java.lang.Boolean") Boolean sendPushbulletNote(
             @ActionInput(name = "recipient", label = "@text/actionSendPushbulletNoteInputRecipientLabel", description = "@text/actionSendPushbulletNoteInputRecipientDesc") @Nullable String recipient,
@@ -91,10 +99,25 @@ public class PushbulletActions implements ThingActions {
 
     public static boolean sendPushbulletNote(@Nullable ThingActions actions, @Nullable String recipient,
             @Nullable String message) {
-        if (actions instanceof PushbulletActions) {
-            return ((PushbulletActions) actions).sendPushbulletNote(recipient, message);
-        } else {
-            throw new IllegalArgumentException("Instance is not a PushbulletActions class ( " + actions + " )");
+        return invokeMethodOf(actions).sendPushbulletNote(recipient, message);
+    }
+
+    private static IPushbulletActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(PushbulletActions.class.getName())) {
+            if (actions instanceof IPushbulletActions) {
+                return (IPushbulletActions) actions;
+            } else {
+                return (IPushbulletActions) Proxy.newProxyInstance(IPushbulletActions.class.getClassLoader(),
+                        new Class[] { IPushbulletActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of PushbulletActions");
     }
 }

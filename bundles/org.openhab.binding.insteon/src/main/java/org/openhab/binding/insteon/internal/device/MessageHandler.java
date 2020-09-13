@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -27,9 +28,11 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
 import org.openhab.binding.insteon.internal.device.GroupMessageStateMachine.GroupMessage;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -51,9 +54,8 @@ import org.slf4j.LoggerFactory;
 public abstract class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
-    DeviceFeature feature;
-    HashMap<String, @Nullable String> parameters = new HashMap<>();
-    HashMap<Integer, @Nullable GroupMessageStateMachine> groupState = new HashMap<>();
+    protected DeviceFeature feature;
+    protected Map<String, @Nullable String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -73,9 +75,8 @@ public abstract class MessageHandler {
      * @param cmd1 the insteon cmd1 field
      * @param msg the received insteon message
      * @param feature the DeviceFeature to which this message handler is attached
-     * @param fromPort the device (/dev/ttyUSB0) from which the message has been received
      */
-    public abstract void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature feature, String fromPort);
+    public abstract void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature feature);
 
     /**
      * Method to send an extended insteon message for querying a device
@@ -167,6 +168,20 @@ public abstract class MessageHandler {
         return def;
     }
 
+    protected boolean getBooleanDeviceConfig(String key, boolean def) {
+        Object o = feature.getDevice().getDeviceConfigMap().get(key);
+        if (o != null) {
+            if (o instanceof Boolean) {
+                return (Boolean) o;
+            } else {
+                logger.warn("{} {}: The value for the '{}' key is not boolean in the device configuration parameter.",
+                        nm(), feature.getDevice().getAddress(), key);
+            }
+        }
+
+        return def;
+    }
+
     /**
      * Test if message refers to the button configured for given feature
      *
@@ -252,7 +267,6 @@ public abstract class MessageHandler {
         boolean isDuplicate = false;
         try {
             MsgType t = MsgType.fromValue(msg.getByte("messageFlags"));
-            int hops = msg.getHopsLeft();
             if (t == MsgType.ALL_LINK_BROADCAST) {
                 int group = msg.getAddress("toAddress").getLowByte() & 0xff;
                 byte cmd1 = msg.getByte("command1");
@@ -260,12 +274,12 @@ public abstract class MessageHandler {
                 // from the original broadcaster, with which the device
                 // confirms that it got all cleanup replies successfully.
                 GroupMessage gm = (cmd1 == 0x06) ? GroupMessage.SUCCESS : GroupMessage.BCAST;
-                isDuplicate = !updateGroupState(group, hops, gm);
+                isDuplicate = !feature.getDevice().getGroupState(group, gm, cmd1);
             } else if (t == MsgType.ALL_LINK_CLEANUP) {
                 // the cleanup messages are direct messages, so the
                 // group # is not in the toAddress, but in cmd2
                 int group = msg.getByte("command2") & 0xff;
-                isDuplicate = !updateGroupState(group, hops, GroupMessage.CLEAN);
+                isDuplicate = !feature.getDevice().getGroupState(group, GroupMessage.CLEAN, (byte) 0);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("cannot parse msg: {}", msg, e);
@@ -273,24 +287,6 @@ public abstract class MessageHandler {
             logger.warn("cannot parse msg: {}", msg, e);
         }
         return (isDuplicate);
-    }
-
-    /**
-     * Advance the state of the state machine that suppresses duplicates
-     *
-     * @param group the insteon group of the broadcast message
-     * @param hops number of hops left
-     * @param a what type of group message came in (action etc)
-     * @return true if this is message is NOT a duplicate
-     */
-    private boolean updateGroupState(int group, int hops, GroupMessage a) {
-        GroupMessageStateMachine m = groupState.get(new Integer(group));
-        if (m == null) {
-            m = new GroupMessageStateMachine();
-            groupState.put(new Integer(group), m);
-        }
-        logger.trace("updating group state for {} to {}", group, a);
-        return (m.action(a, hops));
     }
 
     /**
@@ -327,10 +323,10 @@ public abstract class MessageHandler {
     /**
      * Set parameter map
      *
-     * @param hm the parameter map for this message handler
+     * @param map the parameter map for this message handler
      */
-    public void setParameters(HashMap<String, @Nullable String> hm) {
-        parameters = hm;
+    public void setParameters(Map<String, @Nullable String> map) {
+        parameters = map;
     }
 
     //
@@ -346,7 +342,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), Utils.getHexByte(cmd1));
         }
     }
@@ -358,7 +354,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             logger.trace("{} ignore msg {}: {}", nm(), Utils.getHexByte(cmd1), msg);
         }
     }
@@ -370,7 +366,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (!isMybutton(msg, f)) {
                 return;
             }
@@ -400,7 +396,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was turned off {}.", nm(), f.getDevice().getAddress(), mode);
@@ -416,7 +412,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was switched on {}.", nm(), f.getDevice().getAddress(), mode);
@@ -434,7 +430,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was switched off {}.", nm(), f.getDevice().getAddress(), mode);
@@ -462,14 +458,14 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void setParameters(HashMap<String, @Nullable String> params) {
+        public void setParameters(Map<String, @Nullable String> params) {
             super.setParameters(params);
             onCmd = getIntParameter("on", 0x2E);
             offCmd = getIntParameter("off", 0x2F);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (cmd1 == onCmd) {
                 int level = getLevel(msg);
                 logger.debug("{}: device {} was switched on using ramp to level {}.", nm(), f.getDevice().getAddress(),
@@ -517,7 +513,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 InsteonAddress a = f.getDevice().getAddress();
                 int cmd2 = msg.getByte("command2") & 0xff;
@@ -585,7 +581,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
@@ -628,7 +624,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             Msg m = f.makePollMsg();
             if (m != null) {
                 f.getDevice().enqueueMessage(m, f);
@@ -650,7 +646,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
                 int upDown = (cmd2 == 0) ? 0 : 2;
@@ -677,10 +673,9 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             logger.debug("{}: dev {} manual state change: {}", nm(), f.getDevice().getAddress(), 0);
             feature.publish(new DecimalType(1), StateChangeType.ALWAYS);
-
         }
     }
 
@@ -691,7 +686,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.warn("{} device {} expected extended msg as info reply, got {}", nm(), dev.getAddress(), msg);
@@ -727,7 +722,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.trace("{} device {} ignoring non-extended msg {}", nm(), dev.getAddress(), msg);
@@ -735,20 +730,94 @@ public abstract class MessageHandler {
             }
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
+                int batteryLevel;
+                int lightLevel;
+                int temperatureLevel;
                 switch (cmd2) {
                     case 0x00: // this is a product data response message
-                        int batteryLevel = msg.getByte("userData12") & 0xff;
-                        int lightLevel = msg.getByte("userData11") & 0xff;
+                        batteryLevel = msg.getByte("userData12") & 0xff;
+                        lightLevel = msg.getByte("userData11") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 lightLevel, batteryLevel);
-                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, "field", "light_level");
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, "field",
-                                "battery_level");
+                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                        break;
+                    case 0x03: // this is the 2844-222 data response message
+                        batteryLevel = msg.getByte("userData6") & 0xff;
+                        lightLevel = msg.getByte("userData7") & 0xff;
+                        temperatureLevel = msg.getByte("userData8") & 0xff;
+                        logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
+                                dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
+                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                        feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+
+                        // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
+                        int batteryPercentage;
+                        if (batteryLevel >= 0xd2) {
+                            batteryPercentage = 100;
+                        } else if (batteryLevel <= 0x70) {
+                            batteryPercentage = 0;
+                        } else {
+                            batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
+                        }
+                        logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
+                        feature.publish(new QuantityType<>(batteryPercentage, SmartHomeUnits.PERCENT),
+                                StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                                InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
                         break;
                 }
+            } catch (FieldException e) {
+                logger.warn("error parsing {}: ", msg, e);
+            }
+        }
+    }
+
+    @NonNullByDefault
+    public static class MotionSensor2AlternateHeartbeatHandler extends MessageHandler {
+        MotionSensor2AlternateHeartbeatHandler(DeviceFeature p) {
+            super(p);
+        }
+
+        @Override
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+            InsteonDevice dev = f.getDevice();
+            try {
+                // group 0x0B (11) - alternate heartbeat group
+                InsteonAddress toAddr = msg.getAddr("toAddress");
+                int batteryLevel = toAddr.getHighByte() & 0xff;
+                int lightLevel = toAddr.getMiddleByte() & 0xff;
+                int temperatureLevel = msg.getByte("command2") & 0xff;
+
+                logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
+                        dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
+                feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                        InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                        InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
+                        InsteonDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+
+                // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
+                int batteryPercentage;
+                if (batteryLevel >= 0xd2) {
+                    batteryPercentage = 100;
+                } else if (batteryLevel <= 0x70) {
+                    batteryPercentage = 0;
+                } else {
+                    batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
+                }
+                logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
+                feature.publish(new QuantityType<>(batteryPercentage, SmartHomeUnits.PERCENT), StateChangeType.CHANGED,
+                        InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
             } catch (FieldException e) {
                 logger.warn("error parsing {}: ", msg, e);
             }
@@ -762,7 +831,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.trace("{} device {} ignoring non-extended msg {}", nm(), dev.getAddress(), msg);
@@ -776,10 +845,10 @@ public abstract class MessageHandler {
                         int batteryWatermark = msg.getByte("userData7") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 batteryWatermark, batteryLevel);
-                        feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED, "field",
-                                "battery_watermark_level");
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, "field",
-                                "battery_level");
+                        feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_WATERMARK_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -798,7 +867,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             if (msg.isExtended()) {
                 try {
                     // see iMeter developer notes 2423A1dev-072013-en.pdf
@@ -820,8 +889,10 @@ public abstract class MessageHandler {
                     }
 
                     logger.debug("{}:{} watts: {} kwh: {} ", nm(), f.getDevice().getAddress(), watts, kwh);
-                    feature.publish(new DecimalType(kwh), StateChangeType.CHANGED, "field", "kwh");
-                    feature.publish(new DecimalType(watts), StateChangeType.CHANGED, "field", "watts");
+                    feature.publish(new QuantityType<>(kwh, SmartHomeUnits.KILOWATT_HOUR), StateChangeType.CHANGED,
+                            InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_KWH);
+                    feature.publish(new QuantityType<>(watts, SmartHomeUnits.WATT), StateChangeType.CHANGED,
+                            InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_WATTS);
                 } catch (FieldException e) {
                     logger.warn("error parsing {}: ", msg, e);
                 }
@@ -836,7 +907,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonDevice dev = f.getDevice();
             logger.debug("{}: power meter {} was reset", nm(), dev.getAddress());
 
@@ -855,7 +926,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f) {
             feature.publish(new DateTimeType(), StateChangeType.ALWAYS);
         }
     }
@@ -867,7 +938,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f) {
             byte cmd = 0x00;
             byte cmd2 = 0x00;
             try {
@@ -892,7 +963,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
         }
     }
@@ -904,7 +975,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
         }
     }
@@ -916,7 +987,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 byte cmd2 = msg.getByte("command2");
                 switch (cmd1) {
@@ -957,9 +1028,15 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
-            sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+                if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
+                    sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+                }
+            } else {
+                sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            }
         }
     }
 
@@ -970,9 +1047,15 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
-            sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+                if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
+                    sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
+                }
+            } else {
+                sendExtendedQuery(f, (byte) 0x2e, (byte) 00);
+            }
         }
     }
 
@@ -991,7 +1074,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             feature.getDevice().doPoll(2000); // 2000 ms delay
         }
     }
@@ -1006,7 +1089,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             try {
                 // first do the bit manipulations to focus on the right area
                 int mask = getIntParameter("mask", 0xFFFF);
@@ -1017,7 +1100,8 @@ public abstract class MessageHandler {
                 // last, multiply with factor and add an offset
                 double dvalue = getDoubleParameter("offset", 0) + value * getDoubleParameter("factor", 1.0);
 
-                @Nullable State state;
+                @Nullable
+                State state;
                 String scale = getStringParameter("scale", null);
                 if (scale != null && scale.equals("celsius")) {
                     state = new QuantityType<>(dvalue, SIUnits.CELSIUS);
@@ -1176,7 +1260,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to ON", nm(), a);
             feature.publish(OnOffType.ON, StateChangeType.ALWAYS);
@@ -1190,7 +1274,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OFF", nm(), a);
             feature.publish(OnOffType.OFF, StateChangeType.ALWAYS);
@@ -1204,7 +1288,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring brighten message for device {}", nm(), a);
         }
@@ -1217,7 +1301,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring dim message for device {}", nm(), a);
         }
@@ -1230,7 +1314,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OPEN", nm(), a);
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
@@ -1244,7 +1328,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f, String fromPort) {
+        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to CLOSED", nm(), a);
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
@@ -1259,8 +1343,8 @@ public abstract class MessageHandler {
      * @param f the feature for which to create the handler
      * @return the handler which was created
      */
-    public static @Nullable <T extends MessageHandler> T makeHandler(String name,
-            HashMap<String, @Nullable String> params, DeviceFeature f) {
+    public static @Nullable <T extends MessageHandler> T makeHandler(String name, Map<String, @Nullable String> params,
+            DeviceFeature f) {
         String cname = MessageHandler.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);

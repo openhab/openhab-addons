@@ -13,10 +13,13 @@
 package org.openhab.binding.heos.internal.resources;
 
 import java.util.EventListener;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-//import org.openhab.binding.heos.internal.api.HeosEventController;
+import org.openhab.binding.heos.internal.api.HeosEventController;
+import org.openhab.binding.heos.internal.exception.HeosFunctionalException;
+import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
+import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
+import org.openhab.binding.heos.internal.json.payload.Media;
 
 /**
  * The {@link HeosEventListener } is an Event Listener
@@ -29,10 +32,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface HeosEventListener extends EventListener {
 
-    void playerStateChangeEvent(String pid, String event, String command);
+    void playerStateChangeEvent(HeosEventObject eventObject);
 
-    void playerMediaChangeEvent(String pid, Map<String, String> info);
+    void playerStateChangeEvent(HeosResponseObject<?> responseObject) throws HeosFunctionalException;
 
-    void bridgeChangeEvent(String event, String result, String command);
+    void playerMediaChangeEvent(String pid, Media media);
 
+    void bridgeChangeEvent(String event, boolean success, Object command);
 }

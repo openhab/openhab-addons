@@ -101,5 +101,4 @@ public class ZoneMinderConstants {
     public static final String MONITOR_EVENT_MOTION = "Motion";
     public static final String MONITOR_EVENT_FORCED_WEB = "Forced Web";
     public static final String MONITOR_EVENT_OPENHAB = "openHAB";
-
 }

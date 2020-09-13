@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="nuvo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Nuvo Whole House Amplifier Thing -->
+	<thing-type id="amplifier">
+		<label>Whole House Amplifier</label>
+		<description>
+			A Multi-zone Whole House Amplifier System
+		</description>
+
+		<channel-groups>
+			<channel-group id="system" typeId="system">
+				<label>System</label>
+				<description>System Level Commands</description>
+			</channel-group>
+			<channel-group id="zone1" typeId="zone">
+				<label>Zone 1</label>
+				<description>The Controls for Zone 1</description>
+			</channel-group>
+			<channel-group id="zone2" typeId="zone">
+				<label>Zone 2</label>
+				<description>The Controls for Zone 2</description>
+			</channel-group>
+			<channel-group id="zone3" typeId="zone">
+				<label>Zone 3</label>
+				<description>The Controls for Zone 3</description>
+			</channel-group>
+			<channel-group id="zone4" typeId="zone">
+				<label>Zone 4</label>
+				<description>The Controls for Zone 4</description>
+			</channel-group>
+			<channel-group id="zone5" typeId="zone">
+				<label>Zone 5</label>
+				<description>The Controls for Zone 5</description>
+			</channel-group>
+			<channel-group id="zone6" typeId="zone">
+				<label>Zone 6</label>
+				<description>The Controls for Zone 6</description>
+			</channel-group>
+			<channel-group id="zone7" typeId="zone">
+				<label>Zone 7</label>
+				<description>The Controls for Zone 7</description>
+			</channel-group>
+			<channel-group id="zone8" typeId="zone">
+				<label>Zone 8</label>
+				<description>The Controls for Zone 8</description>
+			</channel-group>
+			<channel-group id="zone9" typeId="zone">
+				<label>Zone 9</label>
+				<description>The Controls for Zone 9</description>
+			</channel-group>
+			<channel-group id="zone10" typeId="zone">
+				<label>Zone 10</label>
+				<description>The Controls for Zone 10</description>
+			</channel-group>
+			<channel-group id="zone11" typeId="zone">
+				<label>Zone 11</label>
+				<description>The Controls for Zone 11</description>
+			</channel-group>
+			<channel-group id="zone12" typeId="zone">
+				<label>Zone 12</label>
+				<description>The Controls for Zone 12</description>
+			</channel-group>
+			<channel-group id="zone13" typeId="zone">
+				<label>Zone 13</label>
+				<description>The Controls for Zone 13</description>
+			</channel-group>
+			<channel-group id="zone14" typeId="zone">
+				<label>Zone 14</label>
+				<description>The Controls for Zone 14</description>
+			</channel-group>
+			<channel-group id="zone15" typeId="zone">
+				<label>Zone 15</label>
+				<description>The Controls for Zone 15</description>
+			</channel-group>
+			<channel-group id="zone16" typeId="zone">
+				<label>Zone 16</label>
+				<description>The Controls for Zone 16</description>
+			</channel-group>
+			<channel-group id="zone17" typeId="zone">
+				<label>Zone 17</label>
+				<description>The Controls for Zone 17</description>
+			</channel-group>
+			<channel-group id="zone18" typeId="zone">
+				<label>Zone 18</label>
+				<description>The Controls for Zone 18</description>
+			</channel-group>
+			<channel-group id="zone19" typeId="zone">
+				<label>Zone 19</label>
+				<description>The Controls for Zone 19</description>
+			</channel-group>
+			<channel-group id="zone20" typeId="zone">
+				<label>Zone 20</label>
+				<description>The Controls for Zone 20</description>
+			</channel-group>
+			<channel-group id="source1" typeId="source">
+				<label>Source 1</label>
+				<description>The Display Information for Source 1</description>
+			</channel-group>
+			<channel-group id="source2" typeId="source">
+				<label>Source 2</label>
+				<description>The Display Information for Source 2</description>
+			</channel-group>
+			<channel-group id="source3" typeId="source">
+				<label>Source 3</label>
+				<description>The Display Information for Source 3</description>
+			</channel-group>
+			<channel-group id="source4" typeId="source">
+				<label>Source 4</label>
+				<description>The Display Information for Source 4</description>
+			</channel-group>
+			<channel-group id="source5" typeId="source">
+				<label>Source 5</label>
+				<description>The Display Information for Source 5</description>
+			</channel-group>
+			<channel-group id="source6" typeId="source">
+				<label>Source 6</label>
+				<description>The Display Information for Source 6</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="false">
+				<context>serial-port</context>
+				<label>Serial Port</label>
+				<description>Serial Port to use for connecting to the Nuvo amplifier</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host Name or IP Address of the machine connected to the Nuvo amplifier (Serial over IP)</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
+				<label>Port</label>
+				<description>Communication Port (serial over IP). For IP connection to the Nuvo amplifier</description>
+				<default>4444</default>
+			</parameter>
+			<parameter name="numZones" type="integer" min="1" max="20" required="true">
+				<label>Number of Zones</label>
+				<description>Number of Zones on the amplifier to utilize in the binding (Up to 20 zones when using expansion module)</description>
+				<default>6</default>
+			</parameter>
+			<parameter name="clockSync" type="boolean" required="false">
+				<label>Sync Clock On GConcerto</label>
+				<description>If set to true, the binding will sync the internal clock on the Grand Concerto to match the openHAB
+					host's system clock. The sync job runs at binding startup and once an hour thereafter. The Essentia G has no RTC,
+					so this setting has no effect on that component.</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="system">
+		<label>System</label>
+		<description>System Level Commands</description>
+		<channels>
+			<channel id="alloff" typeId="alloff"/>
+			<channel id="allmute" typeId="system.mute"/>
+			<channel id="page" typeId="page"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>Zone Controls</label>
+		<description>The Controls for the Zone</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="control" typeId="control"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="loudness" typeId="loudness"/>
+			<channel id="dnd" typeId="dnd"/>
+			<channel id="lock" typeId="lock"/>
+			<channel id="party" typeId="party"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="source">
+		<label>Source Info</label>
+		<description>The Display Information for the Source</description>
+		<channels>
+			<channel id="display_line1" typeId="display_line1"/>
+			<channel id="display_line2" typeId="display_line2"/>
+			<channel id="display_line3" typeId="display_line3"/>
+			<channel id="display_line4" typeId="display_line4"/>
+			<channel id="play_mode" typeId="play_mode"/>
+			<channel id="track_length" typeId="track_length"/>
+			<channel id="track_position" typeId="track_position"/>
+			<channel id="button_press" typeId="button_press"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="alloff">
+		<item-type>Switch</item-type>
+		<label>All Off</label>
+		<description>Turn All Zones Off</description>
+	</channel-type>
+
+	<channel-type id="page">
+		<item-type>Switch</item-type>
+		<label>Page</label>
+		<description>Activates the Page Mode for All Zones</description>
+	</channel-type>
+
+	<channel-type id="source">
+		<item-type>Number</item-type>
+		<label>Source Input</label>
+		<description>Select the Source Input for the Zone</description>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Transport Controls e.g. Play/Pause/Next/Previous for the Current Source</description>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="treble">
+		<item-type>Number</item-type>
+		<label>Treble Adjustment</label>
+		<description>Adjust the Treble Setting for the Zone</description>
+		<state min="-18" max="18" step="2" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="bass">
+		<item-type>Number</item-type>
+		<label>Bass Adjustment</label>
+		<description>Adjust the Bass Setting for the Zone</description>
+		<state min="-18" max="18" step="2" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="balance">
+		<item-type>Number</item-type>
+		<label>Balance Adjustment</label>
+		<description>Adjust the Balance Setting for the Zone</description>
+		<state min="-18" max="18" step="2" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="loudness">
+		<item-type>Switch</item-type>
+		<label>Loudness Compensation</label>
+		<description>A Switch That Controls the Loudness Compensation Setting for the Zone</description>
+	</channel-type>
+
+	<channel-type id="dnd">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb</label>
+		<description>A Switch That Controls If the Zone Should Ignore an Incoming Audio Page</description>
+	</channel-type>
+
+	<channel-type id="lock">
+		<item-type>Contact</item-type>
+		<label>Locked</label>
+		<description>Indicates If This Zone Is Locked</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Unlocked</option>
+				<option value="OPEN">Locked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="party">
+		<item-type>Switch</item-type>
+		<label>Party Mode</label>
+		<description>Activate Party Mode With This Zone as the Host</description>
+	</channel-type>
+
+	<channel-type id="display_line1">
+		<item-type>String</item-type>
+		<label>Display Line 1</label>
+		<description>1st Line of Text Being Displayed on the Keypad</description>
+	</channel-type>
+
+	<channel-type id="display_line2">
+		<item-type>String</item-type>
+		<label>Display Line 2</label>
+		<description>2nd Line of Text Being Displayed on the Keypad</description>
+	</channel-type>
+
+	<channel-type id="display_line3">
+		<item-type>String</item-type>
+		<label>Display Line 3</label>
+		<description>3rd Line of Text Being Displayed on the Keypad</description>
+	</channel-type>
+
+	<channel-type id="display_line4">
+		<item-type>String</item-type>
+		<label>Display Line 4</label>
+		<description>4th Line of Text Being Displayed on the Keypad</description>
+	</channel-type>
+
+	<channel-type id="play_mode">
+		<item-type>String</item-type>
+		<label>Play Mode</label>
+		<description>The Current Playback Mode of the Source</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="track_length">
+		<item-type>Number:Time</item-type>
+		<label>Track Length</label>
+		<description>The Total Running Time of the Current Playing Track</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="track_position">
+		<item-type>Number:Time</item-type>
+		<label>Track Position</label>
+		<description>The Running Time Elapsed of the Current Playing Track</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="button_press">
+		<item-type>String</item-type>
+		<label>Button Pressed</label>
+		<description>Indicates the Last Button Pressed On the Keypad for a Non NuvoNet Source</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

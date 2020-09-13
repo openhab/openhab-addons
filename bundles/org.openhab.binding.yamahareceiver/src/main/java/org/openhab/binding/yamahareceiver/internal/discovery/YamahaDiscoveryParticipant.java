@@ -46,7 +46,7 @@ public class YamahaDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private final Logger logger = LoggerFactory.getLogger(YamahaDiscoveryParticipant.class);
 
-    private final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_THING_TYPE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(BRIDGE_THING_TYPE);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {

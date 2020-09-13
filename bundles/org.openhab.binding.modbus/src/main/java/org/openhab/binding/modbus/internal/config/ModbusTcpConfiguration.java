@@ -23,8 +23,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class ModbusTcpConfiguration {
-    @Nullable
-    private String host;
+    private @Nullable String host;
     private int port;
     private int id;
     private int timeBetweenTransactionsMillis;
@@ -105,5 +104,4 @@ public class ModbusTcpConfiguration {
     public void setDiscoveryEnabled(boolean enableDiscovery) {
         this.enableDiscovery = enableDiscovery;
     }
-
 }

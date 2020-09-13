@@ -71,7 +71,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private final NhcMqttConnection2 mqttConnection;
 
-    private final List<NhcProfile2> profiles = new CopyOnWriteArrayList<>();
     private final List<NhcService2> services = new CopyOnWriteArrayList<>();
 
     private volatile String profile = "";
@@ -168,9 +167,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         message.method = "systeminfo.publish";
         mqttConnection.connectionPublish(profile + "/system/cmd", gson.toJson(message));
 
-        message.method = "profiles.list";
-        mqttConnection.connectionPublish("public/authentication/cmd", gson.toJson(message));
-
         message.method = "services.list";
         mqttConnection.connectionPublish(profile + "/authentication/cmd", gson.toJson(message));
 
@@ -230,27 +226,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
         if (systemInfo != null) {
             nhcSystemInfo = systemInfo.get(0);
-        }
-    }
-
-    private void profilesListRsp(String response) {
-        Type messageType = new TypeToken<NhcMessage2>() {
-        }.getType();
-        List<NhcProfile2> profileList = null;
-        try {
-            NhcMessage2 message = gson.fromJson(response, messageType);
-            List<NhcMessageParam> messageParams = message.params;
-            if (messageParams != null) {
-                profileList = messageParams.stream().filter(p -> (p.profiles != null)).findFirst().get().profiles;
-            }
-        } catch (JsonSyntaxException e) {
-            logger.debug("Niko Home Control: unexpected json {}", response);
-        } catch (NoSuchElementException ignore) {
-            // Ignore if profiles not present in response, this should not happen in a profiles response
-        }
-        profiles.clear();
-        if (profileList != null) {
-            profiles.addAll(profileList);
         }
     }
 
@@ -334,6 +309,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             return;
         } else if ("devices.added".equals(method)) {
             deviceList.forEach(this::addDevice);
+        } else if ("devices.changed".contentEquals(method)) {
+            deviceList.forEach(this::removeDevice);
+            deviceList.forEach(this::addDevice);
         }
 
         deviceList.forEach(this::updateState);
@@ -378,9 +356,11 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void addDevice(NhcDevice2 device) {
-        String location;
-        location = device.parameters.stream().map(p -> p.locationName).filter(Objects::nonNull).findFirst()
-                .orElse(null);
+        String location = null;
+        if (device.parameters != null) {
+            location = device.parameters.stream().map(p -> p.locationName).filter(Objects::nonNull).findFirst()
+                    .orElse(null);
+        }
 
         if ("action".equals(device.type)) {
             if (!actions.containsKey(device.uuid)) {
@@ -423,7 +403,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                         actionType, location, this);
                 actions.put(device.uuid, nhcAction);
             }
-        } else if ("thermostat".equals(device.type) || "hvac".contentEquals(device.type)) {
+        } else if ("thermostat".equals(device.type)) {
             if (!thermostats.containsKey(device.uuid)) {
                 logger.debug("Niko Home Control: adding thermostat device {}, {}", device.uuid, device.name);
 
@@ -432,10 +412,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                 thermostats.put(device.uuid, nhcThermostat);
             }
         } else if ("centralmeter".equals(device.type)) {
-            logger.debug("Niko Home Control: adding centralmeter device {}, {}", device.uuid, device.name);
-            NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
-                    device.technology, this, scheduler);
-            energyMeters.put(device.uuid, nhcEnergyMeter);
+            if (!energyMeters.containsKey(device.uuid)) {
+                logger.debug("Niko Home Control: adding centralmeter device {}, {}", device.uuid, device.name);
+                NhcEnergyMeter2 nhcEnergyMeter = new NhcEnergyMeter2(device.uuid, device.name, device.model,
+                        device.technology, this, scheduler);
+                energyMeters.put(device.uuid, nhcEnergyMeter);
+            }
         } else {
             logger.debug("Niko Home Control: device type {} not supported for {}, {}", device.type, device.uuid,
                     device.name);
@@ -456,28 +438,34 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void updateState(NhcDevice2 device) {
+        List<NhcProperty> deviceProperties = device.properties;
+        if (deviceProperties == null) {
+            logger.debug("Cannot Update state for {} as no properties defined in device message", device.uuid);
+            return;
+        }
+
         if (actions.containsKey(device.uuid)) {
-            updateActionState((NhcAction2) actions.get(device.uuid), device);
+            updateActionState((NhcAction2) actions.get(device.uuid), deviceProperties);
         } else if (thermostats.containsKey(device.uuid)) {
-            updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), device);
+            updateThermostatState((NhcThermostat2) thermostats.get(device.uuid), deviceProperties);
         } else if (energyMeters.containsKey(device.uuid)) {
-            updateEnergyMeterState((NhcEnergyMeter2) energyMeters.get(device.uuid), device);
+            updateEnergyMeterState((NhcEnergyMeter2) energyMeters.get(device.uuid), deviceProperties);
         }
     }
 
-    private void updateActionState(NhcAction2 action, NhcDevice2 device) {
+    private void updateActionState(NhcAction2 action, List<NhcProperty> deviceProperties) {
         if (action.getType() == ActionType.ROLLERSHUTTER) {
-            updateRollershutterState(action, device);
+            updateRollershutterState(action, deviceProperties);
         } else {
-            updateLightState(action, device);
+            updateLightState(action, deviceProperties);
         }
     }
 
-    private void updateLightState(NhcAction2 action, NhcDevice2 device) {
-        Optional<NhcProperty> statusProperty = device.properties.stream().filter(p -> (p.status != null)).findFirst();
-        Optional<NhcProperty> dimmerProperty = device.properties.stream().filter(p -> (p.brightness != null))
+    private void updateLightState(NhcAction2 action, List<NhcProperty> deviceProperties) {
+        Optional<NhcProperty> statusProperty = deviceProperties.stream().filter(p -> (p.status != null)).findFirst();
+        Optional<NhcProperty> dimmerProperty = deviceProperties.stream().filter(p -> (p.brightness != null))
                 .findFirst();
-        Optional<NhcProperty> basicStateProperty = device.properties.stream().filter(p -> (p.basicState != null))
+        Optional<NhcProperty> basicStateProperty = deviceProperties.stream().filter(p -> (p.basicState != null))
                 .findFirst();
 
         String booleanState = null;
@@ -504,73 +492,68 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
     }
 
-    private void updateRollershutterState(NhcAction2 action, NhcDevice2 device) {
-        Optional<NhcProperty> positionProperty = device.properties.stream().filter(p -> (p.position != null))
-                .findFirst();
-        Optional<NhcProperty> movingProperty = device.properties.stream().filter(p -> (p.moving != null)).findFirst();
-
-        if (!(movingProperty.isPresent() && Boolean.parseBoolean(movingProperty.get().moving))
-                && positionProperty.isPresent()) {
-            action.setState(Integer.parseInt(positionProperty.get().position));
-            logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(),
-                    positionProperty.get().position);
-        }
+    private void updateRollershutterState(NhcAction2 action, List<NhcProperty> deviceProperties) {
+        deviceProperties.stream().map(p -> p.position).filter(Objects::nonNull).findFirst().ifPresent(position -> {
+            try {
+                action.setState(Integer.parseInt(position));
+                logger.debug("Niko Home Control: setting action {} internally to {}", action.getId(), position);
+            } catch (NumberFormatException e) {
+                logger.trace("Niko Home Control: received empty rollershutter {} position info", action.getId());
+            }
+        });
     }
 
-    private void updateThermostatState(NhcThermostat2 thermostat, NhcDevice2 device) {
-        Optional<Boolean> overruleActiveProperty = device.properties.stream().map(p -> p.overruleActive)
+    private void updateThermostatState(NhcThermostat2 thermostat, List<NhcProperty> deviceProperties) {
+        Optional<Boolean> overruleActiveProperty = deviceProperties.stream().map(p -> p.overruleActive)
                 .filter(Objects::nonNull).map(t -> Boolean.parseBoolean(t)).findFirst();
-        Optional<Integer> overruleSetpointProperty = device.properties.stream().map(p -> p.overruleSetpoint)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
-        Optional<Integer> overruleTimeProperty = device.properties.stream().map(p -> p.overruleTime)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t))).findFirst();
-        Optional<String> programProperty = device.properties.stream().map(p -> p.program).filter(Objects::nonNull)
-                .findFirst();
-        Optional<Integer> setpointTemperatureProperty = device.properties.stream().map(p -> p.setpointTemperature)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
-        Optional<NhcProperty> ecoSaveProperty = device.properties.stream().filter(p -> (p.ecoSave != null)).findFirst();
-        Optional<Integer> ambientTemperatureProperty = device.properties.stream().map(p -> p.ambientTemperature)
-                .filter(Objects::nonNull).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+        Optional<Integer> overruleSetpointProperty = deviceProperties.stream().map(p -> p.overruleSetpoint)
+                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+        Optional<Integer> overruleTimeProperty = deviceProperties.stream().map(p -> p.overruleTime)
+                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t))).findFirst();
+        Optional<Integer> setpointTemperatureProperty = deviceProperties.stream().map(p -> p.setpointTemperature)
+                .filter(s -> !((s == null) || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+        Optional<Boolean> ecoSaveProperty = deviceProperties.stream().map(p -> p.ecoSave).filter(Objects::nonNull)
+                .map(t -> Boolean.parseBoolean(t)).findFirst();
+        Optional<Integer> ambientTemperatureProperty = deviceProperties.stream().map(p -> p.ambientTemperature)
+                .filter(s -> !(s == null || s.isEmpty())).map(t -> Math.round(Float.parseFloat(t) * 10)).findFirst();
+        Optional<@Nullable String> demandProperty = deviceProperties.stream().map(p -> p.demand)
+                .filter(Objects::nonNull).findFirst();
+        Optional<@Nullable String> operationModeProperty = deviceProperties.stream().map(p -> p.operationMode)
+                .filter(Objects::nonNull).findFirst();
 
-        Optional<NhcProperty> demandProperty = device.properties.stream()
-                .filter(p -> ((p.demand != null) || (p.operationMode != null))).findFirst();
-
-        String modeString = programProperty.orElse("");
+        String modeString = deviceProperties.stream().map(p -> p.program).filter(Objects::nonNull).findFirst()
+                .orElse("");
         int mode = IntStream.range(0, THERMOSTATMODES.length).filter(i -> THERMOSTATMODES[i].equals(modeString))
                 .findFirst().orElse(thermostat.getMode());
 
         int measured = ambientTemperatureProperty.orElse(thermostat.getMeasured());
         int setpoint = setpointTemperatureProperty.orElse(thermostat.getSetpoint());
 
-        int overrule = 0;
-        int overruletime = 0;
+        int overrule = thermostat.getOverrule();
+        int overruletime = thermostat.getRemainingOverruletime();
         if (overruleActiveProperty.orElse(false)) {
             overrule = overruleSetpointProperty.orElse(0);
             overruletime = overruleTimeProperty.orElse(0);
         }
 
-        int ecosave = ecoSaveProperty.isPresent() ? ("True".equals(ecoSaveProperty.get().ecoSave) ? 1 : 0)
-                : thermostat.getEcosave();
+        int ecosave = thermostat.getEcosave();
+        if (ecoSaveProperty.orElse(false)) {
+            ecosave = 1;
+        }
 
         int demand = thermostat.getDemand();
-        if (demandProperty.isPresent()) {
-            String demandString;
-            if (demandProperty.get().demand != null) {
-                demandString = demandProperty.get().demand;
-            } else {
-                demandString = demandProperty.get().operationMode;
-            }
-            switch (demandString) {
-                case "None":
-                    demand = 0;
-                    break;
-                case "Heating":
-                    demand = 1;
-                    break;
-                case "Cooling":
-                    demand = -1;
-                    break;
-            }
+        String demandString = demandProperty.orElse(operationModeProperty.orElse(""));
+        demandString = demandString == null ? "" : demandString;
+        switch (demandString) {
+            case "None":
+                demand = 0;
+                break;
+            case "Heating":
+                demand = 1;
+                break;
+            case "Cooling":
+                demand = -1;
+                break;
         }
 
         logger.debug(
@@ -579,12 +562,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         thermostat.updateState(measured, setpoint, mode, overrule, overruletime, ecosave, demand);
     }
 
-    private void updateEnergyMeterState(NhcEnergyMeter2 energyMeter, NhcDevice2 device) {
-        device.properties.stream().map(p -> p.electricalPower).filter(Objects::nonNull).findFirst()
+    private void updateEnergyMeterState(NhcEnergyMeter2 energyMeter, List<NhcProperty> deviceProperties) {
+        deviceProperties.stream().map(p -> p.electricalPower).filter(Objects::nonNull).findFirst()
                 .ifPresent(electricalPower -> {
                     try {
                         energyMeter.setPower(Integer.parseInt(electricalPower));
-                        logger.debug("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
+                        logger.trace("Niko Home Control: setting energy meter {} power to {}", energyMeter.getId(),
                                 electricalPower);
                     } catch (NumberFormatException e) {
                         energyMeter.setPower(null);
@@ -592,7 +575,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
                                 energyMeter.getId());
                     }
                 });
-
     }
 
     @Override
@@ -609,9 +591,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         devices.add(device);
         param.devices = devices;
         device.uuid = actionId;
-        device.properties = new ArrayList<>();
+        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
-        device.properties.add(property);
+        deviceProperties.add(property);
+        device.properties = deviceProperties;
 
         NhcAction2 action = (NhcAction2) actions.get(actionId);
 
@@ -671,15 +654,17 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         devices.add(device);
         param.devices = devices;
         device.uuid = thermostatId;
-        device.properties = new ArrayList<>();
+        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
 
         NhcProperty overruleActiveProp = new NhcProperty();
-        device.properties.add(overruleActiveProp);
+        deviceProperties.add(overruleActiveProp);
         overruleActiveProp.overruleActive = "False";
 
         NhcProperty program = new NhcProperty();
-        device.properties.add(program);
+        deviceProperties.add(program);
         program.program = mode;
+
+        device.properties = deviceProperties;
 
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
@@ -700,25 +685,26 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         devices.add(device);
         param.devices = devices;
         device.uuid = thermostatId;
-        device.properties = new ArrayList<>();
+        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
 
         if (overruleTime > 0) {
             NhcProperty overruleActiveProp = new NhcProperty();
             overruleActiveProp.overruleActive = "True";
-            device.properties.add(overruleActiveProp);
+            deviceProperties.add(overruleActiveProp);
 
             NhcProperty overruleSetpointProp = new NhcProperty();
-            overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp);
-            device.properties.add(overruleSetpointProp);
+            overruleSetpointProp.overruleSetpoint = String.valueOf(overruleTemp / 10.0);
+            deviceProperties.add(overruleSetpointProp);
 
             NhcProperty overruleTimeProp = new NhcProperty();
             overruleTimeProp.overruleTime = String.valueOf(overruleTime);
-            device.properties.add(overruleTimeProp);
+            deviceProperties.add(overruleTimeProp);
         } else {
             NhcProperty overruleActiveProp = new NhcProperty();
             overruleActiveProp.overruleActive = "False";
-            device.properties.add(overruleActiveProp);
+            deviceProperties.add(overruleActiveProp);
         }
+        device.properties = deviceProperties;
 
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
@@ -739,11 +725,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         devices.add(device);
         param.devices = devices;
         device.uuid = energyMeterId;
-        device.properties = new ArrayList<>();
+        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
 
         NhcProperty reportInstantUsageProp = new NhcProperty();
-        device.properties.add(reportInstantUsageProp);
+        deviceProperties.add(reportInstantUsageProp);
         reportInstantUsageProp.reportInstantUsage = "True";
+        device.properties = deviceProperties;
 
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
@@ -791,19 +778,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     @Override
     public void processMessage(String topic, byte[] payload) {
         String message = new String(payload);
-        if ("public/system/evt".equals(topic) || (profile + "/system/evt").equals(topic)) {
+        if ((profile + "/system/evt").equals(topic)) {
             systemEvt(message);
         } else if ((profile + "/system/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             systeminfoPublishRsp(message);
-        } else if ("public/authentication/rsp".equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
-            profilesListRsp(message);
         } else if ((profile + "/notification/evt").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             notificationEvt(message);
         } else if ((profile + "/control/devices/evt").equals(topic)) {
-            logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
+            logger.trace("Niko Home Control: received topic {}, payload {}", topic, message);
             devicesEvt(message);
         } else if ((profile + "/control/devices/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
@@ -811,7 +795,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if ((profile + "/authentication/rsp").equals(topic)) {
             logger.debug("Niko Home Control: received topic {}, payload {}", topic, message);
             servicesListRsp(message);
-        } else if ("public/control/devices.error".equals(topic) || (profile + "/control/devices.error").equals(topic)) {
+        } else if ((profile + "/control/devices.error").equals(topic)) {
             logger.warn("Niko Home Control: received error {}", message);
         } else {
             logger.trace("Niko Home Control: not acted on received message topic {}, payload {}", topic, message);
@@ -838,13 +822,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             timeInfo = new NhcTimeInfo2();
         }
         return timeInfo;
-    }
-
-    /**
-     * @return comma separated list of profiles with uuid's retrieved from Connected Controller
-     */
-    public String getProfiles() {
-        return profiles.stream().map(NhcProfile2::profile).collect(Collectors.joining(", "));
     }
 
     /**

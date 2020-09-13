@@ -16,6 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -35,6 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVMouseSocket.ButtonType;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket;
+import org.openhab.binding.lgwebos.internal.handler.LGWebOSTVSocket.State;
 import org.openhab.binding.lgwebos.internal.handler.command.ServiceSubscription;
 import org.openhab.binding.lgwebos.internal.handler.core.AppInfo;
 import org.openhab.binding.lgwebos.internal.handler.core.ResponseListener;
@@ -49,14 +52,19 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 /**
- * This is the automation engine action handler service for the
- * lgwebos action.
+ * The {@link LGWebOSActions} defines the thing actions for the LGwebOS binding.
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
+ * the test <i>actions instanceof LGWebOSActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link LGWebOSActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author Sebastian Prehn - Initial contribution
+ * @author Laurent Garnier - new method invokeMethodOf + interface ILGWebOSActions
  */
 @ThingActionsScope(name = "lgwebos")
 @NonNullByDefault
-public class LGWebOSActions implements ThingActions {
+public class LGWebOSActions implements ThingActions, ILGWebOSActions {
     private final Logger logger = LoggerFactory.getLogger(LGWebOSActions.class);
     private final ResponseListener<TextInputStatusInfo> textInputListener = createTextInputStatusListener();
     private @Nullable LGWebOSHandler handler;
@@ -93,6 +101,7 @@ public class LGWebOSActions implements ThingActions {
         OK
     }
 
+    @Override
     @RuleAction(label = "@text/actionShowToastLabel", description = "@text/actionShowToastDesc")
     public void showToast(
             @ActionInput(name = "text", label = "@text/actionShowToastInputTextLabel", description = "@text/actionShowToastInputTextDesc") String text)
@@ -100,6 +109,7 @@ public class LGWebOSActions implements ThingActions {
         getConnectedSocket().ifPresent(control -> control.showToast(text, createResponseListener()));
     }
 
+    @Override
     @RuleAction(label = "@text/actionShowToastWithIconLabel", description = "@text/actionShowToastWithIconLabel")
     public void showToast(
             @ActionInput(name = "icon", label = "@text/actionShowToastInputIconLabel", description = "@text/actionShowToastInputIconDesc") String icon,
@@ -113,6 +123,7 @@ public class LGWebOSActions implements ThingActions {
         }
     }
 
+    @Override
     @RuleAction(label = "@text/actionLaunchBrowserLabel", description = "@text/actionLaunchBrowserDesc")
     public void launchBrowser(
             @ActionInput(name = "url", label = "@text/actionLaunchBrowserInputUrlLabel", description = "@text/actionLaunchBrowserInputUrlDesc") String url) {
@@ -133,14 +144,9 @@ public class LGWebOSActions implements ThingActions {
             return Collections.emptyList();
         }
         return appInfos;
-
     }
 
-    public List<Application> getApplications() {
-        return getAppInfos().stream().map(appInfo -> new Application(appInfo.getId(), appInfo.getName()))
-                .collect(Collectors.toList());
-    }
-
+    @Override
     @RuleAction(label = "@text/actionLaunchApplicationLabel", description = "@text/actionLaunchApplicationDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId) {
@@ -152,9 +158,9 @@ public class LGWebOSActions implements ThingActions {
             logger.warn("Device with ThingID {} does not support any app with id: {}.",
                     getLGWebOSHandler().getThing().getUID(), appId);
         }
-
     }
 
+    @Override
     @RuleAction(label = "@text/actionLaunchApplicationWithParamsLabel", description = "@text/actionLaunchApplicationWithParamsDesc")
     public void launchApplication(
             @ActionInput(name = "appId", label = "@text/actionLaunchApplicationInputAppIDLabel", description = "@text/actionLaunchApplicationInputAppIDDesc") String appId,
@@ -178,6 +184,7 @@ public class LGWebOSActions implements ThingActions {
         }
     }
 
+    @Override
     @RuleAction(label = "@text/actionSendTextLabel", description = "@text/actionSendTextDesc")
     public void sendText(
             @ActionInput(name = "text", label = "@text/actionSendTextInputTextLabel", description = "@text/actionSendTextInputTextDesc") String text) {
@@ -188,6 +195,7 @@ public class LGWebOSActions implements ThingActions {
         });
     }
 
+    @Override
     @RuleAction(label = "@text/actionSendButtonLabel", description = "@text/actionSendButtonDesc")
     public void sendButton(
             @ActionInput(name = "text", label = "@text/actionSendButtonInputButtonLabel", description = "@text/actionSendButtonInputButtonDesc") String button) {
@@ -227,16 +235,19 @@ public class LGWebOSActions implements ThingActions {
         }
     }
 
+    @Override
     @RuleAction(label = "@text/actionIncreaseChannelLabel", description = "@text/actionIncreaseChannelDesc")
     public void increaseChannel() {
         getConnectedSocket().ifPresent(control -> control.channelUp(createResponseListener()));
     }
 
+    @Override
     @RuleAction(label = "@text/actionDecreaseChannelLabel", description = "@text/actionDecreaseChannelDesc")
     public void decreaseChannel() {
         getConnectedSocket().ifPresent(control -> control.channelDown(createResponseListener()));
     }
 
+    @Override
     @RuleAction(label = "@text/actionSendRCButtonLabel", description = "@text/actionSendRCButtonDesc")
     public void sendRCButton(
             @ActionInput(name = "text", label = "@text/actionSendRCButtonInputTextLabel", description = "@text/actionSendRCButtonInputTextDesc") String rcButton) {
@@ -247,7 +258,7 @@ public class LGWebOSActions implements ThingActions {
         LGWebOSHandler lgWebOSHandler = getLGWebOSHandler();
         final LGWebOSTVSocket socket = lgWebOSHandler.getSocket();
 
-        if (!socket.isConnected()) {
+        if (socket.getState() != State.REGISTERED) {
             logger.warn("Device with ThingID {} is currently not connected.", lgWebOSHandler.getThing().getUID());
             return Optional.empty();
         }
@@ -287,91 +298,62 @@ public class LGWebOSActions implements ThingActions {
 
     // delegation methods for "legacy" rule support
 
-    public static void showToast(@Nullable ThingActions actions, String text) throws IOException {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).showToast(text);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
+    private static ILGWebOSActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(LGWebOSActions.class.getName())) {
+            if (actions instanceof ILGWebOSActions) {
+                return (ILGWebOSActions) actions;
+            } else {
+                return (ILGWebOSActions) Proxy.newProxyInstance(ILGWebOSActions.class.getClassLoader(),
+                        new Class[] { ILGWebOSActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of LGWebOSActions");
+    }
+
+    public static void showToast(@Nullable ThingActions actions, String text) throws IOException {
+        invokeMethodOf(actions).showToast(text);
     }
 
     public static void showToast(@Nullable ThingActions actions, String icon, String text) throws IOException {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).showToast(icon, text);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).showToast(icon, text);
     }
 
     public static void launchBrowser(@Nullable ThingActions actions, String url) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).launchBrowser(url);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
-    }
-
-    public static List<Application> getApplications(@Nullable ThingActions actions) {
-        if (actions instanceof LGWebOSActions) {
-            return ((LGWebOSActions) actions).getApplications();
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).launchBrowser(url);
     }
 
     public static void launchApplication(@Nullable ThingActions actions, String appId) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).launchApplication(appId);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).launchApplication(appId);
     }
 
     public static void launchApplication(@Nullable ThingActions actions, String appId, String param) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).launchApplication(appId, param);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).launchApplication(appId, param);
     }
 
     public static void sendText(@Nullable ThingActions actions, String text) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendText(text);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).sendText(text);
     }
 
     public static void sendButton(@Nullable ThingActions actions, String button) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendButton(button);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).sendButton(button);
     }
 
     public static void increaseChannel(@Nullable ThingActions actions) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).increaseChannel();
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).increaseChannel();
     }
 
     public static void decreaseChannel(@Nullable ThingActions actions) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).decreaseChannel();
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).decreaseChannel();
     }
 
     public static void sendRCButton(@Nullable ThingActions actions, String rcButton) {
-        if (actions instanceof LGWebOSActions) {
-            ((LGWebOSActions) actions).sendRCButton(rcButton);
-        } else {
-            throw new IllegalArgumentException("Instance is not an LGWebOSActions class.");
-        }
+        invokeMethodOf(actions).sendRCButton(rcButton);
     }
 }

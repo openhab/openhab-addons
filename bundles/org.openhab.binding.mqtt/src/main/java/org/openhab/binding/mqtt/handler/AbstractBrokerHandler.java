@@ -12,6 +12,13 @@
  */
 package org.openhab.binding.mqtt.handler;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.*;
@@ -27,13 +34,6 @@ import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryParticipant;
 import org.openhab.binding.mqtt.discovery.TopicSubscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeoutException;
 
 /**
  * This base implementation handles connection changes of the {@link MqttBrokerConnection}
@@ -118,17 +118,23 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
 
         discoveryTopics.forEach((topic, listenerMap) -> {
             listenerMap.replaceAll((listener, oldTopicSubscribe) -> {
+                if (oldTopicSubscribe.isStarted()) {
+                    oldTopicSubscribe.stop();
+                }
+
                 TopicSubscribe topicSubscribe = new TopicSubscribe(connection, topic, listener, thing.getUID());
-                topicSubscribe.start().handle((result, ex) -> {
-                    if (ex != null) {
-                        logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
-                                thing.getUID());
-                    } else {
-                        logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic,
-                                thing.getUID());
-                    }
-                    return null;
-                });
+                if (discoveryEnabled()) {
+                    topicSubscribe.start().handle((result, ex) -> {
+                        if (ex != null) {
+                            logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
+                                    thing.getUID());
+                        } else {
+                            logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic,
+                                    thing.getUID());
+                        }
+                        return null;
+                    });
+                }
                 return topicSubscribe;
             });
         });
@@ -197,15 +203,18 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
             }
 
             TopicSubscribe topicSubscribe = new TopicSubscribe(connection, topic, listener, thing.getUID());
-            topicSubscribe.start().handle((result, ex) -> {
-                if (ex != null) {
-                    logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
-                            thing.getUID());
-                } else {
-                    logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic, thing.getUID());
-                }
-                return null;
-            });
+            if (discoveryEnabled()) {
+                topicSubscribe.start().handle((result, ex) -> {
+                    if (ex != null) {
+                        logger.warn("Failed to subscribe {} to discovery topic {} on broker {}", listener, topic,
+                                thing.getUID());
+                    } else {
+                        logger.trace("Subscribed {} to discovery topic {} on broker {}", listener, topic,
+                                thing.getUID());
+                    }
+                    return null;
+                });
+            }
             return topicSubscribe;
         });
     }
@@ -217,8 +226,8 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
      * @param topic the topic (as specified during registration)
      */
     public final void unregisterDiscoveryListener(MQTTTopicDiscoveryParticipant listener, String topic) {
-        Map<MQTTTopicDiscoveryParticipant, @Nullable TopicSubscribe> topicListeners = discoveryTopics
-                .compute(topic, (k, v) -> {
+        Map<MQTTTopicDiscoveryParticipant, @Nullable TopicSubscribe> topicListeners = discoveryTopics.compute(topic,
+                (k, v) -> {
                     if (v == null) {
                         logger.warn(
                                 "Tried to unsubscribe {} from  discovery topic {} on broker {} but topic not registered at all. Check discovery logic!",
@@ -240,4 +249,11 @@ public abstract class AbstractBrokerHandler extends BaseBridgeHandler implements
                     return v.isEmpty() ? null : v;
                 });
     }
+
+    /**
+     * check whether discovery is disabled on this broker
+     *
+     * @return true if discovery disabled
+     */
+    public abstract boolean discoveryEnabled();
 }

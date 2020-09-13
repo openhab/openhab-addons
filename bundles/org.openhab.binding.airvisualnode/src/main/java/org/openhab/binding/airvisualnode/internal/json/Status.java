@@ -113,5 +113,4 @@ public class Status {
     public void setWifiStrength(int wifiStrength) {
         this.wifiStrength = wifiStrength;
     }
-
 }

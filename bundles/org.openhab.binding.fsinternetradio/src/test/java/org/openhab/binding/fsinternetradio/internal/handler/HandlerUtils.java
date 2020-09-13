@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.fsinternetradio.internal.handler;
 
-import org.openhab.binding.fsinternetradio.internal.handler.FSInternetRadioHandler;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
 
 /**
@@ -20,6 +19,7 @@ import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadio;
  *
  * @author Markus Rathgeb - Initial contribution
  */
+
 public class HandlerUtils {
 
     /**

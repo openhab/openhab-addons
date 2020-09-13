@@ -84,5 +84,4 @@ public class NumericValueParam extends DeviceParam {
         return "NumericValueParam{" + "super=" + super.toString() + ", unit='" + unit + '\'' + ", graphable="
                 + graphable + '}';
     }
-
 }

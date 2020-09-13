@@ -35,5 +35,7 @@ public interface ICommunicatorBuilder {
 
     ICommunicatorBuilder withScheduler(ScheduledExecutorService scheduler);
 
+    ICommunicatorBuilder withEncryption(boolean useEncryption);
+
     IParadoxCommunicator build();
 }

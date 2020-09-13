@@ -15,12 +15,16 @@ package org.openhab.binding.insteon.internal;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -44,6 +48,7 @@ import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.driver.DriverListener;
 import org.openhab.binding.insteon.internal.driver.ModemDBEntry;
 import org.openhab.binding.insteon.internal.driver.Poller;
+import org.openhab.binding.insteon.internal.driver.Port;
 import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
@@ -107,7 +112,7 @@ public class InsteonBinding {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonBinding.class);
 
-    private Driver driver = new Driver();
+    private Driver driver;
     private ConcurrentHashMap<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
     private PortListener portListener = new PortListener();
@@ -119,20 +124,20 @@ public class InsteonBinding {
     private InsteonNetworkHandler handler;
 
     public InsteonBinding(InsteonNetworkHandler handler, @Nullable InsteonNetworkConfiguration config,
-            @Nullable SerialPortManager serialPortManager) {
+            @Nullable SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
         this.handler = handler;
+
+        String port = config.getPort();
+        logger.debug("port = '{}'", Utils.redactPassword(port));
+
+        driver = new Driver(port, portListener, serialPortManager, scheduler);
+        driver.addMsgListener(portListener);
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
         if (devicePollIntervalSeconds != null) {
             devicePollIntervalMilliseconds = devicePollIntervalSeconds * 1000;
         }
         logger.debug("device poll interval set to {} seconds", devicePollIntervalMilliseconds / 1000);
-
-        Integer modemDbRetryTimeoutSeconds = config.getModemDbRetryTimeoutSeconds();
-        if (modemDbRetryTimeoutSeconds != null) {
-            logger.debug("setting modem db retry timeout to {} seconds", modemDbRetryTimeoutSeconds);
-            driver.setModemDBRetryTimeout(modemDbRetryTimeoutSeconds * 1000);
-        }
 
         String additionalDevices = config.getAdditionalDevices();
         if (additionalDevices != null) {
@@ -152,34 +157,16 @@ public class InsteonBinding {
 
         deadDeviceTimeout = devicePollIntervalMilliseconds * DEAD_DEVICE_COUNT;
         logger.debug("dead device timeout set to {} seconds", deadDeviceTimeout / 1000);
+    }
 
-        String port = config.getPort();
-        logger.debug("port = '{}'", Utils.redactPassword(port));
-        driver.addPort("port", port, serialPortManager);
-        driver.addMsgListener(portListener, port);
-
-        logger.debug("setting driver listener");
-        driver.setDriverListener(portListener);
+    public Driver getDriver() {
+        return driver;
     }
 
     public boolean startPolling() {
-        logger.debug("starting {} ports", driver.getNumberOfPorts());
-
-        driver.startAllPorts();
-        logger.debug("ports started");
-        switch (driver.getNumberOfPorts()) {
-            case 0:
-                logger.warn("initialization complete, but found no ports!");
-                return false;
-            case 1:
-                logger.debug("initialization complete, found 1 port!");
-                break;
-            default:
-                logger.warn("initialization complete, found {} ports.", driver.getNumberOfPorts());
-                break;
-        }
-
-        return true;
+        logger.debug("starting to poll {}", driver.getPortName());
+        driver.start();
+        return driver.isRunning();
     }
 
     public void setIsActive(boolean isActive) {
@@ -262,12 +249,15 @@ public class InsteonBinding {
         handler.updateState(channelUID, state);
     }
 
-    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey) {
+    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey,
+            Map<String, @Nullable Object> deviceConfigMap) {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
+        dev.setProductKey(productKey);
         dev.setDriver(driver);
-        dev.addPort(driver.getDefaultPort());
+        dev.setIsModem(productKey.equals(InsteonDeviceHandler.PLM_PRODUCT_KEY));
+        dev.setDeviceConfigMap(deviceConfigMap);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);
         }
@@ -306,10 +296,10 @@ public class InsteonBinding {
     private int checkIfInModemDatabase(InsteonDevice dev) {
         try {
             InsteonAddress addr = dev.getAddress();
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
             if (dbes.containsKey(addr)) {
                 if (!dev.hasModemDBEntry()) {
-                    logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr));
+                    logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr, true));
                     dev.setHasModemDBEntry(true);
                 }
             } else {
@@ -323,6 +313,26 @@ public class InsteonBinding {
         }
     }
 
+    public Map<String, String> getDatabaseInfo() {
+        try {
+            Map<String, String> databaseInfo = new HashMap<>();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+            for (InsteonAddress addr : dbes.keySet()) {
+                String a = addr.toString();
+                databaseInfo.put(a, a + ": " + getLinkInfo(dbes, addr, false));
+            }
+
+            return databaseInfo;
+        } finally {
+            driver.unlockModemDBEntries();
+        }
+    }
+
+    public boolean reconnect() {
+        driver.stop();
+        return startPolling();
+    }
+
     /**
      * Everything below was copied from Insteon PLM v1
      */
@@ -332,7 +342,7 @@ public class InsteonBinding {
      */
     public void shutdown() {
         logger.debug("shutting down Insteon bridge");
-        driver.stopAllPorts();
+        driver.stop();
         devices.clear();
         RequestQueueManager.destroyInstance();
         Poller.instance().stop();
@@ -350,42 +360,55 @@ public class InsteonBinding {
         return (dev);
     }
 
-    private String getLinkInfo(HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a) {
+    private String getLinkInfo(Map<InsteonAddress, @Nullable ModemDBEntry> dbes, InsteonAddress a, boolean prefix) {
         ModemDBEntry dbe = dbes.get(a);
-        ArrayList<Byte> controls = dbe.getControls();
-        ArrayList<Byte> responds = dbe.getRespondsTo();
+        List<Byte> controls = dbe.getControls();
+        List<Byte> responds = dbe.getRespondsTo();
 
-        StringBuilder buf = new StringBuilder("the modem");
-        if (!controls.isEmpty()) {
-            buf.append(" controls groups [");
-            buf.append(toGroupString(controls));
-            buf.append("]");
-        }
-
-        if (!responds.isEmpty()) {
-            if (!controls.isEmpty()) {
-                buf.append(" and");
+        Port port = dbe.getPort();
+        String deviceName = port.getDeviceName();
+        String s = deviceName.startsWith("/hub") ? "hub" : "plm";
+        StringBuilder buf = new StringBuilder();
+        if (port.isModem(a)) {
+            if (prefix) {
+                buf.append("it is the ");
             }
-
-            buf.append(" responds to groups [");
+            buf.append(s);
+            buf.append(" (");
+            buf.append(Utils.redactPassword(deviceName));
+            buf.append(")");
+        } else {
+            if (prefix) {
+                buf.append("the ");
+            }
+            buf.append(s);
+            buf.append(" controls groups (");
+            buf.append(toGroupString(controls));
+            buf.append(") and responds to groups (");
             buf.append(toGroupString(responds));
-            buf.append("]");
+            buf.append(")");
         }
 
         return buf.toString();
     }
 
-    private String toGroupString(ArrayList<Byte> group) {
-        ArrayList<Byte> sorted = new ArrayList<>(group);
-        Collections.sort(sorted);
+    private String toGroupString(List<Byte> group) {
+        List<Byte> sorted = new ArrayList<>(group);
+        Collections.sort(sorted, new Comparator<Byte>() {
+            @Override
+            public int compare(Byte b1, Byte b2) {
+                int i1 = b1 & 0xFF;
+                int i2 = b2 & 0xFF;
+                return i1 < i2 ? -1 : i1 == i2 ? 0 : 1;
+            }
+        });
 
         StringBuilder buf = new StringBuilder();
         for (Byte b : sorted) {
             if (buf.length() > 0) {
                 buf.append(",");
             }
-            buf.append("0x");
-            buf.append(Utils.getHexString(b));
+            buf.append(b & 0xFF);
         }
 
         return buf.toString();
@@ -414,25 +437,24 @@ public class InsteonBinding {
     @NonNullByDefault
     private class PortListener implements MsgListener, DriverListener {
         @Override
-        public void msg(Msg msg, String fromPort) {
+        public void msg(Msg msg) {
             if (msg.isEcho() || msg.isPureNack()) {
                 return;
             }
             messagesReceived++;
             logger.debug("got msg: {}", msg);
             if (msg.isX10()) {
-                handleX10Message(msg, fromPort);
+                handleX10Message(msg);
             } else {
-                handleInsteonMessage(msg, fromPort);
+                handleInsteonMessage(msg);
             }
-
         }
 
         @Override
         public void driverCompletelyInitialized() {
-            List<String> missing = new ArrayList<String>();
+            List<String> missing = new ArrayList<>();
             try {
-                HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
+                Map<InsteonAddress, @Nullable ModemDBEntry> dbes = driver.lockModemDBEntries();
                 logger.debug("modem database has {} entries!", dbes.size());
                 if (dbes.isEmpty()) {
                     logger.warn("the modem link database is empty!");
@@ -440,7 +462,7 @@ public class InsteonBinding {
                 for (InsteonAddress k : dbes.keySet()) {
                     logger.debug("modem db entry: {}", k);
                 }
-                HashSet<InsteonAddress> addrs = new HashSet<>();
+                Set<InsteonAddress> addrs = new HashSet<>();
                 for (InsteonDevice dev : devices.values()) {
                     InsteonAddress a = dev.getAddress();
                     if (!dbes.containsKey(a)) {
@@ -450,7 +472,8 @@ public class InsteonBinding {
                     } else {
                         if (!dev.hasModemDBEntry()) {
                             addrs.add(a);
-                            logger.debug("device {} found in the modem database and {}.", a, getLinkInfo(dbes, a));
+                            logger.debug("device {} found in the modem database and {}.", a,
+                                    getLinkInfo(dbes, a, true));
                             dev.setHasModemDBEntry(true);
                         }
                         if (dev.getStatus() != DeviceStatus.POLLING) {
@@ -460,9 +483,9 @@ public class InsteonBinding {
                 }
 
                 for (InsteonAddress k : dbes.keySet()) {
-                    if (!addrs.contains(k) && !k.equals(dbes.get(k).getPort().getAddress())) {
+                    if (!addrs.contains(k)) {
                         logger.debug("device {} found in the modem database, but is not configured as a thing and {}.",
-                                k, getLinkInfo(dbes, k));
+                                k, getLinkInfo(dbes, k, true));
 
                         missing.add(k.toString());
                     }
@@ -476,7 +499,12 @@ public class InsteonBinding {
             }
         }
 
-        private void handleInsteonMessage(Msg msg, String fromPort) {
+        @Override
+        public void disconnected() {
+            handler.bindingDisconnected();
+        }
+
+        private void handleInsteonMessage(Msg msg) {
             InsteonAddress toAddr = msg.getAddr("toAddress");
             if (!msg.isBroadcast() && !driver.isMsgForUs(toAddr)) {
                 // not for one of our modems, do not process
@@ -487,17 +515,17 @@ public class InsteonBinding {
                 logger.debug("invalid fromAddress, ignoring msg {}", msg);
                 return;
             }
-            handleMessage(fromPort, fromAddr, msg);
+            handleMessage(fromAddr, msg);
         }
 
-        private void handleX10Message(Msg msg, String fromPort) {
+        private void handleX10Message(Msg msg) {
             try {
                 int x10Flag = msg.getByte("X10Flag") & 0xff;
                 int rawX10 = msg.getByte("rawX10") & 0xff;
                 if (x10Flag == 0x80) { // actual command
                     if (x10HouseUnit != -1) {
                         InsteonAddress fromAddr = new InsteonAddress((byte) x10HouseUnit);
-                        handleMessage(fromPort, fromAddr, msg);
+                        handleMessage(fromAddr, msg);
                     }
                 } else if (x10Flag == 0) {
                     // what unit the next cmd will apply to
@@ -509,12 +537,12 @@ public class InsteonBinding {
             }
         }
 
-        private void handleMessage(String fromPort, InsteonAddress fromAddr, Msg msg) {
+        private void handleMessage(InsteonAddress fromAddr, Msg msg) {
             InsteonDevice dev = getDevice(fromAddr);
             if (dev == null) {
                 logger.debug("dropping message from unknown device with address {}", fromAddr);
             } else {
-                dev.handleMessage(fromPort, msg);
+                dev.handleMessage(msg);
             }
         }
     }

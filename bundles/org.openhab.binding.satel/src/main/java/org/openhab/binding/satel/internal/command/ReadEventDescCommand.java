@@ -34,8 +34,8 @@ public class ReadEventDescCommand extends SatelCommandBase {
     /**
      * Creates new command class instance to read description for given parameters.
      *
-     * @param eventCode       event code
-     * @param restore         <code>true</code> if this is restoration
+     * @param eventCode event code
+     * @param restore <code>true</code> if this is restoration
      * @param longDescription <code>true</code> for long description, <code>false</code> for short one
      */
     public ReadEventDescCommand(int eventCode, boolean restore, boolean longDescription) {
@@ -99,5 +99,4 @@ public class ReadEventDescCommand extends SatelCommandBase {
         }
         return true;
     }
-
 }

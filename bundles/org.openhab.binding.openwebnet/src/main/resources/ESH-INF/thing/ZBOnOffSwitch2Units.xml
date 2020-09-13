@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for ZigBee OnOff Switch with 2 units (BTicino 4592) -->
+	<thing-type id="zb_on_off_switch2u">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="zb_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>ZigBee 2-units Switch</label>
+		<description>A OpenWebNet ZigBee 2-units switch (actuator) for the control of 2 loads/lights. BTicino model: 4592</description>
+
+		<channels>
+			<channel id="switch_01" typeId="switch"/>
+			<channel id="switch_02" typeId="switch"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-4592</property>
+			<property name="ownDeviceType">256</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Device Address</label>
+				<description>It identifies one ZigBee device. Use decimal format address without the UNIT part and network: ZigBee
+					WHERE=414122201#9 -> OpenWebNet Device Address = 4141222</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

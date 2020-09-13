@@ -169,7 +169,6 @@ public class A5_20_04 extends A5_20 {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (CHANNEL_SEND_COMMAND.equals(channelId) && (command.equals(OnOffType.ON))) {
             byte db3 = getPos(getCurrentStateFunc);
             byte db2 = getTsp(getCurrentStateFunc);
@@ -186,7 +185,6 @@ public class A5_20_04 extends A5_20 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         switch (channelId) {
             case CHANNEL_VALVE_POSITION:
                 return getValvePosition();

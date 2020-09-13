@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solaredge.internal.connector;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpStatus.Code;
 
 /**
@@ -20,12 +22,14 @@ import org.eclipse.jetty.http.HttpStatus.Code;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class CommunicationStatus {
 
-    private Code httpCode;
-    private Exception error;
+    private @Nullable Code httpCode;
+    private @Nullable Exception error;
 
     public final Code getHttpCode() {
+        Code httpCode = this.httpCode;
         return httpCode == null ? Code.INTERNAL_SERVER_ERROR : httpCode;
     }
 
@@ -33,7 +37,7 @@ public class CommunicationStatus {
         this.httpCode = httpCode;
     }
 
-    public final Exception getError() {
+    public final @Nullable Exception getError() {
         return error;
     }
 
@@ -42,12 +46,13 @@ public class CommunicationStatus {
     }
 
     public final String getMessage() {
+        Code httpCode = this.httpCode;
+        Exception error = this.error;
         if (error != null && error.getMessage() != null && !error.getMessage().isEmpty()) {
             return error.getMessage();
-        } else if (httpCode != null & httpCode.getMessage() != null && !httpCode.getMessage().isEmpty()) {
+        } else if (httpCode != null && httpCode.getMessage() != null && !httpCode.getMessage().isEmpty()) {
             return httpCode.getMessage();
         }
         return "";
     }
-
 }

@@ -127,5 +127,4 @@ public class NeeoDeviceDetails {
                 + ", manufacturer=" + manufacturer + ", name=" + name + ", timing=" + timing + ", deviceCapabilities="
                 + StringUtils.join(deviceCapabilities, ',') + "]";
     }
-
 }

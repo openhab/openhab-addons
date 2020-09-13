@@ -36,5 +36,4 @@ public interface NibeHeatPumpEventListener {
      *            Error occurred.
      */
     void errorOccurred(String error);
-
 }

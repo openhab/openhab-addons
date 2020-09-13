@@ -39,7 +39,7 @@ public class OwnTracksCallbackServlet extends AbstractCallbackServlet {
      * Constructor called at binding startup.
      *
      * @param discoveryService Discovery service for new trackers.
-     * @param trackerRegistry  Tracker registry
+     * @param trackerRegistry Tracker registry
      */
     public OwnTracksCallbackServlet(TrackerDiscoveryService discoveryService, TrackerRegistry trackerRegistry) {
         super(discoveryService, trackerRegistry);

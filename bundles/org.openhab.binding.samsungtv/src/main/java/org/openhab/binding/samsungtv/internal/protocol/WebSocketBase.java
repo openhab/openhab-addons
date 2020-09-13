@@ -14,6 +14,7 @@ package org.openhab.binding.samsungtv.internal.protocol;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,6 +35,8 @@ class WebSocketBase extends WebSocketAdapter {
      *
      */
     final RemoteControllerWebSocket remoteControllerWebSocket;
+
+    private @Nullable Future<?> sessionFuture;
 
     /**
      * @param remoteControllerWebSocket
@@ -72,7 +75,8 @@ class WebSocketBase extends WebSocketAdapter {
         isConnecting = true;
 
         try {
-            remoteControllerWebSocket.client.connect(this, uri);
+            sessionFuture = remoteControllerWebSocket.client.connect(this, uri);
+            logger.trace("Connecting session Future: {}", sessionFuture);
         } catch (IOException | IllegalStateException e) {
             throw new RemoteControllerException(e);
         }
@@ -89,9 +93,16 @@ class WebSocketBase extends WebSocketAdapter {
 
     void close() {
         logger.debug("{} connection close requested", this.getClass().getSimpleName());
+
         Session session = getSession();
         if (session != null) {
             session.close();
+        }
+
+        final Future<?> sessionFuture = this.sessionFuture;
+        logger.trace("Closing session Future: {}", sessionFuture);
+        if (sessionFuture != null && !sessionFuture.isDone()) {
+            sessionFuture.cancel(true);
         }
     }
 
@@ -117,5 +128,4 @@ class WebSocketBase extends WebSocketAdapter {
     public void onWebSocketText(@Nullable String str) {
         logger.trace("{}: onWebSocketText: {}", this.getClass().getSimpleName(), str);
     }
-
 }

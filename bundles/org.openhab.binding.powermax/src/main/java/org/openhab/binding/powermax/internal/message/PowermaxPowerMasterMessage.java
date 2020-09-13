@@ -66,5 +66,4 @@ public class PowermaxPowerMasterMessage extends PowermaxBaseMessage {
 
         return str;
     }
-
 }

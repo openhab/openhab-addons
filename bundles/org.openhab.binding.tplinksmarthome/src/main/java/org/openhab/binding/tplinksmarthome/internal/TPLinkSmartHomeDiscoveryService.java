@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
+import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.CONFIG_DEVICE_ID;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.*;
 
 import java.io.IOException;
@@ -184,8 +185,8 @@ public class TPLinkSmartHomeDiscoveryService extends AbstractDiscoveryService im
             final Map<String, Object> properties = PropertiesCollector.collectProperties(thingType.get(), ipAddress,
                     sysinfoRaw);
             final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
-                    .withLabel(sysinfo.getAlias()).withRepresentationProperty(deviceId).withProperties(properties)
-                    .build();
+                    .withLabel(sysinfo.getAlias()).withRepresentationProperty(CONFIG_DEVICE_ID)
+                    .withProperties(properties).build();
             thingDiscovered(discoveryResult);
         } else {
             logger.debug("Detected, but ignoring unsupported TP-Link Smart Home device model '{}'", sysinfo.getModel());

@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.DefaultSystemChannelTypeProvider;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
+import org.eclipse.smarthome.core.thing.type.AutoUpdatePolicy;
 import org.eclipse.smarthome.core.thing.type.ChannelType;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
@@ -37,9 +39,11 @@ import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
@@ -135,6 +139,7 @@ public class Property implements AttributeChanged {
      * @return Returns the ChannelType to be used to build the Channel.
      */
     private ChannelType createChannelType(PropertyAttributes attributes, ChannelState channelState) {
+        // Retained property -> State channel
         if (attributes.retained) {
             return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
                     .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
@@ -142,6 +147,14 @@ public class Property implements AttributeChanged {
                             .toStateDescription())
                     .build();
         } else {
+            // Non-retained and settable property -> State channel
+            if (attributes.settable) {
+                return ChannelTypeBuilder.state(channelTypeUID, attributes.name, channelState.getItemType())
+                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HOMIE_CHANNEL))
+                        .withCommandDescription(channelState.getCache().createCommandDescription().build())
+                        .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+            }
+            // Non-retained and non settable property -> Trigger channel
             if (attributes.datatype.equals(DataTypeEnum.enum_)) {
                 if (attributes.format.contains("PRESSED") && attributes.format.contains("RELEASED")) {
                     return DefaultSystemChannelTypeProvider.SYSTEM_RAWBUTTON;
@@ -174,7 +187,15 @@ public class Property implements AttributeChanged {
                 value = new OnOffValue("true", "false");
                 break;
             case color_:
-                value = new ColorValue(attributes.format.contains("rgb"), null, null, 100);
+                if (attributes.format.equals("hsv")) {
+                    value = new ColorValue(ColorMode.HSB, null, null, 100);
+                } else if (attributes.format.equals("rgb")) {
+                    value = new ColorValue(ColorMode.RGB, null, null, 100);
+                } else {
+                    logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
+                            attributes.format);
+                    value = new TextValue();
+                }
                 break;
             case enum_:
                 String enumValues[] = attributes.format.split(",");
@@ -192,8 +213,11 @@ public class Property implements AttributeChanged {
                 if (step != null && !isDecimal && step.intValue() <= 0) {
                     step = new BigDecimal(1);
                 }
-
-                value = new NumberValue(min, max, step, attributes.unit);
+                if (attributes.unit.contains("%") && attributes.settable) {
+                    value = new PercentageValue(min, max, step, null, null);
+                } else {
+                    value = new NumberValue(min, max, step, attributes.unit);
+                }
                 break;
             case string_:
             case unknown:
@@ -307,8 +331,8 @@ public class Property implements AttributeChanged {
      *
      * @return Returns a list of relative topics
      */
-    public ArrayList<String> getRetainedTopics() {
-        ArrayList<String> topics = new ArrayList<String>();
+    public List<String> getRetainedTopics() {
+        List<String> topics = new ArrayList<>();
 
         topics.addAll(Stream.of(this.attributes.getClass().getDeclaredFields()).map(f -> {
             return String.format("%s/$%s", this.propertyID, f.getName());

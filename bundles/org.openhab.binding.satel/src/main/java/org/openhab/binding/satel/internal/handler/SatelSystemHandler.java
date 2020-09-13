@@ -30,6 +30,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.satel.internal.command.ClearTroublesCommand;
 import org.openhab.binding.satel.internal.command.IntegraStatusCommand;
 import org.openhab.binding.satel.internal.command.SatelCommand;
@@ -79,7 +81,9 @@ public class SatelSystemHandler extends SatelStateThingHandler {
         if (getThingConfig().isCommandOnly()) {
             return;
         }
-        updateState(CHANNEL_DATE_TIME, new DateTimeType(event.getIntegraTime().atZone(getBridgeHandler().getZoneId())));
+        updateState(CHANNEL_DATE_TIME,
+                event.getIntegraTime().map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
+                        .orElse(UnDefType.UNDEF));
         updateSwitch(CHANNEL_SERVICE_MODE, event.inServiceMode());
         updateSwitch(CHANNEL_TROUBLES, event.troublesPresent());
         updateSwitch(CHANNEL_TROUBLES_MEMORY, event.troublesMemory());
@@ -139,5 +143,4 @@ public class SatelSystemHandler extends SatelStateThingHandler {
 
         return result;
     }
-
 }

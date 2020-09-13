@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.heos.internal.resources;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.heos.internal.json.dto.HeosEventObject;
+import org.openhab.binding.heos.internal.json.payload.Media;
 
 /**
  * The {@link HeosSystemEventListener } is used for classes which
@@ -25,9 +28,9 @@ import java.util.Map;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosSystemEventListener {
-
-    protected List<HeosEventListener> listenerList = new ArrayList<>();
+    private Set<HeosEventListener> listenerList = new CopyOnWriteArraySet<>();
 
     /**
      * Register a listener from type {@link HeosEventListener} to be notified by
@@ -51,34 +54,32 @@ public class HeosSystemEventListener {
     /**
      * Notifies the registered listener of a changed state type event
      *
-     * @param pid     the ID of the player or group which has changed
-     * @param event   the name of the event (see {@link HeosConstants} for event types)
-     * @param command the command of the event
+     * @param eventObject the command of the event
      */
-    public void fireStateEvent(String pid, String event, String command) {
-        listenerList.forEach(element -> element.playerStateChangeEvent(pid, event, command));
+    public void fireStateEvent(HeosEventObject eventObject) {
+        listenerList.forEach(element -> element.playerStateChangeEvent(eventObject));
     }
 
     /**
      * Notifies the registered listener of a changed media type event
      *
-     * @param pid  the ID of the player or group which has changed
-     * @param info an HashMap which contains the media information
+     * @param pid the ID of the player or group which has changed
+     * @param media the media information
      */
-    public void fireMediaEvent(String pid, Map<String, String> info) {
-        listenerList.forEach(element -> element.playerMediaChangeEvent(pid, info));
+    public void fireMediaEvent(String pid, Media media) {
+        listenerList.forEach(element -> element.playerMediaChangeEvent(pid, media));
     }
 
     /**
      * Notifies the registered listener if a change of the bridge state
      *
-     * @param event   the event type
-     * @param result  the result (success or fail)
+     * @param event the event type
+     * @param success the result (success or fail)
      * @param command the command of the event
      */
-    public void fireBridgeEvent(String event, String result, String command) {
-        for (int i = 0; i < listenerList.size(); i++) {
-            listenerList.get(i).bridgeChangeEvent(event, result, command);
+    public void fireBridgeEvent(String event, boolean success, Object command) {
+        for (HeosEventListener heosEventListener : listenerList) {
+            heosEventListener.bridgeChangeEvent(event, success, command);
         }
     }
 }

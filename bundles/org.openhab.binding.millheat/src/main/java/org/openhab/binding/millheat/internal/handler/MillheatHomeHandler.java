@@ -17,8 +17,6 @@ import static org.openhab.binding.millheat.internal.MillheatBindingConstants.*;
 import java.time.ZoneId;
 import java.util.Optional;
 
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -72,7 +70,7 @@ public class MillheatHomeHandler extends MillheatBaseThingHandler {
                     updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_TEMP, command);
                 } else if (command instanceof DecimalType) {
                     updateVacationModeProperty(home, SetHolidayParameterRequest.PROP_TEMP,
-                            new QuantityType<Temperature>((DecimalType) command, SIUnits.CELSIUS));
+                            new QuantityType<>((DecimalType) command, SIUnits.CELSIUS));
                 }
             } else if (CHANNEL_HOME_VACATION_MODE.equals(channelUID.getId())) {
                 if (command instanceof RefreshType) {

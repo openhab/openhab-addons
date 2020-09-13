@@ -40,7 +40,7 @@ public class IhcConfigurationServiceTest {
     private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/ConfigurationService";
     final String query = ResourceFileUtils.getFileContent("EmptyQuery.xml");
-    private Map<String, String> requestProps = new HashMap<String, String>();
+    private Map<String, String> requestProps = new HashMap<>();
     private final int timeout = 100;
 
     @Before
@@ -98,5 +98,4 @@ public class IhcConfigurationServiceTest {
         assertEquals("3.06.c", result.getRfModuleSoftwareVersion());
         assertEquals("640C10140000", result.getRfModuleSerialNumber());
     }
-
 }

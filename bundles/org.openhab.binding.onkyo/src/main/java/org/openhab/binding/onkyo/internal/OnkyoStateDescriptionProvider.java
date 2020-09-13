@@ -52,7 +52,8 @@ public class OnkyoStateDescriptionProvider implements DynamicStateDescriptionPro
             return null;
         }
 
-        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create() : StateDescriptionFragmentBuilder.create(original);
+        StateDescriptionFragmentBuilder builder = (original == null) ? StateDescriptionFragmentBuilder.create()
+                : StateDescriptionFragmentBuilder.create(original);
         return builder.withOptions(options).build().toStateDescription();
     }
 

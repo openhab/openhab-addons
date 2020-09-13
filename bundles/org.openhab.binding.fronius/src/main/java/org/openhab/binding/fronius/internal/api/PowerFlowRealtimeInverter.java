@@ -72,5 +72,4 @@ public class PowerFlowRealtimeInverter {
     public void seteTotal(double eTotal) {
         this.eTotal = eTotal;
     }
-
 }

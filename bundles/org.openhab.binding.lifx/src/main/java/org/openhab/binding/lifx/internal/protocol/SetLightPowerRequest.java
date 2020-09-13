@@ -86,5 +86,4 @@ public class SetLightPowerRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] { StateLightPowerResponse.TYPE };
     }
-
 }

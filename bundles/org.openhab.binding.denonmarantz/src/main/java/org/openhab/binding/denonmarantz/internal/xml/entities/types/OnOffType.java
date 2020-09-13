@@ -36,5 +36,4 @@ public class OnOffType {
     public void setValue(Boolean value) {
         this.value = value;
     }
-
 }

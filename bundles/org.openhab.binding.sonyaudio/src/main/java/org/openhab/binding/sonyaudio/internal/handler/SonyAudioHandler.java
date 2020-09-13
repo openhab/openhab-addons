@@ -233,8 +233,11 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
                 case CHANNEL_RADIO_SEEK_STATION:
                     handleRadioSeekStationCommand(command, channelUID);
                     break;
+                case CHANNEL_NIGHTMODE:
+                    handleNightMode(command, channelUID);
+                    break;
                 default:
-                    logger.error("Channel {} not supported!", id);
+                    logger.error("Command {}, {} not supported by {}!", id, command, channelUID);
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
@@ -252,6 +255,20 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         if (command instanceof StringType) {
             logger.debug("handleSoundSettings set {}", command);
             connection.setSoundSettings("soundField", ((StringType) command).toString());
+        }
+    }
+
+    public void handleNightMode(Command command, ChannelUID channelUID) throws IOException {
+        if (command instanceof RefreshType) {
+            logger.debug("handleNightMode RefreshType");
+            Map<String, String> result = soundSettingsCache.getValue();
+            if (result != null) {
+                updateState(channelUID, new StringType(result.get("nightMode")));
+            }
+        }
+        if (command instanceof OnOffType) {
+            logger.debug("handleNightMode set {}", command);
+            connection.setSoundSettings("nightMode", ((OnOffType) command) == OnOffType.ON ? "on" : "off");
         }
     }
 
@@ -394,7 +411,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         }
     }
 
-    abstract public String setInputCommand(Command command);
+    public abstract String setInputCommand(Command command);
 
     @Override
     public void initialize() {
@@ -498,7 +515,7 @@ abstract class SonyAudioHandler extends BaseThingHandler implements SonyAudioEve
         }
     }
 
-    abstract public StringType inputSource(String input);
+    public abstract StringType inputSource(String input);
 
     @Override
     public void updateCurrentRadioStation(int radioStation) {

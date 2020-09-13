@@ -22,6 +22,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.RoomInformation;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class MCommand extends CubeCommand {
     private final Logger logger = LoggerFactory.getLogger(MCommand.class);
 
@@ -181,5 +183,4 @@ public class MCommand extends CubeCommand {
     public String getReturnStrings() {
         return "A:";
     }
-
 }

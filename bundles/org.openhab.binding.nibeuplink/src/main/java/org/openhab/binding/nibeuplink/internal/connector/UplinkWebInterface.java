@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class UplinkWebInterface implements AtomicReferenceTrait {
 
-    private final static int NIBE_ID_THRESHOLD = 14;
+    private static final int NIBE_ID_THRESHOLD = 14;
 
     private final Logger logger = LoggerFactory.getLogger(UplinkWebInterface.class);
 
@@ -81,8 +81,7 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
     /**
      * periodic request executor job
      */
-    private AtomicReference<@Nullable Future<?>> requestExecutorJobReference = new AtomicReference<@Nullable Future<?>>(
-            null);
+    private AtomicReference<@Nullable Future<?>> requestExecutorJobReference = new AtomicReference<>(null);
 
     /**
      * this class is responsible for executing periodic web requests. This ensures that only one request is executed at
@@ -90,12 +89,13 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
      *
      * @author afriese - initial contribution
      */
+    @NonNullByDefault
     private class WebRequestExecutor implements Runnable {
 
         /**
          * queue which holds the commands to execute
          */
-        private final Queue<NibeUplinkCommand> commandQueue;
+        private final Queue<@Nullable NibeUplinkCommand> commandQueue;
 
         /**
          * constructor
@@ -153,17 +153,17 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
                                 uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                                         status.getMessage());
                                 setAuthenticated(false);
-
                         }
                     }
                 };
 
                 NibeUplinkCommand command = commandQueue.poll();
-                command.setListener(statusUpdater);
-                command.performAction(httpClient);
+                if (command != null) {
+                    command.setListener(statusUpdater);
+                    command.performAction(httpClient);
+                }
             }
         }
-
     }
 
     /**
@@ -207,7 +207,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         setAuthenticated(false);
 
         if (preCheck()) {
-
             StatusUpdateListener statusUpdater = new StatusUpdateListener() {
 
                 @Override
@@ -265,7 +264,6 @@ public class UplinkWebInterface implements AtomicReferenceTrait {
         this.uplinkHandler.setStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                 preCheckStatusMessage);
         return false;
-
     }
 
     /**

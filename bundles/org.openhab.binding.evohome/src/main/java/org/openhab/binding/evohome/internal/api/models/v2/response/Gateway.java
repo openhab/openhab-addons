@@ -37,5 +37,4 @@ public class Gateway {
     public List<TemperatureControlSystem> getTemperatureControlSystems() {
         return temperatureControlSystems;
     }
-
 }

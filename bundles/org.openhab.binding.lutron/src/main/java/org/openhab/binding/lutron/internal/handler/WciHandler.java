@@ -118,5 +118,4 @@ public class WciHandler extends BaseKeypadHandler {
     public WciHandler(Thing thing) {
         super(thing);
     }
-
 }

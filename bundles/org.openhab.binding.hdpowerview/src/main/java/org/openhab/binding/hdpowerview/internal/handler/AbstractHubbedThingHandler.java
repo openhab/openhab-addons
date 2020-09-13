@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.hdpowerview.internal.handler;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
@@ -20,10 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Abstract class for Things that are managed through an HD Power View Hub
+ * Abstract class for Things that are managed through an HD PowerView hub
  *
  * @author Andy Lintner - Initial contribution
  */
+@NonNullByDefault
 abstract class AbstractHubbedThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractHubbedThingHandler.class);
@@ -32,7 +35,7 @@ abstract class AbstractHubbedThingHandler extends BaseThingHandler {
         super(thing);
     }
 
-    protected HDPowerViewHubHandler getBridgeHandler() {
+    protected @Nullable HDPowerViewHubHandler getBridgeHandler() {
         Bridge bridge = getBridge();
         if (bridge == null) {
             logger.error("Thing {} must belong to a hub", getThing().getThingTypeUID().getId());
@@ -45,5 +48,4 @@ abstract class AbstractHubbedThingHandler extends BaseThingHandler {
         }
         return (HDPowerViewHubHandler) handler;
     }
-
 }

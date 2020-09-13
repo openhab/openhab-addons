@@ -19,6 +19,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.elerotransmitterstick.internal.config.EleroTransmitterStickConfig;
 import org.openhab.binding.elerotransmitterstick.internal.stick.TransmitterStick;
 import org.openhab.binding.elerotransmitterstick.internal.stick.TransmitterStick.StickListener;
@@ -29,10 +30,12 @@ import org.openhab.binding.elerotransmitterstick.internal.stick.TransmitterStick
  * @author Volker Bier - Initial contribution
  */
 public class EleroTransmitterStickHandler extends BaseBridgeHandler implements BridgeHandler {
-    private TransmitterStick stick;
+    private final SerialPortManager serialPortManager;
+    private final TransmitterStick stick;
 
-    public EleroTransmitterStickHandler(Bridge bridge) {
+    public EleroTransmitterStickHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
 
         stick = new TransmitterStick(new StickListener() {
             @Override
@@ -62,7 +65,7 @@ public class EleroTransmitterStickHandler extends BaseBridgeHandler implements B
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
-        stick.initialize(getConfig().as(EleroTransmitterStickConfig.class), scheduler);
+        stick.initialize(getConfig().as(EleroTransmitterStickConfig.class), scheduler, serialPortManager);
     }
 
     public TransmitterStick getStick() {

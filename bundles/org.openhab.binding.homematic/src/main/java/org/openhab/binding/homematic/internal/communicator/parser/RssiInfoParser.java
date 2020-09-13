@@ -35,7 +35,7 @@ public class RssiInfoParser extends CommonRpcParser<Object[], List<HmRssiInfo>> 
     @Override
     @SuppressWarnings("unchecked")
     public List<HmRssiInfo> parse(Object[] result) throws IOException {
-        List<HmRssiInfo> rssiList = new ArrayList<HmRssiInfo>();
+        List<HmRssiInfo> rssiList = new ArrayList<>();
         if (result != null && result.length > 0 && result[0] instanceof Map) {
             Map<String, ?> devices = (Map<String, ?>) result[0];
 

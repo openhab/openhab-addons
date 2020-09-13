@@ -9,7 +9,7 @@
 		<label>RSSI</label>
 		<description>Received signal strength indicator</description>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%d dBm" />
+		<state readOnly="true" pattern="%d dBm"/>
 	</channel-type>
 
 </thing:thing-descriptions>

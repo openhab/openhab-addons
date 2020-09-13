@@ -14,13 +14,16 @@ package org.openhab.binding.ntp.internal;
 
 import static org.openhab.binding.ntp.internal.NtpBindingConstants.*;
 
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.ntp.internal.handler.NtpHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -31,18 +34,15 @@ import org.osgi.service.component.annotations.Reference;
  * @author Marcel Verpaalen - Initial contribution
  * @author Markus Rathgeb - Add locale provider support
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.ntp")
 public class NtpHandlerFactory extends BaseThingHandlerFactory {
 
-    private LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
+    @Activate
+    public NtpHandlerFactory(final @Reference TimeZoneProvider timeZoneProvider) {
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -51,11 +51,11 @@ public class NtpHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_NTP.equals(thingTypeUID)) {
-            return new NtpHandler(thing, localeProvider);
+            return new NtpHandler(thing, timeZoneProvider);
         }
 
         return null;

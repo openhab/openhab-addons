@@ -98,10 +98,21 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
             int tcpPort = config.getPort();
             String ip150Password = config.getIp150Password();
             String pcPassword = config.getPcPassword();
+            boolean useEncryption = config.isEncrypt();
 
-            logger.debug("Phase1 - Identify communicator");
+            // Early exit. If panel type is configured and known to the binding skip auto-detection. Saves one full
+            // initial login process to detect the panel type.
+            PanelType configuredPanelType = PanelType.from(config.getPanelType());
+            if (configuredPanelType != PanelType.UNKNOWN) {
+                logger.debug("Configuration file has pannelType={}. Skipping Phase1 (Autodiscovery)",
+                        configuredPanelType);
+                scheduler.schedule(() -> createDiscoveredCommunicatorJob(configuredPanelType), 3, TimeUnit.SECONDS);
+                return;
+            }
+
+            logger.debug("Phase1 - Auto discover communicator");
             IParadoxInitialLoginCommunicator initialCommunicator = new GenericCommunicator(ipAddress, tcpPort,
-                    ip150Password, pcPassword, scheduler);
+                    ip150Password, pcPassword, scheduler, useEncryption);
             initialCommunicator.startLoginSequence();
 
             timeStamp = System.currentTimeMillis();
@@ -156,7 +167,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
         communicator = builder.withIp150Password(config.getIp150Password()).withPcPassword(config.getPcPassword())
                 .withIpAddress(config.getIpAddress()).withTcpPort(config.getPort())
                 .withMaxPartitions(config.getMaxPartitions()).withMaxZones(config.getMaxZones())
-                .withScheduler(scheduler).build();
+                .withScheduler(scheduler).withEncryption(config.isEncrypt()).build();
 
         ParadoxPanel panel = ParadoxPanel.getInstance();
         panel.setCommunicator(communicator);
@@ -164,6 +175,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
         Collection<IDataUpdateListener> listeners = Arrays.asList(panel, this);
         communicator.setListeners(listeners);
         communicator.setStoListener(this);
+        logger.debug("Listeners set to: {}", listeners);
 
         communicator.startLoginSequence();
 
@@ -180,8 +192,11 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Error while starting socket communication.");
-                throw new ParadoxRuntimeException("Communicator didn't go online in defined treshold time. "
-                        + ONLINE_WAIT_TRESHOLD_MILLIS + "sec.");
+                ParadoxRuntimeException exception = new ParadoxRuntimeException(
+                        "Communicator didn't go online in defined treshold time. " + ONLINE_WAIT_TRESHOLD_MILLIS
+                                + "sec. You can still try to reset the bridge with command RESET.");
+                logger.debug("Problem with communication", exception);
+                throw exception;
             }
         }
 
@@ -192,7 +207,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     @Override
     public void dispose() {
         cancelSchedule(refreshCacheUpdateSchedule);
-        communicator.close();
+        CommunicationState.logout(communicator);
         super.dispose();
     }
 
@@ -213,7 +228,18 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
 
     @Override
     public void update() {
+        updateStatusChannel();
+
         Bridge bridge = getThing();
+        if (bridge.getStatus() == ThingStatus.OFFLINE) {
+            if (communicator.isOnline()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                logger.debug("Bridge {} triggered update but is OFFLINE", bridge.getUID());
+                return;
+            }
+        }
+
         List<Thing> things = bridge.getThings();
         for (Thing thing : things) {
             ThingHandler handler = thing.getHandler();
@@ -229,6 +255,7 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
     public void handleCommand(ChannelUID channelUID, Command command) {
         logger.debug("Received command {}", command);
         if (ThingStatus.OFFLINE == getThing().getStatus() && command instanceof RefreshType) {
+            logger.debug("Bridge {} is OFFLINE. Cannot handle refresh commands.", getThing().getUID());
             return;
         }
 
@@ -272,7 +299,10 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
 
     @Override
     protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        updateStatusChannel();
+
         super.updateStatus(status, statusDetail, description);
+
         if (status.equals(ThingStatus.ONLINE)) {
             if (refreshCacheUpdateSchedule == null || refreshCacheUpdateSchedule.isDone()) {
                 scheduleRefresh();
@@ -280,6 +310,13 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
         } else {
             cancelSchedule(refreshCacheUpdateSchedule);
         }
+    }
+
+    private void updateStatusChannel() {
+        StringType communicatorStatus = communicator != null && communicator.isOnline()
+                ? ParadoxAlarmBindingConstants.STATE_ONLINE
+                : ParadoxAlarmBindingConstants.STATE_OFFLINE;
+        updateState(ParadoxAlarmBindingConstants.IP150_COMMUNICATION_STATE_CHANNEL_UID, communicatorStatus);
     }
 
     public IParadoxCommunicator getCommunicator() {
@@ -299,4 +336,8 @@ public class ParadoxIP150BridgeHandler extends BaseBridgeHandler
         }
     }
 
+    @Override
+    public String toString() {
+        return "ParadoxIP150BridgeHandler [" + getThing().getUID().getAsString() + "]";
+    }
 }

@@ -72,7 +72,6 @@ public class CeilingDeviceWithAmbientDevice extends CeilingDevice
         }
 
         super.onNotify(msg);
-
     }
 
     @Override

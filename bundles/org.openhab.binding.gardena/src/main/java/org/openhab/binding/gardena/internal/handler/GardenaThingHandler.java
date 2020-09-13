@@ -15,6 +15,8 @@ package org.openhab.binding.gardena.internal.handler;
 import static org.openhab.binding.gardena.internal.GardenaBindingConstants.*;
 import static org.openhab.binding.gardena.internal.GardenaSmartCommandName.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -185,7 +187,7 @@ public class GardenaThingHandler extends BaseThingHandler {
                 case "DateTime":
                     Calendar cal = DateUtils.parseToCalendar(value);
                     if (cal != null && !cal.before(VALID_DATE_START)) {
-                        return new DateTimeType(cal);
+                        return new DateTimeType(ZonedDateTime.ofInstant(cal.toInstant(), ZoneId.systemDefault()));
                     } else {
                         return UnDefType.NULL;
                     }
@@ -367,5 +369,4 @@ public class GardenaThingHandler extends BaseThingHandler {
 
         return ((GardenaAccountHandler) getBridge().getHandler()).getGardenaSmart();
     }
-
 }

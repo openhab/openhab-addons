@@ -121,7 +121,7 @@ public class CcuMetadataExtractor {
      * Loads a JavaScript file and extract JSON description data.
      */
     private Map<String, String> loadJsonLangDescriptionFile(String url, String lang) throws IOException {
-        final Map<String, String> descriptions = new TreeMap<String, String>();
+        final Map<String, String> descriptions = new TreeMap<>();
         String descriptionUrl = StringUtils.replace(url, "{LANGUAGE}", lang);
 
         String startLine = "  \"" + lang + "\" : {";
@@ -143,7 +143,7 @@ public class CcuMetadataExtractor {
      * Loads all description keys.
      */
     private Map<String, String> loadDeviceKeys() throws IOException {
-        final Map<String, String> deviceKeys = new TreeMap<String, String>();
+        final Map<String, String> deviceKeys = new TreeMap<>();
 
         new UrlLoader(CCU_URL + DEVICE_KEYS) {
 

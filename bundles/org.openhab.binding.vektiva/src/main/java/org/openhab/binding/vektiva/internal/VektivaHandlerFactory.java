@@ -56,7 +56,8 @@ public class VektivaHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) WebSocketClient webSocketClient;
 
     @Activate
-    public VektivaHandlerFactory(@Reference HttpClientFactory httpClientFactory, @Reference WebSocketFactory webSocketFactory) {
+    public VektivaHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference WebSocketFactory webSocketFactory) {
         this.httpClient = httpClientFactory.getCommonHttpClient();
         this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
     }

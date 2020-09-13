@@ -17,7 +17,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.astro.internal.model.SunZodiac;
 import org.openhab.binding.astro.internal.model.ZodiacSign;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
@@ -27,35 +29,34 @@ import org.openhab.binding.astro.internal.util.DateTimeUtils;
  *
  * @author Gerhard Riegler - Initial contribution
  */
+@NonNullByDefault
 public class SunZodiacCalc {
-    private Map<Integer, List<SunZodiac>> zodiacsByYear = new HashMap<Integer, List<SunZodiac>>();
+    private Map<Integer, List<SunZodiac>> zodiacsByYear = new HashMap<>();
 
     /**
      * Returns the zodiac for the specified calendar.
      */
-    public SunZodiac getZodiac(Calendar calendar) {
+    public Optional<SunZodiac> getZodiac(Calendar calendar) {
+
         int year = calendar.get(Calendar.YEAR);
-        List<SunZodiac> zodiacs = zodiacsByYear.get(year);
-        if (zodiacs == null) {
+        List<SunZodiac> zodiacs;
+
+        if (zodiacsByYear.containsKey(year)) {
+            zodiacs = zodiacsByYear.get(year);
+        } else {
             zodiacs = calculateZodiacs(year);
             zodiacsByYear.clear();
             zodiacsByYear.put(year, zodiacs);
         }
 
-        for (SunZodiac zodiac : zodiacs) {
-            if (zodiac.isValid(calendar)) {
-                return zodiac;
-            }
-        }
-
-        return null;
+        return zodiacs.stream().filter(z -> z.isValid(calendar)).findFirst();
     }
 
     /**
      * Calculates the zodiacs for the current year.
      */
     private List<SunZodiac> calculateZodiacs(int year) {
-        List<SunZodiac> zodiacs = new ArrayList<SunZodiac>();
+        List<SunZodiac> zodiacs = new ArrayList<>();
 
         zodiacs.add(new SunZodiac(ZodiacSign.ARIES,
                 DateTimeUtils.getRange(year, Calendar.MARCH, 21, year, Calendar.APRIL, 19)));

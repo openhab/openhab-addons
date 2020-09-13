@@ -13,6 +13,9 @@
 package org.openhab.binding.airquality.internal.json;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -23,24 +26,23 @@ import com.google.gson.annotations.SerializedName;
  * @author Kuba Wolanin - Initial contribution
  * @author Gaël L'hopital - Use ZonedDateTime instead of Calendar
  */
+@NonNullByDefault
 public class AirQualityJsonTime {
 
     @SerializedName("s")
-    private String dateString;
+    private String dateString = "";
 
     @SerializedName("tz")
-    private String timeZone;
+    private String timeZone = "";
+
+    private String iso = "";
 
     /**
      * Get observation time
      *
      * @return {ZonedDateTime}
-     * @throws Exception
      */
-    public ZonedDateTime getObservationTime() throws Exception {
-        String fullString = dateString.replace(" ", "T") + timeZone;
-        ZonedDateTime observationTime = ZonedDateTime.parse(fullString);
-        return observationTime;
+    public ZonedDateTime getObservationTime() throws DateTimeParseException {
+        return ZonedDateTime.parse(iso);
     }
-
 }

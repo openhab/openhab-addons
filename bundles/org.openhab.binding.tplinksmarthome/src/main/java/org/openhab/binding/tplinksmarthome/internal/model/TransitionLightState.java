@@ -78,7 +78,6 @@ public class TransitionLightState {
         public String toString() {
             return "brightness:" + brightness + ", " + super.toString();
         }
-
     }
 
     public static class LightOnOff {

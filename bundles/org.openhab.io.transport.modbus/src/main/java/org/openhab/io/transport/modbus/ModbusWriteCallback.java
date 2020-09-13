@@ -19,28 +19,14 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Sami Salonen - Initial contribution
  */
+@FunctionalInterface
 @NonNullByDefault
-public interface ModbusWriteCallback extends ModbusCallback {
+public interface ModbusWriteCallback extends ModbusResultCallback {
 
     /**
-     * Callback handler method for cases when an error occurred with write
+     * Callback handling response data
      *
-     * Note that only one of the two is called: onError, onResponse
-     *
-     * @request ModbusWriteRequestBlueprint representing the request
-     * @param Exception representing the issue with the request. Instance of
-     *            {@link ModbusUnexpectedTransactionIdException} or {@link ModbusTransportException}.
+     * @param asyncModbusWriteResult result of the write operation
      */
-    void onError(ModbusWriteRequestBlueprint request, Exception error);
-
-    /**
-     * Callback handler method for successful writes
-     *
-     * Note that only one of the two is called: onError, onResponse
-     *
-     * @param request ModbusWriteRequestBlueprint representing the request
-     * @param response response matching the write request
-     */
-    void onWriteResponse(ModbusWriteRequestBlueprint request, ModbusResponse response);
-
+    void handle(AsyncModbusWriteResult result);
 }

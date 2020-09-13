@@ -183,7 +183,6 @@ public class KeContactHandler extends BaseThingHandler {
                         }
                         isReport100needed = false;
                     }
-
                 }
             }
         } catch (NumberFormatException | IOException e) {
@@ -558,15 +557,17 @@ public class KeContactHandler extends BaseThingHandler {
                     if (command instanceof DecimalType) {
                         transceiver.send(
                                 "setenergy " + String.valueOf(
-                                        Math.min(Math.max(0, ((DecimalType) command).intValue()*10), 999999999)), this);
+                                        Math.min(Math.max(0, ((DecimalType) command).intValue() * 10), 999999999)),
+                                this);
                     }
                     break;
                 }
                 case CHANNEL_AUTHENTICATE: {
                     if (command instanceof StringType) {
                         String cmd = command.toString();
-                        // cmd must contain ID + CLASS (works only if the RFID TAG is in the whitelist of the Keba station) 
-                        transceiver.send("start " + cmd , this);
+                        // cmd must contain ID + CLASS (works only if the RFID TAG is in the whitelist of the Keba
+                        // station)
+                        transceiver.send("start " + cmd, this);
                     }
                     break;
                 }

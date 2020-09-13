@@ -15,9 +15,6 @@ package org.openhab.binding.astro.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Holds the calculated sun data.
  *
@@ -25,7 +22,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class Sun extends RiseSet implements Planet {
 
-    private Map<SunPhaseName, Range> ranges = new HashMap<SunPhaseName, Range>();
+    private Map<SunPhaseName, Range> ranges = new HashMap<>();
 
     private Position position = new Position();
 
@@ -33,7 +30,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Season season = new Season();
 
-    private SunEclipse eclipse = new SunEclipse();
+    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = new Radiation();
 
@@ -196,6 +193,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Sets the rise range.
      */
+    @Override
     public void setRise(Range rise) {
         super.setRise(rise);
         ranges.put(SunPhaseName.SUN_RISE, rise);
@@ -204,6 +202,7 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Sets the set range.
      */
+    @Override
     public void setSet(Range set) {
         super.setSet(set);
         ranges.put(SunPhaseName.SUN_SET, set);
@@ -261,14 +260,14 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the eclipses.
      */
-    public SunEclipse getEclipse() {
+    public Eclipse getEclipse() {
         return eclipse;
     }
 
     /**
      * Sets the eclipses.
      */
-    public void setEclipse(SunEclipse eclipse) {
+    public void setEclipse(Eclipse eclipse) {
         this.eclipse = eclipse;
     }
 
@@ -292,17 +291,4 @@ public class Sun extends RiseSet implements Planet {
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
     }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("sunrise", getRise())
-                .append("noon", getNoon()).append("sunset", getSet()).append("night", getNight())
-                .append("morningNight", getMorningNight()).append("astroDawn", getAstroDawn())
-                .append("nauticDawn", getNauticDawn()).append("civilDawn", getCivilDawn())
-                .append("civilDusk", getCivilDusk()).append("nauticDusk", getNauticDawn())
-                .append("astroDusk", getAstroDusk()).append("daylight", getDaylight())
-                .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase)
-                .append("radiation", radiation).toString();
-    }
-
 }

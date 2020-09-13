@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.rotel.internal.handler.RotelHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -52,9 +53,16 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
                     THING_TYPE_RT09, THING_TYPE_RT11, THING_TYPE_RT1570, THING_TYPE_T11, THING_TYPE_T14)
             .collect(Collectors.toSet()));
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) RotelStateDescriptionOptionProvider stateDescriptionProvider;
+    private final RotelStateDescriptionOptionProvider stateDescriptionProvider;
+
+    @Activate
+    public RotelHandlerFactory(final @Reference SerialPortManager serialPortManager,
+            final @Reference RotelStateDescriptionOptionProvider stateDescriptionProvider) {
+        this.serialPortManager = serialPortManager;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -70,23 +78,5 @@ public class RotelHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(RotelStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(RotelStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }

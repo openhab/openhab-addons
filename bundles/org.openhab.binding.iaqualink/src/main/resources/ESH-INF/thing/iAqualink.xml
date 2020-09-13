@@ -8,9 +8,9 @@
 		<description>A iAquaLink pool control thing represents a iAquaLink pool controller for Jandy/Zodiac systems
 		</description>
 		<channels>
-			<channel id="status" typeId="status" />
-			<channel id="system_type" typeId="system_type" />
-			<channel id="temp_scale" typeId="temperature_scale" />
+			<channel id="status" typeId="status"/>
+			<channel id="system_type" typeId="system_type"/>
+			<channel id="temp_scale" typeId="temperature_scale"/>
 			<channel id="spa_temp" typeId="temperature">
 				<label>Spa Temperature</label>
 				<description>The current temperature of the spa</description>
@@ -126,7 +126,7 @@
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>The status of the iAqualink connection</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 
 	</channel-type>
 
@@ -134,7 +134,7 @@
 		<item-type>String</item-type>
 		<label>System Type</label>
 		<description> System Type</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 
 	</channel-type>
 
@@ -303,7 +303,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Setpoint</label>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" />
+		<state pattern="%.1f %unit%"/>
 
 	</channel-type>
 
@@ -311,7 +311,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 
 	</channel-type>
 
@@ -319,13 +319,13 @@
 		<item-type>String</item-type>
 		<label>Temperature Units</label>
 		<description>The selected units for temperature (C or F)</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="chemical">
 		<item-type>Number</item-type>
 		<label>Chemical</label>
 		<category>Other</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

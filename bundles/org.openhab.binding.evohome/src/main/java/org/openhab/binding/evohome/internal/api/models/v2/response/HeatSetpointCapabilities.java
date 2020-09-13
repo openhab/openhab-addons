@@ -41,5 +41,4 @@ public class HeatSetpointCapabilities {
 
     @SerializedName("timingResolution")
     private String timingResolution;
-
 }

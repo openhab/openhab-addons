@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for Automation (BTicino xxx/xxx/...) -->
+	<thing-type id="zb_automation">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="zb_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>ZigBee Automation</label>
+		<description>A OpenWebNet ZigBee automation device to control roller shutters, blinds, etc. BTicino models:
+			xxx/yyyy/etc.</description>
+
+		<channels>
+			<channel id="shutter" typeId="shutter"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-xxxx/yyyy/etc.</property>
+			<property name="ownDeviceType">512</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="shutterRun" type="text">
+				<label>Shutter Run</label>
+				<description>Time (in ms) to go from max position (e.g. CLOSED) to the other position (e.g. OPEN). Example: 12000
+					(=12sec).
+					Use AUTO (default) to calibrate the shutter automatically (UP->DOWN->Position%) the first time a Position
+					command (%)
+					is sent.</description>
+				<required>true</required>
+				<default>AUTO</default>
+			</parameter>
+			<parameter name="where" type="text">
+				<label>OpenWebNet Device Address</label>
+				<description>It identifies one ZigBee device. Use decimal format address without the UNIT part and network: ZigBee
+					WHERE=414122201#9 -> OpenWebNet Device Address = 4141222</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

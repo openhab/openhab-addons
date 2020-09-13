@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.discovery.test;
 
+import static org.eclipse.smarthome.config.discovery.inbox.InboxPredicates.forThingUID;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
@@ -21,9 +22,9 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.inbox.Inbox;
-import org.eclipse.smarthome.config.discovery.inbox.InboxFilterCriteria;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
@@ -42,13 +43,14 @@ import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
  * @author Svilen Valkanov - Initial contribution
  * @author Stefan Triller - Ported Tests from Groovy to Java
  */
+@NonNullByDefault
 public class WemoDiscoveryOSGiTest extends GenericWemoOSGiTest {
 
     // UpnP service information
-    private final String SERVICE_ID = "basicevent";
-    private final String SERVICE_NUMBER = "1";
+    private static final String SERVICE_ID = "basicevent";
+    private static final String SERVICE_NUMBER = "1";
 
-    private Inbox inbox;
+    private @NonNullByDefault({}) Inbox inbox;
 
     @Before
     public void setUp() throws IOException {
@@ -75,19 +77,14 @@ public class WemoDiscoveryOSGiTest extends GenericWemoOSGiTest {
         waitForAssert(() -> {
             Collection<Device> devices = mockUpnpService.getRegistry().getDevices();
             assertThat(devices.size(), is(1));
-            Device device = null;
-            for (Device d : devices) {
-                device = d;
-                break;
-            }
+            Device device = devices.iterator().next();
             assertThat(device.getDetails().getModelDetails().getModelName(), is(model));
         });
 
         ThingUID thingUID = new ThingUID(thingType, DEVICE_UDN);
 
         waitForAssert(() -> {
-            List<DiscoveryResult> results = inbox.get(new InboxFilterCriteria(thingUID, null));
-            assertFalse(results.isEmpty());
+            assertTrue(inbox.stream().anyMatch(forThingUID(thingUID)));
         });
 
         inbox.approve(thingUID, DEVICE_FRIENDLY_NAME);

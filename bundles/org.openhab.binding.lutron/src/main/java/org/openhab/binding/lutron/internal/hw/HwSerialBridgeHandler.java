@@ -32,16 +32,15 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  *
@@ -62,12 +61,14 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
 
     private HwDiscoveryService discoveryService;
 
+    private final SerialPortManager serialPortManager;
     private SerialPort serialPort;
     private OutputStreamWriter serialOutput;
     private BufferedReader serialInput;
 
-    public HwSerialBridgeHandler(Bridge bridge) {
+    public HwSerialBridgeHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
+        this.serialPortManager = serialPortManager;
     }
 
     @Override
@@ -99,9 +100,14 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
     }
 
     private void openConnection() {
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
+        if (portIdentifier == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
+            return;
+        }
+
         try {
             logger.info("Connecting to Lutron HomeWorks Processor using {}.", serialPortName);
-            CommPortIdentifier portIdentifier = CommPortIdentifier.getPortIdentifier(serialPortName);
             serialPort = portIdentifier.open(this.getClass().getName(), 2000);
 
             logger.debug("Connection established using {}.  Configuring IO parameters. ", serialPortName);
@@ -128,9 +134,6 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
             if (updateTime) {
                 startUpdateProcessorTimeJob();
             }
-
-        } catch (NoSuchPortException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Invalid port: " + serialPortName);
         } catch (PortInUseException portInUseException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Port in use: " + serialPortName);
         } catch (UnsupportedCommOperationException | IOException e) {
@@ -201,7 +204,6 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
                 logger.error("Error parsing incoming message", e);
             }
         }
-
     }
 
     private HwDimmerHandler findHandler(String address) {
@@ -267,5 +269,4 @@ public class HwSerialBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         logger.debug("Finished disposing bridge.");
     }
-
 }

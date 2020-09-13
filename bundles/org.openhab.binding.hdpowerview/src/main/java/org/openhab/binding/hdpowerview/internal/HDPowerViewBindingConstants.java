@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.hdpowerview.internal;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -23,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Andy Lintner - Initial contribution
+ * @author Andrew Fiddian-Green - Added support for secondary rail positions
  */
 @NonNullByDefault
 public class HDPowerViewBindingConstants {
@@ -37,10 +40,11 @@ public class HDPowerViewBindingConstants {
     public static final String CHANNEL_SHADE_POSITION = "position";
     public static final String CHANNEL_SHADE_VANE = "vane";
     public static final String CHANNEL_SHADE_LOW_BATTERY = "lowBattery";
+    public static final String CHANNEL_SHADE_SECONDARY_POSITION = "secondary";
 
     public static final String CHANNELTYPE_SCENE_ACTIVATE = "scene-activate";
 
-    public static final String NETBIOS_NAME = "PDBU-Hub3.0";
+    public static final List<String> NETBIOS_NAMES = Arrays.asList("PDBU-Hub3.0", "PowerView-Hub");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>();
 
@@ -48,5 +52,4 @@ public class HDPowerViewBindingConstants {
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_HUB);
         SUPPORTED_THING_TYPES_UIDS.add(THING_TYPE_SHADE);
     }
-
 }

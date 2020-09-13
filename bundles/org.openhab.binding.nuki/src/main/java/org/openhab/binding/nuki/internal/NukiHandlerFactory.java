@@ -14,6 +14,8 @@ package org.openhab.binding.nuki.internal;
 
 import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.net.HttpServiceUtil;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
@@ -27,6 +29,7 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.nuki.internal.dataexchange.NukiApiServlet;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
 import org.openhab.binding.nuki.internal.handler.NukiSmartLockHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -40,15 +43,24 @@ import org.slf4j.LoggerFactory;
  * @author Markus Katter - Initial contribution
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.nuki")
+@NonNullByDefault
 public class NukiHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(NukiHandlerFactory.class);
 
-    private HttpService httpService;
-    private HttpClient httpClient;
-    private NetworkAddressService networkAddressService;
-    private String callbackUrl;
-    private NukiApiServlet nukiApiServlet;
+    private final HttpService httpService;
+    private final HttpClient httpClient;
+    private final NetworkAddressService networkAddressService;
+    private @Nullable String callbackUrl;
+    private @Nullable NukiApiServlet nukiApiServlet;
+
+    @Activate
+    public NukiHandlerFactory(@Reference HttpService httpService, @Reference final HttpClientFactory httpClientFactory,
+            @Reference NetworkAddressService networkAddressService) {
+        this.httpService = httpService;
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.networkAddressService = networkAddressService;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -56,7 +68,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         logger.debug("NukiHandlerFactory:createHandler({})", thing);
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
@@ -90,34 +102,7 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    @Reference
-    public void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    public void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
-
-    private String createCallbackUrl() {
+    private @Nullable String createCallbackUrl() {
         logger.trace("createCallbackUrl()");
         if (callbackUrl != null) {
             return callbackUrl;
@@ -139,5 +124,4 @@ public class NukiHandlerFactory extends BaseThingHandlerFactory {
         logger.trace("callbackUrl[{}]", callbackUrl);
         return callbackUrl;
     }
-
 }

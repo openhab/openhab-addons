@@ -66,7 +66,6 @@ Fragment-Host: org.openhab.binding.mqtt.homie
 	tec.uom.lib.uom-lib-common;version='[1.0.3,1.0.4)',\
 	tec.uom.se;version='[1.0.10,1.0.11)',\
 	org.apache.servicemix.bundles.jaxb-impl;version='[2.2.11,2.2.12)',\
-	org.apache.commons.codec;version='[1.10.0,1.10.1)',\
 	ch.qos.logback.classic;version='[1.2.3,1.2.4)',\
 	net.bytebuddy.byte-buddy;version='[1.9.10,1.9.11)',\
 	net.bytebuddy.byte-buddy-agent;version='[1.9.10,1.9.11)',\

@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.neohub.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link NeoBaseConfiguration} class contains the thing configuration
  * parameters for NeoStat and NeoPlug devices
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class NeoBaseConfiguration {
-
-    public String deviceNameInHub;
-
+    public String deviceNameInHub = "";
 }

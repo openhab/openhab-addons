@@ -43,5 +43,4 @@ public class Ec3kSensorDefinition extends SensorDefinition<Ec3kReading> {
     public JeeLinkSensorHandler<Ec3kReading> createHandler(Thing thing) {
         return new Ec3kSensorHandler(thing, type);
     }
-
 }

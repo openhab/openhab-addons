@@ -55,5 +55,4 @@ public class BroadcastGroupSwitchResponseMessage extends Message {
             throw new PlugwisePayloadMismatchException(BROADCAST_GROUP_SWITCH_RESPONSE, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

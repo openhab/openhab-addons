@@ -87,7 +87,6 @@ public abstract class AbstractInputControlXML {
                 && deviceDescriptor.features.containsKey(Feature.NET_USB)
                 && !deviceDescriptor.features.containsKey(Feature.NET_RADIO)
                 && !deviceDescriptor.features.containsKey(Feature.USB)) {
-
             // have to use the NET_USB xml element in this case
             inputElement = "NET_USB";
             inputFeature = Feature.NET_USB;

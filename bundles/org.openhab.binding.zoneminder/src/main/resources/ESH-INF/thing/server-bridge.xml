@@ -8,7 +8,7 @@
 		<label>ZoneMinder Server</label>
 		<description>ZoneMinder Server</description>
 		<channels>
-			<channel id="online" typeId="server_online" />
+			<channel id="online" typeId="server_online"/>
 			<channel id="cpu-load" typeId="server_cpu_load"/>
 			<channel id="disk-usage" typeId="server_disk_usage"/>
 		</channels>

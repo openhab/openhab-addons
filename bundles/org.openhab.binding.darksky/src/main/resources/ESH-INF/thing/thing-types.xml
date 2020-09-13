@@ -7,14 +7,14 @@
 	<!-- Dark Sky Binding -->
 	<thing-type id="weather-and-forecast">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="weather-api" />
+			<bridge-type-ref id="weather-api"/>
 		</supported-bridge-type-refs>
 
 		<label>Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the Dark Sky API.</description>
 
 		<channel-groups>
-			<channel-group id="current" typeId="current" />
+			<channel-group id="current" typeId="current"/>
 			<channel-group id="forecastHours01" typeId="hourlyForecast">
 				<label>1 Hour Forecast</label>
 				<description>This is the weather forecast for the next hour.</description>
@@ -147,7 +147,7 @@
 
 		<representation-property>location</representation-property>
 
-		<config-description-ref uri="thing-type:darksky:weather-and-forecast" />
+		<config-description-ref uri="thing-type:darksky:weather-and-forecast"/>
 	</thing-type>
 
 </thing:thing-descriptions>

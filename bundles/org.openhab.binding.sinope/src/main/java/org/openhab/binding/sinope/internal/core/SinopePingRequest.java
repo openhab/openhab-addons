@@ -47,5 +47,4 @@ public class SinopePingRequest extends SinopeRequest {
     public SinopePingAnswer getReplyAnswer(InputStream r) throws IOException {
         return new SinopePingAnswer(r);
     }
-
 }

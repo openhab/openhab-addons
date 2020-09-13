@@ -76,7 +76,13 @@ public class BitUtilitiesCommandToRegistersTest {
                         new Object[] { new DecimalType("1.6"), ValueType.INT16, shorts(1) },
                         new Object[] { new DecimalType("2.6"), ValueType.INT16, shorts(2) },
                         new Object[] { new DecimalType("-1004.4"), ValueType.INT16, shorts(-1004), },
-                        new Object[] { new DecimalType("64000"), ValueType.INT16, shorts(64000), }, new Object[] {
+                        // within bounds for signed int16
+                        new Object[] { new DecimalType("32000"), ValueType.INT16, shorts(32000), },
+                        new Object[] { new DecimalType("-32000"), ValueType.INT16, shorts(-32000), },
+                        // out bounds for signed int16, but not for uint16
+                        new Object[] { new DecimalType("60000"), ValueType.INT16, shorts(60000), },
+                        new Object[] { new DecimalType("64000"), ValueType.INT16, shorts(64000), }, //
+                        new Object[] {
                                 // out of bounds of unsigned 16bit (0 to 65,535)
                                 new DecimalType("70004.4"),
                                 // 70004 -> 0x00011174 (int) -> 0x1174 (short) = 4468
@@ -88,7 +94,13 @@ public class BitUtilitiesCommandToRegistersTest {
                         new Object[] { new DecimalType("1.6"), ValueType.UINT16, shorts(1) },
                         new Object[] { new DecimalType("2.6"), ValueType.UINT16, shorts(2) },
                         new Object[] { new DecimalType("-1004.4"), ValueType.UINT16, shorts(-1004), },
-                        new Object[] { new DecimalType("64000"), ValueType.UINT16, shorts(64000), }, new Object[] {
+                        // within bounds for signed int16
+                        new Object[] { new DecimalType("32000"), ValueType.UINT16, shorts(32000), },
+                        new Object[] { new DecimalType("-32000"), ValueType.UINT16, shorts(-32000), },
+                        // out bounds for signed int16, but not for uint16
+                        new Object[] { new DecimalType("60000"), ValueType.UINT16, shorts(60000), },
+                        new Object[] { new DecimalType("64000"), ValueType.UINT16, shorts(64000), }, //
+                        new Object[] {
                                 // out of bounds of unsigned 16bit (0 to 65,535)
                                 new DecimalType("70004.4"),
                                 // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
@@ -102,11 +114,12 @@ public class BitUtilitiesCommandToRegistersTest {
                         new Object[] { new DecimalType("-1004.4"), ValueType.INT32,
                                 // -1004 = 0xFFFFFC14 (32bit) =
                                 shorts(0xFFFF, 0xFC14), },
-                        new Object[] { new DecimalType("64000"), ValueType.INT32, shorts(0, 64000), }, new Object[] {
-                                // out of bounds of unsigned 16bit (0 to 65,535)
-                                new DecimalType("70004.4"),
-                                // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
-                                ValueType.INT32, shorts(1, 4468), },
+                        new Object[] { new DecimalType("64000"), ValueType.INT32, shorts(0, 64000), }, //
+                        // within signed int32 range: +-2,000,000,00
+                        new Object[] { new DecimalType("-2000000000"), ValueType.INT32, shorts(0x88CA, 0x6C00), },
+                        new Object[] { new DecimalType("2000000000"), ValueType.INT32, shorts(0x7735, 0x9400), },
+                        // out bounds for signed int32, but not for uint32
+                        new Object[] { new DecimalType("3000000000"), ValueType.INT32, shorts(0xB2D0, 0x5E00), }, //
                         new Object[] {
                                 // out of bounds of unsigned 32bit (0 to 4,294,967,295)
                                 new DecimalType("5000000000"),
@@ -121,11 +134,12 @@ public class BitUtilitiesCommandToRegistersTest {
                         new Object[] { new DecimalType("-1004.4"), ValueType.UINT32,
                                 // -1004 = 0xFFFFFC14 (32bit) =
                                 shorts(0xFFFF, 0xFC14), },
-                        new Object[] { new DecimalType("64000"), ValueType.UINT32, shorts(0, 64000), }, new Object[] {
-                                // out of bounds of unsigned 16bit (0 to 65,535)
-                                new DecimalType("70004.4"),
-                                // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
-                                ValueType.UINT32, shorts(1, 4468), },
+                        new Object[] { new DecimalType("64000"), ValueType.UINT32, shorts(0, 64000), }, //
+                        // within signed int32 range: +-2,000,000,00
+                        new Object[] { new DecimalType("-2000000000"), ValueType.UINT32, shorts(0x88CA, 0x6C00), },
+                        new Object[] { new DecimalType("2000000000"), ValueType.UINT32, shorts(0x7735, 0x9400), },
+                        // out bounds for signed int32, but not for uint32
+                        new Object[] { new DecimalType("3000000000"), ValueType.UINT32, shorts(0xB2D0, 0x5E00), }, //
                         new Object[] {
                                 // out of bounds of unsigned 32bit (0 to 4,294,967,295)
                                 new DecimalType("5000000000"),
@@ -141,11 +155,11 @@ public class BitUtilitiesCommandToRegistersTest {
                                 // -1004 = 0xFFFFFC14 (32bit)
                                 shorts(0xFC14, 0xFFFF), },
                         new Object[] { new DecimalType("64000"), ValueType.INT32_SWAP, shorts(64000, 0), },
-                        new Object[] {
-                                // out of bounds of unsigned 16bit (0 to 65,535)
-                                new DecimalType("70004.4"),
-                                // 70004 -> 0x00011174 (32bit)
-                                ValueType.INT32_SWAP, shorts(4468, 1), },
+                        // within signed int32 range: +-2,000,000,00
+                        new Object[] { new DecimalType("-2000000000"), ValueType.INT32_SWAP, shorts(0x6C00, 0x88CA), },
+                        new Object[] { new DecimalType("2000000000"), ValueType.INT32_SWAP, shorts(0x9400, 0x7735), },
+                        // out bounds for signed int32, but not for uint32
+                        new Object[] { new DecimalType("3000000000"), ValueType.INT32_SWAP, shorts(0x5E00, 0xB2D0), }, //
                         new Object[] {
                                 // out of bounds of unsigned 32bit (0 to 4,294,967,295)
                                 new DecimalType("5000000000"),
@@ -161,11 +175,11 @@ public class BitUtilitiesCommandToRegistersTest {
                                 // -1004 = 0xFFFFFC14 (32bit)
                                 shorts(0xFC14, 0xFFFF), },
                         new Object[] { new DecimalType("64000"), ValueType.UINT32_SWAP, shorts(64000, 0), },
-                        new Object[] {
-                                // out of bounds of unsigned 16bit (0 to 65,535)
-                                new DecimalType("70004.4"),
-                                // 70004 -> 0x00011174 (32bit)
-                                ValueType.UINT32_SWAP, shorts(4468, 1), },
+                        // within signed int32 range: +-2,000,000,00
+                        new Object[] { new DecimalType("-2000000000"), ValueType.UINT32_SWAP, shorts(0x6C00, 0x88CA), },
+                        new Object[] { new DecimalType("2000000000"), ValueType.UINT32_SWAP, shorts(0x9400, 0x7735), },
+                        // out bounds for signed int32, but not for uint32
+                        new Object[] { new DecimalType("3000000000"), ValueType.UINT32_SWAP, shorts(0x5E00, 0xB2D0), }, //
                         new Object[] {
                                 // out of bounds of unsigned 32bit (0 to 4,294,967,295)
                                 new DecimalType("5000000000"),
@@ -226,6 +240,14 @@ public class BitUtilitiesCommandToRegistersTest {
                                 new DecimalType("34359738368"),
                                 // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
                                 ValueType.INT64, shorts(0x0, 0x8, 0x0, 0x0), },
+                        // within signed int64 range: +-9,200,000,000,000,000,000
+                        new Object[] { new DecimalType("-9200000000000000000"), ValueType.INT64,
+                                shorts(0x8053, 0x08BE, 0x6268, 0x0000), },
+                        new Object[] { new DecimalType("9200000000000000000"), ValueType.INT64,
+                                shorts(0x7FAC, 0xF741, 0x9D98, 0x0000), },
+                        // within unsigned int64 range (but out of range for signed int64)
+                        new Object[] { new DecimalType("18200000000000000000"), ValueType.INT64,
+                                shorts(0xFC93, 0x6392, 0x801C, 0x0000), },
                         new Object[] {
                                 // out of bounds of unsigned 64bit
                                 new DecimalType("3498348904359085439088905"),
@@ -246,6 +268,14 @@ public class BitUtilitiesCommandToRegistersTest {
                                 new DecimalType("34359738368"),
                                 // 70004 -> 0x00011174 (32bit) -> 0x1174 (16bit)
                                 ValueType.UINT64, shorts(0x0, 0x8, 0x0, 0x0), },
+                        // within signed int64 range: +-9,200,000,000,000,000,000
+                        new Object[] { new DecimalType("-9200000000000000000"), ValueType.UINT64,
+                                shorts(0x8053, 0x08BE, 0x6268, 0x0000), },
+                        new Object[] { new DecimalType("9200000000000000000"), ValueType.UINT64,
+                                shorts(0x7FAC, 0xF741, 0x9D98, 0x0000), },
+                        // within unsigned int64 range (but out of range for signed int64)
+                        new Object[] { new DecimalType("18200000000000000000"), ValueType.UINT64,
+                                shorts(0xFC93, 0x6392, 0x801C, 0x0000), },
                         new Object[] {
                                 // out of bounds of unsigned 64bit
                                 new DecimalType("3498348904359085439088905"),
@@ -292,7 +322,6 @@ public class BitUtilitiesCommandToRegistersTest {
                                 // should pick the low 64 bits
                                 ValueType.UINT64_SWAP, shorts(0x7909, 0x772E, 0xBBB7, 0xDFC5), })
                 .collect(Collectors.toList()));
-
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

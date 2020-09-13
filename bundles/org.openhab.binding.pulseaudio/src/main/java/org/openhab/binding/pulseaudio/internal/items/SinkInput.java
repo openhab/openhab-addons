@@ -32,5 +32,4 @@ public class SinkInput extends AbstractAudioDeviceConfig {
     public void setSink(Sink sink) {
         this.sink = sink;
     }
-
 }

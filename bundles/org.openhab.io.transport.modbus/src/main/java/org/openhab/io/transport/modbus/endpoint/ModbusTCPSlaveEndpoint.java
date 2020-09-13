@@ -31,5 +31,4 @@ public class ModbusTCPSlaveEndpoint extends ModbusIPSlaveEndpoint {
     public <R> R accept(ModbusSlaveEndpointVisitor<R> factory) {
         return factory.visit(this);
     }
-
 }

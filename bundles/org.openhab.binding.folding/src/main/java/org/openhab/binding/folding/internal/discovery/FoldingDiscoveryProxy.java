@@ -44,5 +44,4 @@ public class FoldingDiscoveryProxy {
             discoveryService.newSlot(bridgeUID, host, id, description);
         }
     }
-
 }

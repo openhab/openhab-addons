@@ -38,11 +38,10 @@ public class GatewayStatus {
     }
 
     public boolean hasActiveFaults() {
-        return activeFaults.size() > 0;
+        return !activeFaults.isEmpty();
     }
 
     public ActiveFault getActiveFault(int index) {
         return activeFaults.get(index);
     }
-
 }

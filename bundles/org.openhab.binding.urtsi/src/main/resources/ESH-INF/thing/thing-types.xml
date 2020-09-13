@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <thing:thing-descriptions bindingId="urtsi"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-		xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="urtsidevice">
 		<label>@text/urtsiDeviceLabel</label>
@@ -14,6 +14,7 @@
 			<parameter name="port" type="text" required="true">
 				<label>@text/urtsiDevicePortLabel</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>@text/urtsiDevicePortDescription</description>
 			</parameter>
 			<parameter name="commandInterval" type="integer" required="false" min="50" max="5000">
@@ -24,9 +25,9 @@
 		</config-description>
 	</bridge-type>
 
-	<thing-type id="rtsdevice" >
+	<thing-type id="rtsdevice">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="urtsidevice" />
+			<bridge-type-ref id="urtsidevice"/>
 		</supported-bridge-type-refs>
 		<label>@text/rtsDeviceLabel</label>
 		<description>@text/rtsDeviceDescription</description>

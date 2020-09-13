@@ -6,12 +6,12 @@
 
 	<thing-type id="switchProgram" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="kmdevice" />
+			<bridge-type-ref id="kmdevice"/>
 		</supported-bridge-type-refs>
 		<label>Switch Program</label>
 		<description>This thing is representing a switch program.</description>
 		<properties>
-			<property name="root" />
+			<property name="root"/>
 		</properties>
 	</thing-type>
 </thing:thing-descriptions>

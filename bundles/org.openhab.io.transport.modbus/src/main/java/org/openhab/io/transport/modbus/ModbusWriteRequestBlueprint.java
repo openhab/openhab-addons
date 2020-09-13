@@ -23,7 +23,7 @@ import net.wimpi.modbus.Modbus;
  *
  */
 @NonNullByDefault
-public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
+public abstract class ModbusWriteRequestBlueprint {
 
     /**
      * Returns the protocol identifier of this
@@ -34,8 +34,7 @@ public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
      *
      * @return the protocol identifier as <tt>int</tt>.
      */
-    @Override
-    public default int getProtocolID() {
+    public int getProtocolID() {
         return Modbus.DEFAULT_PROTOCOL_ID;
     }
 
@@ -47,7 +46,7 @@ public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
      * @return the reference of the register
      *         to start reading from as <tt>int</tt>.
      */
-    public int getReference();
+    public abstract int getReference();
 
     /**
      * Returns the unit identifier of this
@@ -58,8 +57,7 @@ public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
      *
      * @return the unit identifier as <tt>int</tt>.
      */
-    @Override
-    public int getUnitID();
+    public abstract int getUnitID();
 
     /**
      * Returns the function code of this
@@ -75,19 +73,17 @@ public interface ModbusWriteRequestBlueprint extends ModbusRequestBlueprint {
      *
      * @see net.wimpi.modbus.Modbus
      */
-    public ModbusWriteFunctionCode getFunctionCode();
+    public abstract ModbusWriteFunctionCode getFunctionCode();
 
     /**
      * Get maximum number of tries, in case errors occur. Should be at least 1.
      */
-    @Override
-    public int getMaxTries();
+    public abstract int getMaxTries();
 
     /**
      * Accept visitor
      *
      * @param visitor
      */
-    public void accept(ModbusWriteRequestBlueprintVisitor visitor);
-
+    public abstract void accept(ModbusWriteRequestBlueprintVisitor visitor);
 }

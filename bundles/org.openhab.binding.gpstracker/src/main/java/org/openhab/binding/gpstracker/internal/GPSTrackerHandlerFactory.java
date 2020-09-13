@@ -12,6 +12,20 @@
  */
 package org.openhab.binding.gpstracker.internal;
 
+import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
+
+import java.net.URI;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.ServletException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
@@ -29,6 +43,7 @@ import org.openhab.binding.gpstracker.internal.provider.TrackerRegistry;
 import org.openhab.binding.gpstracker.internal.provider.gpslogger.GPSLoggerCallbackServlet;
 import org.openhab.binding.gpstracker.internal.provider.owntracks.OwnTracksCallbackServlet;
 import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -36,18 +51,13 @@ import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import java.net.URI;
-import java.util.*;
-
-import static org.openhab.binding.gpstracker.internal.GPSTrackerBindingConstants.CONFIG_PID;
-
 /**
  * Main component
  *
  * @author Gabor Bicskei - Initial contribution
  */
-@Component(configurationPid = CONFIG_PID, service = {ThingHandlerFactory.class, ConfigOptionProvider.class})
+@Component(configurationPid = CONFIG_PID, service = { ThingHandlerFactory.class, ConfigOptionProvider.class })
+@NonNullByDefault
 public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements TrackerRegistry, ConfigOptionProvider {
     /**
      * Config URI
@@ -62,47 +72,58 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     /**
      * Discovery service instance
      */
-    private TrackerDiscoveryService discoveryService;
+    private final TrackerDiscoveryService discoveryService;
 
     /**
      * Unit provider
      */
-    private UnitProvider unitProvider;
+    private final UnitProvider unitProvider;
 
     /**
      * Location provider
      */
-    private LocationProvider locationProvider;
+    private final LocationProvider locationProvider;
 
     /**
      * HTTP service reference
      */
-    private HttpService httpService;
+    private final HttpService httpService;
 
     /**
      * Endpoint called by tracker applications
      */
-    private OwnTracksCallbackServlet otHTTPEndpoint;
+    private @NonNullByDefault({}) OwnTracksCallbackServlet otHTTPEndpoint;
 
     /**
      * Endpoint called by tracker applications
      */
-    private GPSLoggerCallbackServlet glHTTPEndpoint;
+    private @NonNullByDefault({}) GPSLoggerCallbackServlet glHTTPEndpoint;
 
     /**
      * Notification broker
      */
-    private NotificationBroker notificationBroker = new NotificationBroker();
+    private final NotificationBroker notificationBroker = new NotificationBroker();
 
     /**
      * Handler registry
      */
-    private Map<String, TrackerHandler> trackerHandlers = new HashMap<>();
+    private final Map<String, TrackerHandler> trackerHandlers = new HashMap<>();
 
     /**
      * All regions.
      */
-    private Set<String> regions = new HashSet<>();
+    private final Set<String> regions = new HashSet<>();
+
+    @Activate
+    public GPSTrackerHandlerFactory(final @Reference HttpService httpService, //
+            final @Reference TrackerDiscoveryService discoveryService, //
+            final @Reference UnitProvider unitProvider, //
+            final @Reference LocationProvider locationProvider) {
+        this.httpService = httpService;
+        this.discoveryService = discoveryService;
+        this.unitProvider = unitProvider;
+        this.locationProvider = locationProvider;
+    }
 
     /**
      * Called by the framework to find out if thing type is supported by the handler factory.
@@ -122,12 +143,12 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
      * @return Handler instance
      */
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (GPSTrackerBindingConstants.THING_TYPE_TRACKER.equals(thingTypeUID)
                 && ConfigHelper.getTrackerId(thing.getConfiguration()) != null) {
             TrackerHandler trackerHandler = new TrackerHandler(thing, notificationBroker, regions,
-                    locationProvider != null ? locationProvider.getLocation(): null, unitProvider);
+                    locationProvider.getLocation(), unitProvider);
             discoveryService.removeTracker(trackerHandler.getTrackerId());
             trackerHandlers.put(trackerHandler.getTrackerId(), trackerHandler);
             return trackerHandler;
@@ -186,53 +207,23 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     @Override
-    public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
-        if (URI_STR.equals(uri.toString()) && ConfigHelper.CONFIG_REGION_NAME.equals(param)) {
-            Set<ParameterOption> ret = new HashSet<>();
-            regions.forEach(r->ret.add(new ParameterOption(r, r)));
-            return ret;
-        }
-        return Collections.emptyList();
-    }
-
-    @Reference
-    protected void setHttpService(HttpService httpService) {
-        this.httpService = httpService;
-    }
-
-    protected void unsetHttpService(HttpService httpService) {
-        this.httpService = null;
-    }
-
-    @Reference
-    protected void setTrackerDiscoveryService(TrackerDiscoveryService discoveryService) {
-        this.discoveryService = discoveryService;
-    }
-
-    protected void unsetTrackerDiscoveryService(TrackerDiscoveryService discoveryService) {
-        this.discoveryService = null;
-    }
-
-    @Reference
-    protected void setUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = unitProvider;
-    }
-
-    protected void unsetUnitProvider(UnitProvider unitProvider) {
-        this.unitProvider = null;
-    }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
+        return getParameterOptions(uri, param, null, locale);
     }
 
     @Override
-    public TrackerHandler getTrackerHandler(String trackerId) {
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
+            @Nullable Locale locale) {
+        if (URI_STR.equals(uri.toString()) && ConfigHelper.CONFIG_REGION_NAME.equals(param)) {
+            Set<ParameterOption> ret = new HashSet<>();
+            regions.forEach(r -> ret.add(new ParameterOption(r, r)));
+            return ret;
+        }
+        return null;
+    }
+
+    @Override
+    public @Nullable TrackerHandler getTrackerHandler(String trackerId) {
         return trackerHandlers.get(trackerId);
     }
 }

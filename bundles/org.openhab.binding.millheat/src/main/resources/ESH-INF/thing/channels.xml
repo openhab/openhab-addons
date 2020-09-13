@@ -11,7 +11,7 @@
 		<tags>
 			<tag>CurrentTemperature</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="comfortTemperature">
 		<item-type>Number:Temperature</item-type>
@@ -20,7 +20,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="sleepTemperature">
 		<item-type>Number:Temperature</item-type>
@@ -29,7 +29,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="awayTemperature">
 		<item-type>Number:Temperature</item-type>
@@ -39,7 +39,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="targetTemperatureHeater">
 		<item-type>Number:Temperature</item-type>
@@ -48,7 +48,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="targetTemperatureRoom">
 		<item-type>Number:Temperature</item-type>
@@ -57,20 +57,20 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state pattern="%d %unit%" readOnly="true" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" readOnly="true" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="heatingActive">
 		<item-type>Switch</item-type>
 		<label>Heating Active</label>
 		<description>Current state of the heater or heaters in room</description>
 		<category>Energy</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="independent">
 		<item-type>Switch</item-type>
 		<label>Independent Heater</label>
 		<description>ON if heater is an independent heater and not connected to a room</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="masterSwitch">
 		<item-type>Switch</item-type>
@@ -87,7 +87,7 @@
 		<item-type>Contact</item-type>
 		<label>Window State</label>
 		<description>Open window/cold air flow detection</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="currentEnergy">
 		<item-type>Number:Power</item-type>
@@ -123,7 +123,7 @@
 		<tags>
 			<tag>TargetTemperature</tag>
 		</tags>
-		<state pattern="%d %unit%" min="5" max="35" step="1" />
+		<state pattern="%d %unit%" min="5" max="35" step="1"/>
 	</channel-type>
 	<channel-type id="vacationMode">
 		<item-type>Switch</item-type>

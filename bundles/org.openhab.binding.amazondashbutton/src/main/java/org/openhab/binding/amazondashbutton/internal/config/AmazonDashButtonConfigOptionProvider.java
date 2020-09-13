@@ -17,13 +17,14 @@ import static org.openhab.binding.amazondashbutton.internal.AmazonDashButtonBind
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.ConfigOptionProvider;
 import org.eclipse.smarthome.config.core.ParameterOption;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -40,18 +41,25 @@ import org.pcap4j.core.PcapAddress;
  * @author Oliver Libutzki - Initial contribution
  *
  */
-@Component(service = ConfigOptionProvider.class, immediate = true)
+@Component(service = ConfigOptionProvider.class)
+@NonNullByDefault
 public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvider {
 
     @Override
-    public Collection<ParameterOption> getParameterOptions(URI uri, String param, Locale locale) {
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
+        return getParameterOptions(uri, param, null, locale);
+    }
+
+    @Override
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
+            @Nullable Locale locale) {
         if ("thing-type".equals(uri.getScheme())) {
             ThingTypeUID thingtypeUID = new ThingTypeUID(uri.getSchemeSpecificPart());
             if (thingtypeUID.equals(DASH_BUTTON_THING_TYPE) && PROPERTY_NETWORK_INTERFACE_NAME.equals(param)) {
                 return getPcapNetworkInterfacesOptions();
             }
         }
-        return Collections.emptyList();
+        return null;
     }
 
     private Collection<ParameterOption> getPcapNetworkInterfacesOptions() {
@@ -96,5 +104,4 @@ public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvide
         }
         return sb.toString();
     }
-
 }

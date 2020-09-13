@@ -16,6 +16,7 @@ import static org.eclipse.smarthome.core.library.unit.MetricPrefix.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -28,10 +29,10 @@ import java.util.stream.Stream;
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.i18n.UnitProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -86,7 +87,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     private static final Set<String> USUAL_FEATURES = Stream.of(FEATURE_CONDITIONS, FEATURE_FORECAST10DAY)
             .collect(Collectors.toSet());
 
-    private static final Map<String, String> LANG_ISO_TO_WU_CODES = new HashMap<String, String>();
+    private static final Map<String, @Nullable String> LANG_ISO_TO_WU_CODES = new HashMap<>();
     // Codes from https://www.wunderground.com/weather/api/d/docs?d=language-support
     static {
         LANG_ISO_TO_WU_CODES.put("AF", "AF");
@@ -170,7 +171,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         // Yiddish - transliterated => JI
         LANG_ISO_TO_WU_CODES.put("YI", "YI");
     }
-    private static final Map<String, String> LANG_COUNTRY_TO_WU_CODES = new HashMap<String, String>();
+    private static final Map<String, @Nullable String> LANG_COUNTRY_TO_WU_CODES = new HashMap<>();
     static {
         LANG_COUNTRY_TO_WU_CODES.put("en-GB", "LI"); // British English
         LANG_COUNTRY_TO_WU_CODES.put("fr-CA", "FC"); // French Canadian
@@ -178,19 +179,22 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
 
     private final LocaleProvider localeProvider;
     private final UnitProvider unitProvider;
+    private final TimeZoneProvider timeZoneProvider;
     private final Gson gson;
     private final Map<String, Integer> forecastMap;
-    @Nullable
-    private ScheduledFuture<?> refreshJob;
-    @Nullable
-    private WeatherUndergroundJsonData weatherData;
-    @Nullable
-    private WeatherUndergroundBridgeHandler bridgeHandler;
 
-    public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider) {
+    private @Nullable ScheduledFuture<?> refreshJob;
+
+    private @Nullable WeatherUndergroundJsonData weatherData;
+
+    private @Nullable WeatherUndergroundBridgeHandler bridgeHandler;
+
+    public WeatherUndergroundHandler(Thing thing, LocaleProvider localeProvider, UnitProvider unitProvider,
+            TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.localeProvider = localeProvider;
         this.unitProvider = unitProvider;
+        this.timeZoneProvider = timeZoneProvider;
         gson = new Gson();
         forecastMap = initForecastDayMap();
     }
@@ -233,14 +237,13 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 String errors = "";
                 String statusDescr = null;
 
-                if (StringUtils.trimToNull(config.location) == null) {
+                if (config.location == null || config.location.trim().isEmpty()) {
                     errors += " Parameter 'location' must be configured.";
                     statusDescr = "@text/offline.conf-error-missing-location";
                     validConfig = false;
                 }
                 if (config.language != null) {
-                    String lang = StringUtils.trimToEmpty(config.language);
-                    if (lang.length() != 2) {
+                    if (config.language.trim().length() != 2) {
                         errors += " Parameter 'language' must be 2 letters.";
                         statusDescr = "@text/offline.conf-error-syntax-language";
                         validConfig = false;
@@ -264,7 +267,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 
@@ -272,7 +275,8 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
      * Start the job refreshing the weather data
      */
     private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> job = refreshJob;
+        if (job == null || job.isCancelled()) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -300,10 +304,11 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     public void dispose() {
         logger.debug("Disposing WeatherUnderground handler.");
 
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            refreshJob.cancel(true);
-            refreshJob = null;
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
         }
+        refreshJob = null;
     }
 
     @Override
@@ -324,11 +329,12 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
     private void updateChannel(String channelId) {
         if (isLinked(channelId)) {
             State state = null;
-            if (weatherData != null) {
+            WeatherUndergroundJsonData data = weatherData;
+            if (data != null) {
                 if (channelId.startsWith("current")) {
-                    state = updateCurrentObservationChannel(channelId, weatherData.getCurrent());
+                    state = updateCurrentObservationChannel(channelId, data.getCurrent());
                 } else if (channelId.startsWith("forecast")) {
-                    state = updateForecastChannel(channelId, weatherData.getForecast());
+                    state = updateForecastChannel(channelId, data.getForecast());
                 }
             }
 
@@ -352,7 +358,9 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
             case "stationId":
                 return undefOrState(current.getStationId(), new StringType(current.getStationId()));
             case "observationTime":
-                return undefOrState(current.getObservationTime(), new DateTimeType(current.getObservationTime()));
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
+                return undefOrState(current.getObservationTime(zoneId),
+                        new DateTimeType(current.getObservationTime(zoneId)));
             case "conditions":
                 return undefOrState(current.getConditions(), new StringType(current.getConditions()));
             case "temperature":
@@ -425,7 +433,9 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         String channelTypeId = getChannelTypeId(channelId);
         switch (channelTypeId) {
             case "forecastTime":
-                return undefOrState(dayForecast.getForecastTime(), new DateTimeType(dayForecast.getForecastTime()));
+                ZoneId zoneId = timeZoneProvider.getTimeZone();
+                return undefOrState(dayForecast.getForecastTime(zoneId),
+                        new DateTimeType(dayForecast.getForecastTime(zoneId)));
             case "conditions":
                 return undefOrState(dayForecast.getConditions(), new StringType(dayForecast.getConditions()));
             case "minTemperature":
@@ -535,11 +545,9 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
         try {
             WeatherUndergroundConfiguration config = getConfigAs(WeatherUndergroundConfiguration.class);
 
-            String urlStr = URL_QUERY.replace("%APIKEY%", StringUtils.trimToEmpty(bridgeHandler.getApikey()));
+            String urlStr = URL_QUERY.replace("%FEATURES%", String.join("/", features));
 
-            urlStr = urlStr.replace("%FEATURES%", String.join("/", features));
-
-            String lang = StringUtils.trimToEmpty(config.language);
+            String lang = config.language == null ? "" : config.language.trim();
             if (lang.isEmpty()) {
                 // If language is not set in the configuration, you try deducing it from the system language
                 lang = getCodeFromLanguage(localeProvider.getLocale());
@@ -552,8 +560,13 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 urlStr = urlStr.replace("%SETTINGS%", "lang:" + lang.toUpperCase());
             }
 
-            urlStr = urlStr.replace("%QUERY%", StringUtils.trimToEmpty(config.location));
-            logger.debug("URL = {}", urlStr);
+            String location = config.location == null ? "" : config.location.trim();
+            urlStr = urlStr.replace("%QUERY%", location);
+            if (logger.isDebugEnabled()) {
+                logger.debug("URL = {}", urlStr.replace("%APIKEY%", "***"));
+            }
+
+            urlStr = urlStr.replace("%APIKEY%", bridgeHandler.getApikey());
 
             // Run the HTTP request and get the JSON response from Weather Underground
             String response = null;
@@ -562,8 +575,7 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
                 logger.debug("weatherData = {}", response);
             } catch (IllegalArgumentException e) {
                 // catch Illegal character in path at index XX: http://api.wunderground.com/...
-                error = "Error creating URI with location parameter: '" + StringUtils.trimToEmpty(config.location)
-                        + "'";
+                error = "Error creating URI with location parameter: '" + location + "'";
                 errorDetail = e.getMessage();
                 statusDescr = "@text/offline.uri-error";
             }
@@ -628,11 +640,11 @@ public class WeatherUndergroundHandler extends BaseThingHandler {
      */
     public static String getCodeFromLanguage(Locale locale) {
         String key = locale.getLanguage() + "-" + locale.getCountry();
-        String language = StringUtils.trimToEmpty(LANG_COUNTRY_TO_WU_CODES.get(key));
-        if (language.isEmpty()) {
-            language = StringUtils.trimToEmpty(LANG_ISO_TO_WU_CODES.get(locale.getLanguage().toUpperCase()));
+        String language = LANG_COUNTRY_TO_WU_CODES.get(key);
+        if (language == null) {
+            language = LANG_ISO_TO_WU_CODES.get(locale.getLanguage().toUpperCase());
         }
-        return language;
+        return language != null ? language : "";
     }
 
     private WUQuantity getTemperature(BigDecimal siValue, BigDecimal imperialValue) {

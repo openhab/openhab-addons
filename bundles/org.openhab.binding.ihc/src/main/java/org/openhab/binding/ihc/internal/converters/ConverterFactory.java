@@ -80,7 +80,7 @@ public enum ConverterFactory {
     private Map<Key, Converter<? extends WSResourceValue, ? extends Type>> converters;
 
     private ConverterFactory() {
-        converters = new HashMap<Key, Converter<? extends WSResourceValue, ? extends Type>>();
+        converters = new HashMap<>();
 
         converters.put(new Key(WSDateValue.class, DateTimeType.class), new DateTimeTypeWSDateValueConverter());
         converters.put(new Key(WSTimeValue.class, DateTimeType.class), new DateTimeTypeWSTimeValueConverter());

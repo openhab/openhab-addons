@@ -23,5 +23,4 @@ public class TileVSizeCommand extends BasePercentCommand {
     protected TileVSizeCommand(int setId) {
         super('d', 'h', setId);
     }
-
 }

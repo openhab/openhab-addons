@@ -143,5 +143,4 @@ public class WeatherObservation {
     public void setWeatherType(Integer weatherType) {
         this.weatherType = weatherType;
     }
-
 }

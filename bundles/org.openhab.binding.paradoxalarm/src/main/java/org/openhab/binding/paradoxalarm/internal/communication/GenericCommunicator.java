@@ -17,7 +17,6 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxException;
 import org.openhab.binding.paradoxalarm.internal.exceptions.ParadoxRuntimeException;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
@@ -28,17 +27,20 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public class GenericCommunicator extends AbstractCommunicator implements IParadoxInitialLoginCommunicator {
+public class GenericCommunicator extends AbstractCommunicator implements IResponseReceiver {
 
     private final Logger logger = LoggerFactory.getLogger(GenericCommunicator.class);
 
-    private final String password;
     private final byte[] pcPasswordBytes;
     private byte[] panelInfoBytes;
+    private boolean isEncrypted;
+    private final String password;
 
     public GenericCommunicator(String ipAddress, int tcpPort, String ip150Password, String pcPassword,
-            ScheduledExecutorService scheduler) throws UnknownHostException, IOException {
+            ScheduledExecutorService scheduler, boolean useEncryption) throws UnknownHostException, IOException {
         super(ipAddress, tcpPort, scheduler);
+        this.isEncrypted = useEncryption;
+        logger.debug("Use encryption={}", isEncrypted);
         this.password = ip150Password;
         this.pcPasswordBytes = ParadoxUtil.stringToBCD(pcPassword);
     }
@@ -64,39 +66,6 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
     }
 
     @Override
-    protected void handleReceivedPacket(IResponse response) {
-        retryCounter = 0;
-        IRequest request = response.getRequest();
-        logger.trace("Handling response for request={}", request);
-
-        RequestType type = request.getType();
-        // Send back the response to proper receive methods
-        switch (type) {
-            case LOGON_SEQUENCE:
-                CommunicationState logonSequenceSender = ((LogonRequest) request).getLogonSequenceSender();
-                logonSequenceSender.receiveResponse(this, response);
-                break;
-            case RAM:
-                try {
-                    receiveRamResponse(response);
-                } catch (ParadoxException e) {
-                    RamRequest ramRequest = (RamRequest) request;
-                    logger.debug("Unable to retrieve RAM message for memory page={}", ramRequest.getRamBlockNumber());
-                }
-                break;
-            case EPROM:
-                try {
-                    receiveEpromResponse(response);
-                } catch (ParadoxException e) {
-                    EpromRequest epromRequest = (EpromRequest) request;
-                    logger.debug("Unable to retrieve EPROM message for entity Type={}, Id={}",
-                        epromRequest.getEntityType(), epromRequest.getEntityId());
-                }
-                break;
-        }
-    }
-
-    @Override
     public byte[] getPanelInfoBytes() {
         return panelInfoBytes;
     }
@@ -112,22 +81,17 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    protected void receiveEpromResponse(IResponse response) {
+        // Nothing to do here. Override in particular implementation class.
     }
 
     @Override
-    protected void receiveEpromResponse(IResponse response) throws ParadoxException {
-        // Nothing to do here. Override in sub class.
-    }
-
-    @Override
-    protected void receiveRamResponse(IResponse response) throws ParadoxException {
-        // Nothing to do here. Override in sub class.
+    protected void receiveRamResponse(IResponse response) {
+        // Nothing to do here. Override in particular implementation class.
     }
 
     public void refreshMemoryMap() {
-        // Nothing to do here. Override in sub class.
+        // Nothing to do here. Override in particular implementation class.
     }
 
     @Override
@@ -144,6 +108,31 @@ public class GenericCommunicator extends AbstractCommunicator implements IParado
     public void updateListeners() {
         if (listeners != null && !listeners.isEmpty()) {
             listeners.forEach(IDataUpdateListener::update);
+        }
+    }
+
+    @Override
+    public boolean isEncrypted() {
+        return isEncrypted;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator) {
+        IRequest request = response.getRequest();
+        logger.trace("Handling response for request={}", request);
+        ParadoxUtil.printPacket("Full packet", response.getPacketBytes());
+        RequestType type = request.getType();
+        if (type == RequestType.RAM) {
+            receiveRamResponse(response);
+        } else if (type == RequestType.EPROM) {
+            receiveEpromResponse(response);
+        } else {
+            logger.debug("Probably wrong sender in the request. Request type is not one of the supported methods.");
         }
     }
 }

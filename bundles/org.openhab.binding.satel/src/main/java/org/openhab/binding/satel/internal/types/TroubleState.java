@@ -93,5 +93,4 @@ public enum TroubleState implements StateType {
     public int getBytesCount(boolean isExtended) {
         return bytesCount;
     }
-
 }

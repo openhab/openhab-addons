@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="weathercompany" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="weathercompany"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="account">
 		<label>Weather Company Account</label>
 		<description>Represents an account at the Weather Company service</description>
-		<config-description-ref uri="thing-type:weathercompany:account" />
+		<config-description-ref uri="thing-type:weathercompany:account"/>
 	</bridge-type>
 
 	<thing-type id="weather-observations">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Weather Company Observations</label>
 		<description>Current observations from Personal Weather Station</description>
 		<channels>
-			<channel id="neighborhood" typeId="neighborhood" />
-			<channel id="observationTimeLocal" typeId="observationTimeLocal" />
+			<channel id="neighborhood" typeId="neighborhood"/>
+			<channel id="observationTimeLocal" typeId="observationTimeLocal"/>
 			<channel id="currentTemperature" typeId="temperature">
 				<label>Temperature</label>
 			</channel>
@@ -58,19 +59,19 @@
 			<channel id="currentWindSpeedGust" typeId="windSpeed">
 				<label>Wind Gust Speed</label>
 			</channel>
-			<channel id="stationId" typeId="stationId" />
-			<channel id="country" typeId="country" />
-			<channel id="location" typeId="location" />
-			<channel id="elevation" typeId="elevation" />
-			<channel id="qcStatus" typeId="qcStatus" />
-			<channel id="softwareType" typeId="softwareType" />
+			<channel id="stationId" typeId="stationId"/>
+			<channel id="country" typeId="country"/>
+			<channel id="location" typeId="location"/>
+			<channel id="elevation" typeId="elevation"/>
+			<channel id="qcStatus" typeId="qcStatus"/>
+			<channel id="softwareType" typeId="softwareType"/>
 		</channels>
-		<config-description-ref uri="thing-type:weathercompany:weather-observations" />
+		<config-description-ref uri="thing-type:weathercompany:weather-observations"/>
 	</thing-type>
 
 	<thing-type id="weather-forecast">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
 		<label>Weather Company Forecast</label>
@@ -152,25 +153,25 @@
 				<description>This is the night-time weather forecast in 5 days</description>
 			</channel-group>
 		</channel-groups>
-		<config-description-ref uri="thing-type:weathercompany:weather-forecast" />
+		<config-description-ref uri="thing-type:weathercompany:weather-forecast"/>
 	</thing-type>
 
 	<channel-group-type id="forecastDay">
 		<label>Weather Forecast Day</label>
 		<description>This is the weather forecast</description>
 		<channels>
-			<channel id="dayOfWeek" typeId="dayOfWeek" />
-			<channel id="narrative" typeId="narrative" />
+			<channel id="dayOfWeek" typeId="dayOfWeek"/>
+			<channel id="narrative" typeId="narrative"/>
 			<channel id="temperatureMax" typeId="temperature">
 				<label>Maximum Temperature</label>
 			</channel>
 			<channel id="temperatureMin" typeId="temperature">
 				<label>Minimum Temperature</label>
 			</channel>
-			<channel id="precipitationRain" typeId="precipitationRain" />
-			<channel id="precipitationSnow" typeId="precipitationSnow" />
-			<channel id="validTimeLocal" typeId="validTimeLocal" />
-			<channel id="expirationTimeLocal" typeId="expirationTimeLocal" />
+			<channel id="precipitationRain" typeId="precipitationRain"/>
+			<channel id="precipitationSnow" typeId="precipitationSnow"/>
+			<channel id="validTimeLocal" typeId="validTimeLocal"/>
+			<channel id="expirationTimeLocal" typeId="expirationTimeLocal"/>
 		</channels>
 	</channel-group-type>
 
@@ -178,13 +179,13 @@
 		<label>Weather Forecast Day and Night</label>
 		<description>This is the weather forecast for day and night</description>
 		<channels>
-			<channel id="daypartName" typeId="daypartName" />
-			<channel id="dayOrNight" typeId="dayOrNight" />
-			<channel id="narrative" typeId="narrative" />
-			<channel id="qualifierCode" typeId="qualifierCode" />
-			<channel id="qualifierPhrase" typeId="qualifierPhrase" />
-			<channel id="wxPhraseShort" typeId="wxPhraseShort" />
-			<channel id="wxPhraseLong" typeId="wxPhraseLong" />
+			<channel id="daypartName" typeId="daypartName"/>
+			<channel id="dayOrNight" typeId="dayOrNight"/>
+			<channel id="narrative" typeId="narrative"/>
+			<channel id="qualifierCode" typeId="qualifierCode"/>
+			<channel id="qualifierPhrase" typeId="qualifierPhrase"/>
+			<channel id="wxPhraseShort" typeId="wxPhraseShort"/>
+			<channel id="wxPhraseLong" typeId="wxPhraseLong"/>
 			<channel id="temperature" typeId="temperature">
 				<label>Temperature</label>
 			</channel>
@@ -194,24 +195,24 @@
 			<channel id="temperatureWindChill" typeId="temperature">
 				<label>Wind Chill</label>
 			</channel>
-			<channel id="relativeHumidity" typeId="relativeHumidity" />
-			<channel id="windSpeed" typeId="windSpeed" />
-			<channel id="windDirection" typeId="windDirection" />
-			<channel id="windDirectionCardinal" typeId="windDirectionCardinal" />
-			<channel id="windPhrase" typeId="windPhrase" />
-			<channel id="cloudCover" typeId="cloudCover" />
-			<channel id="precipitationChance" typeId="precipitationChance" />
-			<channel id="precipitationType" typeId="precipitationType" />
-			<channel id="precipitationRain" typeId="precipitationRain" />
-			<channel id="precipitationSnow" typeId="precipitationSnow" />
-			<channel id="snowRange" typeId="snowRange" />
-			<channel id="uvDescription" typeId="uvDescription" />
-			<channel id="uvIndex" typeId="uvIndex" />
-			<channel id="thunderCategory" typeId="thunderCategory" />
-			<channel id="thunderIndex" typeId="thunderIndex" />
-			<channel id="iconCode" typeId="iconCode" />
-			<channel id="iconCodeExtend" typeId="iconCodeExtend" />
-			<channel id="iconImage" typeId="iconImage" />
+			<channel id="relativeHumidity" typeId="relativeHumidity"/>
+			<channel id="windSpeed" typeId="windSpeed"/>
+			<channel id="windDirection" typeId="windDirection"/>
+			<channel id="windDirectionCardinal" typeId="windDirectionCardinal"/>
+			<channel id="windPhrase" typeId="windPhrase"/>
+			<channel id="cloudCover" typeId="cloudCover"/>
+			<channel id="precipitationChance" typeId="precipitationChance"/>
+			<channel id="precipitationType" typeId="precipitationType"/>
+			<channel id="precipitationRain" typeId="precipitationRain"/>
+			<channel id="precipitationSnow" typeId="precipitationSnow"/>
+			<channel id="snowRange" typeId="snowRange"/>
+			<channel id="uvDescription" typeId="uvDescription"/>
+			<channel id="uvIndex" typeId="uvIndex"/>
+			<channel id="thunderCategory" typeId="thunderCategory"/>
+			<channel id="thunderIndex" typeId="thunderIndex"/>
+			<channel id="iconCode" typeId="iconCode"/>
+			<channel id="iconCodeExtend" typeId="iconCodeExtend"/>
+			<channel id="iconImage" typeId="iconImage"/>
 		</channels>
 	</channel-group-type>
 
@@ -282,14 +283,14 @@
 		<item-type>Location</item-type>
 		<label>Weather Station Location</label>
 		<description>Latitude and longitude of weather station</description>
-		<state readOnly="true" pattern="%2$s°N, %3$s°W" />
+		<state readOnly="true" pattern="%2$s°N, %3$s°W"/>
 	</channel-type>
 
 	<channel-type id="elevation" advanced="true">
 		<item-type>Number:Length</item-type>
 		<label>Weather Station Elevation</label>
 		<description>Elevation above ground of weather station</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="narrative">
@@ -317,7 +318,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precipitation Chance</label>
 		<description>Chance of precipitation</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="precipitationRain">
@@ -325,7 +326,7 @@
 		<label>Precipitation Rain</label>
 		<description>Forecasted measurable liquid precipitation during 24 hour period</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="precipitationRate">
@@ -333,7 +334,7 @@
 		<label>Precipitation Rate</label>
 		<description>Precipitation rate</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.7f %unit%" />
+		<state readOnly="true" pattern="%.7f %unit%"/>
 	</channel-type>
 
 	<channel-type id="precipitationSnow">
@@ -341,7 +342,7 @@
 		<label>Precipitation Snow</label>
 		<description>Forecasted measurable snow precipitation during 24 hour period</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="precipitationTotal">
@@ -349,7 +350,7 @@
 		<label>Precipitation Total</label>
 		<description>Precipitation total</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="precipitationType">
@@ -364,14 +365,14 @@
 		<label>Barometric Pressure</label>
 		<description>Barometric Pressure</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="qcStatus" advanced="true">
 		<item-type>Number</item-type>
 		<label>QC Status</label>
 		<description>QC status</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="qualifierPhrase" advanced="true">
@@ -392,7 +393,7 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Forecasted relative humidity</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="snowRange">
@@ -413,7 +414,7 @@
 		<item-type>Number:Intensity</item-type>
 		<label>Solar Radiation</label>
 		<description>Solar radiation</description>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="stationId">
@@ -428,7 +429,7 @@
 		<label>Temperature</label>
 		<description>Forecasted temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="thunderCategory" advanced="true">
@@ -470,7 +471,7 @@
 		<item-type>Number:Angle</item-type>
 		<label>Wind Direction</label>
 		<description>Wind direction</description>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windDirectionCardinal">
@@ -491,7 +492,7 @@
 		<item-type>Number:Speed</item-type>
 		<label>Wind Speed</label>
 		<description>Wind speed</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="wxPhraseLong">

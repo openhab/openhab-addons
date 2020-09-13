@@ -12,6 +12,17 @@
 			<advanced>true</advanced>
 		</parameter-group>
 
+		<parameter name="colorMode" type="text">
+			<label>Color Mode</label>
+			<description>Defines the color representation format of the payload. "HSB" by default.</description>
+			<options>
+				<option value="HSB">HSB (Hue, Saturation, Brightness)</option>
+				<option value="RGB">RGB (Red, Green, Blue)</option>
+				<option value="XYY">CIE xyY (x, y, Brightness)</option>
+			</options>
+			<default>HSB</default>
+		</parameter>
+
 		<parameter name="stateTopic" type="text">
 			<label>MQTT State Topic</label>
 			<description>An MQTT topic that this thing will subscribe to, to receive the state. This can be left empty, the
@@ -96,7 +107,8 @@
 		<parameter name="onBrightness" type="integer" min="1" max="100">
 			<label>Initial Brightness</label>
 			<description>If you connect this channel to a Switch item and turn it on,
-				color and saturation are preserved from the last state, but
+				color and saturation are preserved from the
+				last state, but
 				the brightness will be set to this configured initial brightness percentage.</description>
 			<default>10</default>
 			<advanced>true</advanced>

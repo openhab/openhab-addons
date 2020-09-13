@@ -84,8 +84,8 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerNikoHomeControlDiscoveryService(NikoHomeControlBridgeHandler bridgeHandler) {
         NikoHomeControlDiscoveryService nhcDiscoveryService = new NikoHomeControlDiscoveryService(bridgeHandler);
-        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext.registerService(
-                DiscoveryService.class.getName(), nhcDiscoveryService, new Hashtable<String, Object>()));
+        discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
+                .registerService(DiscoveryService.class.getName(), nhcDiscoveryService, new Hashtable<>()));
         nhcDiscoveryService.activate();
     }
 

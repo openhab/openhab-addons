@@ -73,5 +73,4 @@ public enum OwserverTemperatureScale {
         }
         return CENTIGRADE;
     }
-
 }

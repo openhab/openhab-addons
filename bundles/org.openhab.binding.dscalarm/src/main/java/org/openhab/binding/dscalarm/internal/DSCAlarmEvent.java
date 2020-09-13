@@ -50,5 +50,4 @@ public class DSCAlarmEvent extends EventObject {
     public DSCAlarmMessage getDSCAlarmMessage() {
         return dscAlarmMessage;
     }
-
 }

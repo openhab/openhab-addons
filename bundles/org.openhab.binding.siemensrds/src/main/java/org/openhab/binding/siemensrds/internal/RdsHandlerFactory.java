@@ -22,6 +22,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -31,7 +32,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
-
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Component;
 
@@ -40,13 +40,14 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 @Component(configurationPid = "binding.siemensrds", service = ThingHandlerFactory.class)
 public class RdsHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_CLOUD, THING_TYPE_RDS)));
 
-    private final Map<ThingUID, ServiceRegistration<?>> discos = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discos = new HashMap<>();
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,8 +64,9 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
             return handler;
         }
 
-        if (thingTypeUID.equals(THING_TYPE_RDS))
+        if (thingTypeUID.equals(THING_TYPE_RDS)) {
             return new RdsHandler(thing);
+        }
 
         return null;
     }
@@ -86,7 +88,7 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
 
         // register the discovery service
         ServiceRegistration<?> serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), ds,
-                new Hashtable<String, Object>());
+                new Hashtable<>());
 
         /*
          * store service registration in a list so we can destroy it when the respective
@@ -103,19 +105,20 @@ public class RdsHandlerFactory extends BaseThingHandlerFactory {
      */
     private synchronized void destroyDiscoveryService(RdsCloudHandler handler) {
         // fetch the respective thing's service registration from our list
+        @Nullable
         ServiceRegistration<?> serviceReg = discos.remove(handler.getThing().getUID());
 
+        // retrieve the respective discovery service
         if (serviceReg != null) {
-            // retrieve the respective discovery service
             RdsDiscoveryService disco = (RdsDiscoveryService) bundleContext.getService(serviceReg.getReference());
 
             // unregister the service
             serviceReg.unregister();
 
             // deactivate the service
-            if (disco != null)
+            if (disco != null) {
                 disco.deactivate();
+            }
         }
     }
-
 }

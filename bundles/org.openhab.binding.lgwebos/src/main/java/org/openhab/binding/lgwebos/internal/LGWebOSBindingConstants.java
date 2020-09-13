@@ -43,6 +43,7 @@ public class LGWebOSBindingConstants {
      */
     public static final String CONFIG_HOST = "host";
     public static final String CONFIG_KEY = "key";
+    public static final String CONFIG_MAC_ADDRESS = "macAddress";
 
     /*
      * Property names must match property names in
@@ -53,8 +54,6 @@ public class LGWebOSBindingConstants {
     public static final String PROPERTY_DEVICE_OS_VERSION = "deviceOSVersion";
     public static final String PROPERTY_DEVICE_OS_RELEASE_VERSION = "deviceOSReleaseVersion";
     public static final String PROPERTY_LAST_CONNECTED = "lastConnected";
-    public static final String PROPERTY_MODEL_NAME = "modelName";
-    public static final String PROPERTY_MANUFACTURER = "manufacturer";
 
     /*
      * List of all Channel ids.

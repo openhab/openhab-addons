@@ -55,5 +55,4 @@ public class ParadoxInformationConstants {
 
         return ParadoxInformationConstants.panelTypes.getOrDefault(key, PanelType.UNKNOWN);
     }
-
 }

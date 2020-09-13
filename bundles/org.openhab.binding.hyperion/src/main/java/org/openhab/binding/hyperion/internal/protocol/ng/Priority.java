@@ -108,5 +108,4 @@ public class Priority {
     public void setValue(Value value) {
         this.value = value;
     }
-
 }

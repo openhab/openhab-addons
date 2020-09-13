@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,7 +38,7 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
     private final Consumer<List<T>> consumer;
     private final List<T> queue = Collections.synchronizedList(new ArrayList<>());
     private final ScheduledExecutorService executor;
-    protected @Nullable ScheduledFuture<?> future;
+    protected final AtomicReference<@Nullable ScheduledFuture<?>> futureRef = new AtomicReference<>();
 
     /**
      * Creates a {@link DelayedBatchProcessing}.
@@ -56,18 +57,15 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
     }
 
     /**
-     * Add new object to the batch process list. If the list was empty, the delay timer
-     * is armed and all successive objects are accumulated from here on.
+     * Add new object to the batch process list. Every time a new object is received,
+     * the delay timer is rescheduled.
      *
      * @param t An object
      */
     @Override
     public void accept(T t) {
         queue.add(t);
-        final ScheduledFuture<?> scheduledFuture = this.future;
-        if (scheduledFuture == null || scheduledFuture.isDone()) {
-            this.future = executor.schedule(this::run, delay, TimeUnit.MILLISECONDS);
-        }
+        cancel(futureRef.getAndSet(executor.schedule(this::run, delay, TimeUnit.MILLISECONDS)));
     }
 
     /**
@@ -76,10 +74,7 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * @return A list of accumulated objects
      */
     public List<T> join() {
-        ScheduledFuture<?> scheduledFuture = this.future;
-        if (scheduledFuture != null && !scheduledFuture.isDone()) {
-            scheduledFuture.cancel(false);
-        }
+        cancel(futureRef.getAndSet(null));
         List<T> lqueue = new ArrayList<>();
         synchronized (queue) {
             lqueue.addAll(queue);
@@ -92,7 +87,7 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * Return true if there is a delayed processing going on.
      */
     public boolean isArmed() {
-        ScheduledFuture<?> scheduledFuture = this.future;
+        ScheduledFuture<?> scheduledFuture = this.futureRef.get();
         return scheduledFuture != null && !scheduledFuture.isDone();
     }
 
@@ -100,10 +95,7 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
      * Deliver queued items now to the target consumer.
      */
     public void forceProcessNow() {
-        ScheduledFuture<?> scheduledFuture = this.future;
-        if (scheduledFuture != null && !scheduledFuture.isDone()) {
-            scheduledFuture.cancel(false);
-        }
+        cancel(futureRef.getAndSet(null));
         run();
     }
 
@@ -116,6 +108,12 @@ public class DelayedBatchProcessing<T> implements Consumer<T> {
 
         if (!lqueue.isEmpty()) {
             consumer.accept(lqueue);
+        }
+    }
+
+    private static void cancel(@Nullable ScheduledFuture<?> future) {
+        if (future != null) {
+            future.cancel(false);
         }
     }
 }

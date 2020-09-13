@@ -27,5 +27,4 @@ public class ResetLimitsCommand extends AM43Command {
     public ResetLimitsCommand() {
         super(COMMAND, (byte) 0, (byte) 0, (byte) 1);
     }
-
 }

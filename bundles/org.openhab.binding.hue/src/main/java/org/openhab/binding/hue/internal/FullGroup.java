@@ -12,19 +12,39 @@
  */
 package org.openhab.binding.hue.internal;
 
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
+
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Detailed group information.
  *
  * @author Q42 - Initial contribution
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding
+ * @author Laurent Garnier - field state added
  */
 public class FullGroup extends Group {
+    public static final Type GSON_TYPE = new TypeToken<Map<String, FullGroup>>() {
+    }.getType();
+
     private State action;
     private List<String> lights;
+    private State groupState; // Will not be set by hue API
 
     FullGroup() {
+        super();
+    }
+
+    /**
+     * Test constructor
+     */
+    FullGroup(String id, String name, String type, State action, List<String> lights, State state) {
+        super(id, name, type);
+        this.action = action;
+        this.lights = lights;
+        this.groupState = state;
     }
 
     /**
@@ -42,7 +62,20 @@ public class FullGroup extends Group {
      *
      * @return lights in the group
      */
-    public List<HueObject> getLights() {
-        return Util.idsToLights(lights);
+    public List<String> getLightIds() {
+        return lights;
+    }
+
+    /**
+     * Returns the current state of the group.
+     *
+     * @return current state
+     */
+    public State getState() {
+        return groupState;
+    }
+
+    public void setState(State state) {
+        this.groupState = state;
     }
 }

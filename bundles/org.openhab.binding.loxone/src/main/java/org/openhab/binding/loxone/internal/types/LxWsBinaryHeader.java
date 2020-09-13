@@ -26,33 +26,33 @@ public class LxWsBinaryHeader {
      *
      */
     public enum LxWsMessageType {
-    /**
-     * Text message - jetty websocket client will pass it on automatically to a callback
-     */
-    TEXT_MESSAGE,
-    /**
-     * Binary file
-     */
-    BINARY_FILE,
-    /**
-     * A set of value states for controls that changed their state
-     */
-    EVENT_TABLE_OF_VALUE_STATES,
-    /**
-     * A set of text states for controls that changed their state
-     */
-    EVENT_TABLE_OF_TEXT_STATES,
-    EVENT_TABLE_OF_DAYTIMER_STATES,
-    OUT_OF_SERVICE_INDICATOR,
-    /**
-     * Response to keepalive request message
-     */
-    KEEPALIVE_RESPONSE,
-    EVENT_TABLE_OF_WEATHER_STATES,
-    /**
-     * Unknown header
-     */
-    UNKNOWN
+        /**
+         * Text message - jetty websocket client will pass it on automatically to a callback
+         */
+        TEXT_MESSAGE,
+        /**
+         * Binary file
+         */
+        BINARY_FILE,
+        /**
+         * A set of value states for controls that changed their state
+         */
+        EVENT_TABLE_OF_VALUE_STATES,
+        /**
+         * A set of text states for controls that changed their state
+         */
+        EVENT_TABLE_OF_TEXT_STATES,
+        EVENT_TABLE_OF_DAYTIMER_STATES,
+        OUT_OF_SERVICE_INDICATOR,
+        /**
+         * Response to keepalive request message
+         */
+        KEEPALIVE_RESPONSE,
+        EVENT_TABLE_OF_WEATHER_STATES,
+        /**
+         * Unknown header
+         */
+        UNKNOWN
     }
 
     private LxWsMessageType type = LxWsMessageType.UNKNOWN;
