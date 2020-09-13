@@ -47,7 +47,7 @@
 			<channel id="lock" typeId="smartlockLock"/>
 			<channel id="lockState" typeId="smartlockState"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
-			<channel typeId="smartlockDoorState" id="doorsensorState"/>
+			<channel id="doorsensorState" typeId="smartlockDoorState"/>
 		</channels>
 		<config-description>
 			<parameter name="nukiId" type="text" required="true">
