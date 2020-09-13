@@ -131,18 +131,13 @@ public class RemoteServiceHandler {
             req.header("Content-Length", urlEncodedData.length() + "");
             req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
             req.content(new StringContentProvider(urlEncodedData));
-            // logger.info("URL encoded data {}", urlEncodedData);
-            // logger.info("Data size {} ", urlEncodedData.length());
 
             try {
                 ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
                 if (contentResponse.getStatus() != 200) {
-                    logger.debug("URL {} Status {} Reason {}", serviceExecutionAPI, contentResponse.getStatus(),
-                            contentResponse.getReason());
                     reset();
                     return false;
                 } else {
-                    logger.debug("Executed {}, Response {}", service.toString(), contentResponse.getContentAsString());
                     handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
                     return true;
                 }
@@ -175,17 +170,14 @@ public class RemoteServiceHandler {
 
         try {
             ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
-            if (contentResponse.getStatus() != 200) {
-                logger.debug("URL {} Status {} Reason {}", serviceExecutionAPI, contentResponse.getStatus(),
-                        contentResponse.getReason());
-            } else {
+            if (contentResponse.getStatus() == 200) {
                 String state = contentResponse.getContentAsString();
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(state, ExecutionStatusContainer.class);
                 ExecutionStatus execStatus = esc.executionStatus;
 
                 handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
                 if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
-                    handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
+                    handler.getScheduler().schedule(this::getState, 5, TimeUnit.SECONDS);
                 } else {
                     reset();
                     // immediately refresh data
@@ -203,5 +195,6 @@ public class RemoteServiceHandler {
             serviceExecuting = Optional.empty();
             counter = 0;
         }
+        handler.switchRemoteServicesOff();
     }
 }

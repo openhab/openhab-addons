@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="troubleshoot-control">
 		<label>Troubleshooting</label>
-		<description>Generating Debug Data if a Problem Report shall be raised</description>
+		<description>Generates Debug Data</description>
 		<channels>
 			<channel id="vehicle-fingerprint" typeId="vehicle-fingerprint-channel"/>
 		</channels>

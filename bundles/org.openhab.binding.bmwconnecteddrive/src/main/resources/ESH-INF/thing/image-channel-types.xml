@@ -7,4 +7,12 @@
 		<item-type>Image</item-type>
 		<label>Rendered Image of your Vehicle</label>
 	</channel-type>
+	<channel-type id="image-view-channel">
+		<item-type>String</item-type>
+		<label>Image Viewport</label>
+	</channel-type>
+	<channel-type id="image-size-channel">
+		<item-type>Number</item-type>
+		<label>Image Picture Size</label>
+	</channel-type>
 </thing:thing-descriptions>

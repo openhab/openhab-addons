@@ -95,8 +95,8 @@ public class Converter {
      * @param destinationLongitude
      * @return distance
      */
-    public static double measureDistance(float sourceLatitude, float sourceLongitude, float destinationLatitude,
-            float destinationLongitude) {
+    public static double measureDistance(double sourceLatitude, double sourceLongitude, double destinationLatitude,
+            double destinationLongitude) {
         double earthRadius = 6378.137; // Radius of earth in KM
         double dLat = destinationLatitude * Math.PI / 180 - sourceLatitude * Math.PI / 180;
         double dLon = destinationLongitude * Math.PI / 180 - sourceLongitude * Math.PI / 180;

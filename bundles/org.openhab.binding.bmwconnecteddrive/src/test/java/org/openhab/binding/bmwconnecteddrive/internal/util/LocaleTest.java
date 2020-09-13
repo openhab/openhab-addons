@@ -64,4 +64,13 @@ public class LocaleTest {
         assertEquals("Output DateTime", "2020-08-24T17:55:32", localeTime);
         assertEquals("DateTimeType Value", "2020-08-24T17:55:32", dateTimeType);
     }
+
+    @Test
+    public void testDistance() {
+        double lat = 50.5560;
+        double lon = 8.4956;
+        double distance = 0.005;
+        double dist = Converter.measureDistance(lat, lon, lat + distance, lon + distance);
+        assertTrue("Distance below 1 km", dist < 1);
+    }
 }
