@@ -399,7 +399,7 @@
 		<item-type>String</item-type>
 		<label>Send System Command</label>
 		<description>Sends a system command to Kodi. This allows to shutdown/suspend/hibernate/reboot/quit Kodi</description>
-		<state>
+		<command>
 			<options>
 				<option value="Shutdown">Shutdown</option>
 				<option value="Suspend">Suspend</option>
@@ -407,7 +407,7 @@
 				<option value="Reboot">Reboot</option>
 				<option value="Quit">Quit</option>
 			</options>
-		</state>
+		</command>
 	</channel-type>
 
 	<!-- Kodi variables -->
