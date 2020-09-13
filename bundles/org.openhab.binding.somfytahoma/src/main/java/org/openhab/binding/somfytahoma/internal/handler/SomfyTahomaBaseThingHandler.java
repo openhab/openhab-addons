@@ -20,16 +20,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.library.types.OpenClosedType;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.library.types.*;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
@@ -50,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private HashMap<String, Integer> typeTable = new HashMap<>();
     protected HashMap<String, String> stateNames = new HashMap<>();
 
@@ -76,7 +68,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     private void createRSSIChannel() {
         if (thing.getChannel(RSSI) == null) {
             logger.debug("{} Creating a rssi channel", url);
-            createChannel(RSSI, "Number","RSSI Level");
+            createChannel(RSSI, "Number", "RSSI Level");
         }
     }
 
@@ -205,7 +197,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
             switch (type) {
                 case TYPE_PERCENT:
                     Double valPct = Double.parseDouble(state.getValue().toString());
-                    return new PercentType(valPct.intValue());
+                    return new PercentType(normalizePercent(valPct));
                 case TYPE_DECIMAL:
                     Double valDec = Double.parseDouble(state.getValue().toString());
                     return new DecimalType(valDec);
@@ -220,10 +212,20 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 default:
                     return null;
             }
-        } catch (NumberFormatException ex) {
+        } catch (IllegalArgumentException ex) {
             logger.debug("{} Error while parsing Tahoma state! Value: {} type: {}", url, state.getValue(), type, ex);
         }
         return null;
+    }
+
+    private int normalizePercent(Double valPct) {
+        int value = valPct.intValue();
+        if (value < 0) {
+            value = 0;
+        } else if (value > 100) {
+            value = 100;
+        }
+        return value;
     }
 
     private State parseStringState(String value) {
@@ -318,7 +320,7 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public void updateThingChannels(SomfyTahomaState state) {
-        stateNames.forEach((k,v) -> {
+        stateNames.forEach((k, v) -> {
             if (v.equals(state.getName())) {
                 Channel ch = thing.getChannel(k);
                 if (ch != null) {
@@ -330,5 +332,9 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
                 }
             }
         });
+    }
+
+    public int toInteger(Command command) {
+        return (command instanceof DecimalType) ? ((DecimalType) command).intValue() : 0;
     }
 }

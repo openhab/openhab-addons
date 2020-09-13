@@ -16,6 +16,7 @@ import static org.openhab.binding.network.internal.NetworkBindingConstants.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TimeZone;
@@ -32,10 +33,19 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.network.internal.*;
+import org.openhab.binding.network.internal.NetworkBindingConfiguration;
+import org.openhab.binding.network.internal.NetworkBindingConfigurationListener;
+import org.openhab.binding.network.internal.NetworkBindingConstants;
+import org.openhab.binding.network.internal.NetworkHandlerConfiguration;
+import org.openhab.binding.network.internal.PresenceDetection;
+import org.openhab.binding.network.internal.PresenceDetectionListener;
+import org.openhab.binding.network.internal.PresenceDetectionValue;
+import org.openhab.binding.network.internal.WakeOnLanPacketSender;
+import org.openhab.binding.network.internal.action.NetworkActions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,11 +55,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marc Mettke - Initial contribution
  * @author David Graeff - Rewritten
+ * @author Wouter Born - Add Wake-on-LAN thing action support
  */
 @NonNullByDefault
-public class NetworkHandler extends BaseThingHandler implements PresenceDetectionListener, NetworkBindingConfigurationListener {
+public class NetworkHandler extends BaseThingHandler
+        implements PresenceDetectionListener, NetworkBindingConfigurationListener {
     private final Logger logger = LoggerFactory.getLogger(NetworkHandler.class);
     private @NonNullByDefault({}) PresenceDetection presenceDetection;
+    private @NonNullByDefault({}) WakeOnLanPacketSender wakeOnLanPacketSender;
 
     private boolean isTCPServiceDevice;
     private NetworkBindingConfiguration configuration;
@@ -71,8 +84,8 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     }
 
     private void refreshValue(ChannelUID channelUID) {
-        // We are not yet even initialised, don't do anything
-        if (!presenceDetection.isAutomaticRefreshing()) {
+        // We are not yet even initialized, don't do anything
+        if (presenceDetection == null || !presenceDetection.isAutomaticRefreshing()) {
             return;
         }
 
@@ -186,6 +199,8 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
         presenceDetection.setRefreshInterval(handlerConfiguration.refreshInterval.longValue());
         presenceDetection.setTimeout(handlerConfiguration.timeout.intValue());
 
+        wakeOnLanPacketSender = new WakeOnLanPacketSender(handlerConfiguration.macAddress);
+
         updateStatus(ThingStatus.ONLINE);
         presenceDetection.startAutomaticRefresh(scheduler);
 
@@ -220,5 +235,18 @@ public class NetworkHandler extends BaseThingHandler implements PresenceDetectio
     public void bindingConfigurationChanged() {
         // Make sure that changed binding configuration is reflected
         presenceDetection.setPreferResponseTimeAsLatency(configuration.preferResponseTimeAsLatency);
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singletonList(NetworkActions.class);
+    }
+
+    public void sendWakeOnLanPacket() {
+        if (handlerConfiguration.macAddress.isEmpty()) {
+            throw new IllegalStateException(
+                    "Cannot send WoL packet because the 'macAddress' is not configured for " + thing.getUID());
+        }
+        wakeOnLanPacketSender.sendPacket();
     }
 }

@@ -6,7 +6,7 @@
 
 	<thing-type id="sensor_lock_aq1">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Aqara Fingerprint Door Lock</label>
 		<description>Live fingerprint unlock, password unlock, proximity card unlock, key unlock.</description>
@@ -20,9 +20,9 @@
 				<label>Wrong Access Alarm</label>
 			</channel>
 			<channel id="lastOpened" typeId="lastOpened"></channel>
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

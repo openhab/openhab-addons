@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="openuv" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="openuv"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,7 +8,8 @@
 	<bridge-type id="openuvapi">
 		<label>Open UV API</label>
 		<description>
-		Bridge to the OpenUV Project API. In order to receive the data, you must register an account on https://www.openuv.io/auth/google and get your API token.
+			Bridge to the OpenUV Project API. In order to receive the data, you must register an account on
+			https://www.openuv.io/auth/google and get your API token.
 		</description>
 
 		<config-description>
@@ -23,27 +25,27 @@
 	<!-- OpenUV Report Thing -->
 	<thing-type id="uvreport">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="openuvapi" />
+			<bridge-type-ref id="openuvapi"/>
 		</supported-bridge-type-refs>
-		
+
 		<label>UV Report</label>
 		<description>
-		Provides various UV data from the OpenUV Project for a given location.
+			Provides various UV data from the OpenUV Project for a given location.
 		</description>
 
 		<channels>
-			<channel id="UVIndex" typeId="UVIndex" />
-			<channel id="UVColor" typeId="UVColor" />
-			<channel id="UVMax" typeId="UVMax" />
-			<channel id="UVMaxTime" typeId="UVMaxTime" />
-			<channel id="UVMaxEvent" typeId="UVMaxEvent" />
-			<channel id="Ozone" typeId="Ozone" />
-			<channel id="OzoneTime" typeId="OzoneTime" />
-			<channel id="UVTime" typeId="UVTime" />
-			<channel id="SafeExposure" typeId="SafeExposure" />
-			<channel id="elevation" typeId="elevation" />
+			<channel id="UVIndex" typeId="UVIndex"/>
+			<channel id="UVColor" typeId="UVColor"/>
+			<channel id="UVMax" typeId="UVMax"/>
+			<channel id="UVMaxTime" typeId="UVMaxTime"/>
+			<channel id="UVMaxEvent" typeId="UVMaxEvent"/>
+			<channel id="Ozone" typeId="Ozone"/>
+			<channel id="OzoneTime" typeId="OzoneTime"/>
+			<channel id="UVTime" typeId="UVTime"/>
+			<channel id="SafeExposure" typeId="SafeExposure"/>
+			<channel id="elevation" typeId="elevation"/>
 		</channels>
-		
+
 		<representation-property>location</representation-property>
 
 		<config-description>
@@ -59,40 +61,40 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	
+
 	<channel-type id="UVIndex">
 		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>UV Index</description>
-		<state readOnly="true" pattern="%.2f/16" min="0" max="16" />
+		<state readOnly="true" pattern="%.2f/16" min="0" max="16"/>
 	</channel-type>
 
 	<channel-type id="UVMax" advanced="true">
 		<item-type>Number</item-type>
 		<label>UV Max</label>
 		<description>Max UV Index for the day (at solar noon)</description>
-		<state readOnly="true" pattern="%.2f/16" min="0" max="16" />
+		<state readOnly="true" pattern="%.2f/16" min="0" max="16"/>
 	</channel-type>
 
 	<channel-type id="Ozone">
 		<item-type>Number:ArealDensity</item-type>
 		<label>Ozone</label>
 		<description>Ozone level from OMI data</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="OzoneTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Ozone Observation Time</label>
 		<description>Latest OMI ozone update time</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="UVMaxTime" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>UV Max Time</label>
 		<description>Max UV Index time (solar noon)</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="UVTime" advanced="true">
@@ -135,9 +137,9 @@
 		<item-type>Number:Angle</item-type>
 		<label>Elevation</label>
 		<description>The elevation of the sun</description>
-		<state pattern="%.2f %unit%" />
+		<state pattern="%.2f %unit%"/>
 	</channel-type>
-	
+
 	<!-- UV Max Event Channel Type -->
 	<channel-type id="UVMaxEvent">
 		<kind>trigger</kind>
@@ -146,4 +148,3 @@
 	</channel-type>
 
 </thing:thing-descriptions>
-

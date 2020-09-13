@@ -15,22 +15,18 @@ package org.openhab.binding.lutron.internal.radiora;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.TooManyListenersException;
 
+import org.eclipse.smarthome.io.transport.serial.PortInUseException;
+import org.eclipse.smarthome.io.transport.serial.SerialPort;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
+import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
+import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
 import org.openhab.binding.lutron.internal.radiora.protocol.RadioRAFeedback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
 
 /**
  * RS232 connection to the RadioRA Classic system.
@@ -42,6 +38,7 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
 
     private final Logger logger = LoggerFactory.getLogger(RS232Connection.class);
 
+    protected SerialPortManager serialPortManager;
     protected SerialPort serialPort;
 
     protected BufferedReader inputReader;
@@ -49,25 +46,26 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     protected RadioRAFeedbackListener listener;
     protected RS232MessageParser parser = new RS232MessageParser();
 
+    public RS232Connection(SerialPortManager serialPortManager) {
+        super();
+        this.serialPortManager = serialPortManager;
+    }
+
     @Override
     public void open(String portName, int baud) throws RadioRAConnectionException {
-        CommPortIdentifier commPort = null;
-
-        try {
-            commPort = CommPortIdentifier.getPortIdentifier(portName);
-        } catch (NoSuchPortException e) {
-            logAvailablePorts();
+        SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(portName);
+        if (portIdentifier == null) {
             throw new RadioRAConnectionException(String.format("Port not found", portName));
         }
 
         try {
-            serialPort = commPort.open("openhab", 5000);
+            serialPort = portIdentifier.open("openhab", 5000);
             serialPort.notifyOnDataAvailable(true);
             serialPort.setSerialPortParams(baud, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             serialPort.addEventListener(this);
             inputReader = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
         } catch (PortInUseException e) {
-            throw new RadioRAConnectionException(String.format("Port %s already in use", commPort.getName()));
+            throw new RadioRAConnectionException(String.format("Port %s already in use", portIdentifier.getName()));
         } catch (UnsupportedCommOperationException e) {
             throw new RadioRAConnectionException("Error initializing - Failed to set serial port params");
         } catch (TooManyListenersException e) {
@@ -90,28 +88,6 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     @Override
     public void disconnect() {
         serialPort.close();
-    }
-
-    private void logAvailablePorts() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Available ports:");
-            for (CommPortIdentifier port : getAvailableSerialPorts()) {
-                logger.debug("{}", port.getName());
-            }
-        }
-    }
-
-    protected List<CommPortIdentifier> getAvailableSerialPorts() {
-        List<CommPortIdentifier> ports = new ArrayList<>();
-        Enumeration<?> portIds = CommPortIdentifier.getPortIdentifiers();
-        while (portIds.hasMoreElements()) {
-            CommPortIdentifier id = (CommPortIdentifier) portIds.nextElement();
-            if (CommPortIdentifier.PORT_SERIAL == id.getPortType()) {
-                ports.add(id);
-            }
-        }
-
-        return ports;
     }
 
     @Override
@@ -147,5 +123,4 @@ public class RS232Connection implements RadioRAConnection, SerialPortEventListen
     public void setListener(RadioRAFeedbackListener listener) {
         this.listener = listener;
     }
-
 }

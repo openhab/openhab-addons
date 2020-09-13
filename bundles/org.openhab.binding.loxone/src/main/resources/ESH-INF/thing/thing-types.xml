@@ -62,7 +62,8 @@
 			<parameter name="password" type="text" required="false" groupName="security">
 				<label>Password</label>
 				<context>password</context>
-				<description>User password on the Loxone Miniserver. In token-based authentication this password will be cleared after token is acquired.</description>
+				<description>User password on the Loxone Miniserver. In token-based authentication this password will be cleared
+					after token is acquired.</description>
 			</parameter>
 			<parameter name="authToken" type="text" required="false" groupName="security">
 				<label>Token</label>
@@ -92,12 +93,14 @@
 			</parameter>
 			<parameter name="userErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
 				<label>Authentication Error Delay</label>
-				<description>Time in seconds between user login error as a result of wrong name/password or no authority and next connection attempt (seconds, 0-3600)</description>
+				<description>Time in seconds between user login error as a result of wrong name/password or no authority and next
+					connection attempt (seconds, 0-3600)</description>
 				<default>60</default>
 			</parameter>
 			<parameter name="comErrorDelay" type="integer" min="0" max="3600" groupName="timeouts">
 				<label>Communication Error Delay</label>
-				<description>Time between connection close (as a result of some communication error) and next connection attempt (seconds, 0-3600)</description>
+				<description>Time between connection close (as a result of some communication error) and next connection attempt
+					(seconds, 0-3600)</description>
 				<default>30</default>
 			</parameter>
 			<parameter name="maxBinMsgSize" type="integer" min="0" max="102400" groupName="sizes">
@@ -124,7 +127,7 @@
 		<item-type>Switch</item-type>
 		<label>Loxone Digital Read-only Information</label>
 		<description>Loxone's digital information controls (InfoOnlyDigital, read-only).</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="rollerShutterTypeId">
@@ -137,7 +140,7 @@
 		<item-type>String</item-type>
 		<label>Loxone State Read-only Information</label>
 		<description>Loxone's state information controls (TextState, read-only).</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="numberTypeId">
@@ -150,14 +153,14 @@
 		<item-type>Number</item-type>
 		<label>Loxone State Read-only Information</label>
 		<description>Loxone's time counter (TimedSwitch, read-only).</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="roAnalogTypeId">
 		<item-type>Number</item-type>
 		<label>Loxone Virtual Analog State Read-only Information</label>
 		<description>Loxone's state information controls (InfoOnlyAnalog, read-only).</description>
-		<state readOnly="true" pattern="%.1f" />
+		<state readOnly="true" pattern="%.1f"/>
 	</channel-type>
 
 	<channel-type id="lightCtrlTypeId">
@@ -184,7 +187,7 @@
 		<item-type>Number</item-type>
 		<label>Loxone Radio Button (8x and 16x)</label>
 		<description>Loxone's radio button controls (Radio).</description>
-		<state pattern="%d" min="0" max="16" step="1" />
+		<state pattern="%d" min="0" max="16" step="1"/>
 	</channel-type>
 
 	<channel-type id="dimmerTypeId">
@@ -253,8 +256,7 @@
 		<item-type>Number</item-type>
 		<label>Comfort Tolerance Temperature</label>
 		<description>Loxone Intelligent Room Controller V2 Comfort Tolerance.</description>
-		<state min="0.5" max="3" />
+		<state min="0.5" max="3"/>
 	</channel-type>
 
 </thing:thing-descriptions>
-

@@ -16,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,7 +25,6 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.binding.mqtt.discovery.AbstractMQTTDiscovery;
 import org.openhab.binding.mqtt.discovery.MQTTTopicDiscoveryService;
-import org.openhab.binding.mqtt.generic.tools.WaitForTopicValue;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -93,17 +91,7 @@ public class Homie300Discovery extends AbstractMQTTDiscovery {
             return;
         }
 
-        // Retrieve name and update found discovery
-        try {
-            WaitForTopicValue w = new WaitForTopicValue(connection, topic.replace("$homie", "$name"));
-            w.waitForTopicValueAsync(scheduler, 700).thenAccept(name -> {
-                publishDevice(connectionBridge, connection, deviceID, topic, name);
-            });
-        } catch (InterruptedException | ExecutionException ignored) {
-            // The name is nice to have, but not required, use deviceId as fallback
-            publishDevice(connectionBridge, connection, deviceID, topic, deviceID);
-        }
-
+        publishDevice(connectionBridge, connection, deviceID, topic, deviceID);
     }
 
     void publishDevice(ThingUID connectionBridge, MqttBrokerConnection connection, String deviceID, String topic,

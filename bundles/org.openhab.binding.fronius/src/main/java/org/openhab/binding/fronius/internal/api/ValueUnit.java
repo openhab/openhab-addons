@@ -47,5 +47,4 @@ public class ValueUnit {
         this.setValue(KilowattConverter.convertTo(this.getValue(), this.getUnit(), unit));
         this.unit = unit;
     }
-
 }

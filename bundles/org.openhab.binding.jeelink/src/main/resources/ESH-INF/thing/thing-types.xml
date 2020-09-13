@@ -13,6 +13,7 @@
 			<parameter name="serialPort" type="text" required="true">
 				<label>@text/parameter.serialport.label</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>@text/parameter.serialport.description</description>
 			</parameter>
 			<parameter name="initCommands" type="text" required="false">
@@ -49,6 +50,7 @@
 			<parameter name="serialPort" type="text" required="true">
 				<label>@text/parameter.serialport.label</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>@text/parameter.serialportlgw.description</description>
 			</parameter>
 			<parameter name="initCommands" type="text" required="false">
@@ -152,20 +154,20 @@
 	<!-- Lacrosse Temperature Sensor Thing Type -->
 	<thing-type id="lacrosse">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="jeelinkTcp" />
-			<bridge-type-ref id="jeelinkUsb" />
-			<bridge-type-ref id="lgwTcp" />
-			<bridge-type-ref id="lgwUsb" />
+			<bridge-type-ref id="jeelinkTcp"/>
+			<bridge-type-ref id="jeelinkUsb"/>
+			<bridge-type-ref id="lgwTcp"/>
+			<bridge-type-ref id="lgwUsb"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.lacrosse.label</label>
 		<description>@text/thing-type.lacrosse.description</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="batteryNew" typeId="battery-new" />
-			<channel id="batteryLow" typeId="system.low-battery" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="batteryNew" typeId="battery-new"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
 		</channels>
 
 		<config-description>
@@ -211,22 +213,22 @@
 	<!-- EC3000 Power Monitor Thing Type -->
 	<thing-type id="ec3k">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="jeelinkTcp" />
-			<bridge-type-ref id="jeelinkUsb" />
-			<bridge-type-ref id="lgwTcp" />
-			<bridge-type-ref id="lgwUsb" />
+			<bridge-type-ref id="jeelinkTcp"/>
+			<bridge-type-ref id="jeelinkUsb"/>
+			<bridge-type-ref id="lgwTcp"/>
+			<bridge-type-ref id="lgwUsb"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.ec3k.label</label>
 		<description>@text/thing-type.ec3k.description</description>
 
 		<channels>
-			<channel id="currentPower" typeId="current-power" />
-			<channel id="maxPower" typeId="max-power" />
-			<channel id="consumptionTotal" typeId="consumption-total" />
-			<channel id="applianceTime" typeId="appliance-time" />
-			<channel id="sensorTime" typeId="sensor-time" />
-			<channel id="resets" typeId="resets" />
+			<channel id="currentPower" typeId="current-power"/>
+			<channel id="maxPower" typeId="max-power"/>
+			<channel id="consumptionTotal" typeId="consumption-total"/>
+			<channel id="applianceTime" typeId="appliance-time"/>
+			<channel id="sensorTime" typeId="sensor-time"/>
+			<channel id="resets" typeId="resets"/>
 		</channels>
 
 		<config-description>
@@ -256,19 +258,19 @@
 	<!-- PCA301 power monitoring wireless socket Thing Type -->
 	<thing-type id="pca301">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="jeelinkTcp" />
-			<bridge-type-ref id="jeelinkUsb" />
-			<bridge-type-ref id="lgwTcp" />
-			<bridge-type-ref id="lgwUsb" />
+			<bridge-type-ref id="jeelinkTcp"/>
+			<bridge-type-ref id="jeelinkUsb"/>
+			<bridge-type-ref id="lgwTcp"/>
+			<bridge-type-ref id="lgwUsb"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.pca301.label</label>
 		<description>@text/thing-type.pca301.description</description>
 
 		<channels>
-			<channel id="switchingState" typeId="switching-state" />
-			<channel id="currentPower" typeId="current-power" />
-			<channel id="consumptionTotal" typeId="consumption-total" />
+			<channel id="switchingState" typeId="switching-state"/>
+			<channel id="currentPower" typeId="current-power"/>
+			<channel id="consumptionTotal" typeId="consumption-total"/>
 		</channels>
 
 		<config-description>
@@ -292,22 +294,22 @@
 	<!-- Revolt Energy Meter Thing Type -->
 	<thing-type id="revolt">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="jeelinkTcp" />
-			<bridge-type-ref id="jeelinkUsb" />
-			<bridge-type-ref id="lgwTcp" />
-			<bridge-type-ref id="lgwUsb" />
+			<bridge-type-ref id="jeelinkTcp"/>
+			<bridge-type-ref id="jeelinkUsb"/>
+			<bridge-type-ref id="lgwTcp"/>
+			<bridge-type-ref id="lgwUsb"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.revolt.label</label>
 		<description>@text/thing-type.revolt.description</description>
 
 		<channels>
-			<channel id="currentPower" typeId="current-power" />
-			<channel id="consumptionTotal" typeId="consumption-total" />
-			<channel id="powerFactor" typeId="power-factor" />
-			<channel id="electricCurrent" typeId="electric-current" />
-			<channel id="electricPotential" typeId="electric-potential" />
-			<channel id="powerFrequency" typeId="power-frequency" />
+			<channel id="currentPower" typeId="current-power"/>
+			<channel id="consumptionTotal" typeId="consumption-total"/>
+			<channel id="powerFactor" typeId="power-factor"/>
+			<channel id="electricCurrent" typeId="electric-current"/>
+			<channel id="electricPotential" typeId="electric-potential"/>
+			<channel id="powerFrequency" typeId="power-frequency"/>
 		</channels>
 
 		<config-description>
@@ -326,24 +328,24 @@
 	<!-- TX22 Temperature/Humidity SensorThing Type -->
 	<thing-type id="tx22">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="jeelinkTcp" />
-			<bridge-type-ref id="jeelinkUsb" />
-			<bridge-type-ref id="lgwTcp" />
-			<bridge-type-ref id="lgwUsb" />
+			<bridge-type-ref id="jeelinkTcp"/>
+			<bridge-type-ref id="jeelinkUsb"/>
+			<bridge-type-ref id="lgwTcp"/>
+			<bridge-type-ref id="lgwUsb"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.tx22.label</label>
 		<description>@text/thing-type.tx22.description</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="batteryNew" typeId="battery-new" />
-			<channel id="batteryLow" typeId="system.low-battery" />
-			<channel id="pressure" typeId="pressure" />
-			<channel id="rain" typeId="rain" />
-			<channel id="windStrength" typeId="wind-strength" />
-			<channel id="windAngle" typeId="wind-angle" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="batteryNew" typeId="battery-new"/>
+			<channel id="batteryLow" typeId="system.low-battery"/>
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="rain" typeId="rain"/>
+			<channel id="windStrength" typeId="wind-strength"/>
+			<channel id="windAngle" typeId="wind-angle"/>
 			<channel id="gustStrength" typeId="wind-strength">
 				<label>@text/gust-strength.label</label>
 				<description>@text/gust-strength.description</description>
@@ -366,17 +368,17 @@
 	<!-- LGW Sensor SensorThing Type -->
 	<thing-type id="lgw">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="jeelinkTcp" />
-			<bridge-type-ref id="jeelinkUsb" />
-			<bridge-type-ref id="lgwTcp" />
-			<bridge-type-ref id="lgwUsb" />
+			<bridge-type-ref id="jeelinkTcp"/>
+			<bridge-type-ref id="jeelinkUsb"/>
+			<bridge-type-ref id="lgwTcp"/>
+			<bridge-type-ref id="lgwUsb"/>
 		</supported-bridge-type-refs>
 
 		<label>@text/thing-type.lgw.label</label>
 		<description>@text/thing-type.lgw.description</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
+			<channel id="temperature" typeId="temperature"/>
 		</channels>
 
 		<config-description>
@@ -397,7 +399,7 @@
 		<label>@text/channel-type.wind-angle.label</label>
 		<description>@text/channel-type.wind-angle.description</description>
 		<category>Wind</category>
-		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%" />
+		<state min="0" max="360" step="1" readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="wind-strength">
@@ -405,7 +407,7 @@
 		<label>@text/channel-type.wind-strength.label</label>
 		<description>@text/channel-type.wind-strength.description</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rain">
@@ -413,7 +415,7 @@
 		<label>@text/channel-type.rain.label</label>
 		<description>@text/channel-type.rain.description</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressure">
@@ -421,7 +423,7 @@
 		<label>@text/channel-type.pressure.label</label>
 		<description>@text/channel-type.pressure.description</description>
 		<category>Pressure</category>
-		<state readOnly="true" pattern="%.3f %unit%" />
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<!-- Current Power Channel Type -->
@@ -429,7 +431,7 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.current-power.label</label>
 		<description>@text/channel-type.current-power.description</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- Max Power Channel Type -->
@@ -437,7 +439,7 @@
 		<item-type>Number:Power</item-type>
 		<label>@text/channel-type.max-power.label</label>
 		<description>@text/channel-type.max-power.description</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- Total Energy Consumption Channel Type -->
@@ -445,7 +447,7 @@
 		<item-type>Number:Energy</item-type>
 		<label>@text/channel-type.consumption-total.label</label>
 		<description>@text/channel-type.consumption-total.description</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<!-- Appliance On Time Channel Type -->
@@ -453,7 +455,7 @@
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.appliance-time.label</label>
 		<description>@text/channel-type.appliance-time.description</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<!-- Sensor On Time Channel Type -->
@@ -461,7 +463,7 @@
 		<item-type>Number:Time</item-type>
 		<label>@text/channel-type.sensor-time.label</label>
 		<description>@text/channel-type.sensor-time.description</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<!-- Resets Channel Type -->
@@ -469,7 +471,7 @@
 		<item-type>Number</item-type>
 		<label>@text/channel-type.resets.label</label>
 		<description>@text/channel-type.resets.description</description>
-		<state readOnly="true" pattern="%d" />
+		<state readOnly="true" pattern="%d"/>
 	</channel-type>
 
 	<!-- Temperature Channel Type -->
@@ -478,7 +480,7 @@
 		<label>@text/channel-type.temperature.label</label>
 		<description>@text/channel-type.temperature.description</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- Humidity Channel Type -->
@@ -487,7 +489,7 @@
 		<label>@text/channel-type.humidity.label</label>
 		<description>@text/channel-type.humidity.description</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<!-- Battery New Channel Type -->
@@ -495,7 +497,7 @@
 		<item-type>Switch</item-type>
 		<label>@text/channel-type.battery-new.label</label>
 		<description>@text/channel-type.battery-new.description</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<!-- PCA301 Socket On Type -->
@@ -504,7 +506,7 @@
 		<label>@text/channel-type.switching-state.label</label>
 		<description>@text/channel-type.switching-state.description</description>
 	</channel-type>
-	
+
 	<!-- Revolt Current Type -->
 	<channel-type id="electric-current">
 		<item-type>Number:ElectricCurrent</item-type>
@@ -518,14 +520,14 @@
 		<label>@text/channel-type.power-factor.label</label>
 		<description>@text/channel-type.power-factor.description</description>
 	</channel-type>
-	
+
 	<!-- Revolt Electric Potential Type -->
 	<channel-type id="electric-potential">
 		<item-type>Number:ElectricPotential</item-type>
 		<label>@text/channel-type.electric-potential.label</label>
 		<description>@text/channel-type.electric-potential.description</description>
 	</channel-type>
-	
+
 	<!-- Revolt Frequency Type -->
 	<channel-type id="power-frequency">
 		<item-type>Number:Frequency</item-type>

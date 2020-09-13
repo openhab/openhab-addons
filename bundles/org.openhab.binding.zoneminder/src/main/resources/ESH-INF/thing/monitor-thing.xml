@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="zoneminder" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="zoneminder"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Supported ZoneMinder devices and features -->
 	<thing-type id="monitor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="server" />
+			<bridge-type-ref id="server"/>
 		</supported-bridge-type-refs>
 
 		<label>ZoneMinder Monitor</label>
 		<description>Camera in ZoneMinder</description>
 
 		<channels>
-			<channel id="online" typeId="monitor_online" />
-			<channel id="enabled" typeId="monitor_enabled" />
-			<channel id="force-alarm" typeId="monitor_force_alarm" />
-			<channel id="alarm" typeId="monitor_alarm" />
-			<channel id="recording" typeId="monitor_recording" />
-			<channel id="detailed-status" typeId="monitor_detailed_status" />
-			<channel id="function" typeId="monitor_function" />
-			<channel id="event-cause" typeId="monitor_event_cause" />
-			<channel id="capture-daemon" typeId="monitor_zmc_daemon" />
-			<channel id="analysis-daemon" typeId="monitor_zma_daemon" />
-			<channel id="frame-daemon" typeId="monitor_zmf_daemon" />
+			<channel id="online" typeId="monitor_online"/>
+			<channel id="enabled" typeId="monitor_enabled"/>
+			<channel id="force-alarm" typeId="monitor_force_alarm"/>
+			<channel id="alarm" typeId="monitor_alarm"/>
+			<channel id="recording" typeId="monitor_recording"/>
+			<channel id="detailed-status" typeId="monitor_detailed_status"/>
+			<channel id="function" typeId="monitor_function"/>
+			<channel id="event-cause" typeId="monitor_event_cause"/>
+			<channel id="capture-daemon" typeId="monitor_zmc_daemon"/>
+			<channel id="analysis-daemon" typeId="monitor_zma_daemon"/>
+			<channel id="frame-daemon" typeId="monitor_zmf_daemon"/>
 		</channels>
 
-		<config-description-ref uri="thing-type:monitor-channels:config" />
+		<config-description-ref uri="thing-type:monitor-channels:config"/>
 	</thing-type>
 
 	<!-- Channel definitions of ZoneMinder Server -->
@@ -34,36 +35,38 @@
 		<item-type>Switch</item-type>
 		<label>Online</label>
 		<description>Switch telling if the monitor is online</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="monitor_enabled">
 		<item-type>Switch</item-type>
 		<label>Enabled</label>
 		<description>Showing the value of the checkbox 'enabled' in ZoneMinder for the monitor</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="monitor_force_alarm">
 		<item-type>Switch</item-type>
 		<label>Force Alarm</label>
 		<description>Will force an alarm from openHAB in ZoneMinder</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 
 
 	<channel-type id="monitor_alarm">
 		<item-type>Switch</item-type>
 		<label>Alarm Status</label>
-		<description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed, External Alarm. Else set to 'OFF'</description>
-		<state readOnly="true" />
+		<description>set to 'ON' when one of the following is true: Motion detected, Signal lost, Force Alarm pressed,
+			External Alarm. Else set to 'OFF'</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="monitor_recording">
 		<item-type>Switch</item-type>
 		<label>Recording Status</label>
-		<description>set to 'ON' when either channel monitor-alarm set to 'ON', or  montior function is 'Mocord' or 'Record'. Else set to 'OFF'</description>
-		<state readOnly="true" />
+		<description>set to 'ON' when either channel monitor-alarm set to 'ON', or montior function is 'Mocord' or 'Record'.
+			Else set to 'OFF'</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="monitor_detailed_status" advanced="true">

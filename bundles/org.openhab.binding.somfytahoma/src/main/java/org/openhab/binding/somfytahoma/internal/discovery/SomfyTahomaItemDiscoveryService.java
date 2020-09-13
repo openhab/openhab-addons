@@ -25,15 +25,18 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryServiceCallback;
-import org.eclipse.smarthome.config.discovery.ExtendedDiscoveryService;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
-import org.openhab.binding.somfytahoma.internal.model.*;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Deactivate;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaGateway;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
+import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,43 +47,43 @@ import org.slf4j.LoggerFactory;
  * @author Ondrej Pecta - Initial contribution
  */
 @NonNullByDefault
-public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService implements ExtendedDiscoveryService {
+public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService {
 
     private final Logger logger = LoggerFactory.getLogger(SomfyTahomaItemDiscoveryService.class);
 
-    private SomfyTahomaBridgeHandler bridge;
-
-    private @Nullable DiscoveryServiceCallback discoveryServiceCallback;
+    private @Nullable SomfyTahomaBridgeHandler bridgeHandler;
 
     private @Nullable ScheduledFuture<?> discoveryJob;
 
     private static final int DISCOVERY_TIMEOUT_SEC = 10;
     private static final int DISCOVERY_REFRESH_SEC = 3600;
 
-    public SomfyTahomaItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
+    public SomfyTahomaItemDiscoveryService() {
         super(DISCOVERY_TIMEOUT_SEC);
         logger.debug("Creating discovery service");
-        this.bridge = bridgeHandler;
-    }
-
-    /**
-     * Called on component activation.
-     */
-    @Override
-    @Activate
-    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
-        super.activate(configProperties);
     }
 
     @Override
-    @Deactivate
+    public void activate() {
+        super.activate(null);
+    }
+
+    @Override
     public void deactivate() {
         super.deactivate();
     }
 
     @Override
-    public void setDiscoveryServiceCallback(DiscoveryServiceCallback discoveryServiceCallback) {
-        this.discoveryServiceCallback = discoveryServiceCallback;
+    public void setThingHandler(@NonNullByDefault({}) ThingHandler handler) {
+        if (handler instanceof SomfyTahomaBridgeHandler) {
+            bridgeHandler = (SomfyTahomaBridgeHandler) handler;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 
     @Override
@@ -115,8 +118,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     private synchronized void runDiscovery() {
         logger.debug("Starting scanning for things...");
 
-        if (bridge.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            SomfyTahomaSetup setup = bridge.getSetup();
+        if (bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
+            SomfyTahomaSetup setup = bridgeHandler.getSetup();
 
             if (setup == null) {
                 return;
@@ -129,13 +132,13 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 gatewayDiscovered(gw);
             }
 
-            List<SomfyTahomaActionGroup> actions = bridge.listActionGroups();
+            List<SomfyTahomaActionGroup> actions = bridgeHandler.listActionGroups();
 
             for (SomfyTahomaActionGroup group : actions) {
                 String oid = group.getOid();
                 String label = group.getLabel();
 
-                //actiongroups use oid as deviceURL
+                // actiongroups use oid as deviceURL
                 actionGroupDiscovered(label, oid, oid);
             }
         } else {
@@ -147,6 +150,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         logger.debug("url: {}", device.getDeviceURL());
         switch (device.getUiClass()) {
             case CLASS_AWNING:
+                // widget: PositionableHorizontalAwning
                 deviceDiscovered(device, THING_TYPE_AWNING);
                 break;
             case CLASS_CONTACT_SENSOR:
@@ -168,9 +172,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                 deviceDiscovered(device, THING_TYPE_GARAGEDOOR);
                 break;
             case CLASS_LIGHT:
-                // widget: TimedOnOffLight
-                // widget: StatefulOnOffLight
-                deviceDiscovered(device, THING_TYPE_LIGHT);
+                if ("DimmerLight".equals(device.getWidget())) {
+                    // widget: DimmerLight
+                    deviceDiscovered(device, THING_TYPE_DIMMER_LIGHT);
+                } else {
+                    // widget: TimedOnOffLight
+                    // widget: StatefulOnOffLight
+                    deviceDiscovered(device, THING_TYPE_LIGHT);
+                }
                 break;
             case CLASS_LIGHT_SENSOR:
                 deviceDiscovered(device, THING_TYPE_LIGHTSENSOR);
@@ -236,6 +245,14 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
                     deviceDiscovered(device, THING_TYPE_HEATING_SYSTEM);
                 }
                 break;
+            case CLASS_EXTERIOR_HEATING_SYSTEM:
+                if ("DimmerExteriorHeating".equals(device.getWidget())) {
+                    // widget: DimmerExteriorHeating
+                    deviceDiscovered(device, THING_TYPE_EXTERIOR_HEATING_SYSTEM);
+                } else {
+                    logUnsupportedDevice(device);
+                }
+                break;
             case CLASS_HUMIDITY_SENSOR:
                 if (hasState(device, WATER_DETECTION_STATE)) {
                     deviceDiscovered(device, THING_TYPE_WATERSENSOR);
@@ -297,12 +314,13 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private boolean isStateLess(SomfyTahomaDevice device) {
-        return device.getStates().size() == 0 || (device.getStates().size() == 1 && hasState(device, STATUS_STATE));
+        return device.getStates().isEmpty() || (device.getStates().size() == 1 && hasState(device, STATUS_STATE));
     }
 
     private void logUnsupportedDevice(SomfyTahomaDevice device) {
         if (!isStateLess(device)) {
-            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(), device.getWidget());
+            logger.info("Detected a new unsupported device: {} with widgetName: {}", device.getUiClass(),
+                    device.getWidget());
             logger.info("If you want to add the support, please create a new issue and attach the information below");
             logger.info("Device definition:\n{}", device.getDefinition());
 
@@ -343,7 +361,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
     }
 
     private void deviceDiscovered(SomfyTahomaDevice device, ThingTypeUID thingTypeUID) {
-        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID, hasState(device, RSSI_LEVEL_STATE));
+        deviceDiscovered(device.getLabel(), device.getDeviceURL(), device.getOid(), thingTypeUID,
+                hasState(device, RSSI_LEVEL_STATE));
     }
 
     private void deviceDiscovered(String label, String deviceURL, String oid, ThingTypeUID thingTypeUID, boolean rssi) {
@@ -354,12 +373,12 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
             properties.put(RSSI_LEVEL_STATE, "-1");
         }
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, bridge.getThing().getUID(), oid);
+        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(), oid);
 
         logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                .withProperties(properties).withRepresentationProperty("url").withLabel(label)
-                .withBridge(bridge.getThing().getUID()).build());
+        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
+                .withRepresentationProperty("url").withLabel(label).withBridge(bridgeHandler.getThing().getUID())
+                .build());
     }
 
     private void actionGroupDiscovered(String label, String deviceURL, String oid) {
@@ -373,11 +392,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService im
         properties.put("id", id);
         properties.put("type", type);
 
-        ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, bridge.getThing().getUID(), id);
+        ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, bridgeHandler.getThing().getUID(), id);
 
         logger.debug("Detected a gateway with id: {} and type: {}", id, type);
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY)
                 .withProperties(properties).withRepresentationProperty("id").withLabel("Somfy Gateway (" + type + ")")
-                .withBridge(bridge.getThing().getUID()).build());
+                .withBridge(bridgeHandler.getThing().getUID()).build());
     }
 }

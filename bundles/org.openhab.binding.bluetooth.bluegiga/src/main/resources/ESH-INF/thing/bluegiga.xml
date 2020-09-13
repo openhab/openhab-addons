@@ -12,13 +12,26 @@
 			<parameter name="port" type="text" required="true">
 				<label>Port</label>
 				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
 				<description>Serial Port</description>
 			</parameter>
-			<parameter name="discovery" type="boolean">
-				<label>Device Discovery</label>
-				<description>Whether this adapter actively participates in Bluetooth device discovery</description>
+			<parameter name="backgroundDiscovery" type="boolean">
+				<label>Background Discovery</label>
+				<description>Whether this adapter performs background discovery of Bluetooth devices</description>
 				<advanced>true</advanced>
 				<default>false</default>
+			</parameter>
+			<parameter name="inactiveDeviceCleanupInterval" type="integer" min="1" unit="s">
+				<label>Device Cleanup Interval</label>
+				<description>How often device cleanup is performed</description>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
+			<parameter name="inactiveDeviceCleanupThreshold" type="integer" min="1" unit="s">
+				<label>Device Cleanup Threshold</label>
+				<description>Timespan a device can remain radio silent before it is eligible for cleanup</description>
+				<advanced>true</advanced>
+				<default>300</default>
 			</parameter>
 			<parameter name="passiveScanIdleTime" type="integer" min="100" max="60000">
 				<label>Passive Scan Idle Time</label>
@@ -28,25 +41,29 @@
 			</parameter>
 			<parameter name="passiveScanInterval" type="integer" min="4" max="16384">
 				<label>Passive Scan Interval</label>
-				<description>Passive scan interval defines the interval when scanning is re-started in units of 625us. Default is 4000ms.</description>
+				<description>Passive scan interval defines the interval when scanning is re-started in units of 625us. Default is
+					4000ms.</description>
 				<advanced>true</advanced>
 				<default>6400</default>
 			</parameter>
 			<parameter name="passiveScanWindow" type="integer" min="4" max="16384">
 				<label>Passive Scan Window</label>
-				<description>Passive scan Window defines how long time the scanner will listen on a certain frequency and try to pick up advertisement packets. Default is 4000ms.</description>
+				<description>Passive scan Window defines how long time the scanner will listen on a certain frequency and try to
+					pick up advertisement packets. Default is 4000ms.</description>
 				<advanced>true</advanced>
 				<default>6400</default>
 			</parameter>
 			<parameter name="activeScanInterval" type="integer" min="4" max="16384">
 				<label>Active Scan Interval</label>
-				<description>Active scan interval defines the interval when scanning is re-started in units of 625us. Default is 4000ms.</description>
+				<description>Active scan interval defines the interval when scanning is re-started in units of 625us. Default is
+					4000ms.</description>
 				<advanced>true</advanced>
 				<default>6400</default>
 			</parameter>
 			<parameter name="activeScanWindow" type="integer" min="4" max="16384">
 				<label>Active Scan Window</label>
-				<description>Active scan Window defines how long time the scanner will listen on a certain frequency and try to pick up advertisement packets. Default is 4000ms.</description>
+				<description>Active scan Window defines how long time the scanner will listen on a certain frequency and try to pick
+					up advertisement packets. Default is 4000ms.</description>
 				<advanced>true</advanced>
 				<default>6400</default>
 			</parameter>
@@ -70,7 +87,8 @@
 			</parameter>
 			<parameter name="connTimeout" type="integer" min="10" max="3200">
 				<label>Connection Supervision Timeout</label>
-				<description>Connection supervision timeout in units of 10ms defines how long the devices can be out of range before the connection is closed. Default is 10000ms.</description>
+				<description>Connection supervision timeout in units of 10ms defines how long the devices can be out of range before
+					the connection is closed. Default is 10000ms.</description>
 				<advanced>true</advanced>
 				<default>1000</default>
 			</parameter>

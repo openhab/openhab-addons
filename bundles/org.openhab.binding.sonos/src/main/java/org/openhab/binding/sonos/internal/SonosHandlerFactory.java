@@ -20,6 +20,8 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.audio.AudioHTTPServer;
 import org.eclipse.smarthome.core.audio.AudioSink;
@@ -48,6 +50,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.sonos")
 public class SonosHandlerFactory extends BaseThingHandlerFactory {
 
@@ -61,13 +64,13 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     private final NetworkAddressService networkAddressService;
     private final SonosStateDescriptionOptionProvider stateDescriptionProvider;
 
-    private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
+    private final Map<String, @Nullable ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
 
     // optional OPML URL that can be configured through configuration admin
-    private String opmlUrl = null;
+    private @Nullable String opmlUrl;
 
     // url (scheme+server+port) to use for playing notification sounds
-    private String callbackUrl = null;
+    private @Nullable String callbackUrl;
 
     @Activate
     public SonosHandlerFactory(final @Reference ThingRegistry thingRegistry,
@@ -90,8 +93,8 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
-            ThingUID bridgeUID) {
+    public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
+            @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             ThingUID sonosDeviceUID = getPlayerUID(thingTypeUID, thingUID, configuration);
             logger.debug("Creating a sonos thing with ID '{}'", sonosDeviceUID);
@@ -107,7 +110,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
@@ -122,7 +125,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
             SonosAudioSink audioSink = new SonosAudioSink(handler, audioHTTPServer, callbackUrl);
             @SuppressWarnings("unchecked")
             ServiceRegistration<AudioSink> reg = (ServiceRegistration<AudioSink>) getBundleContext()
-                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<String, Object>());
+                    .registerService(AudioSink.class.getName(), audioSink, new Hashtable<>());
             audioSinkRegistrations.put(thing.getUID().toString(), reg);
 
             return handler;
@@ -130,7 +133,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
         return null;
     }
 
-    private String createCallbackUrl() {
+    private @Nullable String createCallbackUrl() {
         if (callbackUrl != null) {
             return callbackUrl;
         } else {
@@ -160,7 +163,7 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private ThingUID getPlayerUID(ThingTypeUID thingTypeUID, ThingUID thingUID, Configuration configuration) {
+    private ThingUID getPlayerUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration) {
         if (thingUID != null) {
             return thingUID;
         } else {
@@ -168,5 +171,4 @@ public class SonosHandlerFactory extends BaseThingHandlerFactory {
             return new ThingUID(thingTypeUID, udn);
         }
     }
-
 }

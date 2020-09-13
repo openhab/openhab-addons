@@ -80,7 +80,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             }
             return false;
         }
-
     },
     OK_MESSAGE_RECEIVED {
         @Override
@@ -102,7 +101,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             }
             return true;
         }
-
     },
     WRITE_TOKEN_RECEIVED {
         @Override
@@ -112,7 +110,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             context.state(WAIT_START);
             return true;
         }
-
     },
     READ_TOKEN_RECEIVED {
         @Override
@@ -122,7 +119,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
             context.state(WAIT_START);
             return true;
         }
-
     },
     CHECKSUM_FAILURE {
         @Override
@@ -175,7 +171,6 @@ public enum NibeHeatPumpProtocolStates implements NibeHeatPumpProtocolState {
                 byte msgChecksum = byteBuffer.get(datalen + 5);
 
                 if (calcChecksum != msgChecksum) {
-
                     // if checksum is 0x5C (start character), heat pump seems to
                     // send 0xC5 checksum
                     if (calcChecksum != 0x5C && msgChecksum != 0xC5) {

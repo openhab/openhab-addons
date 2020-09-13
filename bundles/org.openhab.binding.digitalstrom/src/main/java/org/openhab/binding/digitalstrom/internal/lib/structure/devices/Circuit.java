@@ -290,5 +290,4 @@ public interface Circuit extends GeneralDeviceInformation {
      * @return list of all {@link CachedMeteringValue}
      */
     List<CachedMeteringValue> getAllCachedMeteringValues();
-
 }

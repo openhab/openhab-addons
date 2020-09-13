@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.measure.quantity.Time;
-
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterConstants;
 
@@ -82,7 +80,7 @@ public enum CosemObjectType {
     EMETER_POWER_FAILURE_LOG(new OBISIdentifier(1, 0, 99, 97, 0, null), 2, new CosemDecimal("entries"),
             new CosemString("obisId"),
             /* Next 2 descriptors are repeating */
-            CosemDate.INSTANCE, new CosemQuantity<Time>(SmartHomeUnits.SECOND, "duration")),
+            CosemDate.INSTANCE, new CosemQuantity<>(SmartHomeUnits.SECOND, "duration")),
     EMETER_VOLTAGE_SAGS_L1(new OBISIdentifier(1, 0, 32, 32, 0, null), CosemDecimal.INSTANCE),
     EMETER_VOLTAGE_SAGS_L2(new OBISIdentifier(1, 0, 52, 32, 0, null), CosemDecimal.INSTANCE),
     EMETER_VOLTAGE_SAGS_L3(new OBISIdentifier(1, 0, 72, 32, 0, null), CosemDecimal.INSTANCE),
@@ -145,9 +143,9 @@ public enum CosemObjectType {
     EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, null, 3, 8, 0, null), CosemQuantity.KILO_VAR_HOUR),
     EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, null, 4, 8, 0, null), CosemQuantity.KILO_VAR_HOUR),
     // The actual reactive's and threshold have no unit in the data and therefore are not quantity types.
-    EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 0, 3, 7, 0, null), CosemDecimal.INSTANCE),
-    EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 0, 4, 7, 0, null), CosemDecimal.INSTANCE),
-    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemDecimal.INSTANCE),
+    EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 0, 3, 7, 0, null), CosemDecimal.INSTANCE_WITH_UNITS),
+    EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 0, 4, 7, 0, null), CosemDecimal.INSTANCE_WITH_UNITS),
+    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemDecimal.INSTANCE_WITH_UNITS),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1(new OBISIdentifier(1, 0, 23, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2(new OBISIdentifier(1, 0, 43, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3(new OBISIdentifier(1, 0, 63, 7, 0, null), CosemQuantity.KILO_VAR),

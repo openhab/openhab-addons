@@ -33,5 +33,4 @@ public class TemperatureValueCommand extends BaseDecimalCommand {
     protected LGSerialResponse createResponse(int set, boolean success, String data) {
         return new QuantityResponse(set, success, new QuantityType<>(Integer.parseInt(data, 16), SIUnits.CELSIUS));
     }
-
 }

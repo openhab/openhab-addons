@@ -114,5 +114,4 @@ public class Property {
     public void setAbility(Ability ability) {
         this.ability = ability;
     }
-
 }

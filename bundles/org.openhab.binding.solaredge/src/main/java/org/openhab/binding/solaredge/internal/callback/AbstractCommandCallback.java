@@ -23,6 +23,8 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -37,12 +39,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * base class for all commands. common logic should be implemented here
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractCommandCallback extends BufferingResponseListener implements SolarEdgeCommand {
 
     /**
@@ -58,7 +62,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * JSON deserializer
      */
-    protected final Gson gson;
+    private final Gson gson;
 
     /**
      * status code of fulfilled request
@@ -68,7 +72,7 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     /**
      * listener to provide updates to the WebInterface class
      */
-    private StatusUpdateListener listener;
+    private @Nullable StatusUpdateListener listener;
 
     /**
      * the constructor
@@ -79,7 +83,6 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
         this.communicationStatus = new CommunicationStatus();
         this.config = config;
         this.gson = new Gson();
-
     }
 
     /**
@@ -96,33 +99,38 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * Log request success
      */
     @Override
-    public final void onSuccess(Response response) {
+    public final void onSuccess(@Nullable Response response) {
         super.onSuccess(response);
-        communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
-        logger.debug("HTTP response {}", response.getStatus());
+        if (response != null) {
+            communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
+            logger.debug("HTTP response {}", response.getStatus());
+        }
     }
 
     /**
      * Log request failure
      */
     @Override
-    public final void onFailure(Response response, Throwable failure) {
+    public final void onFailure(@Nullable Response response, @Nullable Throwable failure) {
         super.onFailure(response, failure);
-        logger.debug("Request failed: {}", failure.toString());
-        communicationStatus.setError((Exception) failure);
+        if (failure != null) {
+            logger.debug("Request failed: {}", failure.toString());
+            communicationStatus.setError((Exception) failure);
 
-        if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
-            communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
-        } else if (failure instanceof UnknownHostException) {
-            communicationStatus.setHttpCode(Code.BAD_GATEWAY);
+            if (failure instanceof SocketTimeoutException || failure instanceof TimeoutException) {
+                communicationStatus.setHttpCode(Code.REQUEST_TIMEOUT);
+            } else if (failure instanceof UnknownHostException) {
+                communicationStatus.setHttpCode(Code.BAD_GATEWAY);
+            } else {
+                communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+            }
         } else {
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
+            logger.debug("Request failed");
         }
-
     }
 
     @Override
-    public void onContent(Response response, ByteBuffer content) {
+    public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
         super.onContent(response, content);
         logger.debug("received content, length: {}", getContentAsString().length());
     }
@@ -153,10 +161,14 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
      * @return returns Http Status Code
      */
     public CommunicationStatus getCommunicationStatus() {
-        if (communicationStatus.getHttpCode() == null) {
-            communicationStatus.setHttpCode(Code.INTERNAL_SERVER_ERROR);
-        }
         return communicationStatus;
+    }
+
+    @Override
+    public void updateListenerStatus() {
+        if (listener != null) {
+            listener.update(communicationStatus);
+        }
     }
 
     /**
@@ -175,13 +187,21 @@ public abstract class AbstractCommandCallback extends BufferingResponseListener 
     protected abstract String getURL();
 
     @Override
-    public final StatusUpdateListener getListener() {
-        return listener;
-    }
-
-    @Override
     public final void setListener(StatusUpdateListener listener) {
         this.listener = listener;
     }
 
+    /**
+     * just a wrapper as fromJson could return null. This will avoid warnings as eclipse otherwise assumes unnecessary
+     * null checks which are not unnecessary
+     *
+     * @param <T>
+     * @param json
+     * @param classOfT
+     * @return
+     * @throws JsonSyntaxException
+     */
+    protected <T> @Nullable T fromJson(String json, Class<T> classOfT) throws JsonSyntaxException {
+        return gson.fromJson(json, classOfT);
+    }
 }

@@ -14,6 +14,8 @@ package org.openhab.binding.solaredge.internal.command;
 
 import static org.openhab.binding.solaredge.internal.SolarEdgeBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.http.HttpMethod;
@@ -26,6 +28,7 @@ import org.openhab.binding.solaredge.internal.handler.SolarEdgeHandler;
  *
  * @author Alexander Friese - initial contribution
  */
+@NonNullByDefault
 public class PrivateApiTokenCheck extends AbstractCommandCallback implements SolarEdgeCommand {
 
     public PrivateApiTokenCheck(SolarEdgeHandler handler, StatusUpdateListener listener) {
@@ -34,7 +37,6 @@ public class PrivateApiTokenCheck extends AbstractCommandCallback implements Sol
 
     @Override
     protected Request prepareRequest(Request requestToPrepare) {
-
         // as a token is used no real login is to be done here. It is just checked if a protected page can be retrieved
         // and therefore the token is valid.
         requestToPrepare.followRedirects(false);
@@ -49,8 +51,7 @@ public class PrivateApiTokenCheck extends AbstractCommandCallback implements Sol
     }
 
     @Override
-    public void onComplete(Result result) {
-        getListener().update(getCommunicationStatus());
+    public void onComplete(@Nullable Result result) {
+        updateListenerStatus();
     }
-
 }

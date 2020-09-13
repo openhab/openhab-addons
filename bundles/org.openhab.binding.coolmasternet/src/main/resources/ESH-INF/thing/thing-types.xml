@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="coolmasternet" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="coolmasternet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -35,19 +36,19 @@
 
 	<thing-type id="hvac">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="controller" />
+			<bridge-type-ref id="controller"/>
 		</supported-bridge-type-refs>
 
 		<label>HVAC System</label>
 		<description>HVAC System connected to a controller (unique UID)</description>
 
 		<channels>
-			<channel id="on" typeId="power" />
-			<channel id="mode" typeId="hvac_mode" />
-			<channel id="fan_speed" typeId="fan_speed" />
-			<channel id="set_temp" typeId="temperature_setpoint" />
-			<channel id="current_temp" typeId="temperature_readback" />
-			<channel id="louvre" typeId="louvre_angle" />
+			<channel id="on" typeId="power"/>
+			<channel id="mode" typeId="hvac_mode"/>
+			<channel id="fan_speed" typeId="fan_speed"/>
+			<channel id="set_temp" typeId="temperature_setpoint"/>
+			<channel id="current_temp" typeId="temperature_readback"/>
+			<channel id="louvre" typeId="louvre_angle"/>
 		</channels>
 
 		<config-description>
@@ -85,19 +86,19 @@
 	</channel-type>
 
 	<channel-type id="temperature_setpoint" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
 		<description>Temperature thermostat setpoint</description>
 		<category>Temperature</category>
-		<state min="10" max="40" step="0.5" pattern="%d °C" readOnly="false"></state>
+		<state pattern="%d %unit%" min="10" max="40" step="1"/>
 	</channel-type>
 
 	<channel-type id="temperature_readback" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Current Temperature</label>
 		<description>Current system ambient temperature</description>
 		<category>Temperature</category>
-		<state min="10" max="40" step="0.5" pattern="%d °C" readOnly="true"></state>
+		<state pattern="%d %unit%" min="10" max="40" step="1" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="fan_speed">

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
  * The {@link RamRequest}. Request for retrieving RAM pages from Paradox system.
@@ -23,8 +23,8 @@ public class RamRequest extends Request {
 
     private int ramBlockNumber;
 
-    public RamRequest(int ramBlockNumber, IPPacketPayload payload) {
-        super(RequestType.RAM, payload);
+    public RamRequest(int ramBlockNumber, IPPacket payload, IResponseReceiver receiver) {
+        super(RequestType.RAM, payload, receiver);
         this.ramBlockNumber = ramBlockNumber;
     }
 
@@ -36,6 +36,4 @@ public class RamRequest extends Request {
     public String toString() {
         return "RamRequest [getType()=" + getType() + ", getRamBlockNumber()=" + getRamBlockNumber() + "]";
     }
-
-
 }

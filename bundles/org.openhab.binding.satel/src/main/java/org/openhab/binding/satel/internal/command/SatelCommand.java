@@ -38,11 +38,11 @@ public interface SatelCommand {
      *
      */
     public enum State {
-    NEW,
-    ENQUEUED,
-    SENT,
-    SUCCEEDED,
-    FAILED
+        NEW,
+        ENQUEUED,
+        SENT,
+        SUCCEEDED,
+        FAILED
     }
 
     /**
@@ -78,9 +78,8 @@ public interface SatelCommand {
      * Handles response received for the command. Usually generates an event with received data.
      *
      * @param eventDispatcher event dispatcher
-     * @param response        response to handle
+     * @param response response to handle
      * @return <code>true</code> if response has been successfully handled
      */
     boolean handleResponse(EventDispatcher eventDispatcher, SatelMessage response);
-
 }

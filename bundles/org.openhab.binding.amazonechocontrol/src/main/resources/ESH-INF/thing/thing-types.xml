@@ -1,65 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions
-	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	bindingId="amazonechocontrol"
+<thing:thing-descriptions xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bindingId="amazonechocontrol"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<bridge-type id="account">
 		<label>Amazon Account</label>
 		<description>Amazon Account where the amazon echo devices are registered.</description>
 		<channels>
-			<channel id="sendMessage" typeId="sendMessage" />
+			<channel id="sendMessage" typeId="sendMessage"/>
 		</channels>
+		<config-description>
+			<parameter name="discoverSmartHome" type="integer">
+				<label>Device Discovery Mode</label>
+				<description>Defines which devices shall be discovered.</description>
+				<options>
+					<option value="0">No Discovery</option>
+					<option value="1">Direct connected</option>
+					<option value="2">Direct and over Alexa skill</option>
+					<option value="3">Direct, over Alexa and openHAB skill</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>0</default>
+			</parameter>
+			<parameter name="pollingIntervalSmartHomeAlexa" type="decimal" min="10" unit="s">
+				<label>Polling Interval Alexa</label>
+				<description>
+					Defines the time in seconds for openHAB to pull the
+					state of the directly connected devices. The minimum
+					is 10 seconds.
+				</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="pollingIntervalSmartSkills" type="decimal" min="60" unit="s">
+				<label>Polling Interval Skill</label>
+				<description>
+					Defines the time in seconds for openHAB to pull the
+					state of the over a skill connected devices. The
+					minimum is 60 seconds.
+				</description>
+				<default>120</default>
+			</parameter>
+		</config-description>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Amazon Echo</label>
 		<description>Amazon Echo device (Amazon Echo, Amazon Echo Dot, Amazon Echo Plus...)</description>
 		<channels>
-			<channel id="player" typeId="player" />
-			<channel id="mediaProgress" typeId="mediaProgress" />
-			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
-			<channel id="mediaLength" typeId="mediaLength" />
-			<channel id="volume" typeId="volume" />
-			<channel id="equalizerTreble" typeId="equalizerTreble" />
-			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
-			<channel id="equalizerBass" typeId="equalizerBass" />
-			<channel id="shuffle" typeId="shuffle" />
-			<channel id="imageUrl" typeId="imageUrl" />
-			<channel id="title" typeId="title" />
-			<channel id="subtitle1" typeId="subtitle1" />
-			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
-			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand"
-				typeId="playMusicVoiceCommand" />
-			<channel id="startCommand" typeId="startCommand" />
-			<channel id="radioStationId" typeId="radioStationId" />
-			<channel id="radio" typeId="radio" />
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
-			<channel id="amazonMusic" typeId="amazonMusic" />
-			<channel id="announcement" typeId="announcement" />
-			<channel id="textToSpeech" typeId="textToSpeech" />
-			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
-			<channel id="remind" typeId="remind" />
-			<channel id="nextReminder" typeId="nextReminder" />
-			<channel id="playAlarmSound" typeId="playAlarmSound" />
-			<channel id="nextAlarm" typeId="nextAlarm" />
-			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
-			<channel id="nextTimer" typeId="nextTimer" />
-			<channel id="startRoutine" typeId="startRoutine" />
-			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
-			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName"
-				typeId="bluetoothDeviceName" />
-			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
-			<channel id="notificationVolume" typeId="notificationVolume" />
-			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
+			<channel id="player" typeId="player"/>
+			<channel id="mediaProgress" typeId="mediaProgress"/>
+			<channel id="mediaProgressTime" typeId="mediaProgressTime"/>
+			<channel id="mediaLength" typeId="mediaLength"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="equalizerTreble" typeId="equalizerTreble"/>
+			<channel id="equalizerMidrange" typeId="equalizerMidrange"/>
+			<channel id="equalizerBass" typeId="equalizerBass"/>
+			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="title" typeId="title"/>
+			<channel id="subtitle1" typeId="subtitle1"/>
+			<channel id="subtitle2" typeId="subtitle2"/>
+			<channel id="providerDisplayName" typeId="providerDisplayName"/>
+			<channel id="musicProviderId" typeId="musicProviderId"/>
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand"/>
+			<channel id="startCommand" typeId="startCommand"/>
+			<channel id="radioStationId" typeId="radioStationId"/>
+			<channel id="radio" typeId="radio"/>
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
+			<channel id="amazonMusic" typeId="amazonMusic"/>
+			<channel id="announcement" typeId="announcement"/>
+			<channel id="textToSpeech" typeId="textToSpeech"/>
+			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
+			<channel id="remind" typeId="remind"/>
+			<channel id="nextReminder" typeId="nextReminder"/>
+			<channel id="playAlarmSound" typeId="playAlarmSound"/>
+			<channel id="nextAlarm" typeId="nextAlarm"/>
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm"/>
+			<channel id="nextTimer" typeId="nextTimer"/>
+			<channel id="startRoutine" typeId="startRoutine"/>
+			<channel id="bluetoothMAC" typeId="bluetoothMAC"/>
+			<channel id="bluetooth" typeId="bluetooth"/>
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
+			<channel id="lastVoiceCommand" typeId="lastVoiceCommand"/>
+			<channel id="notificationVolume" typeId="notificationVolume"/>
+			<channel id="ascendingAlarm" typeId="ascendingAlarm"/>
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -71,53 +97,49 @@
 	</thing-type>
 	<thing-type id="echospot">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Amazon Echo Spot</label>
 		<description>Amazon Echo Spot device</description>
 		<channels>
-			<channel id="player" typeId="player" />
-			<channel id="mediaProgress" typeId="mediaProgress" />
-			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
-			<channel id="mediaLength" typeId="mediaLength" />
-			<channel id="volume" typeId="volume" />
-			<channel id="equalizerTreble" typeId="equalizerTreble" />
-			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
-			<channel id="equalizerBass" typeId="equalizerBass" />
-			<channel id="shuffle" typeId="shuffle" />
-			<channel id="imageUrl" typeId="imageUrl" />
-			<channel id="title" typeId="title" />
-			<channel id="subtitle1" typeId="subtitle1" />
-			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
-			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand"
-				typeId="playMusicVoiceCommand" />
-			<channel id="startCommand" typeId="startCommand" />
-			<channel id="radioStationId" typeId="radioStationId" />
-			<channel id="radio" typeId="radio" />
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
-			<channel id="amazonMusic" typeId="amazonMusic" />
-			<channel id="announcement" typeId="announcement" />
-			<channel id="textToSpeech" typeId="textToSpeech" />
-			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
-			<channel id="remind" typeId="remind" />
-			<channel id="nextReminder" typeId="nextReminder" />
-			<channel id="playAlarmSound" typeId="playAlarmSound" />
-			<channel id="nextAlarm" typeId="nextAlarm" />
-			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
-			<channel id="nextTimer" typeId="nextTimer" />
-			<channel id="startRoutine" typeId="startRoutine" />
-			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
-			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName"
-				typeId="bluetoothDeviceName" />
-			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
-			<channel id="notificationVolume" typeId="notificationVolume" />
-			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
+			<channel id="player" typeId="player"/>
+			<channel id="mediaProgress" typeId="mediaProgress"/>
+			<channel id="mediaProgressTime" typeId="mediaProgressTime"/>
+			<channel id="mediaLength" typeId="mediaLength"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="equalizerTreble" typeId="equalizerTreble"/>
+			<channel id="equalizerMidrange" typeId="equalizerMidrange"/>
+			<channel id="equalizerBass" typeId="equalizerBass"/>
+			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="title" typeId="title"/>
+			<channel id="subtitle1" typeId="subtitle1"/>
+			<channel id="subtitle2" typeId="subtitle2"/>
+			<channel id="providerDisplayName" typeId="providerDisplayName"/>
+			<channel id="musicProviderId" typeId="musicProviderId"/>
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand"/>
+			<channel id="startCommand" typeId="startCommand"/>
+			<channel id="radioStationId" typeId="radioStationId"/>
+			<channel id="radio" typeId="radio"/>
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
+			<channel id="amazonMusic" typeId="amazonMusic"/>
+			<channel id="announcement" typeId="announcement"/>
+			<channel id="textToSpeech" typeId="textToSpeech"/>
+			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
+			<channel id="remind" typeId="remind"/>
+			<channel id="nextReminder" typeId="nextReminder"/>
+			<channel id="playAlarmSound" typeId="playAlarmSound"/>
+			<channel id="nextAlarm" typeId="nextAlarm"/>
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm"/>
+			<channel id="nextTimer" typeId="nextTimer"/>
+			<channel id="startRoutine" typeId="startRoutine"/>
+			<channel id="bluetoothMAC" typeId="bluetoothMAC"/>
+			<channel id="bluetooth" typeId="bluetooth"/>
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
+			<channel id="lastVoiceCommand" typeId="lastVoiceCommand"/>
+			<channel id="notificationVolume" typeId="notificationVolume"/>
+			<channel id="ascendingAlarm" typeId="ascendingAlarm"/>
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -129,53 +151,49 @@
 	</thing-type>
 	<thing-type id="echoshow">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Amazon Echo Show</label>
 		<description>Amazon Echo Show device</description>
 		<channels>
-			<channel id="player" typeId="player" />
-			<channel id="mediaProgress" typeId="mediaProgress" />
-			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
-			<channel id="mediaLength" typeId="mediaLength" />
-			<channel id="volume" typeId="volume" />
-			<channel id="equalizerTreble" typeId="equalizerTreble" />
-			<channel id="equalizerMidrange" typeId="equalizerMidrange" />
-			<channel id="equalizerBass" typeId="equalizerBass" />
-			<channel id="shuffle" typeId="shuffle" />
-			<channel id="imageUrl" typeId="imageUrl" />
-			<channel id="title" typeId="title" />
-			<channel id="subtitle1" typeId="subtitle1" />
-			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
-			<channel id="musicProviderId" typeId="musicProviderId" />
-			<channel id="playMusicVoiceCommand"
-				typeId="playMusicVoiceCommand" />
-			<channel id="startCommand" typeId="startCommand" />
-			<channel id="radioStationId" typeId="radioStationId" />
-			<channel id="radio" typeId="radio" />
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
-			<channel id="amazonMusic" typeId="amazonMusic" />
-			<channel id="announcement" typeId="announcement" />
-			<channel id="textToSpeech" typeId="textToSpeech" />
-			<channel id="textToSpeechVolume" typeId="textToSpeechVolume" />
-			<channel id="remind" typeId="remind" />
-			<channel id="nextReminder" typeId="nextReminder" />
-			<channel id="playAlarmSound" typeId="playAlarmSound" />
-			<channel id="nextAlarm" typeId="nextAlarm" />
-			<channel id="nextMusicAlarm" typeId="nextMusicAlarm" />
-			<channel id="nextTimer" typeId="nextTimer" />
-			<channel id="startRoutine" typeId="startRoutine" />
-			<channel id="bluetoothMAC" typeId="bluetoothMAC" />
-			<channel id="bluetooth" typeId="bluetooth" />
-			<channel id="bluetoothDeviceName"
-				typeId="bluetoothDeviceName" />
-			<channel id="lastVoiceCommand" typeId="lastVoiceCommand" />
-			<channel id="notificationVolume" typeId="notificationVolume" />
-			<channel id="ascendingAlarm" typeId="ascendingAlarm" />
+			<channel id="player" typeId="player"/>
+			<channel id="mediaProgress" typeId="mediaProgress"/>
+			<channel id="mediaProgressTime" typeId="mediaProgressTime"/>
+			<channel id="mediaLength" typeId="mediaLength"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="equalizerTreble" typeId="equalizerTreble"/>
+			<channel id="equalizerMidrange" typeId="equalizerMidrange"/>
+			<channel id="equalizerBass" typeId="equalizerBass"/>
+			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="title" typeId="title"/>
+			<channel id="subtitle1" typeId="subtitle1"/>
+			<channel id="subtitle2" typeId="subtitle2"/>
+			<channel id="providerDisplayName" typeId="providerDisplayName"/>
+			<channel id="musicProviderId" typeId="musicProviderId"/>
+			<channel id="playMusicVoiceCommand" typeId="playMusicVoiceCommand"/>
+			<channel id="startCommand" typeId="startCommand"/>
+			<channel id="radioStationId" typeId="radioStationId"/>
+			<channel id="radio" typeId="radio"/>
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
+			<channel id="amazonMusic" typeId="amazonMusic"/>
+			<channel id="announcement" typeId="announcement"/>
+			<channel id="textToSpeech" typeId="textToSpeech"/>
+			<channel id="textToSpeechVolume" typeId="textToSpeechVolume"/>
+			<channel id="remind" typeId="remind"/>
+			<channel id="nextReminder" typeId="nextReminder"/>
+			<channel id="playAlarmSound" typeId="playAlarmSound"/>
+			<channel id="nextAlarm" typeId="nextAlarm"/>
+			<channel id="nextMusicAlarm" typeId="nextMusicAlarm"/>
+			<channel id="nextTimer" typeId="nextTimer"/>
+			<channel id="startRoutine" typeId="startRoutine"/>
+			<channel id="bluetoothMAC" typeId="bluetoothMAC"/>
+			<channel id="bluetooth" typeId="bluetooth"/>
+			<channel id="bluetoothDeviceName" typeId="bluetoothDeviceName"/>
+			<channel id="lastVoiceCommand" typeId="lastVoiceCommand"/>
+			<channel id="notificationVolume" typeId="notificationVolume"/>
+			<channel id="ascendingAlarm" typeId="ascendingAlarm"/>
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -187,28 +205,26 @@
 	</thing-type>
 	<thing-type id="wha">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Amazon Echo Whole House Audio Control</label>
 		<description>Amazon Multiroom Music</description>
 		<channels>
-			<channel id="player" typeId="player" />
-			<channel id="mediaProgressTime" typeId="mediaProgressTime" />
-			<channel id="mediaProgress" typeId="mediaProgress" />
-			<channel id="mediaLength" typeId="mediaLength" />
-			<channel id="shuffle" typeId="shuffle" />
-			<channel id="imageUrl" typeId="imageUrl" />
-			<channel id="title" typeId="title" />
-			<channel id="subtitle1" typeId="subtitle1" />
-			<channel id="subtitle2" typeId="subtitle2" />
-			<channel id="providerDisplayName"
-				typeId="providerDisplayName" />
-			<channel id="radioStationId" typeId="radioStationId" />
-			<channel id="radio" typeId="radio" />
-			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId" />
-			<channel id="amazonMusicPlayListId"
-				typeId="amazonMusicPlayListId" />
-			<channel id="amazonMusic" typeId="amazonMusic" />
+			<channel id="player" typeId="player"/>
+			<channel id="mediaProgressTime" typeId="mediaProgressTime"/>
+			<channel id="mediaProgress" typeId="mediaProgress"/>
+			<channel id="mediaLength" typeId="mediaLength"/>
+			<channel id="shuffle" typeId="shuffle"/>
+			<channel id="imageUrl" typeId="imageUrl"/>
+			<channel id="title" typeId="title"/>
+			<channel id="subtitle1" typeId="subtitle1"/>
+			<channel id="subtitle2" typeId="subtitle2"/>
+			<channel id="providerDisplayName" typeId="providerDisplayName"/>
+			<channel id="radioStationId" typeId="radioStationId"/>
+			<channel id="radio" typeId="radio"/>
+			<channel id="amazonMusicTrackId" typeId="amazonMusicTrackId"/>
+			<channel id="amazonMusicPlayListId" typeId="amazonMusicPlayListId"/>
+			<channel id="amazonMusic" typeId="amazonMusic"/>
 		</channels>
 		<representation-property>serialNumber</representation-property>
 		<config-description>
@@ -218,18 +234,45 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 	<thing-type id="flashbriefingprofile">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Flash Briefing Profile</label>
 		<description>Store and load a flash briefing configuration</description>
 		<channels>
-			<channel id="save" typeId="save" />
-			<channel id="active" typeId="active" />
-			<channel id="playOnDevice" typeId="playOnDevice" />
+			<channel id="save" typeId="save"/>
+			<channel id="active" typeId="active"/>
+			<channel id="playOnDevice" typeId="playOnDevice"/>
 		</channels>
+	</thing-type>
+	<thing-type id="smartHomeDevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Smart Home Device</label>
+		<description>Smart home device connected to Alexa</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device Id</label>
+				<description>The id of the device (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="smartHomeDeviceGroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Smart Home Device Group</label>
+		<description>Group of smart home devices in your amazon account</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Group Id</label>
+				<description>The id of the device group (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="save">
 		<item-type>Switch</item-type>
@@ -250,7 +293,7 @@
 		<item-type>String</item-type>
 		<label>Bluetooth Device</label>
 		<description>Connected bluetooth device</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="radioStationId" advanced="true">
 		<item-type>String</item-type>
@@ -288,8 +331,7 @@
 		<label>Amazon Music Play List Id</label>
 		<description>Amazon Music play list id (Write only, no current state)</description>
 	</channel-type>
-	<channel-type id="amazonMusicPlayListIdLastUsed"
-		advanced="true">
+	<channel-type id="amazonMusicPlayListIdLastUsed" advanced="true">
 		<item-type>String</item-type>
 		<label>Amazon Music Last Selected Playlist Id</label>
 		<description>Id of the playlist which was started with openHAB</description>
@@ -298,7 +340,7 @@
 		<item-type>String</item-type>
 		<label>Provider Name</label>
 		<description>Name of music provider</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bluetoothMAC">
 		<item-type>String</item-type>
@@ -309,25 +351,25 @@
 		<item-type>String</item-type>
 		<label>Image Url</label>
 		<description>Url of the album image or radio station logo</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Title</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="subtitle1" advanced="true">
 		<item-type>String</item-type>
 		<label>Subtitle 1</label>
 		<description>Subtitle 1</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="subtitle2" advanced="true">
 		<item-type>String</item-type>
 		<label>Subtitle 2</label>
 		<description>Subtitle 2</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="radio" advanced="true">
 		<item-type>Switch</item-type>
@@ -395,12 +437,15 @@
 	<channel-type id="announcement" advanced="true">
 		<item-type>String</item-type>
 		<label>Announcement</label>
-		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding description to learn how it's possible to set the title and turn off the sound.</description>
+		<description>Display the announcement message on the display (Write only). See in the tutorial section of the binding
+			description to learn how it's possible to set the title and turn off the sound.</description>
 	</channel-type>
 	<channel-type id="textToSpeech" advanced="true">
 		<item-type>String</item-type>
 		<label>Speak</label>
-		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe it?&lt;/speak&gt;</description>
+		<description>Speak the text (Write only). It is possible to use plain text or SSML: &lt;speak&gt;I want to tell you a
+			secret.&lt;amazon:effect name=&quot;whispered&quot;&gt;I am not a real human.&lt;/amazon:effect&gt;.Can you believe
+			it?&lt;/speak&gt;</description>
 	</channel-type>
 	<channel-type id="textToSpeechVolume" advanced="true">
 		<item-type>Dimmer</item-type>
@@ -411,25 +456,25 @@
 		<item-type>String</item-type>
 		<label>Last Voice Command</label>
 		<description>Last voice command spoken to the device. Writing to the channel starts voice output.</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="mediaProgress" advanced="false">
 		<item-type>Dimmer</item-type>
 		<label>Media Progress</label>
 		<description>Media progress in percent</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="mediaProgressTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Media Play Time</label>
 		<description>Media play time</description>
-		<state readOnly="false" pattern="%d %unit%" />
+		<state readOnly="false" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="mediaLength" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Media Length</label>
 		<description>Media length</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="startCommand">
 		<item-type>String</item-type>
@@ -450,36 +495,36 @@
 		<item-type>Dimmer</item-type>
 		<label>Notification Volume</label>
 		<description>Notification Volume</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="ascendingAlarm" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Ascending Alarm</label>
 		<description>Ascending alarm up to the configured volume</description>
-		<state readOnly="false" />
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="nextReminder" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Reminder</label>
 		<description>Next Reminder</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextAlarm" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Alarm</label>
 		<description>Next alarm</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextMusicAlarm" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Music Alarm</label>
 		<description>Next music alarm</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="nextTimer" advanced="true">
 		<item-type>DateTime</item-type>
 		<label>Next Timer</label>
 		<description>Next timer</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

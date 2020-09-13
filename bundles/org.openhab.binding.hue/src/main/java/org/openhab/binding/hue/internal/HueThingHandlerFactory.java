@@ -35,15 +35,19 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
+import org.openhab.binding.hue.internal.handler.HueGroupHandler;
 import org.openhab.binding.hue.internal.handler.HueLightHandler;
+import org.openhab.binding.hue.internal.handler.HueStateDescriptionOptionProvider;
+import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.openhab.binding.hue.internal.handler.sensors.DimmerSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.LightLevelHandler;
 import org.openhab.binding.hue.internal.handler.sensors.PresenceHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
-import org.openhab.binding.hue.internal.handler.sensors.ClipHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * {@link HueThingHandlerFactory} is a factory for {@link HueBridgeHandler}s.
@@ -53,17 +57,27 @@ import org.osgi.service.component.annotations.Component;
  * @author Andre Fuechsel - implemented to use one discovery service per bridge
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
+ * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.hue")
 public class HueThingHandlerFactory extends BaseThingHandlerFactory {
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.unmodifiableSet(
             Stream.of(HueBridgeHandler.SUPPORTED_THING_TYPES.stream(), HueLightHandler.SUPPORTED_THING_TYPES.stream(),
                     DimmerSwitchHandler.SUPPORTED_THING_TYPES.stream(), TapSwitchHandler.SUPPORTED_THING_TYPES.stream(),
                     PresenceHandler.SUPPORTED_THING_TYPES.stream(), TemperatureHandler.SUPPORTED_THING_TYPES.stream(),
-                    LightLevelHandler.SUPPORTED_THING_TYPES.stream(), ClipHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
+                    LightLevelHandler.SUPPORTED_THING_TYPES.stream(), ClipHandler.SUPPORTED_THING_TYPES.stream(),
+                    HueGroupHandler.SUPPORTED_THING_TYPES.stream()).flatMap(i -> i).collect(Collectors.toSet()));
+
+    private final HueStateDescriptionOptionProvider stateOptionProvider;
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+
+    @Activate
+    public HueThingHandlerFactory(final @Reference HueStateDescriptionOptionProvider stateOptionProvider) {
+        this.stateOptionProvider = stateOptionProvider;
+    }
 
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
@@ -81,6 +95,9 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
                 || ClipHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             ThingUID hueSensorUID = getSensorUID(thingTypeUID, thingUID, configuration, bridgeUID);
             return super.createThing(thingTypeUID, configuration, hueSensorUID, bridgeUID);
+        } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            ThingUID hueGroupUID = getGroupUID(thingTypeUID, thingUID, configuration, bridgeUID);
+            return super.createThing(thingTypeUID, configuration, hueGroupUID, bridgeUID);
         }
 
         throw new IllegalArgumentException("The thing type " + thingTypeUID + " is not supported by the hue binding.");
@@ -109,6 +126,15 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
+    private ThingUID getGroupUID(ThingTypeUID thingTypeUID, @Nullable ThingUID thingUID, Configuration configuration,
+            @Nullable ThingUID bridgeUID) {
+        if (thingUID != null) {
+            return thingUID;
+        } else {
+            return getThingUID(thingTypeUID, configuration.get(GROUP_ID).toString(), bridgeUID);
+        }
+    }
+
     private ThingUID getThingUID(ThingTypeUID thingTypeUID, String id, @Nullable ThingUID bridgeUID) {
         if (bridgeUID != null) {
             return new ThingUID(thingTypeUID, id, bridgeUID.getId());
@@ -120,7 +146,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing);
+            HueBridgeHandler handler = new HueBridgeHandler((Bridge) thing, stateOptionProvider);
             registerLightDiscoveryService(handler);
             return handler;
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
@@ -136,7 +162,9 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
         } else if (LightLevelHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
             return new LightLevelHandler(thing);
         } else if (ClipHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
-            return new ClipHandler(thing);            
+            return new ClipHandler(thing);
+        } else if (HueGroupHandler.SUPPORTED_THING_TYPES.contains(thing.getThingTypeUID())) {
+            return new HueGroupHandler(thing, stateOptionProvider);
         } else {
             return null;
         }
@@ -145,8 +173,8 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerLightDiscoveryService(HueBridgeHandler bridgeHandler) {
         HueLightDiscoveryService discoveryService = new HueLightDiscoveryService(bridgeHandler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     @Override

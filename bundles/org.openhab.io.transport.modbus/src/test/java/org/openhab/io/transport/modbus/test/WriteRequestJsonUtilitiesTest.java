@@ -15,16 +15,34 @@ package org.openhab.io.transport.modbus.test;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
 import static org.junit.Assert.assertThat;
+import static org.openhab.io.transport.modbus.ModbusConstants.*;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
+import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
 
 /**
  * @author Sami Salonen - Initial contribution
  */
 public class WriteRequestJsonUtilitiesTest {
+
+    private static List<String> MAX_REGISTERS = IntStream.range(0, MAX_REGISTERS_WRITE_COUNT).mapToObj(i -> "1")
+            .collect(Collectors.toList());
+    private static List<String> OVER_MAX_REGISTERS = IntStream.range(0, MAX_REGISTERS_WRITE_COUNT + 1)
+            .mapToObj(i -> "1").collect(Collectors.toList());
+
+    private static List<String> MAX_COILS = IntStream.range(0, MAX_BITS_WRITE_COUNT).mapToObj(i -> "1")
+            .collect(Collectors.toList());
+    private static List<String> OVER_MAX_COILS = IntStream.range(0, MAX_BITS_WRITE_COUNT + 1).mapToObj(i -> "1")
+            .collect(Collectors.toList());
 
     @Test
     public void testEmptyArray() {
@@ -107,6 +125,25 @@ public class WriteRequestJsonUtilitiesTest {
                         ModbusWriteFunctionCode.WRITE_MULTIPLE_REGISTERS, 3, 4, 2)));
     }
 
+    @Test
+    public void testFC16MultipleRegistersMaxRegisters() {
+        Collection<@NonNull ModbusWriteRequestBlueprint> writes = WriteRequestJsonUtilities.fromJson(55, "[{"//
+                + "\"functionCode\": 16,"//
+                + "\"address\": 5412,"//
+                + "\"value\": [" + String.join(",", MAX_REGISTERS) + "]"//
+                + "}]");
+        assertThat(writes.size(), is(equalTo(1)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFC16MultipleRegistersTooManyRegisters() {
+        WriteRequestJsonUtilities.fromJson(55, "[{"//
+                + "\"functionCode\": 16,"//
+                + "\"address\": 5412,"//
+                + "\"value\": [" + String.join(",", OVER_MAX_REGISTERS) + "]"//
+                + "}]");
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
     public void testFC5SingeCoil() {
@@ -152,6 +189,25 @@ public class WriteRequestJsonUtilitiesTest {
                         ModbusWriteFunctionCode.WRITE_MULTIPLE_COILS, true, false, true)));
     }
 
+    @Test
+    public void testFC15MultipleCoilsMaxCoils() {
+        Collection<@NonNull ModbusWriteRequestBlueprint> writes = WriteRequestJsonUtilities.fromJson(55, "[{"//
+                + "\"functionCode\": 15,"//
+                + "\"address\": 5412,"//
+                + "\"value\": [" + String.join(",", MAX_COILS) + "]"//
+                + "}]");
+        assertThat(writes.size(), is(equalTo(1)));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFC15MultipleCoilsTooManyCoils() {
+        WriteRequestJsonUtilities.fromJson(55, "[{"//
+                + "\"functionCode\": 15,"//
+                + "\"address\": 5412,"//
+                + "\"value\": [" + String.join(",", OVER_MAX_COILS) + "]"//
+                + "}]");
+    }
+
     @Test(expected = IllegalStateException.class)
     public void testEmptyObject() {
         // we are expecting list, not object -> error
@@ -168,5 +224,4 @@ public class WriteRequestJsonUtilitiesTest {
     public void testEmptyList() {
         assertThat(WriteRequestJsonUtilities.fromJson(3, "[]").size(), is(equalTo(0)));
     }
-
 }

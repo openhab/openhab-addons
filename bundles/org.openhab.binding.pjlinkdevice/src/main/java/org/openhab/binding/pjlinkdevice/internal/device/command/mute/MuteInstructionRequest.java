@@ -34,5 +34,4 @@ public class MuteInstructionRequest implements Request {
         return "%1AVMT " + this.command.getTargetChannel().getPJLinkRepresentation()
                 + this.command.getTargetState().getPJLinkRepresentation();
     }
-
 }

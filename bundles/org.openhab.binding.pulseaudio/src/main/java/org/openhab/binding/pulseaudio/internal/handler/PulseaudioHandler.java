@@ -197,7 +197,7 @@ public class PulseaudioHandler extends BaseThingHandler implements DeviceStatusL
                                 slaves.add(slave);
                             }
                         }
-                        if (slaves.size() > 0) {
+                        if (!slaves.isEmpty()) {
                             bridge.getClient().setCombinedSinkSlaves(((Sink) device), slaves);
                         }
                     }

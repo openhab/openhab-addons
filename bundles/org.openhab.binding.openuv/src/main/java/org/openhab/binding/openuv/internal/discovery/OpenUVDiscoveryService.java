@@ -97,8 +97,8 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void createResults(PointType location) {
-        ThingUID localOpenUVThing = new ThingUID(LOCATION_REPORT_THING_TYPE, LOCAL);
         ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID localOpenUVThing = new ThingUID(LOCATION_REPORT_THING_TYPE, bridgeUID, LOCAL);
         Map<String, Object> properties = new HashMap<>();
         properties.put(LOCATION, location.toString());
         thingDiscovered(DiscoveryResultBuilder.create(localOpenUVThing).withLabel("Local UV Information")
@@ -117,5 +117,4 @@ public class OpenUVDiscoveryService extends AbstractDiscoveryService {
             }
         }
     }
-
 }

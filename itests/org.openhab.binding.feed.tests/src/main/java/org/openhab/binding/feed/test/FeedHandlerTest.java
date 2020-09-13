@@ -416,5 +416,4 @@ public class FeedHandlerTest extends JavaOSGiTest {
             assertThat(feedThing.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.COMMUNICATION_ERROR)));
         });
     }
-
 }

@@ -67,6 +67,7 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_CONDITION_ICON = "icon";
     public static final String CHANNEL_CONDITION_ICON_ID = "icon-id";
     public static final String CHANNEL_TEMPERATURE = "temperature";
+    public static final String CHANNEL_APPARENT_TEMPERATURE = "apparent-temperature";
     public static final String CHANNEL_MIN_TEMPERATURE = "min-temperature";
     public static final String CHANNEL_MAX_TEMPERATURE = "max-temperature";
     public static final String CHANNEL_PRESSURE = "pressure";

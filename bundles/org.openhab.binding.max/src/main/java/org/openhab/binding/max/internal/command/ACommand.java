@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.max.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link ACommand} deletes the device and room configuration from the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class ACommand extends CubeCommand {
 
     @Override
@@ -28,5 +31,4 @@ public class ACommand extends CubeCommand {
     public String getReturnStrings() {
         return "A:";
     }
-
 }

@@ -79,5 +79,4 @@ public class TokenScore<T> implements Comparable<TokenScore<T>> {
         }
         return i;
     }
-
 }

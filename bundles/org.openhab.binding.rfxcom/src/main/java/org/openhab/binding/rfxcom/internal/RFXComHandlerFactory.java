@@ -34,6 +34,7 @@ import org.openhab.binding.rfxcom.internal.discovery.RFXComDeviceDiscoveryServic
 import org.openhab.binding.rfxcom.internal.handler.RFXComBridgeHandler;
 import org.openhab.binding.rfxcom.internal.handler.RFXComHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -46,25 +47,22 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.rfxcom")
 public class RFXComHandlerFactory extends BaseThingHandlerFactory {
-    /**
-     * Service registration map
-     */
-    private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Stream
             .concat(RFXComBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(),
                     RFXComBindingConstants.SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
             .collect(Collectors.toSet());
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    /**
+     * Service registration map
+     */
+    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public RFXComHandlerFactory(final @Reference SerialPortManager serialPortManager) {
         this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
     }
 
     @Override
@@ -97,8 +95,8 @@ public class RFXComHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDeviceDiscoveryService(RFXComBridgeHandler handler) {
         RFXComDeviceDiscoveryService discoveryService = new RFXComDeviceDiscoveryService(handler);
         discoveryService.activate();
-        this.discoveryServiceRegs.put(handler.getThing().getUID(), bundleContext
-                .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(handler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 
     private synchronized void unregisterDeviceDiscoveryService(Thing thing) {

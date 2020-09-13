@@ -14,15 +14,20 @@ package org.openhab.binding.siemensrds.internal;
 
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonParseException;
 
 /**
  * The {@link RdsCloudHandler} is the handler for Siemens RDS cloud account (
@@ -31,12 +36,14 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
+@NonNullByDefault
 public class RdsCloudHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RdsCloudHandler.class);
 
-    private RdsCloudConfiguration config;
-    private RdsAccessToken accessToken;
+    private @Nullable RdsCloudConfiguration config = null;
+
+    private @Nullable RdsAccessToken accessToken = null;
 
     public RdsCloudHandler(Bridge bridge) {
         super(bridge);
@@ -49,23 +56,15 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        config = getConfigAs(RdsCloudConfiguration.class);
-
-        if (config == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing configuration");
-            return;
-        }
+        RdsCloudConfiguration config = this.config = getConfigAs(RdsCloudConfiguration.class);
 
         if (config.userEmail.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing email address");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing email address");
             return;
         }
 
         if (config.userPassword.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "missing password");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing password");
             return;
         }
 
@@ -74,8 +73,7 @@ public class RdsCloudHandler extends BaseBridgeHandler {
 
         if (config.pollingInterval < FAST_POLL_INTERVAL || config.pollingInterval > LAZY_POLL_INTERVAL) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    String.format("polling interval out of range [%d..%d]", FAST_POLL_INTERVAL,
-                            LAZY_POLL_INTERVAL));
+                    String.format("polling interval out of range [%d..%d]", FAST_POLL_INTERVAL, LAZY_POLL_INTERVAL));
             return;
         }
     }
@@ -89,8 +87,12 @@ public class RdsCloudHandler extends BaseBridgeHandler {
      * public method: used by RDS smart thermostat handlers return the polling
      * interval (seconds)
      */
-    public int getPollInterval() {
-        return (config != null ? config.pollingInterval : -1);
+    public int getPollInterval() throws RdsCloudException {
+        RdsCloudConfiguration config = this.config;
+        if (config != null) {
+            return config.pollingInterval;
+        }
+        throw new RdsCloudException("missing polling interval");
     }
 
     /*
@@ -98,14 +100,44 @@ public class RdsCloudHandler extends BaseBridgeHandler {
      * necessary
      */
     private synchronized void refreshToken() {
+        RdsCloudConfiguration config = this.config;
+        RdsAccessToken accessToken = this.accessToken;
+
         if (accessToken == null || accessToken.isExpired()) {
-            accessToken = RdsAccessToken.create(config.apiKey, config.userEmail, config.userPassword);
+            try {
+                if (config == null) {
+                    throw new RdsCloudException("missing configuration");
+                }
+
+                String url = URL_TOKEN;
+                String payload = String.format(TOKEN_REQUEST, config.userEmail, config.userPassword);
+
+                logger.debug(LOG_HTTP_COMMAND, HTTP_POST, url.length());
+                logger.debug(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, url);
+                logger.debug(LOG_PAYLOAD_FMT, LOG_SENDING_MARK, payload);
+
+                String json = RdsAccessToken.httpGetTokenJson(config.apiKey, payload);
+
+                if (logger.isTraceEnabled()) {
+                    logger.trace(LOG_CONTENT_LENGTH, LOG_RECEIVED_MSG, json.length());
+                    logger.trace(LOG_PAYLOAD_FMT, LOG_RECEIVED_MARK, json);
+                } else if (logger.isDebugEnabled()) {
+                    logger.debug(LOG_CONTENT_LENGTH_ABR, LOG_RECEIVED_MSG, json.length());
+                    logger.debug(LOG_PAYLOAD_FMT_ABR, LOG_RECEIVED_MARK,
+                            json.substring(0, Math.min(json.length(), 30)));
+                }
+
+                accessToken = this.accessToken = RdsAccessToken.createFromJson(json);
+            } catch (RdsCloudException e) {
+                logger.warn(LOG_SYSTEM_EXCEPTION, "refreshToken()", e.getClass().getName(), e.getMessage());
+            } catch (JsonParseException | IOException e) {
+                logger.warn(LOG_RUNTIME_EXCEPTION, "refreshToken()", e.getClass().getName(), e.getMessage());
+            }
         }
 
         if (accessToken != null) {
             if (getThing().getStatus() != ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, 
-                        "cloud server responded");
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, "cloud server responded");
             }
         } else {
             if (getThing().getStatus() == ThingStatus.ONLINE) {
@@ -119,12 +151,20 @@ public class RdsCloudHandler extends BaseBridgeHandler {
      * public method: used by RDS smart thermostat handlers to fetch the current
      * token
      */
-    public synchronized String getToken() {
+    public synchronized String getToken() throws RdsCloudException {
         refreshToken();
-        return (accessToken != null ? accessToken.getToken() : "");
+        RdsAccessToken accessToken = this.accessToken;
+        if (accessToken != null) {
+            return accessToken.getToken();
+        }
+        throw new RdsCloudException("no access token");
     }
 
-    public String getApiKey() {
-        return (config != null ? config.apiKey : "");
+    public String getApiKey() throws RdsCloudException {
+        RdsCloudConfiguration config = this.config;
+        if (config != null) {
+            return config.apiKey;
+        }
+        throw new RdsCloudException("no api key");
     }
 }

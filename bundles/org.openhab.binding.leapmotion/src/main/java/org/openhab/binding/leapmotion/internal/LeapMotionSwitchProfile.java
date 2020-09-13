@@ -50,5 +50,4 @@ public class LeapMotionSwitchProfile implements TriggerProfile {
             callback.sendCommand(lastState ? OnOffType.OFF : OnOffType.ON);
         }
     }
-
 }

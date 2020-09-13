@@ -57,5 +57,4 @@ public class ReloadFromGatewayVirtualDatapointHandler extends AbstractVirtualDat
             }
         }
     }
-
 }

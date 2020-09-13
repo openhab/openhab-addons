@@ -23,5 +23,4 @@ public class AutoVolumeCommand extends BaseOnOffCommand {
     protected AutoVolumeCommand(int setId) {
         super('d', 'u', setId);
     }
-
 }

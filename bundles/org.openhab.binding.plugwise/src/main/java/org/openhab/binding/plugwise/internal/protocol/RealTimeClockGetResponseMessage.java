@@ -96,5 +96,4 @@ public class RealTimeClockGetResponseMessage extends Message {
             throw new PlugwisePayloadMismatchException(REAL_TIME_CLOCK_GET_RESPONSE, PAYLOAD_PATTERN, payload);
         }
     }
-
 }

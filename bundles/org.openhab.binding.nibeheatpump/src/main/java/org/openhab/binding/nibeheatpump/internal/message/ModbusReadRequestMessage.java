@@ -53,7 +53,6 @@ public class ModbusReadRequestMessage extends NibeHeatPumpBaseMessage {
     }
 
     private byte[] createModbus40ReadPdu(int coilAddress) {
-
         byte[] data = new byte[6];
         data[0] = NibeHeatPumpProtocol.FRAME_START_CHAR_TO_NIBE;
         data[1] = NibeHeatPumpProtocol.CMD_MODBUS_READ_REQ;

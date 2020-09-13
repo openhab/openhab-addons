@@ -31,6 +31,8 @@ import org.openhab.binding.onewire.internal.Util;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link EDS006x} class defines an EDS006x device
@@ -39,6 +41,7 @@ import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
  */
 @NonNullByDefault
 public class EDS006x extends AbstractOwDevice {
+    private final Logger logger = LoggerFactory.getLogger(EDS006x.class);
     private OwserverDeviceParameter temperatureParameter = new OwserverDeviceParameter("/temperature");
     private OwserverDeviceParameter humidityParameter = new OwserverDeviceParameter("/humidity");
     private OwserverDeviceParameter pressureParameter = new OwserverDeviceParameter("/pressure");
@@ -62,6 +65,7 @@ public class EDS006x extends AbstractOwDevice {
     @Override
     public void refresh(OwserverBridgeHandler bridgeHandler, Boolean forcedRefresh) throws OwException {
         if (isConfigured) {
+            logger.trace("refresh of sensor {} started", sensorId);
             if (enabledChannels.contains(CHANNEL_TEMPERATURE) || enabledChannels.contains(CHANNEL_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_ABSOLUTE_HUMIDITY)
                     || enabledChannels.contains(CHANNEL_DEWPOINT)) {

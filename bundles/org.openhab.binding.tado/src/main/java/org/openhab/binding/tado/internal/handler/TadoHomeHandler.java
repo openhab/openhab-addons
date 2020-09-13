@@ -21,10 +21,8 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
-
 import org.openhab.binding.tado.internal.TadoBindingConstants;
 import org.openhab.binding.tado.internal.TadoBindingConstants.TemperatureUnit;
 import org.openhab.binding.tado.internal.api.ApiException;
@@ -33,7 +31,6 @@ import org.openhab.binding.tado.internal.api.client.HomeApi;
 import org.openhab.binding.tado.internal.api.model.HomeInfo;
 import org.openhab.binding.tado.internal.api.model.User;
 import org.openhab.binding.tado.internal.config.TadoHomeConfig;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,9 +130,8 @@ public class TadoHomeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Nothing to do for a bridge
     }
-    
-    public State getBatteryLowAlarm(long zoneId) {
-        return batteryChecker.getBatteryLowAlarm(zoneId); 
-    }
 
+    public State getBatteryLowAlarm(long zoneId) {
+        return batteryChecker.getBatteryLowAlarm(zoneId);
+    }
 }

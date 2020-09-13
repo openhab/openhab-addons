@@ -48,7 +48,44 @@ public final class NibeUplinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_F1145 = new ThingTypeUID(BINDING_ID, DEVICE_F1145);
     public static final ThingTypeUID THING_TYPE_F1155 = new ThingTypeUID(BINDING_ID, DEVICE_F1155);
 
-    // List of all Channel ids ==> see UplinkDataChannels
+    public static final String VALID_CHANNEL_ID_REGEX = "[1-5][0-9][0-9][0-9][0-9]";
+
+    public static final String PARAMETER_NAME_WRITE_API_URL = "writeApiUrl";
+    public static final String PARAMETER_NAME_VALIDATION_REGEXP = "validationExpression";
+    public static final String PARAMETER_NAME_OFF_MAPPING = "offMapping";
+    public static final String PARAMETER_NAME_ON_MAPPING = "onMapping";
+
+    // List of all channel types
+    public static final String CHANNEL_TYPE_NUMBER_UNSCALED = "type-number-unscaled";
+    public static final String CHANNEL_TYPE_NUMBER_SCALE10 = "type-number-scale10";
+    public static final String CHANNEL_TYPE_NUMBER_SCALE100 = "type-number-scale100";
+    public static final String CHANNEL_TYPE_TEMPERATURE = "type-temperature";
+    public static final String CHANNEL_TYPE_SWITCH = "type-switch";
+    public static final String CHANNEL_TYPE_POWER = "type-power";
+    public static final String CHANNEL_TYPE_ENERGY = "type-energy";
+    public static final String CHANNEL_TYPE_ELECTRIC_CURRENT = "type-electric-current";
+    public static final String CHANNEL_TYPE_TIME_UNSCALED = "type-time-unscaled";
+    public static final String CHANNEL_TYPE_TIME_SCALE10 = "type-time-scale10";
+    public static final String CHANNEL_TYPE_FREQUENCY_UNSCALED = "type-frequency-unscaled";
+    public static final String CHANNEL_TYPE_FREQUENCY_SCALE10 = "type-frequency-scale10";
+    public static final String CHANNEL_TYPE_FLOW = "type-flow";
+    public static final String CHANNEL_TYPE_SPEED = "type-speed-percent";
+    public static final String CHANNEL_TYPE_DEFROSTING_STATE = "type-defrosting-state";
+    public static final String CHANNEL_TYPE_HPAC_STATE = "type-hpac-state";
+    public static final String CHANNEL_TYPE_PRESSURE = "type-pressure";
+
+    public static final String RW_CHANNEL_PREFIX = "rw";
+    public static final String CHANNEL_TYPE_HEAT_OFFSET_RW = "rwtype-heat-offset";
+    public static final String CHANNEL_TYPE_START_COOLING_RW = "rwtype-start-cooling";
+    public static final String CHANNEL_TYPE_STOP_HEATING_RW = "rwtype-stop-heating";
+    public static final String CHANNEL_TYPE_STOP_ADD_HEATING_RW = "rwtype-stop-add-heating";
+    public static final String CHANNEL_TYPE_FILTER_TIME_RW = "rwtype-filter-time";
+    public static final String CHANNEL_TYPE_ROOM_SENSOR_FACTOR_RW = "rwtype-room-sensor-factor";
+    public static final String CHANNEL_TYPE_SWITCH_RW = "rwtype-switch";
+    public static final String CHANNEL_TYPE_DEGREE_MINUTES_RW = "rwtype-degree-minutes";
+    public static final String CHANNEL_TYPE_HW_LUX_RW = "rwtype-hw-lux";
+    public static final String CHANNEL_TYPE_HW_MODE_RW = "rwtype-hw-mode";
+    public static final String CHANNEL_TYPE_FAN_SPEED_RW = "rwtype-fan-speed";
 
     // URLs
     public static final String LOGIN_URL = "https://www.nibeuplink.com/LogIn";
@@ -75,5 +112,4 @@ public final class NibeUplinkBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_VVM320, THING_TYPE_VVM310, THING_TYPE_F730, THING_TYPE_F750,
                     THING_TYPE_F1145, THING_TYPE_F1155).collect(Collectors.toSet()));
-
 }

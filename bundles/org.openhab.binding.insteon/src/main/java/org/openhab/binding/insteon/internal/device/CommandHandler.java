@@ -15,6 +15,7 @@ package org.openhab.binding.insteon.internal.device;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -27,6 +28,7 @@ import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -47,7 +49,7 @@ public abstract class CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommandHandler.class);
     DeviceFeature feature; // related DeviceFeature
     @Nullable
-    HashMap<String, @Nullable String> parameters = new HashMap<>();
+    Map<String, @Nullable String> parameters = new HashMap<>();
 
     /**
      * Constructor
@@ -111,7 +113,7 @@ public abstract class CommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonChannelConfiguration conf, int defaultLevel) {
-        HashMap<String, @Nullable String> params = conf.getParameters();
+        Map<String, @Nullable String> params = conf.getParameters();
         if (conf.getFeature().contains("dimmer") && params.containsKey("dimmermax")) {
             String item = conf.getChannelName();
             String dimmerMax = params.get("dimmermax");
@@ -134,8 +136,8 @@ public abstract class CommandHandler {
         return defaultLevel;
     }
 
-    void setParameters(HashMap<String, @Nullable String> hm) {
-        parameters = hm;
+    void setParameters(Map<String, @Nullable String> map) {
+        parameters = map;
     }
 
     /**
@@ -289,7 +291,7 @@ public abstract class CommandHandler {
         }
 
         private int getRampLevel(InsteonChannelConfiguration conf, int defaultValue) {
-            HashMap<String, @Nullable String> params = conf.getParameters();
+            Map<String, @Nullable String> params = conf.getParameters();
             return params.containsKey("ramplevel") ? Integer.parseInt(params.get("ramplevel")) : defaultValue;
         }
     }
@@ -595,7 +597,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        void setParameters(HashMap<String, @Nullable String> params) {
+        void setParameters(Map<String, @Nullable String> params) {
             super.setParameters(params);
             onCmd = (byte) getIntParameter("on", 0x2E);
             offCmd = (byte) getIntParameter("off", 0x2F);
@@ -640,7 +642,7 @@ public abstract class CommandHandler {
         }
 
         protected double getRampTime(InsteonChannelConfiguration conf, double defaultValue) {
-            HashMap<String, @Nullable String> params = conf.getParameters();
+            Map<String, @Nullable String> params = conf.getParameters();
             return params.containsKey("ramptime") ? Double.parseDouble(params.get("ramptime")) : defaultValue;
         }
     }
@@ -687,23 +689,25 @@ public abstract class CommandHandler {
 
         @Override
         public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
-            String cmdParam = conf.getParameters().get("cmd");
+            String cmdParam = conf.getParameters().get(InsteonDeviceHandler.CMD);
             if (cmdParam == null) {
                 logger.warn("{} ignoring cmd {} because no cmd= is configured!", nm(), cmd);
                 return;
             }
             try {
                 if (cmd == OnOffType.ON) {
-                    if (cmdParam.equals("reset")) {
+                    if (cmdParam.equals(InsteonDeviceHandler.CMD_RESET)) {
                         Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x80, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent reset msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, "cmd", "reset");
-                    } else if (cmdParam.equals("update")) {
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonDeviceHandler.CMD,
+                                InsteonDeviceHandler.CMD_RESET);
+                    } else if (cmdParam.equals(InsteonDeviceHandler.CMD_UPDATE)) {
                         Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x82, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent update msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, "cmd", "update");
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonDeviceHandler.CMD,
+                                InsteonDeviceHandler.CMD_UPDATE);
                     } else {
                         logger.warn("{}: ignoring unknown cmd {} for power meter {}", nm(), cmdParam, dev.getAddress());
                     }
@@ -873,7 +877,7 @@ public abstract class CommandHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends CommandHandler> T makeHandler(String name, HashMap<String, @Nullable String> params,
+    public static <T extends CommandHandler> T makeHandler(String name, Map<String, @Nullable String> params,
             DeviceFeature f) {
         String cname = CommandHandler.class.getName() + "$" + name;
         try {

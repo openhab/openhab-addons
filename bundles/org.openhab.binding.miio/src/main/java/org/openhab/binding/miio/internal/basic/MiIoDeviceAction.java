@@ -15,6 +15,7 @@ package org.openhab.binding.miio.internal.basic;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
+import com.google.gson.JsonArray;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -32,18 +33,27 @@ public class MiIoDeviceAction {
     @SerializedName("parameterType")
     @Expose
     private CommandParameterType commandParameterType = CommandParameterType.EMPTY;
-    @SerializedName("preCommandParameter1")
+    @SerializedName("parameters")
     @Expose
-    private @Nullable String preCommandParameter1;
-    @SerializedName("parameter1")
+    private @Nullable JsonArray parameters;
+    @SerializedName("siid")
     @Expose
-    private @Nullable String parameter1;
-    @SerializedName("parameter2")
+    private @Nullable Integer siid;
+    @SerializedName("aiid")
     @Expose
-    private @Nullable String parameter2;
-    @SerializedName("parameter3")
+    private @Nullable Integer aiid;
+    @SerializedName("condition")
     @Expose
-    private @Nullable String parameter3;
+    private @Nullable MiIoDeviceActionCondition condition;
+
+    public JsonArray getParameters() {
+        final @Nullable JsonArray parameter = this.parameters;
+        return parameter != null ? parameter : new JsonArray();
+    }
+
+    public void setParameters(JsonArray parameters) {
+        this.parameters = parameters;
+    }
 
     public String getCommand() {
         final @Nullable String command = this.command;
@@ -66,42 +76,47 @@ public class MiIoDeviceAction {
         this.commandParameterType = org.openhab.binding.miio.internal.basic.CommandParameterType.fromString(type);
     }
 
-    public @Nullable String getPreCommandParameter1() {
-        return preCommandParameter1;
+    public int getSiid() {
+        final Integer siid = this.siid;
+        if (siid != null) {
+            return siid.intValue();
+        } else {
+            return 0;
+        }
     }
 
-    public void setPreCommandParameter1(String preCommandParameter1) {
-        this.preCommandParameter1 = preCommandParameter1;
+    public void setSiid(Integer siid) {
+        this.siid = siid;
     }
 
-    public @Nullable String getParameter1() {
-        return parameter1;
+    public int getAiid() {
+        final Integer aiid = this.aiid;
+        if (aiid != null) {
+            return aiid.intValue();
+        } else {
+            return 0;
+        }
     }
 
-    public void setParameter1(String parameter1) {
-        this.parameter1 = parameter1;
+    public void setAiid(Integer aiid) {
+        this.aiid = aiid;
     }
 
-    public @Nullable String getParameter2() {
-        return parameter2;
+    public boolean isMiOtAction() {
+        return aiid != null && siid != null && (getAiid() != 0 || getSiid() != 0);
     }
 
-    public void setParameter2(String parameter2) {
-        this.parameter1 = parameter2;
+    public @Nullable MiIoDeviceActionCondition getCondition() {
+        return condition;
     }
 
-    public @Nullable String getParameter3() {
-        return parameter3;
-    }
-
-    public void setParameter3(String parameter3) {
-        this.parameter1 = parameter3;
+    public void setCondition(@Nullable MiIoDeviceActionCondition condition) {
+        this.condition = condition;
     }
 
     @Override
     public String toString() {
         return "MiIoDeviceAction [command=" + command + ", commandParameterType=" + commandParameterType
-                + ", preCommandParameter1=" + preCommandParameter1 + ", parameter1=" + parameter1 + ", parameter2="
-                + parameter2 + ", parameter3=" + parameter3 + "]";
+                + (parameters != null ? ", parameters=" + getParameters().toString() : "") + "]";
     }
 }

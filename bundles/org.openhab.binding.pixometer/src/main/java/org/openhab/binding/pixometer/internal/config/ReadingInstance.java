@@ -89,5 +89,4 @@ public class ReadingInstance {
     public void setProvidedFractionDigitsSecondTariff(int provided_fraction_digits_second_tariff) {
         this.providedFractionDigitsSecondTariff = provided_fraction_digits_second_tariff;
     }
-
 }

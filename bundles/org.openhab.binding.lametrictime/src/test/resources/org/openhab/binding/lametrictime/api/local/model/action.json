@@ -1,0 +1,8 @@
+{
+  "enabled": {
+    "data_type": "bool"
+  },
+  "time": {
+    "data_type": "string"
+  }
+}

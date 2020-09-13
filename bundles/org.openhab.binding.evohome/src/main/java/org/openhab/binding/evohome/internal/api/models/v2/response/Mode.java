@@ -39,5 +39,4 @@ public class Mode {
 
     @SerializedName("timingResolution")
     private String timingResolution;
-
 }

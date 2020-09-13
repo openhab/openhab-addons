@@ -70,7 +70,7 @@ public class JeeLinkBindingConstants {
     public static final String ELECTRIC_CURRENT_CHANNEL = "electricCurrent";
     public static final String ELECTRIC_POTENTIAL_CHANNEL = "electricPotential";
     public static final String FREQUENCY_CHANNEL = "powerFrequency";
-    
+
     // List of all additional channel ids for tx22 sensor things
     public static final String PRESSURE_CHANNEL = "pressure";
     public static final String RAIN_CHANNEL = "rain";

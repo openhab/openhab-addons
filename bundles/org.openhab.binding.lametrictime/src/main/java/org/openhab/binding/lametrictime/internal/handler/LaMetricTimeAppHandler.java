@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lametrictime.internal.handler;
 
-import org.syphr.lametrictime.api.local.model.Widget;
+import org.openhab.binding.lametrictime.api.local.model.Widget;
 
 /**
  * The {@link LaMetricTimeAppHandler} provides a common contract for all app handlers available for the device.

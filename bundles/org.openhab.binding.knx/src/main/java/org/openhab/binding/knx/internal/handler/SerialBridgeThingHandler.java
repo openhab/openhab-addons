@@ -57,5 +57,4 @@ public class SerialBridgeThingHandler extends KNXBridgeBaseThingHandler {
     protected AbstractKNXClient getClient() {
         return client;
     }
-
 }

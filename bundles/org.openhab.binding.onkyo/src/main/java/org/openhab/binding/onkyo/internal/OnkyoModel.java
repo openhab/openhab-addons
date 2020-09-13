@@ -52,7 +52,8 @@ public enum OnkyoModel {
     TX_NR818("TX-NR818"),
     TX_NR828("TX-NR828"),
     TX_NR838("TX-NR838"),
-    TX_NR3007("TX-NR3007");
+    TX_NR3007("TX-NR3007"),
+    TX_RZ900("TX-RZ900");
 
     private final String id;
 
@@ -63,5 +64,4 @@ public enum OnkyoModel {
     public String getId() {
         return id;
     }
-
 }

@@ -44,5 +44,4 @@ public class GetAllScriptsParser extends CommonRpcParser<Object[], Void> {
         }
         return null;
     }
-
 }

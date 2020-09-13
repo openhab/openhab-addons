@@ -10,17 +10,17 @@
 		<description>Connection to the Rotel RDD-1580 stereo DAC</description>
 
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="source" typeId="source" />
-			<channel id="playControl" typeId="system.media-control" />
-			<channel id="frequency" typeId="frequency" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="playControl" typeId="system.media-control"/>
+			<channel id="frequency" typeId="frequency"/>
 		</channels>
 
 		<properties>
 			<property name="protocol">ASCII_V1</property>
 		</properties>
 
-		<config-description-ref uri="thing-type:rotel:serial" />
+		<config-description-ref uri="thing-type:rotel:serial"/>
 	</thing-type>
 
 </thing:thing-descriptions>

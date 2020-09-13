@@ -40,7 +40,7 @@ public class HmDevice {
     private final String gatewayId;
     private final String homegearId;
 
-    private List<HmChannel> channels = new ArrayList<HmChannel>();
+    private List<HmChannel> channels = new ArrayList<>();
 
     public HmDevice(String address, HmInterface hmInterface, String type, String gatewayId, String homegearId,
             String firmware) {

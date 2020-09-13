@@ -13,8 +13,11 @@
 package org.openhab.binding.lutron.internal.grxprg;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -47,12 +50,12 @@ class PrgProtocolHandler {
     /**
      * The {@link SocketSession} used by this protocol handler
      */
-    private final SocketSession _session;
+    private final SocketSession session;
 
     /**
      * The {@link PrgBridgeHandler} to call back to update status and state
      */
-    private final PrgHandlerCallback _callback;
+    private final PrgHandlerCallback phCallback;
 
     // ------------------------------------------------------------------------------------------------
     // The following are the various command formats specified by the
@@ -103,17 +106,17 @@ class PrgProtocolHandler {
      * A lookup between a 0-100 percentage and corresponding hex value. Note: this specifically matches the liason
      * software setup
      */
-    private static final HashMap<Integer, String> intensityMap = new HashMap<Integer, String>();
+    private static final Map<Integer, String> INTENSITY_MAP = new HashMap<>();
 
     /**
-     * The reverse lookup for the {{@link #intensityMap}
+     * The reverse lookup for the {{@link #INTENSITY_MAP}
      */
-    private static final HashMap<String, Integer> reverseIntensityMap = new HashMap<String, Integer>();
+    private static final Map<String, Integer> REVERSE_INTENSITY_MAP = new HashMap<>();
 
     /**
      * A lookup between returned shade hex intensity to corresponding shade values
      */
-    private static final HashMap<String, Integer> shadeIntensityMap = new HashMap<String, Integer>();
+    private static final Map<String, Integer> SHADE_INTENSITY_MAP = new HashMap<>();
 
     /**
      * Cache of current zone intensities
@@ -124,125 +127,125 @@ class PrgProtocolHandler {
      * Static method to setup the intensity lookup maps
      */
     static {
-        intensityMap.put(0, "0");
-        intensityMap.put(1, "2");
-        intensityMap.put(2, "3");
-        intensityMap.put(3, "4");
-        intensityMap.put(4, "6");
-        intensityMap.put(5, "7");
-        intensityMap.put(6, "8");
-        intensityMap.put(7, "9");
-        intensityMap.put(8, "B");
-        intensityMap.put(9, "C");
-        intensityMap.put(10, "D");
-        intensityMap.put(11, "F");
-        intensityMap.put(12, "10");
-        intensityMap.put(13, "11");
-        intensityMap.put(14, "12");
-        intensityMap.put(15, "14");
-        intensityMap.put(16, "15");
-        intensityMap.put(17, "16");
-        intensityMap.put(18, "18");
-        intensityMap.put(19, "19");
-        intensityMap.put(20, "1A");
-        intensityMap.put(21, "1B");
-        intensityMap.put(22, "1D");
-        intensityMap.put(23, "1E");
-        intensityMap.put(24, "1F");
-        intensityMap.put(25, "20");
-        intensityMap.put(26, "22");
-        intensityMap.put(27, "23");
-        intensityMap.put(28, "24");
-        intensityMap.put(29, "26");
-        intensityMap.put(30, "27");
-        intensityMap.put(31, "28");
-        intensityMap.put(32, "29");
-        intensityMap.put(33, "2B");
-        intensityMap.put(34, "2C");
-        intensityMap.put(35, "2D");
-        intensityMap.put(36, "2F");
-        intensityMap.put(37, "30");
-        intensityMap.put(38, "31");
-        intensityMap.put(39, "32");
-        intensityMap.put(40, "34");
-        intensityMap.put(41, "35");
-        intensityMap.put(42, "36");
-        intensityMap.put(43, "38");
-        intensityMap.put(44, "39");
-        intensityMap.put(45, "3A");
-        intensityMap.put(46, "3B");
-        intensityMap.put(47, "3D");
-        intensityMap.put(48, "3E");
-        intensityMap.put(49, "3F");
-        intensityMap.put(50, "40");
-        intensityMap.put(51, "42");
-        intensityMap.put(52, "43");
-        intensityMap.put(53, "44");
-        intensityMap.put(54, "46");
-        intensityMap.put(55, "47");
-        intensityMap.put(56, "48");
-        intensityMap.put(57, "49");
-        intensityMap.put(58, "4B");
-        intensityMap.put(59, "4C");
-        intensityMap.put(60, "4D");
-        intensityMap.put(61, "4F");
-        intensityMap.put(62, "50");
-        intensityMap.put(63, "51");
-        intensityMap.put(64, "52");
-        intensityMap.put(65, "54");
-        intensityMap.put(66, "55");
-        intensityMap.put(67, "56");
-        intensityMap.put(68, "58");
-        intensityMap.put(69, "59");
-        intensityMap.put(70, "5A");
-        intensityMap.put(71, "5B");
-        intensityMap.put(72, "5D");
-        intensityMap.put(73, "5E");
-        intensityMap.put(74, "5F");
-        intensityMap.put(75, "60");
-        intensityMap.put(76, "62");
-        intensityMap.put(77, "63");
-        intensityMap.put(78, "64");
-        intensityMap.put(79, "66");
-        intensityMap.put(80, "67");
-        intensityMap.put(81, "68");
-        intensityMap.put(82, "69");
-        intensityMap.put(83, "6B");
-        intensityMap.put(84, "6C");
-        intensityMap.put(85, "6D");
-        intensityMap.put(86, "6F");
-        intensityMap.put(87, "70");
-        intensityMap.put(88, "71");
-        intensityMap.put(89, "72");
-        intensityMap.put(90, "74");
-        intensityMap.put(91, "75");
-        intensityMap.put(92, "76");
-        intensityMap.put(93, "78");
-        intensityMap.put(94, "79");
-        intensityMap.put(95, "7A");
-        intensityMap.put(96, "7B");
-        intensityMap.put(97, "7D");
-        intensityMap.put(98, "7E");
-        intensityMap.put(99, "7F");
-        intensityMap.put(100, "7F");
+        INTENSITY_MAP.put(0, "0");
+        INTENSITY_MAP.put(1, "2");
+        INTENSITY_MAP.put(2, "3");
+        INTENSITY_MAP.put(3, "4");
+        INTENSITY_MAP.put(4, "6");
+        INTENSITY_MAP.put(5, "7");
+        INTENSITY_MAP.put(6, "8");
+        INTENSITY_MAP.put(7, "9");
+        INTENSITY_MAP.put(8, "B");
+        INTENSITY_MAP.put(9, "C");
+        INTENSITY_MAP.put(10, "D");
+        INTENSITY_MAP.put(11, "F");
+        INTENSITY_MAP.put(12, "10");
+        INTENSITY_MAP.put(13, "11");
+        INTENSITY_MAP.put(14, "12");
+        INTENSITY_MAP.put(15, "14");
+        INTENSITY_MAP.put(16, "15");
+        INTENSITY_MAP.put(17, "16");
+        INTENSITY_MAP.put(18, "18");
+        INTENSITY_MAP.put(19, "19");
+        INTENSITY_MAP.put(20, "1A");
+        INTENSITY_MAP.put(21, "1B");
+        INTENSITY_MAP.put(22, "1D");
+        INTENSITY_MAP.put(23, "1E");
+        INTENSITY_MAP.put(24, "1F");
+        INTENSITY_MAP.put(25, "20");
+        INTENSITY_MAP.put(26, "22");
+        INTENSITY_MAP.put(27, "23");
+        INTENSITY_MAP.put(28, "24");
+        INTENSITY_MAP.put(29, "26");
+        INTENSITY_MAP.put(30, "27");
+        INTENSITY_MAP.put(31, "28");
+        INTENSITY_MAP.put(32, "29");
+        INTENSITY_MAP.put(33, "2B");
+        INTENSITY_MAP.put(34, "2C");
+        INTENSITY_MAP.put(35, "2D");
+        INTENSITY_MAP.put(36, "2F");
+        INTENSITY_MAP.put(37, "30");
+        INTENSITY_MAP.put(38, "31");
+        INTENSITY_MAP.put(39, "32");
+        INTENSITY_MAP.put(40, "34");
+        INTENSITY_MAP.put(41, "35");
+        INTENSITY_MAP.put(42, "36");
+        INTENSITY_MAP.put(43, "38");
+        INTENSITY_MAP.put(44, "39");
+        INTENSITY_MAP.put(45, "3A");
+        INTENSITY_MAP.put(46, "3B");
+        INTENSITY_MAP.put(47, "3D");
+        INTENSITY_MAP.put(48, "3E");
+        INTENSITY_MAP.put(49, "3F");
+        INTENSITY_MAP.put(50, "40");
+        INTENSITY_MAP.put(51, "42");
+        INTENSITY_MAP.put(52, "43");
+        INTENSITY_MAP.put(53, "44");
+        INTENSITY_MAP.put(54, "46");
+        INTENSITY_MAP.put(55, "47");
+        INTENSITY_MAP.put(56, "48");
+        INTENSITY_MAP.put(57, "49");
+        INTENSITY_MAP.put(58, "4B");
+        INTENSITY_MAP.put(59, "4C");
+        INTENSITY_MAP.put(60, "4D");
+        INTENSITY_MAP.put(61, "4F");
+        INTENSITY_MAP.put(62, "50");
+        INTENSITY_MAP.put(63, "51");
+        INTENSITY_MAP.put(64, "52");
+        INTENSITY_MAP.put(65, "54");
+        INTENSITY_MAP.put(66, "55");
+        INTENSITY_MAP.put(67, "56");
+        INTENSITY_MAP.put(68, "58");
+        INTENSITY_MAP.put(69, "59");
+        INTENSITY_MAP.put(70, "5A");
+        INTENSITY_MAP.put(71, "5B");
+        INTENSITY_MAP.put(72, "5D");
+        INTENSITY_MAP.put(73, "5E");
+        INTENSITY_MAP.put(74, "5F");
+        INTENSITY_MAP.put(75, "60");
+        INTENSITY_MAP.put(76, "62");
+        INTENSITY_MAP.put(77, "63");
+        INTENSITY_MAP.put(78, "64");
+        INTENSITY_MAP.put(79, "66");
+        INTENSITY_MAP.put(80, "67");
+        INTENSITY_MAP.put(81, "68");
+        INTENSITY_MAP.put(82, "69");
+        INTENSITY_MAP.put(83, "6B");
+        INTENSITY_MAP.put(84, "6C");
+        INTENSITY_MAP.put(85, "6D");
+        INTENSITY_MAP.put(86, "6F");
+        INTENSITY_MAP.put(87, "70");
+        INTENSITY_MAP.put(88, "71");
+        INTENSITY_MAP.put(89, "72");
+        INTENSITY_MAP.put(90, "74");
+        INTENSITY_MAP.put(91, "75");
+        INTENSITY_MAP.put(92, "76");
+        INTENSITY_MAP.put(93, "78");
+        INTENSITY_MAP.put(94, "79");
+        INTENSITY_MAP.put(95, "7A");
+        INTENSITY_MAP.put(96, "7B");
+        INTENSITY_MAP.put(97, "7D");
+        INTENSITY_MAP.put(98, "7E");
+        INTENSITY_MAP.put(99, "7F");
+        INTENSITY_MAP.put(100, "7F");
 
-        for (int key : intensityMap.keySet()) {
-            String value = intensityMap.get(key);
-            reverseIntensityMap.put(value, key);
+        for (int key : INTENSITY_MAP.keySet()) {
+            String value = INTENSITY_MAP.get(key);
+            REVERSE_INTENSITY_MAP.put(value, key);
         }
 
-        shadeIntensityMap.put("0", 0);
-        shadeIntensityMap.put("5E", 0);
-        shadeIntensityMap.put("15", 1);
-        shadeIntensityMap.put("2D", 2);
-        shadeIntensityMap.put("71", 3);
-        shadeIntensityMap.put("72", 4);
-        shadeIntensityMap.put("73", 5);
-        shadeIntensityMap.put("5F", 1);
-        shadeIntensityMap.put("60", 2);
-        shadeIntensityMap.put("61", 3);
-        shadeIntensityMap.put("62", 4);
-        shadeIntensityMap.put("63", 5);
+        SHADE_INTENSITY_MAP.put("0", 0);
+        SHADE_INTENSITY_MAP.put("5E", 0);
+        SHADE_INTENSITY_MAP.put("15", 1);
+        SHADE_INTENSITY_MAP.put("2D", 2);
+        SHADE_INTENSITY_MAP.put("71", 3);
+        SHADE_INTENSITY_MAP.put("72", 4);
+        SHADE_INTENSITY_MAP.put("73", 5);
+        SHADE_INTENSITY_MAP.put("5F", 1);
+        SHADE_INTENSITY_MAP.put("60", 2);
+        SHADE_INTENSITY_MAP.put("61", 3);
+        SHADE_INTENSITY_MAP.put("62", 4);
+        SHADE_INTENSITY_MAP.put("63", 5);
     }
 
     /**
@@ -254,7 +257,7 @@ class PrgProtocolHandler {
      * Constructs the protocol handler from given parameters
      *
      * @param session a non-null {@link SocketSession} (may be connected or disconnected)
-     * @param config  a non-null {@link PrgHandlerCallback}
+     * @param config a non-null {@link PrgHandlerCallback}
      */
     PrgProtocolHandler(SocketSession session, PrgHandlerCallback callback) {
         if (session == null) {
@@ -265,8 +268,8 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("callback cannot be null");
         }
 
-        _session = session;
-        _callback = callback;
+        this.session = session;
+        this.phCallback = callback;
     }
 
     /**
@@ -278,11 +281,11 @@ class PrgProtocolHandler {
     String login(String username) throws Exception {
         logger.info("Logging into the PRG interface");
         final NoDispatchingCallback callback = new NoDispatchingCallback();
-        _session.setCallback(callback);
+        session.setCallback(callback);
 
         String response = callback.getResponse();
         if (response.equals("login")) {
-            _session.sendCommand(username);
+            session.sendCommand(username);
         } else {
             return "Protocol violation - wasn't initially a command failure or login prompt: " + response;
         }
@@ -310,8 +313,8 @@ class PrgProtocolHandler {
      */
     private void postLogin() throws IOException {
         logger.info("PRG interface now connected");
-        _session.setCallback(new NormalResponseCallback());
-        _callback.statusChanged(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
+        session.setCallback(new NormalResponseCallback());
+        phCallback.statusChanged(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
     }
 
     /**
@@ -376,7 +379,6 @@ class PrgProtocolHandler {
         if (zone < 1 || zone > 8) {
             throw new IllegalArgumentException("Invalid zone (must be between 1 and 8): " + zone);
         }
-
     }
 
     /**
@@ -400,8 +402,8 @@ class PrgProtocolHandler {
      * Validates a zone intensity and returns the hex corresponding value (handles shade intensity zones as well)
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param intensity   the new intensity level
+     * @param zone the zone
+     * @param intensity the new intensity level
      * @return a valid hex representation
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -413,14 +415,14 @@ class PrgProtocolHandler {
             throw new IllegalArgumentException("Invalid intensity (must be between 0 and 100): " + intensity);
         }
 
-        final boolean isShade = _callback.isShade(controlUnit, zone);
+        final boolean isShade = phCallback.isShade(controlUnit, zone);
         if (isShade) {
             if (intensity > 5) {
                 throw new IllegalArgumentException("Invalid SHADE intensity (must be between 0 and 5): " + intensity);
             }
             return Integer.toString(intensity);
         } else {
-            final String hexNbr = intensityMap.get(intensity);
+            final String hexNbr = INTENSITY_MAP.get(intensity);
             if (hexNbr == null) { // this should be impossible as all 100 values are in table
                 logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.toHexString(intensity).toUpperCase();
@@ -433,8 +435,8 @@ class PrgProtocolHandler {
      * Converts a hex zone intensity back to a integer - handles shade zones as well
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param intensity   the hex intensity value
+     * @param zone the zone
+     * @param intensity the hex intensity value
      * @return the new intensity (between 0-100)
      * @throws IllegalArgumentException if controlUnit, zone or intensity are invalid
      */
@@ -442,17 +444,17 @@ class PrgProtocolHandler {
         validateControlUnit(controlUnit);
         validateZone(zone);
 
-        final boolean isShade = _callback.isShade(controlUnit, zone);
+        final boolean isShade = phCallback.isShade(controlUnit, zone);
 
         if (isShade) {
-            final Integer intNbr = shadeIntensityMap.get(intensity);
+            final Integer intNbr = SHADE_INTENSITY_MAP.get(intensity);
             if (intNbr == null) {
                 logger.warn("Unknown shade intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
             }
             return intNbr;
         } else {
-            final Integer intNbr = reverseIntensityMap.get(intensity);
+            final Integer intNbr = REVERSE_INTENSITY_MAP.get(intensity);
             if (intNbr == null) {
                 logger.warn("Unknown zone intensity ({})", intensity);
                 return Integer.parseInt(intensity, 16);
@@ -466,7 +468,7 @@ class PrgProtocolHandler {
      * Selects a specific scene on a control unit
      *
      * @param controlUnit the control unit
-     * @param scene       the new scene
+     * @param scene the new scene
      * @throws IllegalArgumentException if controlUnit or scene are invalid
      */
     void selectScene(int controlUnit, int scene) {
@@ -485,7 +487,7 @@ class PrgProtocolHandler {
      * Sets the scene locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked      true for locked, false otherwise
+     * @param locked true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneLock(int controlUnit, boolean locked) {
@@ -497,7 +499,7 @@ class PrgProtocolHandler {
      * Sets the scene sequence on/off for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param on          true for sequencing on, false otherwise
+     * @param on true for sequencing on, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setSceneSequence(int controlUnit, boolean on) {
@@ -509,7 +511,7 @@ class PrgProtocolHandler {
      * Sets the zone locked/unlocked for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param locked      true for locked, false otherwise
+     * @param locked true for locked, false otherwise
      * @throws IllegalArgumentException if controlUnit is invalid
      */
     void setZoneLock(int controlUnit, boolean locked) {
@@ -521,7 +523,7 @@ class PrgProtocolHandler {
      * Sets the zone to lowering for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone        the zone to lower
+     * @param zone the zone to lower
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneLower(int controlUnit, int zone) {
@@ -541,7 +543,7 @@ class PrgProtocolHandler {
      * Sets the zone to raising for the specific control unit
      *
      * @param controlUnit the control unit
-     * @param zone        the zone to raise
+     * @param zone the zone to raise
      * @throws IllegalArgumentException if controlUnit or zone is invalid
      */
     void setZoneRaise(int controlUnit, int zone) {
@@ -562,13 +564,13 @@ class PrgProtocolHandler {
      * nothing if already at floor or ceiling. If the specified zone is a shade, does nothing.
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase    true to increase by 1, false otherwise
+     * @param zone the zone
+     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone or fade is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, boolean increase) {
-        if (_callback.isShade(controlUnit, zone)) {
+        if (phCallback.isShade(controlUnit, zone)) {
             return;
         }
 
@@ -591,9 +593,9 @@ class PrgProtocolHandler {
      * If a shade, only deals with intensities from 0 to 5 (stop, open close, preset 1, preset 2, preset 3).
      *
      * @param controlUnit the control unit
-     * @param zone        the zone
-     * @param fade        the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
-     * @param increase    true to increase by 1, false otherwise
+     * @param zone the zone
+     * @param fade the fade time (0-59 seconds, 60-3600 seconds converted to minutes)
+     * @param increase true to increase by 1, false otherwise
      * @throws IllegalArgumentException if controlUnit, zone, fade or intensity is invalid
      */
     void setZoneIntensity(int controlUnit, int zone, int fade, int intensity) {
@@ -716,9 +718,9 @@ class PrgProtocolHandler {
         }
         try {
             logger.debug("SendCommand: {}", command);
-            _session.sendCommand(command);
+            session.sendCommand(command);
         } catch (IOException e) {
-            _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            phCallback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred sending to PRG: " + e);
         }
     }
@@ -831,7 +833,7 @@ class PrgProtocolHandler {
     /**
      * Handles the scene status response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSceneStatus(Matcher m, String resp) {
@@ -851,7 +853,7 @@ class PrgProtocolHandler {
                     if (scene < 0) {
                         logger.warn("Unknown scene status returned for zone {}: {}", i, status);
                     } else {
-                        _callback.stateChanged(i, PrgConstants.CHANNEL_SCENE, new DecimalType(scene));
+                        phCallback.stateChanged(i, PrgConstants.CHANNEL_SCENE, new DecimalType(scene));
                         refreshZoneIntensity(i); // request to get new zone intensities
                     }
                 }
@@ -866,7 +868,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report time response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportTime(Matcher m, String resp) {
@@ -884,7 +886,8 @@ class PrgProtocolHandler {
                 final int yr = Integer.parseInt(m.group(5));
                 c.set(Calendar.YEAR, yr + (yr < 50 ? 1900 : 2000));
 
-                _callback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK, new DateTimeType(c));
+                phCallback.stateChanged(PrgConstants.CHANNEL_TIMECLOCK,
+                        new DateTimeType(ZonedDateTime.ofInstant(c.toInstant(), ZoneId.systemDefault())));
             } catch (NumberFormatException e) {
                 logger.error("Invalid time response (can't parse number): '{}'", resp);
             }
@@ -896,7 +899,7 @@ class PrgProtocolHandler {
     /**
      * Handles the report schedule response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleReportSchedule(Matcher m, String resp) {
@@ -906,7 +909,7 @@ class PrgProtocolHandler {
         if (m.groupCount() == 2) {
             try {
                 int schedule = Integer.parseInt(m.group(1));
-                _callback.stateChanged(PrgConstants.CHANNEL_SCHEDULE, new DecimalType(schedule));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SCHEDULE, new DecimalType(schedule));
             } catch (NumberFormatException e) {
                 logger.error("Invalid schedule response (can't parse number): '{}'", resp);
             }
@@ -918,7 +921,7 @@ class PrgProtocolHandler {
     /**
      * Handles the sunrise/sunset response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSunriseSunset(Matcher m, String resp) {
@@ -934,12 +937,14 @@ class PrgProtocolHandler {
                 final Calendar sunrise = Calendar.getInstance();
                 sunrise.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(1)));
                 sunrise.set(Calendar.MINUTE, Integer.parseInt(m.group(2)));
-                _callback.stateChanged(PrgConstants.CHANNEL_SUNRISE, new DateTimeType(sunrise));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUNRISE,
+                        new DateTimeType(ZonedDateTime.ofInstant(sunrise.toInstant(), ZoneId.systemDefault())));
 
                 final Calendar sunset = Calendar.getInstance();
                 sunset.set(Calendar.HOUR_OF_DAY, Integer.parseInt(m.group(3)));
                 sunset.set(Calendar.MINUTE, Integer.parseInt(m.group(4)));
-                _callback.stateChanged(PrgConstants.CHANNEL_SUNSET, new DateTimeType(sunset));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUNSET,
+                        new DateTimeType(ZonedDateTime.ofInstant(sunset.toInstant(), ZoneId.systemDefault())));
             } catch (NumberFormatException e) {
                 logger.error("Invalid sunrise/sunset response (can't parse number): '{}'", resp);
             }
@@ -951,7 +956,7 @@ class PrgProtocolHandler {
     /**
      * Handles the super sequence response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleSuperSequenceStatus(Matcher m, String resp) {
@@ -963,10 +968,10 @@ class PrgProtocolHandler {
                 final int nextStep = Integer.parseInt(m.group(2));
                 final int nextMin = Integer.parseInt(m.group(3));
                 final int nextSec = Integer.parseInt(m.group(4));
-                _callback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCESTATUS, new StringType(m.group(1)));
-                _callback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSTEP, new DecimalType(nextStep));
-                _callback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCENEXTMIN, new DecimalType(nextMin));
-                _callback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSEC, new DecimalType(nextSec));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCESTATUS, new StringType(m.group(1)));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSTEP, new DecimalType(nextStep));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCENEXTMIN, new DecimalType(nextMin));
+                phCallback.stateChanged(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSEC, new DecimalType(nextSec));
             } catch (NumberFormatException e) {
                 logger.error("Invalid volume response (can't parse number): '{}'", resp);
             }
@@ -978,7 +983,7 @@ class PrgProtocolHandler {
     /**
      * Handles the zone intensity response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleZoneIntensity(Matcher m, String resp) {
@@ -996,7 +1001,7 @@ class PrgProtocolHandler {
                     }
                     final int zid = convertIntensity(controlUnit, z, zi);
 
-                    _callback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONEINTENSITY + z, new PercentType(zid));
+                    phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONEINTENSITY + z, new PercentType(zid));
                 }
             } catch (NumberFormatException e) {
                 logger.error("Invalid volume response (can't parse number): '{}'", resp);
@@ -1009,7 +1014,7 @@ class PrgProtocolHandler {
     /**
      * Handles the controller information response (currently not used).
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleControlInfo(Matcher m, String resp) {
@@ -1029,11 +1034,11 @@ class PrgProtocolHandler {
                 final boolean zoneLock = (q4bits.length() > 2 ? q4bits.charAt(2) : '0') == '1';
                 final boolean sceneLock = (q4bits.length() > 3 ? q4bits.charAt(4) : '0') == '1';
 
-                _callback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENESEQ,
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENESEQ,
                         seqMode ? OnOffType.ON : OnOffType.OFF);
-                _callback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENELOCK,
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_SCENELOCK,
                         sceneLock ? OnOffType.ON : OnOffType.OFF);
-                _callback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONELOCK,
+                phCallback.stateChanged(controlUnit, PrgConstants.CHANNEL_ZONELOCK,
                         zoneLock ? OnOffType.ON : OnOffType.OFF);
             } catch (NumberFormatException e) {
                 logger.error("Invalid controller information response: '{}'", resp);
@@ -1046,21 +1051,21 @@ class PrgProtocolHandler {
     /**
      * Handles the interface being reset
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleResetting(Matcher m, String resp) {
-        _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Device resetting");
+        phCallback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE, "Device resetting");
     }
 
     /**
      * Handles the button press response
      *
-     * @param m    the non-null {@link Matcher} that matched the response
+     * @param m the non-null {@link Matcher} that matched the response
      * @param resp the possibly null, possibly empty actual response
      */
     private void handleButton(Matcher m, String resp) {
-        _callback.stateChanged(PrgConstants.CHANNEL_BUTTONPRESS, new StringType(resp));
+        phCallback.stateChanged(PrgConstants.CHANNEL_BUTTONPRESS, new StringType(resp));
     }
 
     /**
@@ -1164,10 +1169,9 @@ class PrgProtocolHandler {
 
         @Override
         public void responseException(Exception exception) {
-            _callback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+            phCallback.statusChanged(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Exception occurred reading from PRG: " + exception);
         }
-
     }
 
     /**
@@ -1182,17 +1186,17 @@ class PrgProtocolHandler {
         /**
          * Cache of responses that have occurred
          */
-        private BlockingQueue<Object> _responses = new ArrayBlockingQueue<Object>(5);
+        private BlockingQueue<Object> responses = new ArrayBlockingQueue<>(5);
 
         /**
-         * Will return the next response from {@link #_responses}. If the response is an exception, that exception will
+         * Will return the next response from {@link #responses}. If the response is an exception, that exception will
          * be thrown instead.
          *
          * @return a non-null, possibly empty response
          * @throws Exception an exception if one occurred during reading
          */
         String getResponse() throws Exception {
-            final Object lastResponse = _responses.poll(5, TimeUnit.SECONDS);
+            final Object lastResponse = responses.poll(5, TimeUnit.SECONDS);
             if (lastResponse instanceof String) {
                 return (String) lastResponse;
             } else if (lastResponse instanceof Exception) {
@@ -1207,7 +1211,7 @@ class PrgProtocolHandler {
         @Override
         public void responseReceived(String response) {
             try {
-                _responses.put(response);
+                responses.put(response);
             } catch (InterruptedException e) {
             }
         }
@@ -1215,10 +1219,9 @@ class PrgProtocolHandler {
         @Override
         public void responseException(Exception e) {
             try {
-                _responses.put(e);
+                responses.put(e);
             } catch (InterruptedException e1) {
             }
         }
-
     }
 }

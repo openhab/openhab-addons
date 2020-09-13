@@ -155,7 +155,6 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public void controllerOffline() {
         bridgeOffline();
-
     }
 
     @Override

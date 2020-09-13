@@ -72,5 +72,4 @@ public interface HomematicGatewayAdapter {
      * Called when a new value for the duty cycle of the gateway has been received.
      */
     public void onDutyCycleRatioUpdate(int dutyCycleRatio);
-
 }

@@ -165,5 +165,4 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
         JCsetSceneVelocity.silentMode = silent;
         return this;
     }
-
 }

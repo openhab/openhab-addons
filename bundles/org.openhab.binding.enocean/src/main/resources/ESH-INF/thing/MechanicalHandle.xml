@@ -7,7 +7,7 @@
 	<!-- MechanicalHandle -->
 	<thing-type id="mechanicalHandle">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Mechanical Handle</label>

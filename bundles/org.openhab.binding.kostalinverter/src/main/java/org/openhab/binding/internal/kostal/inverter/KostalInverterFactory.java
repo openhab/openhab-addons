@@ -17,6 +17,8 @@ import static org.openhab.binding.internal.kostal.inverter.thirdgeneration.Third
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -27,6 +29,7 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.internal.kostal.inverter.firstgeneration.WebscrapeHandler;
 import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationHandler;
 import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationInverterTypes;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -35,6 +38,7 @@ import org.osgi.service.component.annotations.Reference;
  * @author René Stakemeier - extension for the third generation of KOSTAL inverters
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.kostalinverter")
+@NonNullByDefault
 public class KostalInverterFactory extends BaseThingHandlerFactory {
 
     private static final Map<ThingTypeUID, ThirdGenerationInverterTypes> SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS = new HashMap<>();
@@ -66,9 +70,14 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
                 ThirdGenerationInverterTypes.PLENTICORE_PLUS_100_WITHOUT_BATTERY);
     }
 
-    private HttpClient httpClient;
-
     public static final ThingTypeUID FIRST_GENERATION_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
+
+    private final HttpClient httpClient;
+
+    @Activate
+    public KostalInverterFactory(@Reference final HttpClientFactory httpClientFactory) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -77,7 +86,7 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         // first generation
         if (FIRST_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
             return new WebscrapeHandler(thing);
@@ -89,18 +98,4 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    protected void unsetHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClient = null;
-    }
-
 }

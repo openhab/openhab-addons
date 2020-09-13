@@ -117,7 +117,7 @@ public class BaseDmxChannel implements Comparable<BaseDmxChannel> {
      */
     public static List<BaseDmxChannel> fromString(String dmxChannelString, int defaultUniverseId)
             throws IllegalArgumentException {
-        List<BaseDmxChannel> dmxChannels = new ArrayList<BaseDmxChannel>();
+        List<BaseDmxChannel> dmxChannels = new ArrayList<>();
 
         Stream.of(dmxChannelString.split(",")).forEach(singleDmxChannelString -> {
             int dmxChannelId, dmxChannelWidth;

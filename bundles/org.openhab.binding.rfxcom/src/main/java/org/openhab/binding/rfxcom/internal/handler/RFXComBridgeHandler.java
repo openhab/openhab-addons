@@ -157,7 +157,7 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
 
         if (connectorTask == null || connectorTask.isCancelled()) {
             connectorTask = scheduler.scheduleWithFixedDelay(() -> {
-                logger.debug("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
+                logger.trace("Checking RFXCOM transceiver connection, thing status = {}", thing.getStatus());
                 if (thing.getStatus() != ThingStatus.ONLINE) {
                     connect();
                 }
@@ -169,17 +169,18 @@ public class RFXComBridgeHandler extends BaseBridgeHandler {
         logger.debug("Connecting to RFXCOM transceiver");
 
         try {
+            String readerThreadName = "OH-binding-" + getThing().getUID().getAsString();
             if (configuration.serialPort != null) {
                 if (connector == null) {
-                    connector = new RFXComSerialConnector(serialPortManager);
+                    connector = new RFXComSerialConnector(serialPortManager, readerThreadName);
                 }
             } else if (configuration.bridgeId != null) {
                 if (connector == null) {
-                    connector = new RFXComJD2XXConnector();
+                    connector = new RFXComJD2XXConnector(readerThreadName);
                 }
             } else if (configuration.host != null) {
                 if (connector == null) {
-                    connector = new RFXComTcpConnector();
+                    connector = new RFXComTcpConnector(readerThreadName);
                 }
             }
 

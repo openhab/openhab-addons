@@ -334,5 +334,4 @@ public class VeluxProduct {
     public int getTimeStamp() {
         return timeStamp;
     }
-
 }

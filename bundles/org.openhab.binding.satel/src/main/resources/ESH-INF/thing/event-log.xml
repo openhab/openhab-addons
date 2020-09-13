@@ -7,8 +7,8 @@
 	<thing-type id="event-log">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ethm-1" />
-			<bridge-type-ref id="int-rs" />
+			<bridge-type-ref id="ethm-1"/>
+			<bridge-type-ref id="int-rs"/>
 		</supported-bridge-type-refs>
 
 		<label>Event Log</label>
@@ -16,11 +16,11 @@
 		Event log must read sequentially starting from the most recent record.]]></description>
 
 		<channels>
-			<channel typeId="index" id="index" />
-			<channel typeId="prev_index" id="prev_index" />
-			<channel typeId="timestamp" id="timestamp" />
-			<channel typeId="description" id="description" />
-			<channel typeId="details" id="details" />
+			<channel typeId="index" id="index"/>
+			<channel typeId="prev_index" id="prev_index"/>
+			<channel typeId="timestamp" id="timestamp"/>
+			<channel typeId="description" id="description"/>
+			<channel typeId="details" id="details"/>
 		</channels>
 
 	</thing-type>
@@ -35,28 +35,28 @@
 		<item-type>Number</item-type>
 		<label>Previous Index</label>
 		<description>Index of the previous record in the event log. Use this value to iterate over the log.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="timestamp">
 		<item-type>DateTime</item-type>
 		<label>Date and Time</label>
 		<description>Date and time when the event happened.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="description">
 		<item-type>String</item-type>
 		<label>Description</label>
 		<description>Textual description of the event.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="details">
 		<item-type>String</item-type>
 		<label>Details</label>
 		<description>Additional details about the event, like names of partitions, zones, users, etc.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

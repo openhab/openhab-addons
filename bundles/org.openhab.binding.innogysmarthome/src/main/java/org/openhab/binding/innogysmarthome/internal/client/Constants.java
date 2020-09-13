@@ -12,11 +12,6 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -28,18 +23,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public final class Constants {
 
-    // devices
-    public static final Set<String> BATTERY_POWERED_DEVICES = Collections.unmodifiableSet(
-            Stream.of("RST", "WRT", "WDS", "WSD", "WSD2", "WMD", "WMDO", "WSC2", "BRC8").collect(Collectors.toSet()));
-
     // API URLs
     public static final String API_HOST = "api.services-smarthome.de";
+    public static final String AUTH_HOST = "auth.services-smarthome.de";
     public static final String API_VERSION = "1.1";
     public static final String API_URL_BASE = "https://" + API_HOST + "/API/" + API_VERSION;
-    public static final String API_URL_TOKEN = "https://" + API_HOST + "/AUTH/token";
+    public static final String API_URL_TOKEN = "https://" + AUTH_HOST + "/AUTH/token";
 
-    public static final String API_URL_CHECK_CONNECTION = API_URL_BASE + "/desc/device/SHC.RWE/1.0/event/StateChanged";
-    public static final String API_URL_INITIALIZE = API_URL_BASE + "/initialize";
     public static final String API_URL_STATUS = API_URL_BASE + "/status";
 
     public static final String API_URL_DEVICE = API_URL_BASE + "/device";
@@ -55,11 +45,7 @@ public final class Constants {
 
     public static final String API_URL_MESSAGE = API_URL_BASE + "/message";
 
-    public static final String API_URL_EVENTS = "wss://" + API_HOST + "/API/" + API_VERSION + "/events?token={token}";
     public static final String API_URL_ACTION = API_URL_BASE + "/action";
-
-    // others
-    public static final String FORMAT_DATETIME = "dd.MM.yyyy HH:mm:ss";
 
     private Constants() {
         // Constants class

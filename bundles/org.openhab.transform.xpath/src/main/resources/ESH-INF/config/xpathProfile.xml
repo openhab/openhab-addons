@@ -7,7 +7,8 @@
 	<config-description uri="profile:transform:XPATH">
 		<parameter name="function" type="text" required="true">
 			<label>XPath Expression</label>
-			<description>XPath expression to be applied on the state: For example: /*[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/</description>
+			<description>XPath expression to be applied on the state: For example:
+				/*[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/</description>
 		</parameter>
 		<parameter name="sourceFormat" type="text" required="false">
 			<label>State Formatter</label>

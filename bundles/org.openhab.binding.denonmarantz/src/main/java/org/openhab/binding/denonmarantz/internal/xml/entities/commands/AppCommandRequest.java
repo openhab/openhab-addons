@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class AppCommandRequest {
 
     @XmlElement(name = "cmd")
-    private List<CommandTx> commands = new ArrayList<CommandTx>();
+    private List<CommandTx> commands = new ArrayList<>();
 
     public AppCommandRequest() {
     }

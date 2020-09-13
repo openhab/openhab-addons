@@ -6,37 +6,43 @@
 
 	<thing-type id="partition">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="ip150" />
+			<bridge-type-ref id="ip150"/>
 		</supported-bridge-type-refs>
 
 		<label>Paradox Partition</label>
 		<description>Paradox Partition</description>
 
 		<channels>
-			<channel id="label" typeId="partitionLabel" />
-			<channel id="state" typeId="state" />
-			<channel id="additionalStates" typeId="additionalState" />
-			<channel id="readyToArm" typeId="readyToArm" />
-			<channel id="inExitDelay" typeId="inExitDelay" />
-			<channel id="inEntryDelay" typeId="inEntryDelay" />
-			<channel id="inTrouble" typeId="inTrouble" />
-			<channel id="alarmInMemory" typeId="alarmInMemory" />
-			<channel id="zoneBypass" typeId="zoneBypass" />
-			<channel id="zoneInTamperTrouble" typeId="zoneInTamperTrouble" />
-			<channel id="zoneInLowBatteryTrouble" typeId="zoneInLowBatteryTrouble" />
-			<channel id="zoneInFireLoopTrouble" typeId="zoneInFireLoopTrouble" />
-			<channel id="zoneInSupervisionTrouble" typeId="zoneInSupervisionTrouble" />
-			<channel id="stayInstantReady" typeId="stayInstantReady" />
-			<channel id="forceReady" typeId="forceReady" />
-			<channel id="bypassReady" typeId="bypassReady" />
-			<channel id="inhibitReady" typeId="inhibitReady" />
-			<channel id="allZonesClosed" typeId="allZonesClosed" />
+			<channel id="label" typeId="partitionLabel"/>
+			<channel id="state" typeId="state"/>
+			<channel id="additionalStates" typeId="additionalState"/>
+			<channel id="readyToArm" typeId="readyToArm"/>
+			<channel id="inExitDelay" typeId="inExitDelay"/>
+			<channel id="inEntryDelay" typeId="inEntryDelay"/>
+			<channel id="inTrouble" typeId="inTrouble"/>
+			<channel id="alarmInMemory" typeId="alarmInMemory"/>
+			<channel id="zoneBypass" typeId="zoneBypass"/>
+			<channel id="zoneInTamperTrouble" typeId="zoneInTamperTrouble"/>
+			<channel id="zoneInLowBatteryTrouble" typeId="zoneInLowBatteryTrouble"/>
+			<channel id="zoneInFireLoopTrouble" typeId="zoneInFireLoopTrouble"/>
+			<channel id="zoneInSupervisionTrouble" typeId="zoneInSupervisionTrouble"/>
+			<channel id="stayInstantReady" typeId="stayInstantReady"/>
+			<channel id="forceReady" typeId="forceReady"/>
+			<channel id="bypassReady" typeId="bypassReady"/>
+			<channel id="inhibitReady" typeId="inhibitReady"/>
+			<channel id="allZonesClosed" typeId="allZonesClosed"/>
+			<channel id="command" typeId="command"/>
 		</channels>
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="8" required="true">
 				<label>Partition Id</label>
 				<description>This is the partition ID of the Paradox partition (1-8 for Evo)</description>
+			</parameter>
+			<parameter name="disarmEnabled" type="boolean">
+				<label>Disarm Command Enabled</label>
+				<description>Parameter that enables option to send DISARM command to the partition. (DANGEROUS !)</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -148,5 +154,20 @@
 		<label>Partition Has All Zones Closed</label>
 		<description>Partition has All Zones closed</description>
 		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="command">
+		<item-type>String</item-type>
+		<label>Partition Command</label>
+		<description>Send command</description>
+		<state>
+			<options>
+				<option value="ARM">Arm</option>
+				<option value="STAY_ARM">Stay Arm</option>
+				<option value="INSTANT_ARM">Instant Arm</option>
+				<option value="FORCE_ARM">Force Arm</option>
+				<option value="DISARM">Disarm</option>
+				<option value="BEEP">Keyboard Beep</option>
+			</options>
+		</state>
 	</channel-type>
 </thing:thing-descriptions>

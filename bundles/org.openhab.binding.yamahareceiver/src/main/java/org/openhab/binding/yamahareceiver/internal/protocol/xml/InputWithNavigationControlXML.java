@@ -67,7 +67,6 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
      */
     public InputWithNavigationControlXML(NavigationControlState state, String inputID, AbstractConnection con,
             NavigationControlStateListener observer, DeviceInformationState deviceInformationState) {
-
         super(LoggerFactory.getLogger(InputWithNavigationControlXML.class), inputID, con, deviceInformationState);
 
         this.state = state;
@@ -300,7 +299,8 @@ public class InputWithNavigationControlXML extends AbstractInputControlXML imple
 
             totalWaitingTime += YamahaReceiverBindingConstants.MENU_RETRY_DELAY;
             if (totalWaitingTime > YamahaReceiverBindingConstants.MENU_MAX_WAITING_TIME) {
-                logger.info("Menu still not ready after " + YamahaReceiverBindingConstants.MENU_MAX_WAITING_TIME + "ms. The menu state will be out of sync.");
+                logger.info("Menu still not ready after " + YamahaReceiverBindingConstants.MENU_MAX_WAITING_TIME
+                        + "ms. The menu state will be out of sync.");
                 // ToDo: this needs to redesigned to allow for some sort of async update
                 // Note: there is not really that much we can do here.
                 return;

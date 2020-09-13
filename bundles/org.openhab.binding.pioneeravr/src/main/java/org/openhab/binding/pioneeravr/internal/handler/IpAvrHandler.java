@@ -35,5 +35,4 @@ public class IpAvrHandler extends AbstractAvrHandler {
 
         return new IpAvrConnection(host, tcpPort);
     }
-
 }

@@ -16,7 +16,8 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.reset;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,6 +58,7 @@ import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
+import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,35 +92,29 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
             ItemStateEvent stateEvent = (ItemStateEvent) event;
             logger.trace("Captured event: {} of type {}. Payload: {}", event,
                     stateEvent.getItemState().getClass().getSimpleName(), event.getPayload());
-            stateUpdates.computeIfAbsent(stateEvent.getItemName(), (item) -> new ArrayList<State>())
+            stateUpdates.computeIfAbsent(stateEvent.getItemName(), (item) -> new ArrayList<>())
                     .add(stateEvent.getItemState());
         }
-
     }
 
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
     @Mock
-    @NonNullByDefault({})
-    protected ModbusManager mockedModbusManager;
+    protected @NonNullByDefault({}) ModbusManager mockedModbusManager;
+    protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
+    protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
+    protected @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
+    protected @NonNullByDefault({}) ItemRegistry itemRegistry;
+    protected @NonNullByDefault({}) CoreItemFactory coreItemFactory;
 
-    @NonNullByDefault({})
-    protected ManagedThingProvider thingProvider;
-    @NonNullByDefault({})
-    protected ManagedItemProvider itemProvider;
-    @NonNullByDefault({})
-    protected ManagedItemChannelLinkProvider itemChannelLinkProvider;
-    @NonNullByDefault({})
-    protected ItemRegistry itemRegistry;
-    @NonNullByDefault({})
-    protected CoreItemFactory coreItemFactory;
-
-    @NonNullByDefault({})
-    private ModbusManager realModbusManager;
+    private @NonNullByDefault({}) ModbusManager realModbusManager;
     private Set<Item> addedItems = new HashSet<>();
     private Set<Thing> addedThings = new HashSet<>();
     private Set<ItemChannelLink> addedLinks = new HashSet<>();
     private StateSubscriber stateSubscriber = new StateSubscriber();
+
+    @Mock
+    protected @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     public AbstractModbusOSGiTest() {
         super();
@@ -149,6 +145,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
         // Clean slate for all tests
         reset(mockedModbusManager);
+
         stateSubscriber.stateUpdates.clear();
         logger.debug("setUpAbstractModbusOSGiTest END");
     }
@@ -220,7 +217,12 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         registerService(service, params);
     }
 
-    private void swapModbusManagerToMocked() {
+    protected void mockCommsToModbusManager() {
+        assert comms != null;
+        doReturn(comms).when(mockedModbusManager).newModbusCommunicationInterface(any(), any());
+    }
+
+    protected void swapModbusManagerToMocked() {
         assertNull(realModbusManager);
         realModbusManager = getService(ModbusManager.class);
         assertThat("Could not get ModbusManager", realModbusManager, is(notNullValue()));
@@ -235,7 +237,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         modbusHandlerFactory.setModbusManager(mockedModbusManager);
     }
 
-    private void swapModbusManagerToReal() {
+    protected void swapModbusManagerToReal() {
         assertNotNull(realModbusManager);
         ModbusHandlerFactory modbusHandlerFactory = getService(ThingHandlerFactory.class, ModbusHandlerFactory.class);
         assertThat("Could not get ModbusHandlerFactory", modbusHandlerFactory, is(notNullValue()));
@@ -243,5 +245,4 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         modbusHandlerFactory.unsetModbusManager(mockedModbusManager);
         modbusHandlerFactory.setModbusManager(realModbusManager);
     }
-
 }

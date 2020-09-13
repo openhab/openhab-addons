@@ -36,5 +36,4 @@ public class UvDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.UV_VALUE, getUnit(), value));
     }
-
 }

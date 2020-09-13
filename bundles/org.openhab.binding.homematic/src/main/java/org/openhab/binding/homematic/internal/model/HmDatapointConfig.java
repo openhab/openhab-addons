@@ -57,5 +57,4 @@ public class HmDatapointConfig {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("delay", delay)
                 .append("receiveDelay", receiveDelay).toString();
     }
-
 }

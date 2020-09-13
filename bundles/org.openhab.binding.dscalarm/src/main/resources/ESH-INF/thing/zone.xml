@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="dscalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="dscalarm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="envisalink" />
-			<bridge-type-ref id="it100" />
-			<bridge-type-ref id="tcpserver" />
+			<bridge-type-ref id="envisalink"/>
+			<bridge-type-ref id="it100"/>
+			<bridge-type-ref id="tcpserver"/>
 		</supported-bridge-type-refs>
 
 		<label>DSC Alarm Zone</label>

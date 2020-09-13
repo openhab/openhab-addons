@@ -34,26 +34,25 @@ import org.osgi.service.component.annotations.Component;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@Component(service = ConfigOptionProvider.class)
 @NonNullByDefault
-@Component
 public class SmartMeterConfigProvider implements ConfigOptionProvider {
+
+    @Override
+    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
+        return getParameterOptions(uri, param, null, locale);
+    }
 
     @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
-        return ConfigOptionProvider.super.getParameterOptions(uri, param, context, locale);
-    }
-
-    @Override
-    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
         if (!SmartMeterBindingConstants.THING_TYPE_SMLREADER.getAsString().equals(uri.getSchemeSpecificPart())) {
             return null;
         }
 
         switch (param) {
-
             case SmartMeterBindingConstants.CONFIGURATION_SERIAL_MODE:
-                List<ParameterOption> options = new ArrayList<ParameterOption>();
+                List<ParameterOption> options = new ArrayList<>();
 
                 for (ProtocolMode mode : ProtocolMode.values()) {
                     options.add(new ParameterOption(mode.name(), mode.toString()));
@@ -61,7 +60,7 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
                 return options;
 
             case SmartMeterBindingConstants.CONFIGURATION_BAUDRATE:
-                options = new ArrayList<ParameterOption>();
+                options = new ArrayList<>();
 
                 for (Baudrate baudrate : Baudrate.values()) {
                     options.add(new ParameterOption(baudrate.getBaudrate() + "", baudrate.toString()));
@@ -69,7 +68,7 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
                 return options;
 
             case SmartMeterBindingConstants.CONFIGURATION_CONFORMITY:
-                options = new ArrayList<ParameterOption>();
+                options = new ArrayList<>();
 
                 for (Conformity conformity : Conformity.values()) {
                     options.add(new ParameterOption(conformity.name(), conformity.toString()));
@@ -78,5 +77,4 @@ public class SmartMeterConfigProvider implements ConfigOptionProvider {
         }
         return null;
     }
-
 }

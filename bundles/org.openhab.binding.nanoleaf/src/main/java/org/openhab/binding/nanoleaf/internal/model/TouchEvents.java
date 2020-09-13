@@ -35,5 +35,4 @@ public class TouchEvents {
     public void setEvents(List<TouchEvent> events) {
         this.events = events;
     }
-
 }

@@ -87,5 +87,4 @@ public class XiaomiAqaraActorSwitch2Handler extends XiaomiActorBaseHandler {
             updateState(CHANNEL_SWITCH_CH1, isOn ? OnOffType.ON : OnOffType.OFF);
         }
     }
-
 }

@@ -24,6 +24,9 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.lametrictime.api.local.model.Application;
+import org.openhab.binding.lametrictime.api.local.model.Widget;
+import org.openhab.binding.lametrictime.api.model.CoreApps;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
@@ -31,9 +34,6 @@ import org.openhab.binding.lametrictime.internal.handler.LaMetricTimeAppHandler;
 import org.openhab.binding.lametrictime.internal.handler.LaMetricTimeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.lametrictime.api.local.model.Application;
-import org.syphr.lametrictime.api.local.model.Widget;
-import org.syphr.lametrictime.api.model.CoreApps;
 
 import com.google.gson.JsonPrimitive;
 

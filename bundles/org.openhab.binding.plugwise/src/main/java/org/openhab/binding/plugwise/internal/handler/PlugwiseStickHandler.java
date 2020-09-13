@@ -84,18 +84,18 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     };
 
     private final Logger logger = LoggerFactory.getLogger(PlugwiseStickHandler.class);
-    private final PlugwiseCommunicationHandler communicationHandler = new PlugwiseCommunicationHandler();
-    private final SerialPortManager serialPortManager;
+    private final PlugwiseCommunicationHandler communicationHandler;
     private final List<PlugwiseStickStatusListener> statusListeners = new CopyOnWriteArrayList<>();
 
-    private @NonNullByDefault({}) PlugwiseStickConfig configuration;
+    private PlugwiseStickConfig configuration = new PlugwiseStickConfig();
 
     private @Nullable MACAddress circlePlusMAC;
     private @Nullable MACAddress stickMAC;
 
     public PlugwiseStickHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
-        this.serialPortManager = serialPortManager;
+        communicationHandler = new PlugwiseCommunicationHandler(bridge.getUID(), () -> configuration,
+                serialPortManager);
     }
 
     public void addMessageListener(PlugwiseMessageListener listener) {
@@ -190,8 +190,6 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
     @Override
     public void initialize() {
         configuration = getConfigAs(PlugwiseStickConfig.class);
-        communicationHandler.setConfiguration(configuration);
-        communicationHandler.setSerialPortManager(serialPortManager);
         communicationHandler.addMessageListener(this);
 
         try {
@@ -267,5 +265,4 @@ public class PlugwiseStickHandler extends BaseBridgeHandler implements PlugwiseM
             task.stop();
         }
     }
-
 }

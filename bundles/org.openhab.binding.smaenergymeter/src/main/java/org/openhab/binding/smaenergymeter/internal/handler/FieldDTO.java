@@ -57,5 +57,4 @@ public class FieldDTO {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         return buffer.getLong();
     }
-
 }

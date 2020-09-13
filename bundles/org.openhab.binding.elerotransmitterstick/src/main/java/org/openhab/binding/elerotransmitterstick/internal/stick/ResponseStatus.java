@@ -34,8 +34,8 @@ public enum ResponseStatus {
     SWITCHED_OFF((byte) 0x10),
     SWITCHED_ON((byte) 0x11);
 
-    public final static byte EASY_CONFIRM = (byte) 0x4B;
-    public final static byte EASY_ACK = (byte) 0x4D;
+    public static final byte EASY_CONFIRM = (byte) 0x4B;
+    public static final byte EASY_ACK = (byte) 0x4D;
 
     private byte statusByte;
 

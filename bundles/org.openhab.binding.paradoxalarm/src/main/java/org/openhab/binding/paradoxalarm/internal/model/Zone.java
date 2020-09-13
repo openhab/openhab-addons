@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Zone} Paradox zone.
- * ID is always numeric (1-8 for Evo192)
+ * ID is always numeric (1-192 for Evo192)
  * States are taken from cached RAM memory map and parsed.
  *
  * @author Konstantin Polihronov - Initial contribution
@@ -39,6 +39,6 @@ public class Zone extends Entity {
     public void setZoneState(ZoneState zoneState) {
         this.zoneState = zoneState;
         logger.debug("Zone {} state updated to:\tOpened: {}, Tampered: {}, LowBattery: {}", getLabel(),
-            zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
+                zoneState.isOpened(), zoneState.isTampered(), zoneState.hasLowBattery());
     }
 }

@@ -12,12 +12,16 @@
  */
 package org.openhab.binding.heos.internal.handler;
 
+import java.io.IOException;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.heos.handler.HeosBridgeHandler;
-import org.openhab.binding.heos.handler.HeosGroupHandler;
-import org.openhab.binding.heos.internal.api.HeosFacade;
-import org.openhab.binding.heos.internal.resources.HeosGroup;
+import org.openhab.binding.heos.internal.exception.HeosNotFoundException;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
 
 /**
  * The {@link HeosChannelHandlerGrouping} handles the grouping channel command
@@ -25,36 +29,36 @@ import org.openhab.binding.heos.internal.resources.HeosGroup;
  *
  * @author Johannes Einig - Initial contribution
  */
-public class HeosChannelHandlerGrouping extends HeosChannelHandler {
-
-    public HeosChannelHandlerGrouping(HeosBridgeHandler bridge, HeosFacade api) {
-        super(bridge, api);
+@NonNullByDefault
+public class HeosChannelHandlerGrouping extends BaseHeosChannelHandler {
+    public HeosChannelHandlerGrouping(HeosBridgeHandler bridge) {
+        super(bridge);
     }
 
     @Override
-    protected void handleCommandPlayer() {
+    public void handlePlayerCommand(Command command, String id, ThingUID uid) {
         // No such channel on player
     }
 
     @Override
-    protected void handleCommandGroup() {
+    public void handleGroupCommand(Command command, @Nullable String id, ThingUID uid,
+            HeosGroupHandler heosGroupHandler) throws IOException, ReadException {
+
         if (command instanceof RefreshType) {
-            HeosGroupHandler heosGroupHandler = (HeosGroupHandler) handler;
-            heosGroupHandler.initialize();
             return;
         }
-        if (command.equals(OnOffType.OFF)) {
-            api.ungroupGroup(id);
-        } else if (command.equals(OnOffType.ON)) {
-            HeosGroupHandler heosGroupHandler = (HeosGroupHandler) handler;
-            HeosGroup heosGroup = heosGroupHandler.getHeosGroup();
-            String[] playerArray = heosGroup.getGroupMemberPidList().toArray(new String[0]);
-            api.groupPlayer(playerArray);
+        if (OnOffType.OFF == command) {
+            if (id == null) {
+                throw new HeosNotFoundException();
+            }
+            getApi().ungroupGroup(id);
+        } else if (OnOffType.ON == command) {
+            getApi().groupPlayer(heosGroupHandler.getGroupMemberPidList());
         }
     }
 
     @Override
-    protected void handleCommandBridge() {
+    public void handleBridgeCommand(Command command, ThingUID uid) {
         // No such channel on Bridge
     }
 }

@@ -27,7 +27,6 @@ import org.apache.commons.io.LineIterator;
 import org.openhab.extensionservice.marketplace.MarketplaceExtension;
 import org.openhab.extensionservice.marketplace.MarketplaceExtensionHandler;
 import org.openhab.extensionservice.marketplace.MarketplaceHandlerException;
-import org.openhab.extensionservice.marketplace.internal.BundleExtensionHandler;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -38,7 +37,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A {@link MarketplaceExtensionHandler} implementation, which handles extensions as jar files (specifically, OSGi bundles) and installs
+ * A {@link MarketplaceExtensionHandler} implementation, which handles extensions as jar files (specifically, OSGi
+ * bundles) and installs
  * them through the standard OSGi bundle installation mechanism.
  * The information, which installed bundle corresponds to which extension is written to a file in the bundle's data
  * store. It is therefore wiped together with the bundles upon an OSGi "clean".
@@ -56,9 +56,8 @@ public class BundleExtensionHandler implements MarketplaceExtensionHandler {
     private static final String BUNDLE_FILE = "installedBundlesMap.csv";
 
     // extension types supported by this handler
-    private static final List<String> SUPPORTED_EXT_TYPES = Arrays.asList(
-        MarketplaceExtension.EXT_TYPE_BINDING,
-        MarketplaceExtension.EXT_TYPE_VOICE);
+    private static final List<String> SUPPORTED_EXT_TYPES = Arrays.asList(MarketplaceExtension.EXT_TYPE_BINDING,
+            MarketplaceExtension.EXT_TYPE_VOICE);
 
     private final Logger logger = LoggerFactory.getLogger(BundleExtensionHandler.class);
 
@@ -81,7 +80,8 @@ public class BundleExtensionHandler implements MarketplaceExtensionHandler {
     @Override
     public boolean supports(MarketplaceExtension ext) {
         // we support only certain extension types, and only as pure OSGi bundles
-        return SUPPORTED_EXT_TYPES.contains(ext.getType()) && ext.getPackageFormat().equals(MarketplaceExtension.EXT_FORMAT_BUNDLE);
+        return SUPPORTED_EXT_TYPES.contains(ext.getType())
+                && ext.getPackageFormat().equals(MarketplaceExtension.EXT_FORMAT_BUNDLE);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class BundleExtensionHandler implements MarketplaceExtensionHandler {
                         map.put(parts[0], Long.valueOf(parts[1]));
                     } catch (NumberFormatException e) {
                         logger.debug("Cannot parse '{}' as a number in file {} - ignoring it.", parts[1],
-                            dataFile.getName());
+                                dataFile.getName());
                     }
                 } else {
                     logger.debug("Invalid line in file {} - ignoring it:\n{}", dataFile.getName(), line);
@@ -184,5 +184,4 @@ public class BundleExtensionHandler implements MarketplaceExtensionHandler {
             logger.debug("System does not support bundle data files -> not persisting installed bundle info");
         }
     }
-
 }

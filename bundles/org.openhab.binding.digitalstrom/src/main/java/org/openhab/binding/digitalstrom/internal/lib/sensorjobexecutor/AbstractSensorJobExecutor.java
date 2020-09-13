@@ -57,7 +57,7 @@ public abstract class AbstractSensorJobExecutor {
     protected Config config;
     private final ConnectionManager connectionManager;
 
-    private final List<CircuitScheduler> circuitSchedulerList = new LinkedList<CircuitScheduler>();
+    private final List<CircuitScheduler> circuitSchedulerList = new LinkedList<>();
 
     private class ExecutorRunnable implements Runnable {
         private final CircuitScheduler circuit;
@@ -68,13 +68,21 @@ public abstract class AbstractSensorJobExecutor {
 
         @Override
         public void run() {
+            // pollingSchedulers is not final and might be set to null by another thread. See #8214
+            Map<DSID, ScheduledFuture<?>> pollingSchedulers = AbstractSensorJobExecutor.this.pollingSchedulers;
+
             SensorJob sensorJob = circuit.getNextSensorJob();
+            DSID meter = circuit.getMeterDSID();
+
             if (sensorJob != null) {
                 sensorJob.execute(dSAPI, connectionManager.getSessionToken());
             }
-            if (circuit.noMoreJobs()) {
-                logger.debug("no more jobs... stop circuit schedduler with id = {}", circuit.getMeterDSID());
-                pollingSchedulers.get(circuit.getMeterDSID()).cancel(true);
+            if (circuit.noMoreJobs() && pollingSchedulers != null) {
+                logger.debug("no more jobs... stop circuit schedduler with id = {}", meter);
+                ScheduledFuture<?> scheduler = pollingSchedulers.get(meter);
+                if (scheduler != null) {
+                    scheduler.cancel(true);
+                }
             }
         }
     }
@@ -109,7 +117,7 @@ public abstract class AbstractSensorJobExecutor {
     public synchronized void startExecutor() {
         logger.debug("start all circuit schedulers.");
         if (pollingSchedulers == null) {
-            pollingSchedulers = new HashMap<DSID, ScheduledFuture<?>>();
+            pollingSchedulers = new HashMap<>();
         }
         if (circuitSchedulerList != null && !circuitSchedulerList.isEmpty()) {
             for (CircuitScheduler circuit : circuitSchedulerList) {

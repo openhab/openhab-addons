@@ -15,21 +15,21 @@ package org.openhab.binding.airquality.internal.discovery;
 import static org.openhab.binding.airquality.internal.AirQualityBindingConstants.*;
 import static org.openhab.binding.airquality.internal.AirQualityConfiguration.LOCATION;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
@@ -41,33 +41,35 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial Contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.airquality")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.airquality")
+@NonNullByDefault
 public class AirQualityDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(AirQualityDiscoveryService.class);
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_AQI);
     private static final int DISCOVER_TIMEOUT_SECONDS = 10;
     private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
 
-    private LocationProvider locationProvider;
-    private ScheduledFuture<?> discoveryJob;
-    private PointType previousLocation;
+    private final LocationProvider locationProvider;
+    private @Nullable ScheduledFuture<?> discoveryJob;
+    private @Nullable PointType previousLocation;
 
     /**
      * Creates a AirQualityDiscoveryService with enabled autostart.
      */
-    public AirQualityDiscoveryService() {
+    @Activate
+    public AirQualityDiscoveryService(@Reference LocationProvider locationProvider) {
         super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS, true);
+        this.locationProvider = locationProvider;
     }
 
     @Override
-    protected void activate(Map<String, Object> configProperties) {
+    protected void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
 
     @Override
     @Modified
-    protected void modified(Map<String, Object> configProperties) {
+    protected void modified(@Nullable Map<String, @Nullable Object> configProperties) {
         super.modified(configProperties);
     }
 
@@ -87,7 +89,7 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
         if (discoveryJob == null) {
             discoveryJob = scheduler.scheduleWithFixedDelay(() -> {
                 PointType currentLocation = locationProvider.getLocation();
-                if (!Objects.equals(currentLocation, previousLocation)) {
+                if (currentLocation != null && !Objects.equals(currentLocation, previousLocation)) {
                     logger.debug("Location has been changed from {} to {}: Creating new discovery results",
                             previousLocation, currentLocation);
                     createResults(currentLocation);
@@ -109,21 +111,12 @@ public class AirQualityDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping Air Quality background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            if (discoveryJob.cancel(true)) {
+        ScheduledFuture<?> job = this.discoveryJob;
+        if (job != null && !job.isCancelled()) {
+            if (job.cancel(true)) {
                 discoveryJob = null;
                 logger.debug("Stopped Air Quality background discovery");
             }
         }
     }
-
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
 }

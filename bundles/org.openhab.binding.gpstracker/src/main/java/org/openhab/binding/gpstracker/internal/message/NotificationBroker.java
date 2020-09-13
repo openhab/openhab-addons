@@ -38,7 +38,7 @@ public class NotificationBroker {
 
     public void sendNotification(LocationMessage msg) {
         String trackerId = msg.getTrackerId();
-        handlers.entrySet().stream().filter(e->!e.getKey().equals(trackerId))
-                .forEach(e->e.getValue().handleNotification(msg));
+        handlers.entrySet().stream().filter(e -> !e.getKey().equals(trackerId))
+                .forEach(e -> e.getValue().handleNotification(msg));
     }
 }

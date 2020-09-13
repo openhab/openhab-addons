@@ -52,18 +52,18 @@ public class GrafikEyeHandler extends BaseThingHandler {
     /**
      * Cached instance of the {@link GrafikEyeConfig}. Will be null if disconnected.
      */
-    private GrafikEyeConfig _config = null;
+    private GrafikEyeConfig config = null;
 
     /**
      * The current fade for the grafik eye (only used when setting zone intensity). Will initially be set from
      * configuration.
      */
-    private int _fade = 0;
+    private int fade = 0;
 
     /**
      * The polling job to poll the actual state of the grafik eye
      */
-    private ScheduledFuture<?> _polling;
+    private ScheduledFuture<?> pollingJob;
 
     /**
      * Constructs the handler from the {@link org.eclipse.smarthome.core.thing.Thing}
@@ -109,28 +109,28 @@ public class GrafikEyeHandler extends BaseThingHandler {
         if (id.equals(PrgConstants.CHANNEL_SCENE)) {
             if (command instanceof DecimalType) {
                 final int scene = ((DecimalType) command).intValue();
-                getProtocolHandler().selectScene(_config.getControlUnit(), scene);
+                getProtocolHandler().selectScene(config.getControlUnit(), scene);
             } else {
                 logger.error("Received a SCENE command with a non DecimalType: {}", command);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_SCENELOCK)) {
             if (command instanceof OnOffType) {
-                getProtocolHandler().setSceneLock(_config.getControlUnit(), command == OnOffType.ON);
+                getProtocolHandler().setSceneLock(config.getControlUnit(), command == OnOffType.ON);
             } else {
                 logger.error("Received a SCENELOCK command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_SCENESEQ)) {
             if (command instanceof OnOffType) {
-                getProtocolHandler().setSceneSequence(_config.getControlUnit(), command == OnOffType.ON);
+                getProtocolHandler().setSceneSequence(config.getControlUnit(), command == OnOffType.ON);
             } else {
                 logger.error("Received a SCENESEQ command with a non OnOffType: {}", command);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_ZONELOCK)) {
             if (command instanceof OnOffType) {
-                getProtocolHandler().setZoneLock(_config.getControlUnit(), command == OnOffType.ON);
+                getProtocolHandler().setZoneLock(config.getControlUnit(), command == OnOffType.ON);
             } else {
                 logger.error("Received a ZONELOCK command with a non OnOffType: {}", command);
             }
@@ -139,20 +139,19 @@ public class GrafikEyeHandler extends BaseThingHandler {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONELOWER);
 
             if (zone != null) {
-                getProtocolHandler().setZoneLower(_config.getControlUnit(), zone);
+                getProtocolHandler().setZoneLower(config.getControlUnit(), zone);
             }
 
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONERAISE)) {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONERAISE);
 
             if (zone != null) {
-                getProtocolHandler().setZoneRaise(_config.getControlUnit(), zone);
+                getProtocolHandler().setZoneRaise(config.getControlUnit(), zone);
             }
 
         } else if (id.equals(PrgConstants.CHANNEL_ZONEFADE)) {
             if (command instanceof DecimalType) {
-                final int fade = ((DecimalType) command).intValue();
-                setFade(fade);
+                setFade(((DecimalType) command).intValue());
             } else {
                 logger.error("Received a ZONEFADE command with a non DecimalType: {}", command);
             }
@@ -163,12 +162,12 @@ public class GrafikEyeHandler extends BaseThingHandler {
             if (zone != null) {
                 if (command instanceof PercentType) {
                     final int intensity = ((PercentType) command).intValue();
-                    getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade, intensity);
+                    getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade, intensity);
                 } else if (command instanceof OnOffType) {
-                    getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade,
+                    getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade,
                             command == OnOffType.ON ? 100 : 0);
                 } else if (command instanceof IncreaseDecreaseType) {
-                    getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade,
+                    getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade,
                             command == IncreaseDecreaseType.INCREASE);
                 } else {
                     logger.error("Received a ZONEINTENSITY command with a non DecimalType: {}", command);
@@ -184,9 +183,9 @@ public class GrafikEyeHandler extends BaseThingHandler {
                 } else if (command == StopMoveType.MOVE) {
                     logger.info("StopMoveType.Move is not suppored by QED shades");
                 } else if (command == StopMoveType.STOP) {
-                    getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade, 0);
+                    getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade, 0);
                 } else if (command instanceof UpDownType) {
-                    getProtocolHandler().setZoneIntensity(_config.getControlUnit(), zone, _fade,
+                    getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade,
                             command == UpDownType.UP ? 1 : 2);
                 } else {
                     logger.error("Received a ZONEINTENSITY command with a non DecimalType: {}", command);
@@ -213,16 +212,16 @@ public class GrafikEyeHandler extends BaseThingHandler {
             getProtocolHandler().refreshScene();
 
         } else if (id.equals(PrgConstants.CHANNEL_ZONEINTENSITY)) {
-            getProtocolHandler().refreshZoneIntensity(_config.getControlUnit());
+            getProtocolHandler().refreshZoneIntensity(config.getControlUnit());
         } else if (id.equals(PrgConstants.CHANNEL_ZONEFADE)) {
-            updateState(PrgConstants.CHANNEL_ZONEFADE, new DecimalType(_fade));
+            updateState(PrgConstants.CHANNEL_ZONEFADE, new DecimalType(fade));
         }
     }
 
     /**
      * Gets the trailing number from the channel id (which usually represents the zone number).
      *
-     * @param id              a non-null, possibly empty channel id
+     * @param id a non-null, possibly empty channel id
      * @param channelConstant a non-null, non-empty channel id constant to use in the parse.
      * @return the trailing number or null if a parse exception occurs
      */
@@ -274,14 +273,14 @@ public class GrafikEyeHandler extends BaseThingHandler {
      * starts a status refresh job
      */
     private void internalInitialize() {
-        _config = getThing().getConfiguration().as(GrafikEyeConfig.class);
+        config = getThing().getConfiguration().as(GrafikEyeConfig.class);
 
-        if (_config == null) {
+        if (config == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Configuration file missing");
             return;
         }
 
-        final String configErr = _config.validate();
+        final String configErr = config.validate();
         if (configErr != null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, configErr);
             return;
@@ -301,28 +300,27 @@ public class GrafikEyeHandler extends BaseThingHandler {
         }
 
         updateStatus(ThingStatus.ONLINE);
-        setFade(_config.getFade());
+        setFade(config.getFade());
 
         cancelPolling();
-        _polling = this.scheduler.scheduleWithFixedDelay(new Runnable() {
+        pollingJob = this.scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 final ThingStatus status = getThing().getStatus();
-                if (status == ThingStatus.ONLINE && _config != null) {
-                    getProtocolHandler().refreshState(_config.getControlUnit());
+                if (status == ThingStatus.ONLINE && config != null) {
+                    getProtocolHandler().refreshState(config.getControlUnit());
                 }
-
             }
-        }, 1, _config.getPolling(), TimeUnit.SECONDS);
+        }, 1, config.getPolling(), TimeUnit.SECONDS);
     }
 
     /**
      * Helper method to cancel our polling if we are currently polling
      */
     private void cancelPolling() {
-        if (_polling != null) {
-            _polling.cancel(true);
-            _polling = null;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            pollingJob = null;
         }
     }
 
@@ -350,7 +348,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
      * @return the control unit
      */
     int getControlUnit() {
-        return _config.getControlUnit();
+        return config.getControlUnit();
     }
 
     /**
@@ -361,14 +359,14 @@ public class GrafikEyeHandler extends BaseThingHandler {
      * @return true if a shade zone, false otherwise
      */
     boolean isShade(int zone) {
-        return _config == null ? false : _config.isShadeZone(zone);
+        return config == null ? false : config.isShadeZone(zone);
     }
 
     /**
      * Helper method to expose the ability to change state outside of the class
      *
      * @param channelId the channel id
-     * @param state     the new state
+     * @param state the new state
      */
     void stateChanged(String channelId, State state) {
         updateState(channelId, state);
@@ -384,7 +382,7 @@ public class GrafikEyeHandler extends BaseThingHandler {
             throw new IllegalArgumentException("fade must be between 1-3600");
         }
 
-        _fade = fade;
-        updateState(PrgConstants.CHANNEL_ZONEFADE, new DecimalType(_fade));
+        this.fade = fade;
+        updateState(PrgConstants.CHANNEL_ZONEFADE, new DecimalType(this.fade));
     }
 }

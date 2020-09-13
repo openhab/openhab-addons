@@ -15,6 +15,7 @@ package org.openhab.binding.denonmarantz.internal.connector.telnet;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.regex.Pattern;
@@ -106,7 +107,7 @@ public class DenonMarantzTelnetConnector extends DenonMarantzConnector implement
     private void refreshState() {
         // Sends a series of state query commands over the telnet connection
         telnetStateRequest = scheduler.submit(() -> {
-            ArrayList<String> cmds = new ArrayList<String>(Arrays.asList("PW?", "MS?", "MV?", "ZM?", "MU?", "SI?"));
+            List<String> cmds = new ArrayList<>(Arrays.asList("PW?", "MS?", "MV?", "ZM?", "MU?", "SI?"));
             if (config.getZoneCount() > 1) {
                 cmds.add("Z2?");
                 cmds.add("Z2MU?");

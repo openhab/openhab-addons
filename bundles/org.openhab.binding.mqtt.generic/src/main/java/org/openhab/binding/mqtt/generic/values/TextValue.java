@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.CoreItemFactory;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.CommandDescriptionBuilder;
+import org.eclipse.smarthome.core.types.CommandOption;
 import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.StateOption;
 
@@ -44,7 +46,7 @@ public class TextValue extends Value {
     public TextValue(String[] states) {
         super(CoreItemFactory.STRING, Collections.singletonList(StringType.class));
         Set<String> s = Stream.of(states).filter(e -> StringUtils.isNotBlank(e)).collect(Collectors.toSet());
-        if (s.size() > 0) {
+        if (!s.isEmpty()) {
             this.states = s;
         } else {
             this.states = null;
@@ -80,6 +82,18 @@ public class TextValue extends Value {
         if (states != null) {
             for (String state : states) {
                 builder = builder.withOption(new StateOption(state, state));
+            }
+        }
+        return builder;
+    }
+
+    @Override
+    public CommandDescriptionBuilder createCommandDescription() {
+        CommandDescriptionBuilder builder = super.createCommandDescription();
+        final Set<String> commands = this.states;
+        if (states != null) {
+            for (String command : commands) {
+                builder = builder.withCommandOption(new CommandOption(command, command));
             }
         }
         return builder;

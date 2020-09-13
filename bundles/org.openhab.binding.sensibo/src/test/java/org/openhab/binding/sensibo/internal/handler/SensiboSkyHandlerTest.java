@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -136,6 +133,6 @@ public class SensiboSkyHandlerTest {
         Mockito.when(thing.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));
         SensiboSkyHandler handler = Mockito.spy(new SensiboSkyHandler(thing));
         List<Channel> dynamicChannels = handler.createDynamicChannels(sky);
-        assertTrue(dynamicChannels.size() > 0);
+        assertTrue(!dynamicChannels.isEmpty());
     }
 }

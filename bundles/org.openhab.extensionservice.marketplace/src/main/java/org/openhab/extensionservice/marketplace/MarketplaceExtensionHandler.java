@@ -12,8 +12,7 @@
  */
 package org.openhab.extensionservice.marketplace;
 
-import org.openhab.extensionservice.marketplace.MarketplaceExtension;
-import org.openhab.extensionservice.marketplace.MarketplaceHandlerException;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * This interface can be implemented by services that want to register as handlers for specific marketplace extension
@@ -27,6 +26,7 @@ import org.openhab.extensionservice.marketplace.MarketplaceHandlerException;
  * @author Kai Kreuzer - Initial contribution and API
  *
  */
+@NonNullByDefault
 public interface MarketplaceExtensionHandler {
 
     /**

@@ -25,5 +25,4 @@ import org.eclipse.smarthome.config.core.status.ConfigStatusMessage;
 public interface HueConfigStatusMessage {
 
     static final String IP_ADDRESS_MISSING = "missing-ip-address-configuration";
-
 }

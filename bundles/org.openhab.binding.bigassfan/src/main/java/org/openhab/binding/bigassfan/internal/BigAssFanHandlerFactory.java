@@ -14,6 +14,8 @@ package org.openhab.binding.bigassfan.internal;
 
 import static org.openhab.binding.bigassfan.internal.BigAssFanBindingConstants.SUPPORTED_THING_TYPES_UIDS;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.net.NetworkAddressService;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -21,6 +23,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.bigassfan.internal.handler.BigAssFanHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -30,10 +33,16 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bigassfan")
 public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
 
-    private NetworkAddressService networkAddressService;
+    private final NetworkAddressService networkAddressService;
+
+    @Activate
+    public BigAssFanHandlerFactory(@Reference NetworkAddressService networkAddressService) {
+        this.networkAddressService = networkAddressService;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -41,21 +50,11 @@ public class BigAssFanHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new BigAssFanHandler(thing, networkAddressService.getPrimaryIpv4HostAddress());
         }
         return null;
     }
-
-    @Reference
-    protected void setNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = networkAddressService;
-    }
-
-    protected void unsetNetworkAddressService(NetworkAddressService networkAddressService) {
-        this.networkAddressService = null;
-    }
-
 }

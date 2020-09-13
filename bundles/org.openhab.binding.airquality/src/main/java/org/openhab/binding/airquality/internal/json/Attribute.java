@@ -12,21 +12,30 @@
  */
 package org.openhab.binding.airquality.internal.json;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Attribute representation.
  *
  * @author Łukasz Dywicki - Initial contribution
  */
+@NonNullByDefault
 public class Attribute {
 
-    private String name;
+    private @NonNullByDefault({}) String name;
+    private @Nullable String url;
+    private @Nullable String logo;
+
+    public @Nullable String getUrl() {
+        return url;
+    }
+
+    public @Nullable String getLogo() {
+        return logo;
+    }
 
     public String getName() {
         return name;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
 }

@@ -14,14 +14,18 @@ package org.openhab.binding.robonect.internal.handler;
 
 import static org.openhab.binding.robonect.internal.RobonectBindingConstants.*;
 
+import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -70,12 +74,16 @@ public class RobonectHandler extends BaseThingHandler {
     private ScheduledFuture<?> pollingJob;
 
     private HttpClient httpClient;
+    private TimeZoneProvider timeZoneProvider;
+
+    private ZoneId timeZone;
 
     private RobonectClient robonectClient;
 
-    public RobonectHandler(Thing thing, HttpClient httpClient) {
+    public RobonectHandler(Thing thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.httpClient = httpClient;
+        this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
@@ -249,7 +257,6 @@ public class RobonectHandler extends BaseThingHandler {
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
         }
-
     }
 
     private void clearErrorInfo() {
@@ -277,8 +284,21 @@ public class RobonectHandler extends BaseThingHandler {
     }
 
     private State convertUnixToDateTimeType(String unixTimeSec) {
-        Instant ns = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(ns, ZoneId.of("UTC"));
+        // the value in unixTimeSec represents the time on the robot in its configured timezone. However, it does not
+        // provide which zone this is. Thus we have to add the zone information from the Thing configuration in order to
+        // provide correct results.
+        Instant rawInstant = Instant.ofEpochMilli(Long.valueOf(unixTimeSec) * 1000);
+
+        ZoneId timeZoneOfThing = timeZone;
+        if (timeZoneOfThing == null) {
+            timeZoneOfThing = timeZoneProvider.getTimeZone();
+        }
+        ZoneOffset offsetToConfiguredZone = timeZoneOfThing.getRules().getOffset(rawInstant);
+        long adjustedTime = rawInstant.getEpochSecond() - offsetToConfiguredZone.getTotalSeconds();
+        Instant adjustedInstant = Instant.ofEpochMilli(adjustedTime * 1000);
+
+        // we provide the time in the format as configured in the openHAB settings
+        ZonedDateTime zdt = adjustedInstant.atZone(timeZoneProvider.getTimeZone());
         return new DateTimeType(zdt);
     }
 
@@ -300,8 +320,9 @@ public class RobonectHandler extends BaseThingHandler {
     private void refreshLastErrorInfo() {
         ErrorList errorList = robonectClient.errorList();
         if (errorList.isSuccessful()) {
-            if (errorList.getErrors() != null && errorList.getErrors().size() > 0) {
-                ErrorEntry lastErrorEntry = errorList.getErrors().get(0);
+            List<ErrorEntry> errors = errorList.getErrors();
+            if (errors != null && !errors.isEmpty()) {
+                ErrorEntry lastErrorEntry = errors.get(0);
                 updateLastErrorChannels(lastErrorEntry);
             }
         } else {
@@ -328,6 +349,20 @@ public class RobonectHandler extends BaseThingHandler {
         RobonectConfig robonectConfig = getConfigAs(RobonectConfig.class);
         RobonectEndpoint endpoint = new RobonectEndpoint(robonectConfig.getHost(), robonectConfig.getUser(),
                 robonectConfig.getPassword());
+
+        String timeZoneString = robonectConfig.getTimezone();
+        try {
+            if (timeZoneString != null) {
+                timeZone = ZoneId.of(timeZoneString);
+            } else {
+                logger.warn("No timezone provided, falling back to the default timezone configured in openHAB: '{}'",
+                        timeZoneProvider.getTimeZone());
+            }
+        } catch (DateTimeException e) {
+            logger.warn("Error setting timezone '{}', falling back to the default timezone configured in openHAB: '{}'",
+                    timeZoneString, timeZoneProvider.getTimeZone(), e);
+        }
+
         try {
             httpClient.start();
             robonectClient = new RobonectClient(httpClient, endpoint);
@@ -338,7 +373,6 @@ public class RobonectHandler extends BaseThingHandler {
         Runnable runnable = new MowerChannelPoller(TimeUnit.SECONDS.toMillis(robonectConfig.getOfflineTimeout()));
         int pollInterval = robonectConfig.getPollInterval();
         pollingJob = scheduler.scheduleWithFixedDelay(runnable, 0, pollInterval, TimeUnit.SECONDS);
-
     }
 
     @Override

@@ -33,6 +33,7 @@ public class InsteonBindingConstants {
     public static final String AC_DELAY = "acDelay";
     public static final String BACKLIGHT_DURATION = "backlightDuration";
     public static final String BATTERY_LEVEL = "batteryLevel";
+    public static final String BATTERY_PERCENT = "batteryPercent";
     public static final String BATTERY_WATERMARK_LEVEL = "batteryWatermarkLevel";
     public static final String BEEP = "beep";
     public static final String BOTTOM_OUTLET = "bottomOutlet";
@@ -55,6 +56,10 @@ public class InsteonBindingConstants {
     public static final String FAST_ON_OFF_BUTTON_B = "fastOnOffButtonB";
     public static final String FAST_ON_OFF_BUTTON_C = "fastOnOffButtonC";
     public static final String FAST_ON_OFF_BUTTON_D = "fastOnOffButtonD";
+    public static final String FAST_ON_OFF_BUTTON_E = "fastOnOffButtonE";
+    public static final String FAST_ON_OFF_BUTTON_F = "fastOnOffButtonF";
+    public static final String FAST_ON_OFF_BUTTON_G = "fastOnOffButtonG";
+    public static final String FAST_ON_OFF_BUTTON_H = "fastOnOffButtonH";
     public static final String HEAT_SET_POINT = "heatSetPoint";
     public static final String HUMIDITY = "humidity";
     public static final String HUMIDITY_HIGH = "humidityHigh";
@@ -86,6 +91,10 @@ public class InsteonBindingConstants {
     public static final String MANUAL_CHANGE_BUTTON_B = "manualChangeButtonB";
     public static final String MANUAL_CHANGE_BUTTON_C = "manualChangeButtonC";
     public static final String MANUAL_CHANGE_BUTTON_D = "manualChangeButtonD";
+    public static final String MANUAL_CHANGE_BUTTON_E = "manualChangeButtonE";
+    public static final String MANUAL_CHANGE_BUTTON_F = "manualChangeButtonF";
+    public static final String MANUAL_CHANGE_BUTTON_G = "manualChangeButtonG";
+    public static final String MANUAL_CHANGE_BUTTON_H = "manualChangeButtonH";
     public static final String NOTIFICATION = "notification";
     public static final String ON_LEVEL = "onLevel";
     public static final String RAMP_DIMMER = "rampDimmer";
@@ -94,7 +103,9 @@ public class InsteonBindingConstants {
     public static final String STAGE1_DURATION = "stage1Duration";
     public static final String SWITCH = "switch";
     public static final String SYSTEM_MODE = "systemMode";
+    public static final String TAMPER_SWITCH = "tamperSwitch";
     public static final String TEMPERATURE = "temperature";
+    public static final String TEMPERATURE_LEVEL = "temperatureLevel";
     public static final String TOP_OUTLET = "topOutlet";
     public static final String UPDATE = "update";
     public static final String WATTS = "watts";

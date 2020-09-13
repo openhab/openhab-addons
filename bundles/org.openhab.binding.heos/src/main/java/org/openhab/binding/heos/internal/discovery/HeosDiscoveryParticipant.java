@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.heos.internal.discovery;
 
-import static org.openhab.binding.heos.HeosBindingConstants.*;
-import static org.openhab.binding.heos.internal.resources.HeosConstants.NAME;
+import static org.openhab.binding.heos.internal.HeosBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,12 +24,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.jupnp.model.meta.DeviceDetails;
-import org.jupnp.model.meta.ManufacturerDetails;
 import org.jupnp.model.meta.ModelDetails;
 import org.jupnp.model.meta.RemoteDevice;
+import org.openhab.binding.heos.internal.configuration.BridgeConfiguration;
 import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(service = UpnpDiscoveryParticipant.class, immediate = true, configurationPid = "discovery.heos")
 public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
-
     private final Logger logger = LoggerFactory.getLogger(HeosDiscoveryParticipant.class);
 
     @Override
@@ -57,34 +55,34 @@ public class HeosDiscoveryParticipant implements UpnpDiscoveryParticipant {
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid != null) {
-            Map<String, Object> properties = new HashMap<>(3);
-            properties.put(HOST, device.getIdentity().getDescriptorURL().getHost());
-            properties.put(NAME, device.getDetails().getModelDetails().getModelName());
-            properties.put(PROP_ROLE, PROP_BRIDGE); // Used to hide other bridges if one is already used
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(Thing.PROPERTY_VENDOR, device.getDetails().getManufacturerDetails().getManufacturer());
+            properties.put(Thing.PROPERTY_MODEL_ID, getModel(device.getDetails().getModelDetails()));
+            properties.put(Thing.PROPERTY_SERIAL_NUMBER, device.getDetails().getSerialNumber());
+            properties.put(BridgeConfiguration.IP_ADDRESS, device.getIdentity().getDescriptorURL().getHost());
+            properties.put(PROP_NAME, device.getDetails().getFriendlyName());
             DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
                     .withLabel(" Bridge - " + device.getDetails().getFriendlyName())
-                    .withRepresentationProperty("Device").build();
+                    .withRepresentationProperty(Thing.PROPERTY_VENDOR).build();
             logger.debug("Found HEOS device with UID: {}", uid.getAsString());
             return result;
         }
         return null;
     }
 
+    private String getModel(ModelDetails modelDetails) {
+        return String.format("%s (%s)", modelDetails.getModelName(), modelDetails.getModelNumber());
+    }
+
     @Override
     public @Nullable ThingUID getThingUID(RemoteDevice device) {
-        Optional<RemoteDevice> optDevice = Optional.ofNullable(device);
-        String modelName = optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getModelDetails)
-                .map(ModelDetails::getModelName).orElse("UNKNOWN");
-        String modelManufacturer = optDevice.map(RemoteDevice::getDetails).map(DeviceDetails::getManufacturerDetails)
-                .map(ManufacturerDetails::getManufacturer).orElse("UNKNOWN");
-
-        if (modelManufacturer.equals("Denon")) {
-            if (modelName.startsWith("HEOS") || modelName.endsWith("H")) {
-                String deviceType = device.getType().getType();
-                if (deviceType.startsWith("ACT") || deviceType.startsWith("Aios")) {
-                    return new ThingUID(THING_TYPE_BRIDGE,
-                            optDevice.get().getIdentity().getUdn().getIdentifierString());
-                }
+        DeviceDetails details = device.getDetails();
+        String modelName = details.getModelDetails().getModelName();
+        String modelManufacturer = details.getManufacturerDetails().getManufacturer();
+        if ("Denon".equals(modelManufacturer) && (modelName.startsWith("HEOS") || modelName.endsWith("H"))) {
+            String deviceType = device.getType().getType();
+            if (deviceType.startsWith("ACT") || deviceType.startsWith("Aios")) {
+                return new ThingUID(THING_TYPE_BRIDGE, device.getIdentity().getUdn().getIdentifierString());
             }
         }
         return null;

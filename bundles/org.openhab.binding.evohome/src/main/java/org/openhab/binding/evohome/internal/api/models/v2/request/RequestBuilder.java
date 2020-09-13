@@ -21,5 +21,4 @@ package org.openhab.binding.evohome.internal.api.models.v2.request;
 public interface RequestBuilder<T> {
 
     public T build();
-
 }

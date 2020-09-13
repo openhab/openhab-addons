@@ -8,7 +8,7 @@
 		<label>Smart Meter</label>
 		<description>The Dutch/Belgium Smart Meter (DSMR/e-MUCS)</description>
 
-		<config-description-ref uri="thing-type:dsmr:bridgesettings" />
+		<config-description-ref uri="thing-type:dsmr:bridgesettings"/>
 	</bridge-type>
 
 </thing:thing-descriptions>

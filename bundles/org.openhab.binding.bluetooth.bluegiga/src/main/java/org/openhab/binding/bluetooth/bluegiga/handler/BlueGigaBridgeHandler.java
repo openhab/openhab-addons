@@ -17,13 +17,10 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.ZonedDateTime;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -34,25 +31,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
 import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
-import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.transport.serial.PortInUseException;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
-import org.openhab.binding.bluetooth.BluetoothAdapter;
+import org.openhab.binding.bluetooth.AbstractBluetoothBridgeHandler;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.binding.bluetooth.BluetoothDevice;
-import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
-import org.openhab.binding.bluetooth.BluetoothDeviceListener;
-import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 import org.openhab.binding.bluetooth.bluegiga.BlueGigaAdapterConstants;
 import org.openhab.binding.bluetooth.bluegiga.BlueGigaBluetoothDevice;
 import org.openhab.binding.bluetooth.bluegiga.internal.BlueGigaCommand;
@@ -117,8 +106,8 @@ import org.slf4j.LoggerFactory;
  * @author Pauli Anttila - Many improvements
  */
 @NonNullByDefault
-public class BlueGigaBridgeHandler extends BaseBridgeHandler
-        implements BluetoothAdapter, BlueGigaEventListener, BlueGigaHandlerListener {
+public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGigaBluetoothDevice>
+        implements BlueGigaEventListener, BlueGigaHandlerListener {
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBridgeHandler.class);
 
@@ -159,19 +148,11 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     // Map of open connections
     private final Map<Integer, BluetoothAddress> connections = new ConcurrentHashMap<>();
 
-    // Set of discovery listeners
-    protected final Set<BluetoothDiscoveryListener> discoveryListeners = new CopyOnWriteArraySet<>();
-
-    // List of device listeners
-    protected final ConcurrentHashMap<BluetoothAddress, BluetoothDeviceListener> deviceListeners = new ConcurrentHashMap<>();
-
     private volatile boolean initComplete = false;
 
     private @Nullable ScheduledFuture<?> initTask;
     private @Nullable ScheduledFuture<?> removeInactiveDevicesTask;
     private @Nullable ScheduledFuture<?> discoveryTask;
-
-    private volatile boolean activeScanEnabled = false;
 
     private @Nullable Future<?> passiveScanIdleTimer;
 
@@ -181,18 +162,8 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     }
 
     @Override
-    public ThingUID getUID() {
-        // being a BluetoothAdapter, we use the UID of our bridge
-        return getThing().getUID();
-    }
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // No commands supported for the bridge
-    }
-
-    @Override
     public void initialize() {
+        super.initialize();
         Optional<BlueGigaConfiguration> cfg = Optional.of(getConfigAs(BlueGigaConfiguration.class));
         if (cfg.isPresent()) {
             configuration = cfg.get();
@@ -204,7 +175,12 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void dispose() {
-        stop(true);
+        stop();
+        stopScheduledTasks();
+        if (initTask != null) {
+            initTask.cancel(true);
+        }
+        super.dispose();
     }
 
     private void start() {
@@ -212,7 +188,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             if (!initComplete) {
                 logger.debug("Initialize BlueGiga");
                 logger.debug("Using configuration: {}", configuration);
-                stop(false);
+                stop();
                 if (openSerialPort(configuration.port, 115200)) {
                     serialHandler = Optional.of(new BlueGigaSerialHandler(inputStream.get(), outputStream.get()));
                     transactionManager = Optional.of(new BlueGigaTransactionManager(serialHandler.get(), executor));
@@ -258,7 +234,7 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    private void stop(boolean exit) {
+    private void stop() {
         if (transactionManager.isPresent()) {
             transactionManager.get().removeEventListener(this);
             transactionManager.get().close();
@@ -273,17 +249,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         initComplete = false;
         connections.clear();
         closeSerialPort();
-
-        if (exit) {
-            stopScheduledTasks();
-            if (initTask != null) {
-                initTask.cancel(true);
-            }
-            devices.forEach((address, device) -> {
-                device.dispose();
-            });
-            devices.clear();
-        }
     }
 
     private void schedulePassiveScan() {
@@ -308,8 +273,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
     private void startScheduledTasks() {
         schedulePassiveScan();
         logger.debug("Start scheduled task to remove inactive devices");
-        removeInactiveDevicesTask = scheduler.scheduleWithFixedDelay(this::removeInactiveDevices, 1, 1,
-                TimeUnit.MINUTES);
         discoveryTask = scheduler.scheduleWithFixedDelay(this::refreshDiscoveredDevices, 0, 10, TimeUnit.SECONDS);
     }
 
@@ -323,38 +286,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             discoveryTask.cancel(true);
             discoveryTask = null;
         }
-    }
-
-    private void removeInactiveDevices() {
-        logger.debug("Check inactive devices, count {}", devices.size());
-        devices.forEach((address, device) -> {
-            if (shouldRemove(device)) {
-                logger.debug("Removing device '{}' due to inactivity, last seen: {}", address,
-                        device.getLastSeenTime());
-                device.dispose();
-                devices.remove(address);
-            }
-        });
-    }
-
-    private void refreshDiscoveredDevices() {
-        logger.debug("Refreshing Bluetooth device list...");
-        devices.forEach((address, device) -> {
-            deviceDiscovered(device);
-        });
-    }
-
-    private boolean shouldRemove(BlueGigaBluetoothDevice device) {
-        // we can't remove devices with listeners since that means they have a handler.
-        if (device.hasListeners()) {
-            return false;
-        }
-        // devices that are connected won't receive any scan notifications so we can't remove them for being idle
-        if (device.getConnectionState() == ConnectionState.CONNECTED) {
-            return false;
-        }
-
-        return device.getLastSeenTime().plusMinutes(5).isBefore(ZonedDateTime.now());
     }
 
     private BlueGigaGetConnectionsResponse readMaxConnections() throws BlueGigaException {
@@ -448,24 +379,20 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void scanStart() {
+        super.scanStart();
         logger.debug("Start active scan");
-        activeScanEnabled = true;
         // Stop the passive scan
         cancelScheduledPassiveScan();
         bgEndProcedure();
 
         // Start a active scan
         bgStartScanning(true, configuration.activeScanInterval, configuration.activeScanWindow);
-
-        for (BluetoothDevice device : devices.values()) {
-            deviceDiscovered(device);
-        }
     }
 
     @Override
     public void scanStop() {
+        super.scanStop();
         logger.debug("Stop active scan");
-        activeScanEnabled = false;
 
         // Stop the active scan
         bgEndProcedure();
@@ -484,21 +411,9 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         }
     }
 
-    @SuppressWarnings({ "null", "unused" })
     @Override
-    public BluetoothDevice getDevice(BluetoothAddress address) {
-        BlueGigaBluetoothDevice device = devices.get(address);
-        if (device == null) {
-            // This method always needs to return a device, even if we don't currently know about it.
-            device = new BlueGigaBluetoothDevice(this, address, BluetoothAddressType.UNKNOWN);
-            devices.put(address, device);
-        }
-        return device;
-    }
-
-    @Override
-    public boolean hasDevice(BluetoothAddress address) {
-        return devices.containsKey(address);
+    protected BlueGigaBluetoothDevice createDevice(BluetoothAddress address) {
+        return new BlueGigaBluetoothDevice(this, address, BluetoothAddressType.UNKNOWN);
     }
 
     /**
@@ -563,17 +478,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
             logger.debug("Error occured when sending disconnect command to device {}, reason: {}.", address,
                     e.getMessage());
             return false;
-        }
-    }
-
-    /**
-     * Device discovered. This simply passes the discover information to the discovery service for processing.
-     */
-    public void deviceDiscovered(BluetoothDevice device) {
-        if (configuration.discovery || activeScanEnabled) {
-            for (BluetoothDiscoveryListener listener : discoveryListeners) {
-                listener.deviceDiscovered(device);
-            }
         }
     }
 
@@ -744,7 +648,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
      */
     private <T extends BlueGigaResponse> T sendCommand(BlueGigaCommand command, Class<T> expectedResponse,
             boolean schedulePassiveScan) throws BlueGigaException {
-
         if (!initComplete) {
             throw new BlueGigaException("BlueGiga not initialized");
         }
@@ -793,16 +696,6 @@ public class BlueGigaBridgeHandler extends BaseBridgeHandler
         transactionManager.ifPresent(manager -> {
             manager.removeEventListener(listener);
         });
-    }
-
-    @Override
-    public void addDiscoveryListener(BluetoothDiscoveryListener listener) {
-        discoveryListeners.add(listener);
-    }
-
-    @Override
-    public void removeDiscoveryListener(@Nullable BluetoothDiscoveryListener listener) {
-        discoveryListeners.remove(listener);
     }
 
     @Override

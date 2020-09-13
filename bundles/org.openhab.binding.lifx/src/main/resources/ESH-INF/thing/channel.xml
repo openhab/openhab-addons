@@ -12,7 +12,7 @@
 		<tags>
 			<tag>Lighting</tag>
 		</tags>
-		<config-description-ref uri="channel-type:lifx:brightness" />
+		<config-description-ref uri="channel-type:lifx:brightness"/>
 	</channel-type>
 
 	<channel-type id="color">
@@ -23,7 +23,7 @@
 		<tags>
 			<tag>Lighting</tag>
 		</tags>
-		<config-description-ref uri="channel-type:lifx:color" />
+		<config-description-ref uri="channel-type:lifx:color"/>
 	</channel-type>
 
 	<channel-type id="colorzone" advanced="true">
@@ -47,7 +47,7 @@
 		<label>Temperature</label>
 		<description>Sets the temperature of the light</description>
 		<category>ColorLight</category>
-		<config-description-ref uri="channel-type:lifx:temperature" />
+		<config-description-ref uri="channel-type:lifx:temperature"/>
 	</channel-type>
 
 	<channel-type id="temperaturezone" advanced="true">
@@ -68,7 +68,7 @@
 				<option value="flame">Flame</option>
 			</options>
 		</state>
-		<config-description-ref uri="channel-type:lifx:effect" />
+		<config-description-ref uri="channel-type:lifx:effect"/>
 	</channel-type>
 
 </thing:thing-descriptions>

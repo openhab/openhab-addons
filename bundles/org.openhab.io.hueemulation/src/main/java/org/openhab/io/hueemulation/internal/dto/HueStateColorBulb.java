@@ -124,7 +124,7 @@ public class HueStateColorBulb extends HueStateBulb {
             }
             double hueSat = Math.floor((delta / maxValue) * 254.0d);
             int percentSat = (int) ((100.0d * hueSat) / (MAX_SAT));
-            
+
             int bri = this.bri * 100 / MAX_BRI;
             if (!this.on) {
                 bri = 0;

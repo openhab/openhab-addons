@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Coaster Li - Initial contribution
  * @author Joe Ho - Added Duration Thing parameter
+ * @author Nikita Pogudalov - Added DeviceType for ceiling 1
  */
 public abstract class YeelightHandlerBase extends BaseThingHandler
         implements DeviceConnectionStateListener, DeviceStatusChangeListener {
@@ -73,6 +74,8 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
     private DeviceType getDeviceModel(ThingTypeUID typeUID) {
         if (typeUID.equals(THING_TYPE_CEILING)) {
             return DeviceType.ceiling;
+        } else if (typeUID.equals(THING_TYPE_CEILING1)) {
+            return DeviceType.ceiling1;
         } else if (typeUID.equals(THING_TYPE_CEILING3)) {
             return DeviceType.ceiling3;
         } else if (typeUID.equals(THING_TYPE_CEILING4)) {
@@ -339,6 +342,5 @@ public abstract class YeelightHandlerBase extends BaseThingHandler
         // Duration should not be null, but just in case do a null check.
         return getThing().getConfiguration().get(PARAMETER_DURATION) == null ? 500
                 : ((Number) getThing().getConfiguration().get(PARAMETER_DURATION)).intValue();
-
     }
 }

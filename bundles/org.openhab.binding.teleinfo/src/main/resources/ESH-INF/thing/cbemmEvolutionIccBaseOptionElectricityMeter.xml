@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cbemm_evolution_icc_base_electricitymeter" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialcontroller"/>
+		</supported-bridge-type-refs>
+
+		<label>CBEMM ICC BASE</label>
+		<description>Single-phase Electricity meter with BASE option - CBEMM Evolution ICC (aka "Compteur Bleu Electronique
+			Monophasé Multitarif Evolution ICC")</description>
+
+		<channels>
+			<channel id="isousc" typeId="isouscType"/>
+			<channel id="ptec" typeId="ptecType"/>
+			<channel id="imax" typeId="imaxType"/>
+			<channel id="adps" typeId="adpsType"/>
+			<channel id="papp" typeId="pappType"/>
+			<channel id="iinst" typeId="iinstType"/>
+			<channel id="lastUpdate" typeId="lastUpdateType"/>
+			<channel id="base" typeId="baseType"/>
+		</channels>
+
+		<config-description-ref uri="binding:teleinfo:adco"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>

@@ -23,6 +23,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingRegistry;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.io.console.Console;
 import org.eclipse.smarthome.io.console.extensions.AbstractConsoleCommandExtension;
 import org.eclipse.smarthome.io.console.extensions.ConsoleCommandExtension;
@@ -94,7 +95,7 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
     }
 
     private List<Thing> findDevices(Set<ThingTypeUID> deviceTypes) {
-        List<Thing> devs = new ArrayList<Thing>();
+        List<Thing> devs = new ArrayList<>();
         for (Thing thing : thingRegistry.getAll()) {
             if (deviceTypes.contains(thing.getThingTypeUID())) {
                 devs.add(thing);
@@ -108,9 +109,11 @@ public class MaxConsoleCommandExtension extends AbstractConsoleCommandExtension 
         try {
             ThingUID bridgeUID = new ThingUID(thingId);
             Thing thing = thingRegistry.get(bridgeUID);
-            if ((thing != null) && (thing.getHandler() != null)
-                    && (thing.getHandler() instanceof MaxCubeBridgeHandler)) {
-                handler = (MaxCubeBridgeHandler) thing.getHandler();
+            if (thing != null) {
+                ThingHandler thingHandler = thing.getHandler();
+                if (thingHandler instanceof MaxCubeBridgeHandler) {
+                    handler = (MaxCubeBridgeHandler) thingHandler;
+                }
             }
         } catch (Exception e) {
             handler = null;

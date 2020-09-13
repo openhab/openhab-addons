@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.openhab.binding.digitalstrom.internal.lib.listener.SceneStatusListener;
 import org.openhab.binding.digitalstrom.internal.lib.structure.devices.Device;
 import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.SceneTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link InternalScene} represents a digitalSTROM-Scene for the internal model.
@@ -28,6 +30,7 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.constants.S
  * @author Matthias Siegele - Initial contribution
  */
 public class InternalScene {
+    private final Logger logger = LoggerFactory.getLogger(InternalScene.class);
 
     private final Short sceneID;
     private final Short groupID;
@@ -38,7 +41,7 @@ public class InternalScene {
     private boolean deviceHasChanged = false;
     private String sceneType = SceneTypes.GROUP_SCENE;
 
-    private List<Device> devices = Collections.synchronizedList(new LinkedList<Device>());
+    private List<Device> devices = Collections.synchronizedList(new LinkedList<>());
     private SceneStatusListener listener;
 
     /**
@@ -91,14 +94,13 @@ public class InternalScene {
      * Activates this Scene.
      */
     public void activateScene() {
-        if (!active) {
-            this.active = true;
-            deviceHasChanged = false;
-            informListener();
-            if (this.devices != null) {
-                for (Device device : this.devices) {
-                    device.callInternalScene(this);
-                }
+        logger.debug("activate scene: {}", this.getSceneName());
+        this.active = true;
+        deviceHasChanged = false;
+        informListener();
+        if (this.devices != null) {
+            for (Device device : this.devices) {
+                device.callInternalScene(this);
             }
         }
     }
@@ -107,6 +109,7 @@ public class InternalScene {
      * Deactivates this Scene.
      */
     public void deactivateScene() {
+        logger.debug("deactivate scene: {}", this.getSceneName());
         if (active) {
             this.active = false;
             deviceHasChanged = false;
@@ -123,6 +126,7 @@ public class InternalScene {
      * Will be called by a device, if an undo call of an other scene activated this scene.
      */
     public void activateSceneByDevice() {
+        logger.debug("activate scene by device: {}", this.getSceneName());
         if (!active && !deviceHasChanged) {
             this.active = true;
             deviceHasChanged = false;
@@ -134,6 +138,7 @@ public class InternalScene {
      * Will be called by a device, if an call of an other scene deactivated this scene.
      */
     public void deactivateSceneByDevice() {
+        logger.debug("deactivate scene by device: {}", this.getSceneName());
         if (active) {
             this.active = false;
             deviceHasChanged = false;
@@ -157,8 +162,11 @@ public class InternalScene {
     }
 
     private void informListener() {
+        logger.debug("inform listener: {}", this.getSceneName());
         if (this.listener != null) {
             listener.onSceneStateChanged(this.active);
+        } else {
+            logger.debug("no listener found for scene: {}", this.getSceneName());
         }
     }
 
@@ -230,7 +238,6 @@ public class InternalScene {
      */
     public List<Device> getDeviceList() {
         return this.devices;
-
     }
 
     /**
@@ -329,7 +336,6 @@ public class InternalScene {
         this.listener = listener;
         this.listener.onSceneAdded(this);
         checkDeviceSceneConfig();
-
     }
 
     /**

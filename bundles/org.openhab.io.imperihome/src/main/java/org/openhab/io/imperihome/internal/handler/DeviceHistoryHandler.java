@@ -14,7 +14,9 @@ package org.openhab.io.imperihome.internal.handler;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,8 +94,9 @@ public class DeviceHistoryHandler {
             long end) {
         logger.info("Querying persistence for history of Item {}, from {} to {}", device.getItemName(), start, end);
 
-        FilterCriteria criteria = new FilterCriteria().setItemName(device.getItemName()).setBeginDate(new Date(start))
-                .setEndDate(new Date(end));
+        FilterCriteria criteria = new FilterCriteria().setItemName(device.getItemName())
+                .setBeginDate(ZonedDateTime.ofInstant(Instant.ofEpochMilli(start), ZoneId.systemDefault()))
+                .setEndDate(ZonedDateTime.ofInstant(Instant.ofEpochMilli(end), ZoneId.systemDefault()));
 
         List<HistoryItem> resultItems = new LinkedList<>();
         Iterable<HistoricItem> historicItems = persistence.query(criteria);
@@ -119,5 +122,4 @@ public class DeviceHistoryHandler {
 
         return new HistoryList(resultItems);
     }
-
 }

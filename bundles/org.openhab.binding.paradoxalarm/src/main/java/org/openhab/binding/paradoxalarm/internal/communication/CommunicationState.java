@@ -16,10 +16,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderMessageType;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.IpMessagesConstants;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
+import org.openhab.binding.paradoxalarm.internal.model.ParadoxPanel;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Konstantin Polihronov - Initial contribution
  */
-public enum CommunicationState {
+public enum CommunicationState implements IResponseReceiver {
     START {
 
         @Override
@@ -41,26 +44,24 @@ public enum CommunicationState {
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
             String password = communicator.getPassword();
             logger.debug("Phase {}", this);
-            ParadoxIPPacket packet = new ParadoxIPPacket(password, false)
+            if (communicator.isEncrypted()) {
+                EncryptionHandler.getInstance().updateKey(ParadoxUtil.getBytesFromString(password));
+            }
+            ParadoxIPPacket packet = new ParadoxIPPacket(ParadoxUtil.getBytesFromString(password), false)
                     .setCommand(HeaderCommand.CONNECT_TO_IP_MODULE);
-            sendPacket(communicator, packet);
+            sendLogonPhasePacket(communicator, packet);
         }
 
         @Override
         protected boolean isPhaseSuccess(IResponse response) {
-            byte[] loginPacketResponse = response.getPayload();
+            byte payloadResponseByte = response.getPayload()[0];
+            if (payloadResponseByte == 0x00) {
+                logger.info("Login - Login to IP150 - OK");
+                return true;
+            }
 
-            byte payloadResponseByte = loginPacketResponse[16];
-
-            byte headerResponseByte = loginPacketResponse[4];
+            byte headerResponseByte = response.getHeader()[4];
             switch (headerResponseByte) {
-                case 0x38:
-                case 0x39:
-                    if (payloadResponseByte == 0x00) {
-                        logger.info("Login - Login to IP150 - OK");
-                        return true;
-                    }
-                    break;
                 case 0x30:
                     logger.warn("Login - Login to IP150 failed - Incorrect password");
                     break;
@@ -84,6 +85,20 @@ public enum CommunicationState {
             return false;
         }
 
+        @Override
+        public void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator) {
+            if (isPhaseSuccess(response)) {
+                // Retrieve new encryption key from first packet response and update it in encryption handler
+                if (communicator.isEncrypted()) {
+                    byte[] payload = response.getPayload();
+                    byte[] receivedKey = Arrays.copyOfRange(payload, 1, 17);
+                    EncryptionHandler.getInstance().updateKey(receivedKey);
+                }
+
+                logger.debug("Phase {} completed successfully.", this);
+                nextState().runPhase(communicator);
+            }
+        }
     },
     STEP2 {
 
@@ -97,9 +112,8 @@ public enum CommunicationState {
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(ParadoxIPPacket.EMPTY_PAYLOAD, false)
                     .setCommand(HeaderCommand.LOGIN_COMMAND1);
-            sendPacket(communicator, packet);
+            sendLogonPhasePacket(communicator, packet);
         }
-
     },
     STEP3 {
 
@@ -113,9 +127,8 @@ public enum CommunicationState {
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(ParadoxIPPacket.EMPTY_PAYLOAD, false)
                     .setCommand(HeaderCommand.LOGIN_COMMAND2);
-            sendPacket(communicator, packet);
+            sendLogonPhasePacket(communicator, packet);
         }
-
     },
     STEP4 {
 
@@ -131,15 +144,14 @@ public enum CommunicationState {
             message4[0] = 0x72;
             ParadoxIPPacket packet = new ParadoxIPPacket(message4, true)
                     .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
-            sendPacket(communicator, packet);
+            sendLogonPhasePacket(communicator, packet);
         }
 
         @Override
-        protected void receiveResponse(IParadoxInitialLoginCommunicator communicator, IResponse response) {
-            byte[] receivedPacket = response.getPayload();
-            if (receivedPacket != null && receivedPacket.length >= 53) {
-                byte[] panelInfoBytes = Arrays.copyOfRange(receivedPacket, 16, 53);
-                communicator.setPanelInfoBytes(panelInfoBytes);
+        public void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator) {
+            byte[] payload = response.getPayload();
+            if (payload != null && payload.length >= 37) {
+                communicator.setPanelInfoBytes(payload);
                 logger.debug("Phase {} completed successfully.", this);
                 nextState().runPhase(communicator);
             } else {
@@ -147,7 +159,6 @@ public enum CommunicationState {
                 LOGOUT.runPhase(communicator);
             }
         }
-
     },
     STEP5 {
 
@@ -161,9 +172,8 @@ public enum CommunicationState {
             logger.debug("Phase {}", this);
             ParadoxIPPacket packet = new ParadoxIPPacket(IpMessagesConstants.UNKNOWN_IP150_REQUEST_MESSAGE01, false)
                     .setCommand(HeaderCommand.SERIAL_CONNECTION_INITIATED);
-            sendPacket(communicator, packet);
+            sendLogonPhasePacket(communicator, packet);
         }
-
     },
     STEP6 {
 
@@ -180,18 +190,16 @@ public enum CommunicationState {
             message6[1] = 0x20;
             ParadoxIPPacket packet = new ParadoxIPPacket(message6, true)
                     .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST);
-            sendPacket(communicator, packet);
+            sendLogonPhasePacket(communicator, packet);
         }
 
         @Override
-        protected void receiveResponse(IParadoxInitialLoginCommunicator communicator, IResponse response) {
+        public void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator) {
             byte[] payload = response.getPayload();
-            byte[] initializationMessage = Arrays.copyOfRange(payload, 16, payload.length);
-            ParadoxUtil.printPacket("Init communication sub array: ", initializationMessage);
+            ParadoxUtil.printPacket("Init communication sub array: ", payload);
             logger.debug("Phase {} completed successfully.", this);
-            nextState().runPhase(communicator, initializationMessage);
+            nextState().runPhase(communicator, payload);
         }
-
     },
     STEP7 {
 
@@ -209,7 +217,7 @@ public enum CommunicationState {
                         communicator.getPcPasswordBytes());
                 ParadoxIPPacket packet = new ParadoxIPPacket(message7, true)
                         .setMessageType(HeaderMessageType.SERIAL_PASSTHRU_REQUEST).setUnknown0((byte) 0x14);
-                sendPacket(communicator, packet);
+                sendLogonPhasePacket(communicator, packet);
             } else {
                 logger.error("Error in step {}. Missing argument {}", this, args);
                 throw new IllegalArgumentException(
@@ -247,13 +255,13 @@ public enum CommunicationState {
                     pcPassword[0], pcPassword[1],
 
                     // Modem speed
-                    0x0A,
+                    0x08,
 
                     // Winload type ID
                     0x30,
 
-                    // User code (for some reason Winload sends user code 021000)
-                    0x02, 0x10, 0x00,
+                    // User code (aligned with PAI)
+                    0x02, 0x02, 0x00,
 
                     // Module serial number
                     initializationMessage[17], initializationMessage[18], initializationMessage[19],
@@ -267,8 +275,8 @@ public enum CommunicationState {
                     // Not used
                     0x00, 0x00, 0x00, 0x00,
 
-                    // Source ID (0x02 = Winload through IP)
-                    0x02,
+                    // Source ID
+                    0x00,
 
                     // Carrier length
                     0x00,
@@ -279,7 +287,7 @@ public enum CommunicationState {
         }
 
         @Override
-        protected void receiveResponse(IParadoxInitialLoginCommunicator communicator, IResponse response) {
+        public void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator) {
             // UGLY - this is the handling of ghost packet which appears after the logon sequence
             // Read ghost packet affter 300ms then continue with normal flow
             communicator.getScheduler().schedule(() -> {
@@ -294,11 +302,10 @@ public enum CommunicationState {
                         logger.debug("Error reading ghost packet.", e);
                     }
 
-                    super.receiveResponse(communicator, response);
+                    super.receiveResponse(response, communicator);
                 }
             }, 300, TimeUnit.MILLISECONDS);
         }
-
     },
     INITIALIZE_DATA {
 
@@ -313,9 +320,8 @@ public enum CommunicationState {
                 IParadoxCommunicator comm = (IParadoxCommunicator) communicator;
                 comm.initializeData();
             }
-            ONLINE.runPhase(communicator);
+            nextState().runPhase(communicator);
         }
-
     },
     ONLINE {
 
@@ -330,7 +336,6 @@ public enum CommunicationState {
             communicator.setOnline(true);
             logger.info("Successfully established communication with the panel.");
         }
-
     },
     LOGOUT {
 
@@ -350,7 +355,6 @@ public enum CommunicationState {
             // sendPacket(communicator, logoutPacket);
             nextState().runPhase(communicator);
         }
-
     },
     OFFLINE {
 
@@ -361,10 +365,11 @@ public enum CommunicationState {
 
         @Override
         protected void runPhase(IParadoxInitialLoginCommunicator communicator, Object... args) {
-            communicator.close();
-            communicator.setOnline(false);
+            if (communicator != null) {
+                communicator.close();
+            }
+            ParadoxPanel.getInstance().dispose();
         }
-
     };
 
     protected final Logger logger = LoggerFactory.getLogger(CommunicationState.class);
@@ -389,12 +394,13 @@ public enum CommunicationState {
         runPhase(communicator, new Object[0]);
     }
 
-    protected void sendPacket(IParadoxInitialLoginCommunicator communicator, ParadoxIPPacket packet) {
+    protected void sendLogonPhasePacket(IParadoxInitialLoginCommunicator communicator, IPPacket packet) {
         IRequest request = new LogonRequest(this, packet);
         communicator.submitRequest(request);
     }
 
-    protected void receiveResponse(IParadoxInitialLoginCommunicator communicator, IResponse response) {
+    @Override
+    public void receiveResponse(IResponse response, IParadoxInitialLoginCommunicator communicator) {
         if (isPhaseSuccess(response)) {
             logger.debug("Phase {} completed successfully.", this);
             nextState().runPhase(communicator);

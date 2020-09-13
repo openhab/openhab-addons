@@ -10,14 +10,14 @@
 	<!-- -->
 	<thing-type id="vshutter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="klf200" />
+			<bridge-type-ref id="klf200"/>
 		</supported-bridge-type-refs>
 		<label>@text/thing-type.velux.vshutter.label</label>
 		<description>@text/thing-type.velux.vshutter.description</description>
 		<category>Blinds</category>
 		<channels>
-			<channel id="position" typeId="position" />
+			<channel id="position" typeId="position"/>
 		</channels>
-		<config-description-ref uri="thing-type:velux:vshutter" />
+		<config-description-ref uri="thing-type:velux:vshutter"/>
 	</thing-type>
 </thing:thing-descriptions>

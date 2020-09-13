@@ -187,5 +187,4 @@ public abstract class SatelStateThingHandler extends SatelThingHandler {
     protected boolean requiresRefresh() {
         return requiresRefresh.getAndSet(false);
     }
-
 }

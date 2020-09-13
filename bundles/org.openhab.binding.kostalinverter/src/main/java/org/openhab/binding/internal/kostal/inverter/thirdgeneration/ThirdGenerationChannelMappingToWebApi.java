@@ -28,10 +28,10 @@ class ThirdGenerationChannelMappingToWebApi {
     /**
      * Constructor of {@link ThirdGenerationChannelMappingToWebApi}
      *
-     * @param channelUID    The channel UUID
-     * @param moduleId      module id (as defined by the web api)
+     * @param channelUID The channel UUID
+     * @param moduleId module id (as defined by the web api)
      * @param processdataId process data id (as defined by the web api)
-     * @param dataType      data type of this channel
+     * @param dataType data type of this channel
      */
     ThirdGenerationChannelMappingToWebApi(String channelUID, String moduleId, String processdataId,
             ThirdGenerationChannelDatatypes dataType) {

@@ -115,7 +115,6 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
      * @param retryCount The current number of retries
      */
     protected void retryHook(int retryCount) {
-
     }
 
     @Override
@@ -138,7 +137,6 @@ public abstract class ConnectorBase<T> implements IMeterReaderConnector<T> {
         } else {
             return result;
         }
-
     }
 
     /**

@@ -28,5 +28,4 @@ public class DeviceParameters extends HashMap<ParamType, DeviceParam> {
     public void set(DeviceParam param) {
         put(param.getKey(), param);
     }
-
 }

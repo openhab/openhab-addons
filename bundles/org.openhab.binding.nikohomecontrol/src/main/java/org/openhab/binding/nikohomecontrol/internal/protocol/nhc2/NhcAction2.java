@@ -88,14 +88,19 @@ public class NhcAction2 extends NhcAction {
      * Sets state of action. This version is used for Niko Home Control II.
      *
      * @param state - The allowed values depend on the action type.
-     *                  switch action: 0 or 100
-     *                  dimmer action: between 0 and 100
-     *                  rollershutter action: between 0 and 100
+     *            switch action: 0 or 100
+     *            dimmer action: between 0 and 100
+     *            rollershutter action: between 0 and 100
      */
     @Override
     public void setState(int state) {
         this.state = state;
-        if (booleanState) { // only send the update to the event handler if on
+        if (getType().equals(ActionType.DIMMER)) { // for dimmers, only send the update to the event
+                                                   // handler if on
+            if (booleanState) {
+                updateState();
+            }
+        } else {
             updateState();
         }
     }
@@ -104,9 +109,9 @@ public class NhcAction2 extends NhcAction {
      * Sends action to Niko Home Control. This version is used for Niko Home Control II, that has extra status options.
      *
      * @param command - The allowed values depend on the action type.
-     *                    switch action: On or Off
-     *                    dimmer action: between 0 and 100, On or Off
-     *                    rollershutter action: between 0 and 100, Up, Down or Stop
+     *            switch action: On or Off
+     *            dimmer action: between 0 and 100, On or Off
+     *            rollershutter action: between 0 and 100, Up, Down or Stop
      */
     @Override
     public void execute(String command) {

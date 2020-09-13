@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 
 /**
  * A factory t
@@ -52,11 +53,14 @@ public class ValueFactory {
             case MqttBindingConstants.DIMMER:
                 value = new PercentageValue(config.min, config.max, config.step, config.on, config.off);
                 break;
-            case MqttBindingConstants.COLOR_RGB:
-                value = new ColorValue(true, config.on, config.off, config.onBrightness);
-                break;
             case MqttBindingConstants.COLOR_HSB:
-                value = new ColorValue(false, config.on, config.off, config.onBrightness);
+                value = new ColorValue(ColorMode.HSB, config.on, config.off, config.onBrightness);
+                break;
+            case MqttBindingConstants.COLOR_RGB:
+                value = new ColorValue(ColorMode.RGB, config.on, config.off, config.onBrightness);
+                break;
+            case MqttBindingConstants.COLOR:
+                value = new ColorValue(ColorMode.valueOf(config.colorMode), config.on, config.off, config.onBrightness);
                 break;
             case MqttBindingConstants.SWITCH:
                 value = new OnOffValue(config.on, config.off);
@@ -67,10 +71,13 @@ public class ValueFactory {
             case MqttBindingConstants.ROLLERSHUTTER:
                 value = new RollershutterValue(config.on, config.off, config.stop);
                 break;
+            case MqttBindingConstants.TRIGGER:
+                config.trigger = true;
+                value = new TextValue();
+                break;
             default:
                 throw new IllegalArgumentException("ChannelTypeUID not recognised: " + channelTypeID);
         }
         return value;
     }
-
 }

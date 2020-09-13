@@ -15,7 +15,11 @@ package org.openhab.binding.onewire.test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_OWSERVER;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,7 +76,7 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
     @NonNullByDefault({})
     protected OwserverBridgeHandler secondBridgeHandler;
 
-    protected List<Channel> channels = new ArrayList<Channel>();
+    protected List<Channel> channels = new ArrayList<>();
 
     protected @Nullable Bridge bridge;
     protected @Nullable Thing thing;

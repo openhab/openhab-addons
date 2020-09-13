@@ -35,5 +35,4 @@ public interface HomematicTypeGenerator {
      * different datapoints which may cause warnings in the logfile.
      */
     public void validateFirmwares();
-
 }

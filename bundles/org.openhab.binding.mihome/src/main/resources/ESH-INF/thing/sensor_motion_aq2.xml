@@ -6,19 +6,19 @@
 
 	<thing-type id="sensor_motion_aq2">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Xiaomi Aqara Motion Sensor</label>
 		<description>Sensor that detects movement. Also called Occupancy Sensor or Human Body Sensor. After it detects motion,
 			it goes to sleep for 1 minute.</description>
 		<channels>
-			<channel id="motion" typeId="motion" />
-			<channel id="illumination" typeId="illumination" />
-			<channel id="motionOffTimer" typeId="motionOffTimer" />
-			<channel id="lastMotion" typeId="lastMotion" />
-			<channel id="batteryLevel" typeId="system.battery-level" />
-			<channel id="lowBattery" typeId="system.low-battery" />
+			<channel id="motion" typeId="motion"/>
+			<channel id="illumination" typeId="illumination"/>
+			<channel id="motionOffTimer" typeId="motionOffTimer"/>
+			<channel id="lastMotion" typeId="lastMotion"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
 		</channels>
-		<config-description-ref uri="thing-type:mihome:device" />
+		<config-description-ref uri="thing-type:mihome:device"/>
 	</thing-type>
 </thing:thing-descriptions>

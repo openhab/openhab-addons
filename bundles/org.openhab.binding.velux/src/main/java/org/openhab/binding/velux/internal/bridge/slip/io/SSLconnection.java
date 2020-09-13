@@ -254,5 +254,4 @@ class SSLconnection {
         logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
         ioTimeoutMSecs = timeoutMSecs;
     }
-
 }

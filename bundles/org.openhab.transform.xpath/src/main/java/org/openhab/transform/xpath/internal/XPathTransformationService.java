@@ -81,5 +81,4 @@ public class XPathTransformationService implements TransformationService {
             }
         }
     }
-
 }

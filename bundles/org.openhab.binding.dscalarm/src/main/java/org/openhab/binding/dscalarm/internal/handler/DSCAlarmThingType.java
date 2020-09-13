@@ -73,5 +73,4 @@ public enum DSCAlarmThingType {
         }
         return labelToDSCAlarmThingType.get(label);
     }
-
 }

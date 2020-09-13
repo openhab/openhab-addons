@@ -12,8 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal.dto;
 
-import org.openhab.io.hueemulation.internal.dto.changerequest.HueCommand;
 import org.openhab.io.hueemulation.internal.dto.changerequest.HueChangeScheduleEntry;
+import org.openhab.io.hueemulation.internal.dto.changerequest.HueCommand;
 
 /**
  * Hue API scan result object.

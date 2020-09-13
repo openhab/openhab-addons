@@ -31,7 +31,7 @@
 				"property": "battery",
 				"friendlyName": "Battery",
 				"channel": "battery",
-				"channelType":"system:battery-level",
+				"channelType": "system:battery-level",
 				"type": "Number",
 				"refresh": true,
 				"ChannelGroup": "Status",

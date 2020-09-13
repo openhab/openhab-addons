@@ -12,17 +12,19 @@
  */
 package org.openhab.binding.astro.internal.job;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This class contains the default methods required for different jobs
  *
  * @author Amit Kumar Mondal - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractJob implements Job {
 
     private final String thingUID;
 
     public AbstractJob(String thingUID) {
-        checkArgument(thingUID != null, "The thingUID must not be null");
         this.thingUID = thingUID;
     }
 
@@ -44,5 +46,4 @@ public abstract class AbstractJob implements Job {
             throw new IllegalArgumentException(errorMessage);
         }
     }
-
 }

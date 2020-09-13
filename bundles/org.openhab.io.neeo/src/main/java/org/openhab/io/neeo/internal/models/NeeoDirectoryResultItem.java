@@ -121,5 +121,4 @@ public class NeeoDirectoryResultItem {
         return "NeeoDiscoveryListResultItem [title=" + title + ", thumbnailUri=" + thumbnailUri + ", browseIdentifier="
                 + browseIdentifier + ", actionIdentifier=" + actionIdentifier + ", isQueueable=" + isQueueable + "]";
     }
-
 }

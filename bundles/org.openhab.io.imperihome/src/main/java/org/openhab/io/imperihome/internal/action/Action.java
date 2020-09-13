@@ -52,5 +52,4 @@ public abstract class Action {
      * @param value Action parameter value.
      */
     public abstract void perform(AbstractDevice device, Item item, String value);
-
 }

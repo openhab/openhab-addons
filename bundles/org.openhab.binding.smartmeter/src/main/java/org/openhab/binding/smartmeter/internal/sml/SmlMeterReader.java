@@ -134,7 +134,6 @@ public final class SmlMeterReader extends MeterDevice<SmlFile> {
                     addObisCache(smlValue);
                 }
             }
-
         } else {
             logger.warn("{}: no valid SML messages list retrieved.", this.toString());
         }

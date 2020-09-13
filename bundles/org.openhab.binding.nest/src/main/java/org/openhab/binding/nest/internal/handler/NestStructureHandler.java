@@ -125,5 +125,4 @@ public class NestStructureHandler extends NestBaseHandler<Structure> {
             updateStatus(ThingStatus.ONLINE);
         }
     }
-
 }

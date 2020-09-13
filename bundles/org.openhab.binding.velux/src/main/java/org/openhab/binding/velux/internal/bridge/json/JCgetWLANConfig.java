@@ -47,7 +47,8 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
      */
 
     /**
-     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge JsonVeluxBridge}
+     * Bridge I/O Request message used by {@link org.openhab.binding.velux.internal.bridge.json.JsonVeluxBridge
+     * JsonVeluxBridge}
      * for serializing.
      * <P>
      * Resulting JSON:
@@ -67,7 +68,7 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
 
         public Request() {
             this.action = "wifi";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 
@@ -180,5 +181,4 @@ class JCgetWLANConfig extends GetWLANConfig implements JsonBridgeCommunicationPr
         VeluxGwWLAN gwWLAN = new VeluxGwWLAN(response.data.name, response.data.password);
         return gwWLAN;
     }
-
 }

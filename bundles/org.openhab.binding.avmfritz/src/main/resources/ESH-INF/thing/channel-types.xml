@@ -5,11 +5,42 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Channel definitions of FRITZ!Box -->
+	<channel-type id="incoming_call">
+		<item-type>Call</item-type>
+		<label>Incoming Call</label>
+		<description>Details about incoming call.</description>
+		<state pattern="%1$s to %2$s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="outgoing_call">
+		<item-type>Call</item-type>
+		<label>Outgoing Call</label>
+		<description>Details about outgoing call.</description>
+		<state pattern="%1$s to %2$s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="active_call">
+		<item-type>Call</item-type>
+		<label>Active Call</label>
+		<description>Details about active call.</description>
+		<state pattern="%1$s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="call_state">
+		<item-type>String</item-type>
+		<label>Call State</label>
+		<description>Details about current call state.</description>
+		<state readOnly="true">
+			<options>
+				<option value="IDLE">Idle</option>
+				<option value="RINGING">Ringing</option>
+				<option value="DIALING">Dialing</option>
+				<option value="ACTIVE">Active</option>
+			</options>
+		</state>
+	</channel-type>
 	<channel-type id="apply_template" advanced="true">
 		<item-type>String</item-type>
 		<label>Apply Template</label>
 		<description>Apply template for device(s).</description>
-		<state pattern="%s" />
+		<state pattern="%s"/>
 	</channel-type>
 
 	<!-- Channel definitions of all FRITZ! devices -->
@@ -31,7 +62,7 @@
 		<label>Device Locked (external)</label>
 		<description>Device is locked for switching over external sources.</description>
 		<category>Contact</category>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="device_locked" advanced="true">
@@ -39,7 +70,7 @@
 		<label>Locked (manual)</label>
 		<description>Device is locked for switching by pressing the button on the device.</description>
 		<category>Contact</category>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 	<!-- Channel definitions of specific FRITZ! devices -->
@@ -48,9 +79,9 @@
 		<label>Current Temperature</label>
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 
-		<config-description-ref uri="channel-type:avmfritz:temperature" />
+		<config-description-ref uri="channel-type:avmfritz:temperature"/>
 	</channel-type>
 
 	<channel-type id="energy">
@@ -58,7 +89,7 @@
 		<label>Energy Consumption</label>
 		<description>Accumulated energy consumption.</description>
 		<category>Energy</category>
-		<state pattern="%.3f kWh" readOnly="true" />
+		<state pattern="%.3f kWh" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="power">
@@ -66,7 +97,7 @@
 		<label>Power</label>
 		<description>Current power consumption.</description>
 		<category>Energy</category>
-		<state pattern="%.2f %unit%" readOnly="true" />
+		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="voltage">
@@ -74,7 +105,7 @@
 		<label>Voltage</label>
 		<description>Current voltage.</description>
 		<category>Energy</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="outlet">
@@ -89,7 +120,7 @@
 		<label>Current Temperature</label>
 		<description>Current measured temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="set_temp">
@@ -97,7 +128,7 @@
 		<label>Setpoint Temperature</label>
 		<description>Thermostat Setpoint temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" />
+		<state pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="eco_temp">
@@ -105,7 +136,7 @@
 		<label>Eco Temperature</label>
 		<description>Thermostat Eco temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="comfort_temp">
@@ -113,7 +144,7 @@
 		<label>Comfort Temperature</label>
 		<description>Thermostat Comfort temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="radiator_mode">
@@ -127,7 +158,7 @@
 				<option value="COMFORT">Comfort</option>
 				<option value="ECO">Eco</option>
 				<option value="BOOST">Boost</option>
-				<option value="WINDOW_OPEN">Window open</option>
+				<option value="WINDOW_OPEN">Window Open</option>
 			</options>
 		</state>
 	</channel-type>
@@ -137,7 +168,7 @@
 		<label>Next Setpoint Change</label>
 		<description>Next change of Setpoint Temperature.</description>
 		<category>Time</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="next_temp" advanced="true">
@@ -145,7 +176,7 @@
 		<label>Next Setpoint Temperature</label>
 		<description>Next Setpoint Temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true" />
+		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="contact_state">
@@ -153,7 +184,7 @@
 		<label>Contact State</label>
 		<description>Contact state information (OPEN/CLOSED).</description>
 		<category>Contact</category>
-		<state pattern="%s" readOnly="true" />
+		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="last_change">
@@ -161,6 +192,6 @@
 		<label>Last Change</label>
 		<description>States the last time the button was pressed.</description>
 		<category>Time</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -73,11 +74,11 @@ public class Msg {
     }
 
     // has the structure of all known messages
-    private static final HashMap<String, @Nullable Msg> MSG_MAP = new HashMap<String, @Nullable Msg>();
+    private static final Map<String, @Nullable Msg> MSG_MAP = new HashMap<>();
     // maps between command number and the length of the header
-    private static final HashMap<Integer, @Nullable Integer> HEADER_MAP = new HashMap<Integer, @Nullable Integer>();
+    private static final Map<Integer, @Nullable Integer> HEADER_MAP = new HashMap<>();
     // has templates for all message from modem to host
-    private static final HashMap<Integer, @Nullable Msg> REPLY_MAP = new HashMap<Integer, @Nullable Msg>();
+    private static final Map<Integer, @Nullable Msg> REPLY_MAP = new HashMap<>();
 
     private int headerLength = -1;
     private byte @Nullable [] data = null;
@@ -478,7 +479,7 @@ public class Msg {
                 return f1.getOffset() - f2.getOffset();
             }
         };
-        TreeSet<@Nullable Field> fields = new TreeSet<@Nullable Field>(cmp);
+        TreeSet<@Nullable Field> fields = new TreeSet<>(cmp);
         for (@Nullable
         Field f : definition.getFields().values()) {
             fields.add(f);
@@ -535,7 +536,7 @@ public class Msg {
      * @return the length of the header to expect
      */
     public static int getHeaderLength(byte cmd) {
-        Integer len = HEADER_MAP.get(new Integer(cmd));
+        Integer len = HEADER_MAP.get((int) cmd);
         if (len == null) {
             return (-1); // not found
         }
@@ -602,7 +603,7 @@ public class Msg {
     private static void buildHeaderMap() {
         for (Msg m : MSG_MAP.values()) {
             if (m.getDirection() == Direction.FROM_MODEM) {
-                HEADER_MAP.put(new Integer(m.getCommandNumber()), m.getHeaderLength());
+                HEADER_MAP.put((int) m.getCommandNumber(), m.getHeaderLength());
             }
         }
     }
@@ -610,7 +611,7 @@ public class Msg {
     private static void buildLengthMap() {
         for (Msg m : MSG_MAP.values()) {
             if (m.getDirection() == Direction.FROM_MODEM) {
-                Integer key = new Integer(cmdToKey(m.getCommandNumber(), m.isExtended()));
+                int key = cmdToKey(m.getCommandNumber(), m.isExtended());
                 REPLY_MAP.put(key, m);
             }
         }

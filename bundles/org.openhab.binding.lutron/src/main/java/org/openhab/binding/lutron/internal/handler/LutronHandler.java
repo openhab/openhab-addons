@@ -30,7 +30,8 @@ import org.slf4j.LoggerFactory;
  * Base type for all Lutron thing handlers.
  *
  * @author Allan Tong - Initial contribution
- * @author Bob Adair - Added methods for status and state management
+ * @author Bob Adair - Added additional commands and methods for status and state management
+ *
  */
 @NonNullByDefault
 public abstract class LutronHandler extends BaseThingHandler {
@@ -108,6 +109,16 @@ public abstract class LutronHandler extends BaseThingHandler {
         sendCommand(new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.MODE, getIntegrationId(), parameters));
     }
 
+    protected void sysvar(Object... parameters) {
+        sendCommand(
+                new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.SYSVAR, getIntegrationId(), parameters));
+    }
+
+    protected void shadegrp(Object... parameters) {
+        sendCommand(
+                new LutronCommand(LutronOperation.EXECUTE, LutronCommandType.SHADEGRP, getIntegrationId(), parameters));
+    }
+
     protected void queryOutput(Object... parameters) {
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.OUTPUT, getIntegrationId(), parameters));
     }
@@ -125,4 +136,12 @@ public abstract class LutronHandler extends BaseThingHandler {
         sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.MODE, getIntegrationId(), parameters));
     }
 
+    protected void querySysvar(Object... parameters) {
+        sendCommand(new LutronCommand(LutronOperation.QUERY, LutronCommandType.SYSVAR, getIntegrationId(), parameters));
+    }
+
+    protected void queryShadegrp(Object... parameters) {
+        sendCommand(
+                new LutronCommand(LutronOperation.QUERY, LutronCommandType.SHADEGRP, getIntegrationId(), parameters));
+    }
 }

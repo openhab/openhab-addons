@@ -42,5 +42,4 @@ public class PowerSavingTime {
     public void setMinute(int minute) {
         this.minute = minute;
     }
-
 }

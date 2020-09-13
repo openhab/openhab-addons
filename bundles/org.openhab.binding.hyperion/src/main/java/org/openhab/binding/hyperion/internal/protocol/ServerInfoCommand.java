@@ -25,5 +25,4 @@ public class ServerInfoCommand extends HyperionCommand {
     public ServerInfoCommand() {
         super(NAME);
     }
-
 }

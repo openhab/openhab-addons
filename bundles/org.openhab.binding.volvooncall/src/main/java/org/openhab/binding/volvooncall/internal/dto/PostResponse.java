@@ -13,7 +13,6 @@
 package org.openhab.binding.volvooncall.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -24,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class PostResponse {
+public class PostResponse extends VocAnswer {
 
     public static enum Status {
         @SerializedName("Started")
@@ -45,8 +44,6 @@ public class PostResponse {
     }
 
     public @NonNullByDefault({}) Status status;
-    public @Nullable String errorLabel;
-    public @NonNullByDefault({}) String errorDescription;
     public @NonNullByDefault({}) String vehicleId;
     @SerializedName("service")
     public @NonNullByDefault({}) String serviceURL;

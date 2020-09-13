@@ -12,82 +12,89 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.smarthome.core.items.ItemRegistry;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
-import io.github.hapjava.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.accessories.BasicWindowCovering;
-import io.github.hapjava.accessories.properties.WindowCoveringPositionState;
+import io.github.hapjava.accessories.WindowCoveringAccessory;
+import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
+import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
+import io.github.hapjava.services.impl.WindowCoveringService;
 
 /**
  *
  * @author epike - Initial contribution
  */
-public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl<RollershutterItem>
-        implements BasicWindowCovering {
+@NonNullByDefault
+public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryImpl implements WindowCoveringAccessory {
 
-    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, ItemRegistry itemRegistry,
-            HomekitAccessoryUpdater updater) {
-        super(taggedItem, itemRegistry, updater, RollershutterItem.class);
+    public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, updater, settings);
+        getServices().add(new WindowCoveringService(this));
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Integer> getCurrentPosition() {
-        PercentType value = getItem().getStateAs(PercentType.class);
-        if (value == null) {
-            return CompletableFuture.completedFuture(null);
-        }
-        return CompletableFuture.completedFuture(100 - value.intValue());
+        return super.getCurrentPosition();
     }
 
     @Override
-    public CompletableFuture<WindowCoveringPositionState> getPositionState() {
-        return CompletableFuture.completedFuture(WindowCoveringPositionState.STOPPED);
+    @NonNullByDefault({})
+    public CompletableFuture<PositionStateEnum> getPositionState() {
+        return super.getPositionState();
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Integer> getTargetPosition() {
-        return getCurrentPosition();
+        return super.getTargetPosition();
     }
 
     @Override
-    public CompletableFuture<Void> setTargetPosition(int value) throws Exception {
-        ((RollershutterItem) getItem()).send(new PercentType(100 - value));
-        return CompletableFuture.completedFuture(null);
+    @NonNullByDefault({})
+    public CompletableFuture<Void> setTargetPosition(int value) {
+        return super.setTargetPosition(value);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribeCurrentPosition(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), callback);
+        super.subscribeCurrentPosition(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribePositionState(HomekitCharacteristicChangeCallback callback) {
-        // Not implemented
+        super.subscribePositionState(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribeTargetPosition(HomekitCharacteristicChangeCallback callback) {
-        getUpdater().subscribe(getItem(), "targetPosition", callback);
+        super.subscribeTargetPosition(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribeCurrentPosition() {
-        getUpdater().unsubscribe(getItem());
+        super.unsubscribeCurrentPosition();
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribePositionState() {
-        // Not implemented
+        super.unsubscribePositionState();
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribeTargetPosition() {
-        getUpdater().unsubscribe(getItem(), "targetPosition");
+        super.unsubscribeTargetPosition();
     }
 }

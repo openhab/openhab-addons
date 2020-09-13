@@ -31,8 +31,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.openhab.io.transport.modbus.BasicModbusRegister;
-import org.openhab.io.transport.modbus.BasicModbusRegisterArray;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusRegister;
 import org.openhab.io.transport.modbus.ModbusRegisterArray;
@@ -63,10 +61,10 @@ public class BitUtilitiesExtractStringFromRegistersTest {
 
     private static ModbusRegisterArray shortArrayToRegisterArray(int... arr) {
         ModbusRegister[] tmp = new ModbusRegister[0];
-        return new BasicModbusRegisterArray(IntStream.of(arr).mapToObj(val -> {
+        return new ModbusRegisterArray(IntStream.of(arr).mapToObj(val -> {
             ByteBuffer buffer = ByteBuffer.allocate(2);
             buffer.putShort((short) val);
-            return new BasicModbusRegister(buffer.get(0), buffer.get(1));
+            return new ModbusRegister(buffer.get(0), buffer.get(1));
         }).collect(Collectors.toList()).toArray(tmp));
     }
 
@@ -112,5 +110,4 @@ public class BitUtilitiesExtractStringFromRegistersTest {
         assertThat(String.format("registers=%s, index=%d, length=%d", registers, index, length), actualState,
                 is(equalTo(expectedResult)));
     }
-
 }

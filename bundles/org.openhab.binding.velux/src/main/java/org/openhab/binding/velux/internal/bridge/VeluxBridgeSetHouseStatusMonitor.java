@@ -59,5 +59,4 @@ public class VeluxBridgeSetHouseStatusMonitor {
         logger.debug("modifyHSM() finished {}.", (success ? "successfully" : "with failure"));
         return success;
     }
-
 }

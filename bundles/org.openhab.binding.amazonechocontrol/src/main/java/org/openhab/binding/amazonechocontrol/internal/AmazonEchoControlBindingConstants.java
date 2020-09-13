@@ -28,7 +28,6 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
  */
 @NonNullByDefault
 public class AmazonEchoControlBindingConstants {
-
     public static final String BINDING_ID = "amazonechocontrol";
     public static final String BINDING_NAME = "Amazon Echo Control";
 
@@ -42,9 +41,16 @@ public class AmazonEchoControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_FLASH_BRIEFING_PROFILE = new ThingTypeUID(BINDING_ID,
             "flashbriefingprofile");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
+    public static final ThingTypeUID THING_TYPE_SMART_HOME_DEVICE = new ThingTypeUID(BINDING_ID, "smartHomeDevice");
+    public static final ThingTypeUID THING_TYPE_SMART_HOME_DEVICE_GROUP = new ThingTypeUID(BINDING_ID,
+            "smartHomeDeviceGroup");
+
+    public static final Set<ThingTypeUID> SUPPORTED_ECHO_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(THING_TYPE_ACCOUNT, THING_TYPE_ECHO, THING_TYPE_ECHO_SPOT, THING_TYPE_ECHO_SHOW,
                     THING_TYPE_ECHO_WHA, THING_TYPE_FLASH_BRIEFING_PROFILE));
+
+    public static final Set<ThingTypeUID> SUPPORTED_SMART_HOME_THING_TYPES_UIDS = new HashSet<>(
+            Arrays.asList(THING_TYPE_SMART_HOME_DEVICE, THING_TYPE_SMART_HOME_DEVICE_GROUP));
 
     // List of all Channel ids
     public static final String CHANNEL_PLAYER = "player";
@@ -106,6 +112,7 @@ public class AmazonEchoControlBindingConstants {
     public static final String DEVICE_PROPERTY_SERIAL_NUMBER = "serialNumber";
     public static final String DEVICE_PROPERTY_FAMILY = "deviceFamily";
     public static final String DEVICE_PROPERTY_FLASH_BRIEFING_PROFILE = "configurationJson";
+    public static final String DEVICE_PROPERTY_ID = "id";
 
     // Other
     public static final String FLASH_BRIEFING_COMMAND_PREFIX = "FlashBriefing.";

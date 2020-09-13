@@ -23,5 +23,4 @@ public class InputSelect2Command extends BaseStringCommand {
     protected InputSelect2Command(int setId) {
         super('x', 'b', setId);
     }
-
 }

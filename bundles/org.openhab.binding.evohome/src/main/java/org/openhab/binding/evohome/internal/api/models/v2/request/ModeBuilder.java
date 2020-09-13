@@ -46,5 +46,4 @@ public class ModeBuilder extends TimedRequestBuilder<Mode> {
         this.mode = mode;
         return this;
     }
-
 }

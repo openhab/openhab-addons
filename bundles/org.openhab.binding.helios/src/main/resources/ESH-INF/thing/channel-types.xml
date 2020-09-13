@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="helios" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="helios"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -9,13 +10,13 @@
 		<item-type>Switch</item-type>
 		<label>Audio Loop Test</label>
 		<description>Audio loop test result</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="audioloopteststamp">
 		<item-type>DateTime</item-type>
 		<label>Audio Loop Test Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="callstate">
 		<item-type>String</item-type>
@@ -44,7 +45,7 @@
 		<item-type>DateTime</item-type>
 		<label>Call State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="card">
 		<kind>trigger</kind>
@@ -55,13 +56,13 @@
 		<item-type>Switch</item-type>
 		<label>Card Valid</label>
 		<description>If the detected card is valid, the parameter value is ON. If not, the parameter is set to OFF</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="cardstamp">
 		<item-type>DateTime</item-type>
 		<label>Card Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="code">
 		<kind>trigger</kind>
@@ -72,13 +73,13 @@
 		<item-type>Switch</item-type>
 		<label>Code Valid</label>
 		<description>If the entered code is valid, the parameter value is ON. If not, the parameter is set to OFF</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="codestamp">
 		<item-type>DateTime</item-type>
 		<label>Code Entered Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="devicestate">
 		<item-type>String</item-type>
@@ -94,7 +95,7 @@
 		<item-type>DateTime</item-type>
 		<label>Device State Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="keypressed">
 		<kind>trigger</kind>
@@ -105,7 +106,7 @@
 		<item-type>DateTime</item-type>
 		<label>Key Press Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="keyreleased">
 		<kind>trigger</kind>
@@ -116,43 +117,43 @@
 		<item-type>DateTime</item-type>
 		<label>Key Released Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="motion">
 		<item-type>Switch</item-type>
 		<label>Motion</label>
 		<description>Motion detection indicator</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="motionstamp">
 		<item-type>DateTime</item-type>
 		<label>Motion Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="noise">
 		<item-type>Switch</item-type>
 		<label>Noise</label>
 		<description>Noise detection indicator</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="noisestamp">
 		<item-type>DateTime</item-type>
 		<label>Noise Detection Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchstate">
 		<item-type>Switch</item-type>
 		<label>Switch State</label>
 		<description>ON when a switch switched on, OFF when a switch switched off</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchstateswitch">
 		<item-type>Number</item-type>
 		<label>Switch Number</label>
 		<description>Number of the switch that switched, e.g. 1 to 4</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchstateoriginator">
 		<item-type>String</item-type>
@@ -169,7 +170,7 @@
 		<item-type>DateTime</item-type>
 		<label>Switch Switch Time</label>
 		<description>Event date and time in CCYY-MM-DDThh:mm:ss format</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="switchenabler" advanced="true">
 		<item-type>Switch</item-type>

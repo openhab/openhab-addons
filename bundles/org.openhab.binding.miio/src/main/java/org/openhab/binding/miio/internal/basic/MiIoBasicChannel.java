@@ -35,6 +35,12 @@ public class MiIoBasicChannel {
     @SerializedName("property")
     @Expose
     private @Nullable String property;
+    @SerializedName("siid")
+    @Expose
+    private @Nullable Integer siid;
+    @SerializedName("piid")
+    @Expose
+    private @Nullable Integer piid;
     @SerializedName("friendlyName")
     @Expose
     private @Nullable String friendlyName;
@@ -58,7 +64,7 @@ public class MiIoBasicChannel {
     private @Nullable String channelGroup;
     @SerializedName("actions")
     @Expose
-    private @Nullable List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<MiIoDeviceAction>();
+    private @Nullable List<MiIoDeviceAction> miIoDeviceActions = new ArrayList<>();
 
     public String getProperty() {
         final String property = this.property;
@@ -67,6 +73,40 @@ public class MiIoBasicChannel {
 
     public void setProperty(String property) {
         this.property = property;
+    }
+
+    public int getSiid() {
+        final Integer siid = this.siid;
+        if (siid != null) {
+            return siid.intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    public void setSiid(Integer siid) {
+        this.siid = siid;
+    }
+
+    public int getPiid() {
+        final Integer piid = this.piid;
+        if (piid != null) {
+            return piid.intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    public void setPiid(Integer piid) {
+        this.piid = piid;
+    }
+
+    public boolean isMiOt() {
+        if (piid != null && siid != null && (getPiid() != 0 || getSiid() != 0)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public String getFriendlyName() {

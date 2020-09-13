@@ -117,5 +117,4 @@ public class DenonMarantzConfiguration {
         Integer zoneCount = count;
         this.zoneCount = zoneCount;
     }
-
 }

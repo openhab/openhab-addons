@@ -36,5 +36,4 @@ public class RFXComMessageTooLongException extends RFXComException {
     public RFXComMessageTooLongException(Throwable cause) {
         super(cause);
     }
-
 }

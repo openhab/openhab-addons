@@ -9,7 +9,8 @@
 		<description>Paradox IP150 module connector</description>
 
 		<channels>
-			<channel id="communicationCommand" typeId="command" />
+			<channel id="communicationCommand" typeId="command"/>
+			<channel id="communicationState" typeId="communicationState"/>
 		</channels>
 
 		<config-description>
@@ -26,6 +27,7 @@
 				<label>IP150 Password</label>
 				<description>Password for accessing IP150</description>
 				<context>password</context>
+				<required>true</required>
 			</parameter>
 			<parameter name="pcPassword" type="text" required="true">
 				<label>PC Password</label>
@@ -37,6 +39,7 @@
 				<label>Network Address</label>
 				<description>IP address or host name of IP150</description>
 				<context>network-address</context>
+				<required>true</required>
 			</parameter>
 			<parameter name="port" type="integer" required="true">
 				<label>Port</label>
@@ -48,15 +51,20 @@
 				<description>The time to wait before a reconnect occurs after socket timeout. Value is in seconds</description>
 				<default>30</default>
 			</parameter>
-			<parameter name="maxZones" type="integer" required="false" unit="s">
+			<parameter name="maxZones" type="integer" unit="s">
 				<label>Max Zones</label>
 				<description>Maximum number of configured zones to check (from zone 1 to maxZones)</description>
 				<default>0</default>
 			</parameter>
-			<parameter name="maxPartitions" type="integer" required="false" unit="s">
+			<parameter name="maxPartitions" type="integer" unit="s">
 				<label>Max Partitions</label>
 				<description>Maximum number of configured partitions to check (from partition 1 to maxPartitions)</description>
 				<default>0</default>
+			</parameter>
+			<parameter name="encrypt" type="boolean">
+				<label>Use Encryption</label>
+				<description>If set to true will use encrypted communication. Default=false for backward compatibility</description>
+				<default>false</default>
 			</parameter>
 		</config-description>
 	</bridge-type>
@@ -65,5 +73,11 @@
 		<item-type>String</item-type>
 		<label>Communicator Command</label>
 		<description>Send Command</description>
+	</channel-type>
+	<channel-type id="communicationState">
+		<item-type>String</item-type>
+		<label>Bridge Communication State</label>
+		<description>Status of connection to Paradox system</description>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 </thing:thing-descriptions>

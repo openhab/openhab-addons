@@ -18,8 +18,8 @@ package org.openhab.binding.ihc.internal.ws.projectfile;
  * @author Pauli Anttila - Initial contribution
  */
 public class IhcEnumValue {
-    final private int id;
-    final private String name;
+    private final int id;
+    private final String name;
 
     public IhcEnumValue(int id, String name) {
         this.id = id;

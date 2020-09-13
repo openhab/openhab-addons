@@ -12,19 +12,20 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Custom Cloud Server communication exception
  * 
  * @author Andrew Fiddian-Green - Initial contribution
  * 
  */
-public class RdsCloudException extends RuntimeException {
+@NonNullByDefault
+public class RdsCloudException extends Exception {
 
     private static final long serialVersionUID = -7048044632627280917L;
 
-    public RdsCloudException(String message)
-    {
-      super(message);
+    public RdsCloudException(String message) {
+        super(message);
     }
-
 }

@@ -29,8 +29,8 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.openhab.binding.knx.internal.client.DeviceInspector;
-import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.client.DeviceInspector.Result;
+import org.openhab.binding.knx.internal.client.KNXClient;
 import org.openhab.binding.knx.internal.config.DeviceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
     private static final int INITIAL_PING_DELAY = 5;
     private final Logger logger = LoggerFactory.getLogger(AbstractKNXThingHandler.class);
 
-    private @Nullable IndividualAddress address;
+    protected @Nullable IndividualAddress address;
     private @Nullable Future<?> descriptionJob;
     private boolean filledDescription = false;
     private final Random random = new Random();
@@ -217,5 +217,4 @@ public abstract class AbstractKNXThingHandler extends BaseThingHandler implement
             }
         }
     }
-
 }

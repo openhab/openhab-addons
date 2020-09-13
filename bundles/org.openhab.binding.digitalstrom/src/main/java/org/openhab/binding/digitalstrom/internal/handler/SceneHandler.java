@@ -304,7 +304,6 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
         } else {
             logger.warn("Command sent to an unknown channel id: {}", channelUID);
         }
-
     }
 
     private synchronized BridgeHandler getBridgeHandler() {
@@ -344,7 +343,7 @@ public class SceneHandler extends BaseThingHandler implements SceneStatusListene
 
     @Override
     public void onSceneRemoved(InternalScene scene) {
-        this.scene = null;
+        this.scene = scene;
         updateStatus(ThingStatus.OFFLINE);
         logger.debug("Set status on {}", getThing().getStatus());
     }

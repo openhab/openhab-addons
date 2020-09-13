@@ -142,9 +142,9 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             if (!waterTariff.isEmpty()) {
                 properties.put("waterTariff", waterTariff);
             }
-            String timeZone = comm.getTimeInfo().getTimeZone();
-            if (!timeZone.isEmpty()) {
-                properties.put("timeZone", timeZone);
+            String timezone = comm.getTimeInfo().getTimezone();
+            if (!timezone.isEmpty()) {
+                properties.put("timezone", timezone);
             }
             String isDst = comm.getTimeInfo().getIsDst();
             if (!isDst.isEmpty()) {
@@ -153,10 +153,6 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
             String services = comm.getServices();
             if (!services.isEmpty()) {
                 properties.put("services", services);
-            }
-            String profiles = comm.getProfiles();
-            if (!profiles.isEmpty()) {
-                properties.put("profiles", profiles);
             }
 
             thing.setProperties(properties);
@@ -228,7 +224,6 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
                 }
             }
             return expiryDate;
-
         }
 
         return null;

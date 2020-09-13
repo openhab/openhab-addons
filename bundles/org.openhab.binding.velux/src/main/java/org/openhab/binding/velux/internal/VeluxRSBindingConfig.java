@@ -18,7 +18,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-//import org.openhab.model.item.binding.BindingConfigParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +49,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     /**
      * The ascending sorted list of generic Objects indexed by an Integer
      */
-    private SortedMap<Integer, String> mapAscending = new TreeMap<Integer, String>(new Comparator<Integer>() {
+    private SortedMap<Integer, String> mapAscending = new TreeMap<>(new Comparator<Integer>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o1.compareTo(o2);
@@ -59,7 +58,7 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
     /**
      * The descending sorted list of generic Objects indexed by an Integer
      */
-    private SortedMap<Integer, String> mapDescending = new TreeMap<Integer, String>(new Comparator<Integer>() {
+    private SortedMap<Integer, String> mapDescending = new TreeMap<>(new Comparator<Integer>() {
         @Override
         public int compare(Integer o1, Integer o2) {
             return o2.compareTo(o1);
@@ -153,7 +152,6 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
         }
         logger.trace("getNextAscendingLevel() returning {}.", this.rollershutterLevel);
         return this.rollershutterLevel;
-
     }
 
     /**
@@ -172,7 +170,6 @@ public class VeluxRSBindingConfig extends VeluxBindingConfig {
         }
         logger.trace("getNextDescendingLevel() returning {}.", this.rollershutterLevel);
         return this.rollershutterLevel;
-
     }
 
     /**

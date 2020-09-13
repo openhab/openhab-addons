@@ -54,9 +54,8 @@ public class SceneManagerImpl implements SceneManager {
 
     private final Logger logger = LoggerFactory.getLogger(SceneManagerImpl.class);
 
-    private final List<String> echoBox = Collections.synchronizedList(new LinkedList<String>());
-    private final Map<String, InternalScene> internalSceneMap = Collections
-            .synchronizedMap(new HashMap<String, InternalScene>());
+    private final List<String> echoBox = Collections.synchronizedList(new LinkedList<>());
+    private final Map<String, InternalScene> internalSceneMap = Collections.synchronizedMap(new HashMap<>());
 
     private EventListener eventListener;
     private final StructureManager structureManager;
@@ -263,10 +262,12 @@ public class SceneManagerImpl implements SceneManager {
     public void callInternalScene(String sceneID) {
         InternalScene intScene = this.internalSceneMap.get(sceneID);
         if (intScene != null) {
+            logger.debug("activating existing scene {}", intScene.getSceneName());
             intScene.activateScene();
         } else {
             intScene = createNewScene(sceneID);
             if (intScene != null) {
+                logger.debug("created new scene, activating it: {}", intScene.getSceneName());
                 discovery.sceneDiscoverd(intScene);
                 intScene.activateScene();
             }
@@ -374,10 +375,12 @@ public class SceneManagerImpl implements SceneManager {
     public void undoInternalScene(String sceneID) {
         InternalScene intScene = this.internalSceneMap.get(sceneID);
         if (intScene != null) {
+            logger.debug("deactivating existing scene {}", intScene.getSceneName());
             intScene.deactivateScene();
         } else {
             intScene = createNewScene(sceneID);
             if (intScene != null) {
+                logger.debug("created new scene, deactivating it: {}", intScene.getSceneName());
                 intScene.deactivateScene();
             }
         }
@@ -507,7 +510,7 @@ public class SceneManagerImpl implements SceneManager {
 
     @Override
     public List<InternalScene> getScenes() {
-        return this.internalSceneMap != null ? new LinkedList<InternalScene>(this.internalSceneMap.values()) : null;
+        return this.internalSceneMap != null ? new LinkedList<>(this.internalSceneMap.values()) : null;
     }
 
     @Override

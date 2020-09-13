@@ -28,5 +28,4 @@ public interface PowermaxMessageEventListener extends EventListener {
      * @param event the event object
      */
     public void onNewMessageEvent(EventObject event);
-
 }

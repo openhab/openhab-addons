@@ -53,5 +53,4 @@ public class Humidity {
     public String toString() {
         return String.format("%.3f%%", value);
     }
-
 }

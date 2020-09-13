@@ -92,5 +92,4 @@ public class FreeboxServerDiscoveryParticipant implements MDNSDiscoveryParticipa
         }
         return result;
     }
-
 }

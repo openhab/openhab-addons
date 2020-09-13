@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.sonyprojector.internal.handler.SonyProjectorHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -45,9 +46,16 @@ public class SonyProjectorHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(
             Stream.of(THING_TYPE_ETHERNET, THING_TYPE_SERIAL, THING_TYPE_SERIAL_OVER_IP).collect(Collectors.toSet()));
 
-    private @NonNullByDefault({}) SerialPortManager serialPortManager;
+    private final SerialPortManager serialPortManager;
 
-    private @NonNullByDefault({}) SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+    private final SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider;
+
+    @Activate
+    public SonyProjectorHandlerFactory(final @Reference SerialPortManager serialPortManager,
+            final @Reference SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider) {
+        this.serialPortManager = serialPortManager;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -63,25 +71,5 @@ public class SonyProjectorHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return null;
-    }
-
-    @Reference
-    protected void setSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = serialPortManager;
-    }
-
-    protected void unsetSerialPortManager(final SerialPortManager serialPortManager) {
-        this.serialPortManager = null;
-    }
-
-    @Reference
-    protected void setDynamicStateDescriptionProvider(
-            SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = stateDescriptionProvider;
-    }
-
-    protected void unsetDynamicStateDescriptionProvider(
-            SonyProjectorStateDescriptionOptionProvider stateDescriptionProvider) {
-        this.stateDescriptionProvider = null;
     }
 }

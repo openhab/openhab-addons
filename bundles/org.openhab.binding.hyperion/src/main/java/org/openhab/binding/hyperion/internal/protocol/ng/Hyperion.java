@@ -66,5 +66,4 @@ public class Hyperion {
     public void setSessions(List<Session> sessions) {
         this.sessions = sessions;
     }
-
 }

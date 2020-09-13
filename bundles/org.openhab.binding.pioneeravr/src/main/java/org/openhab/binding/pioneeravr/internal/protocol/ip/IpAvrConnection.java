@@ -107,5 +107,4 @@ public class IpAvrConnection extends StreamAvrConnection {
     protected OutputStream getOutputStream() throws IOException {
         return ipControlSocket.getOutputStream();
     }
-
 }

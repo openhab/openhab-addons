@@ -28,7 +28,7 @@ public class ModuleVersionEvent implements SatelEvent {
     /**
      * Constructs new event class.
      *
-     * @param version           string describing version number and firmware revision
+     * @param version string describing version number and firmware revision
      * @param extPayloadSupport the module supports extended (32-bit) payload for zones/outputs
      */
     public ModuleVersionEvent(String version, boolean extPayloadSupport) {

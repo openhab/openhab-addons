@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="evohome" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0" xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+<thing:thing-descriptions bindingId="evohome"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="display" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>evohome Display</label>
 		<description>This represents the evohome control display.</description>
 		<channels>
-			<channel id="SystemMode" typeId="systemMode" />
+			<channel id="SystemMode" typeId="systemMode"/>
 		</channels>
 		<config-description>
 			<parameter name="id" type="text" required="true" readOnly="true">
@@ -22,16 +25,16 @@
 	</thing-type>
 	<thing-type id="heatingzone" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>evohome Heating Zone</label>
 		<description>This represents the evohome Heating Zone.</description>
 		<channels>
-			<channel id="Temperature" typeId="temperature" />
-			<channel id="SetPointStatus" typeId="setpointstatus" />
-		<channel id="SetPoint" typeId="setpoint" /> 
+			<channel id="Temperature" typeId="temperature"/>
+			<channel id="SetPointStatus" typeId="setpointstatus"/>
+			<channel id="SetPoint" typeId="setpoint"/>
 		</channels>
-		<config-description>	  
+		<config-description>
 			<parameter name="id" type="text" required="true" readOnly="true">
 				<label>ID</label>
 				<description>ID of the zone</description>

@@ -40,10 +40,10 @@ final class ThirdGenerationEncryptionHelper {
     /**
      * This method generates the HMACSha256 encrypted value of the given value
      *
-     * @param password       Password used for encryption
+     * @param password Password used for encryption
      * @param valueToEncrypt value to encrypt
      * @return encrypted value
-     * @throws InvalidKeyException      thrown if the key generated from the password is invalid
+     * @throws InvalidKeyException thrown if the key generated from the password is invalid
      * @throws NoSuchAlgorithmException thrown if HMAC SHA 256 is not supported
      */
     static byte[] getHMACSha256(byte[] password, String valueToEncrypt)
@@ -75,11 +75,11 @@ final class ThirdGenerationEncryptionHelper {
      * Create the PBKDF2 hash
      *
      * @param password password
-     * @param salt     salt
-     * @param rounds   rounds
+     * @param salt salt
+     * @param rounds rounds
      * @return hash
      * @throws NoSuchAlgorithmException if PBKDF2WithHmacSHA256 is not supported
-     * @throws InvalidKeySpecException  if the key specification is not supported
+     * @throws InvalidKeySpecException if the key specification is not supported
      */
     static byte[] getPBKDF2Hash(String password, byte[] salt, int rounds)
             throws NoSuchAlgorithmException, InvalidKeySpecException {

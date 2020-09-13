@@ -13,7 +13,12 @@
 package org.openhab.binding.airquality.internal.json;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link AirQualityJsonData} is responsible for storing
@@ -21,27 +26,17 @@ import java.util.List;
  *
  * @author Kuba Wolanin - Initial contribution
  */
+@NonNullByDefault
 public class AirQualityJsonData {
 
     private int aqi;
     private int idx;
 
-    private static final String GOOD = "GOOD";
-    private static final String MODERATE = "MODERATE";
-    private static final String UNHEALTHY_FOR_SENSITIVE = "UNHEALTHY_FOR_SENSITIVE";
-    private static final String UNHEALTHY = "UNHEALTHY";
-    private static final String VERY_UNHEALTHY = "VERY_UNHEALTHY";
-    private static final String HAZARDOUS = "HAZARDOUS";
-    private static final String NO_DATA = "NO_DATA";
-
-    private AirQualityJsonTime time;
-    private AirQualityJsonCity city;
-    private List<Attribute> attributions;
-    private AirQualityJsonIaqi iaqi;
-    private String dominentpol;
-
-    public AirQualityJsonData() {
-    }
+    private @NonNullByDefault({}) AirQualityJsonTime time;
+    private @NonNullByDefault({}) AirQualityJsonCity city;
+    private List<Attribute> attributions = new ArrayList<>();
+    private Map<String, @Nullable AirQualityValue> iaqi = new HashMap<>();
+    private String dominentpol = "";
 
     /**
      * Air Quality Index
@@ -87,48 +82,20 @@ public class AirQualityJsonData {
      * @return {String}
      */
     public String getAttributions() {
-        List<String> list = new ArrayList<String>();
-        for (int i = 0; i < attributions.size(); i++) {
-            list.add(attributions.get(i).getName());
-        }
-        return "Attributions: " + String.join(", ", list);
-    }
-
-    /**
-     * Receives "iaqi" node from the "data" object in JSON response
-     *
-     * @return {AirQualityJsonIaqi}
-     */
-    public AirQualityJsonIaqi getIaqi() {
-        return iaqi;
-    }
-
-    /**
-     * Interprets the current aqi value within the ranges;
-     * Returns AQI in a human readable format
-     *
-     * @return
-     */
-    public String getAqiDescription() {
-        if (aqi > 0 && aqi <= 50) {
-            return GOOD;
-        } else if (aqi >= 51 && aqi <= 100) {
-            return MODERATE;
-        } else if (aqi >= 101 && aqi <= 150) {
-            return UNHEALTHY_FOR_SENSITIVE;
-        } else if (aqi >= 151 && aqi <= 200) {
-            return UNHEALTHY;
-        } else if (aqi >= 201 && aqi < 300) {
-            return VERY_UNHEALTHY;
-        } else if (aqi >= 300) {
-            return HAZARDOUS;
-        }
-
-        return NO_DATA;
+        List<String> list = new ArrayList<>();
+        attributions.forEach(item -> list.add(item.getName()));
+        return "Attributions : " + String.join(", ", list);
     }
 
     public String getDominentPol() {
         return dominentpol;
     }
 
+    public double getIaqiValue(String key) {
+        AirQualityValue result = iaqi.get(key);
+        if (result != null) {
+            return result.getValue();
+        }
+        return -1;
+    }
 }

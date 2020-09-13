@@ -127,7 +127,7 @@ public class SpotifyDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     private void thingDiscovered(Device device) {
-        Map<String, Object> properties = new HashMap<String, Object>();
+        Map<String, Object> properties = new HashMap<>();
 
         properties.put(PROPERTY_SPOTIFY_DEVICE_NAME, device.getName());
         ThingUID thing = new ThingUID(SpotifyBindingConstants.THING_TYPE_DEVICE, bridgeUID,

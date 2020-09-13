@@ -57,5 +57,4 @@ public enum RemoteKeyType {
     public String toString() {
         return name;
     }
-
 }

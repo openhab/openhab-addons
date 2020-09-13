@@ -6,10 +6,10 @@
 	<config-description uri="thing-type:lgtvserial:serial">
 		<parameter name="port" type="text">
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<label>Serial Port</label>
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 			<required>true</required>
-			<default>/dev/ttyS0</default>
 		</parameter>
 		<parameter name="setId" type="integer">
 			<label>Set ID</label>
@@ -19,4 +19,3 @@
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
-

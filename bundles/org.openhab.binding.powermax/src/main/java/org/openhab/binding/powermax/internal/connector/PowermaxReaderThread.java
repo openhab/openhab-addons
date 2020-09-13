@@ -41,8 +41,10 @@ public class PowermaxReaderThread extends Thread {
      *
      * @param in the input stream
      * @param connector the object that should handle the received message
+     * @param threadName the name of the thread
      */
-    public PowermaxReaderThread(PowermaxConnector connector) {
+    public PowermaxReaderThread(PowermaxConnector connector, String threadName) {
+        super(threadName);
         this.connector = connector;
     }
 
@@ -150,5 +152,4 @@ public class PowermaxReaderThread extends Thread {
         }
         return (checksum == expected);
     }
-
 }

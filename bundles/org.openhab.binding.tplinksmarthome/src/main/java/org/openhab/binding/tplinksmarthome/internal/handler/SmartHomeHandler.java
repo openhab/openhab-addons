@@ -125,10 +125,10 @@ public class SmartHomeHandler extends BaseThingHandler {
                 configuration.deviceId);
         connection = createConnection(configuration);
         smartHomeDevice.initialize(connection, configuration);
-        cache = new ExpiringCache<@Nullable DeviceState>(Duration.ofSeconds(configuration.refresh), this::refreshCache);
+        cache = new ExpiringCache<>(Duration.ofSeconds(configuration.refresh), this::refreshCache);
         // If refresh > threshold fast cache invalidates after 1 second, else it behaves just as the 'normal' cache
         fastCache = configuration.refresh > forceRefreshThreshold
-                ? new ExpiringCache<@Nullable DeviceState>(ONE_SECOND, this::forceCacheUpdate)
+                ? new ExpiringCache<>(ONE_SECOND, this::forceCacheUpdate)
                 : cache;
         updateStatus(ThingStatus.UNKNOWN);
         // While config.xml defines refresh as min 1, this check is used to run a test that doesn't start refresh.

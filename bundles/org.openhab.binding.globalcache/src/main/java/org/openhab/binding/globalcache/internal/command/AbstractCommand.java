@@ -193,8 +193,7 @@ public abstract class AbstractCommand implements CommandInterface {
      */
     private boolean sendCommand() {
         // Create a response queue. The command processor will use this queue to return the device's reply.
-        LinkedBlockingQueue<ResponseMessage> responseQueue = new LinkedBlockingQueue<ResponseMessage>(
-                RESPONSE_QUEUE_MAX_DEPTH);
+        LinkedBlockingQueue<ResponseMessage> responseQueue = new LinkedBlockingQueue<>(RESPONSE_QUEUE_MAX_DEPTH);
 
         // Create the request message
         RequestMessage requestMsg = new RequestMessage(commandName, commandType, deviceCommand, responseQueue);

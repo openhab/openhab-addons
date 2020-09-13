@@ -13,7 +13,8 @@
 package org.openhab.binding.lutron.internal.grxprg;
 
 import java.io.IOException;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
+import java.util.GregorianCalendar;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -44,17 +45,17 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
     /**
      * The {@link PrgProtocolHandler} that handles the actual protocol. Will never be null
      */
-    private PrgProtocolHandler _protocolHandler;
+    private PrgProtocolHandler protocolHandler;
 
     /**
      * The {@link SocketSession} to the physical devices. Will never be null
      */
-    private SocketSession _session;
+    private SocketSession session;
 
     /**
      * The retry connection event. Null if not retrying.
      */
-    private ScheduledFuture<?> _retryConnection;
+    private ScheduledFuture<?> retryConnectionJob;
 
     /**
      * Constructs the handler from the {@link Bridge}. Simply calls the super constructor with the {@link Bridge},
@@ -70,9 +71,9 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         }
 
         final PrgBridgeConfig config = getPrgBridgeConfig();
-        _session = new SocketSession(config.getIpAddress(), 23);
+        session = new SocketSession(config.getIpAddress(), 23);
 
-        _protocolHandler = new PrgProtocolHandler(_session, new PrgHandlerCallback() {
+        protocolHandler = new PrgProtocolHandler(session, new PrgHandlerCallback() {
             @Override
             public void stateChanged(String channelId, State state) {
                 updateState(channelId, state);
@@ -105,7 +106,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      * @return a non-null protocol handler to use
      */
     PrgProtocolHandler getProtocolHandler() {
-        return _protocolHandler;
+        return protocolHandler;
     }
 
     /**
@@ -160,33 +161,33 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         }
 
         if (id.equals(PrgConstants.CHANNEL_ZONELOWERSTOP)) {
-            _protocolHandler.setZoneLowerStop();
+            protocolHandler.setZoneLowerStop();
 
         } else if (id.equals(PrgConstants.CHANNEL_ZONERAISESTOP)) {
-            _protocolHandler.setZoneRaiseStop();
+            protocolHandler.setZoneRaiseStop();
 
         } else if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
             if (command instanceof DateTimeType) {
-                final Calendar c = ((DateTimeType) command).getCalendar();
-                _protocolHandler.setTime(c);
+                final ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
+                protocolHandler.setTime(GregorianCalendar.from(zdt));
             } else {
                 logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);
             }
         } else if (id.startsWith(PrgConstants.CHANNEL_SCHEDULE)) {
             if (command instanceof DecimalType) {
                 final int schedule = ((DecimalType) command).intValue();
-                _protocolHandler.selectSchedule(schedule);
+                protocolHandler.selectSchedule(schedule);
             } else {
                 logger.error("Received a SCHEDULE channel command with a non DecimalType: {}", command);
             }
 
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCESTART)) {
-            _protocolHandler.startSuperSequence();
+            protocolHandler.startSuperSequence();
 
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCEPAUSE)) {
-            _protocolHandler.pauseSuperSequence();
+            protocolHandler.pauseSuperSequence();
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCERESUME)) {
-            _protocolHandler.resumeSuperSequence();
+            protocolHandler.resumeSuperSequence();
 
         } else {
             logger.error("Unknown/Unsupported Channel id: {}", id);
@@ -205,25 +206,25 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         }
 
         if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
-            _protocolHandler.refreshTime();
+            protocolHandler.refreshTime();
 
         } else if (id.equals(PrgConstants.CHANNEL_SCHEDULE)) {
-            _protocolHandler.refreshSchedule();
+            protocolHandler.refreshSchedule();
 
         } else if (id.equals(PrgConstants.CHANNEL_SUNRISE)) {
-            _protocolHandler.refreshSunriseSunset();
+            protocolHandler.refreshSunriseSunset();
 
         } else if (id.equals(PrgConstants.CHANNEL_SUNSET)) {
-            _protocolHandler.refreshSunriseSunset();
+            protocolHandler.refreshSunriseSunset();
 
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCESTATUS)) {
-            _protocolHandler.reportSuperSequenceStatus();
+            protocolHandler.reportSuperSequenceStatus();
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSTEP)) {
-            _protocolHandler.reportSuperSequenceStatus();
+            protocolHandler.reportSuperSequenceStatus();
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCENEXTMIN)) {
-            _protocolHandler.reportSuperSequenceStatus();
+            protocolHandler.reportSuperSequenceStatus();
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSEC)) {
-            _protocolHandler.reportSuperSequenceStatus();
+            protocolHandler.reportSuperSequenceStatus();
         }
     }
 
@@ -253,7 +254,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
             public void run() {
                 connect();
             }
-
         }, 1, TimeUnit.SECONDS);
     }
 
@@ -268,9 +268,9 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
         String response = "Server is offline - will try to reconnect later";
         try {
             logger.info("Attempting connection ...");
-            _session.connect();
+            session.connect();
 
-            response = _protocolHandler.login(config.getUserName());
+            response = protocolHandler.login(config.getUserName());
             if (response == null) {
                 if (config != null) {
                     updateStatus(ThingStatus.ONLINE);
@@ -293,7 +293,7 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      */
     private void disconnect(boolean retryConnection) {
         try {
-            _session.disconnect();
+            session.disconnect();
         } catch (IOException e) {
             // ignore - we don't care
         }
@@ -308,17 +308,16 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
      * call the {@link #connect()} method. If a retry attempt is pending, the request is ignored.
      */
     private void retryConnect() {
-        if (_retryConnection == null) {
+        if (retryConnectionJob == null) {
             final PrgBridgeConfig config = getPrgBridgeConfig();
             if (config != null) {
                 logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
-                _retryConnection = this.scheduler.schedule(new Runnable() {
+                retryConnectionJob = this.scheduler.schedule(new Runnable() {
                     @Override
                     public void run() {
-                        _retryConnection = null;
+                        retryConnectionJob = null;
                         connect();
                     }
-
                 }, config.getRetryPolling(), TimeUnit.SECONDS);
             }
         } else {

@@ -55,5 +55,4 @@ public class UniFiClientThingConfig {
     public String toString() {
         return String.format("UniFiClientConfig{cid: '%s', site: '%s', considerHome: %d}", cid, site, considerHome);
     }
-
 }

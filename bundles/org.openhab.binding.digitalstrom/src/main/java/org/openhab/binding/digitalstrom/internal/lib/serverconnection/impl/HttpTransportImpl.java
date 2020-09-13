@@ -35,6 +35,7 @@ import java.util.Base64;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -296,11 +297,11 @@ public class HttpTransportImpl implements HttpTransport {
             informConnectionManager(ConnectionManager.MALFORMED_URL_EXCEPTION);
         } catch (java.net.UnknownHostException e) {
             informConnectionManager(ConnectionManager.UNKNOWN_HOST_EXCEPTION);
+        } catch (SSLHandshakeException e) {
+            informConnectionManager(ConnectionManager.SSL_HANDSHAKE_EXCEPTION);
         } catch (IOException e) {
             logger.error("An IOException occurred: ", e);
-            if (connectionManager != null) {
-                informConnectionManager(ConnectionManager.GENERAL_EXCEPTION);
-            }
+            informConnectionManager(ConnectionManager.GENERAL_EXCEPTION);
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -581,12 +582,10 @@ public class HttpTransportImpl implements HttpTransport {
 
             @Override
             public void checkClientTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-
             }
 
             @Override
             public void checkServerTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
-
             }
         } };
 

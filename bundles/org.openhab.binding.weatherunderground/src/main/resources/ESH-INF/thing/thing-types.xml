@@ -7,13 +7,13 @@
 	<!-- WeatherUnderground Binding -->
 	<thing-type id="weather">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Weather Information</label>
 		<description>Provides various weather data from the Weather Underground service</description>
 
 		<channel-groups>
-			<channel-group id="current" typeId="current" />
+			<channel-group id="current" typeId="current"/>
 			<channel-group id="forecastToday" typeId="forecast">
 				<label>Weather Forecast Today</label>
 				<description>This is the weather forecast for today</description>
@@ -161,29 +161,29 @@
 		<label>Current Weather</label>
 		<description>This is the current weather</description>
 		<channels>
-			<channel id="location" typeId="location" />
-			<channel id="stationId" typeId="stationId" />
-			<channel id="observationTime" typeId="observationTime" />
-			<channel id="conditions" typeId="currentConditions" />
-			<channel id="temperature" typeId="system.outdoor-temperature" />
-			<channel id="relativeHumidity" typeId="system.atmospheric-humidity" />
-			<channel id="windDirection" typeId="windDirection" />
-			<channel id="windDirectionDegrees" typeId="system.wind-direction" />
-			<channel id="windSpeed" typeId="system.wind-speed" />
-			<channel id="windGust" typeId="windGust" />
-			<channel id="pressure" typeId="system.barometric-pressure" />
-			<channel id="pressureTrend" typeId="pressureTrend" />
-			<channel id="dewPoint" typeId="dewPoint" />
-			<channel id="heatIndex" typeId="heatIndex" />
-			<channel id="windChill" typeId="windChill" />
-			<channel id="feelingTemperature" typeId="feelingTemperature" />
-			<channel id="visibility" typeId="visibility" />
-			<channel id="solarRadiation" typeId="solarRadiation" />
-			<channel id="UVIndex" typeId="UVIndex" />
-			<channel id="precipitationDay" typeId="rainDay" />
-			<channel id="precipitationHour" typeId="rainHour" />
-			<channel id="icon" typeId="icon" />
-			<channel id="iconKey" typeId="iconKey" />
+			<channel id="location" typeId="location"/>
+			<channel id="stationId" typeId="stationId"/>
+			<channel id="observationTime" typeId="observationTime"/>
+			<channel id="conditions" typeId="currentConditions"/>
+			<channel id="temperature" typeId="system.outdoor-temperature"/>
+			<channel id="relativeHumidity" typeId="system.atmospheric-humidity"/>
+			<channel id="windDirection" typeId="windDirection"/>
+			<channel id="windDirectionDegrees" typeId="system.wind-direction"/>
+			<channel id="windSpeed" typeId="system.wind-speed"/>
+			<channel id="windGust" typeId="windGust"/>
+			<channel id="pressure" typeId="system.barometric-pressure"/>
+			<channel id="pressureTrend" typeId="pressureTrend"/>
+			<channel id="dewPoint" typeId="dewPoint"/>
+			<channel id="heatIndex" typeId="heatIndex"/>
+			<channel id="windChill" typeId="windChill"/>
+			<channel id="feelingTemperature" typeId="feelingTemperature"/>
+			<channel id="visibility" typeId="visibility"/>
+			<channel id="solarRadiation" typeId="solarRadiation"/>
+			<channel id="UVIndex" typeId="UVIndex"/>
+			<channel id="precipitationDay" typeId="rainDay"/>
+			<channel id="precipitationHour" typeId="rainHour"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="iconKey" typeId="iconKey"/>
 		</channels>
 	</channel-group-type>
 
@@ -191,22 +191,22 @@
 		<label>Weather Forecast</label>
 		<description>This is the weather forecast</description>
 		<channels>
-			<channel id="forecastTime" typeId="forecastTime" />
-			<channel id="conditions" typeId="forecastConditions" />
-			<channel id="minTemperature" typeId="minTemperature" />
-			<channel id="maxTemperature" typeId="maxTemperature" />
-			<channel id="relativeHumidity" typeId="relativeHumidity" />
-			<channel id="probaPrecipitation" typeId="probaPrecipitation" />
-			<channel id="precipitationDay" typeId="rainDay" />
-			<channel id="snow" typeId="snow" />
-			<channel id="maxWindDirection" typeId="maxWindDirection" />
-			<channel id="maxWindDirectionDegrees" typeId="maxWindDirection-degrees" />
-			<channel id="maxWindSpeed" typeId="maxWindSpeed" />
-			<channel id="averageWindDirection" typeId="averageWindDirection" />
-			<channel id="averageWindDirectionDegrees" typeId="averageWindDirection-degrees" />
-			<channel id="averageWindSpeed" typeId="averageWindSpeed" />
-			<channel id="icon" typeId="icon" />
-			<channel id="iconKey" typeId="iconKey" />
+			<channel id="forecastTime" typeId="forecastTime"/>
+			<channel id="conditions" typeId="forecastConditions"/>
+			<channel id="minTemperature" typeId="minTemperature"/>
+			<channel id="maxTemperature" typeId="maxTemperature"/>
+			<channel id="relativeHumidity" typeId="relativeHumidity"/>
+			<channel id="probaPrecipitation" typeId="probaPrecipitation"/>
+			<channel id="precipitationDay" typeId="rainDay"/>
+			<channel id="snow" typeId="snow"/>
+			<channel id="maxWindDirection" typeId="maxWindDirection"/>
+			<channel id="maxWindDirectionDegrees" typeId="maxWindDirection-degrees"/>
+			<channel id="maxWindSpeed" typeId="maxWindSpeed"/>
+			<channel id="averageWindDirection" typeId="averageWindDirection"/>
+			<channel id="averageWindDirectionDegrees" typeId="averageWindDirection-degrees"/>
+			<channel id="averageWindSpeed" typeId="averageWindSpeed"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="iconKey" typeId="iconKey"/>
 		</channels>
 	</channel-group-type>
 
@@ -257,7 +257,7 @@
 		<label>Minimum Temperature</label>
 		<description>Minimum temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="maxTemperature">
@@ -265,7 +265,7 @@
 		<label>Maximum Temperature</label>
 		<description>Maximum temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="dewPoint" advanced="true">
@@ -273,7 +273,7 @@
 		<label>Dew Point Temperature</label>
 		<description>Dew Point temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heatIndex" advanced="true">
@@ -281,7 +281,7 @@
 		<label>Heat Index</label>
 		<description>Heat index</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windChill" advanced="true">
@@ -289,7 +289,7 @@
 		<label>Wind Chill Temperature</label>
 		<description>Wind chill temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="feelingTemperature" advanced="true">
@@ -297,7 +297,7 @@
 		<label>Feeling Temperature</label>
 		<description>Feeling temperature</description>
 		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="relativeHumidity">
@@ -356,7 +356,7 @@
 		<label>Maximum Wind Speed</label>
 		<description>Maximum wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="averageWindSpeed">
@@ -364,7 +364,7 @@
 		<label>Average Wind Speed</label>
 		<description>Average wind speed</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="windGust">
@@ -372,7 +372,7 @@
 		<label>Wind Gust</label>
 		<description>Wind gust</description>
 		<category>Wind</category>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="pressureTrend" advanced="true">
@@ -393,7 +393,7 @@
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
 		<description>Visibility</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="solarRadiation" advanced="true">
@@ -417,7 +417,7 @@
 		<label>Rain Fall Day</label>
 		<description>Rain fall during the day</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="rainHour">
@@ -425,7 +425,7 @@
 		<label>Rain Fall Hour</label>
 		<description>Rain fall during the last hour</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="snow">
@@ -433,7 +433,7 @@
 		<label>Snow Fall</label>
 		<description>Snow fall</description>
 		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="probaPrecipitation">

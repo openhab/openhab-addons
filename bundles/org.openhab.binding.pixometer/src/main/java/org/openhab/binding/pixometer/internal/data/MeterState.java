@@ -61,5 +61,4 @@ public class MeterState {
     public DateTimeType getLastRefreshTime() {
         return lastRefreshTime;
     }
-
 }

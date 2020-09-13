@@ -23,10 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
@@ -46,47 +48,42 @@ import retrofit.RetrofitError;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@NonNullByDefault
 public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingHandler {
 
-    private Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
-    private ScheduledFuture<?> refreshJob;
-    private RefreshStrategy refreshStrategy;
-    @Nullable
-    protected DEVICE device;
+    private static final int MIN_REFRESH_INTERVAL = 2000;
+    private static final int DEFAULT_REFRESH_INTERVAL = 300000;
+
+    private final Logger logger = LoggerFactory.getLogger(NetatmoDeviceHandler.class);
+    private final Object updateLock = new Object();
+    private @Nullable ScheduledFuture<?> refreshJob;
+    private @Nullable RefreshStrategy refreshStrategy;
+    private @Nullable DEVICE device;
     protected Map<String, Object> childs = new ConcurrentHashMap<>();
 
-    public NetatmoDeviceHandler(Thing thing) {
-        super(thing);
+    public NetatmoDeviceHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            logger.debug("Initializing {} with id '{}'", getClass(), getId());
-            if (bridge.getStatus() == ThingStatus.ONLINE) {
-                defineRefreshInterval();
-                updateStatus(ThingStatus.ONLINE);
-                scheduleRefreshJob();
-            } else {
-                logger.debug("setting device '{}' offline (bridge or thing offline)", getId());
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.BRIDGE_OFFLINE);
-            }
-        } else {
-            logger.debug("setting device '{}' offline (bridge == null)", getId());
-            updateStatus(ThingStatus.OFFLINE);
-        }
+    protected void initializeThing() {
+        defineRefreshInterval();
+        updateStatus(ThingStatus.ONLINE);
+        scheduleRefreshJob();
     }
 
     private void scheduleRefreshJob() {
-        long delay = refreshStrategy.nextRunDelayInS();
+        RefreshStrategy strategy = refreshStrategy;
+        if (strategy == null) {
+            return;
+        }
+        long delay = strategy.nextRunDelayInS();
         logger.debug("Scheduling update channel thread in {} s", delay);
         refreshJob = scheduler.schedule(() -> {
-            updateChannels();
-            if (refreshJob != null && !refreshJob.isCancelled()) {
-                logger.debug("cancel refresh job");
-                refreshJob.cancel(false);
+            updateChannels(false);
+            ScheduledFuture<?> job = refreshJob;
+            if (job != null) {
+                job.cancel(false);
                 refreshJob = null;
             }
             scheduleRefreshJob();
@@ -96,87 +93,96 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
-        if (refreshJob != null && !refreshJob.isCancelled()) {
-            logger.debug("cancel refresh job");
-            refreshJob.cancel(true);
+        ScheduledFuture<?> job = refreshJob;
+        if (job != null) {
+            job.cancel(true);
             refreshJob = null;
         }
     }
 
-    protected abstract DEVICE updateReadings();
+    protected abstract Optional<DEVICE> updateReadings();
 
     protected void updateProperties(DEVICE deviceData) {
     }
 
     @Override
     protected void updateChannels() {
-        if (refreshStrategy != null) {
-            logger.debug("Data aged of {} s", refreshStrategy.dataAge() / 1000);
-            if (refreshStrategy.isDataOutdated()) {
-                logger.debug("Trying to update channels on device {}", getId());
-                childs.clear();
+        updateChannels(true);
+    }
 
-                DEVICE newDeviceReading = null;
-                try {
-                    newDeviceReading = updateReadings();
-                } catch (RetrofitError e) {
-                    if (logger.isDebugEnabled()) {
-                        // we also attach the stack trace
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+    private void updateChannels(boolean requireDefinedRefreshInterval) {
+        // Avoid concurrent data readings
+        synchronized (updateLock) {
+            RefreshStrategy strategy = refreshStrategy;
+            if (strategy != null) {
+                logger.debug("Data aged of {} s", strategy.dataAge() / 1000);
+                boolean dataOutdated = (requireDefinedRefreshInterval && strategy.isSearchingRefreshInterval()) ? false
+                        : strategy.isDataOutdated();
+                if (dataOutdated) {
+                    logger.debug("Trying to update channels on device {}", getId());
+                    childs.clear();
+
+                    Optional<DEVICE> newDeviceReading = Optional.empty();
+                    try {
+                        newDeviceReading = updateReadings();
+                    } catch (RetrofitError e) {
+                        if (logger.isDebugEnabled()) {
+                            // we also attach the stack trace
+                            logger.error("Unable to connect Netatmo API : {}", e.getMessage(), e);
+                        } else {
+                            logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                        }
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Unable to connect Netatmo API : " + e.getLocalizedMessage());
+                    }
+                    if (newDeviceReading.isPresent()) {
+                        updateStatus(ThingStatus.ONLINE);
+                        logger.debug("Successfully updated device {} readings! Now updating channels", getId());
+                        DEVICE theDevice = newDeviceReading.get();
+                        this.device = theDevice;
+                        updateProperties(theDevice);
+                        getDataTimestamp().ifPresent(dataTimeStamp -> {
+                            strategy.setDataTimeStamp(dataTimeStamp, timeZoneProvider.getTimeZone());
+                        });
+                        getRadioHelper().ifPresent(helper -> helper.setModule(theDevice));
+                        getBridgeHandler().ifPresent(handler -> {
+                            handler.checkForNewThings(theDevice);
+                        });
                     } else {
-                        logger.error("Unable to connect Netatmo API : {}", e.getMessage());
+                        logger.debug("Failed to update device {} readings! Skip updating channels", getId());
                     }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "Unable to connect Netatmo API : " + e.getLocalizedMessage());
-                }
-                if (newDeviceReading != null) {
-                    updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Successfully updated device {} readings! Now updating channels", getId());
-                    this.device = newDeviceReading;
-                    updateProperties(device);
-                    Integer dataTimeStamp = getDataTimestamp();
-                    if (dataTimeStamp != null) {
-                        refreshStrategy.setDataTimeStamp(dataTimeStamp);
-                    }
-                    radioHelper.ifPresent(helper -> helper.setModule(device));
-                    NetatmoBridgeHandler handler = getBridgeHandler();
-                    if (handler != null) {
-                        handler.checkForNewThings(newDeviceReading);
-                    }
-                } else {
-                    logger.debug("Failed to update device {} readings! Skip updating channels", getId());
-                }
-                // Be sure that all channels for the modules will be updated with refreshed data
-                childs.forEach((childId, moduleData) -> {
-                    Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
-                    childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
-                        naChildModule.setRefreshRequired(true);
+                    // Be sure that all channels for the modules will be updated with refreshed data
+                    childs.forEach((childId, moduleData) -> {
+                        findNAThing(childId).map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+                            naChildModule.setRefreshRequired(true);
+                        });
                     });
-                });
-            } else {
-                logger.debug("Data still valid for device {}", getId());
+                } else {
+                    logger.debug("Data still valid for device {}", getId());
+                }
+                super.updateChannels();
+                updateChildModules();
             }
-            super.updateChannels();
-            updateChildModules();
         }
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
         try {
+            Optional<DEVICE> dev = getDevice();
             switch (channelId) {
                 case CHANNEL_LAST_STATUS_STORE:
-                    if (device != null) {
-                        Method getLastStatusStore = device.getClass().getMethod("getLastStatusStore");
-                        Integer lastStatusStore = (Integer) getLastStatusStore.invoke(device);
-                        return ChannelTypeUtils.toDateTimeType(lastStatusStore);
+                    if (dev.isPresent()) {
+                        Method getLastStatusStore = dev.get().getClass().getMethod("getLastStatusStore");
+                        Integer lastStatusStore = (Integer) getLastStatusStore.invoke(dev.get());
+                        return ChannelTypeUtils.toDateTimeType(lastStatusStore, timeZoneProvider.getTimeZone());
                     } else {
                         return UnDefType.UNDEF;
                     }
                 case CHANNEL_LOCATION:
-                    if (device != null) {
-                        Method getPlace = device.getClass().getMethod("getPlace");
-                        NAPlace place = (NAPlace) getPlace.invoke(device);
+                    if (dev.isPresent()) {
+                        Method getPlace = dev.get().getClass().getMethod("getPlace");
+                        NAPlace place = (NAPlace) getPlace.invoke(dev.get());
                         PointType point = new PointType(new DecimalType(place.getLocation().get(1)),
                                 new DecimalType(place.getLocation().get(0)));
                         if (place.getAltitude() != null) {
@@ -198,8 +204,7 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
     private void updateChildModules() {
         logger.debug("Updating child modules of {}", getId());
         childs.forEach((childId, moduleData) -> {
-            Optional<AbstractNetatmoThingHandler> childHandler = getBridgeHandler().findNAThing(childId);
-            childHandler.map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
+            findNAThing(childId).map(NetatmoModuleHandler.class::cast).ifPresent(naChildModule -> {
                 logger.debug("Updating child module {}", naChildModule.getId());
                 naChildModule.updateChannels(moduleData);
             });
@@ -220,16 +225,33 @@ public abstract class NetatmoDeviceHandler<DEVICE> extends AbstractNetatmoThingH
                 dataValidityPeriod = new BigDecimal(refreshPeriodProperty);
             }
         } else {
-            Object interval = config.get(REFRESH_INTERVAL);
-            dataValidityPeriod = (BigDecimal) interval;
+            Configuration conf = config;
+            Object interval = conf != null ? conf.get(REFRESH_INTERVAL) : null;
+            if (interval instanceof BigDecimal) {
+                dataValidityPeriod = (BigDecimal) interval;
+                if (dataValidityPeriod.intValue() < MIN_REFRESH_INTERVAL) {
+                    logger.info(
+                            "Refresh interval setting is too small for thing {}, {} ms is considered as refresh interval.",
+                            thing.getUID(), MIN_REFRESH_INTERVAL);
+                    dataValidityPeriod = new BigDecimal(MIN_REFRESH_INTERVAL);
+                }
+            } else {
+                dataValidityPeriod = new BigDecimal(DEFAULT_REFRESH_INTERVAL);
+            }
         }
         refreshStrategy = new RefreshStrategy(dataValidityPeriod.intValue());
     }
 
-    protected abstract @Nullable Integer getDataTimestamp();
+    protected abstract Optional<Integer> getDataTimestamp();
 
     public void expireData() {
-        refreshStrategy.expireData();
+        RefreshStrategy strategy = refreshStrategy;
+        if (strategy != null) {
+            strategy.expireData();
+        }
     }
 
+    protected Optional<DEVICE> getDevice() {
+        return Optional.ofNullable(device);
+    }
 }

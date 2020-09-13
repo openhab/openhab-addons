@@ -1,11 +1,11 @@
 # Adorne Binding 
 
-The Adorne Binding integrates [Adorne Wi-Fi ready devices](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls.aspx) (switches, dimmers, outlets) from [Legrand](legrand.com).
+The Adorne Binding integrates [Adorne Wi-Fi ready devices](https://www.legrand.us/adorne/products/wireless-whole-house-lighting-controls.aspx) (switches, dimmers, outlets) from [Legrand](https://legrand.com/).
 
 Legrand attempted to provide a public API based on Samsung's ARTIK Cloud and the initial version of this binding was based on that API.
 However, Samsung shut down ARTIK Cloud shortly after the release and Legrand has not offered a public API replacement since.
 That leaves direct interaction with the Adorne Hub as the only control option.
-Consequently the OpenHAB server and the Adorne Hub must be located on the same network.
+Consequently the openHAB server and the Adorne Hub must be located on the same network.
 
 The Adorne Hub supports a REST API, but unfortunately there is no documentation or official support from Legrand.
 This binding's implementation of the REST API is motivated by the great work of [sbozarth](https://github.com/sbozarth/homebridge-lc7001) who figured out the API details.
@@ -32,7 +32,7 @@ Background discovery is not supported.
 The hub offers two optional configuration parameters:
 | Parameter | Description                                                                                                                                                                                                                                                           |
 |-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| host      | The URL to reach the hub. The hub makes itself known through mDNS as `LCM1.local` and the host parameter defaults to this value. As long as the OpenHAB server and the hub are on the same broadcast domain for mDNS the host parameter doesn't need to be specified. |
+| host      | The URL to reach the hub. The hub makes itself known through mDNS as `LCM1.local` and the host parameter defaults to this value. As long as the openHAB server and the hub are on the same broadcast domain for mDNS the host parameter doesn't need to be specified. |
 | port      | The port the hub communicates on. By default the hub answers on port 2112 and the port parameter defaults to this value. As long as the hub configuration hasn't been changed the port parameter doesn't need to be specified.                                        |
 
 ### Devices
@@ -64,14 +64,14 @@ This matches how power and brightness are managed on the physical dimmer itself.
 
 To avoid confusion for the user any UI must ensure that only values from 1 to 100 are passed to the brightness channel.
 A default slider allows a 0 value and should not be used since there will be no response when the user selects 0. 
-Common UI choices are Sliders or Setpoints with a minimum value of 1 and a maximum value of 100 (min/max values in Sliders are only supported as of OpenHAB 2.5).
+Common UI choices are Sliders or Setpoints with a minimum value of 1 and a maximum value of 100 (min/max values in Sliders are only supported as of openHAB 2.5).
 
 ## Example
 
 This is a simple example that uses an Adorne switch and two dimmers.
 Remember that the host and port parameter are not needed in most cases.
 As discussed above care is taken that the brightness channel only allows values from 1 to 100 by specifying a min and max value in the sitemap for the dimmers.
-For this example to run on an OpenHAB version older than 2.5 Bedroom 1's Slider must be removed in the sitemap since older versions don't support the min/max setting. 
+For this example to run on an openHAB version older than 2.5 Bedroom 1's Slider must be removed in the sitemap since older versions don't support the min/max setting. 
 
 ## demo.things
 

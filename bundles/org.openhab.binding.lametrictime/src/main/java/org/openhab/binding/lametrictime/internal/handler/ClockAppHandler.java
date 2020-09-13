@@ -14,9 +14,7 @@ package org.openhab.binding.lametrictime.internal.handler;
 
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.*;
 
-import java.time.Instant;
 import java.time.LocalTime;
-import java.time.ZoneId;
 
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -25,11 +23,11 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.lametrictime.api.local.ApplicationActionException;
+import org.openhab.binding.lametrictime.api.model.CoreApps;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeAppConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.syphr.lametrictime.api.local.ApplicationActionException;
-import org.syphr.lametrictime.api.model.CoreApps;
 
 /**
  * The {@link ClockAppHandler} represents an instance of the built-in clock app.
@@ -52,8 +50,7 @@ public class ClockAppHandler extends AbstractLaMetricTimeAppHandler {
         try {
             switch (channelUID.getId()) {
                 case CHANNEL_APP_SET_ALARM: {
-                    LocalTime time = Instant.ofEpochMilli(((DateTimeType) command).getCalendar().getTimeInMillis())
-                            .atZone(ZoneId.systemDefault()).toLocalTime();
+                    LocalTime time = ((DateTimeType) command).getZonedDateTime().toLocalTime();
                     getDevice().doAction(getWidget(), CoreApps.clock().setAlarm(true, time, null));
                     updateActiveAppOnDevice();
                     break;

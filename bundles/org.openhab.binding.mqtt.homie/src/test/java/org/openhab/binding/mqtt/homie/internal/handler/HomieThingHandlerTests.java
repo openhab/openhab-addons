@@ -45,9 +45,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.TypeParser;
 import org.eclipse.smarthome.io.transport.mqtt.MqttBrokerConnection;
-import org.eclipse.smarthome.test.java.JavaTest;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -134,20 +132,18 @@ public class HomieThingHandlerTests {
         doReturn(false).when(scheduledFuture).isDone();
         doReturn(scheduledFuture).when(scheduler).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
 
-        final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, 30, 5);
+        final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, 1000, 30, 5);
         thingHandler = spy(handler);
         thingHandler.setCallback(callback);
         final Device device = new Device(thing.getUID(), thingHandler, spy(new DeviceAttributes()),
                 spy(new ChildMap<>()));
-        thingHandler.setInternalObjects(spy(device),
-                spy(new DelayedBatchProcessing<Object>(500, thingHandler, scheduler)));
+        thingHandler.setInternalObjects(spy(device), spy(new DelayedBatchProcessing<>(500, thingHandler, scheduler)));
 
         // Return the bridge handler if the thing handler asks for it
         doReturn(bridgeHandler).when(thingHandler).getBridgeHandler();
 
         // We are by default online
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
-
     }
 
     @Test
@@ -326,7 +322,7 @@ public class HomieThingHandlerTests {
 
     @Test
     public void propertiesChanged() throws InterruptedException, ExecutionException {
-        thingHandler.device.initialize("homie", "device", new ArrayList<Channel>());
+        thingHandler.device.initialize("homie", "device", new ArrayList<>());
         ThingHandlerHelper.setConnection(thingHandler, connection);
 
         // Create mocked homie device tree with one node and one property

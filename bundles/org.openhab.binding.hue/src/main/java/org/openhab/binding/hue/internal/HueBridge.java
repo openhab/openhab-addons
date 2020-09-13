@@ -22,12 +22,14 @@ import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -55,6 +57,7 @@ import com.google.gson.JsonParser;
  * @author Andre Fuechsel - search for lights with given serial number added
  * @author Denis Dudnik - moved Jue library source code inside the smarthome Hue binding, minor code cleanup
  * @author Samuel Leisering - added cached config and API-Version
+ * @author Laurent Garnier - change the return type of getGroups
  */
 @NonNullByDefault
 public class HueBridge {
@@ -111,6 +114,17 @@ public class HueBridge {
             throws IOException, ApiException {
         this(ip, port, protocol, scheduler);
         authenticate(username);
+    }
+
+    /**
+     * Test constructor
+     */
+    HueBridge(String ip, String baseUrl, String username, ScheduledExecutorService scheduler, HttpClient http) {
+        this.ip = ip;
+        this.baseUrl = baseUrl;
+        this.username = username;
+        this.scheduler = scheduler;
+        this.http = http;
     }
 
     /**
@@ -377,10 +391,10 @@ public class HueBridge {
         requireAuthentication();
 
         String body = update.toJson();
-        return http.putAsync(getRelativeURL("sensors/" + enc(sensor.getId()) + "/state"), body, update.getMessageDelay(),
-                scheduler);
-    }    
-    
+        return http.putAsync(getRelativeURL("sensors/" + enc(sensor.getId()) + "/state"), body,
+                update.getMessageDelay(), scheduler);
+    }
+
     /**
      * Changes the config of a sensor.
      *
@@ -415,20 +429,23 @@ public class HueBridge {
      * @return list of groups
      * @throws UnauthorizedException thrown if the user no longer exists
      */
-    public List<Group> getGroups() throws IOException, ApiException {
+    public List<FullGroup> getGroups() throws IOException, ApiException {
         requireAuthentication();
 
         Result result = http.get(getRelativeURL("groups"));
 
         handleErrors(result);
 
-        Map<String, Group> groupMap = safeFromJson(result.getBody(), Group.GSON_TYPE);
-        ArrayList<Group> groupList = new ArrayList<>();
+        Map<String, FullGroup> groupMap = safeFromJson(result.getBody(), FullGroup.GSON_TYPE);
+        ArrayList<FullGroup> groupList = new ArrayList<>();
 
-        groupList.add(new Group());
+        if (groupMap.get("0") == null) {
+            // Group 0 is not returned, we create it as in fact it exists
+            groupList.add(getGroup(new Group()));
+        }
 
         for (String id : groupMap.keySet()) {
-            Group group = groupMap.get(id);
+            FullGroup group = groupMap.get(id);
             group.setId(id);
             groupList.add(group);
         }
@@ -601,13 +618,12 @@ public class HueBridge {
      * @throws UnauthorizedException thrown if the user no longer exists
      * @throws EntityNotAvailableException thrown if the specified group no longer exists
      */
-    public void setGroupState(Group group, StateUpdate update) throws IOException, ApiException {
+    public CompletableFuture<Result> setGroupState(Group group, StateUpdate update) {
         requireAuthentication();
 
         String body = update.toJson();
-        Result result = http.put(getRelativeURL("groups/" + enc(group.getId()) + "/action"), body);
-
-        handleErrors(result);
+        return http.putAsync(getRelativeURL("groups/" + enc(group.getId()) + "/action"), body, update.getMessageDelay(),
+                scheduler);
     }
 
     /**
@@ -846,6 +862,39 @@ public class HueBridge {
         Result result = http.delete(getRelativeURL("schedules/" + enc(schedule.getId())));
 
         handleErrors(result);
+    }
+
+    /**
+     * Returns the list of scenes that are not recyclable.
+     *
+     * @return all scenes that can be activated
+     */
+    public List<Scene> getScenes() throws IOException, ApiException {
+        requireAuthentication();
+
+        Result result = http.get(getRelativeURL("scenes"));
+        handleErrors(result);
+
+        Map<String, Scene> sceneMap = safeFromJson(result.getBody(), Scene.GSON_TYPE);
+        return sceneMap.entrySet().stream()//
+                .map(e -> {
+                    e.getValue().setId(e.getKey());
+                    return e.getValue();
+                })//
+                .filter(scene -> !scene.isRecycle())//
+                .sorted(Comparator.comparing(Scene::extractKeyForComparator))//
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Activate scene to all lights that belong to the scene.
+     *
+     * @param id the scene to be activated
+     * @throws IOException if the bridge cannot be reached
+     */
+    public CompletableFuture<Result> recallScene(String id) {
+        Group allLightsGroup = new Group();
+        return setGroupState(allLightsGroup, new StateUpdate().setScene(id));
     }
 
     /**

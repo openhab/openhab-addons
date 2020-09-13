@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_30;
 
-import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
+import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.CHANNEL_SMOKEDETECTION;
 
 import java.util.function.Function;
 
@@ -47,12 +47,10 @@ public class A5_30_03_ELTAKO extends A5_30_03 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         byte db1 = getDB_1();
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
-                return db1 == ALARM_ON ? OnOffType.ON
-                        : (db1 == ALARM_OFF ? OnOffType.OFF : UnDefType.UNDEF);
+                return db1 == ALARM_ON ? OnOffType.ON : (db1 == ALARM_OFF ? OnOffType.OFF : UnDefType.UNDEF);
         }
 
         return super.convertToStateImpl(channelId, channelTypeId, getCurrentStateFunc, config);

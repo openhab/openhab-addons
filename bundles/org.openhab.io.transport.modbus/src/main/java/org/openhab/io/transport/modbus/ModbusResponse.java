@@ -33,5 +33,4 @@ public interface ModbusResponse {
      * @return function code of the response
      */
     public int getFunctionCode();
-
 }

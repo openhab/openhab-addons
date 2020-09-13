@@ -42,5 +42,4 @@ public class Priority {
     public void setDurationMs(Integer durationMs) {
         this.durationMs = durationMs;
     }
-
 }

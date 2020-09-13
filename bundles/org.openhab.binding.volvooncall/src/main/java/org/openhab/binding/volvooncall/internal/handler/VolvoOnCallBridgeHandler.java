@@ -36,9 +36,12 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
+import org.openhab.binding.volvooncall.internal.VolvoOnCallException.ErrorType;
 import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
+import org.openhab.binding.volvooncall.internal.dto.VocAnswer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +75,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
         httpHeader.put("x-originator-type", "App");
         httpHeader.put("x-os-type", "Android");
         httpHeader.put("x-os-version", "22");
+        httpHeader.put("Accept", "*/*");
 
         gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class,
@@ -101,7 +105,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Incorrect username or password");
             }
-        } catch (IOException | JsonSyntaxException e) {
+        } catch (JsonSyntaxException | VolvoOnCallException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
@@ -114,19 +118,29 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     public String[] getVehiclesRelationsURL() {
         if (customerAccount != null) {
             return customerAccount.accountVehicleRelationsURL;
-        } else {
-            return new String[0];
         }
+        return new String[0];
     }
 
-    public <T> T getURL(Class<T> objectClass, String vin) throws IOException, JsonSyntaxException {
+    public <T extends VocAnswer> T getURL(Class<T> objectClass, String vin) throws VolvoOnCallException {
         String url = SERVICE_URL + "vehicles/" + vin + "/" + objectClass.getSimpleName().toLowerCase();
         return getURL(url, objectClass);
     }
 
-    public <T> T getURL(String url, Class<T> objectClass) throws IOException, JsonSyntaxException {
-        String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
-        return gson.fromJson(jsonResponse, objectClass);
+    public <T extends VocAnswer> T getURL(String url, Class<T> objectClass) throws VolvoOnCallException {
+        try {
+            String jsonResponse = HttpUtil.executeUrl("GET", url, httpHeader, null, JSON_CONTENT_TYPE, REQUEST_TIMEOUT);
+            logger.debug("Request for : {}", url);
+            logger.debug("Received : {}", jsonResponse);
+            T response = gson.fromJson(jsonResponse, objectClass);
+            String error = response.getErrorLabel();
+            if (error != null) {
+                throw new VolvoOnCallException(error, response.getErrorDescription());
+            }
+            return response;
+        } catch (JsonSyntaxException | IOException e) {
+            throw new VolvoOnCallException(e);
+        }
     }
 
     public class ActionResultControler implements Runnable {
@@ -141,7 +155,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
             switch (postResponse.status) {
                 case SUCCESSFULL:
                 case FAILED:
-                    logger.debug("Action status : {} for vehicle : {}.", postResponse.status.toString(),
+                    logger.info("Action status : {} for vehicle : {}.", postResponse.status.toString(),
                             postResponse.vehicleId);
                     getThing().getThings().stream().filter(VehicleHandler.class::isInstance)
                             .map(VehicleHandler.class::cast)
@@ -151,25 +165,32 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
                     try {
                         postResponse = getURL(postResponse.serviceURL, PostResponse.class);
                         scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
-                    } catch (JsonSyntaxException | IOException e) {
-                        logger.warn("Error calling : {} : {}", postResponse.serviceURL, e.getMessage());
+                    } catch (VolvoOnCallException e) {
+                        if (e.getType() == ErrorType.SERVICE_UNAVAILABLE) {
+                            scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS);
+                        }
                     }
             }
         }
     }
 
-    void postURL(String URL, @Nullable String body) throws IOException, JsonSyntaxException {
+    void postURL(String URL, @Nullable String body) throws VolvoOnCallException {
         InputStream inputStream = body != null ? new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8)) : null;
-        String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
-        logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
-        PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
-        if (postResponse.errorLabel == null) {
-            pendingActions
-                    .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
-        } else {
-            logger.warn("URL {} returned {}", URL, postResponse.errorDescription);
+        try {
+            String jsonString = HttpUtil.executeUrl("POST", URL, httpHeader, inputStream, null, REQUEST_TIMEOUT);
+            logger.debug("Post URL: {} Attributes {}", URL, httpHeader);
+            PostResponse postResponse = gson.fromJson(jsonString, PostResponse.class);
+            String error = postResponse.getErrorLabel();
+            if (error == null) {
+                pendingActions
+                        .add(scheduler.schedule(new ActionResultControler(postResponse), 1000, TimeUnit.MILLISECONDS));
+            } else {
+                throw new VolvoOnCallException(error, postResponse.getErrorDescription());
+            }
+            pendingActions.removeIf(ScheduledFuture::isDone);
+        } catch (JsonSyntaxException | IOException e) {
+            throw new VolvoOnCallException(e);
         }
-        pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
     @Override

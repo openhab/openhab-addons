@@ -14,6 +14,8 @@ package org.openhab.binding.sonos.internal;
 
 import java.io.Serializable;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the resource meta data within a browse response result
  * "<r:resMD>..</r:resMD>". This is used for SONOS favorites.
@@ -21,9 +23,11 @@ import java.io.Serializable;
  * @author Dan Cunningham - Initial contribution
  *
  */
+@NonNullByDefault
 public class SonosResourceMetaData implements Serializable {
 
     private static final long serialVersionUID = 7438424501599637712L;
+
     String id;
     String parentId;
     String title;
@@ -86,5 +90,4 @@ public class SonosResourceMetaData implements Serializable {
     public String getDesc() {
         return desc;
     }
-
 }

@@ -187,6 +187,13 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
                     nhcThermostat.getOverrule(), nhcThermostat.getDemand());
 
             logger.debug("Niko Home Control: thermostat intialized {}", thermostatId);
+
+            Bridge bridge = getBridge();
+            if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            }
         });
     }
 
@@ -204,9 +211,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
 
     @Override
     public void thermostatEvent(int measured, int setpoint, int mode, int overrule, int demand) {
-        updateState(CHANNEL_MEASURED, new QuantityType<Temperature>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
+        updateState(CHANNEL_MEASURED, new QuantityType<>(nhcThermostat.getMeasured() / 10.0, CELSIUS));
 
-        long overruletime = nhcThermostat.getRemainingOverruletime();
+        int overruletime = nhcThermostat.getRemainingOverruletime();
         updateState(CHANNEL_OVERRULETIME, new DecimalType(overruletime));
         // refresh the remaining time every minute
         scheduleRefreshOverruletime(nhcThermostat);
@@ -214,9 +221,9 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         // If there is an overrule temperature set, use this in the setpoint channel, otherwise use the original
         // setpoint temperature
         if (overruletime == 0) {
-            updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(setpoint / 10.0, CELSIUS));
+            updateState(CHANNEL_SETPOINT, new QuantityType<>(setpoint / 10.0, CELSIUS));
         } else {
-            updateState(CHANNEL_SETPOINT, new QuantityType<Temperature>(overrule / 10.0, CELSIUS));
+            updateState(CHANNEL_SETPOINT, new QuantityType<>(overrule / 10.0, CELSIUS));
         }
 
         updateState(CHANNEL_MODE, new DecimalType(mode));
@@ -240,7 +247,7 @@ public class NikoHomeControlThermostatHandler extends BaseThingHandler implement
         }
 
         refreshTimer = scheduler.scheduleWithFixedDelay(() -> {
-            long remainingTime = nhcThermostat.getRemainingOverruletime();
+            int remainingTime = nhcThermostat.getRemainingOverruletime();
             updateState(CHANNEL_OVERRULETIME, new DecimalType(remainingTime));
             if (remainingTime <= 0) {
                 cancelRefreshTimer();

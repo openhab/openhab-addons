@@ -56,5 +56,4 @@ public enum ModbusWriteFunctionCode {
         return Stream.of(ModbusWriteFunctionCode.values()).filter(v -> v.getFunctionCode() == functionCode).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid functionCode"));
     }
-
 }

@@ -28,15 +28,15 @@
 
 	<thing-type id="channel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="xmltvfile" />
+			<bridge-type-ref id="xmltvfile"/>
 		</supported-bridge-type-refs>
 		<label>Channel</label>
 		<description>This represent a channel on a given TV file</description>
 
 		<channel-groups>
-			<channel-group id="channelprops" typeId="channelprops" />
-			<channel-group id="currentprog" typeId="currentprog" />
-			<channel-group id="nextprog" typeId="nextprog" />
+			<channel-group id="channelprops" typeId="channelprops"/>
+			<channel-group id="currentprog" typeId="currentprog"/>
+			<channel-group id="nextprog" typeId="nextprog"/>
 		</channel-groups>
 
 		<config-description>
@@ -65,8 +65,8 @@
 		<label>Channel Properties</label>
 		<description>Properties of the current channel</description>
 		<channels>
-			<channel id="iconUrl" typeId="iconUrl" />
-			<channel id="icon" typeId="icon" />
+			<channel id="iconUrl" typeId="iconUrl"/>
+			<channel id="icon" typeId="icon"/>
 		</channels>
 	</channel-group-type>
 
@@ -74,15 +74,15 @@
 		<label>Current Program</label>
 		<description>Program currently on air on this channel</description>
 		<channels>
-			<channel id="progStart" typeId="progStart" />
-			<channel id="progEnd" typeId="progEnd" />
-			<channel id="progTitle" typeId="progTitle" />
-			<channel id="progCategory" typeId="progCategory" />
-			<channel id="progIconUrl" typeId="progIconUrl" />
-			<channel id="icon" typeId="icon" />
-			<channel id="elapsedTime" typeId="elapsedTime" />
-			<channel id="remainingTime" typeId="remainingTime" />
-			<channel id="progress" typeId="progress" />
+			<channel id="progStart" typeId="progStart"/>
+			<channel id="progEnd" typeId="progEnd"/>
+			<channel id="progTitle" typeId="progTitle"/>
+			<channel id="progCategory" typeId="progCategory"/>
+			<channel id="progIconUrl" typeId="progIconUrl"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="elapsedTime" typeId="elapsedTime"/>
+			<channel id="remainingTime" typeId="remainingTime"/>
+			<channel id="progress" typeId="progress"/>
 		</channels>
 	</channel-group-type>
 
@@ -90,13 +90,13 @@
 		<label>Next Program</label>
 		<description>Program which will follow current program on this channel</description>
 		<channels>
-			<channel id="progStart" typeId="progStart" />
-			<channel id="timeLeft" typeId="timeLeft" />
-			<channel id="progEnd" typeId="progEnd" />
-			<channel id="progTitle" typeId="progTitle" />
-			<channel id="progCategory" typeId="progCategory" />
-			<channel id="progIconUrl" typeId="progIconUrl" />
-			<channel id="icon" typeId="icon" />
+			<channel id="progStart" typeId="progStart"/>
+			<channel id="timeLeft" typeId="timeLeft"/>
+			<channel id="progEnd" typeId="progEnd"/>
+			<channel id="progTitle" typeId="progTitle"/>
+			<channel id="progCategory" typeId="progCategory"/>
+			<channel id="progIconUrl" typeId="progIconUrl"/>
+			<channel id="icon" typeId="icon"/>
 		</channels>
 	</channel-group-type>
 
@@ -104,70 +104,70 @@
 		<item-type>String</item-type>
 		<label>Channel Icon URL</label>
 		<description>Icon URL of the TV channel.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="progIconUrl" advanced="true">
 		<item-type>String</item-type>
 		<label>Program URL</label>
 		<description>URL to an image of the program.</description>
-		<state readOnly="true" pattern="%s" />
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 
 	<channel-type id="progTitle">
 		<item-type>String</item-type>
 		<label>Title</label>
 		<description>Program Title.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="progCategory">
 		<item-type>String</item-type>
 		<label>Category</label>
 		<description>Program Category.</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="progStart">
 		<item-type>DateTime</item-type>
 		<label>Start Time</label>
 		<description>Program Start Time</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="progEnd">
 		<item-type>DateTime</item-type>
 		<label>End Time</label>
 		<description>Program End Time</description>
-		<state readOnly="true" pattern="%1$tF %1$tR" />
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
 	</channel-type>
 
 	<channel-type id="elapsedTime">
 		<item-type>Number:Time</item-type>
 		<label>Current Time</label>
 		<description>Current time of currently playing program.</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="remainingTime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Remaining Time</label>
 		<description>Time remaining until end of the program.</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="timeLeft" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Time Left</label>
 		<description>Time left before program start</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="progress">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Progress</label>
 		<description>Relative progression of the current program.</description>
-		<state readOnly="true" pattern="%d %unit%" />
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="icon">

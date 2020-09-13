@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="autelis" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="autelis"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<thing-type id="jandy">
 		<label>Jandy Pool Controller</label>
 		<description>A Jandy pool control thing represents a Autelis pool controller for Jandy systems</description>
 		<channels>
-			<channel id="system-runstate" typeId="system-runstate" />
-			<channel id="system-model" typeId="system-model" />
-			<channel id="system-dip" typeId="system-dip" />
-			<channel id="system-opmode" typeId="system-opmode" />
-			<channel id="system-vbat" typeId="system-vbat" />
-			<channel id="system-lowbat" typeId="system-lowbat" />
-			<channel id="system-time" typeId="system-time" />
+			<channel id="system-runstate" typeId="system-runstate"/>
+			<channel id="system-model" typeId="system-model"/>
+			<channel id="system-dip" typeId="system-dip"/>
+			<channel id="system-opmode" typeId="system-opmode"/>
+			<channel id="system-vbat" typeId="system-vbat"/>
+			<channel id="system-lowbat" typeId="system-lowbat"/>
+			<channel id="system-time" typeId="system-time"/>
 			<channel id="equipment-pump" typeId="equipment-switch">
 				<label>Pump</label>
 				<description>The current state of the pump</description>
@@ -173,27 +174,27 @@
 				<label>Solar Temperature</label>
 				<description>The current solar temperature</description>
 			</channel>
-			<channel id="temp-tempunits" typeId="temp-tempunits" />
-			<channel id="pumps-vsp1" typeId="pumps-vsp1" />
-			<channel id="pumps-vsp2" typeId="pumps-vsp2" />
-			<channel id="pumps-vsp3" typeId="pumps-vsp3" />
-			<channel id="pumps-vsp4" typeId="pumps-vsp4" />
-			<channel id="chem-avail" typeId="chem-avail" />
-			<channel id="chem-chlrp" typeId="chem-chlrp" />
-			<channel id="chem-saltp" typeId="chem-saltp" />
-			<channel id="chem-chlrs" typeId="chem-chlrs" />
-			<channel id="chem-salts" typeId="chem-salts" />
-			<channel id="chem-orp1" typeId="chem-orp1" />
-			<channel id="chem-orp2" typeId="chem-orp2" />
-			<channel id="chem-ph1" typeId="chem-ph1" />
-			<channel id="chem-ph2" typeId="chem-ph2" />
-			<channel id="chem-orpfd1" typeId="chem-orpfd1" />
-			<channel id="chem-orpfd2" typeId="chem-orpfd2" />
-			<channel id="chem-phfd1" typeId="chem-phfd1" />
-			<channel id="chem-phfd2" typeId="chem-phfd2" />
-			<channel id="reboot" typeId="reboot" />
+			<channel id="temp-tempunits" typeId="temp-tempunits"/>
+			<channel id="pumps-vsp1" typeId="pumps-vsp1"/>
+			<channel id="pumps-vsp2" typeId="pumps-vsp2"/>
+			<channel id="pumps-vsp3" typeId="pumps-vsp3"/>
+			<channel id="pumps-vsp4" typeId="pumps-vsp4"/>
+			<channel id="chem-avail" typeId="chem-avail"/>
+			<channel id="chem-chlrp" typeId="chem-chlrp"/>
+			<channel id="chem-saltp" typeId="chem-saltp"/>
+			<channel id="chem-chlrs" typeId="chem-chlrs"/>
+			<channel id="chem-salts" typeId="chem-salts"/>
+			<channel id="chem-orp1" typeId="chem-orp1"/>
+			<channel id="chem-orp2" typeId="chem-orp2"/>
+			<channel id="chem-ph1" typeId="chem-ph1"/>
+			<channel id="chem-ph2" typeId="chem-ph2"/>
+			<channel id="chem-orpfd1" typeId="chem-orpfd1"/>
+			<channel id="chem-orpfd2" typeId="chem-orpfd2"/>
+			<channel id="chem-phfd1" typeId="chem-phfd1"/>
+			<channel id="chem-phfd2" typeId="chem-phfd2"/>
+			<channel id="reboot" typeId="reboot"/>
 		</channels>
-		
+
 		<config-description>
 			<parameter name="host" type="text" required="true">
 				<context>network-address</context>

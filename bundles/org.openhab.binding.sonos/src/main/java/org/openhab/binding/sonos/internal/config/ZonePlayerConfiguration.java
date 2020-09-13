@@ -12,10 +12,14 @@
  */
 package org.openhab.binding.sonos.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  *
  * @author Karel Goderis - Initial contribution
  */
+@NonNullByDefault
 public class ZonePlayerConfiguration {
 
     public static final String UDN = "udn";
@@ -23,9 +27,8 @@ public class ZonePlayerConfiguration {
     public static final String NOTIFICATION_TIMEOUT = "notificationTimeout";
     public static final String NOTIFICATION_VOLUME = "notificationVolume";
 
-    public String udn;
-    public Integer refresh;
-    public Integer notificationTimeout;
-    public Integer notificationVolume;
-
+    public @Nullable String udn;
+    public int refresh = 60;
+    public int notificationTimeout = 20;
+    public @Nullable Integer notificationVolume;
 }

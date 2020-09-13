@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.smarthome.config.core.Configuration;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -40,11 +41,12 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapWeatherA
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonDailyForecastData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonHourlyForecastData;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonWeatherData;
-import org.openhab.binding.openweathermap.internal.model.base.Rain;
-import org.openhab.binding.openweathermap.internal.model.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonDailyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonHourlyForecastData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonWeatherData;
+import org.openhab.binding.openweathermap.internal.dto.base.Rain;
+import org.openhab.binding.openweathermap.internal.dto.base.Snow;
+import org.openhab.binding.openweathermap.internal.dto.forecast.daily.FeelsLikeTemp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +78,8 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private @Nullable OpenWeatherMapJsonHourlyForecastData hourlyForecastData;
     private @Nullable OpenWeatherMapJsonDailyForecastData dailyForecastData;
 
-    public OpenWeatherMapWeatherAndForecastHandler(Thing thing) {
-        super(thing);
+    public OpenWeatherMapWeatherAndForecastHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -88,13 +90,13 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 OpenWeatherMapWeatherAndForecastConfiguration.class);
 
         boolean configValid = true;
-        int newForecastHours = config.getForecastHours();
+        int newForecastHours = config.forecastHours;
         if (newForecastHours < 0 || newForecastHours > 120 || newForecastHours % 3 != 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-hours");
             configValid = false;
         }
-        int newForecastDays = config.getForecastDays();
+        int newForecastDays = config.forecastDays;
         if (newForecastDays < 0 || newForecastDays > 16) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-number-of-days");
@@ -277,6 +279,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(localWeatherData.getMain().getTemp(), CELSIUS);
                     break;
+                case CHANNEL_APPARENT_TEMPERATURE:
+                    state = getQuantityTypeState(localWeatherData.getMain().getFeelsLikeTemp(), CELSIUS);
+                    break;
                 case CHANNEL_PRESSURE:
                     state = getQuantityTypeState(localWeatherData.getMain().getPressure(), HECTO(PASCAL));
                     break;
@@ -329,8 +334,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private void updateHourlyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (hourlyForecastData != null && hourlyForecastData.getList().size() > count) {
-            org.openhab.binding.openweathermap.internal.model.forecast.hourly.List forecastData = hourlyForecastData
+        OpenWeatherMapJsonHourlyForecastData localHourlyForecastData = hourlyForecastData;
+        if (localHourlyForecastData != null && localHourlyForecastData.getList().size() > count) {
+            org.openhab.binding.openweathermap.internal.dto.forecast.hourly.List forecastData = localHourlyForecastData
                     .getList().get(count);
             State state = UnDefType.UNDEF;
             switch (channelId) {
@@ -360,6 +366,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     break;
                 case CHANNEL_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getMain().getTemp(), CELSIUS);
+                    break;
+                case CHANNEL_APPARENT_TEMPERATURE:
+                    state = getQuantityTypeState(forecastData.getMain().getFeelsLikeTemp(), CELSIUS);
                     break;
                 case CHANNEL_MIN_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getMain().getTempMin(), CELSIUS);
@@ -410,8 +419,9 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     private void updateDailyForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (dailyForecastData != null && dailyForecastData.getList().size() > count) {
-            org.openhab.binding.openweathermap.internal.model.forecast.daily.List forecastData = dailyForecastData
+        OpenWeatherMapJsonDailyForecastData localDailyForecastData = dailyForecastData;
+        if (localDailyForecastData != null && localDailyForecastData.getList().size() > count) {
+            org.openhab.binding.openweathermap.internal.dto.forecast.daily.List forecastData = localDailyForecastData
                     .getList().get(count);
             State state = UnDefType.UNDEF;
             switch (channelId) {
@@ -444,6 +454,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                     break;
                 case CHANNEL_MAX_TEMPERATURE:
                     state = getQuantityTypeState(forecastData.getTemp().getMax(), CELSIUS);
+                    break;
+                case CHANNEL_APPARENT_TEMPERATURE:
+                    FeelsLikeTemp feelsLikeTemp = forecastData.getFeelsLikeTemp();
+                    if (feelsLikeTemp != null) {
+                        state = getQuantityTypeState(feelsLikeTemp.getDay(), CELSIUS);
+                    }
                     break;
                 case CHANNEL_PRESSURE:
                     state = getQuantityTypeState(forecastData.getPressure(), HECTO(PASCAL));

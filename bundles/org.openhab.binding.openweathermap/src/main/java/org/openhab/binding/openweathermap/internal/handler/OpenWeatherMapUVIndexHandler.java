@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -33,7 +34,7 @@ import org.openhab.binding.openweathermap.internal.config.OpenWeatherMapUVIndexC
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapCommunicationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConfigurationException;
 import org.openhab.binding.openweathermap.internal.connection.OpenWeatherMapConnection;
-import org.openhab.binding.openweathermap.internal.model.OpenWeatherMapJsonUVIndexData;
+import org.openhab.binding.openweathermap.internal.dto.OpenWeatherMapJsonUVIndexData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +61,8 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     private @Nullable OpenWeatherMapJsonUVIndexData uvindexData;
     private @Nullable List<OpenWeatherMapJsonUVIndexData> uvindexForecastData;
 
-    public OpenWeatherMapUVIndexHandler(Thing thing) {
-        super(thing);
+    public OpenWeatherMapUVIndexHandler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
         OpenWeatherMapUVIndexConfiguration config = getConfigAs(OpenWeatherMapUVIndexConfiguration.class);
 
         boolean configValid = true;
-        int newForecastDays = config.getForecastDays();
+        int newForecastDays = config.forecastDays;
         if (newForecastDays < 1 || newForecastDays > 8) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-not-supported-uvindex-number-of-days");
@@ -182,8 +183,9 @@ public class OpenWeatherMapUVIndexHandler extends AbstractOpenWeatherMapHandler 
     private void updateUVIndexForecastChannel(ChannelUID channelUID, int count) {
         String channelId = channelUID.getIdWithoutGroup();
         String channelGroupId = channelUID.getGroupId();
-        if (uvindexForecastData != null && uvindexForecastData.size() >= count) {
-            OpenWeatherMapJsonUVIndexData forecastData = uvindexForecastData.get(count - 1);
+        List<OpenWeatherMapJsonUVIndexData> localUVIndexForecastData = uvindexForecastData;
+        if (localUVIndexForecastData != null && localUVIndexForecastData.size() >= count) {
+            OpenWeatherMapJsonUVIndexData forecastData = localUVIndexForecastData.get(count - 1);
             State state = UnDefType.UNDEF;
             switch (channelId) {
                 case CHANNEL_TIME_STAMP:

@@ -81,9 +81,9 @@ public class ApiAccess {
     /**
      * Issues an HTTP request on the API's URL. Makes sure that the request is correctly formatted.
      *
-     * @param method      The HTTP method to use (POST, GET, ...)
-     * @param url         The URL to query
-     * @param headers     The optional additional headers to apply, can be null
+     * @param method The HTTP method to use (POST, GET, ...)
+     * @param url The URL to query
+     * @param headers The optional additional headers to apply, can be null
      * @param requestData The optional request data to use, can be null
      * @param contentType The content type to use with the request data. Required when using requestData
      * @return The result of the request or null
@@ -91,7 +91,6 @@ public class ApiAccess {
      */
     public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
             String contentType, Class<TOut> outClass) throws TimeoutException {
-
         TOut retVal = null;
         logger.debug("Requesting: [{}]", url);
 
@@ -131,7 +130,7 @@ public class ApiAccess {
      * Issues an HTTP GET request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param url      The URL to query
+     * @param url The URL to query
      * @param outClass The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
@@ -144,7 +143,7 @@ public class ApiAccess {
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param url              The URL to query
+     * @param url The URL to query
      * @param requestContainer The object to use as JSON data for the request
      * @throws TimeoutException Thrown when a request times out
      */
@@ -156,17 +155,16 @@ public class ApiAccess {
      * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param method           The HTTP method to use (POST, GET, ...)
-     * @param url              The URL to query
-     * @param headers          The optional additional headers to apply, can be null
+     * @param method The HTTP method to use (POST, GET, ...)
+     * @param url The URL to query
+     * @param headers The optional additional headers to apply, can be null
      * @param requestContainer The object to use as JSON data for the request
-     * @param outClass         The type of the requested result
+     * @param outClass The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
     private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
             Class<TOut> outClass) throws TimeoutException {
-
         String json = null;
         if (requestContainer != null) {
             json = this.gson.toJson(requestContainer);
@@ -180,10 +178,10 @@ public class ApiAccess {
      * using the authentication applied to the type.
      * Makes sure that the request is correctly formatted.*
      *
-     * @param method           The HTTP method to use (POST, GET, ...)
-     * @param url              The URL to query
+     * @param method The HTTP method to use (POST, GET, ...)
+     * @param url The URL to query
      * @param requestContainer The object to use as JSON data for the request
-     * @param outClass         The type of the requested result
+     * @param outClass The type of the requested result
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
@@ -191,7 +189,7 @@ public class ApiAccess {
             Class<TOut> outClass) throws TimeoutException {
         Map<String, String> headers = null;
         if (authenticationData != null) {
-            headers = new HashMap<String, String>();
+            headers = new HashMap<>();
 
             headers.put("Authorization", "Bearer " + authenticationData.getAccessToken());
             headers.put("applicationId", applicationId);

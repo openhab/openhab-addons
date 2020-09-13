@@ -67,5 +67,4 @@ public class ModuleVersionCommand extends SatelCommandBase {
         // dispatch version event
         eventDispatcher.dispatchEvent(new ModuleVersionEvent(getVersion(), hasExtPayloadSupport()));
     }
-
 }

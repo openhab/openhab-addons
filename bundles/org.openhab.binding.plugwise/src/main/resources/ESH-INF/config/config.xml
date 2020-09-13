@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config-description:config-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
@@ -7,8 +8,8 @@
 		<parameter name="serialPort" type="text" required="true">
 			<label>Serial Port</label>
 			<context>serial-port</context>
+			<limitToOptions>false</limitToOptions>
 			<description>The serial port of the Stick, e.g. "/dev/ttyUSB0" for Linux or "COM1" for Windows</description>
-			<default>/dev/ttyUSB0</default>
 		</parameter>
 		<parameter name="messageWaitTime" type="integer" min="0" max="500" step="50">
 			<label>Message Wait Time</label>
@@ -37,7 +38,8 @@
 	</config-description>
 
 	<config-description uri="thing-type:plugwise:relay">
-		<parameter name="macAddress" type="text" pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
+		<parameter name="macAddress" type="text"
+			pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
 			<label>MAC Address</label>
 			<description>The full device MAC address e.g. "000D6F0000A1B2C3"</description>
 		</parameter>
@@ -78,7 +80,8 @@
 	</config-description>
 
 	<config-description uri="thing-type:plugwise:scan">
-		<parameter name="macAddress" type="text" pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
+		<parameter name="macAddress" type="text"
+			pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
 			<label>MAC Address</label>
 			<description>The full device MAC address e.g. "000D6F0000A1B2C3"</description>
 		</parameter>
@@ -132,7 +135,8 @@
 	</config-description>
 
 	<config-description uri="thing-type:plugwise:sense">
-		<parameter name="macAddress" type="text" pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
+		<parameter name="macAddress" type="text"
+			pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
 			<label>MAC Address</label>
 			<description>The full device MAC address e.g. "000D6F0000A1B2C3"</description>
 		</parameter>
@@ -161,12 +165,14 @@
 				<option value="onBelowOffAbove">On below / Off above</option>
 			</options>
 		</parameter>
-		<parameter name="temperatureBoundaryMin" type="integer" min="0" max="60" step="5" required="false" unit="Cel">
+		<parameter name="temperatureBoundaryMin" type="integer" min="0" max="60" step="5" required="false"
+			unit="Cel">
 			<label>Temperature Minimum</label>
 			<description>The minimum boundary for the temperature boundary action</description>
 			<default>15</default>
 		</parameter>
-		<parameter name="temperatureBoundaryMax" type="integer" min="0" max="60" step="5" required="false" unit="Cel">
+		<parameter name="temperatureBoundaryMax" type="integer" min="0" max="60" step="5" required="false"
+			unit="Cel">
 			<label>Temperature Maximum</label>
 			<description>The maximum boundary for the temperature boundary action</description>
 			<default>25</default>
@@ -204,7 +210,8 @@
 	</config-description>
 
 	<config-description uri="thing-type:plugwise:switch">
-		<parameter name="macAddress" type="text" pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
+		<parameter name="macAddress" type="text"
+			pattern="(000)(d|D)6(f|F)(0000)([0-9A-Fa-f]{6})|(000)(d|D)6(f|F)(000)([0-9A-Fa-f]{7})" required="true">
 			<label>MAC Address</label>
 			<description>The full device MAC address e.g. "000D6F0000A1B2C3"</description>
 		</parameter>

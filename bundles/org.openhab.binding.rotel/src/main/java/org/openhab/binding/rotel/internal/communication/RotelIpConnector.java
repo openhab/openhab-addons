@@ -50,10 +50,11 @@ public class RotelIpConnector extends RotelConnector {
      * @param port the TCP port to be used
      * @param model the projector model in use
      * @param protocol the protocol to be used
+     * @param readerThreadName the name of thread to be created
      */
     public RotelIpConnector(String address, Integer port, RotelModel model, RotelProtocol protocol,
-            Map<RotelSource, String> sourcesLabels) {
-        super(model, protocol, sourcesLabels, false);
+            Map<RotelSource, String> sourcesLabels, String readerThreadName) {
+        super(model, protocol, sourcesLabels, false, readerThreadName);
 
         this.address = address;
         this.port = port;
@@ -69,7 +70,7 @@ public class RotelIpConnector extends RotelConnector {
             dataOut = new DataOutputStream(clientSocket.getOutputStream());
             dataIn = new DataInputStream(clientSocket.getInputStream());
 
-            Thread thread = new RotelReaderThread(this);
+            Thread thread = new RotelReaderThread(this, readerThreadName);
             setReaderThread(thread);
             thread.start();
 

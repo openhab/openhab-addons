@@ -6,18 +6,18 @@
 
 	<thing-type id="gj_v3_0" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="dsmrBridge" />
+			<bridge-type-ref id="dsmrBridge"/>
 		</supported-bridge-type-refs>
 
 		<label>GJ Meter (DSMR V3.0)</label>
 		<description>This is a Giga Joule meter that complies to the DSMR V3.0 specification.</description>
 
 		<channels>
-			<channel id="meter_device_type" typeId="deviceType" />
-			<channel id="meter_equipment_identifier" typeId="equipmentIdType" />
-			<channel id="gjmeter_value_v3" typeId="gjValueType" />
-			<channel id="meter_valve_switch_position" typeId="gjValvePositionType" />
+			<channel id="meter_device_type" typeId="deviceType"/>
+			<channel id="meter_equipment_identifier" typeId="equipmentIdType"/>
+			<channel id="gjmeter_value_v3" typeId="gjValueType"/>
+			<channel id="meter_valve_switch_position" typeId="gjValvePositionType"/>
 		</channels>
-		<config-description-ref uri="thing-type:dsmr:meterdescriptor" />
+		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>

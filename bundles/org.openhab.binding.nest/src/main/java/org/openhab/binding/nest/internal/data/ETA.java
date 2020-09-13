@@ -105,5 +105,4 @@ public class ETA {
                 .append(estimatedArrivalWindowEnd).append("]");
         return builder.toString();
     }
-
 }

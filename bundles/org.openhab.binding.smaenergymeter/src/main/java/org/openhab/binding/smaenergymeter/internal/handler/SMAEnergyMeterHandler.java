@@ -103,6 +103,21 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
             updateState(CHANNEL_ENERGY_IN, energyMeter.getEnergyIn());
             updateState(CHANNEL_ENERGY_OUT, energyMeter.getEnergyOut());
 
+            updateState(CHANNEL_POWER_IN_L1, energyMeter.getPowerInL1());
+            updateState(CHANNEL_POWER_OUT_L1, energyMeter.getPowerOutL1());
+            updateState(CHANNEL_ENERGY_IN_L1, energyMeter.getEnergyInL1());
+            updateState(CHANNEL_ENERGY_OUT_L1, energyMeter.getEnergyOutL1());
+
+            updateState(CHANNEL_POWER_IN_L2, energyMeter.getPowerInL2());
+            updateState(CHANNEL_POWER_OUT_L2, energyMeter.getPowerOutL2());
+            updateState(CHANNEL_ENERGY_IN_L2, energyMeter.getEnergyInL2());
+            updateState(CHANNEL_ENERGY_OUT_L2, energyMeter.getEnergyOutL2());
+
+            updateState(CHANNEL_POWER_IN_L3, energyMeter.getPowerInL3());
+            updateState(CHANNEL_POWER_OUT_L3, energyMeter.getPowerOutL3());
+            updateState(CHANNEL_ENERGY_IN_L3, energyMeter.getEnergyInL3());
+            updateState(CHANNEL_ENERGY_OUT_L3, energyMeter.getEnergyOutL3());
+
             if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
                 updateStatus(ThingStatus.ONLINE);
             }
@@ -110,5 +125,4 @@ public class SMAEnergyMeterHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
         }
     }
-
 }

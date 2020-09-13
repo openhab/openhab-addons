@@ -37,5 +37,4 @@ public interface RpcEventListener {
      * Called when devices has been deleted from the Homeamtic gateway.
      */
     public void deleteDevices(List<String> addresses);
-
 }

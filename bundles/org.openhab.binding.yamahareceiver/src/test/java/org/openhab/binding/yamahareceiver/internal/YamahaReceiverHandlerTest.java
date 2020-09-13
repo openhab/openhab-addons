@@ -102,7 +102,6 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
 
     @Test
     public void afterInitializeBridgeShouldBeOnline() throws InterruptedException {
-
         // when
         subject.initialize();
         // internally there is an timer, let's allow it to execute

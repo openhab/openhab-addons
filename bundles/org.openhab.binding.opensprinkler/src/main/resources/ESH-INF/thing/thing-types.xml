@@ -11,7 +11,8 @@
 		<config-description>
 			<parameter name="hostname" type="text">
 				<label>Hostname</label>
-				<description>The host name or IP address of the OpenSprinkler Web API interface. It may or may not start with the protocol, e.g. in order to use https:// instead of the default http://.</description>
+				<description>The host name or IP address of the OpenSprinkler Web API interface. It may or may not start with the
+					protocol, e.g. in order to use https:// instead of the default http://.</description>
 				<default>localhost</default>
 			</parameter>
 			<parameter name="port" type="integer" min="1" max="65535">
@@ -44,7 +45,7 @@
 
 	<thing-type id="station">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="http" />
+			<bridge-type-ref id="http"/>
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Station</label>
 		<description>Controls a station connected to the OpenSprinkler device.</description>
@@ -66,13 +67,14 @@
 
 	<thing-type id="device">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="http" />
+			<bridge-type-ref id="http"/>
 		</supported-bridge-type-refs>
 		<label>OpenSprinkler Device</label>
 		<description>A thing that receives data from the OpenSprinkler device directly.</description>
 
 		<channels>
 			<channel id="rainsensor" typeId="rainsensor"></channel>
+			<channel id="waterlevel" typeId="waterlevel"></channel>
 		</channels>
 	</thing-type>
 
@@ -81,7 +83,15 @@
 		<label>Rain</label>
 		<description>Provides feedback on whether the OpenSprinkler device has detected rain or not.</description>
 		<category>Sensor</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
+	</channel-type>
+
+
+	<channel-type id="waterlevel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Water Level</label>
+		<description>The current water level in percent</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="stationState">
@@ -94,7 +104,8 @@
 	<channel-type id="queued">
 		<item-type>Switch</item-type>
 		<label>Queued</label>
-		<description>Indicates if the station is queued to be turned on. Can be removed from the queue by turning off. ON is read-only.</description>
+		<description>Indicates if the station is queued to be turned on. Can be removed from the queue by turning off. ON is
+			read-only.</description>
 		<category>Switch</category>
 	</channel-type>
 
@@ -109,6 +120,6 @@
 		<item-type>Number:Time</item-type>
 		<label>Next Open Duration</label>
 		<description>The duration the station will be opened the next time it is switched on.</description>
-		<state readOnly="true" pattern="%.0f s"/>
+		<state readOnly="false" pattern="%.0f s"/>
 	</channel-type>
 </thing:thing-descriptions>

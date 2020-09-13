@@ -36,5 +36,4 @@ public class TemperatureDevice extends AbstractNumericValueDevice {
         DecimalType value = (DecimalType) item.getStateAs(DecimalType.class);
         addParam(new NumericValueParam(ParamType.TEMPERATURE_VALUE, getUnit(), value));
     }
-
 }

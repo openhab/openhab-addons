@@ -24,5 +24,4 @@ public class SonyProjectorSerialConfiguration {
 
     public @NonNullByDefault({}) String port;
     public @NonNullByDefault({}) String model;
-
 }

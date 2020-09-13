@@ -49,5 +49,4 @@ public abstract class Login implements BridgeCommunicationProtocol {
     public String getAuthToken() {
         return "";
     }
-
 }

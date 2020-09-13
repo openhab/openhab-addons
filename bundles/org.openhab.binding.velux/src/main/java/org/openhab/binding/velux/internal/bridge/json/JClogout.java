@@ -61,7 +61,7 @@ class JClogout extends Logout implements JsonBridgeCommunicationProtocol {
 
         public Request() {
             this.action = "logout";
-            this.params = new HashMap<String, String>();
+            this.params = new HashMap<>();
         }
     }
 
@@ -133,5 +133,4 @@ class JClogout extends Logout implements JsonBridgeCommunicationProtocol {
     public String[] getErrors() {
         return response.errors;
     }
-
 }

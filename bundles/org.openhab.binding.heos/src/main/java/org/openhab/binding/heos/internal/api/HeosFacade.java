@@ -12,10 +12,31 @@
  */
 package org.openhab.binding.heos.internal.api;
 
-import java.net.URL;
+import static org.openhab.binding.heos.internal.resources.HeosConstants.*;
 
-//import org.openhab.binding.heos.internal.resources.HeosConstants;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.openhab.binding.heos.internal.json.dto.HeosResponseObject;
+import org.openhab.binding.heos.internal.json.payload.BrowseResult;
+import org.openhab.binding.heos.internal.json.payload.Group;
+import org.openhab.binding.heos.internal.json.payload.Media;
+import org.openhab.binding.heos.internal.json.payload.Player;
+import org.openhab.binding.heos.internal.resources.HeosCommands;
+import org.openhab.binding.heos.internal.resources.HeosConstants;
 import org.openhab.binding.heos.internal.resources.HeosEventListener;
+import org.openhab.binding.heos.internal.resources.Telnet.ReadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonElement;
 
 /**
  * The {@link HeosFacade} is the interface for handling commands, which are
@@ -23,14 +44,76 @@ import org.openhab.binding.heos.internal.resources.HeosEventListener;
  *
  * @author Johannes Einig - Initial contribution
  */
+@NonNullByDefault
 public class HeosFacade {
+    private static final int MAX_QUEUE_PAGES = 25;
+    private final Logger logger = LoggerFactory.getLogger(HeosFacade.class);
 
-    private HeosSystem controller;
-    private HeosEventController event;
+    private final HeosSystem heosSystem;
+    private final HeosEventController eventController;
 
-    public HeosFacade(HeosSystem controller, HeosEventController event) {
-        this.controller = controller;
-        this.event = event;
+    public HeosFacade(HeosSystem heosSystem, HeosEventController eventController) {
+        this.heosSystem = heosSystem;
+        this.eventController = eventController;
+    }
+
+    public synchronized List<BrowseResult> getFavorites() throws IOException, ReadException {
+        return getBrowseResults(FAVORITE_SID);
+    }
+
+    public List<BrowseResult> getInputs() throws IOException, ReadException {
+        return getBrowseResults(String.valueOf(INPUT_SID));
+    }
+
+    public List<BrowseResult> getPlaylists() throws IOException, ReadException {
+        return getBrowseResults(PLAYLISTS_SID);
+    }
+
+    @NotNull
+    private List<BrowseResult> getBrowseResults(String sourceIdentifier) throws IOException, ReadException {
+        HeosResponseObject<BrowseResult[]> response = browseSource(sourceIdentifier);
+        logger.debug("Response: {}", response);
+
+        if (response.payload == null) {
+            return Collections.emptyList();
+        }
+        logger.debug("Received results: {}", Arrays.asList(response.payload));
+
+        return Arrays.asList(response.payload);
+    }
+
+    public List<Media> getQueue(String pid) throws IOException, ReadException {
+        List<Media> media = new ArrayList<>();
+        for (int page = 0; page < MAX_QUEUE_PAGES; page++) {
+            HeosResponseObject<Media[]> response = fetchQueue(pid, page);
+            if (!response.result || response.payload == null) {
+                break;
+            }
+
+            media.addAll(Arrays.asList(response.payload));
+
+            if (response.payload.length < 100) {
+                break;
+            }
+
+            if (page == MAX_QUEUE_PAGES - 1) {
+                logger.info("Currently only a maximum of {} pages is fetched for every queue", MAX_QUEUE_PAGES);
+            }
+        }
+
+        return media;
+    }
+
+    HeosResponseObject<Media[]> fetchQueue(String pid, int page) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getQueue(pid, page * 100, (page + 1) * 100), Media[].class);
+    }
+
+    public HeosResponseObject<Player> getPlayerInfo(String pid) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getPlayerInfo(pid), Player.class);
+    }
+
+    public HeosResponseObject<Group> getGroupInfo(String gid) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getGroupInfo(gid), Group.class);
     }
 
     /**
@@ -38,8 +121,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void pause(String pid) {
-        controller.send(controller.command().setPlayStatePause(pid));
+    public void pause(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setPlayStatePause(pid));
     }
 
     /**
@@ -47,8 +130,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void play(String pid) {
-        controller.send(controller.command().setPlayStatePlay(pid));
+    public void play(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setPlayStatePlay(pid));
     }
 
     /**
@@ -56,8 +139,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void stop(String pid) {
-        controller.send(controller.command().setPlayStateStop(pid));
+    public void stop(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setPlayStateStop(pid));
     }
 
     /**
@@ -65,8 +148,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void next(String pid) {
-        controller.send(controller.command().playNext(pid));
+    public void next(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playNext(pid));
     }
 
     /**
@@ -74,8 +157,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void previous(String pid) {
-        controller.send(controller.command().playPrevious(pid));
+    public void previous(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playPrevious(pid));
     }
 
     /**
@@ -83,8 +166,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void mute(String pid) {
-        controller.send(controller.command().setMuteToggle(pid));
+    public void mute(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setMuteToggle(pid));
     }
 
     /**
@@ -92,8 +175,8 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void muteON(String pid) {
-        controller.send(controller.command().setMuteOn(pid));
+    public void muteON(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setMuteOn(pid));
     }
 
     /**
@@ -101,28 +184,28 @@ public class HeosFacade {
      *
      * @param pid The PID of the dedicated player
      */
-    public void muteOFF(String pid) {
-        controller.send(controller.command().setMuteOff(pid));
+    public void muteOFF(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setMuteOff(pid));
     }
 
     /**
      * Set the play mode of the player or group
      *
-     * @param pid  The PID of the dedicated player or group
+     * @param pid The PID of the dedicated player or group
      * @param mode The shuffle mode: Allowed commands: on; off
      */
-    public void setShuffleMode(String pid, String mode) {
-        controller.send(controller.command().setShuffleMode(pid, mode));
+    public void setShuffleMode(String pid, String mode) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setShuffleMode(pid, mode));
     }
 
     /**
      * Sets the repeat mode of the player or group
      *
-     * @param pid  The ID of the dedicated player or group
+     * @param pid The ID of the dedicated player or group
      * @param mode The repeat mode. Allowed commands: on_all; on_one; off
      */
-    public void setRepeatMode(String pid, String mode) {
-        controller.send(controller.command().setRepeatMode(pid, mode));
+    public void setRepeatMode(String pid, String mode) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setRepeatMode(pid, mode));
     }
 
     /**
@@ -131,8 +214,8 @@ public class HeosFacade {
      * @param vol The volume the player shall be set to (value between 0 -100)
      * @param pid The ID of the dedicated player or group
      */
-    public void setVolume(String vol, String pid) {
-        controller.send(controller.command().setVolume(vol, pid));
+    public void setVolume(String vol, String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setVolume(vol, pid));
     }
 
     /**
@@ -140,8 +223,8 @@ public class HeosFacade {
      *
      * @param pid The ID of the dedicated player or group
      */
-    public void increaseVolume(String pid) {
-        controller.send(controller.command().volumeUp(pid));
+    public void increaseVolume(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.volumeUp(pid));
     }
 
     /**
@@ -149,8 +232,8 @@ public class HeosFacade {
      *
      * @param pid The ID of the dedicated player or group
      */
-    public void decreaseVolume(String pid) {
-        controller.send(controller.command().volumeDown(pid));
+    public void decreaseVolume(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.volumeDown(pid));
     }
 
     /**
@@ -158,8 +241,8 @@ public class HeosFacade {
      *
      * @param gid The GID of the group
      */
-    public void muteGroup(String gid) {
-        controller.send(controller.command().setMuteToggle(gid));
+    public void muteGroup(String gid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setMuteToggle(gid));
     }
 
     /**
@@ -167,8 +250,8 @@ public class HeosFacade {
      *
      * @param gid The GID of the group
      */
-    public void muteGroupON(String gid) {
-        controller.send(controller.command().setGroupMuteOn(gid));
+    public void muteGroupON(String gid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setGroupMuteOn(gid));
     }
 
     /**
@@ -176,8 +259,8 @@ public class HeosFacade {
      *
      * @param gid The GID of the group
      */
-    public void muteGroupOFF(String gid) {
-        controller.send(controller.command().setGroupMuteOff(gid));
+    public void muteGroupOFF(String gid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setGroupMuteOff(gid));
     }
 
     /**
@@ -186,26 +269,26 @@ public class HeosFacade {
      * @param vol The volume the group shall be set to (value between 0-100)
      * @param gid The GID of the group
      */
-    public void volumeGroup(String vol, String gid) {
-        controller.send(controller.command().setGroupVolume(vol, gid));
+    public void volumeGroup(String vol, String gid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setGroupVolume(vol, gid));
     }
 
     /**
      * Increases the HEOS group volume 1 Step
      *
-     * @param pid The ID of the dedicated player or group
+     * @param gid The ID of the dedicated player or group
      */
-    public void increaseGroupVolume(String gid) {
-        controller.send(controller.command().setGroupVolumeUp(gid));
+    public void increaseGroupVolume(String gid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setGroupVolumeUp(gid));
     }
 
     /**
      * Decreases the HEOS group volume 1 Step
      *
-     * @param pid The ID of the dedicated player or group
+     * @param gid The ID of the dedicated player or group
      */
-    public void decreaseGroupVolume(String gid) {
-        controller.send(controller.command().setGroupVolumeDown(gid));
+    public void decreaseGroupVolume(String gid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.setGroupVolumeDown(gid));
     }
 
     /**
@@ -213,27 +296,29 @@ public class HeosFacade {
      *
      * @param gid The GID of the group
      */
-    public void ungroupGroup(String gid) {
+    public void ungroupGroup(String gid) throws IOException, ReadException {
         String[] pid = new String[] { gid };
-        controller.send(controller.command().setGroup(pid));
+        heosSystem.send(HeosCommands.setGroup(pid));
     }
 
     /**
      * Builds a group from single players
      *
      * @param pids The single player IDs of the player which shall be grouped
+     * @return
      */
-    public void groupPlayer(String[] pids) {
-        controller.send(controller.command().setGroup(pids));
+    public boolean groupPlayer(String[] pids) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.setGroup(pids)).result;
     }
 
     /**
      * Browses through a HEOS source. Currently no response
      *
      * @param sid The source sid which shall be browsed
+     * @return
      */
-    public void browseSource(String sid) {
-        controller.send(controller.command().browseSource(sid));
+    public HeosResponseObject<BrowseResult[]> browseSource(String sid) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.browseSource(sid), BrowseResult[].class);
     }
 
     /**
@@ -244,51 +329,58 @@ public class HeosFacade {
      * @param sid The source ID where the media is located
      * @param cid The container ID of the media
      */
-    public void addContainerToQueuePlayNow(String pid, String sid, String cid) {
-        controller.send(controller.command().addContainerToQueuePlayNow(pid, sid, cid));
-    }
-
-    /**
-     * Sets the connection parameter if the HOES system and connects to the system
-     *
-     * @param ip   The IP address of the HEOS player which is used as bridge
-     * @param port The port the system shall establish the connection
-     */
-    public void setHeosConnection(String ip, int port) {
-        controller.setConnectionIP(ip);
-        controller.setConnectionPort(port);
-        controller.establishConnection(false);
+    public void addContainerToQueuePlayNow(String pid, String sid, String cid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.addContainerToQueuePlayNow(pid, sid, cid));
     }
 
     /**
      * Reboot the bridge to which the connection is established
      */
-    public void reboot() {
-        controller.sendWithoutResponse(controller.command().rebootSystem());
+    public void reboot() throws IOException, ReadException {
+        heosSystem.send(HeosCommands.rebootSystem());
     }
 
     /**
      * Login in via the bridge to the HEOS account
      *
-     * @param name     The username
+     * @param name The username
      * @param password The password of the user
+     * @return
      */
-    public void logIn(String name, String password) {
-        controller.command().setUsernamePwassword(name, password);
-        controller.send(controller.command().signIn(name, password));
+    public HeosResponseObject<Void> logIn(String name, String password) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.signIn(name, password));
+    }
+
+    /**
+     * Get all the players known by HEOS
+     * 
+     * @return
+     */
+    public HeosResponseObject<Player[]> getPlayers() throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getPlayers(), Player[].class);
+    }
+
+    /**
+     * Get all the groups known by HEOS
+     * 
+     * @return
+     */
+    public HeosResponseObject<Group[]> getGroups() throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getGroups(), Group[].class);
     }
 
     /**
      * Plays a specific station on the HEOS player
      *
-     * @param pid  The player ID
-     * @param sid  The source ID where the media is located
-     * @param cid  The container ID of the media
-     * @param mid  The media ID of the media
+     * @param pid The player ID
+     * @param sid The source ID where the media is located
+     * @param cid The container ID of the media
+     * @param mid The media ID of the media
      * @param name Station name returned by 'browse' command.
      */
-    public void playStation(String pid, String sid, String cid, String mid, String name) {
-        controller.send(controller.command().playStation(pid, sid, cid, mid, name));
+    public void playStream(@Nullable String pid, @Nullable String sid, @Nullable String cid, @Nullable String mid,
+            @Nullable String name) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playStream(pid, sid, cid, mid, name));
     }
 
     /**
@@ -298,8 +390,8 @@ public class HeosFacade {
      * @param sid The source ID where the media is located
      * @param mid The media ID of the media
      */
-    public void playStation(String pid, String sid, String mid) {
-        controller.send(controller.command().playStation(pid, sid, mid));
+    public void playStream(String pid, String sid, String mid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playStream(pid, sid, mid));
     }
 
     /**
@@ -309,20 +401,21 @@ public class HeosFacade {
      * @param pid
      * @param input
      */
-    public void playInputSource(String pid, String input) {
-        controller.send(controller.command().playInputSource(pid, pid, input));
+    public void playInputSource(String pid, String input) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playInputSource(pid, pid, input));
     }
 
     /**
      * Plays a specified input source from another player on the selected player.
      * Input name as per specified in HEOS CLI Protocol
      *
-     * @param des_pid    the PID where the source shall be played
-     * @param source_pid the PID where the source is located.
-     * @param input      the input name
+     * @param destinationPid the PID where the source shall be played
+     * @param sourcePid the PID where the source is located.
+     * @param input the input name
      */
-    public void playInputSource(String des_pid, String source_pid, String input) {
-        controller.send(controller.command().playInputSource(des_pid, source_pid, input));
+    public void playInputSource(String destinationPid, String sourcePid, String input)
+            throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playInputSource(destinationPid, sourcePid, input));
     }
 
     /**
@@ -331,19 +424,17 @@ public class HeosFacade {
      * @param pid the PID where the file shall be played
      * @param url the complete URL the file is located
      */
-    public void playURL(String pid, URL url) {
-        controller.send(controller.command().playURL(pid, url.toString()));
+    public void playURL(String pid, URL url) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playURL(pid, url.toString()));
     }
 
     /**
-     * Gets the information like mid, sid and so on of the
-     * currently playing media. Response is handled via the
-     * HeosEventController
+     * clear the queue
      *
      * @param pid The player ID the media is playing on
      */
-    public void getPlayingMediaInfo(String pid) {
-        controller.send(controller.command().getNowPlayingMedia(pid));
+    public void clearQueue(String pid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.clearQueue(pid));
     }
 
     /**
@@ -352,8 +443,8 @@ public class HeosFacade {
      * @param pid The player ID the media is playing on
      * @param qid The queue ID of the media. (starts by 1)
      */
-    public void deleteMediaFromQueue(String pid, String qid) {
-        controller.send(controller.command().deleteQueueItem(pid, qid));
+    public void deleteMediaFromQueue(String pid, String qid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.deleteQueueItem(pid, qid));
     }
 
     /**
@@ -362,8 +453,8 @@ public class HeosFacade {
      * @param pid The player ID the media shall be played on
      * @param qid The queue ID of the media. (starts by 1)
      */
-    public void playMediafromQueue(String pid, String qid) {
-        controller.send(controller.command().playQueueItem(pid, qid));
+    public void playMediaFromQueue(String pid, String qid) throws IOException, ReadException {
+        heosSystem.send(HeosCommands.playQueueItem(pid, qid));
     }
 
     /**
@@ -372,9 +463,10 @@ public class HeosFacade {
      * {@link HeosConstants.PAUSE} or {@link HeosConstants.STOP}.
      *
      * @param id The player ID the state shall get for
+     * @return
      */
-    public void getHeosPlayState(String id) {
-        controller.send(controller.command().getPlayState(id));
+    public HeosResponseObject<Void> getPlayState(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getPlayState(id));
     }
 
     /**
@@ -383,9 +475,10 @@ public class HeosFacade {
      * or {@link HeosConstants.OFF}.
      *
      * @param id The player id the mute state shall get for
+     * @return
      */
-    public void getHeosPlayerMuteState(String id) {
-        controller.send(controller.command().getMute(id));
+    public HeosResponseObject<Void> getPlayerMuteState(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getMute(id));
     }
 
     /**
@@ -394,29 +487,10 @@ public class HeosFacade {
      * a value between 0 and 100
      *
      * @param id The player id the volume shall get for
+     * @return
      */
-    public void getHeosPlayerVolume(String id) {
-        controller.send(controller.command().getVolume(id));
-    }
-
-    /**
-     * Ask for the actual song duration of the player. The result has
-     * to be handled by the event controller.
-     *
-     * @param id The player id the song duration shall get for
-     */
-    public void getHeosPlayerDuration(String id) {
-        controller.send(controller.command().getPlayState(id));
-    }
-
-    /**
-     * Ask for the actual song position of the player. The result has
-     * to be handled by the event controller.
-     *
-     * @param id The player id the song position shall get for
-     */
-    public void getHeosPlayerCurrentPosition(String id) {
-        controller.send(controller.command().getPlayState(id));
+    public HeosResponseObject<Void> getPlayerVolume(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getVolume(id));
     }
 
     /**
@@ -425,79 +499,33 @@ public class HeosFacade {
      * {@link HeosConstants.HEOS_REPEAT_ALL} or {@link HeosConstants.HEOS_REPEAT_ONE}
      *
      * @param id The player id the shuffle mode shall get for
+     * @return
      */
-    public void getHeosPlayerShuffleMode(String id) {
-        controller.send(controller.command().getPlayMode(id));
+    public HeosResponseObject<Void> getPlayMode(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getPlayMode(id));
     }
 
-    public void getHeosPlayerRepeatMode(String id) {
-        controller.send(controller.command().getPlayMode(id));
+    public HeosResponseObject<Void> getGroupMuteState(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getGroupMute(id));
     }
 
-    public void getHeosGroupeMuteState(String id) {
-        controller.send(controller.command().getGroupMute(id));
+    public HeosResponseObject<Void> getGroupVolume(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getGroupVolume(id));
     }
 
-    public void getHeosGroupVolume(String id) {
-        controller.send(controller.command().getGroupVolume(id));
-    }
-
-    public void getNowPlayingMedia(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaArtist(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaSong(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaAlbum(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaImageUrl(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaImageQid(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaMid(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaAlbumID(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaStation(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
-    }
-
-    public void getNowPlayingMediaType(String id) {
-        controller.send(controller.command().getNowPlayingMedia(id));
+    public HeosResponseObject<Media> getNowPlayingMedia(String id) throws IOException, ReadException {
+        return heosSystem.send(HeosCommands.getNowPlayingMedia(id), Media.class);
     }
 
     /**
-     *
-     * @param pid The ID of the dedicated player or group
-     */
-    public void setActivePlayer(String pid) {
-        controller.command().setPlayerID(pid);
-    }
-
-    /**
-     * Sends a RAW command to the HESO bridge. The command has to be
+     * Sends a RAW command to the HEOS bridge. The command has to be
      * in accordance with the HEOS CLI specification
      *
      * @param command to send
+     * @return
      */
-    public void sendRawCommand(String command) {
-        controller.send(command);
+    public HeosResponseObject<JsonElement> sendRawCommand(String command) throws IOException, ReadException {
+        return heosSystem.send(command, JsonElement.class);
     }
 
     /**
@@ -505,8 +533,8 @@ public class HeosFacade {
      *
      * @param listener The HeosEventListener
      */
-    public void registerforChangeEvents(HeosEventListener listener) {
-        event.addListener(listener);
+    public void registerForChangeEvents(HeosEventListener listener) {
+        eventController.addListener(listener);
     }
 
     /**
@@ -514,7 +542,15 @@ public class HeosFacade {
      *
      * @param listener The HeosEventListener
      */
-    public void unregisterforChangeEvents(HeosEventListener listener) {
-        event.removeListener(listener);
+    public void unregisterForChangeEvents(HeosEventListener listener) {
+        eventController.removeListener(listener);
+    }
+
+    public boolean isConnected() {
+        return heosSystem.isConnected();
+    }
+
+    public void closeConnection() {
+        heosSystem.closeConnection();
     }
 }

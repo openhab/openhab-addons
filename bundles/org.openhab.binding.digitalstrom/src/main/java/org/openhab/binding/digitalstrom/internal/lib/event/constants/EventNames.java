@@ -27,5 +27,4 @@ public class EventNames {
     public static final String UNDO_SCENE = "undoScene";
     public static final String DEVICE_SENSOR_VALUE = "deviceSensorValue";
     public static final String DEVICE_BINARY_INPUT_EVENT = "deviceBinaryInputEvent";
-
 }

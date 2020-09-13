@@ -15,6 +15,7 @@ package org.openhab.binding.bluetooth;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -26,7 +27,6 @@ import org.eclipse.smarthome.core.thing.binding.BridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.bluetooth.discovery.internal.BluetoothAddressLocker;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 
@@ -81,11 +81,9 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
 
         try {
             deviceLock.lock();
-            BluetoothAddressLocker.lock(address);
             device = adapter.getDevice(address);
             device.addListener(this);
         } finally {
-            BluetoothAddressLocker.unlock(address);
             deviceLock.unlock();
         }
 
@@ -118,14 +116,17 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
      */
     protected void updateRSSI() {
         if (device != null) {
-            Integer rssi = device.getRssi();
-            if (rssi != null && rssi != 0) {
-                updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
-                updateStatusBasedOnRssi(true);
-            } else {
-                updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
-                updateStatusBasedOnRssi(false);
-            }
+            updateRSSI(device.getRssi());
+        }
+    }
+
+    private void updateRSSI(@Nullable Integer rssi) {
+        if (rssi != null && rssi != 0) {
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, new DecimalType(rssi));
+            updateStatusBasedOnRssi(true);
+        } else {
+            updateState(BluetoothBindingConstants.CHANNEL_TYPE_RSSI, UnDefType.NULL);
+            updateStatusBasedOnRssi(false);
         }
     }
 
@@ -147,8 +148,7 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     public void onScanRecordReceived(BluetoothScanNotification scanNotification) {
         int rssi = scanNotification.getRssi();
         if (rssi != Integer.MIN_VALUE) {
-            device.setRssi(rssi);
-            updateRSSI();
+            updateRSSI(rssi);
         }
     }
 
@@ -176,5 +176,4 @@ public class BeaconBluetoothHandler extends BaseThingHandler implements Bluetoot
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
     }
-
 }

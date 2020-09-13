@@ -6,20 +6,20 @@
 
 	<thing-type id="area" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 		<label>Area</label>
 		<description>Area</description>
 		<channels>
-			<channel typeId="area_status" id="status" />
-			<channel typeId="area_armed" id="armed" />
-			<channel typeId="zone_in_memory" id="zone_in_memory" />
-			<channel typeId="trouble" id="trouble" />
-			<channel typeId="ready" id="ready" />
-			<channel typeId="in_programming" id="in_programming" />
-			<channel typeId="alarm" id="alarm" />
-			<channel typeId="strobe" id="strobe" />
-			<channel typeId="control" id="control" />
+			<channel typeId="area_status" id="status"/>
+			<channel typeId="area_armed" id="armed"/>
+			<channel typeId="zone_in_memory" id="zone_in_memory"/>
+			<channel typeId="trouble" id="trouble"/>
+			<channel typeId="ready" id="ready"/>
+			<channel typeId="in_programming" id="in_programming"/>
+			<channel typeId="alarm" id="alarm"/>
+			<channel typeId="strobe" id="strobe"/>
+			<channel typeId="control" id="control"/>
 		</channels>
 		<config-description>
 			<parameter name="refreshPeriod" type="integer" unit="s">
@@ -130,7 +130,8 @@
 	<channel-type id="control">
 		<item-type>String</item-type>
 		<label>Control Alarm System</label>
-		<description>Used to control area status. By reading its state one can check result of the last command sent to the alarm system.</description>
+		<description>Used to control area status. By reading its state one can check result of the last command sent to the
+			alarm system.</description>
 		<state>
 			<options>
 				<option value="OK">Ok</option>

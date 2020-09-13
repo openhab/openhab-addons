@@ -27,7 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class EirPacket {
-    private Map<EirDataType, Object> records = new HashMap<EirDataType, Object>();
+    private Map<EirDataType, Object> records = new HashMap<>();
 
     public EirPacket(int @Nullable [] data) {
         if (data == null || data.length == 0) {

@@ -59,5 +59,4 @@ public class KNXProfileAdvisor implements ProfileAdvisor {
     public static boolean isControl(ChannelTypeUID channelTypeUID) {
         return CONTROL_CHANNEL_TYPES.contains(channelTypeUID.getId());
     }
-
 }

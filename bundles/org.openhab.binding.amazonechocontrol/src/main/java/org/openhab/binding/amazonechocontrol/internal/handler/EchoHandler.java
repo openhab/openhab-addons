@@ -12,46 +12,7 @@
  */
 package org.openhab.binding.amazonechocontrol.internal.handler;
 
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_AMAZON_MUSIC_TRACK_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_ASCENDING_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_DEVICE_NAME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_BLUETOOTH_MAC;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_BASS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_MIDRANGE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_EQUALIZER_TREBLE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_IMAGE_URL;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_LAST_VOICE_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_LENGTH;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MEDIA_PROGRESS_TIME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_MUSIC_PROVIDER_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_MUSIC_ALARM;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_REMINDER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NEXT_TIMER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_NOTIFICATION_VOLUME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAYER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ALARM_SOUND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_MUSIC_VOICE_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PLAY_ON_DEVICE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_PROVIDER_DISPLAY_NAME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_RADIO_STATION_ID;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_REMIND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SHUFFLE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_COMMAND;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_START_ROUTINE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE1;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_SUBTITLE2;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TEXT_TO_SPEECH_VOLUME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_TITLE;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.CHANNEL_VOLUME;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.DEVICE_PROPERTY_SERIAL_NUMBER;
-import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.FLASH_BRIEFING_COMMAND_PREFIX;
+import static org.openhab.binding.amazonechocontrol.internal.AmazonEchoControlBindingConstants.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -60,18 +21,14 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.measure.quantity.Time;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -146,7 +103,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
-    private @Nullable ScheduledFuture<?> ignoreVolumeChange;
     private @Nullable ScheduledFuture<?> updateProgressJob;
     private Object progressLock = new Object();
     private @Nullable String wakeWord;
@@ -167,7 +123,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
     private boolean updateStartCommand = true;
-    private @Nullable Integer noticationVolumeLevel;
+    private @Nullable Integer notificationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
     private @Nullable JsonPlaylists playLists;
     private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
@@ -287,6 +243,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
+            logger.trace("Command '{}' received for channel '{}'", command, channelUID);
             int waitForUpdate = 1000;
             boolean needBluetoothRefresh = false;
             String lastKnownBluetoothMAC = this.lastKnownBluetoothMAC;
@@ -343,7 +300,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (command instanceof PercentType) {
                     int volume = ((PercentType) command).intValue();
                     connection.notificationVolume(device, volume);
-                    this.noticationVolumeLevel = volume;
+                    this.notificationVolumeLevel = volume;
                     waitForUpdate = -1;
                     account.forceCheckData();
                 }
@@ -365,7 +322,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // Media progress commands
             Long mediaPosition = null;
             if (channelId.equals(CHANNEL_MEDIA_PROGRESS)) {
-
                 if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
                     int percent = value.intValue();
@@ -397,7 +353,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     mediaStartMs = System.currentTimeMillis() - this.mediaProgressMs;
                     updateMediaProgress(false);
                 }
-
             }
             // Volume commands
             if (channelId.equals(CHANNEL_VOLUME)) {
@@ -405,10 +360,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (command instanceof PercentType) {
                     PercentType value = (PercentType) command;
                     volume = value.intValue();
-
                 } else if (command == OnOffType.OFF) {
                     volume = 0;
-
                 } else if (command == OnOffType.ON) {
                     volume = lastKnownVolume;
                 } else if (command == IncreaseDecreaseType.INCREASE) {
@@ -426,17 +379,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     if (StringUtils.equals(device.deviceFamily, "WHA")) {
                         connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
                                 + ",\"contentFocusClientId\":\"Default\"}");
-
                     } else {
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put("value", volume);
-                        connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
+                        connection.volume(device, volume);
                     }
                     lastKnownVolume = volume;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                     waitForUpdate = -1;
                 }
-
             }
             // equalizer commands
             if (channelId.equals(CHANNEL_EQUALIZER_BASS) || channelId.equals(CHANNEL_EQUALIZER_MIDRANGE)
@@ -468,7 +417,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                             waitForUpdate = 3000;
                         }
                     }
-
                 }
             }
             if (channelId.equals(CHANNEL_PLAY_MUSIC_VOICE_COMMAND)) {
@@ -526,28 +474,23 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             // amazon music commands
             if (channelId.equals(CHANNEL_AMAZON_MUSIC_TRACK_ID)) {
                 if (command instanceof StringType) {
-
                     String trackId = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(trackId)) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicTrack(device, trackId);
-
                 }
             }
             if (channelId.equals(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID)) {
                 if (command instanceof StringType) {
-
                     String playListId = ((StringType) command).toFullString();
                     if (StringUtils.isNotEmpty(playListId)) {
                         waitForUpdate = 3000;
                     }
                     connection.playAmazonMusicPlayList(device, playListId);
-
                 }
             }
             if (channelId.equals(CHANNEL_AMAZON_MUSIC)) {
-
                 if (command == OnOffType.ON) {
                     String lastKnownAmazonMusicId = this.lastKnownAmazonMusicId;
                     if (StringUtils.isNotEmpty(lastKnownAmazonMusicId)) {
@@ -616,7 +559,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                         currentNotifcationUpdateTimer = scheduler.scheduleWithFixedDelay(() -> {
                             updateNotificationTimerState();
                         }, 1, 1, TimeUnit.SECONDS);
-
                     }
                 }
             }
@@ -711,7 +653,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (bluetoothRefresh) {
                     JsonBluetoothStates states;
                     states = connection.getBluetoothConnectionStates();
-                    state = states.findStateByDevice(device);
+                    if (states != null) {
+                        state = states.findStateByDevice(device);
+                    }
                 }
 
                 updateState(account, device, state, null, null, null, null, null);
@@ -753,13 +697,12 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     newEqualizerSetting.treble = value.intValue();
                 }
                 try {
-                    connection.SetEqualizer(device, newEqualizerSetting);
+                    connection.setEqualizer(device, newEqualizerSetting);
                     return true;
                 } catch (HttpException | IOException | ConnectionException e) {
                     logger.debug("Update equalizer failed", e);
                     this.lastKnownEqualizer = null;
                 }
-
             }
         }
         return false;
@@ -769,15 +712,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             throws IOException, URISyntaxException {
         Integer volume = null;
         if (textToSpeechVolume != 0) {
-            startIgnoreVolumeChange();
             volume = textToSpeechVolume;
         }
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
-            String bodyText = text.replaceAll("<[^>]+>", "");
-            connection.sendAnnouncement(device, text, bodyText, null, volume, lastKnownVolume);
-        } else {
-            connection.textToSpeech(device, text, volume, lastKnownVolume);
-        }
+        connection.textToSpeech(device, text, volume, lastKnownVolume);
     }
 
     @Override
@@ -793,10 +730,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (volume != null && volume < 0) {
             volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
         }
-        if (volume != null) {
-            startIgnoreVolumeChange();
-        }
-        connection.sendAnnouncement(device, speak, bodyText, title, volume, lastKnownVolume);
+        connection.announcement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
     private void stopCurrentNotification() {
@@ -820,22 +754,22 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     }
 
     private void updateNotificationTimerState() {
-        boolean stopCurrentNotifcation = true;
+        boolean stopCurrentNotification = true;
         JsonNotificationResponse currentNotification = this.currentNotification;
         try {
             if (currentNotification != null) {
                 Connection currentConnection = this.findConnection();
                 if (currentConnection != null) {
                     JsonNotificationResponse newState = currentConnection.getNotificationState(currentNotification);
-                    if (StringUtils.equals(newState.status, "ON")) {
-                        stopCurrentNotifcation = false;
+                    if (newState != null && "ON".equals(newState.status)) {
+                        stopCurrentNotification = false;
                     }
                 }
             }
         } catch (IOException | URISyntaxException e) {
             logger.warn("update notification state fails", e);
         }
-        if (stopCurrentNotifcation) {
+        if (stopCurrentNotification) {
             if (currentNotification != null) {
                 String type = currentNotification.type;
                 if (type != null) {
@@ -862,7 +796,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             this.logger.debug("Handle updateState {}", this.getThing().getUID());
 
             if (deviceNotificationState != null) {
-                noticationVolumeLevel = deviceNotificationState.volumeLevel;
+                notificationVolumeLevel = deviceNotificationState.volumeLevel;
             }
             if (ascendingAlarmModel != null) {
                 ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
@@ -906,44 +840,44 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             Progress progress = null;
             try {
                 JsonPlayerState playerState = connection.getPlayer(device);
-                playerInfo = playerState.playerInfo;
-                if (playerInfo != null) {
-                    infoText = playerInfo.infoText;
-                    if (infoText == null) {
-                        infoText = playerInfo.miniInfoText;
-                    }
-                    mainArt = playerInfo.mainArt;
-                    provider = playerInfo.provider;
-                    if (provider != null) {
-                        musicProviderId = provider.providerName;
-                        // Map the music provider id to the one used for starting music with voice command
-                        if (musicProviderId != null) {
-                            musicProviderId = musicProviderId.toUpperCase();
+                if (playerState != null) {
+                    playerInfo = playerState.playerInfo;
+                    if (playerInfo != null) {
+                        infoText = playerInfo.infoText;
+                        if (infoText == null) {
+                            infoText = playerInfo.miniInfoText;
+                        }
+                        mainArt = playerInfo.mainArt;
+                        provider = playerInfo.provider;
+                        if (provider != null) {
+                            musicProviderId = provider.providerName;
+                            // Map the music provider id to the one used for starting music with voice command
+                            if (musicProviderId != null) {
+                                musicProviderId = musicProviderId.toUpperCase();
 
-                            if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
-                                musicProviderId = "AMAZON_MUSIC";
-                            }
-                            if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
-                                musicProviderId = "AMAZON_MUSIC";
-                            }
-                            if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
-                                musicProviderId = "TUNEIN";
-                            }
-                            if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
-                                musicProviderId = "I_HEART_RADIO";
-                            }
-                            if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
-                                    && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
-                                musicProviderId = "APPLE_MUSIC";
+                                if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
+                                    musicProviderId = "AMAZON_MUSIC";
+                                }
+                                if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
+                                    musicProviderId = "AMAZON_MUSIC";
+                                }
+                                if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
+                                    musicProviderId = "TUNEIN";
+                                }
+                                if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
+                                    musicProviderId = "I_HEART_RADIO";
+                                }
+                                if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
+                                        && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
+                                    musicProviderId = "APPLE_MUSIC";
+                                }
                             }
                         }
+                        progress = playerInfo.progress;
                     }
-                    progress = playerInfo.progress;
                 }
             } catch (HttpException e) {
-                if (e.getCode() == 400) {
-                    // Ignore
-                } else {
+                if (e.getCode() != 400) {
                     logger.info("getPlayer fails", e);
                 }
             } catch (IOException | URISyntaxException e) {
@@ -951,10 +885,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             // check playing
             isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"));
-            // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING"));
 
             isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"));
-            // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PAUSED"));
             synchronized (progressLock) {
                 Boolean showTime = null;
                 Long mediaLength = null;
@@ -976,7 +908,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     } else {
                         stopProgressTimer();
                     }
-
                 } else {
                     stopProgressTimer();
                     mediaProgressMs = 0;
@@ -988,17 +919,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             JsonMediaState mediaState = null;
             try {
-
                 if (StringUtils.equalsIgnoreCase(musicProviderId, "AMAZON_MUSIC")
                         || StringUtils.equalsIgnoreCase(musicProviderId, "TUNEIN")) {
                     mediaState = connection.getMediaState(device);
                 }
-
             } catch (HttpException e) {
                 if (e.getCode() == 400) {
-
                     updateState(CHANNEL_RADIO_STATION_ID, new StringType(""));
-
                 } else {
                     logger.info("getMediaState fails", e);
                 }
@@ -1007,7 +934,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
 
             // handle music provider id
-
             if (provider != null && isPlaying) {
                 if (musicProviderId != null) {
                     this.musicProviderId = musicProviderId;
@@ -1094,7 +1020,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (queueEntries != null && queueEntries.length > 0) {
                     QueueEntry entry = queueEntries[0];
                     if (entry != null) {
-
                         if (isRadio) {
                             if (StringUtils.isEmpty(imageUrl) && entry.imageURL != null) {
                                 imageUrl = entry.imageURL;
@@ -1123,12 +1048,11 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // handle volume
             Integer volume = null;
-            if (this.ignoreVolumeChange == null) {
+            if (!connection.isSequenceNodeQueueRunning()) {
                 if (mediaState != null) {
                     volume = mediaState.volume;
                 }
                 if (playerInfo != null && volume == null) {
-
                     Volume volumnInfo = playerInfo.volume;
                     if (volumnInfo != null) {
                         volume = volumnInfo.volume;
@@ -1191,12 +1115,12 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             updateState(CHANNEL_ASCENDING_ALARM,
                     ascendingAlarm != null ? (ascendingAlarm ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
 
-            if (noticationVolumeLevel != null) {
-                updateState(CHANNEL_NOTIFICATION_VOLUME, new PercentType(noticationVolumeLevel));
+            final Integer notificationVolumeLevel = this.notificationVolumeLevel;
+            if (notificationVolumeLevel != null) {
+                updateState(CHANNEL_NOTIFICATION_VOLUME, new PercentType(notificationVolumeLevel));
             } else {
                 updateState(CHANNEL_NOTIFICATION_VOLUME, UnDefType.UNDEF);
             }
-
         } catch (Exception e) {
             this.logger.debug("Handle updateState {} failed: {}", this.getThing().getUID(), e.getMessage(), e);
 
@@ -1218,14 +1142,16 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (device == null) {
             return;
         }
-        Integer bass;
-        Integer midrange;
-        Integer treble;
+        Integer bass = null;
+        Integer midrange = null;
+        Integer treble = null;
         try {
             JsonEqualizer equalizer = connection.getEqualizer(device);
-            bass = equalizer.bass;
-            midrange = equalizer.mid;
-            treble = equalizer.treble;
+            if (equalizer != null) {
+                bass = equalizer.bass;
+                midrange = equalizer.mid;
+                treble = equalizer.treble;
+            }
             this.lastKnownEqualizer = equalizer;
         } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
             logger.debug("Get equalizer failes", e);
@@ -1240,7 +1166,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (treble != null) {
             updateState(CHANNEL_EQUALIZER_TREBLE, new DecimalType(treble));
         }
-
     }
 
     private void updateMediaProgress() {
@@ -1259,10 +1184,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
                 }
                 updateState(CHANNEL_MEDIA_PROGRESS_TIME,
-                        new QuantityType<Time>(currentPlayTimeMs / 1000, SmartHomeUnits.SECOND));
+                        new QuantityType<>(currentPlayTimeMs / 1000, SmartHomeUnits.SECOND));
                 if (updateMediaLength) {
-                    updateState(CHANNEL_MEDIA_LENGTH,
-                            new QuantityType<Time>(mediaLengthMs / 1000, SmartHomeUnits.SECOND));
+                    updateState(CHANNEL_MEDIA_LENGTH, new QuantityType<>(mediaLengthMs / 1000, SmartHomeUnits.SECOND));
                 }
             } else {
                 updateState(CHANNEL_MEDIA_PROGRESS, UnDefType.UNDEF);
@@ -1279,7 +1203,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if ("DISCARDED_NON_DEVICE_DIRECTED_INTENT".equals(pushActivity.activityStatus)) {
             return;
         }
-        Description description = pushActivity.ParseDescription();
+        Description description = pushActivity.parseDescription();
         if (StringUtils.isEmpty(description.firstUtteranceId)
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
             return;
@@ -1298,25 +1222,12 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
 
-            if (lastSpokenText.equals(spokenText)) {
+            if (lastSpokenText.isEmpty() || lastSpokenText.equals(spokenText)) {
                 updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
             }
             lastSpokenText = spokenText;
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
         }
-    }
-
-    private void startIgnoreVolumeChange() {
-        @Nullable
-        ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
-        if (oldIgnoreVolumeChange != null) {
-            oldIgnoreVolumeChange.cancel(false);
-        }
-        this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
-    }
-
-    private void stopIgnoreVolumeChange() {
-        this.ignoreVolumeChange = null;
     }
 
     public void handlePushCommand(String command, String payload) {
@@ -1325,16 +1236,15 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             case "PUSH_VOLUME_CHANGE":
                 JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
                         JsonCommandPayloadPushVolumeChange.class);
+                Connection connection = this.findConnection();
                 @Nullable
                 Integer volumeSetting = volumeChange.volumeSetting;
                 @Nullable
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
-                } else if (volumeSetting != null) {
-                    if (ignoreVolumeChange != null) {
-                        return;
-                    }
+                }
+                if (volumeSetting != null && connection != null && !connection.isSequenceNodeQueueRunning()) {
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }

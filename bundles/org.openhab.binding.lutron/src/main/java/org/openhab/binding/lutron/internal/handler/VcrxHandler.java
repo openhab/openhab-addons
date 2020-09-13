@@ -84,13 +84,13 @@ public class VcrxHandler extends BaseKeypadHandler {
         }
     }
 
-    private static final List<Component> BUTTONGROUP = Arrays.asList(Component.BUTTON1, Component.BUTTON2,
+    private static final List<Component> BUTTON_GROUP = Arrays.asList(Component.BUTTON1, Component.BUTTON2,
             Component.BUTTON3, Component.BUTTON4, Component.BUTTON5, Component.BUTTON6);
 
-    private static final List<Component> LEDGROUP = Arrays.asList(Component.LED1, Component.LED2, Component.LED3,
+    private static final List<Component> LED_GROUP = Arrays.asList(Component.LED1, Component.LED2, Component.LED3,
             Component.LED4, Component.LED5, Component.LED6);
 
-    private static final List<Component> CCIGROUP = Arrays.asList(Component.CCI1, Component.CCI2, Component.CCI3,
+    private static final List<Component> CCI_GROUP = Arrays.asList(Component.CCI1, Component.CCI2, Component.CCI3,
             Component.CCI4);
 
     private final Logger logger = LoggerFactory.getLogger(VcrxHandler.class);
@@ -114,13 +114,12 @@ public class VcrxHandler extends BaseKeypadHandler {
     protected void configureComponents(@Nullable String model) {
         logger.debug("Configuring components for VCRX");
 
-        buttonList.addAll(BUTTONGROUP);
-        ledList.addAll(LEDGROUP);
-        cciList.addAll(CCIGROUP);
+        buttonList.addAll(BUTTON_GROUP);
+        ledList.addAll(LED_GROUP);
+        cciList.addAll(CCI_GROUP);
     }
 
     public VcrxHandler(Thing thing) {
         super(thing);
     }
-
 }

@@ -49,11 +49,11 @@ public class LxTemperatureHSBType extends HSBType {
      * Re-maps a number from one range to another. That is, a value of fromLow would get mapped to toLow, a value of
      * fromHigh to toHigh, values in-between to values in-between, etc.
      *
-     * @param x        the number to map
-     * @param fromLow  the lower bound of the value's current range
+     * @param x the number to map
+     * @param fromLow the lower bound of the value's current range
      * @param fromHigh the upper bound of the value's current range
-     * @param toLow    the lower bound of the value's target range
-     * @param toHigh   the upper bound of the value's target range
+     * @param toLow the lower bound of the value's target range
+     * @param toHigh the upper bound of the value's target range
      * @return the mapped value
      */
     private static int map(int x, int fromLow, int fromHigh, int toLow, int toHigh) {
@@ -124,7 +124,7 @@ public class LxTemperatureHSBType extends HSBType {
     /**
      * Constrains a number to be within a range.
      *
-     * @param x   the number to constrain
+     * @param x the number to constrain
      * @param min the minimum value
      * @param max the maximum value
      * @return the constrained value
@@ -138,5 +138,4 @@ public class LxTemperatureHSBType extends HSBType {
             return max;
         }
     }
-
 }

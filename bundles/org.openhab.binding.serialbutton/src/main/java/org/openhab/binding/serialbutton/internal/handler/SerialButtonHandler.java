@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.TooManyListenersException;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
@@ -94,9 +93,20 @@ public class SerialButtonHandler extends BaseThingHandler implements SerialPortE
     @Override
     public void dispose() {
         if (serialPort != null) {
+            serialPort.removeEventListener();
+        }
+        if (inputStream != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                logger.debug("Error while closing the input stream: {}", e.getMessage());
+            }
+        }
+        if (serialPort != null) {
             serialPort.close();
         }
-        IOUtils.closeQuietly(inputStream);
+        inputStream = null;
+        serialPort = null;
     }
 
     @Override

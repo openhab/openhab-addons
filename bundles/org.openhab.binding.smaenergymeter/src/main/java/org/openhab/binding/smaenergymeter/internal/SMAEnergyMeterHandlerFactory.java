@@ -46,5 +46,4 @@ public class SMAEnergyMeterHandlerFactory extends BaseThingHandlerFactory {
 
         return null;
     }
-
 }

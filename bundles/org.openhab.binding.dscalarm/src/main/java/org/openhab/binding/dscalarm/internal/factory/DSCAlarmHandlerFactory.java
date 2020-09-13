@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.openhab.binding.dscalarm.internal.DSCAlarmBindingConstants;
 import org.openhab.binding.dscalarm.internal.config.DSCAlarmPartitionConfiguration;
 import org.openhab.binding.dscalarm.internal.config.DSCAlarmZoneConfiguration;
@@ -43,7 +44,9 @@ import org.openhab.binding.dscalarm.internal.handler.PartitionThingHandler;
 import org.openhab.binding.dscalarm.internal.handler.TCPServerBridgeHandler;
 import org.openhab.binding.dscalarm.internal.handler.ZoneThingHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,13 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
     private final Logger logger = LoggerFactory.getLogger(DSCAlarmHandlerFactory.class);
     private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+
+    private final SerialPortManager serialPortManager;
+
+    @Activate
+    public DSCAlarmHandlerFactory(final @Reference SerialPortManager serialPortManager) {
+        this.serialPortManager = serialPortManager;
+    }
 
     @Override
     public Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration, ThingUID thingUID,
@@ -261,7 +271,7 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
             logger.debug("createHandler(): ENVISALINKBRIDGE_THING: ThingHandler created for {}", thingTypeUID);
             return handler;
         } else if (thingTypeUID.equals(DSCAlarmBindingConstants.IT100BRIDGE_THING_TYPE)) {
-            IT100BridgeHandler handler = new IT100BridgeHandler((Bridge) thing);
+            IT100BridgeHandler handler = new IT100BridgeHandler((Bridge) thing, serialPortManager);
             registerDSCAlarmDiscoveryService(handler);
             logger.debug("createHandler(): IT100BRIDGE_THING: ThingHandler created for {}", thingTypeUID);
             return handler;
@@ -304,5 +314,4 @@ public class DSCAlarmHandlerFactory extends BaseThingHandlerFactory {
 
         super.removeHandler(thingHandler);
     }
-
 }

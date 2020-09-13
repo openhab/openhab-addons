@@ -67,5 +67,4 @@ public interface NibeHeatPumpConnector {
      * @return true, if connected
      */
     boolean isConnected();
-
 }

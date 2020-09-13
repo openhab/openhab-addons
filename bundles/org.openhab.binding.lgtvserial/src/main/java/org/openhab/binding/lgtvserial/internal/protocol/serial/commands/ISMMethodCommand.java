@@ -23,5 +23,4 @@ public class ISMMethodCommand extends BaseStringCommand {
     protected ISMMethodCommand(int setId) {
         super('j', 'p', setId);
     }
-
 }

@@ -11,29 +11,29 @@
 		<description>@text/bridge-type.velux.klf200.description</description>
 
 		<channels>
-			<channel id="status" typeId="status" />
-			<channel id="reload" typeId="reload" />
-			<channel id="downtime" typeId="downtime" />
-			<channel id="doDetection" typeId="doDetection" />
+			<channel id="status" typeId="status"/>
+			<channel id="reload" typeId="reload"/>
+			<channel id="downtime" typeId="downtime"/>
+			<channel id="doDetection" typeId="doDetection"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">Velux</property>
 			<!-- Bridge properties
-			<property name="firmware" />
-			<property name="ipAddress" />
-			<property name="subnetMask" />
-			<property name="defaultGW" />
-			<property name="DHCP" />
-			<property name="WLANSSID" />
-			<property name="WLANPassword" />
-			<property name="products" />
-			<property name="scenes" />
-			<property name="check" />
+				<property name="firmware" />
+				<property name="ipAddress" />
+				<property name="subnetMask" />
+				<property name="defaultGW" />
+				<property name="DHCP" />
+				<property name="WLANSSID" />
+				<property name="WLANPassword" />
+				<property name="products" />
+				<property name="scenes" />
+				<property name="check" />
 			-->
 		</properties>
 
-		<config-description-ref uri="bridge-type:velux:bridge" />
+		<config-description-ref uri="bridge-type:velux:bridge"/>
 
 	</bridge-type>
 

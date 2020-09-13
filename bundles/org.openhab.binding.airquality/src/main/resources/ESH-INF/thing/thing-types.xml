@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<thing:thing-descriptions bindingId="airquality" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<thing:thing-descriptions bindingId="airquality"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
@@ -7,27 +8,30 @@
 	<thing-type id="aqi">
 		<label>Air Quality</label>
 		<description>
-		Provides various air quality data from the World Air Quality Project.
-		In order to receive the data, you must register an account on http://aqicn.org/data-platform/token/ and get your API token.
+			Provides various air quality data from the World Air Quality Project.
+			In order to receive the data, you
+			must register an account on http://aqicn.org/data-platform/token/ and get your API
+			token.
 		</description>
 
 		<channels>
-			<channel id="aqiLevel" typeId="aqiLevel" />
-			<channel id="aqiDescription" typeId="aqiDescription" />
-			<channel id="pm25" typeId="pm25" />
-			<channel id="pm10" typeId="pm10" />
-			<channel id="o3" typeId="o3" />
-			<channel id="no2" typeId="no2" />
-			<channel id="co" typeId="co" />
-			<channel id="so2" typeId="so2" />
-			<channel id="locationName" typeId="locationName" />
-			<channel id="stationLocation" typeId="stationLocation" />
-			<channel id="stationId" typeId="stationId" />
-			<channel id="observationTime" typeId="observationTime" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="pressure" typeId="pressure" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="dominentpol" typeId="dominentPol" />
+			<channel id="aqiLevel" typeId="aqiLevel"/>
+			<channel id="aqiColor" typeId="aqiColor"/>
+			<channel id="aqiDescription" typeId="aqiDescription"/>
+			<channel id="pm25" typeId="pm25"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="o3" typeId="o3"/>
+			<channel id="no2" typeId="no2"/>
+			<channel id="co" typeId="co"/>
+			<channel id="so2" typeId="so2"/>
+			<channel id="locationName" typeId="locationName"/>
+			<channel id="stationLocation" typeId="stationLocation"/>
+			<channel id="stationId" typeId="stationId"/>
+			<channel id="observationTime" typeId="observationTime"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="pressure" typeId="pressure"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="dominentpol" typeId="dominentPol"/>
 		</channels>
 
 		<config-description>
@@ -44,11 +48,14 @@
 			<parameter name="stationId" type="integer" required="false">
 				<label>Station ID</label>
 				<description>Fill only in case you want to receive data from the specific station</description>
+				<advanced>true</advanced>
 			</parameter>
-			<parameter name="refresh" type="integer" min="30" required="false">
+			<parameter name="refresh" type="integer" min="30" required="false" unit="min">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in minutes.</description>
+				<advanced>true</advanced>
 				<default>60</default>
+				<unitLabel>Minutes</unitLabel>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -58,7 +65,7 @@
 		<label>Air Quality Index</label>
 		<description></description>
 		<category>Air Quality Index</category>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="aqiDescription">
@@ -66,7 +73,16 @@
 		<label>AQI Description</label>
 		<description></description>
 		<category>AQI Description</category>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good</option>
+				<option value="MODERATE">Moderate</option>
+				<option value="UNHEALTHY_FOR_SENSITIVE">Unhealthy for Sensitive Groups</option>
+				<option value="UNHEALTHY">Unhealthy</option>
+				<option value="VERY_UNHEALTHY">Very Unhealthy</option>
+				<option value="HAZARDOUS">Hazardous</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="pm25">
@@ -74,7 +90,7 @@
 		<label>PM2.5</label>
 		<description>Fine particles pollution level</description>
 		<category>PM2.5</category>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="pm10">
@@ -82,7 +98,7 @@
 		<label>PM10</label>
 		<description>Coarse dust particles pollution level</description>
 		<category>PM10</category>
-		<state readOnly="true" pattern="%d"/>
+		<state readOnly="true" pattern="%d" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="o3">
@@ -90,7 +106,7 @@
 		<label>O3</label>
 		<description>Ozone level</description>
 		<category>O3</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.1f" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="no2">
@@ -98,7 +114,7 @@
 		<label>NO2</label>
 		<description>Nitrogen dioxide level</description>
 		<category>NO2</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.1f" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="co">
@@ -106,7 +122,7 @@
 		<label>CO</label>
 		<description>Carbon monoxide level</description>
 		<category>CO</category>
-		<state readOnly="true" pattern="%.1f"/>
+		<state readOnly="true" pattern="%.1f" min="0" max="500"/>
 	</channel-type>
 
 	<channel-type id="so2">
@@ -130,7 +146,7 @@
 		<label>Station Location</label>
 		<description>Location of the measuring station</description>
 		<category>Station Location</category>
-		<state readOnly="true" pattern="%2$s°N,%3$s°W" />
+		<state readOnly="true" pattern="%2$s°N,%3$s°W"/>
 	</channel-type>
 
 	<channel-type id="stationId" advanced="true">
@@ -170,14 +186,29 @@
 		<label>Humidity</label>
 		<description>Current humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
 	</channel-type>
-	
+
 	<channel-type id="dominentPol">
 		<item-type>String</item-type>
 		<label>Dominent Polutor</label>
-		<state readOnly="true" pattern="%s"/>
+		<state readOnly="true">
+			<options>
+				<option value="pm25">Fine particles</option>
+				<option value="pm10">Coarse dust particles</option>
+				<option value="o3">Ozone</option>
+				<option value="no2">Nitrogen Dioxide</option>
+				<option value="co">Carbon Monoxide</option>
+				<option value="so2">Sulfur Dioxide</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="aqiColor" advanced="true">
+		<item-type>Color</item-type>
+		<label>AQI Color</label>
+		<description>Color associated to given AQI Index.</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
-

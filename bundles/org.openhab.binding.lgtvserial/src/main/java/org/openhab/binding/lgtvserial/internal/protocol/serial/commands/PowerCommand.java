@@ -23,5 +23,4 @@ public class PowerCommand extends BaseOnOffCommand {
     protected PowerCommand(int setId) {
         super('k', 'a', setId);
     }
-
 }

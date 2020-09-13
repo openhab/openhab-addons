@@ -57,5 +57,4 @@ public class HeadStatus {
     public void setUserMessage(String userMessage) {
         this.userMessage = userMessage;
     }
-
 }

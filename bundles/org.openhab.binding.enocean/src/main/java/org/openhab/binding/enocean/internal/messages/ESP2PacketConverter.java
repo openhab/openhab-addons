@@ -73,7 +73,6 @@ public class ESP2PacketConverter {
                 System.arraycopy(description, 0, data, 17, description.length);
                 return ESP3PacketFactory.BuildPacket(data.length, 0, ESPPacketType.RESPONSE.getValue(), data);
             }
-
             case UNKOWN: // try to interpret it as a radio telegram
                 return handleRadioTelegram(dataLength, packetType, payload);
 

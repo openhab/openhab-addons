@@ -12,57 +12,17 @@
  */
 package org.openhab.binding.astro.internal.config;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * Channel configuration from Eclipse SmartHome.
  *
  * @author Gerhard Riegler - Initial contribution
  */
-
+@NonNullByDefault
 public class AstroChannelConfig {
-    private Integer offset;
-    private String earliest;
-    private String latest;
-
-    /**
-     * Returns the offset.
-     */
-    public Integer getOffset() {
-        return offset;
-    }
-
-    /**
-     * Sets the offset.
-     */
-    public void setOffset(Integer offset) {
-        this.offset = offset;
-    }
-
-    /**
-     * Returns the earliest time.
-     */
-    public String getEarliest() {
-        return earliest;
-    }
-
-    /**
-     * Sets the earliest time.
-     */
-    public void setEarliest(String earliest) {
-        this.earliest = earliest;
-    }
-
-    /**
-     * Returns the latest time.
-     */
-    public String getLatest() {
-        return latest;
-    }
-
-    /**
-     * Sets the latest time.
-     */
-    public void setLatest(String latest) {
-        this.latest = latest;
-    }
-
+    public int offset = 0;
+    public @Nullable String earliest;
+    public @Nullable String latest;
 }

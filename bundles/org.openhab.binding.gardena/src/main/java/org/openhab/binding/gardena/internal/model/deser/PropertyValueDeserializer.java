@@ -67,5 +67,4 @@ public class PropertyValueDeserializer implements JsonDeserializer<PropertyValue
             return new PropertyValue(element.getAsString());
         }
     }
-
 }

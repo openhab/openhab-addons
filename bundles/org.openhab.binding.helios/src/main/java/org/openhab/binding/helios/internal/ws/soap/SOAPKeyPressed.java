@@ -38,5 +38,4 @@ public class SOAPKeyPressed extends SOAPDataField {
     public void setKeyCode(String code) {
         this.keyCode = code;
     }
-
 }

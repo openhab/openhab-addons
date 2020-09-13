@@ -49,5 +49,4 @@ public abstract class BlueGigaDeviceCommand extends BlueGigaCommand {
     public final int getConnection() {
         return connection;
     }
-
 }

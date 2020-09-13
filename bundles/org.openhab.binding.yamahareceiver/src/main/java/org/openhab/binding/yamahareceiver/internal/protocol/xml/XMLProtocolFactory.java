@@ -53,7 +53,6 @@ public class XMLProtocolFactory implements ProtocolFactory {
     @Override
     public SystemControl SystemControl(AbstractConnection connection, SystemControlStateListener listener,
             DeviceInformationState deviceInformationState) {
-
         return new SystemControlXML(connection, listener, deviceInformationState);
     }
 
@@ -61,14 +60,12 @@ public class XMLProtocolFactory implements ProtocolFactory {
     public InputWithPlayControl InputWithPlayControl(AbstractConnection connection, String currentInputID,
             PlayInfoStateListener listener, YamahaBridgeConfig bridgeConfig,
             DeviceInformationState deviceInformationState) {
-
         return new InputWithPlayControlXML(currentInputID, connection, listener, bridgeConfig, deviceInformationState);
     }
 
     @Override
     public InputWithPresetControl InputWithPresetControl(AbstractConnection connection, String currentInputID,
             PresetInfoStateListener listener, DeviceInformationState deviceInformationState) {
-
         return new InputWithPresetControlXML(currentInputID, connection, listener, deviceInformationState);
     }
 
@@ -76,7 +73,6 @@ public class XMLProtocolFactory implements ProtocolFactory {
     public InputWithTunerBandControl InputWithDabBandControl(String currentInputID, AbstractConnection connection,
             DabBandStateListener observerForBand, PresetInfoStateListener observerForPreset,
             PlayInfoStateListener observerForPlayInfo, DeviceInformationState deviceInformationState) {
-
         return new InputWithTunerDABControlXML(currentInputID, connection, observerForBand, observerForPreset,
                 observerForPlayInfo, deviceInformationState);
     }
@@ -85,7 +81,6 @@ public class XMLProtocolFactory implements ProtocolFactory {
     public InputWithNavigationControl InputWithNavigationControl(AbstractConnection connection,
             NavigationControlState state, String inputID, NavigationControlStateListener observer,
             DeviceInformationState deviceInformationState) {
-
         return new InputWithNavigationControlXML(state, inputID, connection, observer, deviceInformationState);
     }
 
@@ -93,7 +88,6 @@ public class XMLProtocolFactory implements ProtocolFactory {
     public ZoneControl ZoneControl(AbstractConnection connection, YamahaZoneConfig zoneSettings,
             ZoneControlStateListener listener, Supplier<InputConverter> inputConverterSupplier,
             DeviceInformationState deviceInformationState) {
-
         if (isZoneB(zoneSettings.getZone(), deviceInformationState)) {
             return new ZoneBControlXML(connection, zoneSettings, listener, deviceInformationState,
                     inputConverterSupplier);
@@ -106,7 +100,6 @@ public class XMLProtocolFactory implements ProtocolFactory {
     public ZoneAvailableInputs ZoneAvailableInputs(AbstractConnection connection, YamahaZoneConfig zoneSettings,
             AvailableInputStateListener listener, Supplier<InputConverter> inputConverterSupplier,
             DeviceInformationState deviceInformationState) {
-
         if (isZoneB(zoneSettings.getZone(), deviceInformationState)) {
             return new ZoneBAvailableInputsXML(connection, listener, inputConverterSupplier);
         }

@@ -59,6 +59,7 @@ public class DSMRMeterDetectorTest {
             { "Landis_Gyr_ZCF110", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2, M3_V5_0)},
             { "Sagemcom_XS210", EnumSet.of( DEVICE_V4, ELECTRICITY_V4_2)},
             { "smarty", EnumSet.of( DEVICE_V5, ELECTRICITY_SMARTY_V1_0)},
+            { "smarty_with_units", EnumSet.of( DEVICE_V5, ELECTRICITY_SMARTY_V1_0, M3_V4)},
         });
     }
     // @formatter:on
@@ -89,5 +90,4 @@ public class DSMRMeterDetectorTest {
                     1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
         }
     }
-
 }

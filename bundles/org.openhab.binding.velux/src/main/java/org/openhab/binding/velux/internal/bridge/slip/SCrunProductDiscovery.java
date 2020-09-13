@@ -150,5 +150,4 @@ class SCrunProductDiscovery extends RunProductDiscovery implements SlipBridgeCom
     public boolean isCommunicationSuccessful() {
         return success;
     }
-
 }

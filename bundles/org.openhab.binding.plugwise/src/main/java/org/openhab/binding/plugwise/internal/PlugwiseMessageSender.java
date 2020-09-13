@@ -42,7 +42,7 @@ public class PlugwiseMessageSender {
         private int messageWaitTime;
 
         public MessageSenderThread(int messageWaitTime) {
-            super("Plugwise MessageSenderThread");
+            super("OH-binding-" + context.getBridgeUID() + "-message-sender");
             this.messageWaitTime = messageWaitTime;
             setDaemon(true);
         }
@@ -66,7 +66,6 @@ public class PlugwiseMessageSender {
                 }
             }
         }
-
     }
 
     /** Default maximum number of attempts to send a message */
@@ -199,5 +198,4 @@ public class PlugwiseMessageSender {
             }
         }
     }
-
 }

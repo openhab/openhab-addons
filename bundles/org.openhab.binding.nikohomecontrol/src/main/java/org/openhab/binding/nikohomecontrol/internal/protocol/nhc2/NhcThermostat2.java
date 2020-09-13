@@ -56,7 +56,7 @@ public class NhcThermostat2 extends NhcThermostat {
         logger.debug("Niko Home Control: execute thermostat overrule {} during {} min for {}", overrule, overruletime,
                 id);
 
-        nhcComm.executeThermostat(id, overrule / 10, overruletime);
+        nhcComm.executeThermostat(id, overrule, overruletime);
     }
 
     /**

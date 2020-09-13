@@ -35,5 +35,4 @@ public class VelbusRelayPacket extends VelbusPacket {
     protected byte[] getDataBytes() {
         return new byte[] { command, channel };
     }
-
 }

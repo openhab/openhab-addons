@@ -82,5 +82,4 @@ public class Battery {
     public void setVendor(String vendor) {
         this.vendor = vendor;
     }
-
 }

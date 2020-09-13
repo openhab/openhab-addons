@@ -73,5 +73,4 @@ public class AvailableServices {
     public void setSchedule(String schedule) {
         this.schedule = schedule;
     }
-
 }

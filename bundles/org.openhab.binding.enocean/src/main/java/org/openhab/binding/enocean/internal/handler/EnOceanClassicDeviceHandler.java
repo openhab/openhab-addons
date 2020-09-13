@@ -56,7 +56,7 @@ import org.openhab.binding.enocean.internal.messages.BasePacket;
 public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     // List of thing types which support sending of eep messages
-    public final static Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_CLASSICDEVICE));
 
     private StringType lastTriggerEvent = StringType.valueOf(CommonTriggerEvents.DIR1_PRESSED);
@@ -126,7 +126,6 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
                 getBridgeHandler().addPacketListener(this, Long.parseLong(config.enoceanId, 16));
                 return true;
             } catch (NumberFormatException e) {
-
             }
 
             return false;
@@ -208,7 +207,6 @@ public class EnOceanClassicDeviceHandler extends EnOceanBaseActuatorHandler {
 
     @Override
     public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-
         // We must have a valid sendingEEPType and sender id to send commands
         if (sendingEEPType == null || senderId == null || command == RefreshType.REFRESH) {
             return;

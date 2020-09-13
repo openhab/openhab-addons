@@ -143,7 +143,6 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
         }
         executorService.shutdown();
         executorService = null;
-
     }
 
     /**
@@ -223,6 +222,5 @@ public class RioSystemDiscovery extends AbstractDiscoveryService {
                     .withLabel("Russound " + type).build();
             thingDiscovered(result);
         }
-
     }
 }

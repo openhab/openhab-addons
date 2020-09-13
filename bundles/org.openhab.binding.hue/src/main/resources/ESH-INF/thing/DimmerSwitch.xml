@@ -6,18 +6,18 @@
 	<!-- Hue Dimmer Switch -->
 	<thing-type id="0820">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge" />
+			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>Hue Dimmer Switch</label>
 		<description>A dimmer switch.</description>
 
 		<channels>
-			<channel id="dimmer_switch_event" typeId="dimmer_switch_event" />
-			<channel id="dimmer_switch" typeId="dimmer_switch" />
-			<channel id="last_updated" typeId="last_updated" />
-			<channel id="battery_level" typeId="system.battery-level" />
-			<channel id="battery_low" typeId="system.low-battery" />
+			<channel id="dimmer_switch_event" typeId="dimmer_switch_event"/>
+			<channel id="dimmer_switch" typeId="dimmer_switch"/>
+			<channel id="last_updated" typeId="last_updated"/>
+			<channel id="battery_level" typeId="system.battery-level"/>
+			<channel id="battery_low" typeId="system.low-battery"/>
 		</channels>
 
 		<representation-property>uniqueId</representation-property>

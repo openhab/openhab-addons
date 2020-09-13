@@ -14,6 +14,7 @@ package org.openhab.binding.avmfritz.internal.hardware.callbacks;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.avmfritz.internal.hardware.FritzAhaWebInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@NonNullByDefault
 public class FritzAhaApplyTemplateCallback extends FritzAhaReauthCallback {
 
     private final Logger logger = LoggerFactory.getLogger(FritzAhaApplyTemplateCallback.class);

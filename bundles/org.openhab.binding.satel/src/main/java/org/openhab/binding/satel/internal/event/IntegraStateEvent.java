@@ -35,8 +35,8 @@ public class IntegraStateEvent implements SatelEvent {
     /**
      * Constructs new event instance from given state type and state bits.
      *
-     * @param command      the command byte
-     * @param stateBits    state bits as byte array
+     * @param command the command byte
+     * @param stateBits state bits as byte array
      * @param extendedData whether state bits are for extended command
      */
     public IntegraStateEvent(byte command, byte[] stateBits, boolean extendedData) {
@@ -81,7 +81,7 @@ public class IntegraStateEvent implements SatelEvent {
      * Returns <code>true</code> if specified state bit is set for given state.
      *
      * @param stateType type of state
-     * @param nbr       state bit number
+     * @param nbr state bit number
      * @return <code>true</code> if state bit is set
      */
     public boolean isSet(StateType stateType, int nbr) {

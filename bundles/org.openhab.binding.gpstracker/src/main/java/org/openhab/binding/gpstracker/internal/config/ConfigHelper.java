@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.gpstracker.internal.config;
 
+import java.math.BigDecimal;
+
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.PointType;
-
-import java.math.BigDecimal;
 
 /**
  * The {@link ConfigHelper} class is a configuration helper for channels and profiles.
@@ -23,7 +23,7 @@ import java.math.BigDecimal;
  * @author Gabor Bicskei - Initial contribution
  */
 public class ConfigHelper {
-    //configuration constants
+    // configuration constants
     public static final String CONFIG_TRACKER_ID = "trackerId";
     public static final String CONFIG_REGION_NAME = "regionName";
     public static final String CONFIG_REGION_RADIUS = "regionRadius";
@@ -33,7 +33,8 @@ public class ConfigHelper {
     /**
      * Constructor.
      */
-    private ConfigHelper() {}
+    private ConfigHelper() {
+    }
 
     public static double getRegionRadius(Configuration config) {
         return ((BigDecimal) config.get(CONFIG_REGION_RADIUS)).doubleValue();
@@ -41,7 +42,7 @@ public class ConfigHelper {
 
     public static double getAccuracyThreshold(Configuration config) {
         Object value = config.get(CONFIG_ACCURACY_THRESHOLD);
-        return value != null ? ((BigDecimal) value).doubleValue(): 0;
+        return value != null ? ((BigDecimal) value).doubleValue() : 0;
     }
 
     public static String getRegionName(Configuration config) {
@@ -54,6 +55,6 @@ public class ConfigHelper {
 
     public static PointType getRegionCenterLocation(Configuration config) {
         String location = (String) config.get(CONFIG_REGION_CENTER_LOCATION);
-        return location != null ? new PointType(location): null;
+        return location != null ? new PointType(location) : null;
     }
 }

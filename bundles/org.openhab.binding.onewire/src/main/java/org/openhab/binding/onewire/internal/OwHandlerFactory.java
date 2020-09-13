@@ -93,8 +93,8 @@ public class OwHandlerFactory extends BaseThingHandlerFactory {
     private synchronized void registerDiscoveryService(OwserverBridgeHandler owserverBridgeHandler) {
         OwDiscoveryService owDiscoveryService = new OwDiscoveryService(owserverBridgeHandler);
 
-        this.discoveryServiceRegs.put(owserverBridgeHandler.getThing().getUID(), bundleContext.registerService(
-                DiscoveryService.class.getName(), owDiscoveryService, new Hashtable<String, Object>()));
+        this.discoveryServiceRegs.put(owserverBridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), owDiscoveryService, new Hashtable<>()));
     }
 
     @Override

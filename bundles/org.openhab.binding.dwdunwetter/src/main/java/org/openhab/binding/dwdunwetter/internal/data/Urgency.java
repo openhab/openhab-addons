@@ -41,5 +41,4 @@ public enum Urgency {
         return Arrays.asList(Urgency.values()).stream()
                 .filter(urg -> StringUtils.equalsIgnoreCase(input, urg.getText())).findAny().orElse(UNKNOWN);
     }
-
 }

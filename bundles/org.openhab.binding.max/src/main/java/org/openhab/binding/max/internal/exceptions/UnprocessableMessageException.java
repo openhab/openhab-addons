@@ -24,5 +24,4 @@ public class UnprocessableMessageException extends Exception {
      * required variable to avoid IncorrectMultilineIndexException warning
      */
     private static final long serialVersionUID = -9071779402960309265L;
-
 }

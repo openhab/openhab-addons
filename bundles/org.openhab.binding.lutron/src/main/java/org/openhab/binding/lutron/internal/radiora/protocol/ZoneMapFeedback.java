@@ -55,5 +55,4 @@ public class ZoneMapFeedback extends RadioRAFeedback {
 
         return zoneStates.charAt(zone - 1);
     }
-
 }

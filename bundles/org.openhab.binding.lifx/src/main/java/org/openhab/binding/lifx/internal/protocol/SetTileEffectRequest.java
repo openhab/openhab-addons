@@ -150,5 +150,4 @@ public class SetTileEffectRequest extends Packet {
     public int[] expectedResponses() {
         return new int[] {};
     }
-
 }

@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.max.internal.handler;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.max.internal.command.CubeCommand;
@@ -22,14 +23,15 @@ import org.openhab.binding.max.internal.command.CubeCommand;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public final class SendCommand {
 
     private int id;
     private static int commandId = -1;
 
-    private ChannelUID channelUID;
-    private Command command;
-    private CubeCommand cubeCommand;
+    private @Nullable ChannelUID channelUID;
+    private @Nullable Command command;
+    private @Nullable CubeCommand cubeCommand;
     private String serialNumber;
     private String key;
     private String commandText;
@@ -41,7 +43,7 @@ public final class SendCommand {
         this.channelUID = channelUID;
         this.command = command;
         key = getKey(serialNumber, channelUID);
-        this.setCommandText(command.toString());
+        this.commandText = command.toString();
     }
 
     public SendCommand(String serialNumber, CubeCommand cubeCommand, String commandText) {
@@ -50,7 +52,7 @@ public final class SendCommand {
         this.serialNumber = serialNumber;
         this.cubeCommand = cubeCommand;
         key = getKey(serialNumber, cubeCommand);
-        this.setCommandText(commandText);
+        this.commandText = commandText;
     }
 
     /**
@@ -82,7 +84,7 @@ public final class SendCommand {
         return id;
     }
 
-    public ChannelUID getChannelUID() {
+    public @Nullable ChannelUID getChannelUID() {
         return channelUID;
     }
 
@@ -91,7 +93,7 @@ public final class SendCommand {
         key = getKey(serialNumber, channelUID);
     }
 
-    public Command getCommand() {
+    public @Nullable Command getCommand() {
         return command;
     }
 
@@ -99,7 +101,7 @@ public final class SendCommand {
         this.command = command;
     }
 
-    public CubeCommand getCubeCommand() {
+    public @Nullable CubeCommand getCubeCommand() {
         return cubeCommand;
     }
 
@@ -109,7 +111,10 @@ public final class SendCommand {
 
     public void setDeviceSerial(String device) {
         this.serialNumber = device;
-        key = getKey(serialNumber, channelUID);
+        final ChannelUID channelUID = this.channelUID;
+        if (channelUID != null) {
+            key = getKey(serialNumber, channelUID);
+        }
     }
 
     public String getCommandText() {
@@ -122,9 +127,10 @@ public final class SendCommand {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("id", id).append("channelUID", channelUID).append("command", command)
-                .append("cubeCommand", cubeCommand).append("serialNumber", serialNumber).append("key", key)
-                .append("commandText", commandText).toString();
+        StringBuilder sb = new StringBuilder();
+        return sb.append("id: ").append(id).append(", channelUID: ").append(channelUID).append(", command: ")
+                .append(command).append(", cubeCommand: ").append(cubeCommand).append(", serialNumber: ")
+                .append(serialNumber).append(", key: ").append(key).append(", commandText: ").append(commandText)
+                .toString();
     }
-
 }

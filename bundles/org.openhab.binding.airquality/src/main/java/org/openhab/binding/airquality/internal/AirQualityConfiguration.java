@@ -12,19 +12,22 @@
  */
 package org.openhab.binding.airquality.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link AirQualityConfiguration} is the class used to match the
  * thing configuration.
  *
  * @author Kuba Wolanin - Initial contribution
  */
+@NonNullByDefault
 public class AirQualityConfiguration {
 
     public static final String LOCATION = "location";
 
-    public String apikey;
-    public String location;
-    public Integer stationId;
-    public Integer refresh;
-
+    public String apikey = "";
+    public String location = "";
+    public @Nullable Integer stationId;
+    public int refresh = 60;
 }

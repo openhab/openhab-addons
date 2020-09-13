@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.siemensrds.internal;
 
-import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
+import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.DEBOUNCE_DELAY;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link RdsDebouncer} determines if change events should be forwarded to a
@@ -24,21 +27,24 @@ import java.util.Map;
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
+@NonNullByDefault
 public class RdsDebouncer {
 
-    private final Map<String, DebounceDelay> channels = new HashMap<String, DebounceDelay>();
+    private final Map<String, @Nullable DebounceDelay> channels = new HashMap<>();
 
+    @SuppressWarnings("null")
+    @NonNullByDefault
     static class DebounceDelay {
 
         private long expireTime;
 
-        public DebounceDelay(Boolean enabled) {
+        public DebounceDelay(boolean enabled) {
             if (enabled) {
                 expireTime = new Date().getTime() + (DEBOUNCE_DELAY * 1000);
             }
         }
 
-        public Boolean timeExpired() {
+        public boolean timeExpired() {
             return (expireTime < new Date().getTime());
         }
     }
@@ -51,7 +57,13 @@ public class RdsDebouncer {
     }
 
     public Boolean timeExpired(String channelId) {
-        return (channels.containsKey(channelId) ? channels.get(channelId).timeExpired() : true);
+        if (channels.containsKey(channelId)) {
+            @Nullable
+            DebounceDelay debounceDelay = channels.get(channelId);
+            if (debounceDelay != null) {
+                return ((DebounceDelay) debounceDelay).timeExpired();
+            }
+        }
+        return true;
     }
-
 }

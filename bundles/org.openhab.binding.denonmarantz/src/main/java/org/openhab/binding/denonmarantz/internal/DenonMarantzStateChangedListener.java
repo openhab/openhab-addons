@@ -26,7 +26,7 @@ public interface DenonMarantzStateChangedListener {
      * Update was received.
      *
      * @param channelID the channel for which its state changed
-     * @param state     the new state of the channel
+     * @param state the new state of the channel
      */
     void stateChanged(String channelID, State state);
 

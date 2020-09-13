@@ -120,5 +120,4 @@ class SCgetWLANConfig extends GetWLANConfig implements SlipBridgeCommunicationPr
         // Enhancement idea: Velux should provide an enhanced API.
         return new VeluxGwWLAN(UNSUPPORTED, UNSUPPORTED);
     }
-
 }

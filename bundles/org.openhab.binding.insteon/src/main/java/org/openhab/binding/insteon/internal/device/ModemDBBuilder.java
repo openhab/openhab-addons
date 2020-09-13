@@ -13,9 +13,12 @@
 package org.openhab.binding.insteon.internal.device;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,56 +40,57 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @SuppressWarnings("null")
-public class ModemDBBuilder implements MsgListener, Runnable {
+public class ModemDBBuilder implements MsgListener {
+    private static final int MESSAGE_TIMEOUT = 30000;
+
     private final Logger logger = LoggerFactory.getLogger(ModemDBBuilder.class);
-    private boolean isComplete = false;
+
+    private volatile boolean isComplete = false;
     private Port port;
-    private @Nullable Thread writeThread = null;
-    private int timeoutMillis = 120000;
+    private ScheduledExecutorService scheduler;
+    private @Nullable ScheduledFuture<?> job = null;
+    private volatile long lastMessageTimestamp;
+    private volatile int messageCount = 0;
 
-    public ModemDBBuilder(Port port) {
+    public ModemDBBuilder(Port port, ScheduledExecutorService scheduler) {
         this.port = port;
-    }
-
-    public void setRetryTimeout(int timeout) {
-        this.timeoutMillis = timeout;
+        this.scheduler = scheduler;
     }
 
     public void start() {
         port.addListener(this);
-        writeThread = new Thread(this);
-        writeThread.setName("Insteon DBBuilder");
-        writeThread.setDaemon(true);
-        writeThread.start();
-        logger.debug("querying port for first link record");
+
+        logger.trace("starting modem db builder");
+        startDownload();
+        job = scheduler.scheduleWithFixedDelay(() -> {
+            if (isComplete()) {
+                logger.trace("modem db builder finished");
+                job.cancel(false);
+                job = null;
+            } else {
+                if (System.currentTimeMillis() - lastMessageTimestamp > MESSAGE_TIMEOUT) {
+                    String s = "";
+                    if (messageCount == 0) {
+                        s = " No messages were received, the PLM or hub might be broken. If this continues see "
+                                + "'Known Limitations and Issues' in the Insteon binding documentation.";
+                    }
+                    logger.warn("Modem database download was unsuccessful, restarting!{}", s);
+                    startDownload();
+                }
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 
-    public void startDownload() {
+    private void startDownload() {
         logger.trace("starting modem database download");
         port.clearModemDB();
+        lastMessageTimestamp = System.currentTimeMillis();
+        messageCount = 0;
         getFirstLinkRecord();
     }
 
-    public synchronized boolean isComplete() {
-        return (isComplete);
-    }
-
-    @Override
-    public void run() {
-        logger.trace("starting modem db builder thread");
-        while (!isComplete()) {
-            startDownload();
-            try {
-                Thread.sleep(timeoutMillis); // wait for download to complete
-            } catch (InterruptedException e) {
-                logger.warn("modem db builder thread interrupted");
-                break;
-            }
-            if (!isComplete()) {
-                logger.warn("modem database download unsuccessful, restarting!");
-            }
-        }
-        logger.trace("exiting modem db builder thread");
+    public boolean isComplete() {
+        return isComplete;
     }
 
     private void getFirstLinkRecord() {
@@ -105,7 +109,10 @@ public class ModemDBBuilder implements MsgListener, Runnable {
      * {@inheritDoc}
      */
     @Override
-    public void msg(Msg msg, String fromPort) {
+    public void msg(Msg msg) {
+        lastMessageTimestamp = System.currentTimeMillis();
+        messageCount++;
+
         if (msg.isPureNack()) {
             return;
         }
@@ -120,7 +127,7 @@ public class ModemDBBuilder implements MsgListener, Runnable {
                 }
             } else if (msg.getByte("Cmd") == 0x57) {
                 // we got the link record response
-                updateModemDB(msg.getAddress("LinkAddr"), port, msg);
+                updateModemDB(msg.getAddress("LinkAddr"), port, msg, false);
                 port.writeMessage(Msg.makeMessage("GetNextALLLinkRecord"));
             }
         } catch (FieldException e) {
@@ -144,9 +151,9 @@ public class ModemDBBuilder implements MsgListener, Runnable {
     private void logModemDB() {
         try {
             logger.debug("MDB ------- start of modem link records ------------------");
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             for (Entry<InsteonAddress, @Nullable ModemDBEntry> db : dbes.entrySet()) {
-                ArrayList<Msg> lrs = db.getValue().getLinkRecords();
+                List<Msg> lrs = db.getValue().getLinkRecords();
                 for (Msg m : lrs) {
                     int recordFlags = m.getByte("RecordFlags") & 0xff;
                     String ms = ((recordFlags & (0x1 << 6)) != 0) ? "CTRL" : "RESP";
@@ -168,12 +175,12 @@ public class ModemDBBuilder implements MsgListener, Runnable {
         return Utils.getHexString(b);
     }
 
-    public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m) {
+    public void updateModemDB(InsteonAddress linkAddr, Port port, @Nullable Msg m, boolean isModem) {
         try {
-            HashMap<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
+            Map<InsteonAddress, @Nullable ModemDBEntry> dbes = port.getDriver().lockModemDBEntries();
             ModemDBEntry dbe = dbes.get(linkAddr);
             if (dbe == null) {
-                dbe = new ModemDBEntry(linkAddr);
+                dbe = new ModemDBEntry(linkAddr, isModem);
                 dbes.put(linkAddr, dbe);
             }
             dbe.setPort(port);

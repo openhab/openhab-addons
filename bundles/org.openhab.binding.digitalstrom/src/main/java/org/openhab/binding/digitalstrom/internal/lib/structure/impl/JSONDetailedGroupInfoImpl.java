@@ -40,7 +40,7 @@ public class JSONDetailedGroupInfoImpl implements DetailedGroupInfo {
      * @param jObject of the server response, must not be null
      */
     public JSONDetailedGroupInfoImpl(JsonObject jObject) {
-        this.deviceList = new LinkedList<String>();
+        this.deviceList = new LinkedList<>();
         if (jObject.get(JSONApiResponseKeysEnum.NAME.getKey()) != null) {
             name = jObject.get(JSONApiResponseKeysEnum.NAME.getKey()).getAsString();
         }

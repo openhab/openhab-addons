@@ -32,5 +32,4 @@ public class DeviceTypeSerializer implements JsonSerializer<DeviceType> {
     public JsonElement serialize(DeviceType deviceType, Type type, JsonSerializationContext jsonSerializationContext) {
         return new JsonPrimitive(deviceType.getApiString());
     }
-
 }

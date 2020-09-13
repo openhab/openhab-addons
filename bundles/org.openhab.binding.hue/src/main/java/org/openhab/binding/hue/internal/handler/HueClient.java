@@ -15,9 +15,11 @@ package org.openhab.binding.hue.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.ConfigUpdate;
+import org.openhab.binding.hue.internal.FullGroup;
 import org.openhab.binding.hue.internal.FullLight;
 import org.openhab.binding.hue.internal.FullSensor;
 import org.openhab.binding.hue.internal.StateUpdate;
+import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
 
 /**
  * Access to the Hue system for light handlers.
@@ -25,9 +27,25 @@ import org.openhab.binding.hue.internal.StateUpdate;
  * @author Simon Kaufmann - initial contribution and API
  * @author Samuel Leisering - Added support for sensor API
  * @author Christoph Weitkamp - Added support for sensor API
+ * @author Laurent Garnier - Added support for groups
  */
 @NonNullByDefault
 public interface HueClient {
+
+    /**
+     * Register {@link HueLightDiscoveryService} to bridge handler
+     *
+     * @param listener the discovery service
+     * @return {@code true} if the new discovery service is accepted
+     */
+    boolean registerDiscoveryListener(HueLightDiscoveryService listener);
+
+    /**
+     * Unregister {@link HueLightDiscoveryService} from bridge handler
+     *
+     * @return {@code true} if the discovery service was removed
+     */
+    boolean unregisterDiscoveryListener();
 
     /**
      * Register a light status listener.
@@ -62,10 +80,26 @@ public interface HueClient {
     boolean unregisterSensorStatusListener(SensorStatusListener sensorStatusListener);
 
     /**
+     * Register a group status listener.
+     *
+     * @param groupStatusListener the group status listener
+     * @return {@code true} if the collection of listeners has changed as a result of this call
+     */
+    boolean registerGroupStatusListener(GroupStatusListener groupStatusListener);
+
+    /**
+     * Unregister a group status listener.
+     *
+     * @param groupStatusListener the group status listener
+     * @return {@code true} if the collection of listeners has changed as a result of this call
+     */
+    boolean unregisterGroupStatusListener(GroupStatusListener groupStatusListener);
+
+    /**
      * Get the light by its ID.
      *
      * @param lightId the light ID
-     * @return the full light representation of {@code null} if it could not be found
+     * @return the full light representation or {@code null} if it could not be found
      */
     @Nullable
     FullLight getLightById(String lightId);
@@ -74,18 +108,29 @@ public interface HueClient {
      * Get the sensor by its ID.
      *
      * @param sensorId the sensor ID
-     * @return the full sensor representation of {@code null} if it could not be found
+     * @return the full sensor representation or {@code null} if it could not be found
      */
     @Nullable
     FullSensor getSensorById(String sensorId);
 
     /**
+     * Get the group by its ID.
+     *
+     * @param groupId the group ID
+     * @return the full group representation or {@code null} if it could not be found
+     */
+    @Nullable
+    FullGroup getGroupById(String groupId);
+
+    /**
      * Updates the given light.
      *
+     * @param listener the light status listener to block it for state updates
      * @param light the light to be updated
      * @param stateUpdate the state update
+     * @param fadeTime the status listener will be blocked for this duration after command
      */
-    void updateLightState(FullLight light, StateUpdate stateUpdate);
+    void updateLightState(LightStatusListener listener, FullLight light, StateUpdate stateUpdate, long fadeTime);
 
     /**
      * Updates the given sensors config.
@@ -102,4 +147,19 @@ public interface HueClient {
      * @param stateUpdate the state update
      */
     void updateSensorState(FullSensor sensor, StateUpdate stateUpdate);
+
+    /**
+     * Updates the given group.
+     *
+     * @param group the group to be updated
+     * @param stateUpdate the state update
+     */
+    void updateGroupState(FullGroup group, StateUpdate stateUpdate, long fadeTime);
+
+    /**
+     * Recall scene to all lights that belong to the scene.
+     *
+     * @param id the ID of the scene to be recalled
+     */
+    void recallScene(String id);
 }

@@ -10,7 +10,7 @@
 		<category>PowerOutlet</category>
 
 		<channel-groups>
-			<channel-group id="group" typeId="switch-group" />
+			<channel-group id="group" typeId="switch-group"/>
 			<channel-group id="outlet1" typeId="switch-outlet">
 				<label>Outlet 1</label>
 			</channel-group>
@@ -24,7 +24,7 @@
 
 		<representation-property>deviceId</representation-property>
 
-		<config-description-ref uri="thing-type:device:plug" />
+		<config-description-ref uri="thing-type:device:plug"/>
 	</thing-type>
 
 </thing:thing-descriptions>

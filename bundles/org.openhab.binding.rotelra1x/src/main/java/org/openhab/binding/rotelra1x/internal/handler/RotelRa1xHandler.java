@@ -296,7 +296,6 @@ public class RotelRa1xHandler extends BaseThingHandler {
                 return;
             }
         }
-
     }
 
     private void sendIfPowerOn(String text) throws IOException {
@@ -382,5 +381,4 @@ public class RotelRa1xHandler extends BaseThingHandler {
             sendIfPowerOn("get_current_source!");
         }
     }
-
 }

@@ -93,5 +93,4 @@ public class PowerBufferResponseMessage extends Message {
 
         return ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, UTC).plusMinutes(minutes);
     }
-
 }
