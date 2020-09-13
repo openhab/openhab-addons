@@ -60,13 +60,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
                     int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
                     this.logger.debug("Channel '{}' writting into ID '{}'", channel.getUID().getId(), id);
                     this.updateState(channelUID, new QuantityType<>(command.toString()));
-
-                    for (IDataPoint dp : svr.getDataPoints()) {
-                        if (dp.getId() == id) {
-                            dataPoint = dp;
-                            break;
-                        }
-                    }
+                    dataPoint = svr.getDataPoint(id);
                 } catch (NumberFormatException e) {
                     this.logger.debug("Updating State of ISM DataPoint '{}' failed. '{}'", channel.getConfiguration(),
                             e.getMessage());

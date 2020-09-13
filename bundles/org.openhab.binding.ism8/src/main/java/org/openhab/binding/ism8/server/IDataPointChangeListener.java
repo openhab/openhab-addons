@@ -26,11 +26,11 @@ public interface IDataPointChangeListener {
      * This method will be called in case a data-point has changed.
      *
      */
-    public void dataPointChanged(DataPointChangedEvent e);
+    void dataPointChanged(DataPointChangedEvent e);
 
     /**
      * This method will be called in case the connection status has changed.
      *
      */
-    public void connectionStatusChanged(ThingStatus status);
+    void connectionStatusChanged(ThingStatus status);
 }

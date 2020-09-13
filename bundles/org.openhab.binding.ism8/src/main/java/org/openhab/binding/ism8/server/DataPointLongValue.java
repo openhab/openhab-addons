@@ -27,20 +27,19 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class DataPointLongValue extends DataPointBase<@Nullable Double> {
     private final Logger logger = LoggerFactory.getLogger(DataPointLongValue.class);
-    private float factor;
-    private String outputFormat = "";
+    private final float factor;
+    private final String outputFormat;
 
     public DataPointLongValue(int id, String knxDataType, String description) {
         super(id, knxDataType, description);
-        this.factor = 0.0f;
-
-        this.setUnit("");
-        this.factor = 1.0f;
-        this.outputFormat = "%.1f";
 
         if (knxDataType.equals("13.002")) {
             this.setUnit("m³/h");
             this.factor = 0.0001f;
+            this.outputFormat = "%.1f";
+        } else {
+            this.setUnit("");
+            this.factor = 1.0f;
             this.outputFormat = "%.1f";
         }
     }

@@ -12,12 +12,8 @@
  */
 package org.openhab.binding.ism8.server;
 
-import java.util.ArrayList;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DataPointFactory} creates the data points depending on the types
@@ -26,8 +22,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DataPointFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataPointFactory.class);
-    private static ArrayList<IDataPoint> DATA_POINTS = new ArrayList<>();
 
     /**
      * Creates the concrete data-point based on the type.
@@ -60,17 +54,6 @@ public class DataPointFactory {
                 dataPoint = new DataPointByteValue(id, knxType, description);
                 break;
         }
-
-        if (dataPoint != null) {
-            for (IDataPoint dp : DATA_POINTS) {
-                if (dp.getId() == dataPoint.getId()) {
-                    LOGGER.debug("Data point already exists ({}).", id);
-                    return null;
-                }
-            }
-            DATA_POINTS.add(dataPoint);
-            return dataPoint;
-        }
-        return null;
+        return dataPoint;
     }
 }

@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 public abstract class DataPointBase<@Nullable T> implements IDataPoint {
     private final Logger logger = LoggerFactory.getLogger(DataPointBase.class);
 
-    private int id;
-    private String knxDataType = "";
-    private String description = "";
+    private final int id;
+    private final String knxDataType;
+    private final String description;
     private T value;
     private String unit = "";
 

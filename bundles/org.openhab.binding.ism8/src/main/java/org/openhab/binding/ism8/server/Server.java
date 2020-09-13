@@ -20,6 +20,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -40,7 +41,7 @@ public class Server extends Thread {
     private int port;
     private int startRetries;
     private boolean connected;
-    private ArrayList<IDataPoint> dataPoints = new ArrayList<>();
+    private HashMap<Integer, IDataPoint> dataPoints = new HashMap<>();
     private @Nullable ServerSocket serverSocket = null;
     private @Nullable Socket client;
     private @Nullable IDataPointChangeListener changeListener;
@@ -71,8 +72,13 @@ public class Server extends Thread {
      * Gets the data points of the server
      *
      */
-    public ArrayList<IDataPoint> getDataPoints() {
-        return this.dataPoints;
+    public @Nullable IDataPoint getDataPoint(int id) {
+        IDataPoint dataPoint = null;
+        if (this.dataPoints.containsKey(id)) {
+            dataPoint = this.dataPoints.get(id);
+        }
+
+        return dataPoint;
     }
 
     /**
@@ -89,6 +95,7 @@ public class Server extends Thread {
                 }
             } catch (InterruptedException e) {
                 logger.debug("Thread interrupted");
+                Thread.currentThread().interrupt();
             }
 
             this.startRetries++;
@@ -119,14 +126,13 @@ public class Server extends Thread {
      *
      */
     public void addDataPoint(int id, String knxType, String description) {
+        if (this.dataPoints.containsKey(id)) {
+            return;
+        }
+
         IDataPoint dp = DataPointFactory.createDataPoint(id, knxType, description);
         if (dp != null) {
-            for (IDataPoint dataPoint : this.dataPoints) {
-                if (dataPoint.getId() == dp.getId()) {
-                    return;
-                }
-            }
-            this.dataPoints.add(dp);
+            this.dataPoints.put(new Integer(id), dp);
         }
     }
 
@@ -139,6 +145,7 @@ public class Server extends Thread {
         if (clientSocket != null && clientSocket.isConnected() && data.length > 0) {
             OutputStream stream = clientSocket.getOutputStream();
             stream.write(data);
+            stream.flush();
             logger.debug("Data sent: {}", this.printBytes(data));
         }
     }
@@ -196,15 +203,7 @@ public class Server extends Thread {
                             logger.debug("Message received: {} {}", message.getId(),
                                     this.printBytes(message.getData()));
 
-                            IDataPoint dataPoint = null;
-                            for (int k = 0; k < this.dataPoints.size(); k++) {
-                                IDataPoint dp = this.dataPoints.get(k);
-                                if (dp.getId() == message.getId()) {
-                                    dataPoint = dp;
-                                    break;
-                                }
-                            }
-
+                            IDataPoint dataPoint = this.getDataPoint(message.getId());
                             if (dataPoint != null) {
                                 dataPoint.processData(message.getData());
                                 logger.debug("{} {}", dataPoint.getDescription(), dataPoint.getValueText());
@@ -231,7 +230,7 @@ public class Server extends Thread {
 
     private byte[] getBytesFromInputStream(InputStream is) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        byte[] buffer = new byte[0xFFFF];
+        byte[] buffer = new byte[0xFF];
         int len = is.read(buffer);
         os.write(buffer, 0, len);
         return os.toByteArray();
