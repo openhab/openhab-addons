@@ -55,7 +55,8 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     private void startDiscovery() {
-        if (bridgeHandler != null && ThingStatus.ONLINE == bridgeHandler.getThing().getStatus()) {
+        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null && ThingStatus.ONLINE == localBridgeHandler.getThing().getStatus()) {
             discoverServices();
         }
     }
@@ -75,16 +76,17 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void stopBackgroundDiscovery() {
         super.stopBackgroundDiscovery();
-        if (discoveryJob != null) {
-            discoveryJob.cancel(true);
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null) {
+            localDiscoveryJob.cancel(true);
         }
     }
 
     @Override
     protected void startBackgroundDiscovery() {
         logger.debug("Starting Jablotron background discovery");
-
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::startDiscovery, 10, 3600, TimeUnit.SECONDS);
         }
     }
@@ -111,61 +113,74 @@ public class JablotronDiscoveryService extends AbstractDiscoveryService
     }
 
     public void oasisDiscovered(String label, String serviceId) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_OASIS, bridgeHandler.getThing().getUID(), serviceId);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_SERVICE_ID, serviceId);
+        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            ThingUID thingUID = new ThingUID(THING_TYPE_OASIS, localBridgeHandler.getThing().getUID(), serviceId);
 
-        logger.debug("Detected an OASIS alarm with service id: {}", serviceId);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_OASIS).withLabel(label)
-                .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
-                .withBridge(bridgeHandler.getThing().getUID()).build());
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(PROPERTY_SERVICE_ID, serviceId);
+
+            logger.debug("Detected an OASIS alarm with service id: {}", serviceId);
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_OASIS).withLabel(label)
+                    .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
+                    .withBridge(localBridgeHandler.getThing().getUID()).build());
+        }
     }
 
     public void ja100Discovered(String label, String serviceId) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_JA100, bridgeHandler.getThing().getUID(), serviceId);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_SERVICE_ID, serviceId);
+        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            ThingUID thingUID = new ThingUID(THING_TYPE_JA100, localBridgeHandler.getThing().getUID(), serviceId);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(PROPERTY_SERVICE_ID, serviceId);
 
-        logger.debug("Detected a JA100 alarm with service id: {}", serviceId);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_JA100).withLabel(label)
-                .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
-                .withBridge(bridgeHandler.getThing().getUID()).build());
+            logger.debug("Detected a JA100 alarm with service id: {}", serviceId);
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_JA100).withLabel(label)
+                    .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
+                    .withBridge(localBridgeHandler.getThing().getUID()).build());
+        }
     }
 
     public void ja100fDiscovered(String label, String serviceId) {
-        ThingUID thingUID = new ThingUID(THING_TYPE_JA100F, bridgeHandler.getThing().getUID(), serviceId);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_SERVICE_ID, serviceId);
+        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            ThingUID thingUID = new ThingUID(THING_TYPE_JA100F, localBridgeHandler.getThing().getUID(), serviceId);
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(PROPERTY_SERVICE_ID, serviceId);
 
-        logger.debug("Detected a JA100+ alarm with service id: {}", serviceId);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_JA100F).withLabel(label)
-                .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
-                .withBridge(bridgeHandler.getThing().getUID()).build());
+            logger.debug("Detected a JA100+ alarm with service id: {}", serviceId);
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_JA100F).withLabel(label)
+                    .withProperties(properties).withRepresentationProperty(PROPERTY_SERVICE_ID)
+                    .withBridge(localBridgeHandler.getThing().getUID()).build());
+        }
     }
 
     private synchronized void discoverServices() {
-        List<JablotronDiscoveredService> services = bridgeHandler.discoverServices();
+        JablotronBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            List<JablotronDiscoveredService> services = localBridgeHandler.discoverServices();
 
-        if (services == null || services.isEmpty()) {
-            logger.debug("Cannot find any Jablotron device");
-            return;
-        }
+            if (services == null || services.isEmpty()) {
+                logger.debug("Cannot find any Jablotron device");
+                return;
+            }
 
-        for (JablotronDiscoveredService service : services) {
-            String serviceId = String.valueOf(service.getId());
-            logger.debug("Found Jablotron service: {} id: {}", service.getName(), serviceId);
+            for (JablotronDiscoveredService service : services) {
+                String serviceId = String.valueOf(service.getId());
+                logger.debug("Found Jablotron service: {} id: {}", service.getName(), serviceId);
 
-            String serviceType = service.getServiceType().toLowerCase();
-            if (serviceType.equals(THING_TYPE_OASIS.getId())) {
-                oasisDiscovered("Jablotron OASIS Alarm : " + service.getName(), serviceId);
-            } else if (serviceType.equals(THING_TYPE_JA100.getId())) {
-                ja100Discovered("Jablotron JA100 Alarm : " + service.getName(), serviceId);
-            } else if (serviceType.equals(THING_TYPE_JA100F.getId())) {
-                ja100fDiscovered("Jablotron JA100+ Alarm : " + service.getName(), serviceId);
-            } else {
-                logger.info("Unsupported device type discovered: {} with serviceId: {} and type: {}", service.getName(),
-                        serviceId, service.getServiceType());
-                logger.info("Please create a new issue and attach the above information");
+                String serviceType = service.getServiceType().toLowerCase();
+                if (serviceType.equals(THING_TYPE_OASIS.getId())) {
+                    oasisDiscovered("Jablotron OASIS Alarm : " + service.getName(), serviceId);
+                } else if (serviceType.equals(THING_TYPE_JA100.getId())) {
+                    ja100Discovered("Jablotron JA100 Alarm : " + service.getName(), serviceId);
+                } else if (serviceType.equals(THING_TYPE_JA100F.getId())) {
+                    ja100fDiscovered("Jablotron JA100+ Alarm : " + service.getName(), serviceId);
+                } else {
+                    logger.info("Unsupported device type discovered: {} with serviceId: {} and type: {}",
+                            service.getName(), serviceId, service.getServiceType());
+                    logger.info("Please create a new issue and attach the above information");
+                }
             }
         }
     }

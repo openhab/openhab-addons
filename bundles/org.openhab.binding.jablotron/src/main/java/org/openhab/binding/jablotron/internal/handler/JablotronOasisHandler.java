@@ -27,6 +27,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,27 +81,30 @@ public class JablotronOasisHandler extends JablotronAlarmHandler {
     }
 
     private void updateChannel(String channel) {
-        switch (channel) {
-            case CHANNEL_STATUS_A:
-                updateSegmentStatus("STATE_1", dataCache.getValue());
-                break;
-            case CHANNEL_STATUS_B:
-                updateSegmentStatus("STATE_2", dataCache.getValue());
-                break;
-            case CHANNEL_STATUS_ABC:
-                updateSegmentStatus("STATE_3", dataCache.getValue());
-                break;
-            case CHANNEL_STATUS_PGX:
-                updateSegmentStatus("PGM_1", dataCache.getValue());
-                break;
-            case CHANNEL_STATUS_PGY:
-                updateSegmentStatus("PGM_2", dataCache.getValue());
-                break;
-            case CHANNEL_LAST_CHECK_TIME:
-                // not updating
-                break;
-            default:
-                updateEventChannel(channel);
+        ExpiringCache<JablotronDataUpdateResponse> localDataCache = dataCache;
+        if (localDataCache != null) {
+            switch (channel) {
+                case CHANNEL_STATUS_A:
+                    updateSegmentStatus("STATE_1", localDataCache.getValue());
+                    break;
+                case CHANNEL_STATUS_B:
+                    updateSegmentStatus("STATE_2", localDataCache.getValue());
+                    break;
+                case CHANNEL_STATUS_ABC:
+                    updateSegmentStatus("STATE_3", localDataCache.getValue());
+                    break;
+                case CHANNEL_STATUS_PGX:
+                    updateSegmentStatus("PGM_1", localDataCache.getValue());
+                    break;
+                case CHANNEL_STATUS_PGY:
+                    updateSegmentStatus("PGM_2", localDataCache.getValue());
+                    break;
+                case CHANNEL_LAST_CHECK_TIME:
+                    // not updating
+                    break;
+                default:
+                    updateEventChannel(channel);
+            }
         }
     }
 

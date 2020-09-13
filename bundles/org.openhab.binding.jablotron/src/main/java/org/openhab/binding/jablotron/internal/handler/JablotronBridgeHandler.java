@@ -129,8 +129,9 @@ public class JablotronBridgeHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         super.dispose();
-        if (future != null) {
-            future.cancel(true);
+        ScheduledFuture<?> localFuture = future;
+        if (localFuture != null) {
+            localFuture.cancel(true);
         }
         logout();
     }

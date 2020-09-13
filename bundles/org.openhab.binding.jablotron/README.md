@@ -34,28 +34,28 @@ Binding itself doesn't require specific configuration.
 
 ## Channels
 
-| thing                | channel name     | item type | description                                               |
-|----------------------|------------------|-----------|-----------------------------------------------------------|
-| bridge               | N/A              | N/A       | the bridge does not expose any channels                   |
-| JA-80                | statusA          | Switch    | the status of the A section                               |
-| JA-80                | statusB          | Switch    | the status of the AB/B section                            |
-| JA-80                | statusABC        | Switch    | the status of the ABC section                             |
-| JA-80                | statusPGX        | Switch    | the status of PGX                                         |
-| JA-80                | statusPGY        | Switch    | the status of PGY                                         |
-| JA-80                | command          | String    | the channel for sending keyboard codes to the OASIS alarm |
-| JA-80/JA-100/JA-100F | lastEvent        | String    | the description of the last event                         |
-| JA-80/JA-100/JA-100F | lastEventClass   | String    | the class of the last event - e.g. arm, disarm, ...       |
-| JA-80/JA-100/JA-100F | lastEventInvoker | String    | the invoker of the last event                             |
-| JA-80/JA-100/JA-100F | lastEventTime    | DateTime  | the time of the last event                                |
-| JA-80/JA-100/JA-100F | lastCheckTime    | DateTime  | the time of the last checking                             |
-| JA-80/JA-100/JA-100F | alarm            | N/A       | the alarm trigger, might fire ALARM or TAMPER events      |
-| JA-100/JA-100F       | lastEventSection | String    | the section of the last event                             |
-| JA-100               | state_%nr%       | String    | the section %nr% status/control                           |
-| JA-100               | pgm_%nr%         | Switch    | the PG switch %nr% status/control                        |
-| JA-100               | thermometer_%nr% | Number    | the thermometer %nr% value                                |
-| JA-100               | thermostat_%nr%  | Number    | the thermostat %nr% value                                 |
-| JA-100F              | sec-%nr%         | String    | the section %nr% status/control                           |
-| JA-100F              | pg-%nr%          | Switch    | the PG switch %nr% status/control                        |
+| thing                | channel name     | item type          | description                                               |
+|----------------------|------------------|--------------------|-----------------------------------------------------------|
+| bridge               | N/A              | N/A                | the bridge does not expose any channels                   |
+| JA-80                | statusA          | Switch             | the status of the A section                               |
+| JA-80                | statusB          | Switch             | the status of the AB/B section                            |
+| JA-80                | statusABC        | Switch             | the status of the ABC section                             |
+| JA-80                | statusPGX        | Switch             | the status of PGX                                         |
+| JA-80                | statusPGY        | Switch             | the status of PGY                                         |
+| JA-80                | command          | String             | the channel for sending keyboard codes to the OASIS alarm |
+| JA-80/JA-100/JA-100F | lastEvent        | String             | the description of the last event                         |
+| JA-80/JA-100/JA-100F | lastEventClass   | String             | the class of the last event - e.g. arm, disarm, ...       |
+| JA-80/JA-100/JA-100F | lastEventInvoker | String             | the invoker of the last event                             |
+| JA-80/JA-100/JA-100F | lastEventTime    | DateTime           | the time of the last event                                |
+| JA-80/JA-100/JA-100F | lastCheckTime    | DateTime           | the time of the last checking                             |
+| JA-80/JA-100/JA-100F | alarm            | N/A                | the alarm trigger, might fire ALARM or TAMPER events      |
+| JA-100/JA-100F       | lastEventSection | String             | the section of the last event                             |
+| JA-100               | state_%nr%       | String             | the section %nr% status/control                           |
+| JA-100               | pgm_%nr%         | Switch             | the PG switch %nr% status/control                         |
+| JA-100               | thermometer_%nr% | Number:Temperature | the thermometer %nr% value                                |
+| JA-100               | thermostat_%nr%  | Number:Temperature | the thermostat %nr% value                                 |
+| JA-100F              | sec-%nr%         | String             | the section %nr% status/control                           |
+| JA-100F              | pg-%nr%          | Switch             | the PG switch %nr% status/control                         |
 
 The state, pgm, thermometer, thermostat, sec and pg channels for the JA-100/JA-100F alarms are dynamically created according to your configuration.
 

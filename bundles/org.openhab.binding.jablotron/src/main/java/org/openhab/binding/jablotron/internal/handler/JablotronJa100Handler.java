@@ -19,9 +19,10 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -32,6 +33,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.jablotron.internal.model.JablotronControlResponse;
+import org.openhab.binding.jablotron.internal.model.JablotronDataUpdateResponse;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegment;
 import org.openhab.binding.jablotron.internal.model.JablotronServiceDetailSegmentInfo;
 import org.slf4j.Logger;
@@ -74,13 +76,16 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
     }
 
     private void updateChannel(String channel) {
-        if (channel.startsWith("state_") || channel.startsWith("pgm_") || channel.startsWith("thermometer_")
-                || channel.startsWith("thermostat_")) {
-            updateSegmentStatus(channel, dataCache.getValue());
-        } else if (CHANNEL_LAST_CHECK_TIME.equals(channel)) {
-            // not updating
-        } else {
-            updateEventChannel(channel);
+        ExpiringCache<JablotronDataUpdateResponse> localDataCache = dataCache;
+        if (localDataCache != null) {
+            if (channel.startsWith("state_") || channel.startsWith("pgm_") || channel.startsWith("thermometer_")
+                    || channel.startsWith("thermostat_")) {
+                updateSegmentStatus(channel, localDataCache.getValue());
+            } else if (CHANNEL_LAST_CHECK_TIME.equals(channel)) {
+                // not updating
+            } else {
+                updateEventChannel(channel);
+            }
         }
     }
 
@@ -190,8 +195,7 @@ public class JablotronJa100Handler extends JablotronAlarmHandler {
         List<JablotronServiceDetailSegmentInfo> infos = segment.getSegmentInfos();
         if (infos.size() > 0) {
             logger.debug("Found value: {} and type: {}", infos.get(0).getValue(), infos.get(0).getType());
-            DecimalType newState = new DecimalType(infos.get(0).getValue());
-            updateState(channel.getUID(), newState);
+            updateState(channel.getUID(), QuantityType.valueOf(infos.get(0).getValue(), SIUnits.CELSIUS));
         } else {
             logger.debug("No segment information received");
         }

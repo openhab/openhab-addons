@@ -124,8 +124,9 @@ public abstract class JablotronAlarmHandler extends BaseThingHandler {
 
     private void cleanup() {
         logger.debug("doing cleanup...");
-        if (future != null) {
-            future.cancel(true);
+        ScheduledFuture<?> localFuture = future;
+        if (localFuture != null) {
+            localFuture.cancel(true);
         }
     }
 
