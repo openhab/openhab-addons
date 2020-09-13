@@ -38,11 +38,11 @@ Thing configuration is optional, it is easier to use discovery which will automa
 
 ### Account
 
-| Name            | Required | Description                                 |
-|-----------------|----------|---------------------------------------------|
-| username        | yes      | The username of your TCC account            |
-| password        | yes      | The password of your TCC account            |
-| refreshInterval | no       | The amount of time between updates (0-3000) |
+| Name            | Required | Description                                            |
+|-----------------|----------|--------------------------------------------------------|
+| username        | yes      | The username of your TCC account                       |
+| password        | yes      | The password of your TCC account                       |
+| refreshInterval | no       | The amount of time in seconds between updates (0-3000) |
 
 ### Display &amp; Zone
 
