@@ -127,7 +127,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public final ChannelGroup mjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final ChannelGroup snapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final ChannelGroup autoSnapshotMjpegChannelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    public final ChannelGroup openChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public @Nullable Ffmpeg ffmpegHLS = null;
     public @Nullable Ffmpeg ffmpegRecord = null;
     public @Nullable Ffmpeg ffmpegGIF = null;
@@ -172,6 +172,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // basicAuth MUST remain private as it holds the password
     private String basicAuth = "";
+    public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
     public String snapshotUri = "";
     public String mjpegUri = "";
@@ -450,6 +451,10 @@ public class IpCameraHandler extends BaseThingHandler {
         String temp = longUrl;
         URL url;
 
+        if (longUrl.isEmpty() || longUrl.equals("ffmpeg")) {
+            return longUrl;
+        }
+
         try {
             url = new URL(longUrl);
             int port = url.getPort();
@@ -467,10 +472,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
             }
         } catch (MalformedURLException e) {
-            if (!longUrl.equals("ffmpeg")) {
-                cameraConfigError("A non valid URL has been given to the binding, check they work in a browser.");
-                return "";
-            }
+            cameraConfigError("A non valid URL has been given to the binding, check they work in a browser.");
         }
         return temp;
     }
@@ -1431,23 +1433,22 @@ public class IpCameraHandler extends BaseThingHandler {
     void snapshotIsFfmpeg() {
         bringCameraOnline();
         snapshotUri = "";// ffmpeg is a valid option. Simplify further checks.
-        logger.info(
-                "Binding has no snapshot url. Will now use your CPU and FFmpeg to create snapshots from the cameras RTSP.");
+        logger.debug(
+                "Binding has no snapshot url. Will use your CPU and FFmpeg to create snapshots from the cameras RTSP.");
         if (!rtspUri.isEmpty()) {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
             setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
             updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.ON);
         } else {
-            cameraConfigError(
-                    "Binding can not find a RTSP url for this camera, please OVERRIDE the url as per the readme.");
+            cameraConfigError("Binding can not find a RTSP url for this camera, please provide a FFmpeg Input URL.");
         }
     }
 
     void pollingCameraConnection() {
         if (thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
             if (rtspUri.isEmpty()) {
-                logger.warn("Binding has not been supplied with a RTSP URL so some features will not work.");
+                logger.warn("Binding has not been supplied with a FFmpeg Input URL, so some features will not work.");
             }
             if (snapshotUri.isEmpty() || snapshotUri.equals("ffmpeg")) {
                 snapshotIsFfmpeg();
@@ -1634,10 +1635,14 @@ public class IpCameraHandler extends BaseThingHandler {
         } else if (serverPort < 1025) {
             logger.warn("The serverPort is <= 1024 and may cause permission errors under Linux, try a higher number.");
         }
-
         rtspUri = cameraConfig.getFfmpegInput();
+        /*
+         * if (!rtspUri.isEmpty()) {
+         * RtspConnection rtspConnection = new RtspConnection(this, username, password);
+         * rtspConnection.connect();
+         * }
+         */
         ffmpegOutputFolder = cameraConfig.getFfmpegOutput();
-
         // Known cameras will connect quicker if we skip ONVIF questions.
         switch (thing.getThingTypeUID().getId()) {
             case AMCREST_THING:

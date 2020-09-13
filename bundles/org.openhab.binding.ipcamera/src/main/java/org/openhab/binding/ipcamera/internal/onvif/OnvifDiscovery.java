@@ -16,6 +16,7 @@ package org.openhab.binding.ipcamera.internal.onvif;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -116,7 +117,7 @@ public class OnvifDiscovery {
     void searchReply(String url, String xml) {
         String ipAddress = "";
         String temp = url;
-        int onvifPort = 80;
+        BigDecimal onvifPort = new BigDecimal(80);
 
         logger.info("Camera found at xAddr:{}", url);
         int endIndex = temp.indexOf(" ");// Some xAddr have two urls with a space in between.
@@ -129,7 +130,7 @@ public class OnvifDiscovery {
         endIndex = temp.indexOf("/", beginIndex);
         if (secondIndex > beginIndex && endIndex > secondIndex) {// http://192.168.0.1:8080/onvif/device_service
             ipAddress = temp.substring(beginIndex, secondIndex);
-            onvifPort = Integer.parseInt(temp.substring(secondIndex + 1, endIndex));
+            onvifPort = new BigDecimal(temp.substring(secondIndex + 1, endIndex));
         } else {// // http://192.168.0.1/onvif/device_service
             ipAddress = temp.substring(beginIndex, endIndex);
         }
@@ -142,7 +143,7 @@ public class OnvifDiscovery {
                 brand = "onvif";
             }
         }
-        ipCameraDiscoveryService.newCameraFound(brand, ipAddress, onvifPort);
+        ipCameraDiscoveryService.newCameraFound(brand, ipAddress, onvifPort.intValue());
     }
 
     void processCameraReplys() {
@@ -173,8 +174,10 @@ public class OnvifDiscovery {
             return "instar";
         } else if (response.toLowerCase().contains("doorbird")) {
             return "doorbird";
-        } else if (response.toLowerCase().contains("/doc/page/login.asp")) {
-            return "hikvision";
+        } else if (response.toLowerCase().contains("ipc-")) {
+            return "dahua";
+        } else if (response.toLowerCase().contains("dh-sd")) {
+            return "dahua";
         }
         return "onvif";// generic camera
     }

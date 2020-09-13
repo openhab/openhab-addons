@@ -569,7 +569,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				</description>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
@@ -882,7 +882,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
@@ -1164,7 +1164,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
@@ -1451,7 +1451,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
@@ -1742,7 +1742,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				</description>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
@@ -2039,7 +2039,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.
@@ -2319,7 +2319,7 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="onvifPort" type="text" required="true" groupName="Settings">
+			<parameter name="onvifPort" type="integer" required="true" groupName="Settings">
 				<label>ONVIF Port</label>
 				<description>The port your camera uses for ONVIF connections. This is needed for PTZ movement, alarm events and auto
 					discovery of RTSP and snapshot URLs.

@@ -19,7 +19,6 @@ import java.util.Random;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +36,7 @@ import io.netty.handler.codec.http.HttpResponse;
 
 @NonNullByDefault
 public class MyNettyAuthHandler extends ChannelDuplexHandler {
-
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    public final Logger logger = LoggerFactory.getLogger(getClass());
     private IpCameraHandler myHandler;
     private String username, password;
     private String httpMethod = "", httpUrl = "";
@@ -46,16 +44,8 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     private String nonce = "", opaque = "", qop = "";
     private String realm = "";
 
-    public MyNettyAuthHandler(String user, String pass, String method, String url, ThingHandler handle) {
-        myHandler = (IpCameraHandler) handle;
-        username = user;
-        password = pass;
-        httpUrl = url;
-        httpMethod = method;
-    }
-
-    public MyNettyAuthHandler(String user, String pass, ThingHandler handle) {
-        myHandler = (IpCameraHandler) handle;
+    public MyNettyAuthHandler(String user, String pass, IpCameraHandler handle) {
+        myHandler = handle;
         username = user;
         password = pass;
     }
@@ -99,7 +89,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
 
         /////// Fresh Digest Authenticate method follows as Basic is already handled and returned ////////
         realm = Helper.searchString(authenticate, "realm=\"");
-        if (realm == "") {
+        if (realm.isEmpty()) {
             logger.warn("Could not find a valid WWW-Authenticate response in :{}", authenticate);
             return;
         }
@@ -116,7 +106,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         String stale = Helper.searchString(authenticate, "stale=\"");
-        if (stale == "") {
+        if (stale.isEmpty()) {
         } else if (stale.equalsIgnoreCase("true")) {
             logger.debug("Camera reported stale=true which normally means the NONCE has expired.");
         }

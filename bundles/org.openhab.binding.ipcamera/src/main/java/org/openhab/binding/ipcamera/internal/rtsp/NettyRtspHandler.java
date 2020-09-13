@@ -17,8 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.HttpContent;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.http.LastHttpContent;
 
 /**
  * The {@link NettyRtspHandler} is used to decode RTSP traffic into message Strings.
@@ -36,12 +35,13 @@ public class NettyRtspHandler extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(@Nullable ChannelHandlerContext ctx, @Nullable Object msg) throws Exception {
-        if (msg == null) {
+        if (msg == null || ctx == null) {
             return;
         }
-        if (msg instanceof HttpContent) {
-            HttpContent content = (HttpContent) msg;
-            rtspConnection.processMessage(content.content().toString(CharsetUtil.UTF_8));
+        if (!(msg instanceof LastHttpContent)) {
+            rtspConnection.processMessage(msg);
+        } else {
+            ctx.close();
         }
     }
 

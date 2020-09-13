@@ -37,6 +37,7 @@ import io.netty.handler.codec.rtsp.RtspEncoder;
 import io.netty.handler.codec.rtsp.RtspHeaderNames;
 import io.netty.handler.codec.rtsp.RtspMethods;
 import io.netty.handler.codec.rtsp.RtspVersions;
+import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * The {@link RtspConnection} is a WIP and not currently used, but will talk directly to RTSP and collect information
@@ -51,40 +52,37 @@ public class RtspConnection {
     private @Nullable Bootstrap rtspBootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
     private IpCameraHandler ipCameraHandler;
+    String username, password;
 
-    RtspConnection(IpCameraHandler ipCameraHandler) {
+    public RtspConnection(IpCameraHandler ipCameraHandler, String username, String password) {
         this.ipCameraHandler = ipCameraHandler;
+        this.username = username;
+        this.password = password;
     }
 
     public void connect() {
         sendRtspRequest(getRTSPoptions());
     }
 
-    public void processMessage(String string) {
-        // TODO Auto-generated method stub
-        // Handle following replies
-
-        // (getRTSPoptions());
-        // returns this:
-        // RTSP/1.0 200 OK
-        // CSeq: 1
-        // Server: Rtsp Server/3.0
-        // Public: OPTIONS, DESCRIBE, ANNOUNCE, SETUP, PLAY, RECORD, PAUSE, TEARDOWN,
-        // SET_PARAMETER, GET_PARAMETER
-
-        // (getRTSPdescribe());
-        // returns this:
-        // RTSP/1.0 200 OK
-        // CSeq: 2
-        // x-Accept-Dynamic-Rate: 1
-        // Content-Base:
-        // rtsp://192.168.xx.xx:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif/
-        // Cache-Control: must-revalidate
-        // Content-Length: 582
-        // Content-Type: application/sdp
-
-        // ch.writeAndFlush(getRTSPsetup(rtspUri));
-        // ch.writeAndFlush(getRTSPplay(rtspUri));
+    public void processMessage(Object msg) {
+        logger.info("reply from RTSP is {}", msg);
+        if (msg.toString().contains("DESCRIBE")) {// getRTSPoptions
+            // Public: OPTIONS, DESCRIBE, ANNOUNCE, SETUP, PLAY, RECORD, PAUSE, TEARDOWN, SET_PARAMETER, GET_PARAMETER
+            sendRtspRequest(getRTSPdescribe());
+        } else if (msg.toString().contains("CSeq: 2")) {// getRTSPdescribe
+            // returns this:
+            // RTSP/1.0 200 OK
+            // CSeq: 2
+            // x-Accept-Dynamic-Rate: 1
+            // Content-Base:
+            // rtsp://192.168.xx.xx:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif/
+            // Cache-Control: must-revalidate
+            // Content-Length: 582
+            // Content-Type: application/sdp
+            sendRtspRequest(getRTSPsetup());
+        } else if (msg.toString().contains("CSeq: 3")) {
+            sendRtspRequest(getRTSPplay());
+        }
     }
 
     HttpRequest getRTSPoptions() {
@@ -111,7 +109,8 @@ public class RtspConnection {
     HttpRequest getRTSPplay() {
         HttpRequest request = new DefaultHttpRequest(RtspVersions.RTSP_1_0, RtspMethods.PLAY, ipCameraHandler.rtspUri);
         request.headers().add(RtspHeaderNames.CSEQ, "4");
-        request.headers().add(RtspHeaderNames.SESSION, "12345678"); // need session number to match that of setup
+        // need session to match response from getRTSPsetup()
+        request.headers().add(RtspHeaderNames.SESSION, "12345678");
         return request;
     }
 
@@ -134,8 +133,11 @@ public class RtspConnection {
 
                 @Override
                 public void initChannel(SocketChannel socketChannel) throws Exception {
+                    socketChannel.pipeline().addLast(new IdleStateHandler(18, 0, 0));
                     socketChannel.pipeline().addLast(new RtspDecoder());
                     socketChannel.pipeline().addLast(new RtspEncoder());
+                    // Need to update the authhandler to work for multiple use cases, before this works.
+                    // socketChannel.pipeline().addLast(new MyNettyAuthHandler(username, password, ipCameraHandler));
                     socketChannel.pipeline().addLast(new NettyRtspHandler(getHandle()));
                 }
             });
