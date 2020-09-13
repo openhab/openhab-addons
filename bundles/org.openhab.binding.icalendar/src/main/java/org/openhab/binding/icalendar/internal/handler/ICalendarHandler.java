@@ -36,9 +36,11 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -162,6 +164,16 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     public void onCalendarUpdated() {
         if (reloadCalendar()) {
             updateStates();
+            for (Thing childThing : getThing().getThings()) {
+                ThingHandler handler = childThing.getHandler();
+                if (handler instanceof CalendarUpdateListener) {
+                    try {
+                        ((CalendarUpdateListener) handler).onCalendarUpdated();
+                    } catch (Exception e) {
+                        logger.trace("The update of a child handler failed. Ignoring.", e);
+                    }
+                }
+            }
         } else {
             logger.trace("Calendar was updated, but loading failed.");
         }

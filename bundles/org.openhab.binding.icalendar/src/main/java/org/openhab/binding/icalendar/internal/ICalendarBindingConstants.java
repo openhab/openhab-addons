@@ -49,12 +49,13 @@ public class ICalendarBindingConstants {
     public static final String DATETIME_UNIT_WEEK = "week";
 
     // specials for EventFilter
-    public final static String RESULT_GROUP_ID_PREFIX = "result_";
-    public final static String RESULT_BEGIN_ID = "begin";
-    public final static String RESULT_END_ID = "end";
-    public final static String RESULT_TITLE_ID = "title";
-    public final static ChannelGroupTypeUID GROUP_TYPE_UID = new ChannelGroupTypeUID(BINDING_ID, "result");
-    public final static ChannelTypeUID BEGIN_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_start");
-    public final static ChannelTypeUID END_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_end");
-    public final static ChannelTypeUID TITLE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_title");
+    public static final int DEFAULT_FILTER_REFRESH = 15;
+    public static final String RESULT_GROUP_ID_PREFIX = "result_";
+    public static final String RESULT_BEGIN_ID = "begin";
+    public static final String RESULT_END_ID = "end";
+    public static final String RESULT_TITLE_ID = "title";
+    public static final ChannelGroupTypeUID GROUP_TYPE_UID = new ChannelGroupTypeUID(BINDING_ID, "result");
+    public static final ChannelTypeUID BEGIN_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_start");
+    public static final ChannelTypeUID END_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_end");
+    public static final ChannelTypeUID TITLE_TYPE_UID = new ChannelTypeUID(BINDING_ID, "result_title");
 }

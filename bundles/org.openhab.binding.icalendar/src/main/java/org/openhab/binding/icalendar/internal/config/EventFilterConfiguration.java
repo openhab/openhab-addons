@@ -21,6 +21,7 @@ import java.math.BigDecimal;
  */
 public class EventFilterConfiguration {
     public BigDecimal maxEvents;
+    public BigDecimal refreshTime;
     public String datetimeUnit;
     public BigDecimal datetimeStart;
     public BigDecimal datetimeEnd;

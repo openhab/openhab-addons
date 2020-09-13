@@ -151,6 +151,12 @@
 				<label>maximum matches</label>
 				<required>true</required>
 			</parameter>
+			<parameter name="refreshTime" type="integer" min="1" groupName="general">
+				<label>refresh time</label>
+				<description>The frequency in minutes the channels get refreshed</description>
+				<required>true</required>
+				<default>15</default>
+			</parameter>
 			<parameter name="datetimeUnit" type="text" groupName="datetime_based">
 				<limitToOptions>true</limitToOptions>
 				<options>
