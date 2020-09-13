@@ -33,8 +33,6 @@ public class Constants {
     public static final String NO_SERVICE_REQUEST = "No Service Requests";
     public static final String UTC_APPENDIX = "-01T12:00:00";
     public static final String NULL_DATE = "1900-01-01T00:00:00";
-    public static final String MILES_SHORT = "mi";
-    public static final String KM_SHORT = "km";
 
     // Services to query
     public static final String SERVICES_SUPPORTED = "Services Supported";
