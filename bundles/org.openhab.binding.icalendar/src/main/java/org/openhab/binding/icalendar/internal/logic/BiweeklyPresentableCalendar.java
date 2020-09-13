@@ -185,7 +185,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
         if (filter != null) {
             Pattern filterPattern;
             if (filter.type == Type.TEXT) {
-                filterPattern = Pattern.compile(".*" + Pattern.quote(filter.value) + ".*", Pattern.CASE_INSENSITIVE);
+                filterPattern = Pattern.compile(".*" + Pattern.quote(filter.value) + ".*",
+                        Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
             } else {
                 filterPattern = Pattern.compile(filter.value);
             }

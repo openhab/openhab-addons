@@ -42,6 +42,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.binding.icalendar.internal.config.ICalendarConfiguration;
 import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
 import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
@@ -176,6 +178,16 @@ public class ICalendarHandler extends BaseBridgeHandler implements CalendarUpdat
     public void onCalendarUpdated() {
         if (reloadCalendar()) {
             updateStates();
+            for (Thing childThing : getThing().getThings()) {
+                ThingHandler handler = childThing.getHandler();
+                if (handler instanceof CalendarUpdateListener) {
+                    try {
+                        ((CalendarUpdateListener) handler).onCalendarUpdated();
+                    } catch (Exception e) {
+                        logger.trace("The update of a child handler failed. Ignoring.", e);
+                    }
+                }
+            }
         } else {
             logger.trace("Calendar was updated, but loading failed.");
         }
