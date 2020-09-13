@@ -47,13 +47,12 @@ import org.slf4j.LoggerFactory;
 @Component(service = MDNSDiscoveryParticipant.class, immediate = true)
 public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
-    @Nullable
-    @Reference
-    CloudConnector cloudConnector;
+    private final CloudConnector cloudConnector;
     private Logger logger = LoggerFactory.getLogger(MiIoDiscoveryParticipant.class);
 
     @Activate
-    private void miIoDiscoveryParticipantStart() {
+    public MiIoDiscoveryParticipant(@Reference CloudConnector cloudConnector) {
+        this.cloudConnector = cloudConnector;
         logger.debug("Start Xiaomi Mi IO mDNS discovery");
     }
 
@@ -112,13 +111,13 @@ public class MiIoDiscoveryParticipant implements MDNSDiscoveryParticipant {
             // remove the domain from the name
             InetAddress ip = getIpAddress(service);
             if (ip == null) {
+                logger.debug("Mi IO mDNS Discovery could not determine ip address from service info: {}", service);
                 return null;
             }
             String inetAddress = ip.toString().substring(1); // trim leading slash
             String id = uid.getId();
             String label = "Xiaomi Mi Device " + id + " (" + Long.parseUnsignedLong(id, 16) + ") " + service.getName();
-            final CloudConnector cloudConnector = this.cloudConnector;
-            if (cloudConnector != null && cloudConnector.isConnected()) {
+            if (cloudConnector.isConnected()) {
                 cloudConnector.getDevicesList();
                 CloudDeviceDTO cloudInfo = cloudConnector.getDeviceInfo(id);
                 if (cloudInfo != null) {
