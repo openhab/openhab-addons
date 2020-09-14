@@ -37,10 +37,11 @@ import org.openhab.binding.tr064.internal.config.Tr064RootConfiguration;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDServiceType;
 import org.openhab.binding.tr064.internal.dto.scpd.service.SCPDActionType;
+import org.openhab.binding.tr064.internal.phonebook.Phonebook;
+import org.openhab.binding.tr064.internal.phonebook.PhonebookProvider;
+import org.openhab.binding.tr064.internal.phonebook.Tr064PhonebookImpl;
 import org.openhab.binding.tr064.internal.util.SCPDUtil;
 import org.openhab.binding.tr064.internal.util.Util;
-import org.openhab.binding.tr064.profile.phonebook.Phonebook;
-import org.openhab.binding.tr064.profile.phonebook.PhonebookProvider;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.thing.*;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -375,6 +376,12 @@ public class Tr064RootHandler extends BaseBridgeHandler implements PhonebookProv
     @Override
     public ThingUID getUID() {
         return thing.getUID();
+    }
+
+    @Override
+    public String getFriendlyName() {
+        String friendlyName = thing.getLabel();
+        return friendlyName != null ? friendlyName : getUID().getId();
     }
 
     @Override

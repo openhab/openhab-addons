@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tr064.profile.phonebook;
+package org.openhab.binding.tr064.internal.phonebook;
 
 import java.util.Optional;
 

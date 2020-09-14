@@ -93,7 +93,8 @@
 
 	<thing-type id="subdevice">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="rootdevice"/>
+			<bridge-type-ref id="generic"/>
+			<bridge-type-ref id="fritzbox"/>
 		</supported-bridge-type-refs>
 		<label>Sub-Device</label>
 		<description>A virtual sub-device.</description>
@@ -113,7 +114,8 @@
 
 	<thing-type id="subdeviceLan" listed="false">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="rootdevice"/>
+			<bridge-type-ref id="generic"/>
+			<bridge-type-ref id="fritzbox"/>
 		</supported-bridge-type-refs>
 		<label>Sub-Device (LAN)</label>
 		<description>A virtual Sub-Device (LAN).</description>

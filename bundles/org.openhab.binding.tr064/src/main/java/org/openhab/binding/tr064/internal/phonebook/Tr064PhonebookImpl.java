@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tr064.internal;
+package org.openhab.binding.tr064.internal.phonebook;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -33,7 +33,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.tr064.internal.dto.phonebook.NumberType;
 import org.openhab.binding.tr064.internal.dto.phonebook.PhonebooksType;
-import org.openhab.binding.tr064.profile.phonebook.Phonebook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

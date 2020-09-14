@@ -10,14 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tr064.profile.phonebook.internal;
+package org.openhab.binding.tr064.internal.phonebook;
 
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tr064.profile.phonebook.PhonebookProvider;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ThingUID;
@@ -28,6 +27,7 @@ import org.openhab.core.thing.profiles.StateProfile;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.util.UIDUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +41,7 @@ public class PhonebookProfile implements StateProfile {
     public static final ProfileTypeUID PHONEBOOK_PROFILE_TYPE_UID = new ProfileTypeUID(
             TransformationService.TRANSFORM_PROFILE_SCOPE, "PHONEBOOK");
 
-    private static final String THING_UID_PARAM = "thingUid";
-    private static final String PHONEBOOK_NAME_PARAM = "phonebookName";
+    public static final String PHONEBOOK_PARAM = "phonebook";
     private static final String MATCH_COUNT_PARAM = "matchCount";
 
     private final Logger logger = LoggerFactory.getLogger(PhonebookProfile.class);
@@ -60,29 +59,31 @@ public class PhonebookProfile implements StateProfile {
         this.phonebookProviders = phonebookProviders;
 
         Configuration configuration = context.getConfiguration();
-        Object thingUidParam = configuration.get(THING_UID_PARAM);
-        Object phonebookNameParam = configuration.get(PHONEBOOK_NAME_PARAM);
+        Object phonebookParam = configuration.get(PHONEBOOK_PARAM);
         Object matchCountParam = configuration.get(MATCH_COUNT_PARAM);
 
-        logger.debug("Profile configured with '{}'='{}', '{}'='{}', '{}'='{}'", THING_UID_PARAM, thingUidParam,
-                PHONEBOOK_NAME_PARAM, phonebookNameParam, MATCH_COUNT_PARAM, matchCountParam);
+        logger.debug("Profile configured with '{}'='{}', '{}'='{}'", PHONEBOOK_PARAM, phonebookParam, MATCH_COUNT_PARAM,
+                matchCountParam);
 
         ThingUID thingUID;
         String phonebookName = null;
         int matchCount = 0;
 
         try {
-            if (!(thingUidParam instanceof String)
-                    || ((phonebookNameParam != null) && !(phonebookNameParam instanceof String))
-                    || ((matchCountParam != null) && (matchCountParam instanceof String))) {
-                throw new IllegalArgumentException("Parameters need to be Strings.");
+            if (!(phonebookParam instanceof String)
+                    || ((matchCountParam != null) && !(matchCountParam instanceof String))) {
+                throw new IllegalArgumentException("Parameters need to be Strings");
             }
-            thingUID = new ThingUID((String) thingUidParam);
-            if (phonebookName != null) {
-                phonebookName = (String) phonebookNameParam;
+            String[] phonebookParams = ((String) phonebookParam).split(":");
+            if (phonebookParams.length > 2) {
+                throw new IllegalArgumentException("Could not split 'phonebook' parameter");
+            }
+            thingUID = new ThingUID(UIDUtils.decode(phonebookParams[0]));
+            if (phonebookParams.length == 2) {
+                phonebookName = UIDUtils.decode(phonebookParams[1]);
             }
             if (matchCountParam != null) {
-                matchCount = Integer.valueOf((String) matchCountParam);
+                matchCount = Integer.parseInt((String) matchCountParam);
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Could not initialize PHONEBOOK transformation profile: {}. Profile will be inactive.",
@@ -122,9 +123,11 @@ public class PhonebookProfile implements StateProfile {
                 match = provider.getPhonebooks().stream().map(p -> p.lookupNumber(state.toString(), matchCount))
                         .filter(Optional::isPresent).map(Optional::get).findAny();
             }
-            match.ifPresentOrElse(name -> callback.handleUpdate(new StringType(name)),
-                    () -> logger.debug("Number '{}' not found in phonebook '{}' from provider '{}'", state,
-                            phonebookName, thingUID));
+            match.ifPresentOrElse(name -> callback.sendUpdate(new StringType(name)), () -> {
+                logger.debug("Number '{}' not found in phonebook '{}' from provider '{}'", state, phonebookName,
+                        thingUID);
+                callback.sendUpdate(state);
+            });
         }
     }
 
