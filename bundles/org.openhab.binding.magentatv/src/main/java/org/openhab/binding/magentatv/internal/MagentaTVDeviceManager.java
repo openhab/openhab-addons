@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = MagentaTVDeviceManager.class, immediate = true)
+@Component(service = MagentaTVDeviceManager.class)
 public class MagentaTVDeviceManager {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVDeviceManager.class);
 
@@ -44,7 +44,7 @@ public class MagentaTVDeviceManager {
         protected @Nullable MagentaTVHandler thingHandler;
     }
 
-    private final Map<String, MagentaTVDevice> deviceList = new HashMap<String, MagentaTVDevice>();
+    private final Map<String, MagentaTVDevice> deviceList = new HashMap<>();
 
     public void registerDevice(String udn, String deviceId, String ipAddress, MagentaTVHandler handler) {
         logger.trace("Register new device, UDN={}, deviceId={}, ipAddress={}", udn, deviceId, ipAddress);

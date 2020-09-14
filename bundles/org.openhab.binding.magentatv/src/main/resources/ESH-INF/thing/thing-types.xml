@@ -155,7 +155,7 @@
 		<item-type>String</item-type>
 		<label>Key</label>
 		<description>Send Key to the Media Receive (POWER/MENU/INFO... - see documentation)</description>
-		<state>
+		<command>
 			<options>
 				<option value="POWER">POWER</option>
 				<option value="HELP">Help</option>
@@ -216,9 +216,8 @@
 				<option value="IPTV">IPTV</option>
 				<option value="PIP">PIP</option>
 				<option value="MULTIVIEW">Multi View</option>
-				<option value="PAIR">PAIR</option>
 			</options>
-		</state>
+		</command>
 	</channel-type>
 
 </thing:thing-descriptions>

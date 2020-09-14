@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = ConsoleCommandExtension.class, immediate = true)
+@Component(service = ConsoleCommandExtension.class)
 public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
 
     private static final String CMD_LOGIN = "login";

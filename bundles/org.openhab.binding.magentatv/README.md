@@ -111,10 +111,7 @@ For security reasons the credentials are automatically deleted from the thing co
 
 |Group   |Channel        |Item-Type|Description                                                               |
 |--------|---------------|---------|--------------------------------------------------------------------------|
-|control |power          |Switch   |Switching the channel simulates pressing the power button (same as sending 
-"POWER" to the key channel). The receiver doesn't offer ON and OFF, but just toggles the power state.
-For that it's tricky to ensure the power state. Maybe some future versions will use some kind of 
-testing to determine the current state.                                                                       |
+|control |power          |Switch   |Toggle power state (same as sending "POWER" to the key channel), see note.|
 |        |channel        |Number   |Select program channel (outbound only, current channel is not available)  |
 |        |player         |Player   |Send commands to the receiver - see below                                 |
 |        |key            |String   |Send key code to the receiver (see code table below)                      |
@@ -127,8 +124,12 @@ testing to determine the current state.                                         
 |        |position       |Number   |Position in minutes within a movie.                                       |
 |        |duration       |Number   |Remaining time in minutes, usually not updated for TV program             | 
 
-Please note: Channels receiving event information get updated when changing the channel or playing a video.
+Please note:
+
+- POWER is a toggle button, not an on/off switch. The binding tries to detect and maintain the correct state, but due to device limitations this is not always possible. Make sure the receiver's and binding's state are in sync when OH is restarted (binidng assume state OFF).
+- Channels receiving event information get updated when changing the channel or playing a video.
 There is no way to read the current status, therefore they don't get initialized on startup nor being updated in real-time.
+
 
 The player channel supports the following actions:
 

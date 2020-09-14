@@ -171,9 +171,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             connectReceiver(); // throws MagentaTVException on error
 
             // setup background device check
-            renewEventJob = scheduler.scheduleWithFixedDelay(() -> {
-                renewEventSubscription();
-            }, 2, 5, TimeUnit.MINUTES);
+            renewEventJob = scheduler.scheduleWithFixedDelay(this::renewEventSubscription, 2, 5, TimeUnit.MINUTES);
 
             // change to ThingStatus.ONLINE will be done when the pairing result is received
             // (see onPairingResult())
@@ -286,7 +284,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             }
         } catch (MagentaTVException e) {
             String errorMessage = MessageFormat.format("Channel operation failed (command={0}, value={1}): {2}",
-                    command, channelUID.getId(), e.toString());
+                    command, channelUID.getId(), e.getMessage());
             logger.debug("{}: {}", thingId, errorMessage);
             setOnlineStatus(ThingStatus.OFFLINE, errorMessage);
         }
@@ -607,8 +605,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
             return;
         }
         logger.debug("{}: Check receiver status, current state  {}/{}", thingId,
-                this.getThing().getStatusInfo().getStatus().toString(),
-                this.getThing().getStatusInfo().getStatusDetail());
+                this.getThing().getStatusInfo().getStatus(), this.getThing().getStatusInfo().getStatusDetail());
 
         try {
             // when pairing is completed re-new event channel subscription

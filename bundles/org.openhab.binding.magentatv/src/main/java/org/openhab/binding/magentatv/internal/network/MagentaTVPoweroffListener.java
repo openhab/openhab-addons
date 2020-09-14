@@ -49,6 +49,9 @@ public class MagentaTVPoweroffListener extends Thread {
 
     public MagentaTVPoweroffListener(MagentaTVHandlerFactory handlerFactory,
             @Nullable NetworkInterface networkInterface) throws IOException {
+        setName("OH-Binding-magentatv-upnp-listener");
+        setDaemon(true);
+
         this.handlerFactory = handlerFactory;
         this.networkInterface = networkInterface;
         socket = new MulticastSocket(UPNP_PORT);
