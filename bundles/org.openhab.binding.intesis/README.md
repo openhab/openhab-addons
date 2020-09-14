@@ -24,7 +24,7 @@ The binding needs two configuration parameters.
 | Parameter | Description                                       |
 |-----------|---------------------------------------------------|
 | ipAddress | IP-Address of the              device             |
-| password  | Password to login to thelocal webserver of device |
+| password  | Password to login to the local webserver of device |
 
 
 ## Channels
@@ -40,9 +40,8 @@ The binding needs two configuration parameters.
 | ambientTemperature | Number:Temperature | (Readonly) The ambient air temperature.     |                           |
 | outdoorTemperature | Number:Temperature | (Readonly) The outdoor air temperature.     |                           |
 
+Note that individual A/C units may not support all channels, or all possible values for those channels.
 
-
-###Note that individual A/C units may not support all channels, or all possible values for those channels.
 The binding will add all supported channels and possible values on first thing initialization and list them as thing properties.
 If new channels or values might be supported after firmware upgrades, deleting the thing and reading is necessary.
 For example, not all A/C units have controllable vanes. Or fan speed may be limited to 1-4, instead of all of 1-9.

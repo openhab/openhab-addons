@@ -70,7 +70,7 @@ public class IntesisHomeHttpApi {
                 return null;
             }
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            logger.debug("Could not make HTTP Post request", e);
+            logger.debug("Could not make HTTP Post request");
         }
         return null;
     }

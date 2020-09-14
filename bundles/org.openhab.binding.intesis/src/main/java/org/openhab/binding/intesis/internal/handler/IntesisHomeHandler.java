@@ -96,7 +96,6 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Start initializing!");
         updateStatus(ThingStatus.UNKNOWN);
         final IntesisConfiguration config = getConfigAs(IntesisConfiguration.class);
         ipAddress = config.ipAddress;
@@ -130,7 +129,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         int value = 0;
         String channelId = channelUID.getId();
         if (command instanceof RefreshType) {
-            // getAllUidValues();
+            // Refresh command is not supported as the binding polls all values every 30 seconds
         } else {
             switch (channelId) {
                 case CHANNEL_TYPE_POWER:
@@ -526,7 +525,6 @@ public class IntesisHomeHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     public void addChannel(String channelId, String itemType, @Nullable final Collection<?> options) {
         if (thing.getChannel(channelId) == null) {
             logger.trace("Channel '{}' for UID to be added", channelId);
@@ -544,7 +542,10 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                     e.toString().substring(0, 1) + e.toString().substring(1).toLowerCase()))
                             .collect(Collectors.toList());
                     logger.trace("StateOptions : '{}'", stateOptions);
-                    intesisStateDescriptionProvider.setStateOptions(thing.getChannel(channelId).getUID(), stateOptions);
+                    channel = thing.getChannel(channelId);
+                    if (channel != null) {
+                        intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
+                    }
                 }
             }
         }
