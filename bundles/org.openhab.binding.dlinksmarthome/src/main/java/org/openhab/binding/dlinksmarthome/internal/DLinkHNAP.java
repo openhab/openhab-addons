@@ -68,7 +68,7 @@ public abstract class DLinkHNAP {
     private String pin;
     private String url;
     private static final String USER = "admin";
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     private ScheduledFuture<?> pollFuture;
     private boolean invalidConfiguration = false;
@@ -76,6 +76,10 @@ public abstract class DLinkHNAP {
     MessageFactory soapMessageFactory;
     SOAPFactory soapFactory;
     private static final int DETECT_POLL_S = 1;
+
+    public DLinkHNAP(final HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
 
     private void poller() {
         if (authenticate()) {
@@ -106,11 +110,6 @@ public abstract class DLinkHNAP {
 
         public String privateKey;
         public String cookie;
-    }
-
-    @Activate
-    public void DLinkSmartHomeHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     public void start(ScheduledExecutorService scheduler) {

@@ -14,14 +14,18 @@ package org.openhab.binding.dlinksmarthome.internal;
 
 import static org.openhab.binding.dlinksmarthome.internal.DLinkSmartHomeBindingConstants.*;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.openhab.binding.dlinksmarthome.internal.handler.DLinkMotionSensorHandler;
 import org.openhab.binding.dlinksmarthome.internal.handler.DLinkSmartPlugHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link DLinkSmartHomeHandlerFactory} is responsible for creating things and thing
@@ -32,6 +36,13 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.dlinksmarthome")
 public class DLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
+
+    private final HttpClient httpClient;
+
+    @Activate
+    public DLinkSmartHomeHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        httpClient = httpClientFactory.getCommonHttpClient();
+    }
 
     @Override
     public boolean supportsThingType(final ThingTypeUID thingTypeUID) {
@@ -45,7 +56,7 @@ public class DLinkSmartHomeHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_DCHS150)) {
             return new DLinkMotionSensorHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_DSPW215)) {
-            return new DLinkSmartPlugHandler(thing);
+            return new DLinkSmartPlugHandler(thing, httpClient);
         }
 
         return null;

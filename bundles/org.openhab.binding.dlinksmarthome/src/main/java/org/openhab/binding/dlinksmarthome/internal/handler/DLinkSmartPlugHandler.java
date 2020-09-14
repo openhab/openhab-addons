@@ -13,6 +13,7 @@
 
 package org.openhab.binding.dlinksmarthome.internal.handler;
 
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
@@ -44,9 +45,9 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
     final DLinkHNAP hnap;
     private Logger logger = LoggerFactory.getLogger(DLinkSmartPlugHandler.class);
 
-    public DLinkSmartPlugHandler(final Thing thing) {
+    public DLinkSmartPlugHandler(final Thing thing, final HttpClient httpClient) {
         super(thing);
-        hnap = new DLinkHNAP() {
+        hnap = new DLinkHNAP(httpClient) {
 
             @Override
             public void poll() {
