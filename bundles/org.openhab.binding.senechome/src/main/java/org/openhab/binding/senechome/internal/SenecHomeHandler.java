@@ -110,9 +110,8 @@ public class SenecHomeHandler extends BaseThingHandler {
             BigDecimal pvLimitation = new BigDecimal(100).subtract(getSenecValue(response.limitation.powerLimitation))
                     .setScale(0, RoundingMode.HALF_UP);
 
-            Channel channelLimitation = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_LIMITATION);
-            updateState(channelLimitation.getUID(),
-            		new QuantityType<Dimensionless>(pvLimitation, SmartHomeUnits.PERCENT));
+            updateState(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_LIMITATION,
+                    new QuantityType<Dimensionless>(pvLimitation, SmartHomeUnits.PERCENT));
 
             Channel channelLimitationState = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_POWER_LIMITATION_STATE);
@@ -241,7 +240,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         updateState(channel.getUID(), new StringType(SenecBatteryStatus.fromCode(code).name()));
     }
 
-    protected void updateGridPowerValues(Thing thing, BigDecimal gridTotalValue) {
+    protected void updateGridPowerValues(BigDecimal gridTotalValue) {
         BigDecimal gridTotal = gridTotalValue.setScale(2, RoundingMode.HALF_UP);
 
         Channel channelGridPower = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_GRID_POWER);

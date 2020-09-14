@@ -11,8 +11,7 @@
 
 		<channels>
 			<channel id="powerLimitation" typeId="powerLimitation" />
-			<channel id="powerLimitationState"
-				typeId="powerLimitationState" />
+			<channel id="powerLimitationState" typeId="powerLimitationState" />
 			<channel id="houseConsumption" typeId="houseConsumption" />
 			<channel id="energyProduction" typeId="energyProduction" />
 			<channel id="batteryPower" typeId="batteryPower" />
@@ -27,21 +26,19 @@
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname/IP Address</label>
 				<description>Enter the hostname or ip address of your Senec Home device</description>
+				<context>network-address</context>
 			</parameter>
-			<parameter name="refreshInterval" type="integer" min="1"
-				unit="s">
+			<parameter name="refreshInterval" type="integer" min="1" unit="s">
 				<label>Refresh Interval</label>
 				<description>Rate of refreshing details (in s)</description>
 				<default>15</default>
 			</parameter>
-			<parameter name="limitationTresholdValue" type="integer"
-				min="0" max="100" unit="%">
+			<parameter name="limitationTresholdValue" type="integer" min="0" max="100" unit="%">
 				<label>Limitation Treshold</label>
 				<description>Treshold in percent, defines when limitation state is enabled</description>
 				<default>95</default>
 			</parameter>
-			<parameter name="limitationDuration" type="integer"
-				unit="s" min="1" max="1200">
+			<parameter name="limitationDuration" type="integer" unit="s" min="1" max="1200">
 				<label>Limitation Duration</label>
 				<description>Duration of stable values until state is changed, defined in seconds</description>
 				<default>120</default>
