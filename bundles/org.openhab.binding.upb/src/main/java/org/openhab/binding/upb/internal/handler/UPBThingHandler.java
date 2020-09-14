@@ -68,13 +68,11 @@ public class UPBThingHandler extends BaseThingHandler {
             // use value from binding config
             final Byte defaultNetworkId = this.defaultNetworkId;
             if (defaultNetworkId == null) {
-                logger.debug("missing network ID for {}", getThing().getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing network ID");
                 return;
             }
             networkId = defaultNetworkId.byteValue();
         } else if (val.compareTo(BigDecimal.ZERO) < 0 || val.compareTo(BigDecimal.valueOf(255)) > 0) {
-            logger.debug("invalid network ID {} for {}", val, getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid network ID");
             return;
         } else {
@@ -83,13 +81,11 @@ public class UPBThingHandler extends BaseThingHandler {
 
         final BigDecimal cfgUnitId = (BigDecimal) getConfig().get(Constants.CONFIGURATION_UNIT_ID);
         if (cfgUnitId == null) {
-            logger.debug("Unit ID is not set in {}", getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "missing unit ID");
             return;
         }
         unitId = cfgUnitId.intValue();
         if (unitId < 1 || unitId > 250) {
-            logger.debug("Unit ID ({}) out of range for {}", cfgUnitId, getThing().getUID());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "invalid unit ID");
             return;
         }
@@ -131,7 +127,7 @@ public class UPBThingHandler extends BaseThingHandler {
     public void handleCommand(final ChannelUID channelUID, final Command cmd) {
         final PIMHandler pimHandler = getPIMHandler();
         if (pimHandler == null) {
-            logger.info("DEV {}: received cmd {} but no bridge handler", unitId, cmd);
+            logger.warn("DEV {}: received cmd {} but no bridge handler", unitId, cmd);
             return;
         }
 
@@ -146,7 +142,7 @@ public class UPBThingHandler extends BaseThingHandler {
             refreshDeviceState();
             return;
         } else {
-            logger.info("channel {}: unsupported cmd {}", channelUID, cmd);
+            logger.warn("channel {}: unsupported cmd {}", channelUID, cmd);
             return;
         }
 
@@ -176,7 +172,7 @@ public class UPBThingHandler extends BaseThingHandler {
 
             case GOTO:
                 if (msg.getArguments().length == 0) {
-                    logger.info("DEV {}: malformed GOTO cmd", unitId);
+                    logger.warn("DEV {}: malformed GOTO cmd", unitId);
                     return;
                 }
                 final int level = msg.getArguments()[0];

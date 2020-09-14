@@ -178,7 +178,7 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
             case ACCEPT:
                 break;
             case ERROR:
-                logger.info("received ERROR response from PIM");
+                logger.debug("received ERROR response from PIM");
                 break;
             default:
                 // ignore
