@@ -48,11 +48,15 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class UPBThingHandler extends BaseThingHandler {
+    // Time to wait between attempts to poll the device to refresh state
+    private static final long REFRESH_INTERVAL_MS = 3_000;
+
     private final Logger logger = LoggerFactory.getLogger(UPBThingHandler.class);
     private final @Nullable Byte defaultNetworkId;
 
     protected volatile byte networkId;
     protected volatile int unitId;
+    private volatile long lastRefreshMillis;
 
     public UPBThingHandler(final Thing device, final @Nullable Byte defaultNetworkId) {
         super(device);
@@ -252,10 +256,18 @@ public class UPBThingHandler extends BaseThingHandler {
     }
 
     private void refreshDeviceState() {
-        final PIMHandler pimHandler = getPIMHandler();
-        if (pimHandler != null) {
-            pimHandler.sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
-                    .thenAccept(this::updateStatus);
+        // This polls the device to see if it is alive. Since the REFRESH command is sent
+        // for each channel and we want to avoid unnecessary traffic, we only ping the device
+        // if some time has elapsed since the last refresh.
+        final long now = System.currentTimeMillis();
+        if (now - lastRefreshMillis > REFRESH_INTERVAL_MS) {
+            lastRefreshMillis = now;
+            final PIMHandler pimHandler = getPIMHandler();
+            if (pimHandler != null) {
+                pimHandler
+                        .sendPacket(MessageBuilder.forCommand(REPORT_STATE).network(networkId).destination(getUnitId()))
+                        .thenAccept(this::updateStatus);
+            }
         }
     }
 
