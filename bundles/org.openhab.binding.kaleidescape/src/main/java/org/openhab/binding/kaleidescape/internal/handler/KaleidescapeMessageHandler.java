@@ -475,17 +475,19 @@ public enum KaleidescapeMessageHandler {
                         }
                         break;
                     case "TOGGLE_MUTE":
-                        State state = UnDefType.UNDEF;
-                        synchronized (handler.sequenceLock) {
-                            if (handler.isMuted) {
-                                state = OnOffType.OFF;
-                                handler.isMuted = false;
-                            } else {
-                                state = OnOffType.ON;
-                                handler.isMuted = true;
+                        if (handler.volumeEnabled) {
+                            State state = UnDefType.UNDEF;
+                            synchronized (handler.sequenceLock) {
+                                if (handler.isMuted) {
+                                    state = OnOffType.OFF;
+                                    handler.isMuted = false;
+                                } else {
+                                    state = OnOffType.ON;
+                                    handler.isMuted = true;
+                                }
+                                handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
+                                handler.updateChannel(MUTE, state);
                             }
-                            handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
-                            handler.updateChannel(MUTE, state);
                         }
                         break;
                     // the default is to just publish all other USER_DEFINED_EVENTs

@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class KaleidescapeThingConfiguration {
-    public @Nullable String componentType;
     public @Nullable String serialPort;
     public @Nullable String host;
     public @Nullable Integer port;

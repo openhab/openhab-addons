@@ -30,24 +30,16 @@ public class KaleidescapeBindingConstants {
     public static final String BINDING_ID = "kaleidescape";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_PLAYER_ZONE = new ThingTypeUID(BINDING_ID, "player");
+    public static final ThingTypeUID THING_TYPE_PLAYER = new ThingTypeUID(BINDING_ID, "player");
+    public static final ThingTypeUID THING_TYPE_CINEMA_ONE = new ThingTypeUID(BINDING_ID, "cinemaone");
+    public static final ThingTypeUID THING_TYPE_ALTO = new ThingTypeUID(BINDING_ID, "alto");
+    public static final ThingTypeUID THING_TYPE_STRATO = new ThingTypeUID(BINDING_ID, "strato");
 
     public static final int DEFAULT_API_PORT = 10000;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
     public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE_MS = 500;
     public static final int DISCOVERY_DEFAULT_IP_TIMEOUT_RATE_MS = 750;
-
-    // Component Types
-    public static final String PLAYER = "Player";
-    public static final String CINEMA_ONE = "Cinema One";
-    public static final String ALTO = "Alto";
-    public static final String STRATO = "Strato";
-    public static final String STRATO_S = "Strato S";
-    public static final String DISC_VAULT = "Disc Vault";
-
-    public static final Set<String> ALLOWED_DEVICES = new HashSet<String>(
-            Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, STRATO_S, DISC_VAULT));
 
     // List of all Channels
     public static final String POWER = "ui#power";

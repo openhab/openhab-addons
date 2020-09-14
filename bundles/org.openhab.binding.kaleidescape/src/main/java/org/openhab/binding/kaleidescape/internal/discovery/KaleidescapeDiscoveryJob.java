@@ -24,8 +24,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,10 +46,21 @@ import org.slf4j.LoggerFactory;
 public class KaleidescapeDiscoveryJob implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeDiscoveryJob.class);
 
+    // Component Types
+    private static final String PLAYER = "Player";
+    private static final String CINEMA_ONE = "Cinema One";
+    private static final String ALTO = "Alto";
+    private static final String STRATO = "Strato";
+    private static final String STRATO_S = "Strato S";
+    private static final String DISC_VAULT = "Disc Vault";
+
+    private static final Set<String> ALLOWED_DEVICES = new HashSet<String>(
+            Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, STRATO_S, DISC_VAULT));
+
     private KaleidescapeDiscoveryService discoveryClass;
 
+    private ThingTypeUID thingTypeUid = THING_TYPE_PLAYER;
     private String ipAddress = EMPTY;
-    private String componentType = EMPTY;
     private String friendlyName = EMPTY;
     private String serialNumber = EMPTY;
 
@@ -57,7 +72,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
     @Override
     public void run() {
         if (hasKaleidescapeDevice(this.ipAddress)) {
-            discoveryClass.submitDiscoveryResults(this.ipAddress, this.componentType, this.friendlyName,
+            discoveryClass.submitDiscoveryResults(this.thingTypeUid, this.ipAddress, this.friendlyName,
                     this.serialNumber);
         }
     }
@@ -108,6 +123,7 @@ public class KaleidescapeDiscoveryJob implements Runnable {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
+            String componentType = EMPTY;
             String line;
             String videoZone = null;
             String audioZone = null;
@@ -148,25 +164,38 @@ public class KaleidescapeDiscoveryJob implements Runnable {
             if ("01".equals(videoZone)) {
                 // now check if we are one of the allowed types
                 if (ALLOWED_DEVICES.contains(componentType)) {
-                    // A Strato S, just call it 'Strato'
-                    if (STRATO_S.equals(componentType)) {
-                        componentType = STRATO;
+                    if (STRATO_S.equals(componentType) || STRATO.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_STRATO;
                         return true;
                     }
 
                     // A 'Player' without an audio zone is really a Strato C
-                    // does not work yet, Strato erroneously reports "01" for audio zones
+                    // does not work yet, Strato C erroneously reports "01" for audio zones
                     // so we are unable to differentiate a Strato C from a Premiere player
                     if ("00".equals(audioZone) && PLAYER.equals(componentType)) {
-                        componentType = STRATO;
+                        thingTypeUid = THING_TYPE_STRATO;
                         return true;
                     }
 
-                    // A Disc Vault with a video zone (the M700 vault), just call it a 'Player'
-                    if (DISC_VAULT.equals(componentType)) {
-                        componentType = PLAYER;
+                    // Alto
+                    if (ALTO.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_ALTO;
                         return true;
                     }
+
+                    // Cinema One
+                    if (CINEMA_ONE.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_CINEMA_ONE;
+                        return true;
+                    }
+
+                    // A Disc Vault with a video zone (the M700 vault), just call it a THING_TYPE_PLAYER
+                    if (DISC_VAULT.equals(componentType)) {
+                        thingTypeUid = THING_TYPE_PLAYER;
+                        return true;
+                    }
+
+                    // default returns THING_TYPE_PLAYER
                     return true;
                 }
             }

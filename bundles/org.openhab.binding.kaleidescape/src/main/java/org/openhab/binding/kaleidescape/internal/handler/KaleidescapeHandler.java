@@ -14,12 +14,12 @@ package org.openhab.binding.kaleidescape.internal.handler;
 
 import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConstants.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -37,11 +37,11 @@ import org.eclipse.smarthome.core.library.types.PlayPauseType;
 import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.Channel;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
@@ -74,15 +74,16 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
     private final SerialPortManager serialPortManager;
+    private final Map<String, String> cache = new HashMap<String, String>();
 
     protected final HttpClient httpClient;
     protected final Unit<Time> apiSecondUnit = SmartHomeUnits.SECOND;
 
+    private ThingTypeUID thingTypeUID = THING_TYPE_PLAYER;
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
     private long lastEventReceived = 0;
     private int updatePeriod = 0;
-    private String componentType = EMPTY;
 
     protected KaleidescapeConnector connector = new KaleidescapeDefaultConnector();
     protected int metaRuntimeMultiple = 1;
@@ -114,8 +115,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     public void initialize() {
         final String uid = this.getThing().getUID().getAsString();
         KaleidescapeThingConfiguration config = getConfigAs(KaleidescapeThingConfiguration.class);
-        @Nullable
-        final String componentType = config.componentType;
+
+        this.thingTypeUID = thing.getThingTypeUID();
 
         // Check configuration settings
         String configError = null;
@@ -143,55 +144,16 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             return;
         }
 
-        if (componentType != null) {
-            this.componentType = componentType;
-        }
-
         if (updatePeriod != null) {
             this.updatePeriod = updatePeriod;
         }
 
-        boolean channelsRemoved = false;
-        List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
-
-        // check if volume is enabled, if not remove the volume & mute channels
+        // check if volume is enabled
         if (config.volumeEnabled) {
             this.volumeEnabled = true;
             this.volume = config.initialVolume;
             this.updateState(VOLUME, new PercentType(this.volume));
             this.updateState(MUTE, OnOffType.OFF);
-        } else {
-            channelsRemoved = true;
-            channels.removeIf(c -> (c.getUID().getId().equals(VOLUME)));
-            channels.removeIf(c -> (c.getUID().getId().equals(MUTE)));
-        }
-
-        // remove music channels if we are not a Premiere Player or Cinema One
-        if (!(PLAYER.equals(this.componentType) || CINEMA_ONE.equals(this.componentType))) {
-            channelsRemoved = true;
-            channels.removeIf(c -> (c.getUID().getId().contains(MUSIC)));
-            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_ALBUM_TITLE)));
-            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_ARTIST)));
-            channels.removeIf(c -> (c.getUID().getId().equals(DETAIL + DETAIL_REVIEW)));
-        }
-
-        // premiere players do not support SYSTEM_READINESS_STATE
-        if (PLAYER.equals(this.componentType)) {
-            channelsRemoved = true;
-            channels.removeIf(c -> (c.getUID().getId().equals(SYSTEM_READINESS_STATE)));
-        }
-
-        // remove VIDEO_COLOR and CONTENT_COLOR if not a Strato
-        if (!STRATO.equals(this.componentType)) {
-            channelsRemoved = true;
-            channels.removeIf(c -> (c.getUID().getId().equals(VIDEO_COLOR)));
-            channels.removeIf(c -> (c.getUID().getId().equals(VIDEO_COLOR_EOTF)));
-            channels.removeIf(c -> (c.getUID().getId().equals(CONTENT_COLOR)));
-            channels.removeIf(c -> (c.getUID().getId().equals(CONTENT_COLOR_EOTF)));
-        }
-
-        if (channelsRemoved) {
-            updateThing(editThing().withChannels(channels).build());
         }
 
         if (serialPort != null) {
@@ -290,7 +252,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         break;
                 }
             } catch (KaleidescapeException e) {
-                logger.warn("Command {} from channel {} failed: {}", command, channel, e.getMessage());
+                logger.debug("Command {} from channel {} failed: {}", command, channel, e.getMessage());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Sending command failed");
                 closeConnection();
                 scheduleReconnectJob();
@@ -341,6 +303,10 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             // case statement here
             KaleidescapeMessageHandler.valueOf(evt.getKey()).handleMessage(evt.getValue(), this);
 
+            if (!evt.isCached()) {
+                cache.put(evt.getKey(), evt.getValue());
+            }
+
             if (ThingStatusDetail.BRIDGE_OFFLINE.equals(thing.getStatusInfo().getStatusDetail())) {
                 // no longer in standby, update the status
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, this.friendlyName);
@@ -364,6 +330,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     String error = EMPTY;
                     if (openConnection()) {
                         try {
+                            cache.clear();
                             Set<String> initialCommands = new HashSet<>(Arrays.asList(GET_DEVICE_TYPE_NAME,
                                     GET_FRIENDLY_NAME, GET_DEVICE_INFO, GET_SYSTEM_VERSION, GET_DEVICE_POWER_STATE,
                                     GET_CINEMASCAPE_MASK, GET_CINEMASCAPE_MODE, GET_SCALE_MODE, GET_SCREEN_MASK,
@@ -372,18 +339,18 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                                     GET_PLAYING_TITLE_NAME));
 
                             // Premiere Players and Cinema One support music
-                            if (PLAYER.equals(this.componentType) || CINEMA_ONE.equals(this.componentType)) {
+                            if (thingTypeUID.equals(THING_TYPE_PLAYER) || thingTypeUID.equals(THING_TYPE_CINEMA_ONE)) {
                                 initialCommands.addAll(Arrays.asList(GET_MUSIC_NOW_PLAYING_STATUS,
                                         GET_MUSIC_PLAY_STATUS, GET_MUSIC_TITLE));
                             }
 
                             // everything after Premiere Player supports GET_SYSTEM_READINESS_STATE
-                            if (!PLAYER.equals(this.componentType)) {
+                            if (!thingTypeUID.equals(THING_TYPE_PLAYER)) {
                                 initialCommands.add(GET_SYSTEM_READINESS_STATE);
                             }
 
                             // only Strato supports the GET_*_COLOR commands
-                            if (STRATO.equals(this.componentType)) {
+                            if (thingTypeUID.equals(THING_TYPE_STRATO)) {
                                 initialCommands.addAll(Arrays.asList(GET_VIDEO_COLOR, GET_CONTENT_COLOR));
                             }
 
@@ -441,6 +408,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     logger.debug("Polling the component for updated status...");
                     try {
                         connector.ping();
+                        cache.clear();
                     } catch (KaleidescapeException e) {
                         logger.debug("Polling error: {}", e.getMessage());
                     }
@@ -497,7 +465,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     private void handleRefresh(String channel) throws KaleidescapeException {
         switch (channel) {
             case POWER:
-                connector.sendCommand(GET_DEVICE_POWER_STATE);
+                connector.sendCommand(GET_DEVICE_POWER_STATE, cache.get("DEVICE_POWER_STATE"));
                 break;
             case VOLUME:
                 updateState(channel, new PercentType(this.volume));
@@ -506,7 +474,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
                 break;
             case TITLE_NAME:
-                connector.sendCommand(GET_PLAYING_TITLE_NAME);
+                connector.sendCommand(GET_PLAYING_TITLE_NAME, cache.get("TITLE_NAME"));
                 break;
             case PLAY_MODE:
             case PLAY_SPEED:
@@ -516,64 +484,64 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case CHAPTER_NUM:
             case CHAPTER_LENGTH:
             case CHAPTER_LOC:
-                connector.sendCommand(GET_PLAY_STATUS);
+                connector.sendCommand(GET_PLAY_STATUS, cache.get("PLAY_STATUS"));
                 break;
             case MOVIE_MEDIA_TYPE:
-                connector.sendCommand(GET_MOVIE_MEDIA_TYPE);
+                connector.sendCommand(GET_MOVIE_MEDIA_TYPE, cache.get("MOVIE_MEDIA_TYPE"));
                 break;
             case MOVIE_LOCATION:
-                connector.sendCommand(GET_MOVIE_LOCATION);
+                connector.sendCommand(GET_MOVIE_LOCATION, cache.get("MOVIE_LOCATION"));
                 break;
             case VIDEO_MODE:
             case VIDEO_MODE_COMPOSITE:
             case VIDEO_MODE_COMPONENT:
             case VIDEO_MODE_HDMI:
-                connector.sendCommand(GET_VIDEO_MODE);
+                connector.sendCommand(GET_VIDEO_MODE, cache.get("VIDEO_MODE"));
                 break;
             case VIDEO_COLOR:
             case VIDEO_COLOR_EOTF:
-                connector.sendCommand(GET_VIDEO_COLOR);
+                connector.sendCommand(GET_VIDEO_COLOR, cache.get("VIDEO_COLOR"));
                 break;
             case CONTENT_COLOR:
             case CONTENT_COLOR_EOTF:
-                connector.sendCommand(GET_CONTENT_COLOR);
+                connector.sendCommand(GET_CONTENT_COLOR, cache.get("CONTENT_COLOR"));
                 break;
             case SCALE_MODE:
-                connector.sendCommand(GET_SCALE_MODE);
+                connector.sendCommand(GET_SCALE_MODE, cache.get("SCALE_MODE"));
                 break;
             case ASPECT_RATIO:
             case SCREEN_MASK:
-                connector.sendCommand(GET_SCREEN_MASK);
+                connector.sendCommand(GET_SCREEN_MASK, cache.get("SCREEN_MASK"));
                 break;
             case SCREEN_MASK2:
-                connector.sendCommand(GET_SCREEN_MASK2);
+                connector.sendCommand(GET_SCREEN_MASK2, cache.get("SCREEN_MASK2"));
                 break;
             case CINEMASCAPE_MASK:
-                connector.sendCommand(GET_CINEMASCAPE_MASK);
+                connector.sendCommand(GET_CINEMASCAPE_MASK, cache.get("GET_CINEMASCAPE_MASK"));
                 break;
             case CINEMASCAPE_MODE:
-                connector.sendCommand(GET_CINEMASCAPE_MODE);
+                connector.sendCommand(GET_CINEMASCAPE_MODE, cache.get("CINEMASCAPE_MODE"));
                 break;
             case UI_STATE:
-                connector.sendCommand(GET_UI_STATE);
+                connector.sendCommand(GET_UI_STATE, cache.get("UI_STATE"));
                 break;
             case CHILD_MODE_STATE:
-                connector.sendCommand(GET_CHILD_MODE_STATE);
+                connector.sendCommand(GET_CHILD_MODE_STATE, cache.get("CHILD_MODE_STATE"));
                 break;
             case SYSTEM_READINESS_STATE:
-                connector.sendCommand(GET_SYSTEM_READINESS_STATE);
+                connector.sendCommand(GET_SYSTEM_READINESS_STATE, cache.get("SYSTEM_READINESS_STATE"));
                 break;
             case HIGHLIGHTED_SELECTION:
-                connector.sendCommand(GET_HIGHLIGHTED_SELECTION);
+                connector.sendCommand(GET_HIGHLIGHTED_SELECTION, cache.get("HIGHLIGHTED_SELECTION"));
                 break;
             case USER_DEFINED_EVENT:
             case USER_INPUT:
             case USER_INPUT_PROMPT:
-                updateState(channel, new StringType(EMPTY));
+                updateState(channel, StringType.EMPTY);
                 break;
             case MUSIC_REPEAT:
             case MUSIC_RANDOM:
-                connector.sendCommand(GET_MUSIC_NOW_PLAYING_STATUS);
+                connector.sendCommand(GET_MUSIC_NOW_PLAYING_STATUS, cache.get("MUSIC_NOW_PLAYING_STATUS"));
                 break;
             case MUSIC_TRACK:
             case MUSIC_ARTIST:
@@ -581,14 +549,14 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case MUSIC_TRACK_HANDLE:
             case MUSIC_ALBUM_HANDLE:
             case MUSIC_NOWPLAY_HANDLE:
-                connector.sendCommand(GET_MUSIC_TITLE);
+                connector.sendCommand(GET_MUSIC_TITLE, cache.get("MUSIC_TITLE"));
                 break;
             case MUSIC_PLAY_MODE:
             case MUSIC_PLAY_SPEED:
             case MUSIC_TRACK_LENGTH:
             case MUSIC_TRACK_POSITION:
             case MUSIC_TRACK_PROGRESS:
-                connector.sendCommand(GET_MUSIC_PLAY_STATUS);
+                connector.sendCommand(GET_MUSIC_PLAY_STATUS, cache.get("MUSIC_PLAY_STATUS"));
                 break;
             case DETAIL_TYPE:
             case DETAIL_TITLE:
@@ -610,7 +578,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case DETAIL_COUNTRY:
             case DETAIL_ASPECT_RATIO:
             case DETAIL_DISC_LOCATION:
-                updateState(channel, new StringType(EMPTY));
+                updateState(channel, StringType.EMPTY);
                 break;
         }
     }

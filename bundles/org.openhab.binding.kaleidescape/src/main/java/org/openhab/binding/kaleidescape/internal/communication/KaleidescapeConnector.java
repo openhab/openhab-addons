@@ -172,6 +172,26 @@ public abstract class KaleidescapeConnector {
      * @throws KaleidescapeException - In case of any problem
      */
     public void sendCommand(@Nullable String cmd) throws KaleidescapeException {
+        sendCommand(cmd, null);
+    }
+
+    /**
+     * Request the Kaleidescape component to execute a command
+     *
+     * @param cmd the command to execute
+     * @param cachedMessage an optional cached message that will immediately be sent as a KaleidescapeMessageEvent
+     *
+     * @throws KaleidescapeException - In case of any problem
+     */
+    public void sendCommand(@Nullable String cmd, @Nullable String cachedMessage) throws KaleidescapeException {
+        // if sent a cachedMessage, just send out an event with the data so KaleidescapeMessageHandler will process it
+        if (cachedMessage != null) {
+            logger.debug("Command: '{}' returning cached value: '{}'", cmd, cachedMessage);
+            // change GET_SOMETHING into SOMETHING and special case GET_PLAYING_TITLE_NAME into TITLE_NAME
+            dispatchKeyValue(cmd.replace("GET_", "").replace("PLAYING_TITLE_NAME", "TITLE_NAME"), cachedMessage, true);
+            return;
+        }
+
         String messageStr = BEGIN_CMD + cmd + END_CMD;
 
         logger.debug("Send command {}", messageStr);
@@ -226,24 +246,25 @@ public abstract class KaleidescapeConnector {
 
             Matcher matcher = pattern.matcher(message);
             if (matcher.find()) {
-                dispatchKeyValue(matcher.group(3), matcher.group(4));
+                dispatchKeyValue(matcher.group(3), matcher.group(4), false);
             } else {
                 logger.debug("no match on message: {}", message);
                 if (message.contains(KaleidescapeBindingConstants.STANDBY_MSG)) {
-                    dispatchKeyValue(KaleidescapeBindingConstants.STANDBY_MSG, "");
+                    dispatchKeyValue(KaleidescapeBindingConstants.STANDBY_MSG, "", false);
                 }
             }
         }
     }
 
     /**
-     * Dispatch an event (key, value) to the event listeners
+     * Dispatch an event (key, value, isCached) to the event listeners
      *
      * @param key the key
      * @param value the value
+     * @param isCached indicates if this event was generated from a cached value
      */
-    private void dispatchKeyValue(String key, String value) {
-        KaleidescapeMessageEvent event = new KaleidescapeMessageEvent(this, key, value);
+    private void dispatchKeyValue(String key, String value, boolean isCached) {
+        KaleidescapeMessageEvent event = new KaleidescapeMessageEvent(this, key, value, isCached);
         listeners.forEach(l -> l.onNewMessageEvent(event));
     }
 }

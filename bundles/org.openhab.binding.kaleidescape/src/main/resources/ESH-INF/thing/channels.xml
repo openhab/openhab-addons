@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Kaleidescape Movie Player Thing -->
+	<!-- Kaleidescape Movie Player (Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen) Thing -->
 	<thing-type id="player">
-		<label>Kaleidescape</label>
+		<label>Kaleidescape Player</label>
 		<description>
-			A Movie Player Zone in a Kaleidescape System
+			A Kaleidescape Movie Player (KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen)
 		</description>
 
 		<channel-groups>
@@ -35,57 +35,101 @@
 			<property name="Protocol Version">unknown</property>
 		</properties>
 
-		<config-description>
-			<parameter name="componentType" type="text" required="true">
-				<label>Component Type</label>
-				<description>Choose type of Kaleidescape component</description>
-				<limitToOptions>true</limitToOptions>
-				<options>
-					<option value="Player">Premiere (Any KPlayer, M Class [M300, M500, M700]) or Cinema One 1st Gen</option>
-					<option value="Cinema One">Cinema One 2nd Gen</option>
-					<option value="Alto">Alto</option>
-					<option value="Strato">Strato</option>
-				</options>
-				<default>Player</default>
-			</parameter>
-			<parameter name="host" type="text" required="false">
-				<context>network-address</context>
-				<label>Address</label>
-				<description>Host Name or IP Address of the Kaleidescape component.</description>
-			</parameter>
-			<parameter name="port" type="integer" min="1" max="65535" required="false">
-				<label>Port</label>
-				<description>Communication Port for IP Connection to the Kaleidescape component.</description>
-				<default>10000</default>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="serialPort" type="text" required="false">
-				<context>serial-port</context>
-				<label>Serial Port</label>
-				<description>(Optional) Serial Port to use for connecting directly to an individual Kaleidescape component.</description>
-				<advanced>true</advanced>
-			</parameter>
-			<parameter name="updatePeriod" type="integer" min="0" max="1" unit="s" required="false">
-				<label>Update Period</label>
-				<description>Tells the component how often time status updates should be sent; Values greater than 1 are not yet
-					implmented by the protocol. Setting to 1 may impact openHAB system performance due
-					to constant updates while content
-					playing.</description>
-				<default>0</default>
-			</parameter>
-			<parameter name="volumeEnabled" type="boolean" required="false">
-				<label>Volume Control Enabled</label>
-				<description>Enable the Volume and Mute controls in the Kaleidescape iPad &amp; Phone apps and track their status in
-					the binding. Disabled by default to prevent conflicts with other control systems that may already be controlling
-					volume on this zone.</description>
-				<default>false</default>
-			</parameter>
-			<parameter name="initialVolume" type="integer" min="0" max="75" unit="%" required="false">
-				<label>Initial Volume Setting</label>
-				<description>When the binding starts up, set the Inital Volume level to this value (Default 25).</description>
-				<default>25</default>
-			</parameter>
-		</config-description>
+		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
+	</thing-type>
+
+	<!-- Kaleidescape Cinema One (2nd Generation) Thing -->
+	<thing-type id="cinemaone">
+		<label>Kaleidescape Cinema One (2nd Generation)</label>
+		<description>
+			A Kaleidescape Cinema One (2nd Generation) Player
+		</description>
+
+		<channel-groups>
+			<channel-group id="ui" typeId="c1-alto_ui">
+				<label>User Interface</label>
+				<description>Controls and Information for the Cinema One's On Screen Interface</description>
+			</channel-group>
+			<channel-group id="music" typeId="music">
+				<label>Music Zone</label>
+				<description>Controls and Information for the Cinema One's Music Zone</description>
+			</channel-group>
+			<channel-group id="detail" typeId="detail">
+				<label>Content Details</label>
+				<description>Contains Metadata About a Selected Item</description>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="Component Type">unknown</property>
+			<property name="Friendly Name">unknown</property>
+			<property name="Serial Number">unknown</property>
+			<property name="Control Protocol ID">unknown</property>
+			<property name="System Version">unknown</property>
+			<property name="Protocol Version">unknown</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
+	</thing-type>
+
+	<!-- Kaleidescape Alto Thing -->
+	<thing-type id="alto">
+		<label>Kaleidescape Alto</label>
+		<description>
+			A Kaleidescape Alto Player
+		</description>
+
+		<channel-groups>
+			<channel-group id="ui" typeId="c1-alto_ui">
+				<label>User Interface</label>
+				<description>Controls and Information for the Alto's On Screen Interface</description>
+			</channel-group>
+			<channel-group id="detail" typeId="alto-strato_detail">
+				<label>Content Details</label>
+				<description>Contains Metadata About a Selected Item</description>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="Component Type">unknown</property>
+			<property name="Friendly Name">unknown</property>
+			<property name="Serial Number">unknown</property>
+			<property name="Control Protocol ID">unknown</property>
+			<property name="System Version">unknown</property>
+			<property name="Protocol Version">unknown</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
+	</thing-type>
+
+	<!-- Kaleidescape Strato Thing -->
+	<thing-type id="strato">
+		<label>Kaleidescape Strato</label>
+		<description>
+			A Kaleidescape Strato Player
+		</description>
+
+		<channel-groups>
+			<channel-group id="ui" typeId="strato_ui">
+				<label>User Interface</label>
+				<description>Controls and Information for the Strato's On Screen Interface</description>
+			</channel-group>
+			<channel-group id="detail" typeId="alto-strato_detail">
+				<label>Content Details</label>
+				<description>Contains Metadata About a Selected Item</description>
+			</channel-group>
+		</channel-groups>
+
+		<properties>
+			<property name="Component Type">unknown</property>
+			<property name="Friendly Name">unknown</property>
+			<property name="Serial Number">unknown</property>
+			<property name="Control Protocol ID">unknown</property>
+			<property name="System Version">unknown</property>
+			<property name="Protocol Version">unknown</property>
+		</properties>
+
+		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
 	</thing-type>
 
 	<channel-group-type id="ui">
@@ -111,6 +155,81 @@
 			<channel id="video_mode" typeId="video_mode"/>
 			<channel id="video_mode_composite" typeId="video_mode_composite"/>
 			<channel id="video_mode_component" typeId="video_mode_component"/>
+			<channel id="video_mode_hdmi" typeId="video_mode_hdmi"/>
+			<channel id="scale_mode" typeId="scale_mode"/>
+			<channel id="screen_mask" typeId="screen_mask"/>
+			<channel id="screen_mask2" typeId="screen_mask2"/>
+			<channel id="cinemascape_mask" typeId="cinemascape_mask"/>
+			<channel id="cinemascape_mode" typeId="cinemascape_mode"/>
+			<channel id="ui_state" typeId="ui_state"/>
+			<channel id="child_mode_state" typeId="child_mode_state"/>
+			<channel id="highlighted_selection" typeId="highlighted_selection"/>
+			<channel id="user_defined_event" typeId="user_defined_event"/>
+			<channel id="user_input" typeId="user_input"/>
+			<channel id="user_input_prompt" typeId="user_input_prompt"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- C1/Alto UI channels (remove analog video channels and add readiness_state) -->
+	<channel-group-type id="c1-alto_ui">
+		<label>User Interface</label>
+		<description>Controls and information for the player's on screen interface</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="control" typeId="movie_control"/>
+			<channel id="title_name" typeId="title_name"/>
+			<channel id="play_mode" typeId="movie_play_mode"/>
+			<channel id="play_speed" typeId="movie_play_speed"/>
+			<channel id="title_num" typeId="title_num"/>
+			<channel id="title_length" typeId="title_length"/>
+			<channel id="title_loc" typeId="title_loc"/>
+			<channel id="chapter_num" typeId="chapter_num"/>
+			<channel id="chapter_length" typeId="chapter_length"/>
+			<channel id="chapter_loc" typeId="chapter_loc"/>
+			<channel id="movie_media_type" typeId="movie_media_type"/>
+			<channel id="movie_location" typeId="movie_location"/>
+			<channel id="aspect_ratio" typeId="aspect_ratio"/>
+			<channel id="video_mode" typeId="video_mode"/>
+			<channel id="video_mode_hdmi" typeId="video_mode_hdmi"/>
+			<channel id="scale_mode" typeId="scale_mode"/>
+			<channel id="screen_mask" typeId="screen_mask"/>
+			<channel id="screen_mask2" typeId="screen_mask2"/>
+			<channel id="cinemascape_mask" typeId="cinemascape_mask"/>
+			<channel id="cinemascape_mode" typeId="cinemascape_mode"/>
+			<channel id="ui_state" typeId="ui_state"/>
+			<channel id="child_mode_state" typeId="child_mode_state"/>
+			<channel id="readiness_state" typeId="readiness_state"/>
+			<channel id="highlighted_selection" typeId="highlighted_selection"/>
+			<channel id="user_defined_event" typeId="user_defined_event"/>
+			<channel id="user_input" typeId="user_input"/>
+			<channel id="user_input_prompt" typeId="user_input_prompt"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Strato UI channels (add *color channels for 4K/HDR info) -->
+	<channel-group-type id="strato_ui">
+		<label>User Interface</label>
+		<description>Controls and information for the player's on screen interface</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="control" typeId="movie_control"/>
+			<channel id="title_name" typeId="title_name"/>
+			<channel id="play_mode" typeId="movie_play_mode"/>
+			<channel id="play_speed" typeId="movie_play_speed"/>
+			<channel id="title_num" typeId="title_num"/>
+			<channel id="title_length" typeId="title_length"/>
+			<channel id="title_loc" typeId="title_loc"/>
+			<channel id="chapter_num" typeId="chapter_num"/>
+			<channel id="chapter_length" typeId="chapter_length"/>
+			<channel id="chapter_loc" typeId="chapter_loc"/>
+			<channel id="movie_media_type" typeId="movie_media_type"/>
+			<channel id="movie_location" typeId="movie_location"/>
+			<channel id="aspect_ratio" typeId="aspect_ratio"/>
+			<channel id="video_mode" typeId="video_mode"/>
 			<channel id="video_mode_hdmi" typeId="video_mode_hdmi"/>
 			<channel id="video_color" typeId="video_color"/>
 			<channel id="video_color_eotf" typeId="video_color_eotf"/>
@@ -176,6 +295,28 @@
 			<channel id="country" typeId="country"/>
 			<channel id="aspect_ratio" typeId="aspect_ratio"/>
 			<channel id="disc_location" typeId="disc_location"/>
+		</channels>
+	</channel-group-type>
+
+	<!-- Detail channels for Alto/Strato (remove music specific and disc vault channels) -->
+	<channel-group-type id="alto-strato_detail">
+		<label>Content Details</label>
+		<description>Contains metadata about a selected item</description>
+		<channels>
+			<channel id="title" typeId="title"/>
+			<channel id="cover_art" typeId="cover_art"/>
+			<channel id="cover_url" typeId="cover_url"/>
+			<channel id="hires_cover_url" typeId="hires_cover_url"/>
+			<channel id="rating" typeId="rating"/>
+			<channel id="year" typeId="year"/>
+			<channel id="running_time" typeId="running_time"/>
+			<channel id="actors" typeId="actors"/>
+			<channel id="directors" typeId="directors"/>
+			<channel id="rating_reason" typeId="rating_reason"/>
+			<channel id="synopsis" typeId="synopsis"/>
+			<channel id="color_description" typeId="color_description"/>
+			<channel id="country" typeId="country"/>
+			<channel id="aspect_ratio" typeId="aspect_ratio"/>
 		</channels>
 	</channel-group-type>
 

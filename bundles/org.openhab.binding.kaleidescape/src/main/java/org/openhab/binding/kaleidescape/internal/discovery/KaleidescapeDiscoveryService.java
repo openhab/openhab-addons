@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.net.util.SubnetUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,10 +53,12 @@ import org.slf4j.LoggerFactory;
  * 
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.kaleidescape")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.kaleidescape")
 public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeDiscoveryService.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER_ZONE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
+            .unmodifiableSet(Stream.of(THING_TYPE_PLAYER, THING_TYPE_CINEMA_ONE, THING_TYPE_ALTO, THING_TYPE_STRATO)
+                    .collect(Collectors.toSet()));
 
     @Activate
     public KaleidescapeDiscoveryService() {
@@ -92,22 +96,21 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     /**
      * Create a new Thing with an IP address and Component type given. Uses default port.
      *
+     * @param thingTypeUid ThingTypeUID of detected Kaleidescape component.
      * @param ip IP address of the Kaleidescape component as a string.
-     * @param componentType Type of Kaleidescape component as a string.
      * @param friendlyName Name of Kaleidescape component as a string.
      * @param serialNumber Serial Number of Kaleidescape component as a string.
      */
-    public void submitDiscoveryResults(String ip, String componentType, String friendlyName, String serialNumber) {
-        ThingUID uid = new ThingUID(THING_TYPE_PLAYER_ZONE, serialNumber);
+    public void submitDiscoveryResults(ThingTypeUID thingTypeUid, String ip, String friendlyName, String serialNumber) {
+        ThingUID uid = new ThingUID(thingTypeUid, serialNumber);
 
         HashMap<String, Object> properties = new HashMap<>();
 
         properties.put("host", ip);
         properties.put("port", DEFAULT_API_PORT);
-        properties.put("componentType", componentType);
 
         thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withRepresentationProperty("host")
-                .withLabel(componentType + " (" + friendlyName + ")").build());
+                .withLabel(friendlyName).build());
     }
 
     /**

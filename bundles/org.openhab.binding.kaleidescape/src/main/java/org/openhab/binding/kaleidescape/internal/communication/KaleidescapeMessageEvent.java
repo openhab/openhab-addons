@@ -26,11 +26,13 @@ public class KaleidescapeMessageEvent extends EventObject {
     private static final long serialVersionUID = 1L;
     private final String key;
     private final String value;
+    private final boolean isCached;
 
-    public KaleidescapeMessageEvent(Object source, String key, String value) {
+    public KaleidescapeMessageEvent(Object source, String key, String value, boolean isCached) {
         super(source);
         this.key = key;
         this.value = value;
+        this.isCached = isCached;
     }
 
     public String getKey() {
@@ -39,5 +41,9 @@ public class KaleidescapeMessageEvent extends EventObject {
 
     public String getValue() {
         return value;
+    }
+
+    public boolean isCached() {
+        return isCached;
     }
 }
