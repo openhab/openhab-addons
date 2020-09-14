@@ -125,13 +125,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
     private void readVariableDefinition() {
         Type vMapType = new TypeToken<Map<String, HeliosVariable>>() {
         }.getType();
-        try {
-            InputStreamReader jsonFile = new InputStreamReader(
-                    getClass().getResourceAsStream(HeliosEasyControlsBindingConstants.VARIABLES_DEFINITION_FILE));
-            BufferedReader reader = new BufferedReader(jsonFile);
+        try (InputStreamReader jsonFile = new InputStreamReader(
+                getClass().getResourceAsStream(HeliosEasyControlsBindingConstants.VARIABLES_DEFINITION_FILE));
+                BufferedReader reader = new BufferedReader(jsonFile)) {
             this.variableMap = gson.fromJson(reader, vMapType);
-            reader.close();
-            jsonFile.close();
         } catch (IOException e) {
             this.handleError("Error reading variable definition file", ThingStatusDetail.CONFIGURATION_ERROR);
         }
@@ -514,7 +511,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             logger.warn("{} encountered Exception when trying to set system date: {}",
                     HeliosEasyControlsHandler.class.getSimpleName(), e.getMessage());
         }
-
     }
 
     protected void setSysDateTime() {
@@ -644,8 +640,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             return null;
         }
     }
-
-    // TODO: Set date, time and UTC delta together => also additional channel required
 
     /**
      * Prepares the payload for the request
@@ -799,7 +793,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @param status The Thing's new status
      */
     private void handleError(String errorMsg, ThingStatusDetail status) {
-        // logger.warn("{}", errorMsg);
         updateStatus(ThingStatus.OFFLINE, status, errorMsg);
     }
 }

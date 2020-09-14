@@ -5,9 +5,9 @@ See https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-
 
 ## Supported Things
 
-| Thing                           | Description                                                |
-|---------------------------------|------------------------------------------------------------|
-| helios-ventilation-easycontrols | Helios Heat-Recovery Ventilation devices with easyControls |
+| Thing        | Description                                                |
+|--------------|------------------------------------------------------------|
+| easycontrols | Helios Heat-Recovery Ventilation devices with easyControls |
 
 ## Configuration
 

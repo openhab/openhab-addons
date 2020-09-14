@@ -43,60 +43,60 @@
 		<channels>
 			<!-- General Status Infos -->
 			<channel id="preHeaterStatus" typeId="onOff">
-		        <label>Pre-Heater Status</label>
-		        <description>Pre-Heater Status</description>
+				<label>Pre-Heater Status</label>
+				<description>Pre-Heater Status</description>
 			</channel>
 			<channel id="bypassStatus" typeId="bypassStatus"/>
 			<!-- Temperatures -->
 			<channel id="nhzDuctSensor" typeId="temperature">
-			    <label>After Heater Duct Temperature</label>
+				<label>After Heater Duct Temperature</label>
 			</channel>
 			<channel id="nhzReturnSensor" typeId="temperature">
-			    <label>After Heater Return Temperature</label>
+				<label>After Heater Return Temperature</label>
 			</channel>
 			<channel id="vhzDuctSensor" typeId="temperature">
-			    <label>Pre-Heater Duct Temperature</label>
+				<label>Pre-Heater Duct Temperature</label>
 			</channel>
 			<channel id="temperatureOutsideAir" typeId="temperature">
-			    <label>Outside Air Temperature</label>
+				<label>Outside Air Temperature</label>
 			</channel>
 			<channel id="temperatureSupplyAir" typeId="temperature">
-                <label>Supply Air Temperature</label>
+				<label>Supply Air Temperature</label>
 			</channel>
 			<channel id="temperatureOutgoingAir" typeId="temperature">
-                <label>Outgoing Air Temperature</label>
-            </channel>
+				<label>Outgoing Air Temperature</label>
+			</channel>
 			<channel id="temperatureExtractAir" typeId="temperature">
-                <label>Extract Air Temperature</label>
+				<label>Extract Air Temperature</label>
 			</channel>
 			<!-- RPM -->
 			<channel id="supplyAirRpm" typeId="rpm">
-                <label>Supply Air Fan RPM</label>
+				<label>Supply Air Fan RPM</label>
 			</channel>
 			<channel id="extractAirRpm" typeId="rpm">
-                <label>Extract Air Fan RPM</label>
+				<label>Extract Air Fan RPM</label>
 			</channel>
 			<!-- Filter Change -->
 			<channel id="filterChangeRemainingTime" typeId="filterChangeRemainingTime"/>
 			<!-- Operating Hours -->
 			<channel id="operatingHoursSupplyAirVent" typeId="operatingHours">
-                <label>Operating Hours Supply Air Fan</label>
+				<label>Operating Hours Supply Air Fan</label>
 			</channel>
 			<channel id="operatingHoursExtractAirVent" typeId="operatingHours">
-                <label>Operating Hours Extract Air Fan</label>
+				<label>Operating Hours Extract Air Fan</label>
 			</channel>
 			<channel id="operatingHoursVhz" typeId="operatingHours">
-                <label>Operating Hours Pre-Heater</label>
+				<label>Operating Hours Pre-Heater</label>
 			</channel>
 			<channel id="operatingHoursNhz" typeId="operatingHours">
-                <label>Operating Hours After Heater</label>
+				<label>Operating Hours After Heater</label>
 			</channel>
 			<!-- Power -->
 			<channel id="outputPowerVhz" typeId="outputPower">
-                <label>Output Power Pre-Heater</label>
+				<label>Output Power Pre-Heater</label>
 			</channel>
 			<channel id="outputPowerNhz" typeId="outputPower">
-                <label>Output Power After Heater</label>
+				<label>Output Power After Heater</label>
 			</channel>
 			<!-- Infos / Warnings / Errors -->
 			<channel id="errors" typeId="errors"/>
@@ -114,12 +114,12 @@
 			<channel id="summerWinter" typeId="summerWinter"/>
 			<!-- Software / Firmware -->
 			<channel id="autoSwUpdate" typeId="enableDisable">
-			    <label>Automatic SW Updates</label>
-                <description>Indicates if automatic software updates are enabled</description>
+				<label>Automatic SW Updates</label>
+				<description>Indicates if automatic software updates are enabled</description>
 			</channel>
 			<channel id="accessHeliosPortal" typeId="enableDisable">
-			    <label>Access Helios Portal</label>
-                <description>Indicates if access to Helios portal is enabled</description>
+				<label>Access Helios Portal</label>
+				<description>Indicates if access to Helios portal is enabled</description>
 			</channel>
 		</channels>
 	</channel-group-type>
@@ -130,48 +130,48 @@
 		<channels>
 			<!-- Party Mode -->
 			<channel id="partyModeDuration" typeId="duration">
-		        <label>Party Mode Duration</label>
-		        <description>Party mode duration (in minutes)</description>
+				<label>Party Mode Duration</label>
+				<description>Party mode duration (in minutes)</description>
 			</channel>
 			<channel id="partyModeFanStage" typeId="fanStage">
-			    <label>Party Mode Fan Stage</label>
-                <description>Party mode fan stage</description>
+				<label>Party Mode Fan Stage</label>
+				<description>Party mode fan stage</description>
 			</channel>
 			<channel id="partyModeRemainingTime" typeId="remainingTime">
-		        <label>Party Mode Remaining Time</label>
-		        <description>Party mode remaining time</description>
+				<label>Party Mode Remaining Time</label>
+				<description>Party mode remaining time</description>
 			</channel>
 			<channel id="partyModeStatus" typeId="onOff">
-		        <label>Party Mode Status</label>
-		        <description>Party mode status</description>
-    		</channel>
+				<label>Party Mode Status</label>
+				<description>Party mode status</description>
+			</channel>
 			<!-- Standby Mode -->
 			<channel id="standbyModeDuration" typeId="duration">
-		        <label>Standby Mode Duration</label>
-		        <description>Standby mode duration (in minutes)</description>
-    		</channel>
+				<label>Standby Mode Duration</label>
+				<description>Standby mode duration (in minutes)</description>
+			</channel>
 			<channel id="standbyModeFanStage" typeId="fanStage">
-		        <label>Standby Mode Fan Stage</label>
-		        <description>Standby mode fan stage</description>
+				<label>Standby Mode Fan Stage</label>
+				<description>Standby mode fan stage</description>
 			</channel>
 			<channel id="standbyModeRemainingTime" typeId="remainingTime">
-		        <label>Standby Mode Remaining Time</label>
-		        <description>Standby mode remaining time</description>
+				<label>Standby Mode Remaining Time</label>
+				<description>Standby mode remaining time</description>
 			</channel>
 			<channel id="standbyModeStatus" typeId="onOff">
-		        <label>Standby Mode Status</label>
-		        <description>Standby mode status</description>
+				<label>Standby Mode Status</label>
+				<description>Standby mode status</description>
 			</channel>
 			<!-- Holiday Programme -->
 			<channel id="holidayProgramme" typeId="holidayProgramme"/>
 			<channel id="holidayProgrammeFanStage" typeId="fanStage"/>
 			<channel id="holidayProgrammeStart" typeId="date">
-		        <label>Holiday Programme Start</label>
-		        <description>Holiday programme start</description>
+				<label>Holiday Programme Start</label>
+				<description>Holiday programme start</description>
 			</channel>
 			<channel id="holidayProgrammeEnd" typeId="date">
-		        <label>Holiday Programme End</label>
-		        <description>Holiday programme end</description>
+				<label>Holiday Programme End</label>
+				<description>Holiday programme end</description>
 			</channel>
 			<channel id="holidayProgrammeInterval" typeId="holidayProgrammeInterval"/>
 			<channel id="holidayProgrammeActivationTime" typeId="holidayProgrammeActivationTime"/>
@@ -179,8 +179,8 @@
 			<channel id="operatingMode" typeId="operatingMode"/>
 			<channel id="fanStage" typeId="fanStage"/>
 			<channel id="percentageFanStage" typeId="percentage">
-		        <label>Percentage Fan Stage</label>
-		        <description>Fan stage in percent</description>
+				<label>Percentage Fan Stage</label>
+				<description>Fan stage in percent</description>
 			</channel>
 			<channel id="extractAirFanStage" typeId="fanStage"/>
 			<channel id="supplyAirFanStage" typeId="fanStage"/>
@@ -197,7 +197,7 @@
 			<channel id="bypassRoomTemperature" typeId="bypassRoomTemperature"/>
 			<channel id="bypassMinOutsideTemperature" typeId="bypassMinOutsideTemperature"/>
 			<channel id="bypassFrom" typeId="bypass"/>
-            <channel id="bypassTo" typeId="bypass"/>
+			<channel id="bypassTo" typeId="bypass"/>
 			<!-- Comfort Temperature -->
 			<channel id="comfortTemp" typeId="comfortTemp"/>
 			<!-- Error Output Function -->
@@ -255,8 +255,8 @@
 				<description>CO2 control status</description>
 			</channel>
 			<channel id="co2ControlSteps" typeId="ppmControlSteps">
-		        <label>CO2 Control Steps</label>
-		        <description>CO2 control steps (in ppm)</description>
+				<label>CO2 Control Steps</label>
+				<description>CO2 control steps (in ppm)</description>
 			</channel>
 			<!-- External CO2 Sensors -->
 			<channel id="externalSensorKwlCo21" typeId="sensorValue"/>
@@ -275,12 +275,12 @@
 		<description>Config of Sensors for VOC Control</description>
 		<channels>
 			<channel id="vocControlSetValue" typeId="ppmControlSetValue">
-			    <label>VOC Control Status</label>
-                <description>VOC control status</description>
+				<label>VOC Control Status</label>
+				<description>VOC control status</description>
 			</channel>
 			<channel id="vocControlSteps" typeId="ppmControlSteps">
-			    <label>CO2 Control Steps</label>
-                <description>CO2 control steps (in ppm)</description>
+				<label>CO2 Control Steps</label>
+				<description>CO2 control steps (in ppm)</description>
 			</channel>
 			<!-- External CO2 Sensors -->
 			<channel id="externalSensorKwlVoc1" typeId="sensorValue"/>
@@ -395,14 +395,6 @@
 		<description>Comfort temperature</description>
 		<category>Temperature</category>
 		<state min="10" max="25" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
-	</channel-type>
-
-	<channel-type id="timeZoneDifferenceToGmt" advanced="true">
-		<item-type>Number:Time</item-type>
-		<label>Time Zone Difference to GMT</label>
-		<description>Time zone difference to GMT</description>
-		<category>Time</category>
-		<state min="-12" max="14" step="1" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="duration" advanced="false">

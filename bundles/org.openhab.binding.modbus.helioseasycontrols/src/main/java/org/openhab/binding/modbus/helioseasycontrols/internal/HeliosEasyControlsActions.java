@@ -27,13 +27,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernhard Bauer - Initial contribution
  */
-@ThingActionsScope(name = "helios-ventilation-easycontrols")
+@ThingActionsScope(name = "modbus.helioseasycontrols")
 @NonNullByDefault
 public class HeliosEasyControlsActions implements ThingActions {
 
     private @Nullable HeliosEasyControlsHandler handler;
 
-    private final Logger logger = LoggerFactory.getLogger(HeliosEasyControlsHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HeliosEasyControlsActions.class);
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
