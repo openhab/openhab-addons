@@ -136,7 +136,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
     }
 
     private synchronized void discoverPS3() {
-        logger.debug("Trying to discover all PS3 devices that have \"Connect PS Vita System Using Network\" on.");
+        logger.trace("Trying to discover all PS3 devices that have \"Connect PS Vita System Using Network\" on.");
 
         InetAddress bcAddress = getBroadcastAdress();
         InetAddress localAddress = getIPv4Adress();
@@ -258,7 +258,7 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
                 : new ThingUID(THING_TYPE_PS4, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
-                .withRepresentationProperty(hostId).build();
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
         thingDiscovered(result);
         return true;
     }
@@ -336,41 +336,8 @@ public class PlayStationDiscovery extends AbstractDiscoveryService {
         ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
-                .withRepresentationProperty(hostId).build();
+                .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
         thingDiscovered(result);
-        return true;
-    }
-
-    private boolean parsePS3PacketOld(DatagramPacket packet) {
-        byte[] data = packet.getData();
-        logger.debug("PS3 data '{}', length:{}", data, packet.getLength());
-        String resp = new String(data, 0, 4);
-        if (!"RESP".equals(resp) || packet.getLength() < 156) {
-            return false;
-        }
-
-        String ipAddress = packet.getAddress().toString().split("/")[1];
-        String hostId = String.format("%02x%02x%02x%02x%02x%02x", data[10], data[11], data[12], data[13], data[14],
-                data[15]);
-        String hostName = new String(data, 16, 128);
-        String systemVersion = String.format("%d.%d", data[5], data[6]);
-        String unknown = new String(data, 144, 12);
-        logger.debug("PS3 discovered, unknown data '{}'", unknown);
-
-        String hwVersion = hwVersionFromHostId(hostId);
-        String modelID = modelNameFromHostTypeAndHWVersion("PS3", hwVersion);
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(IP_ADDRESS, ipAddress);
-        properties.put(Thing.PROPERTY_MODEL_ID, modelID);
-        properties.put(Thing.PROPERTY_HARDWARE_VERSION, hwVersion);
-        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, systemVersion);
-        properties.put(Thing.PROPERTY_MAC_ADDRESS, hostIdToMacAddress(hostId));
-        ThingUID uid = new ThingUID(THING_TYPE_PS3, hostId);
-
-        DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(hostName)
-                .build();
-        thingDiscovered(result);
-        logger.debug("Thing discovered '{}'", result);
         return true;
     }
 

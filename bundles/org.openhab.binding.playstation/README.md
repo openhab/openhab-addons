@@ -113,6 +113,6 @@ sitemap demo label="Main Menu"
 }
 ```
 
-## Any custom content here!
+## Caveat and Limitations!
 
 I tried my hardest to figure out how to turn on the PS3 through WakeOnLan but it looks like Sony never got it to work properly, the only way I've seen it turn on is via WiFi, but if you hook up your PS3 through WiFi to your router and enable WakeOnLan it turns itself on randomly.

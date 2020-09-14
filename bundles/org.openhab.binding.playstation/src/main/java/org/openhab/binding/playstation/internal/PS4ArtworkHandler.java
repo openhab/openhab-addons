@@ -129,7 +129,7 @@ public class PS4ArtworkHandler {
             } catch (FileNotFoundException ex) {
                 LOGGER.debug("Could not find {} in cache. {}", artworkFileInCache, ex.getMessage());
             } catch (IOException ex) {
-                LOGGER.info("Could not read {} from cache. {}", artworkFileInCache, ex.getMessage());
+                LOGGER.debug("Could not read {} from cache. {}", artworkFileInCache, ex.getMessage());
             }
             if (artwork != null) {
                 return artwork;
@@ -148,9 +148,9 @@ public class PS4ArtworkHandler {
                 LOGGER.debug("Caching artwork file {}", artworkFileInCache.getName());
                 fos.write(artwork.getBytes(), 0, artwork.getBytes().length);
             } catch (FileNotFoundException ex) {
-                LOGGER.info("Could not create {} in cache. {}", artworkFileInCache, ex.getMessage());
+                LOGGER.debug("Could not create {} in cache. {}", artworkFileInCache, ex.getMessage());
             } catch (IOException ex) {
-                LOGGER.info("Could not write {} to cache. {}", artworkFileInCache, ex.getMessage());
+                LOGGER.debug("Could not write {} to cache. {}", artworkFileInCache, ex.getMessage());
             }
         } else {
             LOGGER.debug("Could not download artwork file from {}", request);

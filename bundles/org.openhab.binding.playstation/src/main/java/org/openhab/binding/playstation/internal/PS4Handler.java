@@ -621,7 +621,6 @@ public class PS4Handler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Send packet exception: {}", e.getMessage());
         }
     }
 
@@ -738,7 +737,6 @@ public class PS4Handler extends BaseThingHandler {
 
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("RemoteKey exception: {}", e.getMessage());
         }
     }
 
