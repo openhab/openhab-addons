@@ -5,19 +5,19 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="current_consumption" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Current Consumption</label>
 		<description>Current energy consumption.</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="total_consumption" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
 		<description>Total energy consumption in device lifetime.</description>
 		<state pattern="%.6f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperature" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Device temperature.</description>
 		<state pattern="%.2f %unit%" readOnly="true"/>
