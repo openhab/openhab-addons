@@ -115,18 +115,4 @@ public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticip
             return null;
         }
     }
-
-    private DiscoveryResult createMotionSensor(final ThingUID thingUID, final ThingTypeUID thingType,
-            final ServiceInfo serviceInfo) {
-        final String host = serviceInfo.getHostAddresses()[0];
-        final String mac = serviceInfo.getPropertyString("mac");
-
-        final Map<String, Object> properties = new HashMap<>();
-        properties.put(IP_ADDRESS, host);
-
-        logger.debug("DCH-S150 found: {}", host);
-
-        return DiscoveryResultBuilder.create(thingUID).withThingType(thingType).withProperties(properties)
-                .withLabel("Motion Sensor (" + mac + ")").build();
-    }
 }
