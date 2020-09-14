@@ -10,7 +10,8 @@
 		<label>Virtual UPB Device</label>
 		<description>This pseudo-device is useful for switching scenes and receiving scene updates.
 			It does not correspond to
-			any physical device on the network.</description>
+			any physical device on the network.
+		</description>
 		<category>WallSwitch</category>
 
 		<channels>

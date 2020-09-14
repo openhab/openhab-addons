@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class SerialPIMHandler extends PIMHandler {
-    private static final int SERIAL_RECEIVE_TIMEOUT = 100;
+    private static final int SERIAL_RECEIVE_TIMEOUT_MS = 100;
     private static final int BAUD_RATE = 4800;
     private static final int SERIAL_PORT_OPEN_INIT_DELAY_MS = 500;
     private static final int SERIAL_PORT_OPEN_RETRY_DELAY_MS = 30_000;
@@ -137,7 +137,7 @@ public class SerialPIMHandler extends PIMHandler {
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
             try {
                 serialPort.enableReceiveThreshold(1);
-                serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT);
+                serialPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MS);
             } catch (final UnsupportedCommOperationException e) {
                 // ignore - not supported for RFC2217 ports
             }
