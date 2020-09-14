@@ -598,7 +598,6 @@ public class PS4Handler extends BaseThingHandler {
             }
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Send packet {} exception: {}", cmd, e.getMessage());
         }
     }
 
@@ -645,7 +644,6 @@ public class PS4Handler extends BaseThingHandler {
             login(channel);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Send packet exception: {}", e.getMessage());
         }
     }
 
@@ -667,7 +665,6 @@ public class PS4Handler extends BaseThingHandler {
             getConnection();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            logger.debug("Turn on PS4 exception: {}", e.getMessage());
         }
     }
 
