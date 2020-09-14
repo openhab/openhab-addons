@@ -109,8 +109,11 @@ public class ShellyComponents {
                             }
 
                             if (!thingHandler.areChannelsCreated()) {
-                                thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
-                                        .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                                // skip for Shelly Bulb: JSON has a meter, but values don't get updated
+                                if (!profile.isBulb) {
+                                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
+                                            .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                                }
                             }
 
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
