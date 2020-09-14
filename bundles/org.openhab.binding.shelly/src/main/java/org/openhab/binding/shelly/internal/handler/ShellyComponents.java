@@ -99,7 +99,7 @@ public class ShellyComponents {
                 if (!profile.isEMeter) {
                     for (ShellySettingsMeter meter : status.meters) {
                         Integer meterIndex = m + 1;
-                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report das flag
+                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report valid flag
                                                                          // correctly in white mode
                             String groupName = "";
                             if (profile.numMeters > 1) {
@@ -130,8 +130,8 @@ public class ShellyComponents {
                             }
                             thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
                                     getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
-                            m++;
                         }
+                        m++;
                     }
                 } else {
                     for (ShellySettingsEMeter emeter : status.emeters) {
@@ -164,15 +164,14 @@ public class ShellyComponents {
                                         getDecimal(emeter.pf));
                             }
 
+                            accumulatedWatts += getDouble(emeter.power);
+                            accumulatedTotal += getDouble(emeter.total) / 1000;
+                            accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
                             if (updated) {
-                                accumulatedWatts += getDouble(emeter.power);
-                                accumulatedTotal += getDouble(emeter.total) / 1000;
-                                accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
-
                                 thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
                             }
-                            m++;
                         }
+                        m++;
                     }
                 }
             } else {
