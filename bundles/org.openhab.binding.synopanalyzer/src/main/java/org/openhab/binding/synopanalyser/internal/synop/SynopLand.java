@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class SynopLand extends Synop {
-    private int rainfall = Constants.INITIAL_VALUE;
+    private int rainfall = INITIAL_VALUE;
 
     public SynopLand(List<String> stringArray) {
         super(stringArray);
@@ -37,26 +37,12 @@ public class SynopLand extends Synop {
                     if (rainfall >= 990) {
                         rainfall = 0;
                     }
-                } catch (NumberFormatException e) {
-                    // Silently catch;
+                } catch (NumberFormatException ignore) {
                 }
 
             }
         }
     }
-
-    /*
-     * @Override
-     * protected void setStationCode() {
-     * String temp;
-     * if (stringArray.size() < 3 || (temp = stringArray.get(2)).length() > 10
-     * || temp.contains(Constants.UNKNOWN_VALUE)) {
-     * return;
-     * }
-     * 
-     * stationCode = temp;
-     * }
-     */
 
     @Override
     protected void setHorizontalVisibilityInt() {
@@ -65,8 +51,7 @@ public class SynopLand extends Synop {
             if (isValidString(horizontalVisibility)) {
                 try {
                     horizontalVisibilityInt = Integer.parseInt(horizontalVisibility.substring(3, 5));
-                } catch (NumberFormatException e) {
-                    // Silently catch
+                } catch (NumberFormatException ignore) {
                 }
             }
         }

@@ -29,6 +29,42 @@ import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
  */
 @NonNullByDefault
 public abstract class Synop {
+    protected static final int INITIAL_VALUE = -1000;
+    protected static final char PLUS_SIGN_TEMPERATURE = '0';
+    protected static final char MINUS_SIGN_TEMPERATURE = '1';
+
+    /*
+     * WS - WIND SPEED
+     */
+    protected static final int WS_WILDTYPE_IN_MPS = 0;
+    protected static final int WS_ANEMOMETER_IN_MPS = 1;
+
+    /*
+     * HV - HORIZONTAL VISIBILITY [IN KILOMETERS]
+     * VALUES FROM "00" TO "50" AND FROM "56" TO "99"
+     * 00 MEANS HV = BELOW 0,1
+     * DECIMAL SCOPE MEANS HV = XX / 10
+     * UNIT SCOPE MEANS HV = XX - 50
+     * 89 MEANS HV = OVER 70
+     * 90-99 ROUGHLY NUMBERING :
+     * 90 - < 0,05 km
+     * 91 >= 0,05 < 0,2 km
+     * 92 >= 0,2 < 0,5 km
+     * 93 >= 0,5 < 1,0 km
+     * 94 >= 1,0 < 2,0 km
+     * 95 >= 2,0 < 4,0 km
+     * 96 >= 4,0 < 10,0 km
+     * 97 >= 10,0 < 20,0 km
+     * 98 >= 20,0 < 50,0 km
+     * 99 - > 50 km
+     * HP - high precision
+     */
+    protected static final int HV_LESS_THAN_1_LIMIT = 10;
+    protected static final int HV_LESS_THAN_10_LIMIT = 60;
+    protected static final int HV_LESS_THAN_50_LIMIT = 84;
+    protected static final int HV_LESS_THAN_1_HP_LIMIT = 93;
+    protected static final int HV_LESS_THAN_10_HP_LIMIT = 96;
+    protected static final int HV_LESS_THAN_50_HP_LIMIT = 98;
 
     public static enum Overcast {
         UNDEFINED,
@@ -49,8 +85,6 @@ public abstract class Synop {
 
     protected final List<String> stringArray;
 
-    // protected @Nullable String stationCode;
-
     private int year;
     private int month;
     private int day;
@@ -66,7 +100,7 @@ public abstract class Synop {
     private int windSpeed;
     private float pressure;
 
-    protected int horizontalVisibilityInt = Constants.INITIAL_VALUE;
+    protected int horizontalVisibilityInt = INITIAL_VALUE;
     protected @Nullable String temperatureString;
     protected @Nullable String windString;
     protected @Nullable String pressureString;
@@ -80,8 +114,6 @@ public abstract class Synop {
         setWindAndOvercast();
         setPressure();
     }
-
-    // protected abstract void setStationCode();
 
     private void setDateHourAndWindIndicator() {
         String dayHourAndWindIndicator = "";
@@ -104,12 +136,12 @@ public abstract class Synop {
         try {
             hour = Integer.parseInt(str.substring(2, 4));
         } catch (NumberFormatException e) {
-            hour = Constants.INITIAL_VALUE;
+            hour = INITIAL_VALUE;
         }
         try {
             day = Integer.parseInt(str.substring(0, 2));
         } catch (NumberFormatException e) {
-            day = Constants.INITIAL_VALUE;
+            day = INITIAL_VALUE;
         }
     }
 
@@ -117,23 +149,22 @@ public abstract class Synop {
         try {
             windIndicator = Character.getNumericValue(str.charAt(4));
         } catch (NumberFormatException e) {
-            windIndicator = Constants.INITIAL_VALUE;
+            windIndicator = INITIAL_VALUE;
         }
     }
 
     private void setHorizontalVisibility() {
         setHorizontalVisibilityInt();
 
-        if (horizontalVisibilityInt != Constants.INITIAL_VALUE) {
+        if (horizontalVisibilityInt != INITIAL_VALUE) {
 
-            if (horizontalVisibilityInt < Constants.HV_LESS_THAN_1_LIMIT
-                    || horizontalVisibilityInt < Constants.HV_LESS_THAN_1_HP_LIMIT) {
+            if (horizontalVisibilityInt < HV_LESS_THAN_1_LIMIT || horizontalVisibilityInt < HV_LESS_THAN_1_HP_LIMIT) {
                 horizontalVisibility = HorizontalVisibility.LESS_THAN_1;
-            } else if (horizontalVisibilityInt < Constants.HV_LESS_THAN_10_LIMIT
-                    || horizontalVisibilityInt < Constants.HV_LESS_THAN_10_HP_LIMIT) {
+            } else if (horizontalVisibilityInt < HV_LESS_THAN_10_LIMIT
+                    || horizontalVisibilityInt < HV_LESS_THAN_10_HP_LIMIT) {
                 horizontalVisibility = HorizontalVisibility.LESS_THAN_10;
-            } else if (horizontalVisibilityInt < Constants.HV_LESS_THAN_50_LIMIT
-                    || horizontalVisibilityInt < Constants.HV_LESS_THAN_50_HP_LIMIT) {
+            } else if (horizontalVisibilityInt < HV_LESS_THAN_50_LIMIT
+                    || horizontalVisibilityInt < HV_LESS_THAN_50_HP_LIMIT) {
                 horizontalVisibility = HorizontalVisibility.LESS_THAN_50;
             } else {
                 horizontalVisibility = HorizontalVisibility.MORE_THAN_50;
@@ -147,16 +178,15 @@ public abstract class Synop {
 
     private void setTemperature() {
         setTemperatureString();
-        temperature = Constants.INITIAL_VALUE;
+        temperature = INITIAL_VALUE;
         String temperatureString = this.temperatureString;
         if (temperatureString != null) {
             char firstChar = temperatureString.charAt(0);
             try {
                 float temp = Float.parseFloat(temperatureString.substring(1, 4)) / 10;
-                temperature = firstChar == Constants.PLUS_SIGN_TEMPERATURE ? temp
-                        : firstChar == Constants.MINUS_SIGN_TEMPERATURE ? -temp : Constants.INITIAL_VALUE;
-            } catch (NumberFormatException e) {
-                // Silently catch it
+                temperature = firstChar == PLUS_SIGN_TEMPERATURE ? temp
+                        : firstChar == MINUS_SIGN_TEMPERATURE ? -temp : INITIAL_VALUE;
+            } catch (NumberFormatException ignore) {
             }
         }
     }
@@ -176,8 +206,8 @@ public abstract class Synop {
             }
         } else {
             overcast = Overcast.UNDEFINED;
-            windDirection = Constants.INITIAL_VALUE;
-            windSpeed = Constants.INITIAL_VALUE;
+            windDirection = INITIAL_VALUE;
+            windSpeed = INITIAL_VALUE;
         }
     }
 
@@ -202,12 +232,12 @@ public abstract class Synop {
             String windDirectionString = windString.substring(1, 3);
 
             if (windDirectionString.equals("99") || windDirectionString.equals("||")) {
-                windDirection = Constants.INITIAL_VALUE;
+                windDirection = INITIAL_VALUE;
             } else {
                 try {
                     windDirection = Integer.parseInt(windDirectionString) * 10;
                 } catch (NumberFormatException e) {
-                    windDirection = Constants.INITIAL_VALUE;
+                    windDirection = INITIAL_VALUE;
                 }
             }
         }
@@ -220,7 +250,7 @@ public abstract class Synop {
             try {
                 windSpeed = Integer.parseInt(speedString);
             } catch (NumberFormatException e) {
-                windSpeed = Constants.INITIAL_VALUE;
+                windSpeed = INITIAL_VALUE;
             }
         }
     }
@@ -241,7 +271,7 @@ public abstract class Synop {
             try {
                 pressure = (float) Integer.parseInt(pressureTemp) / 10;
             } catch (NumberFormatException e) {
-                pressure = Constants.INITIAL_VALUE;
+                pressure = INITIAL_VALUE;
             }
         }
     }
@@ -251,16 +281,6 @@ public abstract class Synop {
     protected boolean isValidString(String str) {
         return (str.length() == VALID_STRING_LENGTH);
     }
-
-    /*
-     * public Optional<String> getStationCode() {
-     * if (stationCode != null) {
-     * return Optional.of(stationCode);
-     * } else {
-     * return Optional.empty();
-     * }
-     * }
-     */
 
     public int getYear() {
         return year;
@@ -311,17 +331,9 @@ public abstract class Synop {
     }
 
     public Unit<Speed> getWindUnit() {
-        return (getWindIndicator() == Constants.WS_WILDTYPE_IN_MPS
-                || getWindIndicator() == Constants.WS_ANEMOMETER_IN_MPS) ? SmartHomeUnits.METRE_PER_SECOND
-                        : SmartHomeUnits.KNOT;
-    }
-
-    public String getWindSource() {
-        if (getWindIndicator() == Constants.WS_WILDTYPE_IN_MPS || getWindIndicator() == Constants.WS_WILDTYPE_IN_KNOT) {
-            return "estimated";
-        } else {
-            return "anemometer";
-        }
+        return (getWindIndicator() == WS_WILDTYPE_IN_MPS || getWindIndicator() == WS_ANEMOMETER_IN_MPS)
+                ? SmartHomeUnits.METRE_PER_SECOND
+                : SmartHomeUnits.KNOT;
     }
 
 }

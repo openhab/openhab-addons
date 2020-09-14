@@ -19,13 +19,19 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.i18n.LocationProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import com.google.gson.Gson;
 
 /**
  * The {@link SynopAnalyzerHandlerFactory} is responsible for creating things and thing
@@ -39,6 +45,17 @@ import org.osgi.service.component.annotations.Component;
 public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SYNOP);
+    private final LocationProvider locationProvider;
+    private final Gson gson;
+    private TimeZoneProvider timeZoneProvider;
+
+    @Activate
+    public SynopAnalyzerHandlerFactory(@Reference LocationProvider locationProvider,
+            @Reference TimeZoneProvider timeZoneProvider) {
+        this.locationProvider = locationProvider;
+        this.timeZoneProvider = timeZoneProvider;
+        this.gson = new Gson();
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -49,6 +66,8 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return thingTypeUID.equals(THING_SYNOP) ? new SynopAnalyzerHandler(thing) : null;
+        return thingTypeUID.equals(THING_SYNOP)
+                ? new SynopAnalyzerHandler(thing, gson, locationProvider, timeZoneProvider)
+                : null;
     }
 }

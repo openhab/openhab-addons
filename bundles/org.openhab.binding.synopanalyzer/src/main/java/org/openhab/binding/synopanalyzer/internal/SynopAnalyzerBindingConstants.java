@@ -32,8 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class SynopAnalyzerBindingConstants {
-
-    public static final String BINDING_ID = "synopanalyzer";
+    private static final String BINDING_ID = "synopanalyzer";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_SYNOP = new ThingTypeUID(BINDING_ID, "synopanalyzer");
@@ -55,11 +54,10 @@ public class SynopAnalyzerBindingConstants {
     public static final Unit<Temperature> TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Pressure> PRESSURE_UNIT = HECTO(SIUnits.PASCAL);
     public static final Unit<Angle> WIND_DIRECTION_UNIT = SmartHomeUnits.DEGREE_ANGLE;
-    public static final String[] WIND_DIRECTIONS = new String[] { "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S",
-            "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW" };
 
     // Synop message origin station codes
     public static final String LAND_STATION_CODE = "AAXX";
     public static final String SHIP_STATION_CODE = "BBXX";
     public static final String MOBILE_LAND_STATION_CODE = "OOXX";
+
 }
