@@ -52,7 +52,6 @@ import org.openhab.binding.dreamscreen.internal.message.SceneMessage;
 import org.openhab.binding.dreamscreen.internal.message.SerialNumberMessage;
 import org.openhab.binding.dreamscreen.internal.model.DreamScreenMode;
 import org.openhab.binding.dreamscreen.internal.model.DreamScreenScene;
-import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,13 +59,13 @@ import org.slf4j.LoggerFactory;
  * The {@link DreamScreenBaseHandler} is responsible for handling DreamScreen commands
  *
  * @author Bruce Brouwer - Initial contribution
+ * @author Markus Michels - Adapted to 2.5.x
  */
 @NonNullByDefault
 public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(DreamScreenBaseHandler.class);
 
-    private @Nullable ServiceTracker<DreamScreenServer, DreamScreenServer> serverTracker;
-    public @Nullable DreamScreenServer server;
+    public final DreamScreenServer server;
     private Queue<DreamScreenMessage> writes = new ConcurrentLinkedQueue<>();
     private Queue<DreamScreenMessage> reads = new ConcurrentLinkedQueue<>();
     private @Nullable ScheduledFuture<?> sending;
@@ -75,7 +74,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     protected int serialNumber;
     private @Nullable InetAddress address;
     protected byte group = 0;
-    // private boolean powerOn;
+
     private byte mode = 0;
     private DreamScreenMode powerOnMode = VIDEO; // TODO: consider persisting this
     private byte ambientModeType = COLOR.ambientModeType;
@@ -92,13 +91,13 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         DreamScreenConfiguration config = getConfigAs(DreamScreenConfiguration.class);
+        logger.debug("Initializing {}", this.getThing().getUID());
+
         updateStatus(UNKNOWN);
         this.serialNumber = Integer.valueOf(config.serialNumber);
-        logger.debug("Initializing {}", this.serialNumber);
 
-        if (server != null) {
-            server.addHandler(this);
-        }
+        // Attach to the server
+        server.addHandler(this);
     }
 
     @Override

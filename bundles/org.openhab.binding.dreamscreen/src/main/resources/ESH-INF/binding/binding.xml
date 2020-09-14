@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/binding/v1.0.0 https://openhab.org/schemas/binding-1.0.0.xsd">
 
 	<name>DreamScreen Binding</name>
-	<description>This is the binding for DreamScreen.</description>
-	<author>Bruce Brouwer</author>
+	<description>This is the binding integrates the DreamScreen series of devices.</description>
+	<author>Markus Michels</author>
 
 </binding:binding>
