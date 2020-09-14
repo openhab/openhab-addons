@@ -49,6 +49,9 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -80,7 +83,8 @@ public abstract class DLinkHNAP {
     private String pin;
     private String url;
     private static final String USER = "admin";
-    private final HttpClient httpClient;
+    private HttpClient httpClient;
+
     private ScheduledFuture<?> pollFuture;
     private boolean invalidConfiguration = false;
     Authentication authentication;
@@ -108,13 +112,16 @@ public abstract class DLinkHNAP {
         public String cookie;
     }
 
+    @Activate
+    public void DLinkSmartHomeHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     public DLinkHNAP() {
-        httpClient = new HttpClient();
     }
 
     public void start(ScheduledExecutorService scheduler) {
         try {
-            httpClient.start();
             pollFuture = scheduler.scheduleWithFixedDelay(poller, 0, DETECT_POLL_S, TimeUnit.SECONDS);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
@@ -126,11 +133,6 @@ public abstract class DLinkHNAP {
     public void stop() {
         if (pollFuture != null) {
             pollFuture.cancel(true);
-        }
-        try {
-            httpClient.stop();
-        } catch (Exception e) {
-            logger.error("Failed to stop http client.");
         }
     }
 
