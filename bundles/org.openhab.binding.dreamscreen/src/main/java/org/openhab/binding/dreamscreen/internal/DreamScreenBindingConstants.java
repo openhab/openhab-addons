@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.dreamscreen.internal;
 
+import static java.util.stream.Collectors.toSet;
+
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
@@ -24,14 +29,19 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DreamScreenBindingConstants {
 
-    public static final String BINDING_ID = "dreamscreen";
+    private static final String BINDING_ID = "dreamscreen";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_DREAMSCREEN = new ThingTypeUID(BINDING_ID, "dreamScreen");
+    public static final ThingTypeUID THING_TYPE_4K = new ThingTypeUID(BINDING_ID, "4k");
+    public static final ThingTypeUID THING_TYPE_HD = new ThingTypeUID(BINDING_ID, "hd");
+    public static final ThingTypeUID THING_TYPE_SIDEKICK = new ThingTypeUID(BINDING_ID, "sidekick");
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(THING_TYPE_HD, THING_TYPE_4K, THING_TYPE_SIDEKICK).collect(toSet());
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_INPUT = "input";
+    public static final String CHANNEL_COLOR = "color";
 }

@@ -4,7 +4,13 @@ This binding integrates the DreamScreen TV light system
 
 ## Supported Things
 
-The only supported thing type is `dreamscreen`, which represents one DreamScreen controller. Sidekick devices are not supported.
+| Thing UID  | Description                 |
+|------------|-----------------------------|
+| hd         | DreamScreen HD Device       |
+| 4k         | DreamScreen 4k Device       |
+| sidekick   | DreamScreen Sidekick Device |
+
+Note: Sidekick support is primarily and not verified.
 
 ## Discovery
 
@@ -18,10 +24,10 @@ Various function of the DreamScreen could be controlled and status is reported.
 | Channel  | Type   | Description                                            |
 |----------|--------|--------------------------------------------------------|
 | power    | Switch | Switch power of the device on/off                      |
-| input    | String | Select input channel: 1, 2 or 3                        |
 | mode     | String | Switch the display mode: video, music or ambient       |
 | scene    | String | Switch the ambient display scene: one of color, random, fireside, twinkle, ocean, rainbow, july4,  holiday, pop, forest |
 | color    | Switch | Select the active color to use with the Color scene    |
+| input    | String | HD + 4k: Select input channel: 1, 2 or 3               |
 
 ## Full Example
 

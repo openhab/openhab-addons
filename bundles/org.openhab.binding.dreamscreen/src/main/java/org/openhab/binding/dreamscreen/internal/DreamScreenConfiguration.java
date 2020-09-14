@@ -21,5 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class DreamScreenConfiguration {
-    public String name = "";
+    public static final String SERIAL_NUMBER = "serialNumber";
+
+    public String serialNumber = "";
 }
