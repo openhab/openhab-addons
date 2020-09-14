@@ -64,21 +64,6 @@ import org.xml.sax.SAXException;
  * @author Pascal Bies - Initial contribution
  */
 public abstract class DLinkHNAP {
-
-    protected abstract void poll();
-
-    protected abstract void handleCommandAuthenticated(final ChannelUID channelUID, final Command command);
-
-    protected void updateStatus(ThingStatus status) {
-        updateStatus(status, ThingStatusDetail.NONE);
-    }
-
-    protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
-        updateStatus(status, detail, null);
-    }
-
-    protected abstract void updateStatus(ThingStatus status, ThingStatusDetail detail, final String message);
-
     private Logger logger = LoggerFactory.getLogger(DLinkHNAP.class);
     private String pin;
     private String url;
@@ -102,6 +87,20 @@ public abstract class DLinkHNAP {
         }
     };
 
+    protected abstract void poll();
+
+    protected abstract void handleCommandAuthenticated(final ChannelUID channelUID, final Command command);
+
+    protected void updateStatus(ThingStatus status) {
+        updateStatus(status, ThingStatusDetail.NONE);
+    }
+
+    protected void updateStatus(ThingStatus status, ThingStatusDetail detail) {
+        updateStatus(status, detail, null);
+    }
+
+    protected abstract void updateStatus(ThingStatus status, ThingStatusDetail detail, final String message);;
+
     private static class Authentication {
         public Authentication(final String privateKey, final String cookie) {
             this.privateKey = privateKey;
@@ -115,9 +114,6 @@ public abstract class DLinkHNAP {
     @Activate
     public void DLinkSmartHomeHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
         httpClient = httpClientFactory.getCommonHttpClient();
-    }
-
-    public DLinkHNAP() {
     }
 
     public void start(ScheduledExecutorService scheduler) {
@@ -218,7 +214,7 @@ public abstract class DLinkHNAP {
             final Document document = post(action, message, authentication);
             final String response = getElementByTagName(document, name);
             if (!"ok".equals(response.toLowerCase())) {
-                logger.error("Failed to set state.");
+                logger.warn("Failed to set state.");
             }
         } catch (SOAPException e) {
             logger.error("Unexpected internal error.");
