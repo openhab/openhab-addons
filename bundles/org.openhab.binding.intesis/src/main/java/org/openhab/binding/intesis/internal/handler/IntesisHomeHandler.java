@@ -207,7 +207,11 @@ public class IntesisHomeHandler extends BaseThingHandler {
                 case CHANNEL_TYPE_TARGETTEMP:
                     uid = 9;
                     if (command instanceof QuantityType) {
-                        value = ((QuantityType) command).toUnit(SIUnits.CELSIUS).intValue() * 10;
+                        QuantityType<?> newVal = (QuantityType<?>) command;
+                        newVal = newVal.toUnit(SIUnits.CELSIUS);
+                        if (newVal != null) {
+                            value = newVal.intValue() * 10;
+                        }
                     }
                     break;
             }
