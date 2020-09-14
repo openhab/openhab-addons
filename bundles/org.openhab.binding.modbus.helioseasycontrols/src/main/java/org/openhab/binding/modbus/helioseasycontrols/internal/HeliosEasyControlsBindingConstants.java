@@ -32,7 +32,7 @@ public class HeliosEasyControlsBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_HELIOS_VENTILATION_EASY_CONTROLS = new ThingTypeUID(BINDING_ID,
-            "helios-ventilation-easycontrols");
+            "helios-easycontrols");
 
     // List of all Channel IDs
     // -----------------------

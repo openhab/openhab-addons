@@ -5,9 +5,9 @@ See https://www.easycontrols.net/de/service/downloads/send/4-software/16-modbus-
 
 ## Supported Things
 
-| Thing        | Description                                                |
-|--------------|------------------------------------------------------------|
-| easycontrols | Helios Heat-Recovery Ventilation devices with easyControls |
+| Thing               | Description                                                |
+|---------------------|------------------------------------------------------------|
+| helios-easycontrols | Helios Heat-Recovery Ventilation devices with easyControls |
 
 ## Configuration
 
@@ -18,7 +18,7 @@ It's required to provide the device's IP address, port and unit ID (port and uni
 
 ```
 Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="x.x.x.x", port=502, id=180, enableDiscovery=true ] {
-    Thing helios-ventilation-easycontrols kwl "KWL"
+    Thing helios-easycontrols kwl "KWL"
 }
 ```
 
