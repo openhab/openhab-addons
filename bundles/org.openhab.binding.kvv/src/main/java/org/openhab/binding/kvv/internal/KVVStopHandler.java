@@ -66,7 +66,7 @@ public class KVVStopHandler extends BaseThingHandler {
 
     private synchronized void init(final boolean createChannels) {
         this.config = getConfigAs(KVVStopConfig.class);
-        if (config.stopId == "") {
+        if (config.stopId.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to get stop configuration");
             return;
@@ -129,7 +129,7 @@ public class KVVStopHandler extends BaseThingHandler {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(eta));
         }
         for (; i < maxTrains; i++) {
-            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), new StringType(""));
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), StringType.EMPTY);
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), new StringType(""));
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(""));
         }

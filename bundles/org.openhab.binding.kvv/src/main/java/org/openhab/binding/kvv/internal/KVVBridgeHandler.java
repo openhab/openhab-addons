@@ -63,7 +63,7 @@ public class KVVBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         this.config = getConfigAs(KVVBridgeConfig.class);
-        if (this.config.apiKey == "") {
+        if (this.config.apiKey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to get bridge configuration");
             return;
