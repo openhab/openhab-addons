@@ -16,6 +16,20 @@ Settings -> System Settings -> Connect PS Vita System Using Network.
 
 ## Thing Configuration
 
+**playstation4** parameters:
+
+| Property            | Default | Required | Description                                                              |
+|---------------------|---------|:--------:|--------------------------------------------------------------------------|
+| ipAddress           |         | Yes      | The IP address of the PlayStation 4                                      |
+| userCredential      |         | Yes      | A key used for authentication, get via PS4-waker.                        |
+| pairingCode         |         | Yes      | This is shown on the PlayStation 4 during pairing, only needed once.     |
+| passCode            |         | (Yes)    | If you use a code to log in your user on the PS4, set this.              |
+| connectionTimeout   |  60     | No       | How long the connection to the PS4 is kept up, seconds.                  |
+| autoConnect         |  false  | No       | If a connection should be establish to the PS4 when it's turned on.      |
+| artworkSize         |  320    | No       | Width and height of downloaded artwork.                                  |
+| outboundIP          |         | No       | Use this if your PS4 is not on the normal openHAB network.               |
+| ipPort              |  997    | No       | The port to probe the PS4 on, no need to change normally.                |
+
 If you want to control your PS4 the first thing you need is your user-credentials, this is a 64 characters HEX string that is easiest obtained by using PS4-waker https://github.com/dhleong/ps4-waker.
 The result file is called ".ps4-wake.credentials.json" in your home directory.
 
@@ -23,6 +37,12 @@ Then you need to pair your openHAB device with the PS4.
 This can be done by saving the Thing while the pairing screen is open on the PS4. The code is only needed during pairing.
 
 Then, if you have a pass code when you log in to your PS4 you have to specify that as well.
+
+**playstation3** parameters:
+
+| Property            | Default | Required | Description                                                              |
+|---------------------|---------|:--------:|--------------------------------------------------------------------------|
+| ipAddress           |         | Yes      | The IP address of the PlayStation 3                                      |
  
 
 ## Channels
