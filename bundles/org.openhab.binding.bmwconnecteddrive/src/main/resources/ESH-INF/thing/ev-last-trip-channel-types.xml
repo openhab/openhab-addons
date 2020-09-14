@@ -13,10 +13,10 @@
 	</channel-type>
 	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average kw/h Consumption for 100 km Last Trip</label>
+		<label>Average Power Consumption per 100 km</label>
 	</channel-type>
 	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average kw/h Recuperation for 100 km Last Trip</label>
+		<label>Average Power Recuperation for 100 km</label>
 	</channel-type>
 </thing:thing-descriptions>

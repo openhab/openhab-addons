@@ -40,10 +40,12 @@
 					<option value="METRIC">Metric</option>
 					<option value="IMPERIAL">Imperial</option>
 				</options>
+				<default>AUTODETECT</default>
 			</parameter>
 			<parameter name="imageSize" type="integer">
 				<label>Image Picture Size</label>
 				<description>Vehicle Image size for width and length</description>
+				<default>1024</default>
 			</parameter>
 			<parameter name="imageViewport" type="text">
 				<label>Image Viewport</label>
@@ -55,6 +57,7 @@
 					<option value="DASHBOARD">Dashboard View</option>
 					<option value="DRIVERDOOR">Driver Door View</option>
 				</options>
+				<default>FRONT</default>
 			</parameter>
 		</config-description>
 	</thing-type>

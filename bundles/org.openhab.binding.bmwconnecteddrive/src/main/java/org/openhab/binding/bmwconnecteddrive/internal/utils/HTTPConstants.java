@@ -21,6 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class HTTPConstants {
+    public static final int HTTP_TIMEOUT_SEC = 10;
+
     public static final String CONTENT_TYPE_URL_ENCODED = "application/x-www-form-urlencoded";
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String KEEP_ALIVE = "Keep-Alive";
@@ -37,4 +39,5 @@ public class HTTPConstants {
     public static final String ACCESS_TOKEN = "access_token";
     public static final String TOKEN_TYPE = "token_type";
     public static final String EXPIRES_IN = "expires_in";
+    public static final String CHUNKED = "chunked";
 }

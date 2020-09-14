@@ -176,9 +176,11 @@ public class VehicleHandler extends VehicleChannelHandler {
                     if (channelUID.getIdWithoutGroup().equals(IMAGE_VIEWPORT)) {
                         String newViewport = command.toString();
                         synchronized (imageProperties) {
-                            imageProperties = new ImageProperties(newViewport, imageProperties.size);
-                            imageCache = Optional.empty();
-                            proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                            if (!imageProperties.viewport.equals(newViewport)) {
+                                imageProperties = new ImageProperties(newViewport, imageProperties.size);
+                                imageCache = Optional.empty();
+                                proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                            }
                         }
                         updateState(imageViewportChannel, StringType.valueOf(newViewport));
                     }
@@ -188,9 +190,11 @@ public class VehicleHandler extends VehicleChannelHandler {
                         int newImageSize = ((DecimalType) command).intValue();
                         if (channelUID.getIdWithoutGroup().equals(IMAGE_SIZE)) {
                             synchronized (imageProperties) {
-                                imageProperties = new ImageProperties(imageProperties.viewport, newImageSize);
-                                imageCache = Optional.empty();
-                                proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                                if (imageProperties.size != newImageSize) {
+                                    imageProperties = new ImageProperties(imageProperties.viewport, newImageSize);
+                                    imageCache = Optional.empty();
+                                    proxy.get().requestImage(configuration.get(), imageProperties, imageCallback);
+                                }
                             }
                         }
                         updateState(imageSizeChannel, new DecimalType(newImageSize));

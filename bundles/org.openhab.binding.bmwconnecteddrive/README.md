@@ -31,9 +31,10 @@ The Bridge establishes the Connection between BMW ConnectedDrive Portal and open
 
 ### Things
 
-Four different Vehicle Types are provided. They differ in the supported Channel Groups & Channels. 
-While Conventional Fuel Vehicles have no "Charging Profile" Electric Vehicles don't provide a _fuel range_. 
-For Hybrid Vehicles _fuel range_ and _electric range_ is provided and in addition a _combined range_
+Four different Vehicle Types are provided. 
+They differ in the supported Channel Groups & Channels. 
+Conventional Fuel Vehicles have no _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
+For Hybrid Vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
  
 | Name                                | Thing Type ID | Supported Channel Groups                                   |
 |-------------------------------------|---------------|------------------------------------------------------------|
@@ -47,11 +48,11 @@ For Hybrid Vehicles _fuel range_ and _electric range_ is provided and in additio
 
 <img align="right" src="./doc/properties.png" width="600" height="400"/>
 
-For each Vehicle Properties are set with various informations. 
-They are especially handy to figure out the provided Services of your Vehicle. 
+Each Vehicle contains Properties. 
+They are especially handy to figure out the provided Services. 
 In the right picture you can see in _Activated Services_ e.g. the _DoorLock_ and _DoorUnlock_ Services are mentioned. 
-So you're sure that in Channel Group _Remote Services_ you are able to execute these commands.
-Also _LastDestinations_ is mentioned in _Supported Services_ so it's valid to connect Channel Group _Last Destinations_ in order to display the last 3 Navigation Destinations.
+So you're sure that in [Channel Group _Remote Services_](#channel-group-remote-services) you are able to execute these commands.
+Also _LastDestinations_ is mentioned in _Supported Services_ so it's valid to connect Channel Group [Last Destinations](#channel-group-destinations) in order to display the last 3 Navigation Destinations.
 
 Basically 3 Types of Information are registered as Properties
 
@@ -63,9 +64,9 @@ Basically 3 Types of Information are registered as Properties
 
 Auto Discovery is starting after you created the Bridge towards BMW ConnectedDrive. 
 A list of your registered Vehicles is queried and all found Vehicles are added in Inbox.
-As Unique Identifier the _Vehicle Identification Number_ (VIN) is used. 
-If you already predefined a Thing in *.things configuration with the same VIN the Discovery won't discover it again. 
-The Discovery still takes care updating the Properties of your Vehicle.
+Unique Identifier is the _Vehicle Identification Number_ (VIN). 
+If a Thing is already declared in a _*.things configuration_ Discovery won't highlight it again. 
+But it takes care updating the correct Properties.
 
 ## Configuration
 
@@ -85,14 +86,14 @@ The region Configuration has 3 different possibilities
 
 ### Things
 
-All Things are needing the same Configuration Data
+Same Configuration is needed for all Thingds
 
 | Parameter       | Type    | Description                           |           
 |-----------------|---------|---------------------------------------|
 | vin             | text    | Vehicle Identification Number (VIN)   |
 | refreshInterval | integer | Refresh Interval in Minutes           |
 | units           | text    | Unit Selection                        |
-| imageSize       | integer | Image Picture Size                    |
+| imageSize       | integer | Image Size                            |
 | imageViewport   | text    | Image Viewport                        |
 
 The units can be configured in 3 ways
@@ -118,7 +119,7 @@ The Channel Groups are different for the Vehicle Types, on the build in Sensors 
 
 ### Bridge Channels
 
-If your Vehicle isn't found in the Discovery force a log of Fingerprint Data which helps analyzing the problem.
+If your Vehicle isn't found in the Discovery force a log of Fingerprint Data which helps to analyze the problem.
 Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 | Channel Label         | Channel ID            | Type   | Description                                       |
@@ -138,19 +139,19 @@ Available for all Vehicles, Read-only.
 | Window Status             | status           | windows             | String        | Closed if all closed, else reports the Window which is still open    |
 | Doors Locked              | status           | lock                | String        | Status if Doors are locked or unlocked                               |
 | Next Service Date         | status           | service-date        | DateTime      | Date of Upcoming Service                                             |
-| Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                 |
+| Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                        |
 | Next Service Description  | status           | service-name        | String        | Description of Upcoming Service                                      |
 | Check Control             | status           | check-control       | String        | Description of actual Check Control message, Ok if none is activated |
-| Charging Status           | status           | charge              | String        | Only available for PHEV, BEV_REX and BEV 
-| Last Status Update        | status           | last-update         | DateTime      | Date and Time of last status updateDescription of actual Check Control message, Ok if none is activated |
+| Charging Status           | status           | charge              | String        | Only available for PHEV, BEV_REX and BEV                             |
+| Last Status Timestamp     | status           | last-update         | DateTime      | Date and Time of last status update.                                 |
 
 See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
 
 #### Channel Group _Range Data_
 
 Based on Vehicle Type (Thing Type ID) some Channels are presented or not. 
-For Conventional Fuel Vehicles the *Electric Range* isn't presented while for Battery Electric Vehicles *Range Fuel* isn't valid.
-Hybrid Vehicles have both and in addition *Hybrid Range*
+Conventional Fuel Vehicles don't provide *Electric Range* and Battery Electric Vehicles don't show *Range Fuel*.
+Hybrid Vehicles have both and in addition *Hybrid Range*.
 These are Read-only values.
 
 | Channel Label         | Channel Group ID | Channel ID            | Type                 | CONV | PHEV | BEV_REX | BEV |
@@ -165,7 +166,7 @@ These are Read-only values.
 | Electric Range Radius | range            | range-radius-electric | Number:Length        |      |  X   |    X    |  X  | 
 | Hybrid Range Radius   | range            | range-radius-hybrid   | Number:Length        |      |  X   |    X    |     | 
 
-See Description [Range vs. Range Radius](#range-vs.-range-radius) to get more information
+See Description [Range vs Range Radius](#range-vs-range-radius) to get more information
 
 #### Channel Group _Charge Profile_
 
@@ -202,33 +203,33 @@ These are Read-only values.
 
 #### Channel Group _Last Trip_
 
-Check in your Vehicle Thing Properties if *Statistics* is present in *Services Supported*
+Check in your [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
 These are Read-only values.
 
-| Channel Label               | Channel Group ID | Channel ID              | Type          | Description                                       |
-|-----------------------------|------------------|-------------------------|---------------|---------------------------------------------------|
-| Distance Driven             | last-trip        | distance                | Number:Length | Distance Driven on your Last Trip                 |
-| Distance since Last Charge  | last-trip        | distance-since-charging | Number:Length | Distance Driven since Last Charge                 |
-| Average Consumption         | last-trip        | average-consumption     | Number:Power  | Average Power Consumption on your Last Trip per 100 km |
-| Average Recuperation        | last-trip        | average-recuperation    | Number:Power  | Average Power Recuperation on your Last Trip per 100 km |
+| Channel Label                         | Channel Group ID | Channel ID              | Type          |
+|---------------------------------------|------------------|-------------------------|---------------|
+| Average Power Consumption per 100 km  | last-trip        | average-consumption     | Number:Power  |
+| Average Power Recuperation per 100 km | last-trip        | average-recuperation    | Number:Power  |
+| Last Trip Distance                    | last-trip        | distance                | Number:Length |
+| Distance since Last Charge            | last-trip        | distance-since-charging | Number:Length |
 
 
 #### Channel Group _Lifetime Statistics_
 
-Check in your Vehicle Thing Properties if *Statistics* is present in *Services Supported*
+Check in your [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
 These are Read-only values.
 
-| Channel Label                      | Channel Group ID | Channel ID               | Type          | Description                                       |
-|------------------------------------|------------------|--------------------------|---------------|---------------------------------------------------|
-| Average Consumption                | lifetime        | average-consumption       | Number:Power  | Average Power Consumption on your Last Trip per 100 km |
-| Distance since Last Charge         | lifetime        | average-recuperation      | Number:Power  | Average Power Recuperation on your Last Trip per 100 km |
-| Cumulated Electric Driven Distance | lifetime        | cumulated-driven-distance | Number:Length | Total Distance Driven with Electric Power       |
-| Longest Distance with one Charge   | lifetime        | single-longest-distance   | Number:Length | Longest Distance Driven with one single Charge      |
+| Channel Label                         | Channel Group ID | Channel ID               | Type          | 
+|---------------------------------------|------------------|--------------------------|---------------|
+| Average Power Consumption per 100 km  | lifetime        | average-consumption       | Number:Power  |
+| Average Power Recuperation per 100 km | lifetime        | average-recuperation      | Number:Power  |
+| Cumulated Electric Driven Distance    | lifetime        | cumulated-driven-distance | Number:Length |
+| Longest Distance with one Charge      | lifetime        | single-longest-distance   | Number:Length |
 
 
 #### Channel Group _Remote Services_
 
-Check in your Vehicle Thing Properties *Services Activated* which Remote Services are available
+Check in your [Vehicle Properties](#Properties) *Services Activated* which Remote Services are available
 Only one Remote Service can be executed each Time.
 Parallel execution isn't supported.
 The *Service Execution State* Channel is reporting the state.
@@ -246,7 +247,7 @@ State *Executed* is the final State when Execution is finished.
 
 #### Channel Group _Destinations_
 
-Check in your Vehicle Thing Properties if *LastDestinations* is present in *Services Supported*
+Check in your [Vehicle Properties](#Properties) if *LastDestinations* is present in *Services Supported*
 These are Read-only values.
 
 | Channel Label                        | Channel Group ID | Channel ID          | Type    | 
@@ -287,7 +288,7 @@ Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 ## Further Descriptions
 
-### Range vs. Range Radius
+### Range vs Range Radius
 
 <img align="right" src="./doc/range-radius.png" width="400" height="350"/>
 
@@ -295,7 +296,7 @@ You will observe differences in the Vehicle Range and Range Radius values.
 While Range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the Map.
 
 The right picture shows the distance between Kassel and Frankfurt in Germany. 
-While the Air-line Distance is ~ 145 Kilometer the Route Distance is ~ 192 Kilometer.
+While the Air-line Distance is ~145 Kilometer the Route Distance is ~192 Kilometer.
 So Range value is the normal remaining range.
 See the Section [OpenStreetMap](#openstreetMap-widget) how the Range Radius is used to indicate the reachable Range on Map.
 Please note this is just an indicator and the effective range, especially for Electric Vehicles, depends on many factors like driving style and electric consumers 
@@ -303,7 +304,7 @@ Please note this is just an indicator and the effective range, especially for El
 ### Last Status Update Timestamp
 
 There's a timestamp showing the last update of your Vehicle. If this isn't shown correctly please check the date settings.
-In case of Raspberry Pi execute _raspi-cinfig_, select _Localization Options_, the _Change Time Zone_
+In case of Raspberry Pi execute _raspi-config_, select _Localization Options_, the _Change Time Zone_
 Select your _Geaographical Area_ and afterwards the correct City.
 One restart of openHAB service with _systemctl restart openhab2_ is necessary in order to see the corrected Time Settings.
  
@@ -614,6 +615,7 @@ The Range Radius is needed in Meters so a small conversion is needed.
 The rules file is performing the calculations on startup and if the values are changing. 
 If the location of the Vehicle changes it will be shown in the Map
 
+#### Additional Items
 
 ```
 // Range Radius Items
@@ -626,6 +628,8 @@ String          i3Dest1LatLon          "Last Destination"
 String          i3Dest2LatLon          "Second Last Destination"
 String          i3Dest3LatLon          "Third Last Destination"
 ```
+
+#### Rules
 
 ```
 // Hybrid and Electric Range Radius plus Vehicle Coordinates
@@ -679,20 +683,17 @@ end
 
 ### Status Image
 
-<img align="right" src="./doc/ChargingImage.png" width="200" height="150"/>
-
-<img align="right" src="./doc/CheckControlImage.png" width="200" height="150"/>
-
-<img align="right" src="./doc/UnlockImage.png" width="200" height="150"/>
-
-<img align="right" src="./doc/AwayImage.png" width="200" height="150"/>
+<img align="right" alt="Status ok, Location is Away from Home" src="./doc/AwayImage.png" width="200" height="150"/>
+<img align="right" alt="Doors not locked, Car can be opened" src="./doc/UnlockedImage.png" width="200" height="150"/>
+<img align="right" alt="CheckControl activate. Check Car Dashboard." src="./doc/CheckControlImage.png" width="200" height="150"/>
+<img align="right" alt="Charging" src="./doc/ChargingImage.png" width="200" height="150"/>
 
 This Rule is aimed to improve the visibility of the Vehicle Status. 
 Therefore the Image is used to reflect _an overall status_ which can be identified at the first glance.
 As an example the Rule is reflecting the following status as Image
 
 * Side - Vehicle is charging
-* Driver Door - Doors are not locked
+* Driver Door - Doors are not locked => execute [Remote Service](#channel-group-remote-services) *Lock* 
 * Dashboard - Check Control Message is available
 * Front - Vehicle is at the _Home_ Location
 * Rear - Vehicle is away from _Home_ Location
@@ -721,7 +722,7 @@ rule "Image Status"
             val latitudeNumber = i3Latitude.state as Number
             val longitudeNumber = i3Longitude.state as Number
             // Home Location Range
-            if((50.55 < latitudeNumber.floatValue) && ( latitudeNumber.floatValue < 50.56) && (8.49 < longitudeNumber.floatValue) && (longitudeNumber.floatValue < 8.50) ) {
+            if((1.23 < latitudeNumber.floatValue) && ( latitudeNumber.floatValue < 1.24) && (3.21 < longitudeNumber.floatValue) && (longitudeNumber.floatValue < 3.22) ) {
                 logInfo("Vehicle Image","Home Location")
                 i3ImageViewport.sendCommand("FRONT")
             } else {

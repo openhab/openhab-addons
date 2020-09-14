@@ -23,14 +23,14 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 @NonNullByDefault
 public class VehicleConfiguration {
     /**
-     * Vehilce Identification Number (VIN)
+     * Vehicle Identification Number (VIN)
      */
     public String vin = Constants.EMPTY;
 
     /**
      * Data refresh rate in minutes
      */
-    public int refreshInterval = ConnectedDriveConstants.DEFAULT_IMAGE_SIZE;
+    public int refreshInterval = ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL;
 
     /**
      * Either Auto Detect Miles units (UK & US) or select Format directly
