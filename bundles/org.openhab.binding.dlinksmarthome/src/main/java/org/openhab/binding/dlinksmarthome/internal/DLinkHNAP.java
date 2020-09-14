@@ -77,15 +77,12 @@ public abstract class DLinkHNAP {
     SOAPFactory soapFactory;
     private static final int DETECT_POLL_S = 1;
 
-    private final Runnable poller = new Runnable() {
-        @Override
-        public void run() {
-            if (authenticate()) {
-                updateStatus(ThingStatus.ONLINE);
-                poll();
-            }
+    private void poller() {
+        if (authenticate()) {
+            updateStatus(ThingStatus.ONLINE);
+            poll();
         }
-    };
+    }
 
     protected abstract void poll();
 
@@ -118,7 +115,7 @@ public abstract class DLinkHNAP {
 
     public void start(ScheduledExecutorService scheduler) {
         try {
-            pollFuture = scheduler.scheduleWithFixedDelay(poller, 0, DETECT_POLL_S, TimeUnit.SECONDS);
+            pollFuture = scheduler.scheduleWithFixedDelay(this::poller, 0, DETECT_POLL_S, TimeUnit.SECONDS);
         } catch (Exception e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_INITIALIZING_ERROR,
                     "Unexpected internal error.");
