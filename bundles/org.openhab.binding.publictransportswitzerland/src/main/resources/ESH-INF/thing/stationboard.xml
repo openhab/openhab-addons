@@ -3,7 +3,10 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
+	<channel-type id="tsv" advanced="true">
+		<item-type>String</item-type>
+		<label>Tab Separated Time Table</label>
+	</channel-type>
 	<thing-type id="stationboard">
 		<label>Stationboard</label>
 		<description>Upcoming departures for a single station.</description>
