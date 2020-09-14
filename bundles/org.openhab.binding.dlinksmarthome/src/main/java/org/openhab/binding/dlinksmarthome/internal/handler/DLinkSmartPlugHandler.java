@@ -100,7 +100,7 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         hnap.reset();
     }
 
-    private State getCurrentConsuption() {
+    private State getCurrentConsumption() {
         return hnap.queryUnitState("GetCurrentPowerConsumption", "CurrentConsumption", "2", SmartHomeUnits.WATT);
     }
 
@@ -134,7 +134,7 @@ public class DLinkSmartPlugHandler extends BaseThingHandler {
         if (thing.getStatus().equals(ThingStatus.ONLINE)) {
             switch (channelID) {
                 case DLinkSmartHomeBindingConstants.CURRENT_CONSUMPTION:
-                    return getCurrentConsuption();
+                    return getCurrentConsumption();
                 case DLinkSmartHomeBindingConstants.TOTAL_CONSUMPTION:
                     return getTotalConsumption();
                 case DLinkSmartHomeBindingConstants.TEMPERATURE:
