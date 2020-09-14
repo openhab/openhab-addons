@@ -29,7 +29,7 @@
 	</channel-type>
 	<channel-type id="range-radius-electric-channel">
 		<item-type>Number:Length</item-type>
-		<label>ELectric Range Radius </label>
+		<label>Electric Range Radius </label>
 	</channel-type>
 	<channel-type id="range-radius-fuel-channel">
 		<item-type>Number:Length</item-type>

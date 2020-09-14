@@ -55,11 +55,10 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ConnectedDriveProxy {
     private final Logger logger = LoggerFactory.getLogger(ConnectedDriveProxy.class);
-    private static final int TIMEOUT_SEC = 10;
+    private final Token token = new Token();
     private HttpClient httpClient;
     private String authUri;
     private ConnectedDriveConfiguration configuration;
-    private Token token = new Token();
 
     // Connected Drive APIs
     // Base URL without VIN
@@ -80,7 +79,7 @@ public class ConnectedDriveProxy {
         httpClient = httpClientFactory.getCommonHttpClient();
         configuration = config;
         // generate URI for Authorization
-        // https://customer.bmwgroup.com/one/app/oauth.js
+        // see https://customer.bmwgroup.com/one/app/oauth.js
         StringBuffer uri = new StringBuffer();
         uri.append("https://customer.bmwgroup.com");
         if (BimmerConstants.SERVER_NORTH_AMERICA.equals(configuration.region)) {
@@ -93,36 +92,34 @@ public class ConnectedDriveProxy {
     }
 
     public synchronized void request(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
-        if (tokenUpdate()) {
-            final StringBuffer completeUrl = new StringBuffer(url);
-            if (params.isPresent()) {
-                String urlEncodedData = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
-                completeUrl.append("?").append(urlEncodedData);
-            }
-            Request req = httpClient.newRequest(completeUrl.toString());
-            req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
-            req.header(HttpHeader.AUTHORIZATION, token.getBearerToken());
-            req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
-                @NonNullByDefault({})
-                @Override
-                public void onComplete(org.eclipse.jetty.client.api.Result result) {
-                    if (result.getResponse().getStatus() != 200) {
-                        NetworkError error = new NetworkError();
-                        error.url = completeUrl.toString();
-                        error.status = result.getResponse().getStatus();
-                        error.reason = result.getResponse().getReason();
-                        logger.warn("{}", error.toString());
-                        callback.onError(error);
+        final StringBuffer completeUrl = new StringBuffer(url);
+        if (params.isPresent()) {
+            String urlEncodedData = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
+            completeUrl.append("?").append(urlEncodedData);
+        }
+        Request req = httpClient.newRequest(completeUrl.toString());
+        req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
+        req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
+        req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
+            @NonNullByDefault({})
+            @Override
+            public void onComplete(org.eclipse.jetty.client.api.Result result) {
+                if (result.getResponse().getStatus() != 200) {
+                    NetworkError error = new NetworkError();
+                    error.url = completeUrl.toString();
+                    error.status = result.getResponse().getStatus();
+                    error.reason = result.getResponse().getReason();
+                    logger.warn("{}", error.toString());
+                    callback.onError(error);
+                } else {
+                    if (callback instanceof StringResponseCallback) {
+                        ((StringResponseCallback) callback).onResponse(Optional.of(getContentAsString()));
                     } else {
-                        if (callback instanceof StringResponseCallback) {
-                            ((StringResponseCallback) callback).onResponse(Optional.of(getContentAsString()));
-                        } else {
-                            ((ByteResponseCallback) callback).onResponse(Optional.of(getContent()));
-                        }
+                        ((ByteResponseCallback) callback).onResponse(Optional.of(getContent()));
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     public void requestVehicles(StringResponseCallback callback) {
@@ -181,20 +178,16 @@ public class ConnectedDriveProxy {
 
     // Token handling
 
-    public synchronized boolean tokenUpdate() {
-        if (token.isExpired() || !token.isValid()) {
-            token = getToken();
-            if (token.isExpired() || !token.isValid()) {
-                logger.warn("Token update failed!");
-                return false;
-            }
-        }
-        return true;
-    }
-
+    /**
+     * Gets new token if old one is expired or invalid. In case of error the token remains.
+     * So if token refresh fails the corresponding requests will also fail and update the
+     * Thing status accordingly.
+     *
+     * @return token
+     */
     public Token getToken() {
         if (token.isExpired() || !token.isValid()) {
-            token = getNewToken();
+            updateToken();
         }
         return token;
     }
@@ -204,7 +197,7 @@ public class ConnectedDriveProxy {
      *
      * @return
      */
-    public synchronized Token getNewToken() {
+    private synchronized void updateToken() {
         httpClient.setFollowRedirects(false);
         Request req = httpClient.POST(authUri);
 
@@ -225,22 +218,22 @@ public class ConnectedDriveProxy {
         req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
         req.content(new StringContentProvider(urlEncodedData));
         try {
-            ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
-            HttpFields fields = contentResponse.getHeaders();
-            HttpField field = fields.getField(HttpHeader.LOCATION);
-            httpClient.setFollowRedirects(true);
-            return getTokenFromUrl(field.getValue());
+            ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            // Status needs to be 302 - Response is stored in Header
+            if (contentResponse.getStatus() == 302) {
+                HttpFields fields = contentResponse.getHeaders();
+                HttpField field = fields.getField(HttpHeader.LOCATION);
+                tokenFromUrl(field.getValue());
+            }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             logger.warn("Auth Exception: {}", e.getMessage());
         }
         httpClient.setFollowRedirects(true);
-        return new Token();
     }
 
-    public Token getTokenFromUrl(String encodedUrl) {
+    void tokenFromUrl(String encodedUrl) {
         MultiMap<String> tokenMap = new MultiMap<String>();
         UrlEncoded.decodeTo(encodedUrl, tokenMap, StandardCharsets.US_ASCII);
-        final Token token = new Token();
         tokenMap.forEach((key, value) -> {
             if (value.size() > 0) {
                 String val = value.get(0);
@@ -253,6 +246,5 @@ public class ConnectedDriveProxy {
                 }
             }
         });
-        return token;
     }
 }

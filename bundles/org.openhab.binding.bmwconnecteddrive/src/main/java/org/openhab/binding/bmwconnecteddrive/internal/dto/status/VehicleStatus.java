@@ -142,6 +142,13 @@ public class VehicleStatus {
         }
     }
 
+    /**
+     * Check for certain Windows or Doors DTO object the "Closed" Status
+     * INVALID values will be ignored
+     * 
+     * @param dto
+     * @return Closed if all "Closed", "Open" otherwise
+     */
     public static String checkClosed(Object dto) {
         boolean validDoorFound = false;
         for (Field field : dto.getClass().getDeclaredFields()) {

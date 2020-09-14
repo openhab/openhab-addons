@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="charge-values">
 		<label>Electric Charging</label>
-		<description>Charge Status and Charge Profiles of Vehicle</description>
+		<description>Charge Profiles of Vehicle</description>
 		<channels>
 			<channel id="profile-climate" typeId="profile-climate-channel"/>
 			<channel id="profile-mode" typeId="profile-mode-channel"/>

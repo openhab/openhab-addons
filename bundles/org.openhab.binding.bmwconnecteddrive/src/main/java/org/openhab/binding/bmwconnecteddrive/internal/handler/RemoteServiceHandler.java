@@ -47,9 +47,10 @@ public class RemoteServiceHandler {
     private final Logger logger = LoggerFactory.getLogger(RemoteServiceHandler.class);
 
     // after 60 retries the state update will give up
+    private static final String SERVICE_TYPE = "serviceType";
+    private static final int GIVEUP_COUNTER = 12;
+    private static final int STATE_UPDATE_SEC = 5;
     private int counter = 0;
-    private final int giveUpCounter = 120;
-    private static final int TIMEOUT_SEC = 10;
 
     public enum ExecutionState {
         READY("READY"),
@@ -121,32 +122,27 @@ public class RemoteServiceHandler {
             }
             serviceExecuting = Optional.of(service.toString());
         }
-        if (proxy.tokenUpdate()) {
-            MultiMap<String> dataMap = new MultiMap<String>();
-            dataMap.add("serviceType", service.toString());
-            String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+        MultiMap<String> dataMap = new MultiMap<String>();
+        dataMap.add(SERVICE_TYPE, service.toString());
+        String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
 
-            Request req = httpClient.POST(serviceExecutionAPI);
-            req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
-            req.header("Content-Length", urlEncodedData.length() + "");
-            req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
-            req.content(new StringContentProvider(urlEncodedData));
+        Request req = httpClient.POST(serviceExecutionAPI);
+        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+        req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
+        req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
+        req.content(new StringContentProvider(urlEncodedData));
 
-            try {
-                ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
-                if (contentResponse.getStatus() != 200) {
-                    reset();
-                    return false;
-                } else {
-                    handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
-                    return true;
-                }
-            } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Execute Service Exception {}", e.getMessage());
+        try {
+            ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            if (contentResponse.getStatus() != 200) {
                 reset();
                 return false;
+            } else {
+                handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
+                return true;
             }
-        } else {
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            logger.warn("Execute Service Exception {}", e.getMessage());
             reset();
             return false;
         }
@@ -157,8 +153,8 @@ public class RemoteServiceHandler {
             logger.warn("No Service executed to get state");
             return;
         }
-        if (counter >= giveUpCounter) {
-            logger.warn("Giving up updating state for {} after {} times", serviceExecuting, giveUpCounter);
+        if (counter >= GIVEUP_COUNTER) {
+            logger.warn("Giving up updating state for {} after {} times", serviceExecuting, GIVEUP_COUNTER);
             reset();
             // immediately refresh data
             handler.getData();
@@ -166,10 +162,11 @@ public class RemoteServiceHandler {
         counter++;
         Request req = httpClient.newRequest(serviceExecutionStateAPI + serviceExecuting.get());
         req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
+        req.header(HttpHeader.TRANSFER_ENCODING, CHUNKED);
         req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
 
         try {
-            ContentResponse contentResponse = req.timeout(TIMEOUT_SEC, TimeUnit.SECONDS).send();
+            ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
             if (contentResponse.getStatus() == 200) {
                 String state = contentResponse.getContentAsString();
                 ExecutionStatusContainer esc = Converter.getGson().fromJson(state, ExecutionStatusContainer.class);
@@ -177,7 +174,7 @@ public class RemoteServiceHandler {
 
                 handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
                 if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
-                    handler.getScheduler().schedule(this::getState, 5, TimeUnit.SECONDS);
+                    handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
                 } else {
                     reset();
                     // immediately refresh data
@@ -186,6 +183,7 @@ public class RemoteServiceHandler {
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             logger.warn("Execute Service Exception {}", e.getMessage());
+            handler.updateRemoteExecutionStatus(serviceExecuting.get(), e.getMessage());
             reset();
         }
     }

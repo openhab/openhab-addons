@@ -5,6 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="vehicle-fingerprint-channel">
 		<item-type>Switch</item-type>
-		<label>Vehicle Fingerprint for Problem Analysis</label>
+		<label>Vehicle Fingerprint</label>
 	</channel-type>
 </thing:thing-descriptions>
