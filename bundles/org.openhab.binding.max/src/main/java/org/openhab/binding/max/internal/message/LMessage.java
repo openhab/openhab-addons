@@ -58,7 +58,7 @@ public final class LMessage extends Message {
     }
 
     public Collection<? extends Device> updateDevices(List<Device> devices, List<DeviceConfiguration> configurations) {
-        byte[] decodedRawMessage = Base64.getDecoder().decode(getPayload().getBytes(StandardCharsets.UTF_8));
+        byte[] decodedRawMessage = Base64.getDecoder().decode(getPayload().trim().getBytes(StandardCharsets.UTF_8));
 
         MaxTokenizer tokenizer = new MaxTokenizer(decodedRawMessage);
 
