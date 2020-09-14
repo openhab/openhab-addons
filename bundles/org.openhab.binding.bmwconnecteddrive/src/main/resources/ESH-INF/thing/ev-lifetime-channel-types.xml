@@ -5,11 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average kw/h Consumption for 100 km over Lifetime</label>
+		<label>Average Power Consumption per 100 km</label>
 	</channel-type>
 	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>
-		<label>Average kw/h Recuperation for 100 km over Lifetime</label>
+		<label>Average Power Recuperation per 100 km</label>
 	</channel-type>
 	<channel-type id="cumulated-driven-distance-channel">
 		<item-type>Number:Length</item-type>

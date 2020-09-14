@@ -18,8 +18,8 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
  * @author Bernd Weymann - Initial contribution
  */
 public class Position {
-    public float lat;// ": 50.55605,
-    public float lon;// ": 8.495669,
+    public float lat;// ": 46.55605,
+    public float lon;// ": 10.495669,
     public int heading;// ": 219,
     public String status;// ": "OK"
 

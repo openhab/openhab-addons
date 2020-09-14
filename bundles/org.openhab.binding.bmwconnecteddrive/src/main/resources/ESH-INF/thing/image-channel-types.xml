@@ -13,6 +13,6 @@
 	</channel-type>
 	<channel-type id="image-size-channel">
 		<item-type>Number</item-type>
-		<label>Image Picture Size</label>
+		<label>Image Size</label>
 	</channel-type>
 </thing:thing-descriptions>

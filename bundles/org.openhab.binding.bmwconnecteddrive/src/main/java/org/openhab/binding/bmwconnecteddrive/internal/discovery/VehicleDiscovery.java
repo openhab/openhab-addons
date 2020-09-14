@@ -117,16 +117,13 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
                     // Check now if a thing with the same VIN exists
                     final AtomicBoolean foundVehicle = new AtomicBoolean(false);
                     List<VehicleHandler> l = ConnectedDriveHandlerFactory.getHandlerRegistry();
-                    logger.debug("Handler regsitry has {} entries", l.size());
                     l.forEach(handler -> {
                         Thing vehicleThing = handler.getThing();
                         Configuration c = vehicleThing.getConfiguration();
                         if (c.containsKey("vin")) {
                             String thingVIN = c.get("vin").toString();
-                            logger.debug("Found VIN {} ", thingVIN);
                             if (vehicle.vin.equals(thingVIN)) {
                                 vehicleThing.setProperties(properties);
-                                logger.debug("Vehicle {} updated", thingVIN);
                                 foundVehicle.set(true);
                             }
                         }
@@ -136,13 +133,13 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
                     if (!foundVehicle.get()) {
                         // Properties needed for functional THing
                         properties.put("vin", vehicle.vin);
-                        properties.put("refreshInterval", Integer.toString(5));
+                        properties.put("refreshInterval",
+                                Integer.toString(ConnectedDriveConstants.DEFAULT_REFRESH_INTERVAL));
                         properties.put("units", ConnectedDriveConstants.UNITS_AUTODETECT);
                         properties.put("imageSize", Integer.toString(ConnectedDriveConstants.DEFAULT_IMAGE_SIZE));
                         properties.put("imageViewport", ConnectedDriveConstants.DEFAULT_IMAGE_VIEWPORT);
 
                         String vehicleLabel = vehicle.brand + " " + vehicle.model;
-                        logger.debug("Thing {} discovered", vehicleLabel);
                         Map<String, Object> convertedProperties = new HashMap<String, Object>(properties);
                         thingDiscovered(DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
                                 .withRepresentationProperty("vin").withLabel(vehicleLabel)

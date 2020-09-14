@@ -39,7 +39,8 @@ public class AuthTest {
         HttpClientFactory hcf = mock(HttpClientFactory.class);
         when(hcf.getCommonHttpClient()).thenReturn(mock(HttpClient.class));
         ConnectedDriveProxy dcp = new ConnectedDriveProxy(hcf, mock(ConnectedDriveConfiguration.class));
-        Token t = dcp.getTokenFromUrl(headerValue);
+        dcp.tokenFromUrl(headerValue);
+        Token t = dcp.getToken();
         assertEquals("Token", "Bearer SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh", t.getBearerToken());
     }
 }

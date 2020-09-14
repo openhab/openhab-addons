@@ -34,10 +34,6 @@ public class ImageProperties {
     public ImageProperties() {
     }
 
-    public boolean isSame(String viewport, int size) {
-        return this.viewport.equals(viewport) && this.size == size;
-    }
-
     public void failed() {
         failCounter++;
     }

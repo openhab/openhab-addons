@@ -37,6 +37,6 @@
 	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>
-		<label>Last Status Update</label>
+		<label>Last Status Timestamp</label>
 	</channel-type>
 </thing:thing-descriptions>
