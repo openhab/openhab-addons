@@ -245,7 +245,6 @@ public class ShellyComponents {
 
         boolean updated = false;
         if (profile.isSensor || profile.hasBattery || profile.isSense) {
-            thingHandler.logger.debug("{}: Updating sensor", thingHandler.thingName);
             ShellyStatusSensor sdata = thingHandler.api.getSensorStatus();
 
             if (!thingHandler.areChannelsCreated()) {
@@ -258,8 +257,6 @@ public class ShellyComponents {
 
             if ((sdata.contact != null) && sdata.contact.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
-                thingHandler.logger.debug("{}: Updating DW state with {}", thingHandler.thingName,
-                        getString(sdata.contact.state));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         getString(sdata.contact.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);

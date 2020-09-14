@@ -250,7 +250,7 @@ public class ShellyDeviceProfile {
 
     public boolean inButtonMode(int idx) {
         if (idx < 0) {
-            logger.debug("{}: Invalid index {} for getControlGroup()", thingName, idx);
+            logger.debug("{}: Invalid index {} for inButtonMode()", thingName, idx);
             return false;
         }
         String btnType = "";

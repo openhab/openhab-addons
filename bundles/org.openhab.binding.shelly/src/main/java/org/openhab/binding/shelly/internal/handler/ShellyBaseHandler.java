@@ -561,7 +561,7 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
         if (thingName.equalsIgnoreCase(deviceName) || config.deviceIp.equals(ipAddress)) {
             logger.debug("{}: Event received: class={}, index={}, parameters={}", deviceName, type, deviceIndex,
                     parameters);
-            int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : -1;
+            int idx = !deviceIndex.isEmpty() ? Integer.parseInt(deviceIndex) : 1;
             if (!profile.isInitialized()) {
                 logger.debug("{}: Device is not yet initialized, event triggers initialization", deviceName);
                 requestUpdates(1, true);
