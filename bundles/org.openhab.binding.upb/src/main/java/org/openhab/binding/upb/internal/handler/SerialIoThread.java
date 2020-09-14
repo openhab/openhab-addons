@@ -88,7 +88,6 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
 
     @Override
     public void run() {
-        serialPort.disableReceiveTimeout();
         enterMessageMode();
         try (final InputStream in = serialPort.getInputStream()) {
             if (in == null) {
@@ -97,9 +96,13 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
             }
             try (final InputStream bufIn = new BufferedInputStream(in)) {
                 bufIn.mark(MAX_READ_SIZE);
-                int b;
                 int len = 0;
-                while (!done && (b = bufIn.read()) >= 0) {
+                while (!done) {
+                    final int b = bufIn.read();
+                    if (b == -1) {
+                        // the serial input returns -1 on receive timeout
+                        continue;
+                    }
                     len++;
                     if (b == CR) {
                         // message terminator read, rewind the stream and parse the buffered message
