@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upb.handler;
+package org.openhab.binding.upb.internal.handler;
 
 import static org.openhab.binding.upb.internal.message.Command.*;
 
@@ -23,7 +23,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.openhab.binding.upb.Constants;
+import org.openhab.binding.upb.internal.Constants;
 import org.openhab.binding.upb.internal.message.MessageBuilder;
 import org.openhab.binding.upb.internal.message.UPBMessage;
 import org.slf4j.Logger;

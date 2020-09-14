@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upb.handler;
+package org.openhab.binding.upb.internal.handler;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -27,7 +27,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
 import org.eclipse.smarthome.io.transport.serial.UnsupportedCommOperationException;
-import org.openhab.binding.upb.Constants;
+import org.openhab.binding.upb.internal.Constants;
 import org.openhab.binding.upb.internal.message.MessageBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upb.handler;
+package org.openhab.binding.upb.internal.handler;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -37,7 +37,7 @@ import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
-import org.openhab.binding.upb.handler.UPBIoHandler.CmdStatus;
+import org.openhab.binding.upb.internal.handler.UPBIoHandler.CmdStatus;
 import org.openhab.binding.upb.internal.message.MessageBuilder;
 import org.openhab.binding.upb.internal.message.MessageParseException;
 import org.openhab.binding.upb.internal.message.UPBMessage;

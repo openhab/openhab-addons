@@ -10,20 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.upb.handler;
+package org.openhab.binding.upb.internal.handler;
+
+import java.util.concurrent.CompletionStage;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.upb.internal.message.UPBMessage;
+import org.openhab.binding.upb.internal.message.MessageBuilder;
 
 /**
- * Callback interface for received UPB messages.
+ * Handler for PIM communications.
  *
  * @author Marcus Better - Initial contribution
- *
  */
 @NonNullByDefault
-public interface MessageListener {
-    void incomingMessage(UPBMessage msg);
+public interface UPBIoHandler {
+    enum CmdStatus {
+        ACK,
+        NAK,
+        WRITE_FAILED
+    }
 
-    void onError(Throwable t);
+    CompletionStage<CmdStatus> sendPacket(MessageBuilder message);
 }
