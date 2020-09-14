@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dreamscreen"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="power">
+		<item-type>Switch</item-type>
+		<label>Power</label>
+		<description>Turns the power to the DreamScreen on/off</description>
+	</channel-type>
+
+	<channel-type id="mode">
+		<item-type>Number</item-type>
+		<label>Mode</label>
+		<description>Switch the display mode</description>
+		<state>
+			<options>
+				<option value="0">Video</option>
+				<option value="1">Music</option>
+				<option value="2">Ambient</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="scene">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+		<description>Switch the ambient display scene</description>
+		<state>
+			<options>
+				<option value="0">Color</option>
+				<option value="1">Random Color</option>
+				<option value="2">Fireside</option>
+				<option value="3">Twinkle</option>
+				<option value="4">Ocean</option>
+				<option value="5">Rainbow</option>
+				<option value="6">July 4th</option>
+				<option value="7">Holiday</option>
+				<option value="8">Pop</option>
+				<option value="9">Enchanted Forest</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="input">
+		<item-type>Number</item-type>
+		<label>Input Source</label>
+		<description>Select the HDMI input source</description>
+		<state>
+			<options>
+				<option value="0">Channel 1</option>
+				<option value="1">Channel 2</option>
+				<option value="2">Channel 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<description>Select the active color to use with the Color scene</description>
+	</channel-type>
+
+</thing:thing-descriptions>
