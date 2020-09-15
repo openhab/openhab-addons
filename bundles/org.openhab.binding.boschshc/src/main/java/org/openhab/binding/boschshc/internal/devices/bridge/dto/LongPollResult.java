@@ -29,7 +29,6 @@ public class LongPollResult {
      * ...."id":"PowerSwitch",
      * ...."state":{
      * ......"@type":"powerSwitchState",
-     * ......"automaticPowerOffTime":0,
      * ......"switchState":"ON"
      * ....},
      * ...."deviceId":"hdm:HomeMaticIP:3014F711A0001916D859A8A9"}
