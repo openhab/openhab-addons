@@ -19,16 +19,12 @@ import java.util.Arrays;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
@@ -63,43 +59,31 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         super.handleCommand(channelUID, command);
 
-        Bridge bridge = this.getBridge();
-        if (bridge != null) {
+        logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
 
-            logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
-            BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
-
-            if (bridgeHandler != null) {
-
-                if (command instanceof RefreshType) {
-                    switch (channelUID.getId()) {
-                        case CHANNEL_POWER_CONSUMPTION: {
-                            PowerMeterState state = bridgeHandler.refreshState(getThing(), "PowerMeter",
-                                    PowerMeterState.class);
-                            if (state != null) {
-                                updatePowerMeterState(state);
-                            }
-                            break;
-                        }
-                        case CHANNEL_ENERGY_CONSUMPTION:
-                            // Nothing to do here, since the same update is received from POWER_CONSUMPTION
-                            break;
-                        default:
-                            logger.warn("Received refresh request for unsupported channel: {}", channelUID);
+        if (command instanceof RefreshType) {
+            switch (channelUID.getId()) {
+                case CHANNEL_POWER_CONSUMPTION: {
+                    PowerMeterState state = this.getState("PowerMeter", PowerMeterState.class);
+                    if (state != null) {
+                        updatePowerMeterState(state);
                     }
-                } else {
-                    switch (channelUID.getId()) {
-                        case CHANNEL_POWER_SWITCH:
-                            if (command instanceof OnOffType) {
-                                updatePowerSwitchState((OnOffType) command);
-                            }
-                            break;
-                    }
+                    break;
                 }
+                case CHANNEL_ENERGY_CONSUMPTION:
+                    // Nothing to do here, since the same update is received from POWER_CONSUMPTION
+                    break;
+                default:
+                    logger.warn("Received refresh request for unsupported channel: {}", channelUID);
             }
         } else {
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge is NUL");
+            switch (channelUID.getId()) {
+                case CHANNEL_POWER_SWITCH:
+                    if (command instanceof OnOffType) {
+                        updatePowerSwitchState((OnOffType) command);
+                    }
+                    break;
+            }
         }
     }
 

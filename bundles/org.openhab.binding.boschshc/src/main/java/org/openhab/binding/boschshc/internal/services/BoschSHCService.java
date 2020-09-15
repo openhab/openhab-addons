@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.boschshc.internal.services;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 import com.google.gson.Gson;
@@ -105,19 +108,15 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
 
     /**
      * Requests the current state of the service and updates it.
+     * 
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws BoschSHCException
      */
-    public void refreshState() {
-        String deviceId = this.deviceId;
-        if (deviceId == null) {
-            return;
-        }
-        BoschSHCBridgeHandler bridgeHandler = this.bridgeHandler;
-        if (bridgeHandler == null) {
-            return;
-        }
-
+    public void refreshState() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         @Nullable
-        TState state = bridgeHandler.getState(deviceId, this.serviceName, this.stateClass);
+        TState state = this.getState();
         if (state != null) {
             this.onStateUpdate(state);
         }
@@ -127,8 +126,13 @@ public abstract class BoschSHCService<TState extends BoschSHCServiceState> {
      * Requests the current state of the device with the specified id.
      * 
      * @return Current state of the device.
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws BoschSHCException
      */
-    public @Nullable TState getState() {
+    public @Nullable TState getState()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         String deviceId = this.deviceId;
         if (deviceId == null) {
             return null;
