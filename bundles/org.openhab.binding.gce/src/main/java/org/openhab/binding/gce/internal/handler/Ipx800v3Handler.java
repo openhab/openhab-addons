@@ -128,9 +128,8 @@ public class Ipx800v3Handler extends BaseThingHandler implements Ipx800EventList
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        refreshJob = scheduler.scheduleWithFixedDelay(() -> {
-            statusFile.read();
-        }, 3000, configuration.pullInterval, TimeUnit.MILLISECONDS);
+        refreshJob = scheduler.scheduleWithFixedDelay(statusFile::read, 3000, configuration.pullInterval,
+                TimeUnit.MILLISECONDS);
 
         connector.start();
     }

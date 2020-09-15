@@ -8,28 +8,28 @@
 		<description>The GCE IPX800v3 device</description>
 
 		<channel-groups>
-			<channel-group id="contact" typeId="contact"/>
-			<channel-group id="relay" typeId="relay"/>
-			<channel-group id="counter" typeId="counter"/>
-			<channel-group id="analog" typeId="analog"/>
+			<channel-group id="contact" typeId="contacts"/>
+			<channel-group id="relay" typeId="relays"/>
+			<channel-group id="counter" typeId="counters"/>
+			<channel-group id="analog" typeId="analogs"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:gce:ipx800v3Config"/>
 	</thing-type>
 
-	<channel-group-type id="contact">
+	<channel-group-type id="contacts">
 		<label>Digital Inputs</label>
 	</channel-group-type>
 
-	<channel-group-type id="relay">
+	<channel-group-type id="relays">
 		<label>Digital Outputs</label>
 	</channel-group-type>
 
-	<channel-group-type id="counter">
+	<channel-group-type id="counters">
 		<label>Counters</label>
 	</channel-group-type>
 
-	<channel-group-type id="analog">
+	<channel-group-type id="analogs">
 		<label>Analog Inputs</label>
 	</channel-group-type>
 

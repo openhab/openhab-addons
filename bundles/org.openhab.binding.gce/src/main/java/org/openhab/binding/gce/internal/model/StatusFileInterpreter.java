@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.gce.internal.model;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.InputStream;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,6 +26,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.gce.internal.handler.Ipx800EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +62,13 @@ public class StatusFileInterpreter {
     public void read() {
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            URL url = new URL(String.format(URL_TEMPLATE, hostname));
-
-            URLConnection conn = url.openConnection();
-            Document document = builder.parse(conn.getInputStream());
+            String statusPage = HttpUtil.executeUrl("GET", String.format(URL_TEMPLATE, hostname), 5000);
+            InputStream inputStream = new ByteArrayInputStream(statusPage.getBytes());
+            Document document = builder.parse(inputStream);
             document.getDocumentElement().normalize();
             doc = document;
             pushDatas();
-            conn.getInputStream().close();
+            inputStream.close();
         } catch (IOException | SAXException | ParserConfigurationException e) {
             logger.warn("Unable to read IPX800 status page : {}", e.getMessage());
             doc = null;
