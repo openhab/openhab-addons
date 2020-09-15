@@ -192,15 +192,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     private void subscribe(BoschHttpClient httpClient) {
         logger.debug("Sending subscribe request to Bosch");
 
-        String[] params = { "com/bosch/sh/remote/*", null }; // TODO Not sure about the tailing null, copied
-                                                             // from NodeJs
-        JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/subscribe", params);
-
-        // XXX Maybe we should use a different httpClient here, to avoid a race with
-        // concurrent use from other
-        // functions.
-        logger.debug("Subscribe: Sending content: {} - using httpClient {}", gson.toJson(r), httpClient);
-
         class SubscribeListener extends BufferingResponseListener {
             private BoschSHCBridgeHandler bridgeHandler;
 
@@ -239,7 +230,13 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         }
 
         String url = httpClient.createUrl("remote/json-rpc");
-        httpClient.createRequest(url, POST, r).send(new SubscribeListener(this));
+        JsonRpcRequest request = new JsonRpcRequest("2.0", "RE/subscribe", new String[] { "com/bosch/sh/remote/*" });
+
+        // XXX Maybe we should use a different httpClient here, to avoid a race with
+        // concurrent use from other
+        // functions.
+        logger.debug("Subscribe: Sending content: {} - using httpClient {}", gson.toJson(request), httpClient);
+        httpClient.createRequest(url, POST, request).send(new SubscribeListener(this));
     }
 
     /**
