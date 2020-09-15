@@ -124,16 +124,16 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
                     this.longPoll(httpClient);
 
                 } else {
-                    // TODO add offline conf-error description
-                    updateStatus(ThingStatus.OFFLINE);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                            "@text/offline.not-reachable");
                 }
 
             } catch (PairingFailedException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                         "@text/offline.conf-error-pairing");
             } catch (InterruptedException e) {
-                // TODO add offline conf-error description
-                updateStatus(ThingStatus.OFFLINE);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "@text/offline.interrupted");
             }
 
         });
