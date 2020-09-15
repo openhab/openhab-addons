@@ -71,8 +71,9 @@ public class TouchWandControllerDiscoveryService extends AbstractDiscoveryServic
 
     @Override
     public void deactivate() {
-        if (socketReceiveThread != null) {
-            socketReceiveThread.interrupt();
+        Thread mySocketReceiveThread = socketReceiveThread;
+        if (mySocketReceiveThread != null) {
+            mySocketReceiveThread.interrupt();
             socketReceiveThread = null;
         }
 

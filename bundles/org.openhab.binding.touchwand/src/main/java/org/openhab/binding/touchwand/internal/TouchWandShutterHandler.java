@@ -36,21 +36,24 @@ public class TouchWandShutterHandler extends TouchWandBaseUnitHandler {
 
     @Override
     void touchWandUnitHandleCommand(Command command) {
-        switch (command.toString()) {
-            case "OFF":
-            case "DOWN":
-                bridgeHandler.touchWandClient.cmdShutterDown(unitId);
-                break;
-            case "ON":
-            case "UP":
-                bridgeHandler.touchWandClient.cmdShutterUp(unitId);
-                break;
-            case "STOP":
-                bridgeHandler.touchWandClient.cmdShutterStop(unitId);
-                break;
-            default:
-                bridgeHandler.touchWandClient.cmdShutterPosition(unitId, command.toString());
-                break;
+        TouchWandBridgeHandler touchWandBridgeHandler = bridgeHandler;
+        if (touchWandBridgeHandler != null) {
+            switch (command.toString()) {
+                case "OFF":
+                case "DOWN":
+                    touchWandBridgeHandler.touchWandClient.cmdShutterDown(unitId);
+                    break;
+                case "ON":
+                case "UP":
+                    touchWandBridgeHandler.touchWandClient.cmdShutterUp(unitId);
+                    break;
+                case "STOP":
+                    touchWandBridgeHandler.touchWandClient.cmdShutterStop(unitId);
+                    break;
+                default:
+                    touchWandBridgeHandler.touchWandClient.cmdShutterPosition(unitId, command.toString());
+                    break;
+            }
         }
     }
 

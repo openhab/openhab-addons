@@ -125,21 +125,24 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
             // remove discovery service
             TouchWandUnitDiscoveryService service = (TouchWandUnitDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
-            service.unregisterListener(this); // Unregister Unit status polling
-            serviceReg.unregister();
-            service.deactivate();
+            if (service != null) {
+                service.unregisterListener(this); // Unregister Unit status polling
+                serviceReg.unregister();
+                service.deactivate();
+            }
         }
 
-        if (touchWandWebSockets != null) {
-            touchWandWebSockets.unregisterListener(this);
-            touchWandWebSockets.dispose();
+        TouchWandWebSockets myTouchWandWebSockets = touchWandWebSockets;
+        if (myTouchWandWebSockets != null) {
+            myTouchWandWebSockets.unregisterListener(this);
+            myTouchWandWebSockets.dispose();
         }
     }
 
     public synchronized boolean registerUpdateListener(TouchWandUnitUpdateListener listener) {
         logger.debug("Adding Status update listener for device {}", listener.getId());
-
-        return unitUpdateListeners.put(listener.getId(), listener) == null;
+        unitUpdateListeners.put(listener.getId(), listener);
+        return true;
     }
 
     public synchronized boolean unregisterUpdateListener(TouchWandUnitUpdateListener listener) {

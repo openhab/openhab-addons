@@ -72,8 +72,9 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
     @Override
     public void dispose() {
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterUpdateListener(this);
+        TouchWandBridgeHandler myTmpBridgeHandler = bridgeHandler;
+        if (myTmpBridgeHandler != null) {
+            myTmpBridgeHandler.unregisterUpdateListener(this);
         }
     }
 
@@ -90,29 +91,36 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
         unitId = getThing().getUID().getId(); // TouchWand unit id
 
-        bridgeHandler.registerUpdateListener(this);
+        TouchWandBridgeHandler myTmpBridgeHandler = bridgeHandler;
+        if (myTmpBridgeHandler != null) {
+            myTmpBridgeHandler.registerUpdateListener(this);
+        }
 
         updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> {
             boolean thingReachable = false;
-            String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
-            thingReachable = !response.isEmpty();
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            if (myTmpBridgeHandler != null) {
+                String response = myTmpBridgeHandler.touchWandClient.cmdGetUnitById(unitId);
+                thingReachable = !response.isEmpty();
+                if (thingReachable) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                }
             }
         });
     }
 
+    @SuppressWarnings("unused") // not used at the moment till touchWand state in hub will be fixed
     private int getUnitState(String unitId) {
         int status = 0;
 
-        if (bridgeHandler == null) {
+        TouchWandBridgeHandler touchWandBridgeHandler = bridgeHandler;
+        if (touchWandBridgeHandler == null) {
             return status;
         }
 
-        String response = bridgeHandler.touchWandClient.cmdGetUnitById(unitId);
+        String response = touchWandBridgeHandler.touchWandClient.cmdGetUnitById(unitId);
         if (!response.isEmpty()) {
             return status;
         }

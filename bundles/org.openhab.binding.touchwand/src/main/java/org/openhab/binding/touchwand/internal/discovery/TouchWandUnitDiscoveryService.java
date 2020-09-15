@@ -70,7 +70,6 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-
         if (touchWandBridgeHandler.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.warn("Could not scan units while bridge offline");
             return;
@@ -170,8 +169,9 @@ public class TouchWandUnitDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (scanningJob != null) {
-            scanningJob.cancel(true);
+        ScheduledFuture<?> myScanningJob = scanningJob;
+        if (myScanningJob != null) {
+            myScanningJob.cancel(true);
             scanningJob = null;
         }
     }
