@@ -26,10 +26,11 @@ import com.google.gson.Gson;
  *
  * @author Steven Schwarznau - Initial contribution
  */
+@NonNullByDefault
 @Component(service = SenecHomeApiFactory.class)
 public class SenecHomeApiFactory {
 
-    private @NonNull HttpClient httpClient;
+    private HttpClient httpClient;
 
     @Activate
     public SenecHomeApiFactory(@Reference HttpClientFactory httpClientFactory) {
