@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Michael Helm (bernd.helm at helmundwalter.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 version + parsing of the message
  */
+@NonNullByDefault
 public final class SMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(SMessage.class);
 

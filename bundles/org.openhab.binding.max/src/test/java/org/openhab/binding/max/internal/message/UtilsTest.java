@@ -16,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
 
@@ -25,6 +26,7 @@ import org.openhab.binding.max.internal.Utils;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
  */
+@NonNullByDefault
 public class UtilsTest {
 
     @Test

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.max.internal.exceptions.IncompleteMessageException;
 import org.openhab.binding.max.internal.exceptions.IncorrectMultilineIndexException;
@@ -23,16 +23,12 @@ import org.openhab.binding.max.internal.exceptions.UnprocessableMessageException
 import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeException;
 
 /**
- * @author Christian Rockrohr <christian@rockrohr.de>
+ * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */
+@NonNullByDefault
 public class MessageProcessorTest {
 
-    private MessageProcessor processor;
-
-    @Before
-    public void before() {
-        this.processor = new MessageProcessor();
-    }
+    private final MessageProcessor processor = new MessageProcessor();
 
     private void commonMessageTest(String line, Message expectedMessage) throws Exception {
         Assert.assertTrue(this.processor.addReceivedLine(line));

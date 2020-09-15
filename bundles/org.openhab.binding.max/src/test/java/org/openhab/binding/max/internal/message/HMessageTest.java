@@ -18,7 +18,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-import org.junit.Before;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
 
@@ -27,16 +27,12 @@ import org.openhab.binding.max.internal.Utils;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class HMessageTest {
 
     public static final String RAW_DATA = "H:KEQ0565026,0b5951,0113,00000000,4eed6795,01,32,12080a,070f,03,0000";
 
-    private HMessage message;
-
-    @Before
-    public void before() {
-        message = new HMessage(RAW_DATA);
-    }
+    private final HMessage message = new HMessage(RAW_DATA);
 
     @Test
     public void getMessageTypeTest() {
