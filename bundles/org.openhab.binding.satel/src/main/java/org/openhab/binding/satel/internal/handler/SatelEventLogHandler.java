@@ -291,6 +291,10 @@ public class SatelEventLogHandler extends SatelThingHandler {
                             + DETAILS_SEPARATOR + "ip: " + readEventCmd.getSource() + "."
                             + (readEventCmd.getObject() * 32 + readEventCmd.getUserControlNumber()) + eventDetails;
                     break;
+                case 32:
+                    eventDetails = getDeviceDescription(DeviceType.PARTITION, readEventCmd.getPartition())
+                            + DETAILS_SEPARATOR + getDeviceDescription(DeviceType.ZONE, readEventCmd.getSource());
+                    break;
                 default:
                     logger.info("Unsupported device kind code {} at index {}", eventDesc.getKind(),
                             readEventCmd.getCurrentIndex());

@@ -85,7 +85,7 @@ public class FoobotAccountDiscoveryService extends AbstractDiscoveryService
     private void addThing(final FoobotDevice foobot) {
         logger.debug("Adding new Foobot '{}' with uuid: {}", foobot.getName(), foobot.getUuid());
 
-        final ThingUID thingUID = new ThingUID(FoobotBindingConstants.THING_TYPE_FOOBOT, foobot.getUuid());
+        final ThingUID thingUID = new ThingUID(FoobotBindingConstants.THING_TYPE_FOOBOT, bridgeUID, foobot.getUuid());
         final Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, foobot.getUuid());
         properties.put(FoobotBindingConstants.CONFIG_UUID, foobot.getUuid());

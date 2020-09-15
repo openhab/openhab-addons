@@ -108,7 +108,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
         ThingUID bridgeUID = bridge.getThing().getUID();
 
         for (Player player : currentPlayers.values()) {
-            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, String.valueOf(player.playerId));
+            ThingUID uid = new ThingUID(THING_TYPE_PLAYER, bridgeUID, String.valueOf(player.playerId));
             Map<String, Object> properties = new HashMap<>();
             HeosPlayerHandler.propertiesFromPlayer(properties, player);
 
@@ -162,7 +162,7 @@ public class HeosPlayerDiscovery extends AbstractDiscoveryService implements Heo
             // Using an unsigned hashCode from the group members to identify
             // the group and generates the Thing UID.
             // This allows identifying the group even if the sorting within the group has changed
-            ThingUID uid = new ThingUID(THING_TYPE_GROUP, groupMemberHash);
+            ThingUID uid = new ThingUID(THING_TYPE_GROUP, bridgeUID, groupMemberHash);
             Map<String, Object> properties = new HashMap<>();
             properties.put(PROP_NAME, group.name);
             properties.put(PROP_GID, group.id);

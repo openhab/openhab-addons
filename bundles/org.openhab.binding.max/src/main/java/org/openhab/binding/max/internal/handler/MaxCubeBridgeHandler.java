@@ -788,7 +788,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processNMessage(NMessage nMessage) {
-        if (nMessage.getRfAddress() != null) {
+        if (!nMessage.getRfAddress().isEmpty()) {
             logger.debug("New {} found. Serial: {}, rfaddress: {}", nMessage.getDeviceType(),
                     nMessage.getSerialNumber(), nMessage.getRfAddress());
             // Send C command to get the configuration so it will be added to discovery

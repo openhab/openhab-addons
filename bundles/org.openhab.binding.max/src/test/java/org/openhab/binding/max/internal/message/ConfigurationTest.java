@@ -14,6 +14,8 @@ package org.openhab.binding.max.internal.message;
 
 import static org.junit.Assert.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
@@ -25,16 +27,16 @@ import org.openhab.binding.max.internal.device.DeviceType;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
  */
+@NonNullByDefault
 public class ConfigurationTest {
 
     public static final String RAW_DATA = "C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==";
 
-    private CMessage message;
-    private DeviceConfiguration configuration;
+    private final CMessage message = new CMessage(RAW_DATA);
+    private @Nullable DeviceConfiguration configuration;
 
     @Before
     public void before() {
-        message = new CMessage(RAW_DATA);
         configuration = DeviceConfiguration.create(message);
     }
 
@@ -45,19 +47,34 @@ public class ConfigurationTest {
 
     @Test
     public void getRfAddressTest() {
-        String rfAddress = configuration.getRFAddress();
-        assertEquals("0b0da3", rfAddress);
+        final DeviceConfiguration configuration = this.configuration;
+        if (configuration != null) {
+            String rfAddress = configuration.getRFAddress();
+            assertEquals("0b0da3", rfAddress);
+        } else {
+            fail("Configuration missing");
+        }
     }
 
     @Test
     public void getDeviceTypeTest() {
-        DeviceType deviceType = configuration.getDeviceType();
-        assertEquals(DeviceType.HeatingThermostatPlus, deviceType);
+        final DeviceConfiguration configuration = this.configuration;
+        if (configuration != null) {
+            DeviceType deviceType = configuration.getDeviceType();
+            assertEquals(DeviceType.HeatingThermostatPlus, deviceType);
+        } else {
+            fail("Configuration missing");
+        }
     }
 
     @Test
     public void getSerialNumberTest() {
-        String serialNumber = configuration.getSerialNumber();
-        assertEquals("KEQ0544242", serialNumber);
+        final DeviceConfiguration configuration = this.configuration;
+        if (configuration != null) {
+            String serialNumber = configuration.getSerialNumber();
+            assertEquals("KEQ0544242", serialNumber);
+        } else {
+            fail("Configuration missing");
+        }
     }
 }

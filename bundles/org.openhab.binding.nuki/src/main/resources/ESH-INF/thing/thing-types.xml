@@ -47,6 +47,7 @@
 			<channel id="lock" typeId="smartlockLock"/>
 			<channel id="lockState" typeId="smartlockState"/>
 			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="doorsensorState" typeId="smartlockDoorState"/>
 		</channels>
 		<config-description>
 			<parameter name="nukiId" type="text" required="true">
@@ -98,6 +99,22 @@
 				<option value="1007">Unlatching (Lock 'n' Go)</option>
 				<option value="254">Motor blocked</option>
 				<option value="255">UNDEFINED</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="smartlockDoorState">
+		<item-type>Number</item-type>
+		<label>Door State</label>
+		<description>Use this channel to display the current state of the door sensor</description>
+		<category>Door</category>
+		<state>
+			<options>
+				<option value="0">Unavailable</option>
+				<option value="1">Deactivated</option>
+				<option value="2">Closed</option>
+				<option value="3">Open</option>
+				<option value="4">Unknown</option>
+				<option value="5">Calibrating</option>
 			</options>
 		</state>
 	</channel-type>

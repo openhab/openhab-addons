@@ -102,17 +102,18 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
                     || id.equals(t.getConfiguration().as(JeeLinkSensorConfig.class).sensorId);
         }
 
+        ThingUID bridgeUID = bridge.getThing().getUID();
+
         if (!sensorThingExists) {
             SensorDefinition<?> def = SensorDefinition.getSensorDefinition(reading);
-            logger.debug("discovery for bridge {} found unknown sensor of type {} with id {}",
-                    bridge.getThing().getUID(), def.getThingTypeUID(), id);
+            logger.debug("discovery for bridge {} found unknown sensor of type {} with id {}", bridgeUID,
+                    def.getThingTypeUID(), id);
 
             boolean idExists = idExistsAtBridge(id);
             String newId = id;
 
             if (idExists) {
-                logger.debug("bridge {} already has a connected sensor with thing id {}", bridge.getThing().getUID(),
-                        id);
+                logger.debug("bridge {} already has a connected sensor with thing id {}", bridgeUID, id);
 
                 int idx = 1;
                 while (idExists) {
@@ -120,17 +121,17 @@ public class SensorDiscoveryService extends AbstractDiscoveryService implements 
                     idExists = idExistsAtBridge(newId);
                 }
 
-                logger.debug("Bridge {} uses thing id {} instead of {}", bridge.getThing().getUID(), newId, id);
+                logger.debug("Bridge {} uses thing id {} instead of {}", bridgeUID, newId, id);
             }
 
-            ThingUID sensorThing = new ThingUID(def.getThingTypeUID(), newId);
+            ThingUID sensorThing = new ThingUID(def.getThingTypeUID(), bridgeUID, newId);
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(sensorThing).withLabel(def.getName())
-                    .withBridge(bridge.getThing().getUID()).withRepresentationProperty("id")
-                    .withProperty(PROPERTY_SENSOR_ID, id).build();
+                    .withBridge(bridgeUID).withRepresentationProperty("id").withProperty(PROPERTY_SENSOR_ID, id)
+                    .build();
             thingDiscovered(discoveryResult);
         } else {
-            logger.debug("discovery for bridge {} found already known sensor id {}", bridge.getThing().getUID(), id);
+            logger.debug("discovery for bridge {} found already known sensor id {}", bridgeUID, id);
         }
     }
 

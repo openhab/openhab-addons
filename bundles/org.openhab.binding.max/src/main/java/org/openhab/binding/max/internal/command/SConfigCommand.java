@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.max.internal.command;
 
-import org.apache.commons.net.util.Base64;
+import java.util.Base64;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
@@ -153,8 +154,8 @@ public class SConfigCommand extends CubeCommand {
             commandString = commandString + Utils.toHex(roomId) + commandConfigString;
         }
 
-        String encodedString = Base64.encodeBase64String(Utils.hexStringToByteArray(commandString));
-        return "s:" + encodedString;
+        String encodedString = Base64.getEncoder().encodeToString(Utils.hexStringToByteArray(commandString));
+        return "s:" + encodedString + "\r\n";
     }
 
     @Override

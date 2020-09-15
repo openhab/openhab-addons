@@ -14,7 +14,7 @@ package org.openhab.binding.max.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
@@ -22,16 +22,12 @@ import org.junit.Test;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class FMessageTest {
 
     public static final String RAW_DATA = "F:nl.ntp.pool.org,ntp.homematic.com";
 
-    private FMessage message;
-
-    @Before
-    public void before() {
-        message = new FMessage(RAW_DATA);
-    }
+    private final FMessage message = new FMessage(RAW_DATA);
 
     @Test
     public void getMessageTypeTest() {

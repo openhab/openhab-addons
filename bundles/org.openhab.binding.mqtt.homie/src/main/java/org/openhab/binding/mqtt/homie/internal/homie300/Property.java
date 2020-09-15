@@ -39,6 +39,7 @@ import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
@@ -186,7 +187,15 @@ public class Property implements AttributeChanged {
                 value = new OnOffValue("true", "false");
                 break;
             case color_:
-                value = new ColorValue(attributes.format.contains("rgb"), null, null, 100);
+                if (attributes.format.equals("hsv")) {
+                    value = new ColorValue(ColorMode.HSB, null, null, 100);
+                } else if (attributes.format.equals("rgb")) {
+                    value = new ColorValue(ColorMode.RGB, null, null, 100);
+                } else {
+                    logger.warn("Non supported color format: '{}'. Only 'hsv' and 'rgb' are supported",
+                            attributes.format);
+                    value = new TextValue();
+                }
                 break;
             case enum_:
                 String enumValues[] = attributes.format.split(",");

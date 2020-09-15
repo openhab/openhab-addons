@@ -47,6 +47,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BitArray;
+import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -155,6 +156,80 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         verifyEndpointBasicInitInteraction();
         // polling is _not_ setup
         verifyNoMoreInteractions(mockedModbusManager);
+    }
+
+    private void testPollerLengthCheck(String type, int length, boolean expectedOnline) {
+        Configuration pollerConfig = new Configuration();
+        pollerConfig.put("refresh", 0L);
+        pollerConfig.put("start", 5);
+        pollerConfig.put("length", length);
+        pollerConfig.put("type", type);
+        poller = createPollerThingBuilder("poller").withConfiguration(pollerConfig).withBridge(endpoint.getUID())
+                .build();
+
+        addThing(poller);
+        assertThat(poller.getStatus(), is(equalTo(expectedOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE)));
+        if (!expectedOnline) {
+            assertThat(poller.getStatusInfo().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        }
+
+        verifyEndpointBasicInitInteraction();
+        verifyNoMoreInteractions(mockedModbusManager);
+    }
+
+    @Test
+    public void testPollerWithMaxRegisters()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER,
+                ModbusConstants.MAX_REGISTERS_READ_COUNT, true);
+    }
+
+    @Test
+    public void testPollerLengthOutOfBoundsWithRegisters()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_HOLDING_REGISTER,
+                ModbusConstants.MAX_REGISTERS_READ_COUNT + 1, false);
+    }
+
+    @Test
+    public void testPollerWithMaxInputRegisters()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_INPUT_REGISTER,
+                ModbusConstants.MAX_REGISTERS_READ_COUNT, true);
+    }
+
+    @Test
+    public void testPollerLengthOutOfBoundsWithInputRegisters()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_INPUT_REGISTER,
+                ModbusConstants.MAX_REGISTERS_READ_COUNT + 1, false);
+    }
+
+    @Test
+    public void testPollerWithMaxCoils()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_COIL, ModbusConstants.MAX_BITS_READ_COUNT, true);
+    }
+
+    @Test
+    public void testPollerLengthOutOfBoundsWithCoils()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_COIL, ModbusConstants.MAX_BITS_READ_COUNT + 1,
+                false);
+    }
+
+    @Test
+    public void testPollerWithMaxDiscreteInput()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_DISCRETE_INPUT,
+                ModbusConstants.MAX_BITS_READ_COUNT, true);
+    }
+
+    @Test
+    public void testPollerLengthOutOfBoundsWithDiscreteInput()
+            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+        testPollerLengthCheck(ModbusBindingConstantsInternal.READ_TYPE_DISCRETE_INPUT,
+                ModbusConstants.MAX_BITS_READ_COUNT + 1, false);
     }
 
     public void testPollingGeneric(String type, ModbusReadFunctionCode expectedFunctionCode)

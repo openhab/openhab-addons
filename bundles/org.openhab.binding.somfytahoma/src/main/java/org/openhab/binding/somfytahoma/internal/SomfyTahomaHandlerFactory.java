@@ -15,12 +15,10 @@ package org.openhab.binding.somfytahoma.internal;
 import static org.openhab.binding.somfytahoma.internal.SomfyTahomaBindingConstants.*;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -29,7 +27,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.somfytahoma.internal.discovery.SomfyTahomaItemDiscoveryService;
 import org.openhab.binding.somfytahoma.internal.handler.*;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
@@ -72,9 +69,7 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         logger.debug("Creating handler for {}", thing.getThingTypeUID().getId());
 
         if (thingTypeUID.equals(THING_TYPE_BRIDGE)) {
-            SomfyTahomaBridgeHandler handler = new SomfyTahomaBridgeHandler((Bridge) thing, httpClientFactory);
-            registerItemDiscoveryService(handler);
-            return handler;
+            return new SomfyTahomaBridgeHandler((Bridge) thing, httpClientFactory);
         } else if (thingTypeUID.equals(THING_TYPE_GATEWAY)) {
             return new SomfyTahomaGatewayHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_ROLLERSHUTTER)) {
@@ -155,27 +150,5 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
         } else {
             return null;
         }
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof SomfyTahomaBridgeHandler) {
-            ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
-            // remove discovery service, if bridge handler is removed
-            SomfyTahomaItemDiscoveryService service = (SomfyTahomaItemDiscoveryService) bundleContext
-                    .getService(serviceReg.getReference());
-            if (service != null) {
-                service.deactivate();
-            }
-            serviceReg.unregister();
-            discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-        }
-    }
-
-    private synchronized void registerItemDiscoveryService(SomfyTahomaBridgeHandler bridgeHandler) {
-        SomfyTahomaItemDiscoveryService discoveryService = new SomfyTahomaItemDiscoveryService(bridgeHandler);
-        discoveryService.activate(null);
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
 }

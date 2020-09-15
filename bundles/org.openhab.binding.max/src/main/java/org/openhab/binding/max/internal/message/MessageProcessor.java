@@ -15,6 +15,8 @@ package org.openhab.binding.max.internal.message;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.max.internal.exceptions.IncompleteMessageException;
 import org.openhab.binding.max.internal.exceptions.IncorrectMultilineIndexException;
 import org.openhab.binding.max.internal.exceptions.MessageIsWaitingException;
@@ -33,6 +35,7 @@ import org.openhab.binding.max.internal.exceptions.UnsupportedMessageTypeExcepti
  *
  * @author Christian Rockrohr <christian@rockrohr.de> - Initial contribution
  */
+@NonNullByDefault
 public class MessageProcessor {
 
     public static final String SEPARATOR = ":";
@@ -41,7 +44,8 @@ public class MessageProcessor {
      * The message that was created from last line received. (Null if no message
      * available yet)
      */
-    private Message currentMessage;
+
+    private @Nullable Message currentMessage;
 
     /**
      * <pre>
@@ -51,9 +55,9 @@ public class MessageProcessor {
      *    currentMessageType indicates which message type is currently on stack
      * </pre>
      */
-    private Integer numberOfRequiredLines;
+    private @Nullable Integer numberOfRequiredLines;
     private List<String> receivedLines = new ArrayList<>();
-    private MessageType currentMessageType;
+    private @Nullable MessageType currentMessageType;
 
     /**
      * Resets the current status and processed lines. Should be used after
@@ -208,6 +212,7 @@ public class MessageProcessor {
      * @throws NoMessageAvailableException
      *             when there was no message on the stack
      */
+    @Nullable
     public Message pull() throws NoMessageAvailableException {
         final Message result = this.currentMessage;
         if (this.currentMessage == null) {
@@ -225,13 +230,13 @@ public class MessageProcessor {
      *            the raw data provided read from the MAX protocol
      * @return MessageType of the line added
      */
+    @Nullable
     private static MessageType getMessageType(String line) {
         for (MessageType msgType : MessageType.values()) {
             if (line.startsWith(msgType.name() + SEPARATOR)) {
                 return msgType;
             }
         }
-
         return null;
     }
 }

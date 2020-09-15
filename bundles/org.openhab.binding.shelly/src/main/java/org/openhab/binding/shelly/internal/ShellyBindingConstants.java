@@ -182,6 +182,7 @@ public class ShellyBindingConstants {
 
     // Relay
     public static final String CHANNEL_GROUP_RELAY_CONTROL = "relay";
+    public static final String CHANNEL_OUTPUT_NAME = "outputName";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_INPUT1 = "input1";
@@ -214,10 +215,6 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_EMETER_VOLTAGE = "voltage";
     public static final String CHANNEL_EMETER_CURRENT = "current";
     public static final String CHANNEL_EMETER_PFACTOR = "powerFactor";
-
-    public static final String CHANNEL_GROUP_LED_CONTROL = "led";
-    public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
-    public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
 
     public static final String CHANNEL_GROUP_SENSOR = "sensors";
     public static final String CHANNEL_SENSOR_TEMP = "temperature";
@@ -272,6 +269,7 @@ public class ShellyBindingConstants {
 
     // Device Status
     public static final String CHANNEL_GROUP_DEV_STATUS = "device";
+    public static final String CHANNEL_DEVST_NAME = "deviceName";
     public static final String CHANNEL_DEVST_UPTIME = "uptime";
     public static final String CHANNEL_DEVST_HEARTBEAT = "heartBeat";
     public static final String CHANNEL_DEVST_RSSI = "wifiSignal";
@@ -285,6 +283,8 @@ public class ShellyBindingConstants {
     public static final String CHANNEL_DEVST_UPDATE = "updateAvailable";
     public static final String CHANNEL_DEVST_SELFTTEST = "selfTest";
 
+    public static final String CHANNEL_LED_STATUS_DISABLE = "statusLed";
+    public static final String CHANNEL_LED_POWER_DISABLE = "powerLed";
     // Button/xi3
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_STATUS_EVENTTYPE = "lastEvent";

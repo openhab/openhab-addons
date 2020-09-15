@@ -25,7 +25,7 @@ public class Config {
     /**
      * The default application name to generate the application token.
      */
-    public static final String DEFAULT_APPLICATION_NAME = "ESH";
+    public static final String DEFAULT_APPLICATION_NAME = "openHAB";
     /**
      * Defines the used tread pool name to get a thread pool from {@link ThreadPoolManager}.
      */

@@ -39,6 +39,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | -------------------- | :----------: | :---------------------------------: | ----------------------------------------------------------- | ---------------- |
 | Gateway Management   | `13`         | `bus_gateway`                       | Any IP gateway supporting OpenWebNet protocol should work (e.g. F454 / MyHOMEServer1 / MH202 / F455 / MH200N, ...) | Successfully tested: F454, MyHOMEServer1, MyHOME_Screen10, F455, F452, F453AV, MH201, MH202, MH200N. Some connection stability issues/gateway resets reported with MH202  |
 | Lighting            | `1`          | `bus_on_off_switch`, `bus_dimmer`   | BUS switches and dimmers.                   | Successfully tested: F411/2, F411/4, F411U2, F422, F429. Some discovery issues reported with F429 (DALI Dimmers)  |
+| Automation           | `2`          | `bus_automation`                    | BUS roller shutters, with position feedback and auto-calibration | Successfully tested: LN4672M2  |
 
 ### For ZigBee (Radio)
 
@@ -46,6 +47,7 @@ The following Things and OpenWebNet `WHOs` are supported:
 | ---------- | :---: | :-------------------------------: | :-------------------------------------------------------------------: | ------------------------------------ |
 | Gateway    | `13`  | `zb_gateway`                      | Wireless ZigBee USB Gateway (models: BTI-3578 / LG 088328) | Tested: BTI-3578 and LG 088328       |
 | Lighting   | `1`   | `zb_dimmer`, `zb_on_off_switch`, `zb_on_off_switch2u` | ZigBee dimmers, switches and 2-unit switches      | Tested: BTI-4591, BTI-3584, BTI-4585 |
+| Automation | `2`   | `zb_automation`                   | ZigBee roller shutters                                                |  |
 
 ## Discovery
 
@@ -128,8 +130,22 @@ Devices support some of the following channels:
 
 | Channel Type ID (channel ID)        | Item Type     | Description                                                             | Read/Write |
 |--------------------------|---------------|-------------------------------------------------------------------------|:----------:|
-| `switch`                 | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
-| `brightness`             | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
+| `switch`               | Switch        | To switch the device `ON` and `OFF`                                     |    R/W     |
+| `brightness`          | Dimmer        | To adjust the brightness value (Percent, `ON`, `OFF`)                   |    R/W     |
+| `shutter`              | Rollershutter | To activate roller shutters (`UP`, `DOWN`, `STOP`, Percent - [see Shutter position](#shutter-position)) |    R/W     |
+
+### Notes on channels
+
+#### `shutter` position
+
+For Percent commands and position feedback to work correctly, the `shutterRun` Thing config parameter must be configured equal to the time (in ms) to go from full UP to full DOWN.
+It's possible to enter a value manually or set `shutterRun=AUTO` (default) to calibrate `shutterRun` automatically: in this case a *UP >> DOWN >> Position%* cycle will be performed automatically the first time a Percent command is sent to the shutter.
+
+- if `shutterRun` is not set, or is set to AUTO but calibration has not been performed yet, then position estimation will remain `UNDEFINED`
+- if `shutterRun` is wrongly set higher than the actual runtime, then position estimation will remain `UNDEFINED`: try to reduce shutterRun until you find the right value
+- before adding/configuring roller shutter Things it is suggested to have all roller shutters `UP`, otherwise the Percent command won’t work until the roller shutter is fully rolled up
+- if the gateways gets disconnected the binding cannot estimate anymore the shutter positions: just roll the shutter all `UP` or `DOWN` and its position will be estimated again
+- the shutter position is estimated based on UP/DOWN timing: an error of ±2% is normal
 
 ## Full Example
 
@@ -140,6 +156,7 @@ Bridge openwebnet:bus_gateway:mybridge "MyHOMEServer1" [ host="192.168.1.35", pa
       bus_on_off_switch        LR_switch        "Living Room Light"       [ where="51" ]
       bus_dimmer               LR_dimmer        "Living Room Dimmer"      [ where="25#4#01" ]
       bus_dimmer               LR_dalidimmer    "Living Room Dali-Dimmer" [ where="0311#4#01" ]
+      bus_automation           LR_shutter       "Living Room Shutter"     [ where="93", shutterRun="10050"]
 }
 ``` 
 
@@ -161,6 +178,7 @@ Switch          iLR_switch          "Light"                             <light> 
 Dimmer          iLR_dimmer          "Dimmer [%.0f %%]"                  <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dimmer:brightness" }
 Dimmer          iLR_dalidimmer      "Dali-Dimmer [%.0f %%]"             <DimmableLight>  (gLivingRoom)                [ "Lighting" ]  { channel="openwebnet:bus_dimmer:mybridge:LR_dalidimmer:brightness" }
 /* For Dimmers, use category DimmableLight to have Off/On switch in addition to the Percent slider in PaperUI */
+Rollershutter   iLR_shutter         "Shutter [%.0f %%]"                 <rollershutter>  (gShutters, gLivingRoom)     [ "Blinds"   ]  { channel="openwebnet:bus_automation:mybridge:LR_shutter:shutter" }
 ```
 
 ### openwebnet.sitemap
@@ -173,6 +191,7 @@ sitemap openwebnet label="OpenWebNet Binding Example Sitemap"
           Default item=iLR_switch           icon="light"    
           Default item=iLR_dimmer           icon="light" 
           Default item=iLR_dalidimmer       icon="light"
+          Default item=iLR_shutter
     }
 }
 ```

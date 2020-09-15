@@ -62,6 +62,10 @@ The following configuration options are available:
 - **lowBattery** (Switch)  
     Use this channel to receive a low battery warning.
 
+- **doorsensorState** (Number)  
+    Use this channel if you want to display the current door state provided by the door sensor.  
+    Supported Door Sensor States are : `0` (Unavailable), `1` (Deactivated), `2` (Closed), `3` (Open), `4` (Unknown) and `5` (Calibrating).
+
 ## Full Example
 
 A manual setup through files could look like this:
@@ -77,9 +81,10 @@ Bridge nuki:bridge:NB1 [ ip="192.168.0.50", port=8080, apiToken="myS3cr3t!", man
 ### items/nuki.items
 
 ```
-Switch Frontdoor_Lock		"Frontdoor (Unlock / Lock)"		<nukiwhite>		{ channel="nuki:smartlock:NB1:SL1:lock" }
-Number Frontdoor_State		"Frontdoor (State)"				<nukisl>		{ channel="nuki:smartlock:NB1:SL1:lockState" }
-Switch Frontdoor_LowBattery	"Frontdoor Low Battery"			<nukibattery>	{ channel="nuki:smartlock:NB1:SL1:lowBattery" }
+Switch Frontdoor_Lock		"Frontdoor (Unlock / Lock)"	<nukiwhite>		{ channel="nuki:smartlock:NB1:SL1:lock" }
+Number Frontdoor_LockState	"Frontdoor (Lock State)"	<nukisl>		{ channel="nuki:smartlock:NB1:SL1:lockState" }
+Switch Frontdoor_LowBattery	"Frontdoor Low Battery"		<nukibattery>		{ channel="nuki:smartlock:NB1:SL1:lowBattery" }
+Number Frontdoor_DoorState	"Frontdoor (Door State)"	<door>			{ channel="nuki:smartlock:NB1:SL1:doorsensorState" }
 ```
 
 ### sitemaps/nuki.sitemap
@@ -93,10 +98,13 @@ sitemap nuki label="Nuki Smart Lock" {
 		Switch item=Frontdoor_State mappings=[2="Unlock", 7="Unlatch", 1002="LnGo", 1007="LnGoU", 4="Lock"]
 	}
 	Frame label="Channel State" {
-		Text item=Frontdoor_State label="Lock State [MAP(nukilockstates.map):%s]"
+		Text item=Frontdoor_LockState label="Lock State [MAP(nukilockstates.map):%s]"
 	}
 	Frame label="Channel Low Battery" {
 		Text item=Frontdoor_LowBattery	label="Low Battery [%s]"
+	}
+	Frame label="Channel Door State" {
+		Text item=Frontdoor_DoorState label="Door State [MAP(nukidoorsensorstates.map):%s]"
 	}
 }
 ```

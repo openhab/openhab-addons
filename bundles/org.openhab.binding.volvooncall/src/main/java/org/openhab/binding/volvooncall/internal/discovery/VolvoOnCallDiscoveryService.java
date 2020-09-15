@@ -56,11 +56,12 @@ public class VolvoOnCallDiscoveryService extends AbstractDiscoveryService {
                 Vehicles vehicle = bridgeHandler.getURL(accountVehicle.vehicleURL, Vehicles.class);
                 Attributes attributes = bridgeHandler.getURL(Attributes.class, vehicle.vehicleId);
 
-                thingDiscovered(
-                        DiscoveryResultBuilder.create(new ThingUID(VEHICLE_THING_TYPE, accountVehicle.vehicleId))
-                                .withLabel(attributes.vehicleType + " " + attributes.registrationNumber)
-                                .withBridge(bridgeHandler.getThing().getUID()).withProperty(VIN, attributes.vin)
-                                .withRepresentationProperty(accountVehicle.vehicleId).build());
+                thingDiscovered(DiscoveryResultBuilder
+                        .create(new ThingUID(VEHICLE_THING_TYPE, bridgeHandler.getThing().getUID(),
+                                accountVehicle.vehicleId))
+                        .withLabel(attributes.vehicleType + " " + attributes.registrationNumber)
+                        .withBridge(bridgeHandler.getThing().getUID()).withProperty(VIN, attributes.vin)
+                        .withRepresentationProperty(accountVehicle.vehicleId).build());
 
             } catch (VolvoOnCallException e) {
                 logger.warn("Error while discovering vehicle: {}", e.getMessage());
