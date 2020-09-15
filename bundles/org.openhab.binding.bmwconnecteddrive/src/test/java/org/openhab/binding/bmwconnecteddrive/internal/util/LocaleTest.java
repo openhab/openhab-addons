@@ -14,11 +14,15 @@ package org.openhab.binding.bmwconnecteddrive.internal.util;
 
 import static org.junit.Assert.*;
 
+import java.nio.charset.Charset;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.util.MultiMap;
+import org.eclipse.jetty.util.UrlEncoded;
 import org.junit.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
@@ -72,5 +76,22 @@ public class LocaleTest {
         double distance = 0.005;
         double dist = Converter.measureDistance(lat, lon, lat + distance, lon + distance);
         assertTrue("Distance below 1 km", dist < 1);
+    }
+
+    @Test
+    public void testLocation() {
+        MultiMap<String> dataMap = new MultiMap<String>();
+        Position p = new Position();
+        p.lat = (float) 50.32;
+        p.lon = (float) 8.32;
+
+        // LocalDateTime ldt = LocalDateTime.now();
+        // dataMap.add("deviceTime", ldt.format(Converter.DATE_INPUT_PATTERN));
+        dataMap.add("dlat", Float.toString(p.lat));
+        dataMap.add("dlon", Float.toString(p.lon));
+        System.out.println("Map " + dataMap);
+        String urlEncodedParameter = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
+        System.out.println("Encoded " + urlEncodedParameter);
+
     }
 }

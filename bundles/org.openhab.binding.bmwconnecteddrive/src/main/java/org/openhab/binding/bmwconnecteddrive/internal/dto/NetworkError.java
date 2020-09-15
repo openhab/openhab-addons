@@ -24,11 +24,12 @@ public class NetworkError {
     public String url;
     public int status;
     public String reason;
+    public String params;
 
     @Override
     public String toString() {
         return new StringBuffer(url).append(Constants.HYPHEN).append(status).append(Constants.HYPHEN).append(reason)
-                .toString();
+                .append(params).toString();
     }
 
     public String toJson() {
