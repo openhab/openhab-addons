@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -265,7 +266,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
         Request request = httpClient.createRequest(url, POST, requestContent);
         request.send(result -> {
             try {
-                Response response = result.getResponse();
+                Response response = result != null ? result.getResponse() : null;
                 if (result != null && !result.isFailed() && response instanceof ContentResponse) {
                     ContentResponse contentResponse = (ContentResponse) response;
                     String content = contentResponse.getContentAsString();
@@ -402,62 +403,42 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
     /**
      * Query the Bosch Smart Home Controller for the state of the given thing.
      *
-     * @param thing Thing to query the device state for
-     * @param stateName Name of the state to query
-     * @param classOfT Class to convert the resulting JSON to
-     */
-    public <T extends Object> @Nullable T refreshState(Thing thing, String stateName, Class<T> classOfT) {
-        BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
-        if (handler != null) {
-            String deviceId = handler.getBoschID();
-            if (deviceId != null) {
-                return this.getState(deviceId, stateName, classOfT);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Query the Bosch Smart Home Controller for the state of the given thing.
-     *
      * @param deviceId Id of device to get state for
      * @param stateName Name of the state to query
      * @param stateClass Class to convert the resulting JSON to
+     * @throws ExecutionException
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws BoschSHCException
      */
-    public <T extends Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass) {
+    public <T extends @NonNull Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");
             return null;
         }
 
-        try {
-            String url = httpClient.createServiceUrl(stateName, deviceId);
-            Request request = httpClient.createRequest(url, GET).header("Accept", "application/json");
+        String url = httpClient.createServiceUrl(stateName, deviceId);
+        Request request = httpClient.createRequest(url, GET).header("Accept", "application/json");
 
-            logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
+        logger.debug("refreshState: Requesting \"{}\" from Bosch: {} via {}", stateName, deviceId, url);
 
-            ContentResponse contentResponse = request.send();
+        ContentResponse contentResponse = request.send();
 
-            String content = contentResponse.getContentAsString();
-            logger.debug("refreshState: Request complete: [{}] - return code: {}", content,
-                    contentResponse.getStatus());
+        String content = contentResponse.getContentAsString();
+        logger.debug("refreshState: Request complete: [{}] - return code: {}", content, contentResponse.getStatus());
 
-            int statusCode = contentResponse.getStatus();
-            if (statusCode != 200) {
-                JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
-                throw new BoschSHCException(String.format(
-                        "State request for service {} of device {} failed with status code {} and error code {}",
-                        stateName, deviceId, errorResponse.statusCode, errorResponse.errorCode));
-            }
-
-            T state = gson.fromJson(content, stateClass);
-            return state;
-
-        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
-            logger.warn("refreshState: HTTP request failed", e);
-            return null;
+        int statusCode = contentResponse.getStatus();
+        if (statusCode != 200) {
+            JsonRestExceptionResponse errorResponse = gson.fromJson(content, JsonRestExceptionResponse.class);
+            throw new BoschSHCException(String.format(
+                    "State request for service {} of device {} failed with status code {} and error code {}", stateName,
+                    deviceId, errorResponse.statusCode, errorResponse.errorCode));
         }
+
+        T state = gson.fromJson(content, stateClass);
+        return state;
     }
 
     /**
@@ -469,7 +450,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * 
      * @return Response of request
      */
-    public <T extends Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
+    public <T extends @NonNull Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");

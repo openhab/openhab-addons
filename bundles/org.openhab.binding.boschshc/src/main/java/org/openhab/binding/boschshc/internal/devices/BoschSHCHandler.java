@@ -15,9 +15,12 @@ package org.openhab.binding.boschshc.internal.devices;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
@@ -140,7 +143,13 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             // Refresh state of services that affect the channel
             for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
                 if (deviceService.affectedChannels.contains(channelUID.getIdWithoutGroup())) {
-                    deviceService.service.refreshState();
+                    try {
+                        deviceService.service.refreshState();
+                    } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
+                        this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                                String.format("Error when trying to refresh state from service {}: {}",
+                                        deviceService.service.getServiceName(), e.getMessage()));
+                    }
                 }
             }
         }
@@ -184,6 +193,29 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             throw new BoschSHCException(String.format("Bridge of {} has no valid bridge handler", this.getThing()));
         }
         return bridgeHandler;
+    }
+
+    /**
+     * Query the Bosch Smart Home Controller for the state of the service with the specified name.
+     * 
+     * @note Use services instead of directly requesting a state.
+     *
+     * @param stateName Name of the service to query
+     * @param classOfT Class to convert the resulting JSON to
+     */
+    protected <T extends @NonNull Object> @Nullable T getState(String stateName, Class<T> classOfT) {
+        String deviceId = this.getBoschID();
+        if (deviceId == null) {
+            return null;
+        }
+        try {
+            BoschSHCBridgeHandler bridgeHandler = this.getBridgeHandler();
+            return bridgeHandler.getState(deviceId, stateName, classOfT);
+        } catch (InterruptedException | TimeoutException | ExecutionException | BoschSHCException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                    String.format("Error when trying to refresh state from service {}: {}", stateName, e.getMessage()));
+            return null;
+        }
     }
 
     /**

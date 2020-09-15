@@ -102,13 +102,7 @@ public class ShutterControlHandler extends BoschSHCHandler {
     }
 
     private @Nullable ShutterControlState getDeviceState() {
-        BoschSHCBridgeHandler bridgeHandler;
-        try {
-            bridgeHandler = this.getBridgeHandler();
-        } catch (BoschSHCException e) {
-            return null;
-        }
-        return bridgeHandler.refreshState(getThing(), ShutterControlServiceName, ShutterControlState.class);
+        return this.getState(ShutterControlServiceName, ShutterControlState.class);
     }
 
     private void setDeviceState(ShutterControlState state) {

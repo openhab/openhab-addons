@@ -26,7 +26,6 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -49,18 +48,13 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
 
         if (bridge != null) {
             logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
-            BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
 
-            if (bridgeHandler != null) {
+            if (command instanceof RefreshType && CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
 
-                if (command instanceof RefreshType && CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
-
-                    // Only refresh the state for CHANNEL_TEMPERATURE, the rest will be filled in too.
-                    TwinguardState state = bridgeHandler.refreshState(getThing(), "AirQualityLevel",
-                            TwinguardState.class);
-                    if (state != null) {
-                        updateAirQualityState(state);
-                    }
+                // Only refresh the state for CHANNEL_TEMPERATURE, the rest will be filled in too.
+                TwinguardState state = this.getState("AirQualityLevel", TwinguardState.class);
+                if (state != null) {
+                    updateAirQualityState(state);
                 }
             }
         } else {

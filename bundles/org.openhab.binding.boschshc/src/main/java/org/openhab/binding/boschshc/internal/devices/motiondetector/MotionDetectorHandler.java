@@ -17,15 +17,11 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -44,28 +40,15 @@ public class MotionDetectorHandler extends BoschSHCHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Bridge bridge = this.getBridge();
+        logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
 
-        if (bridge != null) {
-
-            logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
-            BoschSHCBridgeHandler bridgeHandler = (BoschSHCBridgeHandler) bridge.getHandler();
-
-            if (bridgeHandler != null) {
-
-                if (CHANNEL_LATEST_MOTION.equals(channelUID.getId())) {
-                    if (command instanceof RefreshType) {
-                        LatestMotionState state = bridgeHandler.refreshState(getThing(), "LatestMotion",
-                                LatestMotionState.class);
-                        if (state != null) {
-                            updateLatestMotionState(state);
-                        }
-                    }
-                    // Otherwise: not action supported here.
+        if (CHANNEL_LATEST_MOTION.equals(channelUID.getId())) {
+            if (command instanceof RefreshType) {
+                LatestMotionState state = this.getState("LatestMotion", LatestMotionState.class);
+                if (state != null) {
+                    updateLatestMotionState(state);
                 }
             }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge is NUL");
         }
     }
 
