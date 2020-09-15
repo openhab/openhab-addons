@@ -163,6 +163,20 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Helper method to send with high priority OWN messages from ThingsHandlers
+     */
+    protected @Nullable Response sendHighPriority(OpenMessage msg) throws OWNException {
+        OpenWebNetBridgeHandler handler = bridgeHandler;
+        if (handler != null) {
+            OpenGateway gw = handler.gateway;
+            if (gw != null) {
+                return gw.sendHighPriority(msg);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Request to gateway state for thing channel. It must be implemented by each specific device handler.
      *
      * @param channel the channel to request the state for

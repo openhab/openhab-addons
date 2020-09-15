@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import org.junit.Before;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.device.DeviceInformation;
 import org.openhab.binding.max.internal.device.DeviceType;
@@ -25,18 +25,14 @@ import org.openhab.binding.max.internal.device.RoomInformation;
 /**
  * Tests cases for {@link MMessage}.
  *
- * @author Marcel Verpaalen - Initial version
+ * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MMessageTest {
 
     public static final String RAW_DATA = "M:00,01,VgIFAQhiYWRrYW1lcgsNowIMU3R1ZGVlcmthbWVyB7bnAwlXb29ua2FtZXIL6aIEDFN6b25qYSBLYW1lcgjDSQUGWm9sZGVyCMHWCAILDaNLRVEwNTQ0MjQyEUJhZGthbWVyIFJhZGlhdG9yAQEHtudLRVEwMTQ1MTcyFVJhZGlhdG9yIFN0dWRlZXJrYW1lcgIDDhXMTEVRMDAxNTM0MBlXYWxsIFRoZXJtb3N0YXQgV29vbmthbWVyAwEL6aJLRVE5MDE1NDMyG1BsdWcgQWRhcHRlciBNdXVydmVyd2FybWluZwMFBDNvSkVRMDM4MDg3OBdFY28gU3dpdGNoIFN0dWRlZXJrYW1lcgAEDnX2S0VRMTEwNDM4MBpXaW5kb3cgU2Vuc29yIFN0dWRlZXJrYW1lcgIBCMNJS0VRMDY0ODk0ORJUaGVybW9zdGFhdCBTem9uamEEAQjB1ktFUTA2NDkzMTIRU3R1ZGVlcmthbWVyIElybWEFAQ==";
 
-    private MMessage message;
-
-    @Before
-    public void before() {
-        message = new MMessage(RAW_DATA);
-    }
+    private final MMessage message = new MMessage(RAW_DATA);
 
     @Test
     public void getMessageTypeTest() {

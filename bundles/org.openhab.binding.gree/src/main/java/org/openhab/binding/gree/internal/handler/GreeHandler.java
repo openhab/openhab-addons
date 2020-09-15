@@ -153,7 +153,7 @@ public class GreeHandler extends BaseThingHandler {
                     case LIGHT_CHANNEL:
                         device.setDeviceLight(socket, getOnOff(command));
                         break;
-                    case TEMP_CHANNEL:
+                    case TARGET_TEMP_CHANNEL:
                         // Set value, read back effective one and update channel
                         // e.g. 22.5C will result in 22.0, because the AC doesn't support half-steps for C
                         device.setDeviceTempSet(socket, convertTemp(command));
@@ -405,8 +405,11 @@ public class GreeHandler extends BaseThingHandler {
                 case LIGHT_CHANNEL:
                     state = updateOnOff(GREE_PROP_LIGHT);
                     break;
-                case TEMP_CHANNEL:
-                    state = updateTemp();
+                case TARGET_TEMP_CHANNEL:
+                    state = updateTargetTemp();
+                    break;
+                case CURRENT_TEMP_CHANNEL:
+                    state = updateCurrentTemp();
                     break;
                 case SWINGUD_CHANNEL:
                     state = updateNumber(GREE_PROP_SWINGUPDOWN);
@@ -505,11 +508,19 @@ public class GreeHandler extends BaseThingHandler {
         return null;
     }
 
-    private @Nullable State updateTemp() throws GreeException {
+    private @Nullable State updateTargetTemp() throws GreeException {
         if (device.hasStatusValChanged(GREE_PROP_SETTEMP) || device.hasStatusValChanged(GREE_PROP_TEMPUNIT)) {
             int unit = device.getIntStatusVal(GREE_PROP_TEMPUNIT);
             return toQuantityType(device.getIntStatusVal(GREE_PROP_SETTEMP), DIGITS_TEMP,
                     unit == TEMP_UNIT_CELSIUS ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT);
+        }
+        return null;
+    }
+
+    private @Nullable State updateCurrentTemp() throws GreeException {
+        if (device.hasStatusValChanged(GREE_PROP_CURRENT_TEMP_SENSOR)) {
+            return new DecimalType(device.getIntStatusVal(GREE_PROP_CURRENT_TEMP_SENSOR) + INTERNAL_TEMP_SENSOR_OFFSET
+                    + config.currentTemperatureOffset.doubleValue());
         }
         return null;
     }
@@ -525,7 +536,7 @@ public class GreeHandler extends BaseThingHandler {
         return new QuantityType<>(bd.setScale(digits, BigDecimal.ROUND_HALF_EVEN), unit);
     }
 
-    private void stopRefrestTask() {
+    private void stopRefreshTask() {
         forceRefresh = false;
         if (refreshTask == null) {
             return;
@@ -544,7 +555,7 @@ public class GreeHandler extends BaseThingHandler {
             clientSocket.get().close();
             clientSocket = Optional.empty();
         }
-        stopRefrestTask();
+        stopRefreshTask();
         if (initializeFuture != null) {
             initializeFuture.cancel(true);
         }

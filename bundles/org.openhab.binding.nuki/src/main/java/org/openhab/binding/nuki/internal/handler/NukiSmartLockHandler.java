@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Markus Katter - Initial contribution
+ * @contributer Christian Hoefler - Door sensor integration
  */
 public class NukiSmartLockHandler extends BaseThingHandler {
 
@@ -220,6 +221,12 @@ public class NukiSmartLockHandler extends BaseThingHandler {
                     updateState(channelUID, bridgeLockStateResponse.isBatteryCritical() ? OnOffType.ON : OnOffType.OFF);
                 }
                 break;
+            case NukiBindingConstants.CHANNEL_SMARTLOCK_DOOR_STATE:
+                bridgeLockStateResponse = nukiHttpClient.getBridgeLockState(nukiId);
+                if (handleResponse(bridgeLockStateResponse, channelUID.getAsString(), command.toString())) {
+                    updateState(channelUID, new DecimalType(bridgeLockStateResponse.getDoorsensorState()));
+                }
+                break;
             default:
                 logger.debug("Command[{}] for channelUID[{}] not implemented!", command, channelUID);
                 return;
@@ -247,6 +254,10 @@ public class NukiSmartLockHandler extends BaseThingHandler {
         Channel channelLockState = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_STATE);
         if (channelLockState != null) {
             updateState(channelLockState.getUID(), new DecimalType(NukiBindingConstants.LOCK_STATES_UNDEFINED));
+        }
+        Channel channelDoorState = thing.getChannel(NukiBindingConstants.CHANNEL_SMARTLOCK_DOOR_STATE);
+        if (channelDoorState != null) {
+            updateState(channelDoorState.getUID(), new DecimalType(NukiBindingConstants.DOORSENSOR_STATES_UNKNOWN));
         }
         startReInitJob();
         return false;

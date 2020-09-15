@@ -9,7 +9,8 @@
 		<channels>
 			<channel id="power" typeId="system.power"/>
 			<channel id="mode" typeId="mode"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="targetTemperature"/>
+			<channel id="currentTemperature" typeId="currentTemperature"/>
 			<channel id="air" typeId="air"/>
 			<channel id="dry" typeId="dry"/>
 			<channel id="turbo" typeId="turbo"/>
@@ -34,6 +35,11 @@
 				<unitLabel>seconds</unitLabel>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="currentTemperatureOffset" type="decimal" step="0.5" required="true" unit="C">
+				<default>0</default>
+				<unitLabel>Degrees Celsius</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
 		</config-description>
 
 	</thing-type>
@@ -55,11 +61,17 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="temperature">
+	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.gree.temperature.label</label>
-		<description>@text/channel-type.gree.temperature.description</description>
+		<label>@text/channel-type.gree.targettemperature.label</label>
+		<description>@text/channel-type.gree.targettemperature.description</description>
 		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
+	</channel-type>
+	<channel-type id="currentTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.gree.currenttemperature.label</label>
+		<description>@text/channel-type.gree.currenttemperature.description</description>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="air">
 		<item-type>Switch</item-type>

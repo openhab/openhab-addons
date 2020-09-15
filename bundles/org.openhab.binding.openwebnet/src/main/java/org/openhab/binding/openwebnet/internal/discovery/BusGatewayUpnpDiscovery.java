@@ -225,7 +225,7 @@ public class BusGatewayUpnpDiscovery implements UpnpDiscoveryParticipant {
                     }
                 }
             }
-            logger.info("Found BTicino device is not a OpenWebNet gateway or is not supported (UDN={})", idString);
+            logger.info("Found BTicino device: not a OpenWebNet gateway or is not supported (UDN={})", idString);
         }
         return null;
     }

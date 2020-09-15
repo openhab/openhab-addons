@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - Details parsing, OH2 version
  */
+@NonNullByDefault
 public final class HMessage extends Message {
 
     private ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.systemDefault());

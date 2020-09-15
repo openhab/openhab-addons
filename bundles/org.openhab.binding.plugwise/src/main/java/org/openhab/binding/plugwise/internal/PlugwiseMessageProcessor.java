@@ -46,7 +46,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
     private class MessageProcessorThread extends Thread {
 
         public MessageProcessorThread() {
-            super("Plugwise MessageProcessorThread");
+            super("OH-binding-" + context.getBridgeUID() + "-message-processor");
             setDaemon(true);
         }
 

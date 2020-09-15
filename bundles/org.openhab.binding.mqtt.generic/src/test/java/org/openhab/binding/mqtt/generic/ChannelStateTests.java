@@ -41,6 +41,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.DateTimeValue;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
@@ -210,7 +211,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveRGBColorTest() {
-        ColorValue value = new ColorValue(true, "FON", "FOFF", 10);
+        ColorValue value = new ColorValue(ColorMode.RGB, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -237,7 +238,7 @@ public class ChannelStateTests {
 
     @Test
     public void receiveHSBColorTest() {
-        ColorValue value = new ColorValue(false, "FON", "FOFF", 10);
+        ColorValue value = new ColorValue(ColorMode.HSB, "FON", "FOFF", 10);
         ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
         c.start(connection, mock(ScheduledExecutorService.class), 100);
 
@@ -256,6 +257,32 @@ public class ChannelStateTests {
         c.processMessage("state", "12,18,100".getBytes());
         assertThat(value.getChannelState().toString(), is("12,18,100"));
         assertThat(value.getMQTTpublishValue(null), is("12,18,100"));
+    }
+
+    @Test
+    public void receiveXYYColorTest() {
+        ColorValue value = new ColorValue(ColorMode.XYY, "FON", "FOFF", 10);
+        ChannelState c = spy(new ChannelState(config, channelUID, value, channelStateUpdateListener));
+        c.start(connection, mock(ScheduledExecutorService.class), 100);
+
+        c.processMessage("state", "ON".getBytes()); // Normal on state
+        assertThat(value.getChannelState().toString(), is("0,0,10"));
+        assertThat(value.getMQTTpublishValue(null), is("0.312716,0.329002,10.00"));
+
+        c.processMessage("state", "FOFF".getBytes()); // Custom off state
+        assertThat(value.getChannelState().toString(), is("0,0,0"));
+        assertThat(value.getMQTTpublishValue(null), is("0.312716,0.329002,0.00"));
+
+        c.processMessage("state", "10".getBytes()); // Brightness only
+        assertThat(value.getChannelState().toString(), is("0,0,10"));
+        assertThat(value.getMQTTpublishValue(null), is("0.312716,0.329002,10.00"));
+
+        HSBType t = HSBType.fromXY(0.3f, 0.6f);
+
+        c.processMessage("state", "0.3,0.6,100".getBytes());
+        assertThat(value.getChannelState(), is(t)); // HSB
+        assertThat(value.getMQTTpublishValue(null), is("0.300000,0.600000,100.00"));
+        assertThat(value.getMQTTpublishValue("%3$.1f,%2$.4f,%1$.4f"), is("100.0,0.6000,0.3000"));
     }
 
     @Test

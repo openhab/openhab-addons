@@ -56,6 +56,7 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
     private final AudioHTTPServer audioHTTPServer;
     private final NetworkAddressService networkAddressService;
+    private final KodiDynamicCommandDescriptionProvider commandDescriptionProvider;
     private final KodiDynamicStateDescriptionProvider stateDescriptionProvider;
     private final WebSocketClient webSocketClient;
 
@@ -67,10 +68,12 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public KodiHandlerFactory(final @Reference AudioHTTPServer audioHTTPServer,
             final @Reference NetworkAddressService networkAddressService,
+            final @Reference KodiDynamicCommandDescriptionProvider commandDescriptionProvider,
             final @Reference KodiDynamicStateDescriptionProvider stateDescriptionProvider,
             final @Reference WebSocketFactory webSocketFactory) {
         this.audioHTTPServer = audioHTTPServer;
         this.networkAddressService = networkAddressService;
+        this.commandDescriptionProvider = commandDescriptionProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.webSocketClient = webSocketFactory.getCommonWebSocketClient();
     }
@@ -93,7 +96,8 @@ public class KodiHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(THING_TYPE_KODI)) {
             String callbackUrl = createCallbackUrl();
-            KodiHandler handler = new KodiHandler(thing, stateDescriptionProvider, webSocketClient, callbackUrl);
+            KodiHandler handler = new KodiHandler(thing, commandDescriptionProvider, stateDescriptionProvider,
+                    webSocketClient, callbackUrl);
 
             // register the Kodi as an audio sink
             KodiAudioSink audioSink = new KodiAudioSink(handler, audioHTTPServer, callbackUrl);

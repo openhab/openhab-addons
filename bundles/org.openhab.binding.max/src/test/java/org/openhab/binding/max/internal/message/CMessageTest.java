@@ -14,7 +14,7 @@ package org.openhab.binding.max.internal.message;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Before;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.device.DeviceType;
 
@@ -24,16 +24,11 @@ import org.openhab.binding.max.internal.device.DeviceType;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 Version and updates
  */
+@NonNullByDefault
 public class CMessageTest {
 
     public static final String RAW_DATA = "C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==";
-
-    private CMessage message;
-
-    @Before
-    public void before() {
-        message = new CMessage(RAW_DATA);
-    }
+    private final CMessage message = new CMessage(RAW_DATA);
 
     @Test
     public void getMessageTypeTest() {

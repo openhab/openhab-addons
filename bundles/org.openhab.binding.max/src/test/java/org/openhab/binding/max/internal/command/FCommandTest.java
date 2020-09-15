@@ -14,6 +14,7 @@ package org.openhab.binding.max.internal.command;
 
 import static org.junit.Assert.assertEquals;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 
 /**
@@ -21,10 +22,11 @@ import org.junit.Test;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class FCommandTest {
 
     @Test
-    public void PrefixTest() {
+    public void prefixTest() {
         FCommand scmd = new FCommand();
 
         String commandStr = scmd.getCommandString();
@@ -35,14 +37,14 @@ public class FCommandTest {
     }
 
     @Test
-    public void BaseCommandTest() {
+    public void baseCommandTest() {
         FCommand scmd = new FCommand("ntp.homematic.com", "nl.ntp.pool.org");
         String commandStr = scmd.getCommandString();
         assertEquals("f:ntp.homematic.com,nl.ntp.pool.org" + '\r' + '\n', commandStr);
     }
 
     @Test
-    public void FCommandNullTest() {
+    public void fCommandNullTest() {
         FCommand scmd = new FCommand("ntp.homematic.com", null);
         String commandStr = scmd.getCommandString();
         assertEquals("f:ntp.homematic.com" + '\r' + '\n', commandStr);

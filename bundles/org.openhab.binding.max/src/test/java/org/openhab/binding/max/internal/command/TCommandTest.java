@@ -14,7 +14,9 @@ package org.openhab.binding.max.internal.command;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.commons.net.util.Base64;
+import java.util.Base64;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.Utils;
 
@@ -23,10 +25,11 @@ import org.openhab.binding.max.internal.Utils;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class TCommandTest {
 
     @Test
-    public void PrefixTest() {
+    public void prefixTest() {
         TCommand scmd = new TCommand("0f1d54", false);
 
         String commandStr = scmd.getCommandString();
@@ -36,13 +39,13 @@ public class TCommandTest {
     }
 
     @Test
-    public void BaseCommandTest() {
+    public void baseCommandTest() {
         TCommand scmd = new TCommand("0f1d54", false);
 
         String commandStr = scmd.getCommandString();
 
         String base64Data = commandStr.split(",")[2];
-        byte[] bytes = Base64.decodeBase64(base64Data.getBytes());
+        byte[] bytes = Base64.getDecoder().decode(base64Data.trim().getBytes());
         int[] data = new int[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             data[i] = bytes[i] & 0xFF;
@@ -54,14 +57,14 @@ public class TCommandTest {
     }
 
     @Test
-    public void AddRoomTest() {
+    public void addRoomTest() {
         TCommand scmd = new TCommand("0f1d54", false);
         scmd.addRoom("0b0da3");
 
         String commandStr = scmd.getCommandString();
 
         String base64Data = commandStr.split(",")[2];
-        byte[] bytes = Base64.decodeBase64(base64Data.getBytes());
+        byte[] bytes = Base64.getDecoder().decode(base64Data.trim().getBytes());
         int[] data = new int[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             data[i] = bytes[i] & 0xFF;
@@ -73,7 +76,7 @@ public class TCommandTest {
     }
 
     @Test
-    public void ForceModeTest() {
+    public void forceModeTest() {
         TCommand scmd = new TCommand("0f1d54", true);
         String commandStr = scmd.getCommandString();
 
