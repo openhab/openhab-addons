@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -407,8 +406,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @param stateName Name of the state to query
      * @param classOfT Class to convert the resulting JSON to
      */
-    public <T extends @NonNull Object> @Nullable T refreshState(Thing thing, String stateName,
-            Class<@NonNull T> classOfT) {
+    public <T extends Object> @Nullable T refreshState(Thing thing, String stateName, Class<T> classOfT) {
         BoschSHCHandler handler = (BoschSHCHandler) thing.getHandler();
         if (handler != null) {
             String deviceId = handler.getBoschID();
@@ -426,7 +424,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * @param stateName Name of the state to query
      * @param stateClass Class to convert the resulting JSON to
      */
-    public <T extends @NonNull Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass) {
+    public <T extends Object> @Nullable T getState(String deviceId, String stateName, Class<T> stateClass) {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");
@@ -471,7 +469,7 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * 
      * @return Response of request
      */
-    public <T extends @NonNull Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
+    public <T extends Object> @Nullable Response putState(String deviceId, String serviceName, T state) {
         BoschHttpClient httpClient = this.httpClient;
         if (httpClient == null) {
             logger.warn("HttpClient not initialized");
