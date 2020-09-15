@@ -56,7 +56,7 @@ For Hybrid Vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 For each Vehicle Properties are available. 
 Basically 3 Types of Information are registered as Properties
 
-* Informations regarding r Dealer with Address and Phone Number
+* Informations regarding your Dealer with Address and Phone Number
 * Which services are available / not available
 * Vehicle Properties like Color, Model Type, Drive Train and Construction Year
 
@@ -76,7 +76,7 @@ So it's valid to connect Channel Group [Last Destinations](#destinations) in ord
 ## Discovery
 
 Auto Discovery is starting after creation of the Bridge towards BMW ConnectedDrive. 
-A list of r registered Vehicles is queried and all found Vehicles are added in Inbox.
+A list of your registered Vehicles is queried and all found Vehicles are added in Inbox.
 Unique Identifier is the *Vehicle Identification Number* (VIN). 
 If a Thing is already declared in a  *.things configuration* Discovery won't highlight it again.
 Properties will be attached to predefined Vehicles if the VIN is matching.
@@ -319,7 +319,7 @@ depends on many factors like driving style and electric consumers.
 
 A timestamp is showing the last Vehicle Status update. If this isn't shown correctly please check the date settings.
 In case of Raspberry Pi execute *raspi-config*, select *Localization Options*, the *Change Time Zone*
-Select r *Geaographical Area* and afterwards the correct City.
+Select your *Geographical Area* and afterwards the correct City.
 One restart of openHAB service with *systemctl restart openhab2* is necessary in order to see the corrected Time Settings.
  
 Correct TimeZone is crucial for handling all Time information in openHAB and it's discussed many times in the Forum.
@@ -358,7 +358,7 @@ Data like
 are anonymized.
 
 After the corresponding Fingerprint is generated please [follow the instructions to raise an Issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the Fingerprint data!
-r feedback is highly appreciated!
+Your feedback is highly appreciated!
 
 Here an example of Debug Fingerprint Data from a BEV_REX Vehicle
 
@@ -614,7 +614,7 @@ end
 
 <img align="right" src="./doc/panel.png" width="600" height="260"/>
 
-The [OpenStreetMap Widget](https://community.openhab.org/t/custom-widget-map/39225) can be used to display a Map on r Panel.
+The [OpenStreetMap Widget](https://community.openhab.org/t/custom-widget-map/39225) can be used to display a Map on the UI Panel.
 It's configurable with *Markers* and *Accuracy Circles* which are quite handy to display several informations.
 See the HABPanel example with the OpenStreetMap Widget on the right side with
 
