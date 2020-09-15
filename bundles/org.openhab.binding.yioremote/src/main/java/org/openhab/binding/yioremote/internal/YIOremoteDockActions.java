@@ -19,8 +19,6 @@ import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link YIOremoteDockActions} is responsible for handling the action commands
@@ -28,11 +26,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Michael Loercher - Initial contribution
  */
-@ThingActionsScope(name = "yioremote") // Your bindings id is usually the scope
+@ThingActionsScope(name = "yioremote")
 @NonNullByDefault
 public class YIOremoteDockActions implements ThingActions {
     private @Nullable YIOremoteDockHandler handler;
-    private final Logger logger = LoggerFactory.getLogger(YIOremoteDockActions.class);
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {

@@ -40,6 +40,10 @@ import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YIOREMOT
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 /**
  * The {@link YIOremoteDockHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -52,16 +56,26 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(YIOremoteDockHandler.class);
 
     YIOremoteConfiguration localConfig = getConfigAs(YIOremoteConfiguration.class);
+    private @Nullable YIOremoteDockHandler yioremotedockhandler = null;
     private WebSocketClient yioremoteDockHandlerwebSocketClient = new WebSocketClient();
-    private YIOremoteDockWebsocket yioremoteDockwebSocketClient = new YIOremoteDockWebsocket();
+    private YIOremoteDockWebsocket yioremoteDockwebSocketClient = new YIOremoteDockWebsocket(this);
     private ClientUpgradeRequest yioremoteDockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI uriyiodockwebsocketaddress;
-    private YIOREMOTEDOCKHANDLESTATUS yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.UNINITIALIZED;
+    private YIOREMOTEDOCKHANDLESTATUS yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.UNINITIALIZED_STATE;
     private @Nullable Future<?> pollingJob;
-    private String sendircode = "";
+    public String stringreceivedmessage = "";
+    private JsonObject jsonobjectrecievedJsonObject = new JsonObject();
+    private boolean booleanauthenticationrequired = false;
+    private boolean booleanheartbeat = false;
+    private boolean booleanauthenticationok = false;
+    private boolean booleansendirstatus = false;
+    private boolean booleanwebsocketconnected = false;
+    private String stringreceivedstatus = "";
+    private String stringlastsendircode = "";
 
     public YIOremoteDockHandler(Thing thing) {
         super(thing);
+        yioremotedockhandler = this;
     }
 
     @Override
@@ -70,97 +84,131 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         scheduler.execute(() -> {
             try {
                 uriyiodockwebsocketaddress = new URI("ws://" + localConfig.host + ":946");
-                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATIONPROCESS;
-                try {
-                    yioremoteDockHandlerwebSocketClient.start();
-                } catch (Exception e) {
-                    logger.warn("Web socket start failed {}", e.getMessage());
-                    // throw new IOException("Web socket start failed");
-                }
-                try {
-                    yioremoteDockHandlerwebSocketClient.connect(yioremoteDockwebSocketClient,
-                            uriyiodockwebsocketaddress, yioremoteDockwebSocketClientrequest);
-                    yioremoteDockwebSocketClient.getLatch().await();
-                    Thread.sleep(1000);
-                    try {
-                        if (yioremoteDockwebSocketClient.getbooleanauthenticationrequired()) {
-                            yioremoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.AUTHENTICATE,
-                                    localConfig.accesstoken);
-                            Thread.sleep(1000);
-                            if (yioremoteDockwebSocketClient.getbooleanauthenticationok()) {
-                                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATED;
-                                logger.debug("authentication to YIO dock ok");
-                                updateStatus(ThingStatus.ONLINE);
-                                try {
-                                    Runnable heartbeatpolling = new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                if (yioremotedockactualstatus
-                                                        .equals(YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATED)) {
-                                                    yioremoteDockwebSocketClient
-                                                            .sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
-
-                                                    Thread.sleep(1000);
-
-                                                    if (yioremoteDockwebSocketClient.getbooleanheartbeat()) {
-                                                        logger.debug("heartbeat ok");
-                                                        triggerChannel(getChannelUuid(GROUP_OUTPUT, YIODOCKSTATUS));
-                                                        updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
-                                                                yioremoteDockwebSocketClient.getstringreceivedstatus());
-                                                    } else {
-                                                        yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTIONFAILED;
-                                                        updateStatus(ThingStatus.OFFLINE,
-                                                                ThingStatusDetail.CONFIGURATION_ERROR,
-                                                                "Connection lost no ping from YIO DOCK");
-                                                        updateState(GROUP_OUTPUT, YIODOCKSTATUS, UnDefType.UNDEF);
-                                                        pollingJob.cancel(true);
-                                                    }
-                                                } else {
-                                                    yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTIONFAILED;
-                                                    updateStatus(ThingStatus.OFFLINE,
-                                                            ThingStatusDetail.CONFIGURATION_ERROR,
-                                                            "Connection lost no ping from YIO DOCK");
-                                                    updateState(GROUP_OUTPUT, YIODOCKSTATUS, UnDefType.UNDEF);
-                                                    pollingJob.cancel(true);
-                                                }
-                                            } catch (Exception e) {
-                                                logger.warn("Error during initializing the WebSocket polling Thread {}",
-                                                        e.getMessage());
-                                            }
-                                        }
-                                    };
-
-                                    pollingJob = scheduler.scheduleWithFixedDelay(heartbeatpolling, 0, 30,
-                                            TimeUnit.SECONDS);
-                                } catch (Exception e) {
-                                    updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, "Connection/Configuration Error");
-                                }
-                            } else {
-                                logger.debug("authentication to YIO dock not ok");
-                                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATEDFAILED;
-                                updateStatus(ThingStatus.OFFLINE);
-                            }
-                        } else {
-                            logger.debug("authentication error YIO dock");
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("JSON convertion failure {}", e.getMessage());
-                    }
-                } catch (Exception e) {
-                    logger.warn("Web socket connect failed {}", e.getMessage());
-                }
+                yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_PROCESS;
             } catch (URISyntaxException e) {
-                logger.debug("Initialize web socket failed {}", e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
+                        "Initialize web socket failed");
             }
+
+            yioremoteDockwebSocketClient.addMessageHandler(new YIOremoteDockWebsocketInterface() {
+
+                @Override
+                public void onConnect(Boolean booleanconnectedflag) {
+                    yioremotedockhandler.booleanwebsocketconnected = booleanconnectedflag;
+                    if (booleanconnectedflag) {
+                        yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTION_ESTABLISHED;
+                        yioremotedockhandler.startwebsocketpollingthread(booleanconnectedflag);
+                    } else {
+                        yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTION_FAILED;
+                    }
+                }
+
+                @Override
+                public void onMessage(String message) {
+                    yioremotedockhandler.stringreceivedmessage = message;
+                    logger.debug("Message recieved {}", message);
+                }
+            });
+            try {
+                yioremoteDockHandlerwebSocketClient.start();
+
+                yioremoteDockHandlerwebSocketClient.connect(yioremoteDockwebSocketClient, uriyiodockwebsocketaddress,
+                        yioremoteDockwebSocketClientrequest);
+            } catch (Exception e) {
+                logger.debug("Connection error");
+            }
+
         });
+    }
+
+    private boolean decodereceivedMessage(@Nullable JsonObject JsonObject_recievedJsonObject) {
+        boolean booleanresult = false;
+
+        if (JsonObject_recievedJsonObject.has("type")) {
+            if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_required\"")) {
+                yioremotedockhandler.booleanauthenticationrequired = true;
+                yioremotedockhandler.booleanheartbeat = true;
+                booleanresult = true;
+            } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
+                yioremotedockhandler.booleanauthenticationrequired = false;
+                yioremotedockhandler.booleanauthenticationok = true;
+                yioremotedockhandler.booleanheartbeat = true;
+                booleanresult = true;
+            } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"dock\"")
+                    && JsonObject_recievedJsonObject.has("message"))
+
+            {
+                if (JsonObject_recievedJsonObject.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
+                    if (JsonObject_recievedJsonObject.get("success").toString().equalsIgnoreCase("true")) {
+                        yioremotedockhandler.stringreceivedstatus = "Send IR Code successfully";
+                        yioremotedockhandler.booleansendirstatus = true;
+                        yioremotedockhandler.booleanheartbeat = true;
+                        booleanresult = true;
+                    } else {
+                        if (stringlastsendircode.equalsIgnoreCase("\"0;0x0;0;0\"")) {
+                            logger.debug("Send heartbeat Code success");
+                        } else {
+                            stringreceivedstatus = "Send IR Code failure";
+                        }
+                        yioremotedockhandler.booleansendirstatus = true;
+                        yioremotedockhandler.booleanheartbeat = true;
+                        booleanresult = true;
+                    }
+                } else {
+                    logger.warn("No known message {}", stringreceivedmessage);
+                    yioremotedockhandler.booleanheartbeat = false;
+                    booleanresult = false;
+                }
+            } else if (JsonObject_recievedJsonObject.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
+                yioremotedockhandler.stringreceivedstatus = JsonObject_recievedJsonObject.get("code").toString()
+                        .replace("\"", "");
+                if (stringreceivedstatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                    yioremotedockhandler.stringreceivedstatus = JsonObject_recievedJsonObject.get("code").toString()
+                            .replace("\"", "");
+                } else {
+                    yioremotedockhandler.stringreceivedstatus = "";
+                }
+                logger.debug("ir_receive message {}", stringreceivedstatus);
+                yioremotedockhandler.booleanheartbeat = true;
+                booleanresult = true;
+            } else {
+                logger.warn("No known message {}", stringreceivedmessage);
+                yioremotedockhandler.booleanheartbeat = false;
+                booleanresult = false;
+            }
+        } else
+
+        {
+            logger.warn("No known message {}", stringreceivedmessage);
+            yioremotedockhandler.booleanheartbeat = false;
+            booleanresult = false;
+        }
+        return booleanresult;
+    }
+
+    private JsonObject convertStringtoJsonObject(String jsonString) {
+        try {
+            JsonParser parser = new JsonParser();
+            JsonElement jsonElement = parser.parse(jsonString);
+            JsonObject result;
+
+            if (jsonElement instanceof JsonObject) {
+                result = jsonElement.getAsJsonObject();
+            } else {
+                logger.debug("{} is not valid JSON stirng", jsonString);
+                result = new JsonObject();
+                throw new IllegalArgumentException(jsonString + "{} is not valid JSON stirng");
+            }
+            return result;
+        } catch (IllegalArgumentException e) {
+            JsonObject result = new JsonObject();
+            return result;
+        }
     }
 
     protected void updateState(String group, String channelId, State value) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
-        if (isLinked(id)) {
-            updateState(id, value);
-        }
+        updateState(id, value);
     }
 
     @Override
@@ -170,13 +218,16 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        pollingJob.cancel(true);
+        Future<?> localPollingJob = pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
+        }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (YIODOCKRECEIVERSWITCH.equals(channelUID.getIdWithoutGroup())) {
-            if (yioremotedockactualstatus.equals(YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATED)) {
+            if (yioremotedockactualstatus.equals(YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_COMPLETE)) {
                 if (command.toString().equals("ON")) {
                     logger.debug("YIODOCKRECEIVERSWITCH ON procedure: Switching IR Receiver on");
                     yioremoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.IRRECEIVERON, "");
@@ -190,12 +241,12 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         }
     }
 
-    public void sendircode(@Nullable String string_ircode) {
-        if (string_ircode != null) {
-            if (string_ircode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
-                yioremoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.IRSEND, string_ircode);
+    public void sendircode(@Nullable String stringIRCode) {
+        if (stringIRCode != null) {
+            if (stringIRCode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                yioremoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.IRSEND, stringIRCode);
             } else {
-                logger.warn("Wrong IR code Format {}", string_ircode);
+                logger.warn("Wrong ir code format {}", stringIRCode);
             }
         }
     }
@@ -206,14 +257,73 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     private void updateChannelString(String group, String channelId, String value) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);
-        if (isLinked(id)) {
-            updateState(id, new StringType(value));
-        }
+        updateState(id, new StringType(value));
     }
 
     private void updateChannelString(ChannelUID channelId, String value) {
-        if (isLinked(channelId)) {
-            updateState(channelId, new StringType(value));
-        }
+        updateState(channelId, new StringType(value));
+    }
+
+    void startwebsocketpollingthread(boolean booleanconnectedflag) {
+        Runnable websocketpollingthread = new Runnable() {
+            @Override
+            public void run() {
+                jsonobjectrecievedJsonObject = convertStringtoJsonObject(stringreceivedmessage);
+                if (jsonobjectrecievedJsonObject.size() > 0) {
+                    if (yioremotedockhandler.decodereceivedMessage(jsonobjectrecievedJsonObject)) {
+                        logger.debug("Message {} decoded", stringreceivedmessage);
+                    } else {
+                        logger.debug("Error during message {} decoding", stringreceivedmessage);
+                    }
+                }
+
+                if (yioremotedockactualstatus.equals(YIOREMOTEDOCKHANDLESTATUS.CONNECTION_ESTABLISHED)) {
+                    yioremoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.AUTHENTICATE,
+                            yioremotedockhandler.localConfig.accesstoken);
+                    yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_PROCESS;
+                } else if (yioremotedockactualstatus.equals(YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_PROCESS)) {
+                    if (yioremotedockhandler.getbooleanauthenticationok()) {
+                        yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_COMPLETE;
+                        logger.debug("IF getbooleanauthenticationok {}",
+                                yioremotedockhandler.getbooleanauthenticationok());
+                    } else {
+                        yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_FAILED;
+                        logger.debug("ELSE getbooleanauthenticationok {}",
+                                yioremotedockhandler.getbooleanauthenticationok());
+                    }
+                } else if (yioremotedockactualstatus.equals(YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_COMPLETE)) {
+                    if (yioremotedockhandler.getbooleanheartbeat()) {
+                        logger.debug("heartbeat ok");
+                        triggerChannel(getChannelUuid(GROUP_OUTPUT, YIODOCKSTATUS));
+                        updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS, yioremotedockhandler.stringreceivedmessage);
+                        yioremoteDockwebSocketClient.sendMessage(YIOREMOTEMESSAGETYPE.HEARTBEAT, "");
+                    } else {
+                        yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTION_FAILED;
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Connection lost no ping from YIO DOCK");
+                        updateState(GROUP_OUTPUT, YIODOCKSTATUS, UnDefType.UNDEF);
+                    }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Connection lost no ping from YIO DOCK");
+                    updateState(GROUP_OUTPUT, YIODOCKSTATUS, UnDefType.UNDEF);
+                }
+            }
+        };
+        pollingJob = scheduler.scheduleWithFixedDelay(websocketpollingthread, 0, 30, TimeUnit.SECONDS);
+    }
+
+    protected boolean getbooleanauthenticationok() {
+        return yioremotedockhandler.booleanauthenticationok;
+    }
+
+    protected boolean getbooleanheartbeat() {
+        boolean booleanresult = yioremotedockhandler.booleanheartbeat;
+        yioremotedockhandler.booleanheartbeat = false;
+        return booleanresult;
+    }
+
+    public YIOREMOTEDOCKHANDLESTATUS getyioremotedockactualstatus() {
+        return yioremotedockhandler.yioremotedockactualstatus;
     }
 }
