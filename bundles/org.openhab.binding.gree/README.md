@@ -24,7 +24,7 @@ No binding configuration is required.
 | ipAddress                | IP Address | IP address of the unit.                                                                       |
 | broadcastAddress         | IP Address | Broadcast address being used for discovery, usually derived from the IP interface address.    |
 | refresh                  | Integer    | Refresh interval in seconds for polling the device status.                                    |
-| currentTemperatureOffset | Decimal    | The offset in Celsius for the current temperature value received from the device.             |
+| currentTemperatureOffset | Decimal    | Offset in Celsius for the current temperature value received from the device.                 |
 
 The Air Conditioner's IP address is mandatory, all other parameters are optional. 
 If the broadcast is not set (default) it will be derived from openHAB's network setting (PaperUI:Configuration:System:Network Settings). 
@@ -41,7 +41,7 @@ The following channels are supported for fans:
 |                    |           | Mode can be one of auto/cool/eco/dry/fan/heat or on/off                                           |
 |                    |           | Check the Air Conditioner's operating manual for supported modes.                                 |
 | temperature        | Number:Temperature | Sets the desired room temperature.                                                       |
-| currentTemperature | Number:Temperature | Displays the current room temperature (if supported by unit, otherwise NaN).                                                   |
+| currentTemperature | Number:Temperature | Displays the current room temperature (if supported by the unit, otherwise NaN).         |
 | air                | Switch    | Set on/off the Air Conditioner's Air function if applicable to the Air Conditioner model          |
 | dry                | Switch    | Set on/off the Air Conditioner's Dry function if applicable to the Air Conditioner model          |
 | health             | Switch    | Set on/off the Air Conditioner's Health function if applicable to the Air Conditioner model       |

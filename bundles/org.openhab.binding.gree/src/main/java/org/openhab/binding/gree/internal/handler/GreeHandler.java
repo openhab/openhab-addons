@@ -141,30 +141,30 @@ public class GreeHandler extends BaseThingHandler {
             logger.debug("{}: Handle command {} for channel {}, command class {}", thingId, command, channelId,
                     command.getClass());
 
-            boolean retry = false;
+            int retries = MAX_API_RETRIES;
             do {
                 try {
-                    retry = false;
                     sendRequest(channelId, command);
                     // force refresh on next status refresh cycle
                     forceRefresh = true;
                     apiRetries = 0;
-                } catch (IllegalArgumentException e) {
-                    logInfo("command.invarg", command, channelId);
                 } catch (GreeException e) {
-                    apiRetries++;
-                    if (apiRetries >= MAX_API_RETRIES) {
+                    retries--;
+                    if (retries > 0) {
+                        logger.debug("{}: Command {} failed for channel {}, retry", thingId, command, channelId);
+                    } else {
                         String message = logInfo(
                                 messages.get("command.exception", command, channelId) + ": " + e.getMessage());
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-                    } else {
-                        retry = true;
-                        logger.debug("{}: Command {} failed for channel {}, retry", thingId, command, channelId);
                     }
+                } catch (IllegalArgumentException e) {
+                    logInfo("command.invarg", command, channelId);
+                    retries = 0;
                 } catch (RuntimeException e) {
                     logger.warn("{}: {}", thingId, messages.get("command.exception", command, channelId), e);
+                    retries = 0;
                 }
-            } while (retry);
+            } while (retries > 0);
         }
     }
 
