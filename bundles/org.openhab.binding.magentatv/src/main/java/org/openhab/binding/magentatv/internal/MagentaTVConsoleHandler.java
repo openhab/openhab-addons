@@ -64,8 +64,7 @@ public class MagentaTVConsoleHandler extends AbstractConsoleCommandExtension {
             switch (subCommand) {
                 case CMD_LOGIN:
                     if (args.length == 1) {
-                        try {
-                            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                        try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
                             console.print("Login Name (email): ");
                             String username = br.readLine();
                             console.print("Password: ");

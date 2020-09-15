@@ -31,7 +31,7 @@ public interface MagentaTVListener {
      * @param pairingCode Code to be used for pairing process
      * @throws MagentaTVException
      */
-    public void onPairingResult(String pairingCode) throws MagentaTVException;
+    void onPairingResult(String pairingCode) throws MagentaTVException;
 
     /**
      * Device woke up (UPnP)
@@ -39,7 +39,7 @@ public interface MagentaTVListener {
      * @param discoveredProperties Properties from UPnP discovery
      * @throws MagentaTVException
      */
-    public void onWakeup(Map<String, String> discoveredProperties) throws MagentaTVException;
+    void onWakeup(Map<String, String> discoveredProperties) throws MagentaTVException;
 
     /**
      * An event has been received from the MR
@@ -47,12 +47,12 @@ public interface MagentaTVListener {
      * @param playContent event information
      * @throws MagentaTVException
      */
-    public void onMREvent(String playContent) throws MagentaTVException;
+    void onMREvent(String playContent) throws MagentaTVException;
 
     /**
      * A power-off was detected (SSDN message received)
      *
      * @throws MagentaTVException
      */
-    public void onPowerOff() throws MagentaTVException;
+    void onPowerOff() throws MagentaTVException;
 }

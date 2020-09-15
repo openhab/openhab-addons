@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = UpnpDiscoveryParticipant.class, immediate = true)
+@Component(service = UpnpDiscoveryParticipant.class)
 public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVDiscoveryParticipant.class);
 
@@ -88,7 +88,7 @@ public class MagentaTVDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 result = DiscoveryResultBuilder.create(uid).withLabel(device.getDetails().getFriendlyName())
                         .withProperties(properties).withRepresentationProperty(PROPERTY_MAC_ADDRESS).build();
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.debug("Unable to create thing for device {}/{} - {}", device.getDetails().getFriendlyName(),
                     device.getIdentity().getUdn().getIdentifierString(), e.getMessage());
         }

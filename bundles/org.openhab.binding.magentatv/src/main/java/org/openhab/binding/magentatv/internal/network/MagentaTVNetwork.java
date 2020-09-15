@@ -143,9 +143,9 @@ public class MagentaTVNetwork {
 
             InetAddress address = InetAddress.getByName(ipAddr);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address, WOL_PORT);
-            DatagramSocket socket = new DatagramSocket();
-            socket.send(packet);
-            socket.close();
+            try (DatagramSocket socket = new DatagramSocket()) {
+                socket.send(packet);
+            }
 
             logger.debug("Wake-on-LAN packet sent to {} / {}", ipAddr, macAddress);
         } catch (IOException e) {

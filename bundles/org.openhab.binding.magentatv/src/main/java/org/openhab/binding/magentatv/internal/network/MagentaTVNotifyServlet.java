@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Markus Michels - Initial contribution
  */
 @NonNullByDefault
-@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL, immediate = true)
+@Component(service = HttpServlet.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class MagentaTVNotifyServlet extends HttpServlet {
     private static final long serialVersionUID = 2119809008606371618L;
     private final Logger logger = LoggerFactory.getLogger(MagentaTVNotifyServlet.class);

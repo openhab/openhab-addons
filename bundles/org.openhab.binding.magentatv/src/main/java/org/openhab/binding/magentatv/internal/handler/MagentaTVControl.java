@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class MagentaTVControl {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVControl.class);
-    private final static HashMap<String, String> keyMap = new HashMap<String, String>();
+    private final static HashMap<String, String> KEY_MAP = new HashMap<>();
 
     private final MagentaTVNetwork network;
     private final MagentaTVHttp http = new MagentaTVHttp();
@@ -61,7 +61,6 @@ public class MagentaTVControl {
         this.config.setTerminalID(computeMD5(network.getLocalMAC().toUpperCase() + config.getUDN()));
         this.config.setLocalIP(network.getLocalIP());
         this.config.setLocalMAC(network.getLocalMAC());
-        initializeKeyMap();
         initialized = true;
     }
 
@@ -121,33 +120,24 @@ public class MagentaTVControl {
                 config.getDescriptionUrl());
         String result = http.httpGet(buildHost(), url, "");
         if (result.contains("<modelName>")) {
-            {
-                config.setModel(substringBetween(result, "<modelName>", "</modelName>"));
-            }
+            config.setModel(substringBetween(result, "<modelName>", "</modelName>"));
         }
         if (result.contains("<modelNumber>")) {
-            {
-                config.setHardwareVersion(substringBetween(result, "<modelNumber>", "</modelNumber>"));
-            }
+            config.setHardwareVersion(substringBetween(result, "<modelNumber>", "</modelNumber>"));
         }
         if (result.contains("<X_wakeOnLan>")) {
-            {
-                String wol = substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
-                config.setWakeOnLAN(wol);
-                logger.debug("{}: Wake-on-LAN is {}", thingId, wol.equals("0") ? "disabled" : "enabled");
-            }
+            String wol = substringBetween(result, "<X_wakeOnLan>", "</X_wakeOnLan>");
+            config.setWakeOnLAN(wol);
+            logger.debug("{}: Wake-on-LAN is {}", thingId, wol.equals("0") ? "disabled" : "enabled");
         }
         if (result.contains("<productVersionNumber>")) {
-            {
-                String version;
-                if (result.contains("<productVersionNumber>&quot; ")) {
-                    version = substringBetween(result, "<productVersionNumber>&quot; ",
-                            " &quot;</productVersionNumber>");
-                } else {
-                    version = substringBetween(result, "<productVersionNumber>", "</productVersionNumber>");
-                }
-                config.setFirmwareVersion(version);
+            String version;
+            if (result.contains("<productVersionNumber>&quot; ")) {
+                version = substringBetween(result, "<productVersionNumber>&quot; ", " &quot;</productVersionNumber>");
+            } else {
+                version = substringBetween(result, "<productVersionNumber>", "</productVersionNumber>");
             }
+            config.setFirmwareVersion(version);
         }
         if (result.contains("<friendlyName>")) {
             String friendlyName = result.substring(result.indexOf("<friendlyName>") + "<friendlyName>".length(),
@@ -202,7 +192,7 @@ public class MagentaTVControl {
                 if (str.contains(NOTIFY_SID)) {
                     sid = str.substring("SID: uuid:".length());
                     logger.debug("{}: SUBSCRIBE returned SID {}", thingId, sid);
-                    continue;
+                    break;
                 }
             }
         }
@@ -401,11 +391,8 @@ public class MagentaTVControl {
             // direct key code
             return key;
         }
-        if (keyMap.isEmpty()) {
-            initializeKeyMap();
-        }
-        if (keyMap.containsKey(key)) {
-            return keyMap.get(key);
+        if (KEY_MAP.containsKey(key)) {
+            return KEY_MAP.get(key);
         }
         return "";
     }
@@ -418,22 +405,23 @@ public class MagentaTVControl {
      * @return playStatus as String
      */
     public String getPlayStatus(int playStatus) {
-        if (playStatus == EV_PLAYCHG_PLAY) {
-            return "playing";
-        } else if (playStatus == EV_PLAYCHG_STOP) {
-            return "stopped";
-        } else if (playStatus == EV_PLAYCHG_PAUSE) {
-            return "paused";
-        } else if (playStatus == EV_PLAYCHG_TRICK) {
-            return "tricking";
-        } else if (playStatus == EV_PLAYCHG_MC_PLAY) {
-            return "playing (MC)";
-        } else if (playStatus == EV_PLAYCHG_UC_PLAY) {
-            return "playing (UC)";
-        } else if (playStatus == EV_PLAYCHG_BUFFERING) {
-            return "buffering";
-        } else {
-            return Integer.toString(playStatus);
+        switch (playStatus) {
+            case EV_PLAYCHG_PLAY:
+                return "playing";
+            case EV_PLAYCHG_STOP:
+                return "stopped";
+            case EV_PLAYCHG_PAUSE:
+                return "paused";
+            case EV_PLAYCHG_TRICK:
+                return "tricking";
+            case EV_PLAYCHG_MC_PLAY:
+                return "playing (MC)";
+            case EV_PLAYCHG_UC_PLAY:
+                return "playing (UC)";
+            case EV_PLAYCHG_BUFFERING:
+                return "buffering";
+            default:
+                return Integer.toString(playStatus);
         }
     }
 
@@ -445,16 +433,18 @@ public class MagentaTVControl {
      * @return runningStatus as String
      */
     public String getRunStatus(int runStatus) {
-        if (runStatus == EV_EITCHG_RUNNING_NOT_RUNNING) {
-            return "stopped";
-        } else if (runStatus == EV_EITCHG_RUNNING_STARTING) {
-            return "starting";
-        } else if (runStatus == EV_EITCHG_RUNNING_PAUSING) {
-            return "paused";
-        } else if (runStatus == EV_EITCHG_RUNNING_RUNNING) {
-            return "running";
+        switch (runStatus) {
+            case EV_EITCHG_RUNNING_NOT_RUNNING:
+                return "stopped";
+            case EV_EITCHG_RUNNING_STARTING:
+                return "starting";
+            case EV_EITCHG_RUNNING_PAUSING:
+                return "paused";
+            case EV_EITCHG_RUNNING_RUNNING:
+                return "running";
+            default:
+                return Integer.toString(runStatus);
         }
-        return Integer.toString(runStatus);
     }
 
     /**
@@ -522,101 +512,101 @@ public class MagentaTVControl {
      * for a list of valid key codes see
      * http://support.huawei.com/hedex/pages/DOC1100366313CEH0713H/01/DOC1100366313CEH0713H/01/resources/dsv_hdx_idp/DSV/en/en-us_topic_0094619112.html
      */
-    private static void initializeKeyMap() {
-        keyMap.put("POWER", "0x0100");
-        keyMap.put("MENU", "0x0110");
-        keyMap.put("EPG", "0x0111");
-        keyMap.put("TVMENU", "0x0454");
-        keyMap.put("VODMENU", "0x0455");
-        keyMap.put("TVODMENU", "0x0456");
-        keyMap.put("NVODMENU", "0x0458");
-        keyMap.put("INFO", "0x010C");
-        keyMap.put("TTEXT", "0x0560");
-        keyMap.put("0", "0x0030");
-        keyMap.put("1", "0x0031");
-        keyMap.put("2", "0x0032");
-        keyMap.put("3", "0x0033");
-        keyMap.put("4", "0x0034");
-        keyMap.put("5", "0x0035");
-        keyMap.put("6", "0x0036");
-        keyMap.put("7", "0x0037");
-        keyMap.put("8", "0x0038");
-        keyMap.put("9", "0x0039");
-        keyMap.put("SPACE", "0x0020");
-        keyMap.put("POUND", "0x0069");
-        keyMap.put("STAR", "0x006A");
-        keyMap.put("UP", "0x0026");
-        keyMap.put("DOWN", "0x0028");
-        keyMap.put("LEFT", "0x0025");
-        keyMap.put("RIGHT", "0x0027");
-        keyMap.put("PGUP", "0x0021");
-        keyMap.put("PGDOWN", "0x0022");
-        keyMap.put("DELETE", "0x0008");
-        keyMap.put("ENTER", "0x000D");
-        keyMap.put("SEARCH", "0x0451");
-        keyMap.put("RED", "0x0113");
-        keyMap.put("GREEN", "0x0114");
-        keyMap.put("YELLOW", "0x0115");
-        keyMap.put("BLUE", "0x0116");
-        keyMap.put("OPTION", "0x0460");
-        keyMap.put("OK", "0x000D");
-        keyMap.put("BACK", "0x0008");
-        keyMap.put("EXIT", "0x045D");
-        keyMap.put("PORTAL", "0x0110");
-        keyMap.put("VOLUP", "0x0103");
-        keyMap.put("VOLDOWN", "0x0104");
-        keyMap.put("INTER", "0x010D");
-        keyMap.put("HELP", "0x011C");
-        keyMap.put("SETTINGS", "0x011D");
-        keyMap.put("MUTE", "0x0105");
-        keyMap.put("CHUP", "0x0101");
-        keyMap.put("CHDOWN", "0x0102");
-        keyMap.put("REWIND", "0x0109");
-        keyMap.put("PLAY", "0x0107");
-        keyMap.put("PAUSE", "0x0107");
-        keyMap.put("FORWARD", "0x0108");
-        keyMap.put("TRACK", "0x0106");
-        keyMap.put("LASTCH", "0x045E");
-        keyMap.put("PREVCH", "0x010B");
-        keyMap.put("NEXTCH", "0x0107");
-        keyMap.put("RECORD", "0x0461");
-        keyMap.put("STOP", "0x010E");
-        keyMap.put("BEGIN", "0x010B");
-        keyMap.put("END", "0x010A");
-        keyMap.put("REPLAY", "0x045B");
-        keyMap.put("SKIP", "0x045C");
-        keyMap.put("SUBTITLE", "0x236");
-        keyMap.put("RECORDINGS", "0x045F");
-        keyMap.put("FAV", "0x0119");
-        keyMap.put("SOURCE", "0x0083");
-        keyMap.put("SWITCH", "0x0118");
-        keyMap.put("IPTV", "0x0081");
-        keyMap.put("PC", "0x0082");
-        keyMap.put("PIP", "0x0084");
-        keyMap.put("MULTIVIEW", "0x0562");
-        keyMap.put("F1", "0x0070");
-        keyMap.put("F2", "0x0071");
-        keyMap.put("F3", "0x0072");
-        keyMap.put("F4", "0x0073");
-        keyMap.put("F5", "0x0074");
-        keyMap.put("F6", "0x0075");
-        keyMap.put("F7", "0x0076");
-        keyMap.put("F8", "0x0077");
-        keyMap.put("F9", "0x0078");
-        keyMap.put("F10", "0x0079");
-        keyMap.put("F11", "0x007A");
-        keyMap.put("F12", "0x007B");
-        keyMap.put("F13", "0x007C");
-        keyMap.put("F14", "0x007D");
-        keyMap.put("F15", "0x007E");
-        keyMap.put("F16", "0x007F");
+    static {
+        KEY_MAP.put("POWER", "0x0100");
+        KEY_MAP.put("MENU", "0x0110");
+        KEY_MAP.put("EPG", "0x0111");
+        KEY_MAP.put("TVMENU", "0x0454");
+        KEY_MAP.put("VODMENU", "0x0455");
+        KEY_MAP.put("TVODMENU", "0x0456");
+        KEY_MAP.put("NVODMENU", "0x0458");
+        KEY_MAP.put("INFO", "0x010C");
+        KEY_MAP.put("TTEXT", "0x0560");
+        KEY_MAP.put("0", "0x0030");
+        KEY_MAP.put("1", "0x0031");
+        KEY_MAP.put("2", "0x0032");
+        KEY_MAP.put("3", "0x0033");
+        KEY_MAP.put("4", "0x0034");
+        KEY_MAP.put("5", "0x0035");
+        KEY_MAP.put("6", "0x0036");
+        KEY_MAP.put("7", "0x0037");
+        KEY_MAP.put("8", "0x0038");
+        KEY_MAP.put("9", "0x0039");
+        KEY_MAP.put("SPACE", "0x0020");
+        KEY_MAP.put("POUND", "0x0069");
+        KEY_MAP.put("STAR", "0x006A");
+        KEY_MAP.put("UP", "0x0026");
+        KEY_MAP.put("DOWN", "0x0028");
+        KEY_MAP.put("LEFT", "0x0025");
+        KEY_MAP.put("RIGHT", "0x0027");
+        KEY_MAP.put("PGUP", "0x0021");
+        KEY_MAP.put("PGDOWN", "0x0022");
+        KEY_MAP.put("DELETE", "0x0008");
+        KEY_MAP.put("ENTER", "0x000D");
+        KEY_MAP.put("SEARCH", "0x0451");
+        KEY_MAP.put("RED", "0x0113");
+        KEY_MAP.put("GREEN", "0x0114");
+        KEY_MAP.put("YELLOW", "0x0115");
+        KEY_MAP.put("BLUE", "0x0116");
+        KEY_MAP.put("OPTION", "0x0460");
+        KEY_MAP.put("OK", "0x000D");
+        KEY_MAP.put("BACK", "0x0008");
+        KEY_MAP.put("EXIT", "0x045D");
+        KEY_MAP.put("PORTAL", "0x0110");
+        KEY_MAP.put("VOLUP", "0x0103");
+        KEY_MAP.put("VOLDOWN", "0x0104");
+        KEY_MAP.put("INTER", "0x010D");
+        KEY_MAP.put("HELP", "0x011C");
+        KEY_MAP.put("SETTINGS", "0x011D");
+        KEY_MAP.put("MUTE", "0x0105");
+        KEY_MAP.put("CHUP", "0x0101");
+        KEY_MAP.put("CHDOWN", "0x0102");
+        KEY_MAP.put("REWIND", "0x0109");
+        KEY_MAP.put("PLAY", "0x0107");
+        KEY_MAP.put("PAUSE", "0x0107");
+        KEY_MAP.put("FORWARD", "0x0108");
+        KEY_MAP.put("TRACK", "0x0106");
+        KEY_MAP.put("LASTCH", "0x045E");
+        KEY_MAP.put("PREVCH", "0x010B");
+        KEY_MAP.put("NEXTCH", "0x0107");
+        KEY_MAP.put("RECORD", "0x0461");
+        KEY_MAP.put("STOP", "0x010E");
+        KEY_MAP.put("BEGIN", "0x010B");
+        KEY_MAP.put("END", "0x010A");
+        KEY_MAP.put("REPLAY", "0x045B");
+        KEY_MAP.put("SKIP", "0x045C");
+        KEY_MAP.put("SUBTITLE", "0x236");
+        KEY_MAP.put("RECORDINGS", "0x045F");
+        KEY_MAP.put("FAV", "0x0119");
+        KEY_MAP.put("SOURCE", "0x0083");
+        KEY_MAP.put("SWITCH", "0x0118");
+        KEY_MAP.put("IPTV", "0x0081");
+        KEY_MAP.put("PC", "0x0082");
+        KEY_MAP.put("PIP", "0x0084");
+        KEY_MAP.put("MULTIVIEW", "0x0562");
+        KEY_MAP.put("F1", "0x0070");
+        KEY_MAP.put("F2", "0x0071");
+        KEY_MAP.put("F3", "0x0072");
+        KEY_MAP.put("F4", "0x0073");
+        KEY_MAP.put("F5", "0x0074");
+        KEY_MAP.put("F6", "0x0075");
+        KEY_MAP.put("F7", "0x0076");
+        KEY_MAP.put("F8", "0x0077");
+        KEY_MAP.put("F9", "0x0078");
+        KEY_MAP.put("F10", "0x0079");
+        KEY_MAP.put("F11", "0x007A");
+        KEY_MAP.put("F12", "0x007B");
+        KEY_MAP.put("F13", "0x007C");
+        KEY_MAP.put("F14", "0x007D");
+        KEY_MAP.put("F15", "0x007E");
+        KEY_MAP.put("F16", "0x007F");
 
-        keyMap.put("PVR", "0x0461");
-        keyMap.put("RADIO", "0x0462");
+        KEY_MAP.put("PVR", "0x0461");
+        KEY_MAP.put("RADIO", "0x0462");
 
         // Those key codes are missing and not included in the spec
-        // keyMap.put("TV", "0x");
-        // keyMap.put("RADIO", "0x");
-        // keyMap.put("MOVIES", "0x");
+        // KEY_MAP.put("TV", "0x");
+        // KEY_MAP.put("RADIO", "0x");
+        // KEY_MAP.put("MOVIES", "0x");
     }
 }

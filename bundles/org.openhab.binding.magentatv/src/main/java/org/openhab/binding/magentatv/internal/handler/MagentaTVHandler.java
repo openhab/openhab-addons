@@ -83,7 +83,6 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListener {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVHandler.class);
-    private static final DecimalType ZERO = new DecimalType(0);
 
     protected MagentaTVDynamicConfig config = new MagentaTVDynamicConfig();
     private final Gson gson;
@@ -129,9 +128,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         updateStatus(ThingStatus.UNKNOWN);
         config = new MagentaTVDynamicConfig(getConfigAs(MagentaTVThingConfiguration.class));
         try {
-            initializeJob = scheduler.schedule(() -> {
-                initializeThing();
-            }, 5, TimeUnit.SECONDS);
+            initializeJob = scheduler.schedule(this::initializeThing, 5, TimeUnit.SECONDS);
         } catch (RuntimeException e) {
             logger.warn("Unable to schedule thing initialization", e);
         }
@@ -572,10 +569,10 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
         updateState(CHANNEL_PROG_TITLE, StringType.EMPTY);
         updateState(CHANNEL_PROG_TEXT, StringType.EMPTY);
         updateState(CHANNEL_PROG_START, StringType.EMPTY);
-        updateState(CHANNEL_PROG_DURATION, ZERO);
-        updateState(CHANNEL_PROG_POS, ZERO);
-        updateState(CHANNEL_CHANNEL, ZERO);
-        updateState(CHANNEL_CHANNEL_CODE, ZERO);
+        updateState(CHANNEL_PROG_DURATION, DecimalType.ZERO);
+        updateState(CHANNEL_PROG_POS, DecimalType.ZERO);
+        updateState(CHANNEL_CHANNEL, DecimalType.ZERO);
+        updateState(CHANNEL_CHANNEL_CODE, DecimalType.ZERO);
     }
 
     private String fixEventJson(String jsonEvent) {

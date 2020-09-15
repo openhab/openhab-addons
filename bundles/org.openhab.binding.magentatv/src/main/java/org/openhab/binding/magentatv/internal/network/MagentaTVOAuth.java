@@ -63,6 +63,14 @@ import com.google.gson.GsonBuilder;
 @NonNullByDefault
 public class MagentaTVOAuth {
     private final Logger logger = LoggerFactory.getLogger(MagentaTVOAuth.class);
+    final Gson gson;
+
+    public MagentaTVOAuth() {
+        gson = new GsonBuilder().registerTypeAdapter(OauthCredentials.class, new OauthCredentialsInstanceCreator())
+                .registerTypeAdapter(OAuthTokenResponse.class, new OAuthTokenResponseInstanceCreator())
+                .registerTypeAdapter(OAuthAuthenticateResponse.class, new OAuthAuthenticateResponseInstanceCreator())
+                .create();
+    }
 
     public String getUserId(String accountName, String accountPassword) throws MagentaTVException {
         logger.debug("Authenticate with account {}", accountName);
@@ -85,13 +93,6 @@ public class MagentaTVOAuth {
         String retmsg = "";
 
         try {
-            Gson gson = new GsonBuilder()
-                    .registerTypeAdapter(OauthCredentials.class, new OauthCredentialsInstanceCreator())
-                    .registerTypeAdapter(OAuthTokenResponse.class, new OAuthTokenResponseInstanceCreator())
-                    .registerTypeAdapter(OAuthAuthenticateResponse.class,
-                            new OAuthAuthenticateResponseInstanceCreator())
-                    .create();
-
             step = "get credentials";
             httpHeader = initHttpHeader();
             url = OAUTH_GET_CRED_URL + ":" + OAUTH_GET_CRED_PORT + OAUTH_GET_CRED_URI;
