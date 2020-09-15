@@ -251,10 +251,6 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
      * Return whether to retry getting a new subscription and restart polling.
      */
     private void longPoll(BoschHttpClient httpClient) {
-        /*
-         * // TODO Change hard-coded Gateway ID // TODO Change hard-coded port
-         */
-
         String subscriptionId = this.subscriptionId;
         if (subscriptionId == null) {
 
