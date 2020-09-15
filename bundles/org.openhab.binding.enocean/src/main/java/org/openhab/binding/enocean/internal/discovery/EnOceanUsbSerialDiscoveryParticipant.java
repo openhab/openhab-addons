@@ -72,8 +72,9 @@ public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryP
     }
 
     private ThingUID createBridgeThingType(UsbSerialDeviceInformation deviceInformation) {
-        if (deviceInformation.getSerialNumber() != null) {
-            return new ThingUID(THING_TYPE_BRIDGE, deviceInformation.getSerialNumber());
+        String serialNumber = deviceInformation.getSerialNumber();
+        if (serialNumber != null) {
+            return new ThingUID(THING_TYPE_BRIDGE, serialNumber);
         } else {
             return new ThingUID(THING_TYPE_BRIDGE, String.valueOf(deviceInformation.getProductId()));
         }

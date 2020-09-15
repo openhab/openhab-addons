@@ -144,20 +144,23 @@ public class SmartherModuleDiscoveryService extends AbstractDiscoveryService
      *            the discovered module
      */
     private void addDiscoveredDevice(Location location, Module module) {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(PROPERTY_PLANT_ID, location.getPlantId());
-        properties.put(PROPERTY_MODULE_ID, module.getId());
-        properties.put(PROPERTY_MODULE_NAME, module.getName());
-        properties.put(PROPERTY_DEVICE_TYPE, module.getDeviceType());
+        ThingUID localBridgeUID = this.bridgeUID;
+        if (localBridgeUID != null) {
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(PROPERTY_PLANT_ID, location.getPlantId());
+            properties.put(PROPERTY_MODULE_ID, module.getId());
+            properties.put(PROPERTY_MODULE_NAME, module.getName());
+            properties.put(PROPERTY_DEVICE_TYPE, module.getDeviceType());
 
-        ThingUID thingUID = new ThingUID(THING_TYPE_MODULE, this.bridgeUID, getThingIdFromModule(module));
+            ThingUID thingUID = new ThingUID(THING_TYPE_MODULE, localBridgeUID, getThingIdFromModule(module));
 
-        final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(this.bridgeUID)
-                .withProperties(properties).withRepresentationProperty(PROPERTY_MODULE_ID).withLabel(module.getName())
-                .build();
-        thingDiscovered(discoveryResult);
-        logger.debug("Bridge[{}] Chronothermostat with id '{}' and name '{}' added to Inbox with UID '{}'",
-                this.bridgeUID, module.getId(), module.getName(), thingUID);
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(localBridgeUID)
+                    .withProperties(properties).withRepresentationProperty(PROPERTY_MODULE_ID)
+                    .withLabel(module.getName()).build();
+            thingDiscovered(discoveryResult);
+            logger.debug("Bridge[{}] Chronothermostat with id '{}' and name '{}' added to Inbox with UID '{}'",
+                    localBridgeUID, module.getId(), module.getName(), thingUID);
+        }
     }
 
     /**

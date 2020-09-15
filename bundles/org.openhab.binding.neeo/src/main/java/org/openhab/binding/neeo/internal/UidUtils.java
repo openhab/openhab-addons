@@ -45,9 +45,12 @@ public class UidUtils {
         if (details == null) {
             return false;
         }
-
+        final String adapterName = details.getAdapterName();
+        if (adapterName == null) {
+            return false;
+        }
         try {
-            new ThingUID(details.getAdapterName());
+            new ThingUID(adapterName);
             return true;
         } catch (IllegalArgumentException e) {
             return false;

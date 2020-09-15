@@ -683,14 +683,12 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
     /**
      * Initialize the binding's thing configuration, calc update counts
      */
-    @SuppressWarnings("deprecation")
     protected void initializeThingConfig() {
         thingType = getThing().getThingTypeUID().getId();
         final Map<String, String> properties = getThing().getProperties();
         thingName = getString(properties.get(PROPERTY_SERVICE_NAME));
         if (thingName.isEmpty()) {
-            thingName = getString(getThing().getUID().getThingTypeId() + "-" + getString(getThing().getUID().getId()))
-                    .toLowerCase();
+            thingName = getString(thingType + "-" + getString(getThing().getUID().getId())).toLowerCase();
             logger.debug("{}: Thing name derived from UID {}", thingName, getString(getThing().getUID().toString()));
         }
 
