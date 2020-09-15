@@ -10,16 +10,16 @@
 		<description>Senec Home</description>
 
 		<channels>
-			<channel id="powerLimitation" typeId="powerLimitation" />
-			<channel id="powerLimitationState" typeId="powerLimitationState" />
-			<channel id="houseConsumption" typeId="houseConsumption" />
-			<channel id="energyProduction" typeId="energyProduction" />
-			<channel id="batteryPower" typeId="batteryPower" />
-			<channel id="batteryFuelCharge" typeId="batteryFuelCharge" />
-			<channel id="batteryState" typeId="system.battery-level" />
-			<channel id="gridPower" typeId="gridPower" />
-			<channel id="gridPowerSupply" typeId="gridPowerSupply" />
-			<channel id="gridPowerDraw" typeId="gridPowerDraw" />
+			<channel id="powerLimitation" typeId="powerLimitation"/>
+			<channel id="powerLimitationState" typeId="powerLimitationState"/>
+			<channel id="houseConsumption" typeId="houseConsumption"/>
+			<channel id="energyProduction" typeId="energyProduction"/>
+			<channel id="batteryPower" typeId="batteryPower"/>
+			<channel id="batteryFuelCharge" typeId="batteryFuelCharge"/>
+			<channel id="batteryState" typeId="system.battery-level"/>
+			<channel id="gridPower" typeId="gridPower"/>
+			<channel id="gridPowerSupply" typeId="gridPowerSupply"/>
+			<channel id="gridPowerDraw" typeId="gridPowerDraw"/>
 		</channels>
 
 		<config-description>
@@ -51,63 +51,63 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Power Limitation</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="powerLimitationState">
 		<item-type>Switch</item-type>
 		<label>Limitation State</label>
 		<category>Energy</category>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="houseConsumption">
 		<item-type>Number:Power</item-type>
 		<label>Home Power Consumption</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryPower">
 		<item-type>Number:Power</item-type>
 		<label>Battery Power</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="batteryFuelCharge">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Fuel</label>
 		<category>Battery</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="energyProduction">
 		<item-type>Number:Power</item-type>
 		<label>Solar Production</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.0f %unit%" />
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>
 		<label>Grid Power</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="gridPowerSupply">
 		<item-type>Number:Power</item-type>
 		<label>Grid Supply</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="gridPowerDraw">
 		<item-type>Number:Power</item-type>
 		<label>Grid Draw</label>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.2f %unit%" />
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

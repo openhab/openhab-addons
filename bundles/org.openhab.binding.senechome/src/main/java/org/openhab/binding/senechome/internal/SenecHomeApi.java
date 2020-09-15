@@ -58,22 +58,22 @@ public class SenecHomeApi {
      * @param hostname Hostname or ip address of senec battery
      * @return Instance of SenecHomeResponse
      * @throws MalformedURLException Configuration/URL is wrong
-     * @throws IOException           Communication failed
+     * @throws IOException Communication failed
      */
-    public SenecHomeResponse getStatistics() throws InterruptedException, TimeoutException, ExecutionException, IOException {
+    public SenecHomeResponse getStatistics()
+            throws InterruptedException, TimeoutException, ExecutionException, IOException {
         String location = HTTP_PROTO_PREFIX + hostname;
-        
+
         Request request = httpClient.newRequest(location);
         request.header(HttpHeader.ACCEPT, MimeTypes.Type.APPLICATION_JSON.asString());
         request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.FORM_ENCODED.asString());
         ContentResponse response = request.method(HttpMethod.POST)
-                .content(new StringContentProvider(gson.toJson(new SenecHomeResponse())))
-                .send();
-        
+                .content(new StringContentProvider(gson.toJson(new SenecHomeResponse()))).send();
+
         if (response.getStatus() == HttpStatus.OK_200) {
             return gson.fromJson(response.getContentAsString(), SenecHomeResponse.class);
         } else {
-            throw new IOException("Got unexpected response code "+response.getStatus());
+            throw new IOException("Got unexpected response code " + response.getStatus());
         }
     }
 }

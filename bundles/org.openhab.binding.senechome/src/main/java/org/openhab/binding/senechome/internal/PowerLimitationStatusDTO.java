@@ -26,5 +26,4 @@ public class PowerLimitationStatusDTO {
     public boolean state = false;
 
     public long time = new Date().getTime();
-
 }

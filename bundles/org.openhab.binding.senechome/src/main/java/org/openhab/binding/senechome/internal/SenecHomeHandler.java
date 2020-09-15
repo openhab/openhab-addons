@@ -88,7 +88,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     protected void stopJobIfRunning() {
-    	final ScheduledFuture<?> refreshJob = this.refreshJob;
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null && !refreshJob.isCancelled()) {
             refreshJob.cancel(true);
             this.refreshJob = null;
@@ -127,9 +127,10 @@ public class SenecHomeHandler extends BaseThingHandler {
 
             Channel channelEnergyProduction = getThing()
                     .getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_ENERGY_PRODUCTION);
-            updateState(channelEnergyProduction.getUID(), new QuantityType<Power>(
-                    getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
-                    SmartHomeUnits.WATT));
+            updateState(channelEnergyProduction.getUID(),
+                    new QuantityType<Power>(
+                            getSenecValue(response.energy.inverterPowerGeneration).setScale(0, RoundingMode.HALF_UP),
+                            SmartHomeUnits.WATT));
 
             Channel channelBatteryPower = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_POWER);
             updateState(channelBatteryPower.getUID(),
@@ -147,7 +148,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             Channel channelBatteryState = getThing().getChannel(SenecHomeBindingConstants.CHANNEL_SENEC_BATTERY_STATE);
             updateBatteryState(channelBatteryState, getSenecValue(response.energy.batteryState).intValue());
 
-            updateGridPowerValues(getThing(), getSenecValue(response.grid.currentGridValue));
+            updateGridPowerValues(getSenecValue(response.grid.currentGridValue));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
