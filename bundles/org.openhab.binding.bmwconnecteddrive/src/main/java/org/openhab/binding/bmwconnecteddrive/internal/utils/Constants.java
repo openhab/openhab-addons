@@ -52,6 +52,7 @@ public class Constants {
     public static final String PLUS = "+";
     public static final String EMPTY = "";
     public static final String COMMA = ",";
+    public static final String QUESTION = "?";
 
     public static final String ANONYMOUS = "ANONYMOUS";
     public static final int MILES_TO_FEET_FACTOR = 5280;
