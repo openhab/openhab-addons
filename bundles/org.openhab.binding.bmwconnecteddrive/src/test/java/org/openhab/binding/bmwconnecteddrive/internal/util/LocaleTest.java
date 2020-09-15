@@ -44,7 +44,6 @@ public class LocaleTest {
         assertFalse("Germany", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.GERMAN.getCountry()));
     }
 
-    @Test
     public void testTimeUTCToLocaleTime() {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
         VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
