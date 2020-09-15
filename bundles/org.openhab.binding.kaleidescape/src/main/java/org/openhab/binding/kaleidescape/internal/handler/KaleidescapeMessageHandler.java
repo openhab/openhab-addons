@@ -394,7 +394,7 @@ public enum KaleidescapeMessageHandler {
                                 int httpStatus = contentResponse.getStatus();
                                 if (httpStatus == OK_200) {
                                     handler.updateDetailChannel(DETAIL_COVER_ART,
-                                            new RawType(contentResponse.getContent()));
+                                            new RawType(contentResponse.getContent(), RawType.DEFAULT_MIME_TYPE));
                                 } else {
                                     handler.updateDetailChannel(DETAIL_COVER_ART, UnDefType.NULL);
                                 }
@@ -441,6 +441,7 @@ public enum KaleidescapeMessageHandler {
     USER_DEFINED_EVENT {
         private final Logger logger = LoggerFactory.getLogger(KaleidescapeMessageHandler.class);
 
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: SELECT_KALEIDESCAPE_INPUT
             try {
@@ -500,12 +501,14 @@ public enum KaleidescapeMessageHandler {
         }
     },
     USER_INPUT {
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 01:Search for title:ABC
             handler.updateChannel(KaleidescapeBindingConstants.USER_INPUT, new StringType(message));
         }
     },
     USER_INPUT_PROMPT {
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 00:00::00:0:1
             handler.updateChannel(KaleidescapeBindingConstants.USER_INPUT, new StringType(message));
@@ -526,6 +529,7 @@ public enum KaleidescapeMessageHandler {
         // protocol version, kOS version
         private final Pattern p = Pattern.compile("^(\\d{2}):(.*)$");
 
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
@@ -543,6 +547,7 @@ public enum KaleidescapeMessageHandler {
         // device type (deprecated), serial number, cpdid, ip address
         private final Pattern p = Pattern.compile("^(\\d{2}):(.*):(\\d{2}):(.*)$");
 
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             Matcher matcher = p.matcher(message);
             if (matcher.find()) {
@@ -555,12 +560,14 @@ public enum KaleidescapeMessageHandler {
         }
     },
     DEVICE_TYPE_NAME {
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 'Player' or 'Strato'
             handler.updateThingProperty(PROPERTY_COMPONENT_TYPE, message);
         }
     },
     FRIENDLY_NAME {
+        @Override
         public void handleMessage(String message, KaleidescapeHandler handler) {
             // example: 'Living Room'
             handler.friendlyName = message;
