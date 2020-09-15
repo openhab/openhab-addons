@@ -99,7 +99,7 @@ public class ShellyComponents {
                 if (!profile.isEMeter) {
                     for (ShellySettingsMeter meter : status.meters) {
                         Integer meterIndex = m + 1;
-                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report das flag
+                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report valid flag
                                                                          // correctly in white mode
                             String groupName = "";
                             if (profile.numMeters > 1) {
@@ -109,8 +109,11 @@ public class ShellyComponents {
                             }
 
                             if (!thingHandler.areChannelsCreated()) {
-                                thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
-                                        .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                                // skip for Shelly Bulb: JSON has a meter, but values don't get updated
+                                if (!profile.isBulb) {
+                                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
+                                            .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                                }
                             }
 
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
@@ -130,8 +133,8 @@ public class ShellyComponents {
                             }
                             thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
                                     getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
-                            m++;
                         }
+                        m++;
                     }
                 } else {
                     for (ShellySettingsEMeter emeter : status.emeters) {
@@ -164,15 +167,14 @@ public class ShellyComponents {
                                         getDecimal(emeter.pf));
                             }
 
+                            accumulatedWatts += getDouble(emeter.power);
+                            accumulatedTotal += getDouble(emeter.total) / 1000;
+                            accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
                             if (updated) {
-                                accumulatedWatts += getDouble(emeter.power);
-                                accumulatedTotal += getDouble(emeter.total) / 1000;
-                                accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
-
                                 thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
                             }
-                            m++;
                         }
+                        m++;
                     }
                 }
             } else {
@@ -245,7 +247,6 @@ public class ShellyComponents {
 
         boolean updated = false;
         if (profile.isSensor || profile.hasBattery || profile.isSense) {
-            thingHandler.logger.debug("{}: Updating sensor", thingHandler.thingName);
             ShellyStatusSensor sdata = thingHandler.api.getSensorStatus();
 
             if (!thingHandler.areChannelsCreated()) {
@@ -258,8 +259,6 @@ public class ShellyComponents {
 
             if ((sdata.contact != null) && sdata.contact.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
-                thingHandler.logger.debug("{}: Updating DW state with {}", thingHandler.thingName,
-                        getString(sdata.contact.state));
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         getString(sdata.contact.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
