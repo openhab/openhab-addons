@@ -129,7 +129,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
             handler.getData();
         }
         counter++;
-        proxy.get(serviceExecutionStateAPI + serviceExecuting.get(), Optional.empty(), this);
+        MultiMap<String> dataMap = new MultiMap<String>();
+        dataMap.add(SERVICE_TYPE, serviceExecuting.get());
+        proxy.get(serviceExecutionStateAPI, Optional.of(dataMap), this);
     }
 
     @Override

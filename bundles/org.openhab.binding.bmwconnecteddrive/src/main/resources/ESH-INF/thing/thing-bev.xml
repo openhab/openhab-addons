@@ -14,7 +14,7 @@
 
 		<channel-groups>
 			<channel-group id="status" typeId="ev-vehicle-status"/>
-			<channel-group id="range" typeId="hybrid-range-values"/>
+			<channel-group id="range" typeId="ev-range-values"/>
 			<channel-group id="location" typeId="location-values"/>
 			<channel-group id="remote" typeId="remote-services"/>
 			<channel-group id="charge" typeId="charge-values"/>
