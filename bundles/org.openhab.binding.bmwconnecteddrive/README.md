@@ -747,6 +747,6 @@ end
 
 ## Credits
 
-This work is based on the work of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected). 
+This work is based on the project of [Bimmer Connected](https://github.com/bimmerconnected/bimmer_connected). 
 Also a [manual installation based on python](https://community.openhab.org/t/script-to-access-the-bmw-connecteddrive-portal-via-oh/37345) was already available for openHAB.
 This Binding is basically a port to openHAB based on these concept works!  
