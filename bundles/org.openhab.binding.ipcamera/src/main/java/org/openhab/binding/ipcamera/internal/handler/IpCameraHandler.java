@@ -200,8 +200,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public boolean snapshotPolling = false;
     public OnvifConnection onvifCamera = new OnvifConnection(this, "", "", "");
 
-    // These methods handle the response from all camera brands, nothing specific to
-    // any brand should be in here //
+    // These methods handle the response from all camera brands, nothing specific to 1 brand.
     private class CommonCameraHandler extends ChannelDuplexHandler {
         private int bytesToRecieve = 0;
         private int bytesAlreadyRecieved = 0;
@@ -1636,12 +1635,6 @@ public class IpCameraHandler extends BaseThingHandler {
             logger.warn("The serverPort is <= 1024 and may cause permission errors under Linux, try a higher number.");
         }
         rtspUri = cameraConfig.getFfmpegInput();
-        /*
-         * if (!rtspUri.isEmpty()) {
-         * RtspConnection rtspConnection = new RtspConnection(this, username, password);
-         * rtspConnection.connect();
-         * }
-         */
         ffmpegOutputFolder = cameraConfig.getFfmpegOutput();
         // Known cameras will connect quicker if we skip ONVIF questions.
         switch (thing.getThingTypeUID().getId()) {

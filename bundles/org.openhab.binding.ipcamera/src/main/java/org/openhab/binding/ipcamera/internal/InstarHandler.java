@@ -67,7 +67,6 @@ public class InstarHandler extends ChannelDuplexHandler {
             if (content.isEmpty()) {
                 return;
             }
-            // ipCameraHandler.logger.trace("HTTP Result back from camera is \t:{}:", content);
             switch (requestUrl) {
                 case "/param.cgi?cmd=getinfrared":
                     if (content.contains("var infraredstat=\"auto")) {
@@ -99,7 +98,6 @@ public class InstarHandler extends ChannelDuplexHandler {
                         ipCameraHandler.setChannelState(CHANNEL_ENABLE_AUDIO_ALARM, OnOffType.ON);
                         value1 = Helper.searchString(content, "var aa_value=\"");
                         if (!value1.isEmpty()) {
-                            // ipCameraHandler.logger.debug("Threshold is changing to {}", value1);
                             ipCameraHandler.setChannelState(CHANNEL_THRESHOLD_AUDIO_ALARM, PercentType.valueOf(value1));
                         }
                     } else {
@@ -174,7 +172,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                 return;
             case CHANNEL_TEXT_OVERLAY:
                 String text = Helper.encodeSpecialChars(command.toString());
-                if ("".contentEquals(text)) {
+                if (text.isEmpty()) {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setoverlayattr&-region=1&-show=0");
                 } else {
                     ipCameraHandler.sendHttpGET("/param.cgi?cmd=setoverlayattr&-region=1&-show=1&-name=" + text);

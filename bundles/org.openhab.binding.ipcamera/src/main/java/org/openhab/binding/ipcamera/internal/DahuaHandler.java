@@ -172,7 +172,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
         switch (channelUID.getId()) {
             case CHANNEL_TEXT_OVERLAY:
                 String text = Helper.encodeSpecialChars(command.toString());
-                if ("".contentEquals(text)) {
+                if (text.isEmpty()) {
                     ipCameraHandler.sendHttpGET(
                             "/cgi-bin/configManager.cgi?action=setConfig&VideoWidget[0].CustomTitle[1].EncodeBlend=false");
                 } else {

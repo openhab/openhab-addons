@@ -175,9 +175,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         int numberOfSegments = howManySegments(m3u8File);
         logger.debug("Using {} segmented files to make up a poll period.", numberOfSegments);
         m3u8File = keepLast(m3u8File, numberOfSegments);
-        // logger.debug("replacing files to keep now");
         m3u8File = m3u8File.replace("ipcamera", cameraIndex + "ipcamera"); // add index so we can then fetch output path
-        // logger.debug("There are {} segments, so we will remove {} from playlist.", entries, numberOfSegments);
         if (entries > numberOfSegments * 3) {
             playingNow = removeFromStart(playingNow, entries - (numberOfSegments * 3));
         }
@@ -232,7 +230,6 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         }
     }
 
-    // @SuppressWarnings("null")
     void addCamera(String UniqueID) {
         if (groupTracker.listOfOnlineCameraUID.contains(UniqueID)) {
             for (IpCameraHandler handler : groupTracker.listOfOnlineCameraHandlers) {

@@ -149,11 +149,9 @@
 			</parameter-group>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -166,14 +164,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -429,11 +419,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter-group>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -446,14 +434,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="mjpegUrl" type="text" required="false" groupName="Settings">
@@ -611,8 +591,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -822,11 +802,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -839,14 +817,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -906,8 +876,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -1104,11 +1074,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -1121,14 +1089,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -1204,8 +1164,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -1400,11 +1360,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -1417,14 +1375,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -1475,8 +1425,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -1677,11 +1627,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -1694,14 +1642,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -1766,8 +1706,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -1979,11 +1919,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -1996,14 +1934,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -2063,8 +1993,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>false</default>
 				<advanced>true</advanced>
@@ -2268,11 +2198,9 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
-				<label>Update the Image channel when:</label>
-				<description>
-<![CDATA[
-The Image channel can be set to update in a number of ways. Recommend you set this to never updates as per the readme.</p>
-]]>
+				<label>Update Image Channel When:</label>
+				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
+					per the readme.
 				</description>
 				<default>0</default>
 				<options>
@@ -2285,14 +2213,6 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 					<option value="5">During Audio Alarm (5)</option>
 					<option value="45">During Motion and Audio Alarms (45)</option>
 				</options>
-			</parameter>
-
-			<parameter name="updateImage" type="boolean" required="true" groupName="Image ch Settings">
-				<label>Poll Image Default</label>
-				<description>Turn this ON to update the Image channel, otherwise the image channel will NOT update unless you turn
-					ON the pollImage channel.
-				</description>
-				<default>false</default>
 			</parameter>
 
 			<parameter name="ipAddress" type="text" required="true" groupName="Settings">
@@ -2343,8 +2263,8 @@ The Image channel can be set to update in a number of ways. Recommend you set th
 			</parameter>
 
 			<parameter name="ptzContinuous" type="boolean" groupName="Settings">
-				<label>Use Continuous PTZ movements instead of Relative Moves.</label>
-				<description>Select if you want Relative (false) or Continuous (true) movements if this camera supports PTZ.
+				<label>Use Continuous PTZ</label>
+				<description>Select if you want Relative (false) or Continuous (true) movements.
 				</description>
 				<default>true</default>
 				<advanced>true</advanced>

@@ -70,6 +70,36 @@ public class Helper {
         return "";
     }
 
+    public static String fetchXML(String message, String sectionHeading, String key) {
+        String result = "";
+        int sectionHeaderBeginning = 0;
+        if (!sectionHeading.isEmpty()) {// looking for a sectionHeading
+            sectionHeaderBeginning = message.indexOf(sectionHeading);
+        }
+        if (sectionHeaderBeginning == -1) {
+            return "";
+        }
+        int startIndex = message.indexOf(key, sectionHeaderBeginning + sectionHeading.length());
+        if (startIndex == -1) {
+            return "";
+        }
+        int endIndex = message.indexOf("<", startIndex + key.length());
+        if (endIndex > startIndex) {
+            result = message.substring(startIndex + key.length(), endIndex);
+        }
+        // remove any quotes and anything after the quote.
+        sectionHeaderBeginning = result.indexOf("\"");
+        if (sectionHeaderBeginning > 0) {
+            result = result.substring(0, sectionHeaderBeginning);
+        }
+        // remove any ">" and anything after it.
+        sectionHeaderBeginning = result.indexOf(">");
+        if (sectionHeaderBeginning > 0) {
+            result = result.substring(0, sectionHeaderBeginning);
+        }
+        return result;
+    }
+
     /**
      * The {@link encodeSpecialChars} Is used to replace spaces with %20 in Strings meant for URL queries.
      *

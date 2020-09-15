@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.IpCameraDiscoveryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,33 +88,6 @@ public class OnvifDiscovery {
         return null;
     }
 
-    String fetchXML(String message, String sectionHeading, String key) {
-        String result = "";
-        int sectionHeaderBeginning = 0;
-        if (!sectionHeading.equals("")) {// looking for a sectionHeading
-            sectionHeaderBeginning = message.indexOf(sectionHeading);
-        }
-        if (sectionHeaderBeginning == -1) {
-            // logger.debug("{} was not found in :{}", sectionHeading, message);
-            return "";
-        }
-        int startIndex = message.indexOf(key, sectionHeaderBeginning + sectionHeading.length());
-        if (startIndex == -1) {
-            // logger.debug("{} was not found in :{}", key, message);
-            return "";
-        }
-        int endIndex = message.indexOf("<", startIndex + key.length());
-        if (endIndex > startIndex) {
-            result = message.substring(startIndex + key.length(), endIndex);
-        }
-        // remove any quotes and anything after the quote.
-        sectionHeaderBeginning = result.indexOf("\"");
-        if (sectionHeaderBeginning > 0) {
-            result = result.substring(0, sectionHeaderBeginning);
-        }
-        return result;
-    }
-
     void searchReply(String url, String xml) {
         String ipAddress = "";
         String temp = url;
@@ -134,7 +108,6 @@ public class OnvifDiscovery {
         } else {// // http://192.168.0.1/onvif/device_service
             ipAddress = temp.substring(beginIndex, endIndex);
         }
-        // logger.debug("Camera IP:{} and ONVIF PORT:{}", ipAddress, onvifPort);
         String brand = checkForBrand(xml);
         if (brand.equals("onvif")) {
             try {
@@ -150,9 +123,8 @@ public class OnvifDiscovery {
         for (DatagramPacket packet : listOfReplys) {
             logger.trace("Device replied to discovery with:{}", packet.toString());
             String xml = packet.content().toString(CharsetUtil.UTF_8);
-            String xAddr = fetchXML(xml, "", "<d:XAddrs>");
+            String xAddr = Helper.fetchXML(xml, "", "<d:XAddrs>");
             if (!xAddr.equals("")) {
-                // logger.trace("Discovery packet back from camera:{}", xml);
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {
                 logger.info("Possible ONVIF camera found at:{}", packet.sender().getHostString());
@@ -179,7 +151,7 @@ public class OnvifDiscovery {
         } else if (response.toLowerCase().contains("dh-sd")) {
             return "dahua";
         }
-        return "onvif";// generic camera
+        return "onvif";
     }
 
     public String getBrandFromLoginPage(String hostname) throws IOException {
@@ -192,7 +164,6 @@ public class OnvifDiscovery {
         connection.setRequestMethod("GET");
         try {
             connection.connect();
-            // int status = connection.getResponseCode();
             BufferedReader reply = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String response = "";
             String temp;

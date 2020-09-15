@@ -175,9 +175,6 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
             } else if (response.status().code() != 200) {
                 logger.debug("Camera at IP:{} gave a reply with a response code of :{}", myHandler.ipAddress,
                         response.status().code());
-                // TODO: look at taking the camera offline for some reponse codes with the below line.
-                // myHandler.cameraCommunicationError(
-                // "Camera gave a reply with a http response code of " + response.status().code());
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//

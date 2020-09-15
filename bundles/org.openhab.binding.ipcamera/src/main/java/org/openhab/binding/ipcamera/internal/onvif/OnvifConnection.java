@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -275,13 +276,12 @@ public class OnvifConnection {
             if (message.contains("WSSubscriptionPolicySupport=\"true\"")) {
                 sendOnvifRequest(requestBuilder("Subscribe", eventXAddr));
             }
-            // sendOnvifRequest(requestBuilder("Subscribe", eventXAddr));
         } else if (message.contains("GetEventPropertiesResponse")) {
             sendOnvifRequest(requestBuilder("CreatePullPointSubscription", eventXAddr));
         } else if (message.contains("SubscribeResponse")) {
             logger.info("Onvif Subscribe appears to be working for Alarms/Events.");
         } else if (message.contains("CreatePullPointSubscriptionResponse")) {
-            subscriptionXAddr = removeIPfromUrl(fetchXML(message, "SubscriptionReference>", "Address>"));
+            subscriptionXAddr = removeIPfromUrl(Helper.fetchXML(message, "SubscriptionReference>", "Address>"));
             logger.debug("subscriptionXAddr={}", subscriptionXAddr);
             sendOnvifRequest(requestBuilder("PullMessages", subscriptionXAddr));
         } else if (message.contains("GetStatusResponse")) {
@@ -290,30 +290,28 @@ public class OnvifConnection {
             presetTokens = listOfResults(message, "<tptz:Preset", "token=\"");
         } else if (message.contains("GetConfigurationsResponse")) {
             sendPTZRequest("GetPresets");
-            ptzConfigToken = fetchXML(message, "PTZConfiguration", "token=\"");
+            ptzConfigToken = Helper.fetchXML(message, "PTZConfiguration", "token=\"");
             logger.debug("ptzConfigToken={}", ptzConfigToken);
             sendPTZRequest("GetConfigurationOptions");
         } else if (message.contains("GetNodesResponse")) {
             sendPTZRequest("GetStatus");
-            ptzNodeToken = fetchXML(message, "", "token=\"");
+            ptzNodeToken = Helper.fetchXML(message, "", "token=\"");
             logger.debug("ptzNodeToken={}", ptzNodeToken);
             sendPTZRequest("GetConfigurations");
         } else if (message.contains("GetDeviceInformationResponse")) {
             logger.debug("GetDeviceInformationResponse recieved");
         } else if (message.contains("GetSnapshotUriResponse")) {
-            snapshotUri = removeIPfromUrl(fetchXML(message, ":MediaUri", ":Uri"));
+            snapshotUri = removeIPfromUrl(Helper.fetchXML(message, ":MediaUri", ":Uri"));
             logger.debug("GetSnapshotUri:{}", snapshotUri);
             if (ipCameraHandler.snapshotUri.isEmpty()) {
                 ipCameraHandler.snapshotUri = snapshotUri;
             }
         } else if (message.contains("GetStreamUriResponse")) {
-            rtspUri = fetchXML(message, ":MediaUri", ":Uri>");
+            rtspUri = Helper.fetchXML(message, ":MediaUri", ":Uri>");
             logger.debug("GetStreamUri:{}", rtspUri);
             if (ipCameraHandler.rtspUri.isEmpty()) {
                 ipCameraHandler.rtspUri = rtspUri;
             }
-        } else {
-            logger.trace("Unhandled Onvif reply is:{}", message);
         }
     }
 
@@ -360,7 +358,7 @@ public class OnvifConnection {
                 + headers
                 + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
                 + getXml(requestType) + "</s:Body></s:Envelope>";
-        String actionString = fetchXML(getXml(requestType), requestType, "xmlns=\"");
+        String actionString = Helper.fetchXML(getXml(requestType), requestType, "xmlns=\"");
         request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
         ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
@@ -389,23 +387,23 @@ public class OnvifConnection {
 
     void parseXAddr(String message) {
         // Normally I would search '<tt:XAddr>' instead but Foscam needed this work around.
-        String temp = removeIPfromUrl(fetchXML(message, "<tt:Device", "tt:XAddr"));
+        String temp = removeIPfromUrl(Helper.fetchXML(message, "<tt:Device", "tt:XAddr"));
         if (!temp.isEmpty()) {
             deviceXAddr = temp;
             logger.debug("deviceXAddr:{}", deviceXAddr);
         }
-        temp = removeIPfromUrl(fetchXML(message, "<tt:Events", "tt:XAddr"));
+        temp = removeIPfromUrl(Helper.fetchXML(message, "<tt:Events", "tt:XAddr"));
         if (!temp.isEmpty()) {
             subscriptionXAddr = eventXAddr = temp;
             logger.debug("eventsXAddr:{}", eventXAddr);
         }
-        temp = removeIPfromUrl(fetchXML(message, "<tt:Media", "tt:XAddr"));
+        temp = removeIPfromUrl(Helper.fetchXML(message, "<tt:Media", "tt:XAddr"));
         if (!temp.isEmpty()) {
             mediaXAddr = temp;
             logger.debug("mediaXAddr:{}", mediaXAddr);
         }
 
-        ptzXAddr = removeIPfromUrl(fetchXML(message, "<tt:PTZ", "tt:XAddr"));
+        ptzXAddr = removeIPfromUrl(Helper.fetchXML(message, "<tt:PTZ", "tt:XAddr"));
         if (ptzXAddr.isEmpty()) {
             ptzDevice = false;
             logger.trace("Camera must not support PTZ, it failed to give a <tt:PTZ><tt:XAddr>:{}", message);
@@ -415,13 +413,13 @@ public class OnvifConnection {
     }
 
     private void parseDateAndTime(String message) {
-        String minute = fetchXML(message, "UTCDateTime", "Minute>");
-        String hour = fetchXML(message, "UTCDateTime", "Hour>");
-        String second = fetchXML(message, "UTCDateTime", "Second>");
+        String minute = Helper.fetchXML(message, "UTCDateTime", "Minute>");
+        String hour = Helper.fetchXML(message, "UTCDateTime", "Hour>");
+        String second = Helper.fetchXML(message, "UTCDateTime", "Second>");
         logger.debug("Cameras  UTC time is : {}:{}:{}", hour, minute, second);
-        String day = fetchXML(message, "UTCDateTime", "Day>");
-        String month = fetchXML(message, "UTCDateTime", "Month>");
-        String year = fetchXML(message, "UTCDateTime", "Year>");
+        String day = Helper.fetchXML(message, "UTCDateTime", "Day>");
+        String month = Helper.fetchXML(message, "UTCDateTime", "Month>");
+        String year = Helper.fetchXML(message, "UTCDateTime", "Year>");
         logger.debug("Cameras  UTC date is : {}-{}-{}", year, month, day);
     }
 
@@ -530,9 +528,9 @@ public class OnvifConnection {
     }
 
     public void eventRecieved(String eventMessage) {
-        String topic = fetchXML(eventMessage, "Topic", "tns1:");
-        String dataName = fetchXML(eventMessage, "tt:Data", "Name=\"");
-        String dataValue = fetchXML(eventMessage, "tt:Data", "Value=\"");
+        String topic = Helper.fetchXML(eventMessage, "Topic", "tns1:");
+        String dataName = Helper.fetchXML(eventMessage, "tt:Data", "Name=\"");
+        String dataValue = Helper.fetchXML(eventMessage, "tt:Data", "Value=\"");
         if (!topic.isEmpty()) {
             logger.debug("Onvif Event Topic:{}, Data:{}, Value:{}", topic, dataName, dataValue);
         }
@@ -686,7 +684,7 @@ public class OnvifConnection {
         for (int startLookingFromIndex = 0; startLookingFromIndex != -1;) {
             startLookingFromIndex = message.indexOf(heading, startLookingFromIndex);
             if (startLookingFromIndex >= 0) {
-                temp = fetchXML(message.substring(startLookingFromIndex), heading, key);
+                temp = Helper.fetchXML(message.substring(startLookingFromIndex), heading, key);
                 if (!temp.isEmpty()) {
                     logger.trace("String was found:{}", temp);
                     results.add(temp);
@@ -695,36 +693,6 @@ public class OnvifConnection {
             }
         }
         return results;
-    }
-
-    public static String fetchXML(String message, String sectionHeading, String key) {
-        String result = "";
-        int sectionHeaderBeginning = 0;
-        if (!sectionHeading.isEmpty()) {// looking for a sectionHeading
-            sectionHeaderBeginning = message.indexOf(sectionHeading);
-        }
-        if (sectionHeaderBeginning == -1) {
-            return "";
-        }
-        int startIndex = message.indexOf(key, sectionHeaderBeginning + sectionHeading.length());
-        if (startIndex == -1) {
-            return "";
-        }
-        int endIndex = message.indexOf("<", startIndex + key.length());
-        if (endIndex > startIndex) {
-            result = message.substring(startIndex + key.length(), endIndex);
-        }
-        // remove any quotes and anything after the quote.
-        sectionHeaderBeginning = result.indexOf("\"");
-        if (sectionHeaderBeginning > 0) {
-            result = result.substring(0, sectionHeaderBeginning);
-        }
-        // remove any ">" and anything after it.
-        sectionHeaderBeginning = result.indexOf(">");
-        if (sectionHeaderBeginning > 0) {
-            result = result.substring(0, sectionHeaderBeginning);
-        }
-        return result;
     }
 
     void parseProfiles(String message) {

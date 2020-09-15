@@ -29,7 +29,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
-import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,8 +128,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                     countDown();
                 }
             } else {
-                String replyElement = OnvifConnection.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-                        "<");
+                String replyElement = Helper.fetchXML(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "<");
                 switch (replyElement) {
                     case "MotionDetection version=":
                         ipCameraHandler.storeHttpReply(
@@ -165,7 +163,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
                     case "TextOverlay version=":
                         ipCameraHandler.storeHttpReply(
                                 "/ISAPI/System/Video/inputs/channels/" + nvrChannel + "/overlays/text/1", content);
-                        String text = OnvifConnection.fetchXML(content, "<enabled>true</enabled>", "<displayText>");
+                        String text = Helper.fetchXML(content, "<enabled>true</enabled>", "<displayText>");
                         ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(text));
                         break;
                     case "AudioDetection version=":
