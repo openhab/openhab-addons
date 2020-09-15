@@ -710,6 +710,7 @@ As an example the Rule is reflecting the following status as Image
 * Rear - Vehicle is away from Home Location
 
 #### Status Image Rule
+
 ```
 // Change Image according to Vehicle Status
 rule "Image Status"
