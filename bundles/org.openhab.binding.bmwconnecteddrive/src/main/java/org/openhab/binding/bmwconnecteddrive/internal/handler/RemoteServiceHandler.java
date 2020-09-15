@@ -39,7 +39,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
     // after 60 retries the state update will give up
     private static final String SERVICE_TYPE = "serviceType";
     private static final int GIVEUP_COUNTER = 12;
-    private static final int STATE_UPDATE_SEC = 5;
+    private static final int STATE_UPDATE_SEC = 10;
     private int counter = 0;
 
     public enum ExecutionState {
