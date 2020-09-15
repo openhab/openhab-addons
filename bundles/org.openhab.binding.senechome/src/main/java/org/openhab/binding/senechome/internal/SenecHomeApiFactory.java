@@ -13,7 +13,6 @@
 package org.openhab.binding.senechome.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
