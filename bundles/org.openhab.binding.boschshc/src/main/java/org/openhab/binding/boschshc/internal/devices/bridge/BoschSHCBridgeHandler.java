@@ -261,123 +261,105 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
 
         logger.debug("Sending long poll request to Bosch");
 
-        String[] params = { subscriptionId, "20" };
-        JsonRpcRequest r = new JsonRpcRequest("2.0", "RE/longPoll", params);
+        JsonRpcRequest requestContent = new JsonRpcRequest("2.0", "RE/longPoll", new String[] { subscriptionId, "20" });
+        String url = httpClient.createUrl("remote/json-rpc");
+        Request request = httpClient.createRequest(url, POST, requestContent);
+        request.send(result -> {
+            try {
+                Response response = result.getResponse();
+                if (result != null && !result.isFailed() && response instanceof ContentResponse) {
+                    ContentResponse contentResponse = (ContentResponse) response;
+                    String content = contentResponse.getContentAsString();
 
-        /**
-         * TODO Move this to separate file?
-         */
-        class LongPollListener extends BufferingResponseListener {
+                    logger.debug("Response complete: {} - return code: {}", content, result.getResponse().getStatus());
 
-            private BoschSHCBridgeHandler bridgeHandler;
+                    LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
+                    if (parsed.result != null) {
+                        for (DeviceStatusUpdate update : parsed.result) {
 
-            public LongPollListener(BoschSHCBridgeHandler bridgeHandler) {
+                            if (update != null && update.state != null) {
 
-                super();
-                this.bridgeHandler = bridgeHandler;
-            }
+                                logger.debug("Got update for {}", update.deviceId);
 
-            @Override
-            public void onComplete(@Nullable Result result) {
+                                boolean handled = false;
 
-                try {
-                    if (result != null && !result.isFailed()) {
-                        String content = getContentAsString();
+                                Bridge bridge = this.getThing();
+                                for (Thing childThing : bridge.getThings()) {
 
-                        logger.debug("Response complete: {} - return code: {}", content,
-                                result.getResponse().getStatus());
+                                    // All children of this should implement BoschSHCHandler
+                                    ThingHandler baseHandler = childThing.getHandler();
+                                    if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
+                                        BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
+                                        String deviceId = handler.getBoschID();
 
-                        LongPollResult parsed = gson.fromJson(content, LongPollResult.class);
-                        if (parsed.result != null) {
-                            for (DeviceStatusUpdate update : parsed.result) {
+                                        handled = true;
+                                        logger.debug("Registered device: {} - looking for {}", deviceId,
+                                                update.deviceId);
 
-                                if (update != null && update.state != null) {
+                                        if (deviceId != null && update.deviceId.equals(deviceId)) {
 
-                                    logger.debug("Got update for {}", update.deviceId);
-
-                                    Bridge bridge = bridgeHandler.getThing();
-                                    boolean handled = false;
-
-                                    for (Thing childThing : bridge.getThings()) {
-
-                                        // All children of this should implement BoschSHCHandler
-                                        ThingHandler baseHandler = childThing.getHandler();
-                                        if (baseHandler != null && baseHandler instanceof BoschSHCHandler) {
-                                            BoschSHCHandler handler = (BoschSHCHandler) baseHandler;
-                                            String deviceId = handler.getBoschID();
-
-                                            handled = true;
-                                            logger.debug("Registered device: {} - looking for {}", deviceId,
-                                                    update.deviceId);
-
-                                            if (deviceId != null && update.deviceId.equals(deviceId)) {
-
-                                                logger.debug("Found child: {} - calling processUpdate with {}", handler,
-                                                        update.state);
-                                                handler.processUpdate(update.id, update.state);
-                                            }
-                                        } else {
-                                            logger.warn(
-                                                    "longPoll: child handler for {} does not implement Bosch SHC handler",
-                                                    baseHandler);
+                                            logger.debug("Found child: {} - calling processUpdate with {}", handler,
+                                                    update.state);
+                                            handler.processUpdate(update.id, update.state);
                                         }
-
+                                    } else {
+                                        logger.warn(
+                                                "longPoll: child handler for {} does not implement Bosch SHC handler",
+                                                baseHandler);
                                     }
 
-                                    if (!handled) {
-                                        logger.debug("Could not find a thing for device ID: {}", update.deviceId);
-                                    }
                                 }
-                            }
 
-                        } else {
-                            logger.warn("Could not parse in onComplete: {}", content);
-
-                            // Check if we got a proper result from the SHC
-                            LongPollError parsedError = gson.fromJson(content, LongPollError.class);
-
-                            if (parsedError.error != null) {
-
-                                logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
-
-                                if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
-
-                                    bridgeHandler.subscriptionId = null;
-                                    logger.warn("Invalidating subscription ID!");
+                                if (!handled) {
+                                    logger.debug("Could not find a thing for device ID: {}", update.deviceId);
                                 }
-                            }
-
-                            // Timeout before retry
-                            try {
-                                Thread.sleep(10000);
-                            } catch (InterruptedException sleepError) {
-                                logger.warn("Failed to sleep in longRun()");
                             }
                         }
 
                     } else {
-                        logger.warn("Failed in onComplete");
+                        logger.warn("Could not parse in onComplete: {}", content);
+
+                        // Check if we got a proper result from the SHC
+                        LongPollError parsedError = gson.fromJson(content, LongPollError.class);
+
+                        if (parsedError.error != null) {
+
+                            logger.warn("Got error from SHC: {}", parsedError.error.hashCode());
+
+                            if (parsedError.error.code == LongPollError.SUBSCRIPTION_INVALID) {
+
+                                this.subscriptionId = null;
+                                logger.warn("Invalidating subscription ID!");
+                            }
+                        }
+
+                        // Timeout before retry
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException sleepError) {
+                            logger.warn("Failed to sleep in longRun()");
+                        }
                     }
 
-                } catch (Exception e) {
-
-                    logger.warn("Execption in long polling", e);
-
-                    // Timeout before retry
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException sleepError) {
-                        logger.warn("Failed to sleep in longRun()");
-                    }
+                } else {
+                    logger.warn("Failed in onComplete");
                 }
 
-                // TODO Is this call okay? Should we use scheduler.execute instead?
-                bridgeHandler.longPoll(httpClient);
-            }
-        }
+            } catch (Exception e) {
 
-        String url = httpClient.createUrl("remote/json-rpc");
-        httpClient.createRequest(url, POST, r).send(new LongPollListener(this));
+                logger.warn("Execption in long polling", e);
+
+                // Timeout before retry
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException sleepError) {
+                    logger.warn("Failed to sleep in longRun()");
+                }
+            }
+
+            // TODO Is this call okay? Should we use scheduler.execute instead?
+            this.longPoll(httpClient);
+        });
     }
 
     /**
