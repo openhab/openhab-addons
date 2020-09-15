@@ -14,6 +14,8 @@ package org.openhab.binding.boschshc.internal.devices.inwallswitch;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -27,6 +29,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
+import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
+import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
+import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -39,14 +45,25 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
+    private PowerSwitchService powerSwitchService;
+
     public BoschInWallSwitchHandler(Thing thing) {
         super(thing);
+        this.powerSwitchService = new PowerSwitchService();
+    }
+
+    @Override
+    protected void initializeServices() throws BoschSHCException {
+        super.initializeServices();
+
+        this.registerService(this.powerSwitchService, this::updateChannels, Arrays.asList(CHANNEL_POWER_SWITCH));
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        Bridge bridge = this.getBridge();
+        super.handleCommand(channelUID, command);
 
+        Bridge bridge = this.getBridge();
         if (bridge != null) {
 
             logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
@@ -56,14 +73,6 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
 
                 if (command instanceof RefreshType) {
                     switch (channelUID.getId()) {
-                        case CHANNEL_POWER_SWITCH: {
-                            PowerSwitchState state = bridgeHandler.refreshState(getThing(), "PowerSwitch",
-                                    PowerSwitchState.class);
-                            if (state != null) {
-                                updatePowerSwitchState(state);
-                            }
-                            break;
-                        }
                         case CHANNEL_POWER_CONSUMPTION: {
                             PowerMeterState state = bridgeHandler.refreshState(getThing(), "PowerMeter",
                                     PowerMeterState.class);
@@ -79,7 +88,13 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
                             logger.warn("Received refresh request for unsupported channel: {}", channelUID);
                     }
                 } else {
-                    bridgeHandler.updateSwitchState(getThing(), command.toFullString());
+                    switch (channelUID.getId()) {
+                        case CHANNEL_POWER_SWITCH:
+                            if (command instanceof OnOffType) {
+                                updatePowerSwitchState((OnOffType) command);
+                            }
+                            break;
+                    }
                 }
             }
         } else {
@@ -96,28 +111,32 @@ public class BoschInWallSwitchHandler extends BoschSHCHandler {
         updateState(CHANNEL_ENERGY_CONSUMPTION, new DecimalType(state.energyConsumption));
     }
 
-    void updatePowerSwitchState(PowerSwitchState state) {
+    /**
+     * Updates the channels which are linked to the {@link PowerSwitchService} of the device.
+     * 
+     * @param state Current state of {@link PowerSwitchService}.
+     */
+    private void updateChannels(PowerSwitchServiceState state) {
+        State powerState = OnOffType.from(state.switchState.toString());
+        super.updateState(CHANNEL_POWER_SWITCH, powerState);
+    }
 
-        // Update power switch
-        logger.debug("Parsed switch state of {}: {}", this.getBoschID(), state.switchState);
-        State powerState = OnOffType.from(state.switchState);
-        updateState(CHANNEL_POWER_SWITCH, powerState);
+    private void updatePowerSwitchState(OnOffType command) {
+        PowerSwitchServiceState state = new PowerSwitchServiceState();
+        state.switchState = PowerSwitchState.valueOf(command.toFullString());
+        this.powerSwitchService.setState(state);
     }
 
     @Override
     public void processUpdate(String id, JsonElement state) {
+        super.processUpdate(id, state);
+
         logger.debug("in-wall switch: received update: ID {} state {}", id, state);
 
         try {
-
             if (id.equals("PowerMeter")) {
                 updatePowerMeterState(gson.fromJson(state, PowerMeterState.class));
-
-            } else {
-                updatePowerSwitchState(gson.fromJson(state, PowerSwitchState.class));
-
             }
-
         } catch (JsonSyntaxException e) {
             logger.warn("Received unknown update in in-wall switch: {}", state);
         }
