@@ -183,7 +183,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public ReentrantLock lockCurrentSnapshot = new ReentrantLock();
     public String rtspUri = "";
     public String ipAddress = "empty";
-    public String updateImageEvents = "";
+    public String updateImageWhen = "";
     public boolean audioAlarmUpdateSnapshot = false;
     private boolean motionAlarmUpdateSnapshot = false;
     private boolean isOnline = false; // Used so only 1 error is logged when a network issue occurs.
@@ -701,7 +701,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     serverFuture.await(4000);
                     logger.debug("File server for camera at {} has started on port {} for all NIC's.", ipAddress,
                             serverPort);
-                    updateState(CHANNEL_STREAM_URL,
+                    updateState(CHANNEL_MJPEG_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.mjpeg"));
                     updateState(CHANNEL_HLS_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.m3u8"));
@@ -1066,7 +1066,7 @@ public class IpCameraHandler extends BaseThingHandler {
         motionDetected = false;
         if (streamingAutoFps) {
             stopSnapshotPolling();
-        } else if (updateImageEvents.contains("4")) { // During Motion Alarms
+        } else if (updateImageWhen.contains("4")) { // During Motion Alarms
             stopSnapshotPolling();
         }
     }
@@ -1083,14 +1083,14 @@ public class IpCameraHandler extends BaseThingHandler {
         if (streamingAutoFps) {
             startSnapshotPolling();
         }
-        if (updateImageEvents.contains("2")) {
+        if (updateImageWhen.contains("2")) {
             if (!firstMotionAlarm) {
                 if (!snapshotUri.isEmpty()) {
                     sendHttpGET(snapshotUri);
                 }
                 firstMotionAlarm = true;// reset back to false when the jpg arrives.
             }
-        } else if (updateImageEvents.contains("4")) { // During Motion Alarms
+        } else if (updateImageWhen.contains("4")) { // During Motion Alarms
             if (!snapshotPolling) {
                 startSnapshotPolling();
             }
@@ -1101,14 +1101,14 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void audioDetected() {
         updateState(CHANNEL_AUDIO_ALARM, OnOffType.ON);
-        if (updateImageEvents.contains("3")) {
+        if (updateImageWhen.contains("3")) {
             if (!firstAudioAlarm) {
                 if (!snapshotUri.isEmpty()) {
                     sendHttpGET(snapshotUri);
                 }
                 firstAudioAlarm = true;// reset back to false when the jpg arrives.
             }
-        } else if (updateImageEvents.contains("5")) {// During audio alarms
+        } else if (updateImageWhen.contains("5")) {// During audio alarms
             firstAudioAlarm = true;
             audioAlarmUpdateSnapshot = true;
         }
@@ -1235,7 +1235,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         onvifCamera.gotoPreset(Integer.valueOf(command.toString()));
                     }
                     return;
-                case CHANNEL_UPDATE_IMAGE_NOW:
+                case CHANNEL_POLL_IMAGE:
                     if (OnOffType.ON.equals(command)) {
                         if (snapshotUri.isEmpty()) {
                             ffmpegSnapshotGeneration = true;
@@ -1406,7 +1406,7 @@ public class IpCameraHandler extends BaseThingHandler {
             cameraConnectionJob.cancel(false);
         }
 
-        if (preroll > 0 || updateImageEvents.contains("1")) {
+        if (preroll > 0 || updateImageWhen.contains("1")) {
             snapshotPolling = true;
             snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 1000, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
@@ -1418,9 +1418,9 @@ public class IpCameraHandler extends BaseThingHandler {
             updateState(CHANNEL_RTSP_URL, new StringType(rtspUri));
         }
         if (updateImageChannel) {
-            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.ON);
+            updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
         } else {
-            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.OFF);
+            updateState(CHANNEL_POLL_IMAGE, OnOffType.OFF);
         }
         if (!groupTracker.listOfGroupHandlers.isEmpty()) {
             for (IpCameraGroupHandler handle : groupTracker.listOfGroupHandlers) {
@@ -1438,7 +1438,7 @@ public class IpCameraHandler extends BaseThingHandler {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
             setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
-            updateState(CHANNEL_UPDATE_IMAGE_NOW, OnOffType.ON);
+            updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
         } else {
             cameraConfigError("Binding can not find a RTSP url for this camera, please provide a FFmpeg Input URL.");
         }
@@ -1514,12 +1514,12 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void stopSnapshotPolling() {
-        if (!streamingSnapshotMjpeg && preroll == 0 && !updateImageEvents.contains("1")) {
+        if (!streamingSnapshotMjpeg && preroll == 0 && !updateImageWhen.contains("1")) {
             snapshotPolling = false;
             if (snapshotJob != null) {
                 snapshotJob.cancel(true);
             }
-        } else if (updateImageEvents.contains("4")) { // only during Motion Alarms
+        } else if (updateImageWhen.contains("4")) { // only during Motion Alarms
             snapshotPolling = false;
             if (snapshotJob != null) {
                 snapshotJob.cancel(true);
@@ -1535,7 +1535,7 @@ public class IpCameraHandler extends BaseThingHandler {
             snapshotPolling = true;
             snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
-        } else if (updateImageEvents.contains("4")) { // During Motion Alarms
+        } else if (updateImageWhen.contains("4")) { // During Motion Alarms
             snapshotPolling = true;
             snapshotJob = threadPool.scheduleAtFixedRate(this::snapshotRunnable, 200, cameraConfig.getPollTime(),
                     TimeUnit.MILLISECONDS);
@@ -1621,8 +1621,7 @@ public class IpCameraHandler extends BaseThingHandler {
         password = cameraConfig.getPassword();
         preroll = cameraConfig.getGifPreroll();
         postroll = cameraConfig.getGifPostroll();
-        updateImageEvents = cameraConfig.getUpdateImageWhen();
-        updateImageChannel = cameraConfig.getUpdateImage();
+        updateImageWhen = cameraConfig.getUpdateImageWhen();
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         nvrChannel = cameraConfig.getNvrChannel();

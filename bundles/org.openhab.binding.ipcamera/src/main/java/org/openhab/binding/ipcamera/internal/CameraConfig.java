@@ -36,7 +36,6 @@ public class CameraConfig {
     String customMotionAlarmUrl = "";
     String customAudioAlarmUrl = "";
     String updateImageWhen = "";
-    boolean updateImage;
     int nvrChannel;
     String ipWhitelist = "";
     String ffmpegLocation = "";
@@ -84,10 +83,6 @@ public class CameraConfig {
 
     public String getFfmpegOutput() {
         return ffmpegOutput;
-    }
-
-    public boolean getUpdateImage() {
-        return updateImage;
     }
 
     public boolean getPtzContinuous() {

@@ -78,15 +78,14 @@ public class IpCameraBindingConstants {
     public static final String CONFIG_USERNAME = "username";
     public static final String CONFIG_PASSWORD = "password";
     public static final String CONFIG_ONVIF_PROFILE_NUMBER = "onvifMediaProfile";
-    public static final String CONFIG_POLL_CAMERA_MS = "pollTime";
+    public static final String CONFIG_POLL_TIME = "pollTime";
     public static final String CONFIG_FFMPEG_INPUT = "ffmpegInput";
     public static final String CONFIG_SNAPSHOT_URL_OVERRIDE = "snapshotUrl";
-    public static final String CONFIG_STREAM_URL_OVERRIDE = "mjpegUrl";
+    public static final String CONFIG_MJPEG_URL = "mjpegUrl";
     public static final String CONFIG_FFMPEG_MOTION_INPUT = "alarmInputUrl";
     public static final String CONFIG_MOTION_URL_OVERRIDE = "customMotionAlarmUrl";
     public static final String CONFIG_AUDIO_URL_OVERRIDE = "customAudioAlarmUrl";
-    public static final String CONFIG_IMAGE_UPDATE_EVENTS = "updateImageWhen";
-    public static final String CONFIG_UPDATE_IMAGE = "updateImage";
+    public static final String CONFIG_IMAGE_UPDATE_WHEN = "updateImageWhen";
     public static final String CONFIG_NVR_CHANNEL = "nvrChannel";
     public static final String CONFIG_IP_WHITELIST = "ipWhitelist";
     public static final String CONFIG_FFMPEG_LOCATION = "ffmpegLocation";
@@ -107,7 +106,7 @@ public class IpCameraBindingConstants {
     public static final String CONFIG_MOTION_CHANGES_ORDER = "motionChangesOrder";
 
     // List of all Channel ids
-    public static final String CHANNEL_UPDATE_IMAGE_NOW = "pollImage";
+    public static final String CHANNEL_POLL_IMAGE = "pollImage";
     public static final String CHANNEL_UPDATE_GIF = "updateGif";
     public static final String CHANNEL_GIF_FILENAME = "gifFilename";
     public static final String CHANNEL_GIF_HISTORY = "gifHistory";
@@ -120,7 +119,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_IMAGE = "image";
     public static final String CHANNEL_RTSP_URL = "rtspUrl";
     public static final String CHANNEL_IMAGE_URL = "imageUrl";
-    public static final String CHANNEL_STREAM_URL = "mjpegUrl";
+    public static final String CHANNEL_MJPEG_URL = "mjpegUrl";
     public static final String CHANNEL_HLS_URL = "hlsUrl";
     public static final String CHANNEL_PAN = "pan";
     public static final String CHANNEL_TILT = "tilt";

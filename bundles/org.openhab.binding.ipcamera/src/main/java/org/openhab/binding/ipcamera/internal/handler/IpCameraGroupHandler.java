@@ -216,7 +216,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                     serverFuture.await(4000);
                     logger.info("IpCamera file server for a group of cameras has started on port {} for all NIC's.",
                             serverPort);
-                    updateState(CHANNEL_STREAM_URL,
+                    updateState(CHANNEL_MJPEG_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.mjpeg"));
                     updateState(CHANNEL_HLS_URL,
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.m3u8"));
@@ -345,7 +345,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     public void initialize() {
         config = thing.getConfiguration();
         serverPort = Integer.parseInt(config.get(CONFIG_SERVER_PORT).toString());
-        pollTimeInSeconds = new BigDecimal(config.get(CONFIG_POLL_CAMERA_MS).toString());
+        pollTimeInSeconds = new BigDecimal(config.get(CONFIG_POLL_TIME).toString());
         motionChangesOrder = (boolean) config.get(CONFIG_MOTION_CHANGES_ORDER);
         pollTimeInSeconds = pollTimeInSeconds.divide(new BigDecimal(1000), 1, RoundingMode.HALF_UP);
         if (serverPort == -1) {
@@ -360,7 +360,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.ONLINE);
         pollCameraGroupJob = pollCameraGroup.scheduleAtFixedRate(this::pollCameraGroup, 10000,
-                Integer.parseInt(config.get(CONFIG_POLL_CAMERA_MS).toString()), TimeUnit.MILLISECONDS);
+                Integer.parseInt(config.get(CONFIG_POLL_TIME).toString()), TimeUnit.MILLISECONDS);
     }
 
     @Override
