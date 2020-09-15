@@ -12,22 +12,12 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants.*;
-
-import java.nio.charset.Charset;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.util.MultiMap;
-import org.eclipse.jetty.util.UrlEncoded;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
@@ -43,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Weymann - Initial contribution
  */
 @NonNullByDefault
-public class RemoteServiceHandler {
+public class RemoteServiceHandler implements StringResponseCallback {
     private final Logger logger = LoggerFactory.getLogger(RemoteServiceHandler.class);
 
     // after 60 retries the state update will give up
@@ -57,7 +47,8 @@ public class RemoteServiceHandler {
         INITIATED("INITIATED"),
         PENDING("PENDING"),
         DELIVERED("DELIVERED"),
-        EXECUTED("EXECUTED");
+        EXECUTED("EXECUTED"),
+        ERROR("ERROR");
 
         private final String state;
 
@@ -93,16 +84,14 @@ public class RemoteServiceHandler {
 
     private ConnectedDriveProxy proxy;
     private VehicleHandler handler;
-    private HttpClient httpClient;
     private Optional<String> serviceExecuting = Optional.empty();
 
     private String serviceExecutionAPI;
     private String serviceExecutionStateAPI;
 
-    public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy, HttpClient hc) {
+    public RemoteServiceHandler(VehicleHandler vehicleHandler, ConnectedDriveProxy connectedDriveProxy) {
         handler = vehicleHandler;
         proxy = connectedDriveProxy;
-        httpClient = hc;
         if (handler.getConfiguration().isPresent()) {
             serviceExecutionAPI = proxy.baseUrl + handler.getConfiguration().get().vin + proxy.serviceExecutionAPI;
             serviceExecutionStateAPI = proxy.baseUrl + handler.getConfiguration().get().vin
@@ -124,28 +113,8 @@ public class RemoteServiceHandler {
         }
         MultiMap<String> dataMap = new MultiMap<String>();
         dataMap.add(SERVICE_TYPE, service.toString());
-        String urlEncodedData = UrlEncoded.encode(dataMap, Charset.defaultCharset(), false);
-
-        Request req = httpClient.POST(serviceExecutionAPI);
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
-        req.header(CONTENT_LENGTH, Integer.toString(urlEncodedData.length()));
-        req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
-        req.content(new StringContentProvider(urlEncodedData));
-
-        try {
-            ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
-            if (contentResponse.getStatus() != 200) {
-                reset();
-                return false;
-            } else {
-                handler.getScheduler().schedule(this::getState, 1, TimeUnit.SECONDS);
-                return true;
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Execute Service Exception {}", e.getMessage());
-            reset();
-            return false;
-        }
+        proxy.post(serviceExecutionAPI, Optional.of(dataMap), this);
+        return true;
     }
 
     public void getState() {
@@ -160,32 +129,33 @@ public class RemoteServiceHandler {
             handler.getData();
         }
         counter++;
-        Request req = httpClient.newRequest(serviceExecutionStateAPI + serviceExecuting.get());
-        req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_JSON);
-        req.header(HttpHeader.TRANSFER_ENCODING, CHUNKED);
-        req.header(HttpHeader.AUTHORIZATION, proxy.getToken().getBearerToken());
+        proxy.get(serviceExecutionStateAPI + serviceExecuting.get(), Optional.empty(), this);
+    }
 
-        try {
-            ContentResponse contentResponse = req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send();
-            if (contentResponse.getStatus() == 200) {
-                String state = contentResponse.getContentAsString();
-                ExecutionStatusContainer esc = Converter.getGson().fromJson(state, ExecutionStatusContainer.class);
-                ExecutionStatus execStatus = esc.executionStatus;
-
-                handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
-                if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
-                    handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
-                } else {
-                    reset();
-                    // immediately refresh data
-                    handler.getData();
-                }
+    @Override
+    public void onResponse(Optional<String> result) {
+        if (result.isPresent()) {
+            ExecutionStatusContainer esc = Converter.getGson().fromJson(result.get(), ExecutionStatusContainer.class);
+            ExecutionStatus execStatus = esc.executionStatus;
+            handler.updateRemoteExecutionStatus(serviceExecuting.get(), execStatus.status);
+            if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
+                handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
+            } else {
+                // refresh loop ends - refresh data
+                reset();
+                handler.getData();
             }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            logger.warn("Execute Service Exception {}", e.getMessage());
-            handler.updateRemoteExecutionStatus(serviceExecuting.get(), e.getMessage());
-            reset();
+        } else {
+            // schedule even if no result is present until retries exceeded
+            handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
         }
+    }
+
+    @Override
+    public void onError(NetworkError error) {
+        handler.updateRemoteExecutionStatus(serviceExecuting.get(), new StringBuffer(ExecutionState.ERROR.toString())
+                .append(Constants.SPACE).append(Integer.toString(error.status)).toString());
+        reset();
     }
 
     private void reset() {

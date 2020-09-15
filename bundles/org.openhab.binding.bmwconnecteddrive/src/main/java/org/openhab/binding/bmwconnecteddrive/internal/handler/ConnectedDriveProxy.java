@@ -91,14 +91,25 @@ public class ConnectedDriveProxy {
         baseUrl = "https://" + getRegionServer() + "/webapi/v1/user/vehicles/";
     }
 
-    public synchronized void request(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
+    private synchronized void call(String url, boolean post, Optional<MultiMap<String>> params,
+            ResponseCallback callback) {
+        Request req;
         final StringBuffer completeUrl = new StringBuffer(url);
-        if (params.isPresent()) {
-            String urlEncodedData = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
-            completeUrl.append("?").append(urlEncodedData);
+        if (post) {
+            req = httpClient.POST(completeUrl.toString());
+            if (params.isPresent()) {
+                String urlEncodedParameter = UrlEncoded.encode(params.get(), Charset.defaultCharset(), false);
+                req.header(HttpHeader.CONTENT_TYPE, CONTENT_TYPE_URL_ENCODED);
+                req.header(CONTENT_LENGTH, Integer.toString(urlEncodedParameter.length()));
+                req.content(new StringContentProvider(urlEncodedParameter));
+            }
+        } else {
+            if (params.isPresent()) {
+                completeUrl.append(Constants.QUESTION)
+                        .append(UrlEncoded.encode(params.get(), Charset.defaultCharset(), false)).toString();
+            }
+            req = httpClient.newRequest(completeUrl.toString());
         }
-        Request req = httpClient.newRequest(completeUrl.toString());
-        req.header(HttpHeader.CONNECTION, KEEP_ALIVE);
         req.header(HttpHeader.AUTHORIZATION, getToken().getBearerToken());
         req.timeout(HTTP_TIMEOUT_SEC, TimeUnit.SECONDS).send(new BufferingResponseListener() {
             @NonNullByDefault({})
@@ -109,7 +120,8 @@ public class ConnectedDriveProxy {
                     error.url = completeUrl.toString();
                     error.status = result.getResponse().getStatus();
                     error.reason = result.getResponse().getReason();
-                    logger.warn("{}", error.toString());
+                    error.params = result.getRequest().getParams().toString();
+                    logger.info("HTTP Error {}", error.toString());
                     callback.onError(error);
                 } else {
                     if (callback instanceof StringResponseCallback) {
@@ -122,37 +134,42 @@ public class ConnectedDriveProxy {
         });
     }
 
+    public void get(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
+        call(url, false, params, callback);
+    }
+
+    public void post(String url, Optional<MultiMap<String>> params, ResponseCallback callback) {
+        call(url, true, params, callback);
+    }
+
     public void requestVehicles(StringResponseCallback callback) {
-        request(baseUrl, Optional.empty(), callback);
+        get(baseUrl, Optional.empty(), callback);
     }
 
     public void requestVehcileStatus(VehicleConfiguration config, StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(vehicleStatusAPI).toString(), Optional.empty(),
+        get(new StringBuffer(baseUrl).append(config.vin).append(vehicleStatusAPI).toString(), Optional.empty(),
                 callback);
     }
 
     public void requestLastTrip(VehicleConfiguration config, StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(lastTripAPI).toString(), Optional.empty(),
-                callback);
+        get(new StringBuffer(baseUrl).append(config.vin).append(lastTripAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestAllTrips(VehicleConfiguration config, StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(allTripsAPI).toString(), Optional.empty(),
-                callback);
+        get(new StringBuffer(baseUrl).append(config.vin).append(allTripsAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestChargingProfile(VehicleConfiguration config, StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(chargeAPI).toString(), Optional.empty(), callback);
+        get(new StringBuffer(baseUrl).append(config.vin).append(chargeAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestDestinations(VehicleConfiguration config, StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(destinationAPI).toString(), Optional.empty(),
-                callback);
+        get(new StringBuffer(baseUrl).append(config.vin).append(destinationAPI).toString(), Optional.empty(), callback);
     }
 
     public void requestRangeMap(VehicleConfiguration config, Optional<MultiMap<String>> params,
             StringResponseCallback callback) {
-        request(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
+        get(new StringBuffer(baseUrl).append(config.vin).append(rangeMapAPI).toString(), params, callback);
     }
 
     public void requestImage(VehicleConfiguration config, ImageProperties props, ByteResponseCallback callback) {
@@ -161,7 +178,7 @@ public class ConnectedDriveProxy {
         dataMap.add("width", Integer.toString(props.size));
         dataMap.add("height", Integer.toString(props.size));
         dataMap.add("view", props.viewport);
-        request(localImageUrl, Optional.of(dataMap), callback);
+        get(localImageUrl, Optional.of(dataMap), callback);
     }
 
     private String getRegionServer() {
@@ -173,7 +190,7 @@ public class ConnectedDriveProxy {
     }
 
     RemoteServiceHandler getRemoteServiceHandler(VehicleHandler vehicleHandler) {
-        return new RemoteServiceHandler(vehicleHandler, this, httpClient);
+        return new RemoteServiceHandler(vehicleHandler, this);
     }
 
     // Token handling

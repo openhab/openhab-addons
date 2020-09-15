@@ -14,7 +14,6 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -22,7 +21,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.MultiMap;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -419,28 +417,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    private void requestRangeMap(Position p) {
-        // format_string = '%Y-%m-%dT%H:%M:%S'
-        // timestamp = datetime.datetime.now().strftime(format_string)
-        // params = {
-        // 'deviceTime': timestamp,
-        // 'dlat': self._vehicle.observer_latitude,
-        // 'dlon': self._vehicle.observer_longitude,
-        // }
-        double diff = Converter.measureDistance(p.lat, p.lon, currentPosition.lat, currentPosition.lon);
-        if (diff > 1000) {
-            LocalDateTime ldt = LocalDateTime.now();
-            MultiMap<String> dataMap = new MultiMap<String>();
-            dataMap.add("deviceTime", ldt.format(Converter.DATE_INPUT_PATTERN));
-            dataMap.add("lat", Float.toString(p.lat));
-            dataMap.add("lon", Float.toString(p.lon));
-            if (configuration.isPresent()) {
-                proxy.get().requestRangeMap(configuration.get(), Optional.of(dataMap), rangeMapCallback);
-            }
-        }
-        currentPosition = p;
-    }
-
     public void updateRemoteExecutionStatus(String service, String status) {
         updateState(remoteStateChannel, StringType
                 .valueOf(Converter.toTitleCase(new StringBuffer(service).append(" ").append(status).toString())));
@@ -783,7 +759,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                 updateState(latitude, new DecimalType(p.lat));
                 updateState(longitude, new DecimalType(p.lon));
                 updateState(heading, QuantityType.valueOf(p.heading, SmartHomeUnits.DEGREE_ANGLE));
-                requestRangeMap(p);
             }
         }
 

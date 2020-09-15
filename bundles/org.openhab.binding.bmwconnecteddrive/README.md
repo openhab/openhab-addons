@@ -2,20 +2,21 @@
 
 <img align="right" src="./doc/bmw-connected.png" width="150" height="150"/>
 
-The Binding connects your Vehicles listed in BMWs ConnectedDrive Portal with openHAB.
-Due to the high range of Vehicles BMW provides you need to check which Channels are applicable. 
-The Discovery Service recognizes your Vehicle with the correct type 
+The Binding provides a Connection between [BMWs ConnectedDrive Portal](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) and openHAB.
+All Vehicles connected to an Account will be detected by the Discovery with the correct type 
 
 * Conventional Fuel Vehicle
 * Plugin-Hybrid Electrical Vehicle 
 * Battery Electric Vehicle with Range Extender
 * Battery Electric Vehicle 
 
-In addition Properties are attached to the Vehicle Thing to observe the Supported & Activated Services.
-Different Channel Groups are available so you are able to cross-check which group is supported by your Vehicle.  
+In addition Properties are attached with Informations and Services.
+The provided data depends on a) the [Type](#Thnigs) and b) the Services mentioned in [Properties](#properties)
+Different Channel Groups are clustering all informations.
+Check for each Group if it's supported for this Vehicle.
 
-Please note **this isn't a _real-time_ Binding**. 
-If you open the Door the state isn't transmitted immediately and shown in your GUI. 
+Please note **this isn't a real-time Binding**. 
+If the Door is opened the state isn't transmitted immediately and changed immediately. 
 This isn't a flaw in the Binding itself because the state in BMWs own ConnectedDrive App is also updated with some delay. 
 
 ## Supported Things
@@ -36,29 +37,43 @@ They differ in the supported Channel Groups & Channels.
 Conventional Fuel Vehicles have no _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
 For Hybrid Vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
  
-| Name                                | Thing Type ID | Supported Channel Groups                                   |
-|-------------------------------------|---------------|------------------------------------------------------------|
-| BMW Electric Vehicle                | BEV           | status, range, remote, location, destination, image, troubleshoot, charge, last-trip, lifetime |
-| BMW Electric Vehicle with REX       | BEV_REX       | status, range, remote, location, destination, image, troubleshoot, charge, last-trip, lifetime |
-| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, remote, location, destination, image, troubleshoot, charge |
-| BMW Conventional Vehicle            | CONV          | status, range, remote, location, destination, image, troubleshoot |
+| Name                                | Thing Type ID | Supported Channel Groups                                     |
+|-------------------------------------|---------------|--------------------------------------------------------------|
+| BMW Electric Vehicle                | BEV           | status, range, location, charge, image, troubleshoot |
+| BMW Electric Vehicle with REX       | BEV_REX       | status, range, location, charge, image, troubleshoot |
+| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, location, charge, image, troubleshoot |
+| BMW Conventional Vehicle            | CONV          | status, range, location, image, troubleshoot         |
 
  
 #### Properties
 
 <img align="right" src="./doc/properties.png" width="600" height="400"/>
 
-Each Vehicle contains Properties. 
-They are especially handy to figure out the provided Services. 
-In the right picture you can see in _Activated Services_ e.g. the _DoorLock_ and _DoorUnlock_ Services are mentioned. 
-So you're sure that in [Channel Group _Remote Services_](#channel-group-remote-services) you are able to execute these commands.
-Also _LastDestinations_ is mentioned in _Supported Services_ so it's valid to connect Channel Group [Last Destinations](#channel-group-destinations) in order to display the last 3 Navigation Destinations.
-
+For each Vehicle Properties are available. 
 Basically 3 Types of Information are registered as Properties
 
 * Informations regarding your Dealer with Address and Phone Number
 * Which services are available / not available
 * Vehicle Properties like Color, Model Type, Drive Train and Construction Year
+
+In the right picture you can see in _Activated Services_ e.g. the _DoorLock_ and _DoorUnlock_ Services are mentioned. 
+So you're sure that in [Channel Group _Remote Services_](#channel-group-remote-services) you are able to execute these commands.
+Also _LastDestinations_ is mentioned in _Supported Services_ so it's valid to connect Channel Group [Last Destinations](#channel-group-destinations) in order to display the last 3 Navigation Destinations.
+
+| Property Key       | Property Value      |  Supported Channel Groups    |
+|--------------------|---------------------|------------------------------|
+| Services Supported | Statistics          | last-trip, Lifetime          |
+| Services Supported | LastDestinations    | destinations                 |
+| Services Activated | (list of services)  | remote                       |
+
+Based on Proper
+
+| Name                                | Thing Type ID | Supported Channel Groups                                     |
+|-------------------------------------|---------------|--------------------------------------------------------------|
+| BMW Electric Vehicle                | BEV           | status, range, remote, location, charge, image, troubleshoot |
+| BMW Electric Vehicle with REX       | BEV_REX       | status, range, remote, location, charge, image, troubleshoot |
+| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, remote, location, charge, image, troubleshoot |
+| BMW Conventional Vehicle            | CONV          | status, range, remote, location, image, troubleshoot         |
 
 ## Discovery
 
@@ -86,7 +101,7 @@ The region Configuration has 3 different possibilities
 
 ### Things
 
-Same Configuration is needed for all Thingds
+Same Configuration is needed for all Things
 
 | Parameter       | Type    | Description                           |           
 |-----------------|---------|---------------------------------------|
@@ -569,7 +584,7 @@ rule "CheckControl"
         System started or
         Item i3CheckControl changed 
     then
-        if(i3CheckControl.state.toString != "Ok") {
+        if(i3CheckControl.state.toString != "Ok" && i3CheckControl.state.toString != "NULL") {
             sendNotification("YOUR_OPENHAB_CLOUD_EMAIL","BMW i3 Check Control: "+i3CheckControl.state)
         }                                                    
 end
