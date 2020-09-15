@@ -60,10 +60,26 @@ public class ConnectedDriveProxy {
     private String authUri;
     private ConnectedDriveConfiguration configuration;
 
-    // Connected Drive APIs
-    // Base URL without VIN
+    /**
+     * URLs taken from https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/const.py
+     *
+     * """URLs for different services and error code mapping."""
+     *
+     * AUTH_URL = 'https://customer.bmwgroup.com/{gcdm_oauth_endpoint}/authenticate'
+     * AUTH_URL_LEGACY = 'https://{server}/gcdm/oauth/token'
+     * BASE_URL = 'https://{server}/webapi/v1'
+     *
+     * VEHICLES_URL = BASE_URL + '/user/vehicles'
+     * VEHICLE_VIN_URL = VEHICLES_URL + '/{vin}'
+     * VEHICLE_STATUS_URL = VEHICLE_VIN_URL + '/status'
+     * REMOTE_SERVICE_STATUS_URL = VEHICLE_VIN_URL + '/serviceExecutionStatus?serviceType={service_type}'
+     * REMOTE_SERVICE_URL = VEHICLE_VIN_URL + "/executeService"
+     * VEHICLE_IMAGE_URL = VEHICLE_VIN_URL + "/image?width={width}&height={height}&view={view}"
+     * VEHICLE_POI_URL = VEHICLE_VIN_URL + '/sendpoi'
+     *
+     * }
+     */
     String baseUrl;
-    // APIs to be attached after VIN insertion
     String vehicleStatusAPI = "/status";
     String lastTripAPI = "/statistics/lastTrip";
     String allTripsAPI = "/statistics/allTrips";
@@ -71,9 +87,8 @@ public class ConnectedDriveProxy {
     String destinationAPI = "/destinations";
     String imageAPI = "/image";
     String rangeMapAPI = "/rangemap";
-
     String serviceExecutionAPI = "/executeService";
-    String serviceExecutionStateAPI = "/serviceExecutionStatus?serviceType=";
+    String serviceExecutionStateAPI = "/serviceExecutionStatus";
 
     public ConnectedDriveProxy(HttpClientFactory httpClientFactory, ConnectedDriveConfiguration config) {
         httpClient = httpClientFactory.getCommonHttpClient();
@@ -121,7 +136,7 @@ public class ConnectedDriveProxy {
                     error.status = result.getResponse().getStatus();
                     error.reason = result.getResponse().getReason();
                     error.params = result.getRequest().getParams().toString();
-                    logger.info("HTTP Error {}", error.toString());
+                    logger.debug("HTTP Error {}", error.toString());
                     callback.onError(error);
                 } else {
                     if (callback instanceof StringResponseCallback) {

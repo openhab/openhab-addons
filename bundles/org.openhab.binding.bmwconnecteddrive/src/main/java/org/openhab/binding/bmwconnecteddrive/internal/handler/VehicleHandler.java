@@ -87,7 +87,6 @@ public class VehicleHandler extends VehicleChannelHandler {
     private boolean isElectric = false;
     private boolean isHybrid = false;
 
-    private Position currentPosition = new Position();
     private ImageProperties imageProperties = new ImageProperties();
 
     StringResponseCallback vehicleStatusCallback = new VehicleStatusCallback();
@@ -281,25 +280,6 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
-    /**
-     * URLs taken from https://github.com/bimmerconnected/bimmer_connected/blob/master/bimmer_connected/const.py
-     *
-     * """URLs for different services and error code mapping."""
-     *
-     * AUTH_URL = 'https://customer.bmwgroup.com/{gcdm_oauth_endpoint}/authenticate'
-     * AUTH_URL_LEGACY = 'https://{server}/gcdm/oauth/token'
-     * BASE_URL = 'https://{server}/webapi/v1'
-     *
-     * VEHICLES_URL = BASE_URL + '/user/vehicles'
-     * VEHICLE_VIN_URL = VEHICLES_URL + '/{vin}'
-     * VEHICLE_STATUS_URL = VEHICLE_VIN_URL + '/status'
-     * REMOTE_SERVICE_STATUS_URL = VEHICLE_VIN_URL + '/serviceExecutionStatus?serviceType={service_type}'
-     * REMOTE_SERVICE_URL = VEHICLE_VIN_URL + "/executeService"
-     * VEHICLE_IMAGE_URL = VEHICLE_VIN_URL + "/image?width={width}&height={height}&view={view}"
-     * VEHICLE_POI_URL = VEHICLE_VIN_URL + '/sendpoi'
-     *
-     * }
-     */
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);

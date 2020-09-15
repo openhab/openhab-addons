@@ -24,7 +24,7 @@
 			</parameter>
 			<parameter name="region" type="text" required="true">
 				<label>Region</label>
-				<description>Select your Region in order to connect to the appropriate BMW Server</description>
+				<description>Select Region in order to connect to the appropriate BMW Server</description>
 				<options>
 					<option value="NORTH_AMERICA">North America</option>
 					<option value="CHINA">China</option>

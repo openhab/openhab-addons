@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="electric-range-values">
+	<channel-group-type id="ev-range-values">
 		<label>Electric Range Data</label>
 		<description>Provides Mileage, remaining range and charge level values</description>
 		<channels>
