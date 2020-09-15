@@ -697,7 +697,7 @@ end
 
 ### Status Image
 
-<img align="right"  src="./doc/CarStatusImages.png" width="600" height="450"/>
+<img align="right"  src="./doc/CarStatusImages.png" width="400" height="300"/>
 
 This Rule is aimed to improve the visibility of the Vehicle Status. 
 Therefore the Image is used to reflect _an overall status_ which can be identified at the first glance.
@@ -709,6 +709,7 @@ As an example the Rule is reflecting the following status as Image
 * Front - Vehicle is at the Home Location
 * Rear - Vehicle is away from Home Location
 
+#### Status Image Rule
 ```
 // Change Image according to Vehicle Status
 rule "Image Status"
