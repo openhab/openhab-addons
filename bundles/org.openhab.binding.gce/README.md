@@ -190,8 +190,3 @@ Switch output3 "Chaudière" <furnace> (gIPXOutputs) {channel="gce:ipx800v3:ipx:r
 Switch output4 "Lumière Porche" <light> (gIPXOutputs) {channel="gce:ipx800v3:ipx:relay#4"}
 
 ```
-
-```
-```
-
-
