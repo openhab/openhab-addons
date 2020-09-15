@@ -10,13 +10,17 @@ All Vehicles connected to an Account will be detected by the Discovery with the 
 * Battery Electric Vehicle with Range Extender
 * Battery Electric Vehicle 
 
-In addition Properties are attached with Informations and Services.
-The provided data depends on a) the [Type](#Thnigs) and b) the Services mentioned in [Properties](#properties)
+In addition Properties are attached with Information and Services provided by this Vehicle.
+The provided data depends on 
+
+1. the [Type](#Things) and 
+2. the Services mentioned in [Properties](#properties)
+
 Different Channel Groups are clustering all informations.
 Check for each Group if it's supported for this Vehicle.
 
 Please note **this isn't a real-time Binding**. 
-If the Door is opened the state isn't transmitted immediately and changed immediately. 
+If the Door is opened the state isn't transmitted and changed immediately. 
 This isn't a flaw in the Binding itself because the state in BMWs own ConnectedDrive App is also updated with some delay. 
 
 ## Supported Things
@@ -52,36 +56,30 @@ For Hybrid Vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ 
 For each Vehicle Properties are available. 
 Basically 3 Types of Information are registered as Properties
 
-* Informations regarding your Dealer with Address and Phone Number
+* Informations regarding r Dealer with Address and Phone Number
 * Which services are available / not available
 * Vehicle Properties like Color, Model Type, Drive Train and Construction Year
 
-In the right picture you can see in _Activated Services_ e.g. the _DoorLock_ and _DoorUnlock_ Services are mentioned. 
-So you're sure that in [Channel Group _Remote Services_](#channel-group-remote-services) you are able to execute these commands.
-Also _LastDestinations_ is mentioned in _Supported Services_ so it's valid to connect Channel Group [Last Destinations](#channel-group-destinations) in order to display the last 3 Navigation Destinations.
+In the right picture  can see in *Services Activated* e.g. the *DoorLock* and *DoorUnlock* Services are mentioned. 
+This ensures [Channel Group _Remote Services_](#remote-services) is supporting Door lock and Door unlock.
+
+In  *Services Supported* the entry *LastDestination* is mentioned.
+So it's valid to connect Channel Group [Last Destinations](#destinations) in order to display the last 3 Navigation Destinations.
 
 | Property Key       | Property Value      |  Supported Channel Groups    |
 |--------------------|---------------------|------------------------------|
-| Services Supported | Statistics          | last-trip, Lifetime          |
+| Services Supported | Statistics          | last-trip, lifetime          |
 | Services Supported | LastDestinations    | destinations                 |
-| Services Activated | (list of services)  | remote                       |
+| Services Activated | list of services    | remote                       |
 
-Based on Proper
-
-| Name                                | Thing Type ID | Supported Channel Groups                                     |
-|-------------------------------------|---------------|--------------------------------------------------------------|
-| BMW Electric Vehicle                | BEV           | status, range, remote, location, charge, image, troubleshoot |
-| BMW Electric Vehicle with REX       | BEV_REX       | status, range, remote, location, charge, image, troubleshoot |
-| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, remote, location, charge, image, troubleshoot |
-| BMW Conventional Vehicle            | CONV          | status, range, remote, location, image, troubleshoot         |
 
 ## Discovery
 
-Auto Discovery is starting after you created the Bridge towards BMW ConnectedDrive. 
-A list of your registered Vehicles is queried and all found Vehicles are added in Inbox.
-Unique Identifier is the _Vehicle Identification Number_ (VIN). 
-If a Thing is already declared in a _*.things configuration_ Discovery won't highlight it again. 
-But it takes care updating the correct Properties.
+Auto Discovery is starting after creation of the Bridge towards BMW ConnectedDrive. 
+A list of r registered Vehicles is queried and all found Vehicles are added in Inbox.
+Unique Identifier is the *Vehicle Identification Number* (VIN). 
+If a Thing is already declared in a  *.things configuration* Discovery won't highlight it again.
+Properties will be attached to predefined Vehicles if the VIN is matching.
 
 ## Configuration
 
@@ -91,7 +89,7 @@ But it takes care updating the correct Properties.
 |-----------------|---------|-------------------------------------------------------------------------|
 | userName        | text    | BMW Connected Drive Username                  |
 | password        | text    | BMW Connected Drive Password                  |
-| region          | text    | Select your Region in order to connect to the appropriate BMW Server.   |
+| region          | text    | Select Region in order to connect to the appropriate BMW Server.   |
 
 The region Configuration has 3 different possibilities
 
@@ -99,7 +97,7 @@ The region Configuration has 3 different possibilities
 * _CHINA_
 * _ROW_ for Rest of World
 
-### Things
+### Thing
 
 Same Configuration is needed for all Things
 
@@ -117,7 +115,7 @@ The units can be configured in 3 ways
 * _METRIC_ selects directly Kilometers
 * _IMPERIAL_ selects directly Miles
 
-The imageVieport allows you to show your Vehicle from different angels.
+The imageVieport allows to show the Vehicle from different angels.
 Possible values are 
 
 * FRONT
@@ -130,11 +128,11 @@ Possible values are
 
 There are many Channels available for each Vehicle. 
 For better overview they are clustered in different Channel Groups.
-The Channel Groups are different for the Vehicle Types, on the build in Sensors of your Vehicle and the activated Services.
+The Channel Groups are different for the Vehicle Types, on the build-in Sensors of the Vehicle and the activated Services.
 
 ### Bridge Channels
 
-If your Vehicle isn't found in the Discovery force a log of Fingerprint Data which helps to analyze the problem.
+If the Vehicle isn't found in the Discovery force a log of Fingerprint Data which helps to analyze the problem.
 Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 | Channel Label         | Channel ID            | Type   | Description                                       |
@@ -143,9 +141,9 @@ Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 ### Thing Channel Groups 
 
-#### Channel Group _Vehicle Status_
+#### Vehicle Status
 
-Reflects Status of your Vehicle.
+Reflects Status of the Vehicle.
 Available for all Vehicles, Read-only.
 
 | Channel Label             | Channel Group ID | Channel ID          | Type          | Description                                                          |
@@ -162,7 +160,7 @@ Available for all Vehicles, Read-only.
 
 See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
 
-#### Channel Group _Range Data_
+#### Range Data
 
 Based on Vehicle Type (Thing Type ID) some Channels are presented or not. 
 Conventional Fuel Vehicles don't provide *Electric Range* and Battery Electric Vehicles don't show *Range Fuel*.
@@ -183,7 +181,7 @@ These are Read-only values.
 
 See Description [Range vs Range Radius](#range-vs-range-radius) to get more information
 
-#### Channel Group _Charge Profile_
+#### Charge Profile
 
 Valid for Electric and Hybrid Vehicles
 These are Read-only values.
@@ -205,7 +203,7 @@ These are Read-only values.
 | Timer 3: Enabled                   | charge           | timer3-enabled      | Switch | 
 
 
-#### Channel Group _Location_
+#### Location
 
 Available for all Vehicles.
 These are Read-only values.
@@ -216,9 +214,9 @@ These are Read-only values.
 | Longitude      | location         | longitude           | Number       |
 | Heading        | location         | heading             | Number:Angle | 
 
-#### Channel Group _Last Trip_
+#### Last Trip
 
-Check in your [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
+Check [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
 These are Read-only values.
 
 | Channel Label                         | Channel Group ID | Channel ID              | Type          |
@@ -229,9 +227,9 @@ These are Read-only values.
 | Distance since Last Charge            | last-trip        | distance-since-charging | Number:Length |
 
 
-#### Channel Group _Lifetime Statistics_
+#### Lifetime Statistics
 
-Check in your [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
+Check [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
 These are Read-only values.
 
 | Channel Label                         | Channel Group ID | Channel ID               | Type          | 
@@ -242,9 +240,9 @@ These are Read-only values.
 | Longest Distance with one Charge      | lifetime        | single-longest-distance   | Number:Length |
 
 
-#### Channel Group _Remote Services_
+#### Remote Services
 
-Check in your [Vehicle Properties](#Properties) *Services Activated* which Remote Services are available
+Check [Vehicle Properties](#Properties) *Services Activated* which Remote Services are available
 Only one Remote Service can be executed each Time.
 Parallel execution isn't supported.
 The *Service Execution State* Channel is reporting the state.
@@ -260,9 +258,9 @@ State *Executed* is the final State when Execution is finished.
 | Active Air Conditioning | remote           | climate             | Switch  |
 | Service Execution State | remote           | state               | STring  |
 
-#### Channel Group _Destinations_
+#### Destinations
 
-Check in your [Vehicle Properties](#Properties) if *LastDestinations* is present in *Services Supported*
+Check [Vehicle Properties](#Properties) if *LastDestinations* is present in *Services Supported*
 These are Read-only values.
 
 | Channel Label                        | Channel Group ID | Channel ID          | Type    | 
@@ -278,20 +276,20 @@ These are Read-only values.
 | Third Last Destination Longitude     | destination      | lon-3               | Number  |
 
 
-#### Channel Group _Image_
+#### Image
 
 Available for all Vehicles.
 Picture can be modified regarding *Viewport* and *Size*.
-See [Things Section](#Things) for Viewport possibilities and [Status Image](#status-image) for possible Use Cases.
+See [Things Section](#thing) for Viewport possibilities and [Status Image](#status-image) for possible Use Cases.
 
 | Channel Label                 | Channel Group ID | Channel ID          | Type   | 
 |-------------------------------|------------------|---------------------|--------|
-| Rendered Image of your Vehicle| image            | png                 | Image  |
+| Rendered Image of the Vehicle | image            | png                 | Image  |
 | Image Viewport                | image            | view                | String |
 | Image Picture Size            | image            | size                | Number |
 
 
-#### Channel Group _Troubleshooting_
+#### Troubleshooting
 
 Available for all Vehicles!
 Switch will log a *Vehicle Data Fingerprint* into the openHAB log.
@@ -307,33 +305,34 @@ Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 <img align="right" src="./doc/range-radius.png" width="400" height="350"/>
 
-You will observe differences in the Vehicle Range and Range Radius values. 
+ will observe differences in the Vehicle Range and Range Radius values. 
 While Range is indicating the possible distance to be driven on roads the range radius indicates the reachable range on the Map.
 
 The right picture shows the distance between Kassel and Frankfurt in Germany. 
 While the Air-line Distance is ~145 Kilometer the Route Distance is ~192 Kilometer.
 So Range value is the normal remaining range.
 See the Section [OpenStreetMap](#openstreetMap-widget) how the Range Radius is used to indicate the reachable Range on Map.
-Please note this is just an indicator and the effective range, especially for Electric Vehicles, depends on many factors like driving style and electric consumers 
+Please note this is just an indicator and the effective range, especially for Electric Vehicles, 
+depends on many factors like driving style and electric consumers. 
  
 ### Last Status Update Timestamp
 
-There's a timestamp showing the last update of your Vehicle. If this isn't shown correctly please check the date settings.
-In case of Raspberry Pi execute _raspi-config_, select _Localization Options_, the _Change Time Zone_
-Select your _Geaographical Area_ and afterwards the correct City.
-One restart of openHAB service with _systemctl restart openhab2_ is necessary in order to see the corrected Time Settings.
+A timestamp is showing the last Vehicle Status update. If this isn't shown correctly please check the date settings.
+In case of Raspberry Pi execute *raspi-config*, select *Localization Options*, the *Change Time Zone*
+Select r *Geaographical Area* and afterwards the correct City.
+One restart of openHAB service with *systemctl restart openhab2* is necessary in order to see the corrected Time Settings.
  
 Correct TimeZone is crucial for handling all Time information in openHAB and it's discussed many times in the Forum.
 See [similar discussion in the openHAB Forum](https://community.openhab.org/t/solved-wrong-local-time-how-to-change/90938) which deals with the same problem.
 
 ### TroubleShooting
 
-As stated at the beginning: BMW has a high range of Vehicles supported by BMWs ConnectedDrive.
-In case of any issues you face with this Binding please help to resolve it! 
+BMW has a high range of Vehicles supported by BMWs ConnectedDrive.
+In case of any issues with this Binding please help to resolve it! 
 Please perform the following Steps:
 
-* Can you login *[Here](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html)* with your Credentials? _Please note this isn't the BMW Customer Portal - it's the ConnectedDrive Portal_
-* Is your Vehicle listed in your Account? _There's a one-to-one dependency from User to Vehicle_
+* Can you login [into ConnectedDrive](https://www.bmw-connecteddrive.com/country-region-select/country-region-selection.html) with your Credentials? _Please note this isn't the BMW Customer Portal - it's the ConnectedDrive Portal_
+* Is the Vehicle listed in your Account? _There's a one-to-one dependency from User to Vehicle_
 
 If the access to the Portal and listing of the Vehicle is checked some debug data is needed in order to identify the issue. 
 The [Example Sitemap](#Sitemap) contains the necessary items to generate Debug Data.
@@ -341,15 +340,15 @@ The [Example Sitemap](#Sitemap) contains the necessary items to generate Debug D
 #### My Vehicle isn't found automatically!
 
 The Vehicle isn't recognized or a predefined Vehicle doesn't show the right properties?
-For this the *Discovery Fingerprint* is needed.
-Short press on the Switch will force some logging entries which can be [normally found in your logs here](http://openhab:9001/) 
+For this the [Discovery Fingerprint](#bridge-channels) is needed.
+Short press on the Switch will force some logging entries which can be [normally found in the logs here](http://openhab:9001/) 
 
 #### My Vehicle shows wrong data or data is missing!
 
-Now the *Vehicle Fingerprint* is needed.
+Now the [Vehicle Fingerprint](#troubleshooting) is needed.
 Proceed like before, shortly press the Switch and the log contains the data.
 
-Personal Data is eliminated from thes log entries so it should be possible to share them in public.
+Personal Data is eliminated from the log entries so it should be possible to share them in public.
 Data like
 
 * Dealer Properties
@@ -358,8 +357,8 @@ Data like
 
 are anonymized.
 
-After you've generated the corresponding Fingerprint please [follow the instructions to raise an Issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the Fingerprint data!
-Your feedback is highly appreciated!
+After the corresponding Fingerprint is generated please [follow the instructions to raise an Issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the Fingerprint data!
+r feedback is highly appreciated!
 
 Here an example of Debug Fingerprint Data from a BEV_REX Vehicle
 
@@ -389,12 +388,12 @@ Exchange the 3 configuration parameters in the Things section
 * YOUR_PASSWORD - with your ConnectedDrive Password Credentials
 * VEHICLE_VIN - the Vehicle Identification Number
 
-In addition search for all occurences of *i3* and replace it with your Vehilce Identification like *x3* or *535d* and you're ready to go!
+In addition search for all occurrences of *i3* and replace it with your Vehicle Identification like *x3* or *535d* and 're ready to go!
 
 ### Things
 
 ```
-Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
+Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="R_USERNAME",password="R_PASSWORD",region="ROW"] {
          Thing BEV_REX i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",units="AUTODETECT",imageSize=600,imageViewport="FRONT",refreshInterval=5]
 }
 ```
@@ -568,14 +567,14 @@ sitemap BMW label="BMW" {
 
 ## Going further
 
-You're now able to receive your Vehicle Data in openHAB. Continue the work and combine this data with other Powerful openHAB Features, Bindings and Widgets.
+You're now able to receive the Vehicle Data in openHAB. Continue the work and combine this data with other Powerful openHAB Features, Bindings and Widgets.
 
 ### Notification
 
-A quite handy rule if you aren't the _permanent Driver_ of the Car but you're somehow responsible for it for e.g one of your family Members.
+A quite handy rule if you aren't the *permanent Driver* of the Car but 're somehow responsible for it e.g for one of your family Members.
 As soon as a check control message occurs a message notification is sent to the Android App.
 Below the rule as an example. 
-just insert your Mail Address which you are using for openHAB Cloud Connector.
+Just insert the Mail Address used for openHAB Cloud Connector.
 
 ```
 // App Notification if Check Control Message is active
@@ -615,7 +614,7 @@ end
 
 <img align="right" src="./doc/panel.png" width="600" height="260"/>
 
-The [OpenStreetMap Widget](https://community.openhab.org/t/custom-widget-map/39225) can be used to display a Map on your Panel.
+The [OpenStreetMap Widget](https://community.openhab.org/t/custom-widget-map/39225) can be used to display a Map on r Panel.
 It's configurable with *Markers* and *Accuracy Circles* which are quite handy to display several informations.
 See the HABPanel example with the OpenStreetMap Widget on the right side with
 
@@ -698,20 +697,17 @@ end
 
 ### Status Image
 
-<img align="right" alt="Status ok, Location is Away from Home" src="./doc/AwayImage.png" width="200" height="150"/>
-<img align="right" alt="Doors not locked, Car can be opened" src="./doc/UnlockedImage.png" width="200" height="150"/>
-<img align="right" alt="CheckControl activate. Check Car Dashboard." src="./doc/CheckControlImage.png" width="200" height="150"/>
-<img align="right" alt="Charging" src="./doc/ChargingImage.png" width="200" height="150"/>
+<img align="right"  src="./doc/CarStatusImages.png" width="600" height="450"/>
 
 This Rule is aimed to improve the visibility of the Vehicle Status. 
 Therefore the Image is used to reflect _an overall status_ which can be identified at the first glance.
 As an example the Rule is reflecting the following status as Image
 
 * Side - Vehicle is charging
-* Driver Door - Doors are not locked => execute [Remote Service](#channel-group-remote-services) *Lock* 
+* Driver Door - Doors are not locked => execute [Remote Service](#remote-services) Lock
 * Dashboard - Check Control Message is available
-* Front - Vehicle is at the _Home_ Location
-* Rear - Vehicle is away from _Home_ Location
+* Front - Vehicle is at the Home Location
+* Rear - Vehicle is away from Home Location
 
 ```
 // Change Image according to Vehicle Status

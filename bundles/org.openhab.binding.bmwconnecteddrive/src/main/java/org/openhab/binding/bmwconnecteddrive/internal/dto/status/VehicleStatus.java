@@ -39,7 +39,7 @@ public class VehicleStatus {
     public float maxRangeElectricMls;// ":134,"
     public float maxFuel;// ":8.5,
     public float chargingLevelHv;// ":71,
-    public String vin;// : "WBY1Z81040V905639",
+    public String vin;// : "ANONYMOUS",
     public String updateReason;// ": "VEHICLE_SHUTDOWN_SECURED",
     public String updateTime;// ": "2020-08-24 T15:55:32+0000",
     public String doorDriverFront;// ": "CLOSED",
@@ -145,7 +145,7 @@ public class VehicleStatus {
     /**
      * Check for certain Windows or Doors DTO object the "Closed" Status
      * INVALID values will be ignored
-     * 
+     *
      * @param dto
      * @return Closed if all "Closed", "Open" otherwise
      */

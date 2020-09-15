@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="png-channel">
 		<item-type>Image</item-type>
-		<label>Rendered Image of your Vehicle</label>
+		<label>Rendered Image of the Vehicle</label>
 	</channel-type>
 	<channel-type id="image-view-channel">
 		<item-type>String</item-type>
