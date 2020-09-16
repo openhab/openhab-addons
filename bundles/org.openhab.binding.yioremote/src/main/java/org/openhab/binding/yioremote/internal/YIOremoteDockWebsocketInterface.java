@@ -24,4 +24,6 @@ public interface YIOremoteDockWebsocketInterface {
     public void onConnect(Boolean booleanconnectedflag);
 
     public void onMessage(String decodedmessage);
+
+    public void onError();
 }
