@@ -9,7 +9,8 @@
             {
                 "property": "",
                 "friendlyName": "Vacuum Action",
-                "channel": "vacuumaction",
+                "channel": "dreameControl",
+                "channelType": "dreameControl",
                 "type": "String",
                 "refresh": false,
                 "actions": [
@@ -93,7 +94,7 @@
                             "name": "matchValue",
                             "parameters": [
                                 {
-                                    "matchValue": "home"
+                                    "matchValue": "dock"
                                 }
                             ]
                         }

@@ -112,6 +112,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         }
         if (channelUID.getId().equals(CHANNEL_COMMAND)) {
             cmds.put(sendCommand(command.toString()), command.toString());
+            return;
         }
         logger.debug("Locating action for channel '{}': '{}'", channelUID.getId(), command);
         if (!actions.isEmpty()) {
