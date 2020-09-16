@@ -29,8 +29,6 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.type.ChannelType;
-import org.eclipse.smarthome.core.thing.type.ChannelTypeBuilder;
 import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
@@ -54,13 +52,10 @@ public class KVVStopHandler extends BaseThingHandler {
 
     private boolean wasOffline;
 
-    private final KVVChannelTypeProvider channelTypeProvider;
-
     public KVVStopHandler(final Thing thing) {
         super(thing);
         this.config = new KVVStopConfig();
         this.wasOffline = false;
-        this.channelTypeProvider = new KVVChannelTypeProvider();
     }
 
     @Override
@@ -90,34 +85,21 @@ public class KVVStopHandler extends BaseThingHandler {
             return;
         }
 
-        // creating channels
+        // create channels
         if (createChannels) {
+            final ChannelTypeUID nameType = new ChannelTypeUID(this.thing.getBridgeUID().getBindingId(), "name");
+            final ChannelTypeUID destType = new ChannelTypeUID(this.thing.getBridgeUID().getBindingId(), "destination");
+            final ChannelTypeUID etaType = new ChannelTypeUID(this.thing.getBridgeUID().getBindingId(), "eta");
+
             final List<Channel> channels = new ArrayList<Channel>();
             for (int i = 0; i < bridgeHandler.getBridgeConfig().maxTrains; i++) {
-                final ChannelType nameType = ChannelTypeBuilder
-                        .state(new ChannelTypeUID(this.thing.getUID().getAsString() + ":train" + i), "Train" + i,
-                                "name")
-                        .build();
-                this.channelTypeProvider.addChannelType(nameType);
-                final ChannelType destType = ChannelTypeBuilder
-                        .state(new ChannelTypeUID(this.thing.getUID().getAsString() + ":train" + i), "Train" + i,
-                                "destination")
-                        .build();
-                this.channelTypeProvider.addChannelType(nameType);
-                final ChannelType etaType = ChannelTypeBuilder
-                        .state(new ChannelTypeUID(this.thing.getUID().getAsString() + ":train" + i), "Train" + i, "eta")
-                        .build();
-                this.channelTypeProvider.addChannelType(nameType);
-                this.channelTypeProvider.addChannelType(destType);
-                this.channelTypeProvider.addChannelType(etaType);
-
                 channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), "String")
-                        .withType(nameType.getUID()).build());
+                        .withType(nameType).build());
                 channels.add(ChannelBuilder
                         .create(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), "String")
-                        .withType(destType.getUID()).build());
+                        .withType(destType).build());
                 channels.add(ChannelBuilder.create(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), "String")
-                        .withType(etaType.getUID()).build());
+                        .withType(etaType).build());
             }
             this.updateThing(this.editThing().withChannels(channels).build());
 
@@ -156,8 +138,8 @@ public class KVVStopHandler extends BaseThingHandler {
         }
         for (; i < maxTrains; i++) {
             this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-name"), StringType.EMPTY);
-            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), new StringType(""));
-            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), new StringType(""));
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-destination"), StringType.EMPTY);
+            this.updateState(new ChannelUID(this.thing.getUID(), "train" + i + "-eta"), StringType.EMPTY);
         }
     }
 
