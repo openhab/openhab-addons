@@ -24,10 +24,10 @@ Various function of the DreamScreen could be controlled and status is reported.
 | Channel  | Type   | Description                                            |
 |----------|--------|--------------------------------------------------------|
 | power    | Switch | Switch power of the device on/off                      |
+| input    | String | HD + 4k: Select input channel: hdmi1, hdmi2 or jdmi3   |
 | mode     | String | Switch the display mode: video, music or ambient       |
-| scene    | String | Switch the ambient display scene: one of color, random, fireside, twinkle, ocean, rainbow, july4,  holiday, pop, forest |
-| color    | Switch | Select the active color to use with the Color scene    |
-| input    | String | HD + 4k: Select input channel: 1, 2 or 3               |
+| scene    | String | Switch the ambient display scene: one of color, random, fireside, twinkle, ocean, rainbow, july_4th,  holiday, pop, forest |
+| color    | Color  | Select the active color to use with the Color scene    |
 
 ## Full Example
 
