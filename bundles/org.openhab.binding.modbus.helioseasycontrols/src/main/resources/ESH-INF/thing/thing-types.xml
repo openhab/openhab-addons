@@ -305,7 +305,7 @@
 	</channel-type>
 
 	<channel-type id="summerWinter" advanced="true">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Summertime / Wintertime</label>
 		<description>Indicates if summertime or wintertime is active</description>
 		<category>Time</category>
@@ -321,12 +321,6 @@
 		<item-type>Switch</item-type>
 		<label>Enable/Disable</label>
 		<description>Used for functionality that can be enabled or disabled</description>
-		<state>
-			<options>
-				<option value="0">disabled</option>
-				<option value="1">enabled</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="minFanStage" advanced="true">
@@ -341,12 +335,6 @@
 		<item-type>Switch</item-type>
 		<label>On/Off</label>
 		<description>Used for configurations that can be on or off</description>
-		<state>
-			<options>
-				<option value="0">Off</option>
-				<option value="1">On</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="humidityControlSetValue" advanced="true">
@@ -420,7 +408,7 @@
 	</channel-type>
 
 	<channel-type id="operatingMode" advanced="false">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Operating Mode</label>
 		<description>Operating mode (automatic/manual)</description>
 		<state>
@@ -534,7 +522,7 @@
 	</channel-type>
 
 	<channel-type id="filterChange" advanced="false">
-		<item-type>Switch</item-type>
+		<item-type>Number</item-type>
 		<label>Filter Change</label>
 		<description>Filter change</description>
 		<state>
@@ -652,29 +640,17 @@
 		<item-type>Switch</item-type>
 		<label>Sensor Configuration</label>
 		<description>Sensor configuration (installed or not)</description>
-		<state readOnly="true">
-			<options>
-				<option value="0">No sensor</option>
-				<option value="1">Sensor installed</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="bypassStatus" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Bypass Status</label>
 		<description>Status of the bypass</description>
-		<state readOnly="true">
-			<options>
-				<option value="0">Bypass closed</option>
-				<option value="1">Bypass open</option>
-			</options>
-		</state>
 	</channel-type>
 
 	<channel-type id="bypass" advanced="true">
 		<item-type>DateTime</item-type>
-		<label>Bypass active from/to (day and month)</label>
+		<label>Bypass Active from/to (Day and Month)</label>
 		<description>Bypass will be active/deactivated from that day and month on</description>
 		<category>Time</category>
 	</channel-type>

@@ -85,9 +85,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * This flag is used to ensure read requests (consisting of a write and subsequent read) are not influenced by
      * another transaction
      */
-    private Map<ModbusSlaveEndpoint, Semaphore> transactionLocks = new ConcurrentHashMap<>();
+    private final Map<ModbusSlaveEndpoint, Semaphore> transactionLocks = new ConcurrentHashMap<>();
 
-    private Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     private @Nullable ModbusCommunicationInterface comms;
 
@@ -303,22 +303,31 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                     String unit = variableMap.get(channelId).getUnit();
                     QuantityType<?> val = (QuantityType<?>) command;
                     if (unit != null) {
-                        if (unit.equals(HeliosVariable.UNIT_DAY)) {
-                            val = val.toUnit(SmartHomeUnits.DAY);
-                        } else if (unit.equals(HeliosVariable.UNIT_HOUR)) {
-                            val = val.toUnit(SmartHomeUnits.HOUR);
-                        } else if (unit.equals(HeliosVariable.UNIT_MIN)) {
-                            val = val.toUnit(SmartHomeUnits.MINUTE);
-                        } else if (unit.equals(HeliosVariable.UNIT_SEC)) {
-                            val = val.toUnit(SmartHomeUnits.SECOND);
-                        } else if (unit.equals(HeliosVariable.UNIT_VOLT)) {
-                            val = val.toUnit(SmartHomeUnits.VOLT);
-                        } else if (unit.equals(HeliosVariable.UNIT_PERCENT)) {
-                            val = val.toUnit(SmartHomeUnits.PERCENT);
-                        } else if (unit.equals(HeliosVariable.UNIT_PPM)) {
-                            val = val.toUnit(SmartHomeUnits.PARTS_PER_MILLION);
-                        } else if (unit.equals(HeliosVariable.UNIT_TEMP)) {
-                            val = val.toUnit(SIUnits.CELSIUS);
+                        switch (unit) {
+                            case HeliosVariable.UNIT_DAY:
+                                val = val.toUnit(SmartHomeUnits.DAY);
+                                break;
+                            case HeliosVariable.UNIT_HOUR:
+                                val = val.toUnit(SmartHomeUnits.HOUR);
+                                break;
+                            case HeliosVariable.UNIT_MIN:
+                                val = val.toUnit(SmartHomeUnits.MINUTE);
+                                break;
+                            case HeliosVariable.UNIT_SEC:
+                                val = val.toUnit(SmartHomeUnits.SECOND);
+                                break;
+                            case HeliosVariable.UNIT_VOLT:
+                                val = val.toUnit(SmartHomeUnits.VOLT);
+                                break;
+                            case HeliosVariable.UNIT_PERCENT:
+                                val = val.toUnit(SmartHomeUnits.PERCENT);
+                                break;
+                            case HeliosVariable.UNIT_PPM:
+                                val = val.toUnit(SmartHomeUnits.PARTS_PER_MILLION);
+                                break;
+                            case HeliosVariable.UNIT_TEMP:
+                                val = val.toUnit(SIUnits.CELSIUS);
+                                break;
                         }
                         value = val != null ? String.valueOf(val.doubleValue()) : null; // ignore the UoM
                     }

@@ -131,9 +131,6 @@ The following channels are supported:
 | bypassFrom                       | unitConfig      | Bypass active from                                                                                                               | DateTime                 | RW | 
 | bypassTo                         | unitConfig      | Bypass active to                                                                                                                 | DateTime                 | RW | 
 
-
-Please also see `variables.json` for further details: https://github.com/openhab/openhab-addons/blob/2.5.x/bundles/org.openhab.binding.modbus.helioseasycontrols/src/main/java/org/openhab/binding/modbus/helioseasycontrols/internal/variables.json
-
 ## Thing Actions
 
 ### Reset Filter Change Timer

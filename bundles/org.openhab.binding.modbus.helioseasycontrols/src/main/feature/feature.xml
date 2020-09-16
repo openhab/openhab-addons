@@ -5,5 +5,7 @@
 	<feature name="openhab-binding-modbus.helioseasycontrols" description="Modbus.HeliosEasyControls Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus.helioseasycontrols/${project.version}</bundle>
+		<feature>openhab-transport-modbus</feature>
+        <bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.modbus/${project.version}</bundle>
 	</feature>
 </features>
