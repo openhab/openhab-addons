@@ -84,7 +84,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -237,7 +237,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -296,7 +296,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique for each
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique for each
 					camera.
 				</description>
 			</parameter>
@@ -486,7 +486,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -557,7 +557,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -741,7 +741,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -783,7 +783,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -1036,7 +1036,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -1152,7 +1152,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -1313,7 +1313,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -1355,7 +1355,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -1587,7 +1587,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -1629,7 +1629,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -1886,7 +1886,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -1928,7 +1928,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -2172,7 +2172,7 @@
 
 			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
 				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
+				<description>This gives you direct access to specify your own FFmpeg options to be used for MJPEG streams.
 				</description>
 				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
 				<advanced>true</advanced>
@@ -2214,7 +2214,7 @@
 
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
-				<description>The port that will serve any files back to Openhab without authentication. It must be unique and unused
+				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
 					for each camera. Setting the port to -1 will turn the feature off.
 				</description>
 			</parameter>
@@ -2324,8 +2324,7 @@
 	<channel-type id="image">
 		<item-type>Image</item-type>
 		<label>Image</label>
-		<description>Low frame rate and low bandwidth to keep demands on your internet connection low when using to remote
-			view.</description>
+		<description>Low frame rate image from your camera. Recommend this is NOT used unless you have large pollTime.</description>
 		<category>Camera</category>
 	</channel-type>
 
@@ -2353,13 +2352,13 @@
 	<channel-type id="gifHistory">
 		<item-type>String</item-type>
 		<label>Gif Filename History</label>
-		<description>A history of the last gifs created in a CSV formatted string.</description>
+		<description>A history of the last GIFs created in a CSV formatted string.</description>
 	</channel-type>
 
 	<channel-type id="gifHistoryLength">
 		<item-type>Number</item-type>
 		<label>GIF History Length</label>
-		<description>How many gifs are stored in the history.</description>
+		<description>How many GIFs are stored in the history.</description>
 	</channel-type>
 
 	<channel-type id="mp4Filename">
@@ -2417,7 +2416,7 @@
 	<channel-type id="mjpegUrl">
 		<item-type>String</item-type>
 		<label>MJPEG URL</label>
-		<description>A link you can use in Openhab/Habpanel to fetch a MJPEG video feed from the camera.</description>
+		<description>A link you can use in openHAB/HABpanel to fetch a MJPEG video feed from the camera.</description>
 		<category>Camera</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -2425,7 +2424,7 @@
 	<channel-type id="hlsUrl">
 		<item-type>String</item-type>
 		<label>HLS URL (m3u8)</label>
-		<description>A link you can use in Openhab to cast video feeds.</description>
+		<description>A link you can use in openHAB to cast video feeds.</description>
 		<category>Camera</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -2433,21 +2432,21 @@
 	<channel-type id="pan">
 		<item-type>Dimmer</item-type>
 		<label>Pan</label>
-		<description>Pan the camera to an absolute position.</description>
+		<description>Pan the camera to a new position.</description>
 		<category>MoveControl</category>
 	</channel-type>
 
 	<channel-type id="tilt">
 		<item-type>Dimmer</item-type>
 		<label>Tilt</label>
-		<description>Tilt the camera to an absolute position.</description>
+		<description>Tilt the camera to a new position.</description>
 		<category>MoveControl</category>
 	</channel-type>
 
 	<channel-type id="zoom">
 		<item-type>Dimmer</item-type>
 		<label>Zoom</label>
-		<description>Zoom the camera to an absolute value.</description>
+		<description>Zoom the camera to a new value.</description>
 		<category>Zoom</category>
 	</channel-type>
 
@@ -2477,7 +2476,7 @@
 	<channel-type id="enableFieldDetectionAlarm">
 		<item-type>Switch</item-type>
 		<label>Intrusion/Field Alarm</label>
-		<description>By using this feature you can stop the camera from sending emails when you are actually home.</description>
+		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 	</channel-type>
 
 	<channel-type id="enablePirAlarm">
@@ -2638,7 +2637,7 @@
 	<channel-type id="enableMotionAlarm">
 		<item-type>Switch</item-type>
 		<label>Motion Alarm ON/OFF</label>
-		<description>By using this feature you can stop the camera from sending emails when you are actually home.</description>
+		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 	</channel-type>
 
@@ -2660,14 +2659,14 @@
 	<channel-type id="enableLineCrossingAlarm">
 		<item-type>Switch</item-type>
 		<label>Line Crossing ON/OFF</label>
-		<description>By using this feature you can stop the camera from sending emails when you are actually home.</description>
+		<description>By using this feature you can stop the camera from sending e-mails when you are actually home.</description>
 		<category>Motion</category>
 	</channel-type>
 
 	<channel-type id="enableAudioAlarm">
 		<item-type>Switch</item-type>
 		<label>Audio Alarm ON/OFF</label>
-		<description>By using this feature you can stop the camera from sending emails when you are having a party.</description>
+		<description>By using this feature you can stop the camera from sending e-mails when you are having a party.</description>
 		<category>SoundVolume</category>
 	</channel-type>
 
@@ -2729,13 +2728,13 @@
 	<channel-type id="textOverlay">
 		<item-type>String</item-type>
 		<label>Text Overlay</label>
-		<description>Some custom text you wish to overlay onto the cameras snapshot and video stream.</description>
+		<description>Some custom text you wish to overlay over the cameras snapshot and video streams.</description>
 	</channel-type>
 
 	<channel-type id="gotoPreset">
 		<item-type>String</item-type>
 		<label>gotoPreset</label>
-		<description>Move a ptz camera to this Onvif preset.</description>
+		<description>Move a P.T.Z camera to this ONVIF preset location.</description>
 		<state readOnly="false">
 			<options>
 				<option value="1">Preset 1</option>
