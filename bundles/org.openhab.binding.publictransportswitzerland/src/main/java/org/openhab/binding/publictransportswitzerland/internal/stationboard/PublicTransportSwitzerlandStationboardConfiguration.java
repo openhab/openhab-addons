@@ -16,7 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link PublicTransportSwitzerlandStationboardConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link PublicTransportSwitzerlandStationboardConfiguration} class contains fields mapping thing configuration
+ * parameters.
  *
  * @author Jeremy Stucki - Initial contribution
  */

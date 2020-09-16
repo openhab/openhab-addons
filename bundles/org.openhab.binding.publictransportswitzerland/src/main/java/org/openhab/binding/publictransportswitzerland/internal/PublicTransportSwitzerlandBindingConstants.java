@@ -30,5 +30,4 @@ public class PublicTransportSwitzerlandBindingConstants {
     public static final ThingTypeUID THING_TYPE_STATIONBOARD = new ThingTypeUID(BINDING_ID, "stationboard");
 
     public static final String BASE_URL = "https://transport.opendata.ch/v1/";
-
 }

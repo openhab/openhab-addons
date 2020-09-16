@@ -11,7 +11,7 @@
 		<label>Stationboard</label>
 		<description>Upcoming departures for a single station.</description>
 		<channels>
-			<channel typeId="tsv" id="tsv" />
+			<channel typeId="tsv" id="tsv"/>
 		</channels>
 		<config-description>
 			<parameter name="station" type="text" required="true">
