@@ -222,7 +222,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     protected void updateBatteryState(Channel channel, int code) {
-        updateState(channel.getUID(), new StringType(SenecBatteryStatus.fromCode(code).name()));
+        updateState(channel.getUID(), new StringType(SenecBatteryStatus.descriptionFromCode(code)));
     }
 
     protected void updateGridPowerValues(BigDecimal gridTotalValue) {
