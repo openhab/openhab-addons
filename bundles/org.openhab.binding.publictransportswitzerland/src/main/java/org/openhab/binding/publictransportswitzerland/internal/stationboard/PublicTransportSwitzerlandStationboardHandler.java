@@ -104,11 +104,6 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             updateStatus(ThingStatus.UNKNOWN);
             startChannelUpdate();
         }
-
-        if (getThing().getChannelsOfGroup(stationboardChannelGroupUID.getId()).isEmpty()) {
-            Channel tsvChannel = ChannelBuilder.create(tsvChannelUID, "String").build();
-            updateThing(editThing().withChannel(tsvChannel).build());
-        }
     }
 
     @Override
