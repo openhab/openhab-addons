@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.senechome.internal;
 
+import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -78,7 +80,12 @@ public class SenecHomeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        /* not implemented - binding only supports reading */
+        if (command == REFRESH) {
+            logger.debug("Refreshing {}", channelUID);
+            refresh();
+        } else {
+            logger.warn("The SenecHome-Binding is a read-only binding and can not handle commands");
+        }
     }
 
     @Override
