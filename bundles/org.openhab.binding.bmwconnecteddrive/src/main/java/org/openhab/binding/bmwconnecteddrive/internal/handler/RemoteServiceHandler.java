@@ -38,7 +38,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
 
     // after 60 retries the state update will give up
     private static final String SERVICE_TYPE = "serviceType";
-    private static final int GIVEUP_COUNTER = 12;
+    private static final int GIVEUP_COUNTER = 6;
     private static final int STATE_UPDATE_SEC = 10;
     private int counter = 0;
 
@@ -143,9 +143,9 @@ public class RemoteServiceHandler implements StringResponseCallback {
             if (!ExecutionState.EXECUTED.toString().equals(execStatus.status)) {
                 handler.getScheduler().schedule(this::getState, STATE_UPDATE_SEC, TimeUnit.SECONDS);
             } else {
-                // refresh loop ends - refresh data
+                // refresh loop ends - update of status handled in the normal refreshInterval. Earlier update doesn't
+                // show better results!
                 reset();
-                handler.getData();
             }
         } else {
             // schedule even if no result is present until retries exceeded
