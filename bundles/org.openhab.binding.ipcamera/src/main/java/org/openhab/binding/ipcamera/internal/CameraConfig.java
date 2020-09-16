@@ -21,36 +21,41 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class CameraConfig {
-    String ipAddress = "";
-    int port;
-    int onvifPort;
-    int serverPort;
-    String username = "";
-    String password = "";
-    int onvifMediaProfile;
-    int pollTime;
-    String ffmpegInput = "";
-    String snapshotUrl = "";
-    String mjpegUrl = "";
-    String alarmInputUrl = "";
-    String customMotionAlarmUrl = "";
-    String customAudioAlarmUrl = "";
-    String updateImageWhen = "";
-    int nvrChannel;
-    String ipWhitelist = "";
-    String ffmpegLocation = "";
-    String ffmpegOutput = "";
-    String hlsOutOptions = "";
-    String gifOutOptions = "";
-    String mp4OutOptions = "";
-    String mjpegOptions = "";
-    String motionOptions = "";
-    boolean ptzContinuous;
-    int gifPreroll;
-    int gifPostroll;
+    private String ipAddress = "";
+    private String ffmpegInputOptions = "";
+    private int port;
+    private int onvifPort;
+    private int serverPort;
+    private String username = "";
+    private String password = "";
+    private int onvifMediaProfile;
+    private int pollTime;
+    private String ffmpegInput = "";
+    private String snapshotUrl = "";
+    private String mjpegUrl = "";
+    private String alarmInputUrl = "";
+    private String customMotionAlarmUrl = "";
+    private String customAudioAlarmUrl = "";
+    private String updateImageWhen = "";
+    private int nvrChannel;
+    private String ipWhitelist = "";
+    private String ffmpegLocation = "";
+    private String ffmpegOutput = "";
+    private String hlsOutOptions = "";
+    private String gifOutOptions = "";
+    private String mp4OutOptions = "";
+    private String mjpegOptions = "";
+    private String motionOptions = "";
+    private boolean ptzContinuous;
+    private int gifPreroll;
+    private int gifPostroll;
 
     public int getOnvifMediaProfile() {
         return onvifMediaProfile;
+    }
+
+    public String getFfmpegInputOptions() {
+        return ffmpegInputOptions;
     }
 
     public String getMjpegOptions() {

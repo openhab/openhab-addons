@@ -904,7 +904,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     public void setupFfmpegFormat(ffmpegFormat format) {
-        String inOptions = "";
+        String inputOptions = cameraConfig.getFfmpegInputOptions();
         if (cameraConfig.getFfmpegOutput().isEmpty()) {
             logger.warn("The camera tried to use a FFmpeg feature when the output folder is not set.");
             return;
@@ -917,15 +917,22 @@ public class IpCameraHandler extends BaseThingHandler {
             logger.warn("The camera tried to use a FFmpeg feature when the location for FFmpeg is not known.");
             return;
         }
+        if (rtspUri.toLowerCase().contains("rtsp")) {
+            if (inputOptions.isEmpty()) {
+                inputOptions = "-rtsp_transport tcp";
+            } else {
+                inputOptions = inputOptions + " -rtsp_transport tcp";
+            }
+        }
 
         // Make sure the folder exists, if not create it.
         new File(ffmpegOutputFolder).mkdirs();
         switch (format) {
             case HLS:
                 if (ffmpegHLS == null) {
-                    if (rtspUri.contains(":554")) {
+                    if (!inputOptions.isEmpty()) {
                         ffmpegHLS = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(),
-                                "-hide_banner -loglevel warning -rtsp_transport tcp", rtspUri,
+                                "-hide_banner -loglevel warning " + inputOptions, rtspUri,
                                 cameraConfig.getHlsOutOptions(), ffmpegOutputFolder + "ipcamera.m3u8", username,
                                 password);
                     } else {
@@ -945,11 +952,12 @@ public class IpCameraHandler extends BaseThingHandler {
                             "-frames:v " + (preroll + postroll) + " " + cameraConfig.getGifOutOptions(),
                             ffmpegOutputFolder + gifFilename + ".gif", username, password);
                 } else {
-                    inOptions = "-y -t " + postroll + " -rtsp_transport tcp -hide_banner -loglevel warning";
-                    if (!rtspUri.contains("rtsp")) {
-                        inOptions = "-y -t " + postroll;
+                    if (!inputOptions.isEmpty()) {
+                        inputOptions = "-y -t " + postroll + " -hide_banner -loglevel warning " + inputOptions;
+                    } else {
+                        inputOptions = "-y -t " + postroll + " -hide_banner -loglevel warning";
                     }
-                    ffmpegGIF = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inOptions, rtspUri,
+                    ffmpegGIF = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getGifOutOptions(), ffmpegOutputFolder + gifFilename + ".gif", username,
                             password);
                 }
@@ -971,11 +979,12 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case RECORD:
-                inOptions = "-y -t " + mp4RecordTime + " -rtsp_transport tcp -hide_banner -loglevel warning";
-                if (!rtspUri.contains("rtsp")) {
-                    inOptions = "-y -t " + mp4RecordTime;
+                if (!inputOptions.isEmpty()) {
+                    inputOptions = "-y -t " + mp4RecordTime + " -hide_banner -loglevel warning " + inputOptions;
+                } else {
+                    inputOptions = "-y -t " + mp4RecordTime + " -hide_banner -loglevel warning";
                 }
-                ffmpegRecord = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inOptions, rtspUri,
+                ffmpegRecord = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                         cameraConfig.getMp4OutOptions(), ffmpegOutputFolder + mp4Filename + ".mp4", username, password);
                 if (mp4Preroll > 0) {
                     // fetchFromHLS(); todo: not done yet
@@ -1004,10 +1013,6 @@ public class IpCameraHandler extends BaseThingHandler {
                 String input = (cameraConfig.getAlarmInputUrl().isEmpty()) ? rtspUri : cameraConfig.getAlarmInputUrl();
                 String OutputOptions = "-f null -";
                 String filterOptions = "";
-                inOptions = "-rtsp_transport tcp";
-                if (!input.contains("rtsp")) {
-                    inOptions = "";
-                }
                 if (!audioAlarmEnabled) {
                     filterOptions = "-an";
                 } else {
@@ -1022,17 +1027,18 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (!cameraConfig.getUser().isEmpty()) {
                     filterOptions += " ";// add space as the Framework does not allow spaces at start of config.
                 }
-                ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inOptions, input,
+                ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
                         filterOptions + cameraConfig.getMotionOptions(), OutputOptions, username, password);
                 ffmpegRtspHelper.startConverting();
                 break;
             case MJPEG:
                 if (ffmpegMjpeg == null) {
-                    inOptions = "-rtsp_transport tcp -hide_banner -loglevel warning";
-                    if (!rtspUri.contains("rtsp")) {
-                        inOptions = "-hide_banner -loglevel warning";
+                    if (inputOptions.isEmpty()) {
+                        inputOptions = "-hide_banner -loglevel warning";
+                    } else {
+                        inputOptions = inputOptions + " -hide_banner -loglevel warning";
                     }
-                    ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inOptions, rtspUri,
+                    ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getMjpegOptions(), "http://127.0.0.1:" + serverPort + "/ipcamera.jpg",
                             username, password);
                 }
@@ -1043,12 +1049,13 @@ public class IpCameraHandler extends BaseThingHandler {
             case SNAPSHOT:
                 // if mjpeg stream you can use ffmpeg -i input.h264 -codec:v copy -bsf:v mjpeg2jpeg output%03d.jpg
                 if (ffmpegSnapshot == null) {
-                    inOptions = "-rtsp_transport tcp -threads 1 -skip_frame nokey -hide_banner -loglevel warning";// iFrames
-                                                                                                                  // only
-                    if (!rtspUri.contains("rtsp")) {
-                        inOptions = "-threads 1 -skip_frame nokey -hide_banner -loglevel warning";
+                    if (inputOptions.isEmpty()) {
+                        // iFrames only
+                        inputOptions = "-threads 1 -skip_frame nokey -hide_banner -loglevel warning";
+                    } else {
+                        inputOptions = inputOptions + " -threads 1 -skip_frame nokey -hide_banner -loglevel warning";
                     }
-                    ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inOptions, rtspUri,
+                    ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             "-an -vsync vfr -update 1", "http://127.0.0.1:" + serverPort + "/snapshot.jpg", username,
                             password);
                 }

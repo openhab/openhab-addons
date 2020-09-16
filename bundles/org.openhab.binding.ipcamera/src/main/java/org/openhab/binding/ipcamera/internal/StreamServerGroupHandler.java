@@ -63,7 +63,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
 
     public StreamServerGroupHandler(IpCameraGroupHandler ipCameraGroupHandler) {
         this.ipCameraGroupHandler = ipCameraGroupHandler;
-        whiteList = ipCameraGroupHandler.getWhiteList();
+        whiteList = ipCameraGroupHandler.groupConfig.getIpWhitelist();
     }
 
     @Override

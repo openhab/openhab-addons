@@ -29,7 +29,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -39,6 +38,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.ipcamera.internal.GroupConfig;
 import org.openhab.binding.ipcamera.internal.GroupTracker;
 import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.StreamServerGroupHandler;
@@ -66,7 +66,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 @NonNullByDefault
 public class IpCameraGroupHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private Configuration config;
+    public GroupConfig groupConfig;
     private BigDecimal pollTimeInSeconds = new BigDecimal(2);
     public ArrayList<IpCameraHandler> cameraOrder = new ArrayList<IpCameraHandler>(2);
     private EventLoopGroup serversLoopGroup = new NioEventLoopGroup();
@@ -88,17 +88,13 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     public IpCameraGroupHandler(Thing thing, @Nullable String openhabIpAddress, GroupTracker groupTracker) {
         super(thing);
-        config = thing.getConfiguration();
+        groupConfig = getConfigAs(GroupConfig.class);
         if (openhabIpAddress != null) {
             hostIp = openhabIpAddress;
         } else {
             hostIp = Helper.getLocalIpAddress();
         }
         this.groupTracker = groupTracker;
-    }
-
-    public String getWhiteList() {
-        return (config.get(CONFIG_IP_WHITELIST) == null) ? "" : config.get(CONFIG_IP_WHITELIST).toString();
     }
 
     public String getPlayList() {
@@ -224,7 +220,7 @@ public class IpCameraGroupHandler extends BaseThingHandler {
                             new StringType("http://" + hostIp + ":" + serverPort + "/ipcamera.jpg"));
                 } catch (Exception e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Exception occured when starting the streaming server. Try changing the SERVER_PORT to another number.");
+                            "Exception occured when starting the streaming server. Try changing the serverPort to another number.");
                 }
             }
         }
@@ -252,13 +248,13 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     // Event based. This is called as each camera comes online after the group handler is registered.
     public void cameraOnline(String uid) {
         logger.debug("New camera {} came online, checking if part of this group", uid);
-        if (config.get(CONFIG_FIRST_CAM).equals(uid)) {
+        if (groupConfig.getFirstCamera().equals(uid)) {
             addCamera(uid);
-        } else if (config.get(CONFIG_SECOND_CAM).equals(uid)) {
+        } else if (groupConfig.getSecondCamera().equals(uid)) {
             addCamera(uid);
-        } else if (config.get(CONFIG_THIRD_CAM).equals(uid)) {
+        } else if (groupConfig.getThirdCamera().equals(uid)) {
             addCamera(uid);
-        } else if (config.get(CONFIG_FORTH_CAM).equals(uid)) {
+        } else if (groupConfig.getForthCamera().equals(uid)) {
             addCamera(uid);
         }
     }
@@ -279,13 +275,13 @@ public class IpCameraGroupHandler extends BaseThingHandler {
     }
 
     void createCameraOrder() {
-        addIfOnline(config.get(CONFIG_FIRST_CAM).toString());
-        addIfOnline(config.get(CONFIG_SECOND_CAM).toString());
-        if (config.get(CONFIG_THIRD_CAM) != null) {
-            addIfOnline(config.get(CONFIG_THIRD_CAM).toString());
+        addIfOnline(groupConfig.getFirstCamera());
+        addIfOnline(groupConfig.getSecondCamera());
+        if (!groupConfig.getThirdCamera().isEmpty()) {
+            addIfOnline(groupConfig.getThirdCamera());
         }
-        if (config.get(CONFIG_FORTH_CAM) != null) {
-            addIfOnline(config.get(CONFIG_FORTH_CAM).toString());
+        if (!groupConfig.getForthCamera().isEmpty()) {
+            addIfOnline(groupConfig.getForthCamera());
         }
         // Cameras can now send events of when they go on and offline.
         groupTracker.listOfGroupHandlers.add(this);
@@ -343,24 +339,23 @@ public class IpCameraGroupHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        config = thing.getConfiguration();
-        serverPort = Integer.parseInt(config.get(CONFIG_SERVER_PORT).toString());
-        pollTimeInSeconds = new BigDecimal(config.get(CONFIG_POLL_TIME).toString());
-        motionChangesOrder = (boolean) config.get(CONFIG_MOTION_CHANGES_ORDER);
+        groupConfig = getConfigAs(GroupConfig.class);
+        serverPort = groupConfig.getServerPort();
+        pollTimeInSeconds = new BigDecimal(groupConfig.getPollTime());
         pollTimeInSeconds = pollTimeInSeconds.divide(new BigDecimal(1000), 1, RoundingMode.HALF_UP);
+        motionChangesOrder = groupConfig.getMotionChangesOrder();
+
         if (serverPort == -1) {
-            logger.warn("The SERVER_PORT = -1 which disables a lot of features. See readme for more info.");
+            logger.warn("The serverPort = -1 which disables a lot of features. See readme for more info.");
         } else if (serverPort < 1025) {
-            logger.warn("The SERVER_PORT is <= 1024 and may cause permission errors under Linux, try a higher port.");
+            logger.warn("The serverPort is <= 1024 and may cause permission errors under Linux, try a higher port.");
         }
-        if (!"-1".contentEquals(config.get(CONFIG_SERVER_PORT).toString())) {
+        if (groupConfig.getServerPort() > 0) {
             startStreamServer(true);
-        } else {
-            logger.warn("SERVER_PORT is -1 which disables all serving features of the camera group.");
         }
         updateStatus(ThingStatus.ONLINE);
         pollCameraGroupJob = pollCameraGroup.scheduleAtFixedRate(this::pollCameraGroup, 10000,
-                Integer.parseInt(config.get(CONFIG_POLL_TIME).toString()), TimeUnit.MILLISECONDS);
+                groupConfig.getPollTime(), TimeUnit.MILLISECONDS);
     }
 
     @Override

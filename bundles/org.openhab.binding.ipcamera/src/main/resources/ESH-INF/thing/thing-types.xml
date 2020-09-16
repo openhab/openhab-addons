@@ -203,6 +203,13 @@
 				</description>
 			</parameter>
 
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Install Location</label>
 				<description>The full path including the filename for where you have installed FFmpeg. Default should work for
@@ -267,31 +274,6 @@
 				<description>This gives you direct access to specify your own FFmpeg options to be used for recording MP4 files.
 				</description>
 				<default>-c:v copy -c:a copy</default>
-				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="mjpegOptions" type="text" required="false" groupName="FFmpeg Setup">
-				<label>MJPEG Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for ipcamera.mjpeg streams.
-				</description>
-				<default>-q:v 5 -r 2 -vf scale=640:-2 -update 1</default>
-				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="alarmInputUrl" type="text" required="false" groupName="FFmpeg Setup">
-				<context>url</context>
-				<label>Alarm Input URL</label>
-				<description>Leave blank to use the ffmpegInput as the source for detecting motion with FFmpeg, or enter any HTTP
-					or
-					RTSP URL. TIP: Using a low res source can save CPU usage.
-				</description>
-				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="motionOptions" type="text" required="false" groupName="FFmpeg Setup">
-				<label>Motion Options</label>
-				<description>This gives you direct access to specify your own FFmpeg options to be used for detecting motion.
-				</description>
 				<advanced>true</advanced>
 			</parameter>
 
@@ -449,6 +431,13 @@
 				<label>FFmpeg Input</label>
 				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
 					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -697,6 +686,13 @@
 				<label>FFmpeg Input</label>
 				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
 					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -989,6 +985,13 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Install Location</label>
 				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
@@ -1259,6 +1262,13 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Install Location</label>
 				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
@@ -1522,6 +1532,13 @@
 				<label>FFmpeg Input</label>
 				<description>Leave this blank to use the auto detected RTSP address, or enter a URL for any type of stream that
 					FFmpeg can use as an input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
 				</description>
 				<advanced>true</advanced>
 			</parameter>
@@ -1818,6 +1835,13 @@
 				<advanced>true</advanced>
 			</parameter>
 
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
 			<parameter name="ffmpegLocation" type="text" required="false" groupName="FFmpeg Setup">
 				<label>FFmpeg Install Location</label>
 				<description>The full path including the filename for where you have installed FFmpeg. For windows use this format,
@@ -2093,6 +2117,13 @@
 				<label>FFmpeg Input</label>
 				<description>Leave this blank to use the auto detected RTSP address, or enter any URL that FFmpeg can use as an
 					input.
+				</description>
+				<advanced>true</advanced>
+			</parameter>
+
+			<parameter name="ffmpegInputOptions" type="text" required="false" groupName="FFmpeg Setup">
+				<label>FFmpeg Input Options</label>
+				<description>This gives you direct access to specify FFmpeg options before the -i.
 				</description>
 				<advanced>true</advanced>
 			</parameter>

@@ -78,7 +78,12 @@ public class Ffmpeg {
             // will not work for https: but currently binding does not use https
             altInput = input.substring(0, 7) + credentials + input.substring(7);
         }
-        ffmpegCommand = ffmpegLocation + " " + inputArguments + " -i " + altInput + " " + outArguments + " " + output;
+        if (inputArguments.isEmpty()) {
+            ffmpegCommand = ffmpegLocation + " -i " + altInput + " " + outArguments + " " + output;
+        } else {
+            ffmpegCommand = ffmpegLocation + " " + inputArguments + " -i " + altInput + " " + outArguments + " "
+                    + output;
+        }
         commandArray = ffmpegCommand.trim().split("\\s+");
     }
 
