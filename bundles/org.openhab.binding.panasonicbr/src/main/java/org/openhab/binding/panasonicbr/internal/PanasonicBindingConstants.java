@@ -14,8 +14,6 @@ package org.openhab.binding.panasonicbr.internal;
 
 import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Time;
@@ -47,8 +45,6 @@ public class PanasonicBindingConstants {
     public static final String CHAPTER_TOTAL = "chapter_total";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_PLAYER);
-    public static final Set<String> SUPPORTED_CHANNEL_IDS = Stream.of(BUTTON, PLAY_MODE, TIME_ELAPSED)
-            .collect(Collectors.toSet());
 
     // Units of measurement of the data delivered by the API
     public static final Unit<Time> API_SECONDS_UNIT = SmartHomeUnits.SECOND;

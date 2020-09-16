@@ -1,6 +1,6 @@
 # Panasonic Blu-ray Player Binding
 
-This binding connects Panasonic Blu-ray players from 2011/2012 and UHD players from 2019 to openHAB.  
+This binding connects Panasonic Blu-ray players from 2011/2012 and UHD players from 2018 to openHAB.  
 Supported Blu-ray models: DMP-BDT110, DMP-BDT210, DMP-BDT310, DMP-BDT120, DMP-BDT220, DMP-BDT320, DMP-BBT01 & DMP-BDT500.  
 Supported UHD models: DP-UB420, DP-UB820 & DP-UB9000.  
 
@@ -9,17 +9,13 @@ Currently the binding can send remote control commands to the player and retriev
 It is possible that more functionality could be added in the future if additional information about the protocol is discovered.
 
 It is understood the reason that players released after 2012 no longer had the http control protocol was that Panasonic outsourced its firmware development to another entity.
-It is believed that they resurrected some of their in-house technology for the UHD player firmware and with it the 2011/2012 http control protocol was again implemented to enable Alexa/Google Home integration on the UHD player line.
+It is believed that they resurrected some of their in-house technology for the UHD player firmware and with it the 2011/2012 http control protocol was again implemented on the 2018 UHD player line.
 
-To enable control of 2011/2012 models, configure the following player settings:  
+To enable network remote control of the player, configure the following player settings:  
 **Player settings/Network/Network Settings/Remote Device Settings**  
 Then make sure you have the following values set:  
 **Remote Device Operation: On**  
 **Registration Type: Automatic**  
-
-To enable control of 2019 UHD models, configure the following player settings:  
-**Player settings/Network/Network Settings/Remote Device Settings**  
-TDB
 
 ## Supported Things
 
