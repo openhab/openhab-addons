@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * This enumeration represents the different message types provided by the MAX! Cube protocol.
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
+@NonNullByDefault
 public enum MessageType {
     H,
     M,

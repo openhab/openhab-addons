@@ -18,12 +18,14 @@ import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 
 import java.lang.invoke.MethodHandles;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +34,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import javax.measure.quantity.Angle;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -76,7 +76,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     /** Scheduler to schedule jobs */
     private final CronScheduler cronScheduler;
 
-    private final TimeZoneProvider timeZoneProvider;
+    protected final TimeZoneProvider timeZoneProvider;
 
     private final Lock monitor = new ReentrantLock();
 
@@ -99,10 +99,9 @@ public abstract class AstroThingHandler extends BaseThingHandler {
         logger.debug("Initializing thing {}", getThing().getUID());
         String thingUid = getThing().getUID().toString();
         thingConfig = getConfigAs(AstroThingConfig.class);
-        thingConfig.setThingUid(thingUid);
         boolean validConfig = true;
-
-        if (StringUtils.trimToNull(thingConfig.geolocation) == null) {
+        String geoLocation = thingConfig.geolocation;
+        if (geoLocation == null || geoLocation.trim().isEmpty()) {
             logger.error("Astro parameter geolocation is mandatory and must be configured, disabling thing '{}'",
                     thingUid);
             validConfig = false;
@@ -258,7 +257,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Counts positional channels and restarts Astro jobs.
      */
     private void linkedChannelChange(ChannelUID channelUID, int step) {
-        if (ArrayUtils.contains(getPositionalChannelIds(), channelUID.getId())) {
+        if (Arrays.asList(getPositionalChannelIds()).contains(channelUID.getId())) {
             int oldValue = linkedPositionalChannels;
             linkedPositionalChannels += step;
             if (oldValue == 0 && linkedPositionalChannels > 0 || oldValue > 0 && linkedPositionalChannels == 0) {
@@ -271,9 +270,10 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      * Returns {@code true}, if at least one positional channel is linked.
      */
     private boolean isPositionalChannelLinked() {
+        List<String> positionalChannels = Arrays.asList(getPositionalChannelIds());
         for (Channel channel : getThing().getChannels()) {
-            if (ArrayUtils.contains(getPositionalChannelIds(), channel.getUID().getId())
-                    && isLinked(channel.getUID().getId())) {
+            String id = channel.getUID().getId();
+            if (isLinked(id) && positionalChannels.contains(id)) {
                 return true;
             }
         }
@@ -351,7 +351,7 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     protected abstract Job getDailyJob();
 
-    protected abstract @Nullable Position getPositionAt(ZonedDateTime date);
+    public abstract @Nullable Position getPositionAt(ZonedDateTime date);
 
     public @Nullable QuantityType<Angle> getAzimuth(ZonedDateTime date) {
         Position position = getPositionAt(date);
@@ -367,5 +367,4 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(AstroActions.class);
     }
-
 }

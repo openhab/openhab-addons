@@ -33,5 +33,4 @@ public enum Mode {
     public int getMode() {
         return mode;
     }
-
 }

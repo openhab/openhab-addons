@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.message;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Defines the structure of a {@link Message}. Messages are part of the innogy system and besides other things are used

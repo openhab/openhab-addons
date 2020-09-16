@@ -458,4 +458,15 @@
 		<item-type>Switch</item-type>
 		<label>Generic Bool</label>
 	</channel-type>
+	<channel-type id="vacuumaction">
+		<item-type>Number</item-type>
+		<label>Vacuum Action</label>
+		<state>
+			<options>
+				<option value="0">Stop</option>
+				<option value="1">Vacuum</option>
+				<option value="2">Pause</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

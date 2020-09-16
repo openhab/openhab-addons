@@ -25,11 +25,6 @@ import org.eclipse.smarthome.core.thing.Thing;
 @NonNullByDefault
 public class DeviceHandler extends AVMFritzBaseThingHandler {
 
-    /**
-     * Constructor
-     *
-     * @param thing Thing object representing a FRITZ! device
-     */
     public DeviceHandler(Thing thing) {
         super(thing);
     }

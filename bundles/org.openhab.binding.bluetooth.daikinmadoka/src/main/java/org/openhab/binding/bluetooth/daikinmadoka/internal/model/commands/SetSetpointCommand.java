@@ -79,5 +79,4 @@ public class SetSetpointCommand extends BRC1HCommand {
     public DecimalType getHeatingSetpoint() {
         return heatingSetpoint;
     }
-
 }

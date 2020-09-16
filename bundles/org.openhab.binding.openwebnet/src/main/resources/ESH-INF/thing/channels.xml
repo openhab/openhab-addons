@@ -26,4 +26,15 @@
 		</tags>
 	</channel-type>
 
+	<!-- Shutter Channel -->
+	<channel-type id="shutter">
+		<item-type>Rollershutter</item-type>
+		<label>Roller shutter</label>
+		<description>Control the roller shutter position</description>
+		<category>Blinds</category>
+		<tags>
+			<tag>Blinds</tag>
+		</tags>
+	</channel-type>
+
 </thing:thing-descriptions>

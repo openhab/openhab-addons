@@ -18,12 +18,14 @@ import org.openhab.binding.nuki.internal.dto.BridgeApiLockStateDto;
  * The {@link BridgeLockStateResponse} class wraps {@link BridgeApiLockStateDto} class.
  *
  * @author Markus Katter - Initial contribution
+ * @contributer Christian Hoefler - Door sensor integration
  */
 public class BridgeLockStateResponse extends NukiBaseResponse {
 
     private int state;
     private String stateName;
     private boolean batteryCritical;
+    private int doorsensorState;
 
     public BridgeLockStateResponse(int status, String message, BridgeApiLockStateDto bridgeApiLockStateDto) {
         super(status, message);
@@ -31,6 +33,7 @@ public class BridgeLockStateResponse extends NukiBaseResponse {
             this.setSuccess(bridgeApiLockStateDto.isSuccess());
             this.setState(bridgeApiLockStateDto.getState());
             this.setStateName(bridgeApiLockStateDto.getStateName());
+            this.setDoorsensorState(bridgeApiLockStateDto.getDoorsensorState());
             this.setBatteryCritical(bridgeApiLockStateDto.isBatteryCritical());
         }
     }
@@ -61,5 +64,13 @@ public class BridgeLockStateResponse extends NukiBaseResponse {
 
     public void setBatteryCritical(boolean batteryCritical) {
         this.batteryCritical = batteryCritical;
+    }
+
+    public int getDoorsensorState() {
+        return doorsensorState;
+    }
+
+    public void setDoorsensorState(int doorsensorState) {
+        this.doorsensorState = doorsensorState;
     }
 }

@@ -101,9 +101,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
                 throw new IllegalStateException("registerPollTask called without proper configuration");
             }
 
-            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(),
-                    readFunctionCode, address, length, myconfig.getMaxTries());
-
+            ModbusReadRequestBlueprint request = new ModbusReadRequestBlueprint(getSlaveId(), readFunctionCode, address,
+                    length, myconfig.getMaxTries());
 
             long refreshMillis = myconfig.getRefreshMillis();
 
@@ -205,8 +204,8 @@ public class StiebelEltronHandler extends BaseThingHandler {
         ModbusRegister register = new ModbusRegister(b1, b2);
         ModbusRegisterArray data = new ModbusRegisterArray(new ModbusRegister[] { register });
 
-        ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId,
-                address, data, false, myconfig.getMaxTries());
+        ModbusWriteRegisterRequestBlueprint request = new ModbusWriteRegisterRequestBlueprint(slaveId, address, data,
+                false, myconfig.getMaxTries());
 
         mycomms.submitOneTimeWrite(request, result -> {
             if (hasConfigurationError()) {
@@ -214,7 +213,9 @@ public class StiebelEltronHandler extends BaseThingHandler {
             }
             logger.debug("Successful write, matching request {}", request);
             StiebelEltronHandler.this.updateStatus(ThingStatus.ONLINE);
-        }, failure -> {StiebelEltronHandler.this.handleWriteError(failure);});
+        }, failure -> {
+            StiebelEltronHandler.this.handleWriteError(failure);
+        });
     }
 
     /**
@@ -674,7 +675,6 @@ public class StiebelEltronHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                 String.format("Error with write: %s: %s", cls, msg));
     }
-
 
     /**
      * Returns true, if we're in a CONFIGURATION_ERROR state

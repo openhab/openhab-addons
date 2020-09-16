@@ -191,20 +191,10 @@ public class NeatoState {
 
     @Override
     public String toString() {
-        return "NeatoState{" +
-                "version=" + version +
-                ", reqId='" + reqId + '\'' +
-                ", result='" + result + '\'' +
-                ", error='" + error + '\'' +
-                ", data=" + data +
-                ", state=" + state +
-                ", action=" + action +
-                ", cleaning=" + cleaning +
-                ", details=" + details +
-                ", availableCommands=" + availableCommands +
-                ", availableServices=" + availableServices +
-                ", meta=" + meta +
-                '}';
+        return "NeatoState{" + "version=" + version + ", reqId='" + reqId + '\'' + ", result='" + result + '\''
+                + ", error='" + error + '\'' + ", data=" + data + ", state=" + state + ", action=" + action
+                + ", cleaning=" + cleaning + ", details=" + details + ", availableCommands=" + availableCommands
+                + ", availableServices=" + availableServices + ", meta=" + meta + '}';
     }
 
     public void setMeta(Meta meta) {

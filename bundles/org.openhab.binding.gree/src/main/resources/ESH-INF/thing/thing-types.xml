@@ -7,19 +7,20 @@
 	<thing-type id="airconditioner">
 		<label>@text/thing-type.gree.airconditioner.label</label>
 		<channels>
-			<channel id="power" typeId="system.power" />
-			<channel id="mode" typeId="mode" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="air" typeId="air" />
-			<channel id="dry" typeId="dry" />
-			<channel id="turbo" typeId="turbo" />
-			<channel id="windspeed" typeId="windspeed" />
-			<channel id="quiet" typeId="quiet" />
-			<channel id="swingUpDown" typeId="swingUpDown" />
-			<channel id="swingLeftRight" typeId="swingLeftRight" />
-			<channel id="powersave" typeId="powersave" />
-			<channel id="light" typeId="light" />
-			<channel id="health" typeId="health" />
+			<channel id="power" typeId="system.power"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="temperature" typeId="targetTemperature"/>
+			<channel id="currentTemperature" typeId="currentTemperature"/>
+			<channel id="air" typeId="air"/>
+			<channel id="dry" typeId="dry"/>
+			<channel id="turbo" typeId="turbo"/>
+			<channel id="windspeed" typeId="windspeed"/>
+			<channel id="quiet" typeId="quiet"/>
+			<channel id="swingUpDown" typeId="swingUpDown"/>
+			<channel id="swingLeftRight" typeId="swingLeftRight"/>
+			<channel id="powersave" typeId="powersave"/>
+			<channel id="light" typeId="light"/>
+			<channel id="health" typeId="health"/>
 		</channels>
 
 		<config-description>
@@ -32,6 +33,11 @@
 			<parameter name="refresh" type="integer" required="true" unit="s">
 				<default>60</default>
 				<unitLabel>seconds</unitLabel>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="currentTemperatureOffset" type="decimal" step="0.5" required="true" unit="C">
+				<default>0</default>
+				<unitLabel>Degrees Celsius</unitLabel>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
@@ -55,11 +61,17 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="temperature">
+	<channel-type id="targetTemperature">
 		<item-type>Number:Temperature</item-type>
-		<label>@text/channel-type.gree.temperature.label</label>
-		<description>@text/channel-type.gree.temperature.description</description>
+		<label>@text/channel-type.gree.targettemperature.label</label>
+		<description>@text/channel-type.gree.targettemperature.description</description>
 		<state min="16" max="86" step="1" pattern="%d %unit%"></state>
+	</channel-type>
+	<channel-type id="currentTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>@text/channel-type.gree.currenttemperature.label</label>
+		<description>@text/channel-type.gree.currenttemperature.description</description>
+		<state readOnly="true" pattern="%d %unit%"></state>
 	</channel-type>
 	<channel-type id="air">
 		<item-type>Switch</item-type>

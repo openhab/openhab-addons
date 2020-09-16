@@ -596,8 +596,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Combined Temperature</label>
 		<description>Combined average temperature of the driver and passenger autoconditioning settings. The temperature for
-			the
-			driver and passenger will be synced when set.</description>
+			the driver and passenger will be synced when set.</description>
 		<state pattern="%.1f %unit%"></state>
 	</channel-type>
 	<channel-type id="timetofullcharge" advanced="true">

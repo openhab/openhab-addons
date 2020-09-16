@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.enigma2.actions;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
@@ -21,9 +24,6 @@ import org.openhab.binding.enigma2.handler.Enigma2Handler;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 
 /**
  * This is the automation engine actions handler service for the

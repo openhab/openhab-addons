@@ -54,6 +54,7 @@ The AirQuality information that is retrieved is available as these channels:
 | Channel ID      | Item Type            | Description                                  |
 |-----------------|----------------------|----------------------------------------------|
 | aqiLevel        | Number               | Air Quality Index                            |
+| aqiColor        | Color                | Color associated to given AQI Index.         |
 | aqiDescription  | String               | AQI Description                              |
 | locationName    | String               | Nearest measuring station location           |
 | stationId       | Number               | Measuring station ID                         |

@@ -34,6 +34,7 @@
 /bundles/org.openhab.binding.caddx/ @jossuar
 /bundles/org.openhab.binding.chromecast/ @kaikreuzer
 /bundles/org.openhab.binding.cm11a/ @BobRak
+/bundles/org.openhab.binding.comfoair/ @boehan
 /bundles/org.openhab.binding.coolmasternet/ @projectgus
 /bundles/org.openhab.binding.coronastats/ @DerOetzi
 /bundles/org.openhab.binding.daikin/ @caffineehacker
@@ -70,6 +71,7 @@
 /bundles/org.openhab.binding.fsinternetradio/ @paphko
 /bundles/org.openhab.binding.ftpupload/ @paulianttila
 /bundles/org.openhab.binding.gardena/ @gerrieg
+/bundles/org.openhab.binding.gce/ @clinique
 /bundles/org.openhab.binding.globalcache/ @mhilbush
 /bundles/org.openhab.binding.gpstracker/ @gbicskei
 /bundles/org.openhab.binding.gree/ @markus7017
@@ -94,7 +96,9 @@
 /bundles/org.openhab.binding.ipcamera/ @Skinah
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irtrans/ @kgoderis
+/bundles/org.openhab.binding.jablotron/ @octa22
 /bundles/org.openhab.binding.jeelink/ @vbier
+/bundles/org.openhab.binding.kaleidescape/ @mlobstein
 /bundles/org.openhab.binding.keba/ @kgoderis
 /bundles/org.openhab.binding.km200/ @Markinus
 /bundles/org.openhab.binding.knx/ @sjka
@@ -114,6 +118,7 @@
 /bundles/org.openhab.binding.logreader/ @paulianttila
 /bundles/org.openhab.binding.loxone/ @ppieczul
 /bundles/org.openhab.binding.lutron/ @actong @bobadair
+/bundles/org.openhab.binding.magentatv/ @markus7017
 /bundles/org.openhab.binding.mail/ @J-N-K
 /bundles/org.openhab.binding.max/ @marcelrv
 /bundles/org.openhab.binding.mcp23017/ @aogorek
@@ -129,12 +134,15 @@
 /bundles/org.openhab.binding.minecraft/ @ibaton
 /bundles/org.openhab.binding.modbus/ @ssalonen
 /bundles/org.openhab.binding.modbus.e3dc/ @weymann
+/bundles/org.openhab.binding.modbus.studer/ @giovannimirulla
 /bundles/org.openhab.binding.modbus.sunspec/ @mrbig
 /bundles/org.openhab.binding.modbus.stiebeleltron/ @pail23
+/bundles/org.openhab.binding.monopriceaudio/ @mlobstein
 /bundles/org.openhab.binding.mqtt/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.generic/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homeassistant/ @davidgraeff
 /bundles/org.openhab.binding.mqtt.homie/ @davidgraeff
+/bundles/org.openhab.binding.mystrom/ @pail23
 /bundles/org.openhab.binding.nanoleaf/ @raepple
 /bundles/org.openhab.binding.neato/ @jjlauterbach
 /bundles/org.openhab.binding.neeo/ @tmrobert8
@@ -150,6 +158,8 @@
 /bundles/org.openhab.binding.novafinedust/ @t2000
 /bundles/org.openhab.binding.ntp/ @marcelrv
 /bundles/org.openhab.binding.nuki/ @mkatter
+/bundles/org.openhab.binding.nuvo/ @mlobstein
+/bundles/org.openhab.binding.nzwateralerts/ @cossey
 /bundles/org.openhab.binding.oceanic/ @kgoderis
 /bundles/org.openhab.binding.ojelectronics/ @EvilPingu
 /bundles/org.openhab.binding.omnikinverter/ @hansbogert
@@ -212,9 +222,11 @@
 /bundles/org.openhab.binding.mpd/ @stefanroellin
 /bundles/org.openhab.binding.synopanalyzer/ @clinique
 /bundles/org.openhab.binding.systeminfo/ @svilenvul
+/bundles/org.openhab.binding.tacmi/ @twendt @Wolfgang1966 @marvkis
 /bundles/org.openhab.binding.tado/ @dfrommi
 /bundles/org.openhab.binding.tankerkoenig/ @dolic @JueBag
 /bundles/org.openhab.binding.telegram/ @ZzetT
+/bundles/org.openhab.binding.teleinfo/ @Nokyyz
 /bundles/org.openhab.binding.tellstick/ @jarlebh
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.tibber/ @kjoglum
@@ -274,6 +286,7 @@
 /itests/org.openhab.binding.feed.tests/ @svilenvul
 /itests/org.openhab.binding.hue.tests/ @cweitkamp
 /itests/org.openhab.binding.max.tests/ @marcelrv
+/itests/org.openhab.binding.modbus.tests/ @ssalonen
 /itests/org.openhab.binding.mqtt.homeassistant.tests/ @davidgraeff
 /itests/org.openhab.binding.mqtt.homie.tests/ @davidgraeff
 /itests/org.openhab.binding.nest.tests/ @wborn

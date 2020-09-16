@@ -77,5 +77,4 @@ public class MadokaProperties {
             return v;
         }
     }
-
 }

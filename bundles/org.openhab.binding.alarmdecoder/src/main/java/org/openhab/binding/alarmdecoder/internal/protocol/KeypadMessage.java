@@ -125,10 +125,10 @@ public class KeypadMessage extends ADMessage {
     }
 
     /**
-     * Returns an int containing the address mask of the message
+     * Returns a long containing the address mask of the message
      */
-    public int getIntAddressMask() {
-        return Integer.parseInt(getAddressMask(), 16);
+    public long getLongAddressMask() {
+        return Long.parseLong(getAddressMask(), 16);
     }
 
     /**

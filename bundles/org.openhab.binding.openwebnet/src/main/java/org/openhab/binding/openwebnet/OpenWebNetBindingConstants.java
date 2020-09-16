@@ -50,6 +50,8 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_BUS_ON_OFF_SWITCH = "Switch";
     public static final ThingTypeUID THING_TYPE_BUS_DIMMER = new ThingTypeUID(BINDING_ID, "bus_dimmer");
     public static final String THING_LABEL_BUS_DIMMER = "Dimmer";
+    public static final ThingTypeUID THING_TYPE_BUS_AUTOMATION = new ThingTypeUID(BINDING_ID, "bus_automation");
+    public static final String THING_LABEL_BUS_AUTOMATION = "Automation";
 
     // ZIGBEE
     public static final ThingTypeUID THING_TYPE_ZB_ON_OFF_SWITCH = new ThingTypeUID(BINDING_ID, "zb_on_off_switch");
@@ -59,21 +61,25 @@ public class OpenWebNetBindingConstants {
     public static final String THING_LABEL_ZB_ON_OFF_SWITCH_2UNITS = "ZigBee 2-units Switch";
     public static final ThingTypeUID THING_TYPE_ZB_DIMMER = new ThingTypeUID(BINDING_ID, "zb_dimmer");
     public static final String THING_LABEL_ZB_DIMMER = "ZigBee Dimmer";
+    public static final ThingTypeUID THING_TYPE_ZB_AUTOMATION = new ThingTypeUID(BINDING_ID, "zb_automation");
+    public static final String THING_LABEL_ZB_AUTOMATION = "ZigBee Automation";
 
     // #SUPPORTED THINGS SETS
     // ## Generic
     public static final Set<ThingTypeUID> GENERIC_SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_GENERIC_DEVICE));
-
     // ## Lighting
     public static final Set<ThingTypeUID> LIGHTING_SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ZB_ON_OFF_SWITCH, THING_TYPE_ZB_ON_OFF_SWITCH_2UNITS, THING_TYPE_ZB_DIMMER,
                     THING_TYPE_BUS_ON_OFF_SWITCH, THING_TYPE_BUS_DIMMER));
+    // ## Automation
+    public static final Set<ThingTypeUID> AUTOMATION_SUPPORTED_THING_TYPES = new HashSet<>(
+            Arrays.asList(THING_TYPE_ZB_AUTOMATION, THING_TYPE_BUS_AUTOMATION));
 
     // ## Groups
     public static final Set<ThingTypeUID> DEVICE_SUPPORTED_THING_TYPES = Stream
-            .of(LIGHTING_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES).flatMap(Collection::stream)
-            .collect(Collectors.toCollection(HashSet::new));
+            .of(LIGHTING_SUPPORTED_THING_TYPES, AUTOMATION_SUPPORTED_THING_TYPES, GENERIC_SUPPORTED_THING_TYPES)
+            .flatMap(Collection::stream).collect(Collectors.toCollection(HashSet::new));
 
     public static final Set<ThingTypeUID> BRIDGE_SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ZB_GATEWAY, THING_TYPE_BUS_GATEWAY));
@@ -88,9 +94,13 @@ public class OpenWebNetBindingConstants {
     public static final String CHANNEL_SWITCH_01 = "switch_01";
     public static final String CHANNEL_SWITCH_02 = "switch_02";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
+    // automation
+    public static final String CHANNEL_SHUTTER = "shutter";
 
     // devices config properties
     public static final String CONFIG_PROPERTY_WHERE = "where";
+    public static final String CONFIG_PROPERTY_SHUTTER_RUN = "shutterRun";
+
     // BUS gw config properties
     public static final String CONFIG_PROPERTY_HOST = "host";
     // properties

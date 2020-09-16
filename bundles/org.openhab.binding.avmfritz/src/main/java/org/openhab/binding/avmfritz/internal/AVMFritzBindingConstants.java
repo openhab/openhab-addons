@@ -148,11 +148,12 @@ public class AVMFritzBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_BUTTON_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(DECT400_THING_TYPE, HAN_FUN_SWITCH_THING_TYPE).collect(Collectors.toSet()));
 
+    public static final Set<ThingTypeUID> SUPPORTED_HEATING_THING_TYPES = Collections.unmodifiableSet(
+            Stream.of(DECT300_THING_TYPE, DECT301_THING_TYPE, COMETDECT_THING_TYPE).collect(Collectors.toSet()));
+
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, DECT300_THING_TYPE,
-                            DECT301_THING_TYPE, PL546E_THING_TYPE, COMETDECT_THING_TYPE, HAN_FUN_CONTACT_THING_TYPE)
-                    .collect(Collectors.toSet()));
+            .unmodifiableSet(Stream.of(DECT100_THING_TYPE, DECT200_THING_TYPE, DECT210_THING_TYPE, PL546E_THING_TYPE,
+                    HAN_FUN_CONTACT_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_GROUP_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(GROUP_HEATING_THING_TYPE, GROUP_SWITCH_THING_TYPE).collect(Collectors.toSet()));
@@ -161,7 +162,7 @@ public class AVMFritzBindingConstants {
             .unmodifiableSet(Stream.of(BRIDGE_THING_TYPE, PL546E_STANDALONE_THING_TYPE).collect(Collectors.toSet()));
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
-            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS.stream(), SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(),
-                    SUPPORTED_GROUP_THING_TYPES_UIDS.stream(), SUPPORTED_BRIDGE_THING_TYPES_UIDS.stream())
-            .reduce(Stream::concat).orElseGet(Stream::empty).collect(Collectors.toSet()));
+            .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES, SUPPORTED_DEVICE_THING_TYPES_UIDS,
+                    SUPPORTED_GROUP_THING_TYPES_UIDS, SUPPORTED_BRIDGE_THING_TYPES_UIDS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 }

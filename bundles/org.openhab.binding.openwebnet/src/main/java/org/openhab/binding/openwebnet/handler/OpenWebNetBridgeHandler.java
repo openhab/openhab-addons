@@ -43,6 +43,7 @@ import org.openwebnet4j.OpenGateway;
 import org.openwebnet4j.USBGateway;
 import org.openwebnet4j.communication.OWNAuthException;
 import org.openwebnet4j.communication.OWNException;
+import org.openwebnet4j.message.Automation;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.FrameException;
 import org.openwebnet4j.message.GatewayMgmt;
@@ -176,7 +177,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         logger.debug("handleCommand (command={} - channel={})", command, channelUID);
         OpenGateway gw = gateway;
         if (gw != null && !gw.isConnected()) {
-            logger.warn("BridgeHandler gateway is NOT connected, skipping command");
+            logger.warn("Gateway is NOT connected, skipping command");
             return;
         } else {
             logger.warn("Channel not supported: channel={}", channelUID);
@@ -341,7 +342,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
 
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
         // let's try to get the Thing associated with this message...
-        if (baseMsg instanceof Lighting) {
+        if (baseMsg instanceof Lighting || baseMsg instanceof Automation) {
             String ownId = ownIdFromMessage(baseMsg);
             logger.debug("ownId={}", ownId);
             OpenWebNetThingHandler deviceHandler = registeredDevices.get(ownId);

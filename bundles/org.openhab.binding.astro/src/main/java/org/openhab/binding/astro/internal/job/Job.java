@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The interface to be implemented by classes which represent a 'job' to be performed
  *
- * @author Amit Kumar Mondal - New Simplified API, Implementation compliant with ESH Scheduler
+ * @author Amit Kumar Mondal - Initial contribution
  */
 @NonNullByDefault
 public interface Job extends SchedulerRunnable, Runnable {

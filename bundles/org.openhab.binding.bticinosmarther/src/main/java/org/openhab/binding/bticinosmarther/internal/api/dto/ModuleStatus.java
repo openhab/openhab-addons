@@ -47,5 +47,4 @@ public class ModuleStatus {
     public String toString() {
         return String.format("chronothermostats=[%s]", chronothermostats);
     }
-
 }

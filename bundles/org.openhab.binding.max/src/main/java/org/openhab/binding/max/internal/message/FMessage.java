@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 
 /**
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public final class FMessage extends Message {
 
     private String ntpServer1 = "";

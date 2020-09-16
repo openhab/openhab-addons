@@ -201,7 +201,7 @@ public class ModbusDataThingHandler extends BaseThingHandler {
         // missing
         Integer writeStart = this.writeStart;
         if (writeStart == null) {
-            logger.warn(
+            logger.debug(
                     "Thing {} '{}': not processing command {} since writeStart is missing and transformation output is not a JSON",
                     getThing().getUID(), getThing().getLabel(), command);
             return;
@@ -247,9 +247,6 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 processJsonTransform(command, transformOutput);
                 return null;
             } else if (writeParametersHavingTransformationOnly) {
-                logger.error(
-                        "Thing {} seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '{}' (channel {}), this is a configuration error.",
-                        getThing().getUID(), command, channelUID);
                 updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
                         "Seems to have writeTransformation but no other write parameters. Since the transformation did not return a JSON for command '%s' (channel %s), this is a configuration error",
                         command, channelUID));
@@ -337,9 +334,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             ModbusDataConfiguration localConfig = config = getConfigAs(ModbusDataConfiguration.class);
             updateUnchangedValuesEveryMillis = localConfig.getUpdateUnchangedValuesEveryMillis();
             Bridge bridge = getBridge();
-            if (bridge == null) {
-                logger.debug("Thing {} '{}' has no bridge", getThing().getUID(), getThing().getLabel());
-                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No poller bridge");
+            if (bridge == null || !bridge.getStatus().equals(ThingStatus.ONLINE)) {
+                logger.debug("Thing {} '{}' has no bridge or it is not online", getThing().getUID(),
+                        getThing().getLabel());
+                updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No online bridge");
                 return;
             }
             BridgeHandler bridgeHandler = bridge.getHandler();
@@ -362,8 +360,9 @@ public class ModbusDataThingHandler extends BaseThingHandler {
                 pollerHandler = localPollerHandler;
                 ModbusReadRequestBlueprint localReadRequest = localPollerHandler.getRequest();
                 if (localReadRequest == null) {
-                    logger.debug("Poller {} '{}' has no read request -- configuration is changing?", bridge.getUID(),
-                            bridge.getLabel());
+                    logger.debug(
+                            "Poller {} '{}' has no read request -- configuration is changing or bridge having invalid configuration?",
+                            bridge.getUID(), bridge.getLabel());
                     updateStatusIfChanged(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                             String.format("Poller %s '%s' has no poll task", bridge.getUID(), bridge.getLabel()));
                     return;
@@ -733,10 +732,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             return;
         }
         if (error instanceof ModbusConnectionException) {
-            logger.error("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
+            logger.trace("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else if (error instanceof ModbusTransportException) {
-            logger.error("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
+            logger.trace("Thing {} '{}' had {} error on read: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else {
             logger.error(
@@ -769,10 +768,10 @@ public class ModbusDataThingHandler extends BaseThingHandler {
             return;
         }
         if (error instanceof ModbusConnectionException) {
-            logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
+            logger.debug("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else if (error instanceof ModbusTransportException) {
-            logger.error("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
+            logger.debug("Thing {} '{}' had {} error on write: {}", getThing().getUID(), getThing().getLabel(),
                     error.getClass().getSimpleName(), error.toString());
         } else {
             logger.error(

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 
 /**
@@ -19,6 +20,7 @@ import org.slf4j.Logger;
  *
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  */
+@NonNullByDefault
 public abstract class Message {
 
     public static final String DELIMETER = ",";

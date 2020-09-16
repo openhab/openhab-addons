@@ -51,6 +51,13 @@
 			</options>
 		</state>
 	</channel-type>
+	<channel-type id="deviceName">
+		<item-type>String</item-type>
+		<label>@text/channel-type.shelly.deviceName.label</label>
+		<description>@text/channel-type.shelly.deviceName.description</description>
+		<state readOnly="true">
+		</state>
+	</channel-type>
 	<channel-type id="charger" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Charger Connected</label>

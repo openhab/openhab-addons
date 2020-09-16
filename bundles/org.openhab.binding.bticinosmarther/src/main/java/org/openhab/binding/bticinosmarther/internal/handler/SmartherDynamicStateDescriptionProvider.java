@@ -70,5 +70,4 @@ public class SmartherDynamicStateDescriptionProvider extends BaseDynamicStateDes
                             .collect(Collectors.toList()));
         }
     }
-
 }

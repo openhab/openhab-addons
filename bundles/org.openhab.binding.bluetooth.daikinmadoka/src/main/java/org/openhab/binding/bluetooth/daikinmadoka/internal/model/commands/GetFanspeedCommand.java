@@ -61,7 +61,6 @@ public class GetFanspeedCommand extends BRC1HCommand {
 
         setState(State.SUCCEEDED);
         executor.execute(() -> listener.receivedResponse(this));
-
     }
 
     @Override
@@ -76,5 +75,4 @@ public class GetFanspeedCommand extends BRC1HCommand {
     public @Nullable FanSpeed getHeatingFanSpeed() {
         return heatingFanSpeed;
     }
-
 }

@@ -289,7 +289,7 @@ The result of this action is compatible with channels of `event-log` thing and c
 Usage:
 
 ```
-    val actions = getActions("satel", "satel:event-log:home:EventLog")
+    val actions = getActions("satel", "satel:event-log:home")
     val eventRec = actions.readEvent(-1)
     logInfo("EventLog", eventRec.get("description"))
 ```
@@ -307,11 +307,12 @@ Bridge satel:ethm-1:home [ host="192.168.0.2", refresh=1000, userCode="1234", en
     Thing zone BedroomPIR [ id=2 ]
     Thing output KitchenLamp [ id=1 ]
     Thing shutter KitchenWindow [ upId=2, downId=3 ]
-    Thing system System [ ]
-    Thing event-log EventLog [ ]
     Thing output Siren [ id=17, wireless=true ]
     Thing atd-100 KitchenTemp [ id=10, refresh=30 ]
 }
+Thing satel:system:home "System" (satel:ethm-1:home) []
+Thing satel:event-log:home "Event log" (satel:ethm-1:home) []
+
 ```
 
 ### satel.items
@@ -327,9 +328,9 @@ Switch BEDROOM_TAMPER "Bedroom PIR tampered" (Satel) { channel="satel:zone:home:
 Switch BEDROOM_TAMPER_M "Bedroom PIR tamper memory" (Satel) { channel="satel:zone:home:BedroomPIR:tamper_alarm_memory" }
 Switch KITCHEN_LAMP "Kitchen lamp" (Satel) { channel="satel:output:home:KitchenLamp:state" }
 Rollershutter KITCHEN_BLIND "Kitchen blind" (Satel) { channel="satel:shutter:home:KitchenWindow:shutter_state" }
-Switch SYSTEM_TROUBLES "Troubles in the system" (Satel) { channel="satel:system:home:System:troubles" }
+Switch SYSTEM_TROUBLES "Troubles in the system" (Satel) { channel="satel:system:home:troubles" }
 String KEYPAD_CHAR ">" <none> (Satel)
-String USER_CODE "User code" (Satel) { channel="satel:system:home:System:user_code" }
+String USER_CODE "User code" (Satel) { channel="satel:system:home:user_code" }
 Switch SIREN_LOBATT "Siren: low battery level" (Satel) { channel="satel:output:home:Siren:device_lobatt" }
 Switch SIREN_NOCOMM "Siren: no communication" (Satel) { channel="satel:output:home:Siren:device_nocomm" }
 Number:Temperature KITCHEN_TEMP "Kitchen temperature [%.1f °C]" <temperature> (Satel) { channel="satel:atd-100:home:KitchenTemp:temperature" }
@@ -413,7 +414,7 @@ rule "Send event log"
 when
     Item Alarms changed to ON
 then
-    val actions = getActions("satel", "satel:event-log:home:EventLog")
+    val actions = getActions("satel", "satel:event-log:home")
     if (null === actions) {
         logInfo("EventLog", "Actions not found, check thing ID")
         return

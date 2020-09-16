@@ -264,5 +264,4 @@ public class Enums {
         }
         throw new SmartherIllegalPropertyValueException(en.getSimpleName(), value);
     }
-
 }

@@ -98,12 +98,12 @@ public class NeeoRoomDiscoveryService extends AbstractDiscoveryService {
 
                 if (room.getDevices().getDevices().length == 0 && room.getRecipes().getRecipes().length == 0
                         && !config.isDiscoverEmptyRooms()) {
-                    logger.debug("Room {} ({}) found but has no devices or recipes, ignoring - {}", room.getKey(),
-                            brainId, room.getName());
+                    logger.debug("Room {} ({}) found but has no devices or recipes, ignoring - {}", roomKey, brainId,
+                            room.getName());
                     continue;
                 }
 
-                final ThingUID thingUID = new ThingUID(NeeoConstants.BRIDGE_TYPE_ROOM, brainUid, room.getKey());
+                final ThingUID thingUID = new ThingUID(NeeoConstants.BRIDGE_TYPE_ROOM, brainUid, roomKey);
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(NeeoConstants.CONFIG_ROOMKEY, roomKey)

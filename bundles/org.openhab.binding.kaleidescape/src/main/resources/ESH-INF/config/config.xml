@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:kaleidescape:kaleidescapedevice">
+		<parameter name="host" type="text" required="false">
+			<context>network-address</context>
+			<label>Address</label>
+			<description>Host Name or IP Address of the Kaleidescape component.</description>
+		</parameter>
+		<parameter name="port" type="integer" min="1" max="65535" required="false">
+			<label>Port</label>
+			<description>Communication Port for IP Connection to the Kaleidescape component.</description>
+			<default>10000</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="serialPort" type="text" required="false">
+			<context>serial-port</context>
+			<label>Serial Port</label>
+			<description>(Optional) Serial Port to use for connecting directly to an individual Kaleidescape component.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="updatePeriod" type="integer" min="0" max="1" unit="s" required="false">
+			<label>Update Period</label>
+			<description>Tells the component how often time status updates should be sent; Values greater than 1 are not yet
+				implmented by the protocol. Setting to 1 may impact openHAB system performance due
+				to constant updates while content
+				playing.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="volumeEnabled" type="boolean" required="false">
+			<label>Volume Control Enabled</label>
+			<description>Enable the Volume and Mute controls in the Kaleidescape iPad &amp; Phone apps and track their status in
+				the binding. Disabled by default to prevent conflicts with other control systems that may already be controlling
+				volume on this zone.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="initialVolume" type="integer" min="0" max="75" unit="%" required="false">
+			<label>Initial Volume Setting</label>
+			<description>When the binding starts up, set the Inital Volume level to this value (Default 25).</description>
+			<default>25</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

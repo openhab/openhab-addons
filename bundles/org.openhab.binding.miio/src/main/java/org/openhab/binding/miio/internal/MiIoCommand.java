@@ -48,6 +48,7 @@ public enum MiIoCommand {
     CHARGE("app_charge"),
     START_ZONE("app_zoned_clean"),
     FIND_ME("find_me"),
+    START_SEGMENT("app_segment_clean"),
 
     CONSUMABLES_GET("get_consumable"),
     CONSUMABLES_RESET("reset_consumable"),
@@ -75,6 +76,7 @@ public enum MiIoCommand {
 
     SET_MODE("set_custom_mode"),
     GET_MODE("get_custom_mode"),
+    SET_WATERBOX_MODE("set_water_box_custom_mode"),
 
     TIMERZONE_SET("set_timezone"),
     TIMERZONE_GET("get_timezone"),

@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.enigma2.actions;
 
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-
 import org.openhab.binding.enigma2.handler.Enigma2Handler;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 
