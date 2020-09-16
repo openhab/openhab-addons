@@ -13,8 +13,10 @@
 package org.openhab.binding.max.internal.message;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
-import org.apache.commons.net.util.Base64;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.DeviceType;
 import org.slf4j.Logger;
@@ -26,13 +28,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public final class NMessage extends Message {
     private final Logger logger = LoggerFactory.getLogger(NMessage.class);
 
-    private String decodedPayload;
-    private DeviceType deviceType;
-    private String rfAddress;
-    private String serialnr;
+    private String decodedPayload = "";
+    private @Nullable DeviceType deviceType;
+    private String rfAddress = "";
+    private String serialnr = "";
 
     /**
      * The {@link: NMessage} contains information about a newly discovered Device
@@ -45,8 +48,8 @@ public final class NMessage extends Message {
 
         if (msgPayload.length() > 0) {
             try {
-                decodedPayload = new String(Base64.decodeBase64(msgPayload), StandardCharsets.UTF_8);
-                byte[] bytes = Base64.decodeBase64(msgPayload);
+                byte[] bytes = Base64.getDecoder().decode(msgPayload.trim());
+                decodedPayload = new String(bytes, StandardCharsets.UTF_8);
 
                 deviceType = DeviceType.create(bytes[0] & 0xFF);
                 rfAddress = Utils.toHex(bytes[1] & 0xFF, bytes[2] & 0xFF, bytes[3] & 0xFF);
@@ -62,7 +65,7 @@ public final class NMessage extends Message {
         }
     }
 
-    public DeviceType getDeviceType() {
+    public @Nullable DeviceType getDeviceType() {
         return deviceType;
     }
 
@@ -76,7 +79,7 @@ public final class NMessage extends Message {
 
     @Override
     public void debug(Logger logger) {
-        if (this.rfAddress != null) {
+        if (!this.rfAddress.isEmpty()) {
             logger.debug("=== N Message === ");
             logger.trace("\tRAW : {}", this.decodedPayload);
             logger.debug("\tDevice Type    : {}", this.deviceType);

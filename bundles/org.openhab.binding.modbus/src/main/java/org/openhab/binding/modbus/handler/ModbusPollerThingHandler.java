@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.modbus.handler;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -36,6 +36,7 @@ import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
+import org.openhab.io.transport.modbus.ModbusConstants;
 import org.openhab.io.transport.modbus.ModbusFailureCallback;
 import org.openhab.io.transport.modbus.ModbusReadCallback;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -151,33 +152,6 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Immutable {@link ModbusReadRequestBlueprint} to read from endpoint represented by this Poller's bridge
-     *
-     * @author Sami Salonen
-     *
-     */
-    private static class ModbusPollerReadRequest extends ModbusReadRequestBlueprint {
-
-        private static ModbusReadFunctionCode getFunctionCode(@Nullable String type) {
-            if (!ModbusBindingConstantsInternal.READ_FUNCTION_CODES.containsKey(type)) {
-                Object[] acceptedTypes = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.keySet().toArray();
-                Arrays.sort(acceptedTypes);
-                throw new IllegalArgumentException(
-                        String.format("No function code found for type='%s'. Was expecting one of: %s", type,
-                                StringUtils.join(acceptedTypes, ", ")));
-            }
-            ModbusReadFunctionCode functionCode = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.get(type);
-            return functionCode;
-        }
-
-        public ModbusPollerReadRequest(ModbusPollerConfiguration config,
-                ModbusEndpointThingHandler slaveEndpointThingHandler) throws EndpointNotInitializedException {
-            super(slaveEndpointThingHandler.getSlaveId(), getFunctionCode(config.getType()), config.getStart(),
-                    config.getLength(), config.getMaxTries());
-        }
-    }
-
-    /**
      * Immutable data object to cache the results of a poll request
      */
     private class PollResult {
@@ -204,6 +178,9 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(ModbusPollerThingHandler.class);
 
+    private final static List<String> SORTED_READ_FUNCTION_CODES = ModbusBindingConstantsInternal.READ_FUNCTION_CODES
+            .keySet().stream().sorted().collect(Collectors.toList());
+
     private @NonNullByDefault({}) ModbusPollerConfiguration config;
     private long cacheMillis;
     private volatile @Nullable PollTask pollTask;
@@ -213,6 +190,8 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     private ReadCallbackDelegator callbackDelegator = new ReadCallbackDelegator();
+
+    private @Nullable ModbusReadFunctionCode functionCode;
 
     public ModbusPollerThingHandler(Bridge bridge) {
         super(bridge);
@@ -258,10 +237,39 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
         }
         this.callbackDelegator.resetCache();
         comms = null;
+        request = null;
         disposed = false;
         logger.trace("Initializing {} from status {}", this.getThing().getUID(), this.getThing().getStatus());
         try {
             config = getConfigAs(ModbusPollerConfiguration.class);
+            String type = config.getType();
+            if (!ModbusBindingConstantsInternal.READ_FUNCTION_CODES.containsKey(type)) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format("No function code found for type='%s'. Was expecting one of: %s", type,
+                                StringUtils.join(SORTED_READ_FUNCTION_CODES, ", ")));
+                return;
+            }
+            functionCode = ModbusBindingConstantsInternal.READ_FUNCTION_CODES.get(type);
+            switch (functionCode) {
+                case READ_INPUT_REGISTERS:
+                case READ_MULTIPLE_REGISTERS:
+                    if (config.getLength() > ModbusConstants.MAX_REGISTERS_READ_COUNT) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                                "Maximum of %d registers can be polled at once due to protocol limitations. Length %d is out of bounds.",
+                                ModbusConstants.MAX_REGISTERS_READ_COUNT, config.getLength()));
+                        return;
+                    }
+                    break;
+                case READ_COILS:
+                case READ_INPUT_DISCRETES:
+                    if (config.getLength() > ModbusConstants.MAX_BITS_READ_COUNT) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String.format(
+                                "Maximum of %d coils/discrete inputs can be polled at once due to protocol limitations. Length %d is out of bounds.",
+                                ModbusConstants.MAX_BITS_READ_COUNT, config.getLength()));
+                        return;
+                    }
+                    break;
+            }
             cacheMillis = this.config.getCacheMillis();
             registerPollTask();
         } catch (EndpointNotInitializedException e) {
@@ -334,8 +342,13 @@ public class ModbusPollerThingHandler extends BaseBridgeHandler {
             return;
         }
         this.comms = localComms;
+        ModbusReadFunctionCode localFunctionCode = functionCode;
+        if (localFunctionCode == null) {
+            return;
+        }
 
-        ModbusReadRequestBlueprint localRequest = new ModbusPollerReadRequest(config, slaveEndpointThingHandler);
+        ModbusReadRequestBlueprint localRequest = new ModbusReadRequestBlueprint(slaveEndpointThingHandler.getSlaveId(),
+                localFunctionCode, config.getStart(), config.getLength(), config.getMaxTries());
         this.request = localRequest;
 
         if (config.getRefresh() <= 0L) {

@@ -43,6 +43,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
+import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.gree.internal.GreeConfiguration;
 import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.GreeTranslationProvider;
@@ -70,6 +71,7 @@ public class GreeHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshTask;
     private @Nullable Future<?> initializeFuture;
     private long lastRefreshTime = 0;
+    private long apiRetries = 0;
 
     public GreeHandler(Thing thing, GreeTranslationProvider messages, GreeDeviceFinder deviceFinder) {
         super(thing);
@@ -85,6 +87,7 @@ public class GreeHandler extends BaseThingHandler {
             String message = messages.get("thinginit.invconf");
             logger.warn("{}: {}", thingId, message);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            return;
         }
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
@@ -126,7 +129,9 @@ public class GreeHandler extends BaseThingHandler {
             logger.warn("{}: {}", thingId, messages.get("thinginit.exception", "RuntimeException"), e);
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        }
     }
 
     @Override
@@ -138,62 +143,79 @@ public class GreeHandler extends BaseThingHandler {
             String channelId = channelUID.getIdWithoutGroup();
             logger.debug("{}: Handle command {} for channel {}, command class {}", thingId, command, channelId,
                     command.getClass());
-            try {
-                DatagramSocket socket = clientSocket.get();
-                switch (channelId) {
-                    case MODE_CHANNEL:
-                        handleModeCommand(socket, command);
-                        break;
-                    case POWER_CHANNEL:
-                        device.setDevicePower(socket, getOnOff(command));
-                        break;
-                    case TURBO_CHANNEL:
-                        device.setDeviceTurbo(socket, getOnOff(command));
-                        break;
-                    case LIGHT_CHANNEL:
-                        device.setDeviceLight(socket, getOnOff(command));
-                        break;
-                    case TARGET_TEMP_CHANNEL:
-                        // Set value, read back effective one and update channel
-                        // e.g. 22.5C will result in 22.0, because the AC doesn't support half-steps for C
-                        device.setDeviceTempSet(socket, convertTemp(command));
-                        break;
-                    case SWINGUD_CHANNEL:
-                        device.setDeviceSwingUpDown(socket, getNumber(command));
-                        break;
-                    case SWINGLR_CHANNEL:
-                        device.setDeviceSwingLeftRight(socket, getNumber(command));
-                        break;
-                    case WINDSPEED_CHANNEL:
-                        device.setDeviceWindspeed(socket, getNumber(command));
-                        break;
-                    case QUIET_CHANNEL:
-                        handleQuietCommand(socket, command);
-                        break;
-                    case AIR_CHANNEL:
-                        device.setDeviceAir(socket, getOnOff(command));
-                        break;
-                    case DRY_CHANNEL:
-                        device.setDeviceDry(socket, getOnOff(command));
-                        break;
-                    case HEALTH_CHANNEL:
-                        device.setDeviceHealth(socket, getOnOff(command));
-                        break;
-                    case PWRSAV_CHANNEL:
-                        device.setDevicePwrSaving(socket, getOnOff(command));
-                        break;
-                }
 
-                // force refresh on next status refresh cycle
-                forceRefresh = true;
-            } catch (GreeException e) {
-                String message = logInfo("command.exception", command, channelId) + ": " + e.getMessage();
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
-            } catch (IllegalArgumentException e) {
-                logInfo("command.invarg", command, channelId);
-            } catch (RuntimeException e) {
-                logger.warn("{}: {}", thingId, messages.get("command.exception", command, channelId), e);
-            }
+            int retries = MAX_API_RETRIES;
+            do {
+                try {
+                    sendRequest(channelId, command);
+                    // force refresh on next status refresh cycle
+                    forceRefresh = true;
+                    apiRetries = 0;
+                    return; // successful
+                } catch (GreeException e) {
+                    retries--;
+                    if (retries > 0) {
+                        logger.debug("{}: Command {} failed for channel {}, retry", thingId, command, channelId);
+                    } else {
+                        String message = logInfo(
+                                messages.get("command.exception", command, channelId) + ": " + e.getMessage());
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logInfo("command.invarg", command, channelId);
+                    retries = 0;
+                } catch (RuntimeException e) {
+                    logger.warn("{}: {}", thingId, messages.get("command.exception", command, channelId), e);
+                    retries = 0;
+                }
+            } while (retries > 0);
+        }
+    }
+
+    private void sendRequest(String channelId, Command command) throws GreeException {
+        DatagramSocket socket = clientSocket.get();
+        switch (channelId) {
+            case MODE_CHANNEL:
+                handleModeCommand(socket, command);
+                break;
+            case POWER_CHANNEL:
+                device.setDevicePower(socket, getOnOff(command));
+                break;
+            case TURBO_CHANNEL:
+                device.setDeviceTurbo(socket, getOnOff(command));
+                break;
+            case LIGHT_CHANNEL:
+                device.setDeviceLight(socket, getOnOff(command));
+                break;
+            case TARGET_TEMP_CHANNEL:
+                // Set value, read back effective one and update channel
+                // e.g. 22.5C will result in 22.0, because the AC doesn't support half-steps for C
+                device.setDeviceTempSet(socket, convertTemp(command));
+                break;
+            case SWINGUD_CHANNEL:
+                device.setDeviceSwingUpDown(socket, getNumber(command));
+                break;
+            case SWINGLR_CHANNEL:
+                device.setDeviceSwingLeftRight(socket, getNumber(command));
+                break;
+            case WINDSPEED_CHANNEL:
+                device.setDeviceWindspeed(socket, getNumber(command));
+                break;
+            case QUIET_CHANNEL:
+                handleQuietCommand(socket, command);
+                break;
+            case AIR_CHANNEL:
+                device.setDeviceAir(socket, getOnOff(command));
+                break;
+            case DRY_CHANNEL:
+                device.setDeviceDry(socket, getOnOff(command));
+                break;
+            case HEALTH_CHANNEL:
+                device.setDeviceHealth(socket, getOnOff(command));
+                break;
+            case PWRSAV_CHANNEL:
+                device.setDevicePwrSaving(socket, getOnOff(command));
+                break;
         }
     }
 
@@ -336,12 +358,15 @@ public class GreeHandler extends BaseThingHandler {
                     // Get the current status from the Airconditioner
 
                     if (getThing().getStatus() == ThingStatus.OFFLINE) {
+                        // try to re-initialize thing access
+                        logger.debug("{}: Re-initialize device", thingId);
                         initializeThing();
                         return;
                     }
 
                     if (clientSocket.isPresent()) {
                         device.getDeviceStatus(clientSocket.get());
+                        apiRetries = 0; // the call was successful without an exception
                         logger.debug("{}: Executing automatic update of values", thingId);
                         List<Channel> channels = getThing().getChannels();
                         for (Channel channel : channels) {
@@ -363,11 +388,17 @@ public class GreeHandler extends BaseThingHandler {
                     } else {
                         logger.debug("{}: {}", thingId, message);
                     }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+
+                    apiRetries++;
+                    if (apiRetries > MAX_API_RETRIES) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                        apiRetries = 0;
+                    }
                 }
             } catch (RuntimeException e) {
                 String message = messages.get("update.exception", "RuntimeException");
                 logger.warn("{}: {}", thingId, message, e);
+                apiRetries++;
             }
         };
 
@@ -519,8 +550,11 @@ public class GreeHandler extends BaseThingHandler {
 
     private @Nullable State updateCurrentTemp() throws GreeException {
         if (device.hasStatusValChanged(GREE_PROP_CURRENT_TEMP_SENSOR)) {
-            return new DecimalType(device.getIntStatusVal(GREE_PROP_CURRENT_TEMP_SENSOR) + INTERNAL_TEMP_SENSOR_OFFSET
-                    + config.currentTemperatureOffset.doubleValue());
+            double temp = device.getIntStatusVal(GREE_PROP_CURRENT_TEMP_SENSOR);
+            return temp != 0
+                    ? new DecimalType(
+                            temp + INTERNAL_TEMP_SENSOR_OFFSET + config.currentTemperatureOffset.doubleValue())
+                    : UnDefType.UNDEF;
         }
         return null;
     }

@@ -108,17 +108,20 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
     private void onThingWithId(final ThingTypeUID deviceType, final String deviceTypeId,
             @Nullable final DeviceDTO device, final String name) {
         logger.debug("{} discovered: {}", deviceTypeId, name);
-        final Map<String, Object> properties = new HashMap<>();
+        ThingUID localBridgeUID = this.bridgeUID;
+        if (localBridgeUID != null) {
+            final Map<String, Object> properties = new HashMap<>();
 
-        properties.put(PROP_ID, deviceTypeId);
-        if (device != null) {
-            DraytonWiserPropertyHelper.setGeneralDeviceProperties(device, properties);
+            properties.put(PROP_ID, deviceTypeId);
+            if (device != null) {
+                DraytonWiserPropertyHelper.setGeneralDeviceProperties(device, properties);
+            }
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(deviceType, localBridgeUID, deviceTypeId)).withBridge(localBridgeUID)
+                    .withProperties(properties).withRepresentationProperty(PROP_ID).withLabel(name).build();
+
+            thingDiscovered(discoveryResult);
         }
-        final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(deviceType, bridgeUID, deviceTypeId)).withBridge(bridgeUID)
-                .withProperties(properties).withRepresentationProperty(PROP_ID).withLabel(name).build();
-
-        thingDiscovered(discoveryResult);
     }
 
     private void onRoomStatAdded(final DraytonWiserDTO domainDTOProxy, final RoomStatDTO roomStat) {
@@ -131,17 +134,20 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
     }
 
     private void onRoomAdded(final RoomDTO room) {
-        final Map<String, Object> properties = new HashMap<>();
+        ThingUID localBridgeUID = this.bridgeUID;
+        if (localBridgeUID != null) {
+            final Map<String, Object> properties = new HashMap<>();
 
-        logger.debug("Room discovered: {}", room.getName());
-        properties.put(PROP_NAME, room.getName());
-        final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(THING_TYPE_ROOM, bridgeUID,
-                        room.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
-                .withBridge(bridgeUID).withProperties(properties).withRepresentationProperty(PROP_NAME)
-                .withLabel(room.getName()).build();
+            logger.debug("Room discovered: {}", room.getName());
+            properties.put(PROP_NAME, room.getName());
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(THING_TYPE_ROOM, localBridgeUID,
+                            room.getName().replaceAll("[^A-Za-z0-9]", "").toLowerCase()))
+                    .withBridge(localBridgeUID).withProperties(properties).withRepresentationProperty(PROP_NAME)
+                    .withLabel(room.getName()).build();
 
-        thingDiscovered(discoveryResult);
+            thingDiscovered(discoveryResult);
+        }
     }
 
     private void onSmartValveAdded(final DraytonWiserDTO domainDTOProxy, final SmartValveDTO smartValve) {
@@ -170,15 +176,18 @@ public class DraytonWiserDiscoveryService extends AbstractDiscoveryService
             final DeviceDTO device, final String name) {
         final String serialNumber = device.getSerialNumber();
         logger.debug("{} discovered, serialnumber: {}", deviceTypeName, serialNumber);
-        final Map<String, Object> properties = new HashMap<>();
+        ThingUID localBridgeUID = this.bridgeUID;
+        if (localBridgeUID != null) {
+            final Map<String, Object> properties = new HashMap<>();
 
-        DraytonWiserPropertyHelper.setPropertiesWithSerialNumber(device, properties);
-        final DiscoveryResult discoveryResult = DiscoveryResultBuilder
-                .create(new ThingUID(deviceType, bridgeUID, serialNumber)).withBridge(bridgeUID)
-                .withProperties(properties).withRepresentationProperty(PROP_SERIAL_NUMBER)
-                .withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceTypeName).build();
+            DraytonWiserPropertyHelper.setPropertiesWithSerialNumber(device, properties);
+            final DiscoveryResult discoveryResult = DiscoveryResultBuilder
+                    .create(new ThingUID(deviceType, localBridgeUID, serialNumber)).withBridge(localBridgeUID)
+                    .withProperties(properties).withRepresentationProperty(PROP_SERIAL_NUMBER)
+                    .withLabel((name.isEmpty() ? "" : (name + " - ")) + deviceTypeName).build();
 
-        thingDiscovered(discoveryResult);
+            thingDiscovered(discoveryResult);
+        }
     }
 
     @Override

@@ -159,6 +159,7 @@ public class GreeBindingConstants {
     public static final int DISCOVERY_TIMEOUT_MS = 7000; // do not change!!
     public static final int MAX_SCAN_CYCLES = 3;
     public static final int REFRESH_INTERVAL_SEC = 5;
+    public static final int MAX_API_RETRIES = 3;
 
     public static final int DIGITS_TEMP = 1;
 

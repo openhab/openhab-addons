@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
@@ -28,11 +29,12 @@ import org.openhab.binding.max.internal.message.CMessage;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MCommandTest {
 
     private List<DeviceConfiguration> configurations = new ArrayList<>();
     private List<Device> devices = new ArrayList<>();
-    private List<RoomInformation> rooms;
+    private List<RoomInformation> rooms = new ArrayList<>();
 
     String deviceCMsg[] = {
             "C:0b0da3,0gsNowIBEABLRVEwNTQ0MjQyLCQ9CQcYAzAM/wBIYViRSP1ZFE0gTSBNIEUgRSBFIEUgRSBFIEhhWJFQ/VkVUSBRIFEgRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIEhQWFpI/lkUTSBNIE0gRSBFIEUgRSBFIEUgSFBYWkj+WRRNIE0gTSBFIEUgRSBFIEUgRSBIUFhaSP5ZFE0gTSBNIEUgRSBFIEUgRSBFIA==",
@@ -52,7 +54,7 @@ public class MCommandTest {
     }
 
     @Test
-    public void PrefixTest() {
+    public void prefixTest() {
         prepareDevices();
         MCommand mcmd = new MCommand(devices);
         String commandStr = mcmd.getCommandString();
@@ -62,7 +64,7 @@ public class MCommandTest {
     }
 
     @Test
-    public void BaseCommandTest() {
+    public void baseCommandTest() {
         prepareDevices();
 
         MCommand mCmd = new MCommand(devices);
@@ -74,7 +76,7 @@ public class MCommandTest {
     }
 
     @Test
-    public void AddRoomsTest() {
+    public void addRoomsTest() {
         prepareDevices();
 
         MCommand mCmd = new MCommand(devices);

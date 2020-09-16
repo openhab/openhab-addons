@@ -76,6 +76,13 @@
 		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
 	</channel-type>
 
+	<channel-type id="color">
+		<item-type>Color</item-type>
+		<label>Color Value (HSB, RGB or CIE xyY)</label>
+		<description></description>
+		<config-description-ref uri="thing-type:mqtt:color_channel"></config-description-ref>
+	</channel-type>
+
 	<channel-type id="trigger">
 		<item-type>Trigger</item-type>
 		<label>Trigger</label>

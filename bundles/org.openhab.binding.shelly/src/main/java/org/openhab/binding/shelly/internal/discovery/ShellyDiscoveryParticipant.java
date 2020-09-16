@@ -14,7 +14,7 @@ package org.openhab.binding.shelly.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.PROPERTY_MODEL_ID;
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.getString;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,7 +23,6 @@ import java.util.TreeMap;
 
 import javax.jmdns.ServiceInfo;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -130,7 +129,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
                 return null;
             }
             String thingType = service.getQualifiedName().contains(SERVICE_TYPE) && name.contains("-")
-                    ? StringUtils.substringBefore(name, "-")
+                    ? substringBeforeLast(name, "-")
                     : name;
             logger.debug("{}: Shelly device discovered: IP-Adress={}, type={}", name, address, thingType);
 
@@ -185,7 +184,7 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
 
                 logger.debug("{}: Adding Shelly {}, UID={}", name, deviceName, thingUID.getAsString());
                 String thingLabel = deviceName.isEmpty() ? name + " - " + address
-                        : deviceName + "(" + name + "@" + address + ")";
+                        : deviceName + " (" + name + "@" + address + ")";
                 return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
                         .withRepresentationProperty(name).build();
             }

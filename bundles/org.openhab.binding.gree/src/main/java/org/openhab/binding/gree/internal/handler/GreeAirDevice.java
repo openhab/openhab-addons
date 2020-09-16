@@ -189,15 +189,42 @@ public class GreeAirDevice {
         setCommandValue(clientSocket, GREE_PROP_MODE, value);
     }
 
+    /**
+     * SwUpDn: controls the swing mode of the vertical air blades
+     *
+     * 0: default
+     * 1: swing in full range
+     * 2: fixed in the upmost position (1/5)
+     * 3: fixed in the middle-up position (2/5)
+     * 4: fixed in the middle position (3/5)
+     * 5: fixed in the middle-low position (4/5)
+     * 6: fixed in the lowest position (5/5)
+     * 7: swing in the downmost region (5/5)
+     * 8: swing in the middle-low region (4/5)
+     * 9: swing in the middle region (3/5)
+     * 10: swing in the middle-up region (2/5)
+     * 11: swing in the upmost region (1/5)
+     */
     public void setDeviceSwingUpDown(DatagramSocket clientSocket, int value) throws GreeException {
-        // Only values 0,1,2,3,4,5,6,10,11 allowed
-        if ((value < 0 || value > 11) || (value > 6 && value < 10)) {
-            throw new GreeException("SwingUpDown value out of range!");
+        if (value < 0 || value > 11) {
+            throw new GreeException("SwingUpDown value is out of range!");
         }
         setCommandValue(clientSocket, GREE_PROP_SWINGUPDOWN, value);
     }
 
+    /**
+     * SwingLfRig: controls the swing mode of the horizontal air blades (available on limited number of devices, e.g.
+     * some Cooper & Hunter units - thanks to mvmn)
+     *
+     * 0: default
+     * 1: full swing
+     * 2-6: fixed position from leftmost to rightmost
+     * Full swing, like for SwUpDn is not supported
+     */
     public void setDeviceSwingLeftRight(DatagramSocket clientSocket, int value) throws GreeException {
+        if (value < 0 || value > 6) {
+            throw new GreeException("SwingLeftRight value is out of range!");
+        }
         setCommandValue(clientSocket, GREE_PROP_SWINGLEFTRIGHT, value, 0, 6);
     }
 
@@ -224,6 +251,13 @@ public class GreeAirDevice {
         executeCommand(clientSocket, parameters);
     }
 
+    /**
+     * Tur: sets fan speed to the maximum. Fan speed cannot be changed while active and only available in Dry and Cool
+     * mode.
+     *
+     * 0: off
+     * 1: on
+     */
     public void setDeviceTurbo(DatagramSocket clientSocket, int value) throws GreeException {
         setCommandValue(clientSocket, GREE_PROP_TURBO, value, 0, 1);
     }
@@ -345,7 +379,8 @@ public class GreeAirDevice {
     }
 
     public boolean isStatusAvailable() {
-        return statusResponseGson.isPresent();
+        return statusResponseGson.isPresent() && (statusResponseGson.get().packJson.cols != null)
+                && (statusResponseGson.get().packJson.dat != null);
     }
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {

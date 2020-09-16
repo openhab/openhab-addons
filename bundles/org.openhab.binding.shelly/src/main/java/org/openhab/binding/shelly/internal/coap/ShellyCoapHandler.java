@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.coap.CoAP.Code;
 import org.eclipse.californium.core.coap.CoAP.ResponseCode;
@@ -170,7 +169,7 @@ public class ShellyCoapHandler implements ShellyCoapListener {
                             break;
                         case COIOT_OPTION_GLOBAL_DEVID:
                             devId = opt.getStringValue();
-                            String sVersion = StringUtils.substringAfterLast(devId, "#");
+                            String sVersion = substringAfterLast(devId, "#");
                             int iVersion = Integer.parseInt(sVersion);
                             if (coiotBound && (coiotVers != iVersion)) {
                                 logger.debug(
@@ -254,7 +253,6 @@ public class ShellyCoapHandler implements ShellyCoapListener {
      *            {"blk":[{"I":0,"D":"Relay0"}],"sen":[{"I":112,"T":"Switch","R":"0/1","L":0}],"act":[{"I":211,"D":"Switch","L":0,"P":[{"I":2011,"D":"ToState","R":"0/1"}]}]}
      */
     private void handleDeviceDescription(String devId, String payload) {
-        // Device description: payload = StringUtils.substringBefore(payload, "}]}]}") + "}]}]}";
         logger.debug("{}: CoIoT Device Description for {}: {}", thingName, devId, payload);
 
         try {
