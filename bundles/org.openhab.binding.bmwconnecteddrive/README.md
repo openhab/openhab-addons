@@ -393,7 +393,7 @@ In addition search for all occurrences of *i3* and replace it with your Vehicle 
 ### Things
 
 ```
-Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="R_USERNAME",password="R_PASSWORD",region="ROW"] {
+Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="YOUR_USERNAME",password="YOUR_PASSWORD",region="ROW"] {
          Thing BEV_REX i3       "BMW i3 94h REX"                [ vin="VEHICLE_VIN",units="AUTODETECT",imageSize=600,imageViewport="FRONT",refreshInterval=5]
 }
 ```
