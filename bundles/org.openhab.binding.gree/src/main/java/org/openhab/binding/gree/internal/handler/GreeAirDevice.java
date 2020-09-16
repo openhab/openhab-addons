@@ -254,7 +254,7 @@ public class GreeAirDevice {
     /**
      * Tur: sets fan speed to the maximum. Fan speed cannot be changed while active and only available in Dry and Cool
      * mode.
-     * 
+     *
      * 0: off
      * 1: on
      */
@@ -379,7 +379,8 @@ public class GreeAirDevice {
     }
 
     public boolean isStatusAvailable() {
-        return statusResponseGson.isPresent();
+        return statusResponseGson.isPresent() && (statusResponseGson.get().packJson.cols != null)
+                && (statusResponseGson.get().packJson.dat != null);
     }
 
     public boolean hasStatusValChanged(String valueName) throws GreeException {
