@@ -175,6 +175,7 @@ If you do not specify any of these, the binding will use the default which shoul
 | `customAudioAlarmUrl`| Foscam only, for custom enable audio alarm use. More info found in Foscam's setup steps. |
 | `mjpegUrl`| A HTTP URL for MJPEG format streams. If you enter 'ffmpeg' the stream can be generated from the RTSP URL. |
 | `ffmpegInput`| Best if this stream is in H.264 format and can be RTSP or HTTP URLs. Leave this blank to use the auto detected RTSP address for ONVIF cameras. |
+| `ffmpegInputOptions` | Allows you to specify any options before the -i on the commands for FFmpeg. If you have a ESP32 camera that only has a mjpeg stream then make this equal `-f mjpeg`. |
 | `ffmpegLocation`| The full path including the filename for where you have installed FFmpeg. The default should work for most Linux installs but if using windows use this format: `c:\ffmpeg\bin\ffmpeg.exe` |
 | `ffmpegOutput`| The full path where FFmpeg has the ability to write files to ending with a slash. For windows use this format: `c:\openhabconf\html\ipcamera\`. If you would like to expose the GIF files to your static server, you can set it to `/etc/openhab2/html/cameras/camera-name/` |
 | `hlsOutOptions`| This gives you direct access to specify your own FFmpeg options to be used. Default: `-strict -2 -f lavfi -i aevalsrc=0 -acodec aac -vcodec copy -hls_flags delete_segments -hls_time 2 -hls_list_size 4` |
@@ -758,6 +759,7 @@ Thing ipcamera:generic:TTGoCamera "ESP32 TTGo Camera" @ "Cameras"
     mjpegUrl="http://192.168.1.181:81/stream",
     ffmpegOutput="/tmpfs/TTGoCamera/",
     ffmpegInput="http://192.168.1.181:81/stream",
+    ffmpegInputOptions="-f mjpeg",
     ipWhitelist="(192.168.2.8)(192.168.2.83)(192.168.2.99)"
 ]
 
