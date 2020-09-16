@@ -15,6 +15,7 @@ package org.openhab.binding.dreamscreen.internal.model;
 import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
@@ -36,7 +37,7 @@ public enum DreamScreenMode {
         this.deviceMode = (byte) deviceMode;
     }
 
-    public static DreamScreenMode fromDevice(byte value) {
+    public static @Nullable DreamScreenMode fromDevice(byte value) {
         if (value == VIDEO.deviceMode) {
             return VIDEO;
         } else if (value == MUSIC.deviceMode) {
@@ -44,7 +45,7 @@ public enum DreamScreenMode {
         } else if (value == AMBIENT.deviceMode) {
             return AMBIENT;
         }
-        throw new IllegalArgumentException("Invalid Mode value: " + String.valueOf(value));
+        return null;
     }
 
     public static DreamScreenMode fromState(StringType command) {

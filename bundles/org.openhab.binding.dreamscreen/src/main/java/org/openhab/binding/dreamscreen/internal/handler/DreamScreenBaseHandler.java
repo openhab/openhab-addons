@@ -185,8 +185,8 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     }
 
     private void modeCommand(Command command) {
-        if (command instanceof DecimalType) {
-            logger.debug("Changing {} mode to {}", this.serialNumber, command);
+        if (command instanceof StringType) {
+            logger.debug("{}: Changing mode to {}", serialNumber, command);
             final DreamScreenMode mode = DreamScreenMode.fromState((StringType) command);
             if (this.mode != 0) {
                 write(new ModeMessage(this.group, mode.deviceMode));

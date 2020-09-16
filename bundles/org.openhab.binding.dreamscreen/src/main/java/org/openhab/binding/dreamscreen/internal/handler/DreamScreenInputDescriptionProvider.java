@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dreamscreen.internal.handler;
 
-import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.CHANNEL_INPUT;
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -53,8 +53,8 @@ public class DreamScreenInputDescriptionProvider implements DynamicStateDescript
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
         if (channel.getUID().getThingUID().equals(thingUID) && CHANNEL_INPUT.equals(channel.getUID().getId())) {
             final List<StateOption> options = Arrays.asList( //
-                    new StateOption("0", this.inputName1), new StateOption("1", this.inputName2),
-                    new StateOption("2", this.inputName3));
+                    new StateOption(INPUT_CHANNEL1, this.inputName1), new StateOption(INPUT_CHANNEL2, this.inputName2),
+                    new StateOption(INPUT_CHANNEL3, this.inputName3));
             return new StateDescription(BigDecimal.ZERO, BigDecimal.valueOf(2), BigDecimal.ONE, null, false, options);
         }
         return null;

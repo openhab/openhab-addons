@@ -63,8 +63,9 @@ public class DreamScreenBindingConstants {
     public static final String SCENE_ENCHANTED_FOREST = "eforrest";
 
     // Input Names
-    public static final String INPUT_CHANNEL1 = "1";
-    public static final String INPUT_CHANNEL2 = "2";
-    public static final String INPUT_CHANNEL3 = "3";
+    public static final String INPUT_PREFIX = "hdmi";
+    public static final String INPUT_CHANNEL1 = INPUT_PREFIX + "1";
+    public static final String INPUT_CHANNEL2 = INPUT_PREFIX + "2";
+    public static final String INPUT_CHANNEL3 = INPUT_PREFIX + "3";
 
 }

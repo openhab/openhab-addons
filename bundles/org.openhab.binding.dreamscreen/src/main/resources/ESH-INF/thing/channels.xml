@@ -44,14 +44,14 @@
 	</channel-type>
 
 	<channel-type id="input">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Input Source</label>
 		<description>Select the HDMI input source</description>
 		<state>
 			<options>
-				<option value="0">Channel 1</option>
-				<option value="1">Channel 2</option>
-				<option value="2">Channel 3</option>
+				<option value="hdmi1">Channel 1</option>
+				<option value="hdmi2">Channel 2</option>
+				<option value="hdmi3">Channel 3</option>
 			</options>
 		</state>
 	</channel-type>

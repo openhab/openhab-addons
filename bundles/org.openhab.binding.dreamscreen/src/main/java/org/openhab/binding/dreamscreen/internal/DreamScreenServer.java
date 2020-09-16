@@ -94,12 +94,12 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
     }
 
     public void read(final DreamScreenMessage msg, final InetAddress address) throws IOException {
-        logger.debug("Sending {} to {}", msg, address);
+        logger.debug("Sending {} to {}", msg, address.getHostAddress());
         send(msg.readPacket(address, DREAMSCREEN_PORT));
     }
 
     public void write(final DreamScreenMessage msg, final InetAddress address) throws IOException {
-        logger.debug("Sending {} to {}", msg, address);
+        logger.debug("Sending {} to {}", msg, address.getHostAddress());
         send(msg.writePacket(address, DREAMSCREEN_PORT));
     }
 

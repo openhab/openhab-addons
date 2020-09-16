@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.dreamscreen.internal.handler;
 
-import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.CHANNEL_INPUT;
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.*;
 
 import java.net.InetAddress;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
@@ -74,12 +74,16 @@ public class DreamScreenBaseTvHandler extends DreamScreenBaseHandler {
     }
 
     private void inputCommand(Command command) {
-        if (command instanceof DecimalType) {
-            logger.debug("Changing input to {} of {}", command, this.serialNumber);
-            byte newInput = ((DecimalType) command).byteValue();
-            write(new InputMessage(this.group, newInput));
+        if (command instanceof StringType) {
+            logger.debug("{}: Changing input to {}", serialNumber, command);
+            String port = ((StringType) command).toString();
+            if (port.contains(INPUT_PREFIX)) {
+                String portId = port.substring(INPUT_PREFIX.length(), INPUT_PREFIX.length() + 1);
+                byte newInput = (byte) (Integer.parseInt(portId) - 1);// input is 0-based
+                write(new InputMessage(this.group, newInput));
+            }
         } else if (command instanceof RefreshType) {
-            updateState(CHANNEL_INPUT, new DecimalType(this.input));
+            inputRefresh(this.input);
         }
     }
 
@@ -95,6 +99,6 @@ public class DreamScreenBaseTvHandler extends DreamScreenBaseHandler {
 
     private void inputRefresh(final byte newInput) {
         this.input = newInput;
-        updateState(CHANNEL_INPUT, new DecimalType(newInput));
+        updateState(CHANNEL_INPUT, new StringType(INPUT_PREFIX + (this.input + 1))); // input is 0-based
     }
 }
