@@ -14,6 +14,7 @@ package org.openhab.binding.netatmo.internal;
 
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -23,6 +24,9 @@ import javax.servlet.http.HttpServlet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.i18n.LocaleProvider;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
+import org.eclipse.smarthome.core.i18n.TranslationProvider;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
@@ -33,6 +37,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.netatmo.internal.discovery.NetatmoModuleDiscoveryService;
 import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.binding.netatmo.internal.homecoach.NAHealthyHomeCoachHandler;
+import org.openhab.binding.netatmo.internal.presence.NAPresenceCameraHandler;
 import org.openhab.binding.netatmo.internal.station.NAMainHandler;
 import org.openhab.binding.netatmo.internal.station.NAModule1Handler;
 import org.openhab.binding.netatmo.internal.station.NAModule2Handler;
@@ -45,6 +50,7 @@ import org.openhab.binding.netatmo.internal.welcome.NAWelcomeCameraHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomeHomeHandler;
 import org.openhab.binding.netatmo.internal.welcome.NAWelcomePersonHandler;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -62,16 +68,38 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.netatmo")
 public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(NetatmoHandlerFactory.class);
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private final Map<ThingUID, ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> webHookServiceRegs = new HashMap<>();
     private final HttpService httpService;
     private final NATherm1StateDescriptionProvider stateDescriptionProvider;
+    private final TimeZoneProvider timeZoneProvider;
+    private final LocaleProvider localeProvider;
+    private final TranslationProvider translationProvider;
+    private boolean backgroundDiscovery;
 
     @Activate
     public NetatmoHandlerFactory(final @Reference HttpService httpService,
-            final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider) {
+            final @Reference NATherm1StateDescriptionProvider stateDescriptionProvider,
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference LocaleProvider localeProvider,
+            final @Reference TranslationProvider translationProvider) {
         this.httpService = httpService;
         this.stateDescriptionProvider = stateDescriptionProvider;
+        this.timeZoneProvider = timeZoneProvider;
+        this.localeProvider = localeProvider;
+        this.translationProvider = translationProvider;
+    }
+
+    @Override
+    protected void activate(ComponentContext componentContext) {
+        super.activate(componentContext);
+        Dictionary<String, Object> properties = componentContext.getProperties();
+        Object property = properties.get("backgroundDiscovery");
+        if (property instanceof Boolean) {
+            backgroundDiscovery = ((Boolean) property).booleanValue();
+        } else {
+            backgroundDiscovery = false;
+        }
+        logger.debug("backgroundDiscovery {}", backgroundDiscovery);
     }
 
     @Override
@@ -88,27 +116,29 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
             registerDeviceDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(MODULE1_THING_TYPE)) {
-            return new NAModule1Handler(thing);
+            return new NAModule1Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MODULE2_THING_TYPE)) {
-            return new NAModule2Handler(thing);
+            return new NAModule2Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MODULE3_THING_TYPE)) {
-            return new NAModule3Handler(thing);
+            return new NAModule3Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MODULE4_THING_TYPE)) {
-            return new NAModule4Handler(thing);
+            return new NAModule4Handler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(MAIN_THING_TYPE)) {
-            return new NAMainHandler(thing);
+            return new NAMainHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(HOMECOACH_THING_TYPE)) {
-            return new NAHealthyHomeCoachHandler(thing);
+            return new NAHealthyHomeCoachHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(PLUG_THING_TYPE)) {
-            return new NAPlugHandler(thing);
+            return new NAPlugHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(THERM1_THING_TYPE)) {
-            return new NATherm1Handler(thing, stateDescriptionProvider);
+            return new NATherm1Handler(thing, stateDescriptionProvider, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_HOME_THING_TYPE)) {
-            return new NAWelcomeHomeHandler(thing);
-        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE) || thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
-            return new NAWelcomeCameraHandler(thing);
+            return new NAWelcomeHomeHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(WELCOME_CAMERA_THING_TYPE)) {
+            return new NAWelcomeCameraHandler(thing, timeZoneProvider);
+        } else if (thingTypeUID.equals(PRESENCE_CAMERA_THING_TYPE)) {
+            return new NAPresenceCameraHandler(thing, timeZoneProvider);
         } else if (thingTypeUID.equals(WELCOME_PERSON_THING_TYPE)) {
-            return new NAWelcomePersonHandler(thing);
+            return new NAWelcomePersonHandler(thing, timeZoneProvider);
         } else {
             logger.warn("ThingHandler not found for {}", thing.getThingTypeUID());
             return null;
@@ -126,8 +156,12 @@ public class NetatmoHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void registerDeviceDiscoveryService(NetatmoBridgeHandler netatmoBridgeHandler) {
         if (bundleContext != null) {
-            NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler);
-            discoveryService.activate(null);
+            NetatmoModuleDiscoveryService discoveryService = new NetatmoModuleDiscoveryService(netatmoBridgeHandler,
+                    localeProvider, translationProvider);
+            Map<String, @Nullable Object> configProperties = new HashMap<>();
+            configProperties.put(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                    Boolean.valueOf(backgroundDiscovery));
+            discoveryService.activate(configProperties);
             discoveryServiceRegs.put(netatmoBridgeHandler.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
         }

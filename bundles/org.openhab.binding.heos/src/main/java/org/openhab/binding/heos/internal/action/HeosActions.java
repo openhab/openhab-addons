@@ -13,6 +13,8 @@
 package org.openhab.binding.heos.internal.action;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -29,14 +31,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The class is responsible to call corresponding
- * action on HEOS Handler
+ * The class is responsible to call corresponding action on HEOS Handler
+ * <p>
+ * <b>Note:</b>The static method <b>invokeMethodOf</b> handles the case where
+ * the test <i>actions instanceof HeosActions</i> fails. This test can fail
+ * due to an issue in openHAB core v2.5.0 where the {@link HeosActions} class
+ * can be loaded by a different classloader than the <i>actions</i> instance.
  *
  * @author Martin van Wingerden - Initial contribution
  */
 @ThingActionsScope(name = "heos")
 @NonNullByDefault
-public class HeosActions implements ThingActions {
+public class HeosActions implements ThingActions, IHeosActions {
 
     private final static Logger logger = LoggerFactory.getLogger(HeosActions.class);
 
@@ -62,6 +68,7 @@ public class HeosActions implements ThingActions {
         return handler.getApiConnection();
     }
 
+    @Override
     @RuleAction(label = "Play Input", description = "Play an input from another device")
     public void playInputFromPlayer(
             @ActionInput(name = "source", label = "Source Player", description = "Player used for input") @Nullable Integer sourcePlayer,
@@ -90,10 +97,25 @@ public class HeosActions implements ThingActions {
 
     public static void playInputFromPlayer(@Nullable ThingActions actions, @Nullable Integer sourcePlayer,
             @Nullable String input, @Nullable Integer destinationPlayer) {
-        if (actions instanceof HeosActions) {
-            ((HeosActions) actions).playInputFromPlayer(sourcePlayer, input, destinationPlayer);
-        } else {
-            throw new IllegalArgumentException("Instance is not an HeosActionsService class.");
+        invokeMethodOf(actions).playInputFromPlayer(sourcePlayer, input, destinationPlayer);
+    }
+
+    private static IHeosActions invokeMethodOf(@Nullable ThingActions actions) {
+        if (actions == null) {
+            throw new IllegalArgumentException("actions cannot be null");
         }
+        if (actions.getClass().getName().equals(HeosActions.class.getName())) {
+            if (actions instanceof IHeosActions) {
+                return (IHeosActions) actions;
+            } else {
+                return (IHeosActions) Proxy.newProxyInstance(IHeosActions.class.getClassLoader(),
+                        new Class[] { IHeosActions.class }, (Object proxy, Method method, Object[] args) -> {
+                            Method m = actions.getClass().getDeclaredMethod(method.getName(),
+                                    method.getParameterTypes());
+                            return m.invoke(actions, args);
+                        });
+            }
+        }
+        throw new IllegalArgumentException("Actions is not an instance of HeosActions");
     }
 }

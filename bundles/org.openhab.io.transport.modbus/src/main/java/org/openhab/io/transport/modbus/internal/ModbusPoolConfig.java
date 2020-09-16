@@ -12,12 +12,12 @@
  */
 package org.openhab.io.transport.modbus.internal;
 
-import java.util.Objects;
-
 import org.apache.commons.pool2.impl.DefaultEvictionPolicy;
 import org.apache.commons.pool2.impl.EvictionPolicy;
 import org.apache.commons.pool2.impl.GenericKeyedObjectPoolConfig;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.io.transport.modbus.internal.pooling.ModbusSlaveConnectionEvictionPolicy;
 
 import net.wimpi.modbus.net.ModbusSlaveConnection;
 
@@ -32,8 +32,9 @@ import net.wimpi.modbus.net.ModbusSlaveConnection;
  *
  */
 @NonNullByDefault
-public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
+public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig<ModbusSlaveConnection> {
 
+    @SuppressWarnings("unused")
     private EvictionPolicy<ModbusSlaveConnection> evictionPolicy = new DefaultEvictionPolicy<>();
 
     public ModbusPoolConfig() {
@@ -61,13 +62,21 @@ public class ModbusPoolConfig extends GenericKeyedObjectPoolConfig {
 
         // disable JMX
         setJmxEnabled(false);
+
+        // Evict idle connections every 10 seconds
+        setEvictionPolicy(new ModbusSlaveConnectionEvictionPolicy());
+        setTimeBetweenEvictionRunsMillis(10000);
+        // Let eviction re-create ready-to-use idle (=unconnected) connections
+        // This is to avoid occasional / rare deadlocks seen with pool 2.8.1 & 2.4.3 when
+        // borrow hangs (waiting indefinitely for idle object to appear in the pool)
+        // https://github.com/openhab/openhab-addons/issues/8460
+        setMinIdlePerKey(1);
     }
 
-    public EvictionPolicy<ModbusSlaveConnection> getEvictionPolicy() {
-        return evictionPolicy;
-    }
-
-    public void setEvictionPolicy(EvictionPolicy<ModbusSlaveConnection> evictionPolicy) {
-        this.evictionPolicy = Objects.requireNonNull(evictionPolicy, "evictionPolicy should not be null!");
+    @Override
+    public void setEvictionPolicyClassName(@Nullable String evictionPolicyClassName) {
+        // Protect against https://issues.apache.org/jira/browse/POOL-338
+        // Disallow re-setting eviction policy with class name. Only setEvictionPolicy allowed
+        throw new IllegalStateException("setEvictionPolicyClassName disallowed! Will fail in OSGI");
     }
 }

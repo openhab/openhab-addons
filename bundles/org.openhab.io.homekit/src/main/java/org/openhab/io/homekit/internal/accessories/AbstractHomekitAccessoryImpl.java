@@ -12,25 +12,29 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.items.GenericItem;
 import org.eclipse.smarthome.core.items.Item;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.OpenClosedType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.unit.ImperialUnits;
+import org.eclipse.smarthome.core.library.unit.SIUnits;
+import org.eclipse.smarthome.core.types.State;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
@@ -57,7 +61,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final List<Service> services;
 
     public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         this.characteristics = characteristics;
         this.accessory = accessory;
         this.updater = updater;
@@ -65,6 +69,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         this.settings = settings;
     }
 
+    @NonNullByDefault
     protected Optional<HomekitTaggedItem> getCharacteristic(HomekitCharacteristicType type) {
         return characteristics.stream().filter(c -> c.getCharacteristicType() == type).findAny();
     }
@@ -120,6 +125,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return settings;
     }
 
+    @NonNullByDefault
     protected void subscribe(HomekitCharacteristicType characteristicType,
             HomekitCharacteristicChangeCallback callback) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
@@ -130,6 +136,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         }
     }
 
+    @NonNullByDefault
     protected void unsubscribe(HomekitCharacteristicType characteristicType) {
         final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
         if (characteristic.isPresent()) {
@@ -144,7 +151,7 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         if (taggedItem.isPresent()) {
             final State state = taggedItem.get().getItem().getStateAs(type);
             if (state != null) {
-                return (T) state.as(type);
+                return state.as(type);
             }
         }
         logger.debug("State for characteristic {} at accessory {} cannot be retrieved.", characteristic,
@@ -152,33 +159,23 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    protected @Nullable <T extends Item> T getItem(HomekitCharacteristicType characteristic, Class<T> type) {
+    @NonNullByDefault
+    protected <T extends Item> Optional<T> getItem(HomekitCharacteristicType characteristic, Class<T> type) {
         final Optional<HomekitTaggedItem> taggedItem = getCharacteristic(characteristic);
         if (taggedItem.isPresent()) {
-            if (type.isInstance(taggedItem.get().getItem()))
-                return (T) taggedItem.get().getItem();
-            else
+            final Item item = taggedItem.get().getItem();
+            if (type.isInstance(item)) {
+                return Optional.of((T) item);
+            } else {
                 logger.warn("Unsupported item type for characteristic {} at accessory {}. Expected {}, got {}",
-                        characteristic, accessory.getItem().getLabel(), type, taggedItem.get().getItem().getClass());
+                        characteristic, accessory.getItem().getName(), type, taggedItem.get().getItem().getClass());
+            }
         } else {
             logger.warn("Mandatory characteristic {} not found at accessory {}. ", characteristic,
-                    accessory.getItem().getLabel());
+                    accessory.getItem().getName());
 
         }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T getItemConfiguration(@NonNull HomekitTaggedItem item, @NonNull String key, @NonNull T defaultValue) {
-        final @Nullable Map<String, Object> configuration = item.getConfiguration();
-        if (configuration != null) {
-            Object value = configuration.get(key);
-            if (value != null && value.getClass().equals(defaultValue.getClass())) {
-                return (T) value;
-            }
-        }
-        return defaultValue;
+        return Optional.empty();
     }
 
     /**
@@ -191,8 +188,9 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(@NonNull String key, @NonNull T defaultValue) {
-        return getItemConfiguration(accessory, key, defaultValue);
+    @NonNullByDefault
+    protected <T> T getAccessoryConfiguration(String key, T defaultValue) {
+        return accessory.getConfiguration(key, defaultValue);
     }
 
     /**
@@ -206,27 +204,96 @@ abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @param <T> expected type
      * @return configuration value
      */
-    protected <T> T getAccessoryConfiguration(@NonNull HomekitCharacteristicType characteristicType,
-            @NonNull String key, @NonNull T defaultValue) {
-        final Optional<HomekitTaggedItem> characteristic = getCharacteristic(characteristicType);
-        return characteristic.isPresent() ? getItemConfiguration(characteristic.get(), key, defaultValue)
-                : defaultValue;
+    @NonNullByDefault
+    protected <T> T getAccessoryConfiguration(HomekitCharacteristicType characteristicType, String key,
+            T defaultValue) {
+        return getCharacteristic(characteristicType)
+                .map(homekitTaggedItem -> homekitTaggedItem.getConfiguration(key, defaultValue)).orElse(defaultValue);
     }
 
+    /**
+     * update mapping with values from item configuration.
+     * it checks for all keys from the mapping whether there is configuration at item with the same key and if yes,
+     * replace the value.
+     * 
+     * @param characteristicType characteristicType to identify item
+     * @param map mapping to update
+     */
+    @NonNullByDefault
+    protected void updateMapping(HomekitCharacteristicType characteristicType, Map<?, String> map) {
+        getCharacteristic(characteristicType).ifPresent(c -> {
+            final Map<String, Object> configuration = c.getConfiguration();
+            if (configuration != null) {
+                map.replaceAll((k, current_value) -> {
+                    final Object new_value = configuration.get(current_value);
+                    return (new_value instanceof String) ? (String) new_value : current_value;
+                });
+            }
+        });
+    }
+
+    /**
+     * takes item state as value and retrieves the key for that value from mapping.
+     * e.g. used to map StringItem value to HomeKit Enum
+     * 
+     * @param characteristicType characteristicType to identify item
+     * @param mapping mapping
+     * @param defaultValue default value if nothing found in mapping
+     * @param <T> type of the result derived from
+     * @return key for the value
+     */
+    @NonNullByDefault
+    protected <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+            T defaultValue) {
+        final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
+        if (c.isPresent()) {
+            final State state = c.get().getItem().getState();
+            logger.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", characteristicType.getTag(),
+                    state, mapping);
+            if (state instanceof StringType) {
+                return mapping.entrySet().stream().filter(entry -> state.toString().equalsIgnoreCase(entry.getValue()))
+                        .findAny().map(Entry::getKey).orElseGet(() -> {
+                            logger.warn(
+                                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
+                                    state.toString(), characteristicType.getTag(), c.get().getName(), mapping.values(),
+                                    defaultValue);
+                            return defaultValue;
+                        });
+            }
+        }
+        return defaultValue;
+    }
+
+    @NonNullByDefault
     protected void addCharacteristic(HomekitTaggedItem characteristic) {
         characteristics.add(characteristic);
     }
 
+    @NonNullByDefault
     private <T extends Quantity<T>> double convertAndRound(double value, Unit<T> from, Unit<T> to) {
-      double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
-      return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
+        double rawValue = from == to ? value : from.getConverterTo(to).convert(value);
+        return new BigDecimal(rawValue).setScale(1, RoundingMode.HALF_UP).doubleValue();
     }
 
-    protected double convertToCelsius(double degrees){
-      return convertAndRound(degrees, getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
+    @NonNullByDefault
+    protected double convertToCelsius(double degrees) {
+        return convertAndRound(degrees,
+                getSettings().useFahrenheitTemperature ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
     }
 
-    protected double convertFromCelsius(double degrees){
-      return convertAndRound(degrees, getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT, ImperialUnits.FAHRENHEIT);
+    @NonNullByDefault
+    protected double convertFromCelsius(double degrees) {
+        return convertAndRound(degrees,
+                getSettings().useFahrenheitTemperature ? SIUnits.CELSIUS : ImperialUnits.FAHRENHEIT,
+                ImperialUnits.FAHRENHEIT);
+    }
+
+    @NonNullByDefault
+    protected BooleanItemReader createBooleanReader(HomekitCharacteristicType characteristicType,
+            OnOffType trueOnOffValue, OpenClosedType trueOpenClosedValue) throws IncompleteAccessoryException {
+        return new BooleanItemReader(
+                getItem(characteristicType, GenericItem.class)
+                        .orElseThrow(() -> new IncompleteAccessoryException(characteristicType)),
+                trueOnOffValue, trueOpenClosedValue);
     }
 }

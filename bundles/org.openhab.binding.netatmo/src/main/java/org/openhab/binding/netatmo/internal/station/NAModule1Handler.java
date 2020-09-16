@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
@@ -36,11 +38,12 @@ import io.swagger.client.model.NAStationModule;
  * @author Rob Nielsen - Added day, week, and month measurements to the weather station and modules
  *
  */
+@NonNullByDefault
 public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
     private Map<String, Float> channelMeasurements = new ConcurrentHashMap<>();
 
-    public NAModule1Handler(Thing thing) {
-        super(thing);
+    public NAModule1Handler(Thing thing, final TimeZoneProvider timeZoneProvider) {
+        super(thing, timeZoneProvider);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_HUMIDITY, DATE_MIN_HUM);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_HUMIDITY, DATE_MAX_HUM);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_DAY, types, channels, channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_DAY, types, channels, channelMeasurements);
         }
     }
 
@@ -79,7 +82,7 @@ public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_WEEK, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_WEEK, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_WEEK, types, channels, channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_WEEK, types, channels, channelMeasurements);
         }
     }
 
@@ -95,50 +98,47 @@ public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
         addMeasurement(channels, types, CHANNEL_DATE_MIN_TEMP_THIS_MONTH, DATE_MIN_TEMP);
         addMeasurement(channels, types, CHANNEL_DATE_MAX_TEMP_THIS_MONTH, DATE_MAX_TEMP);
         if (!channels.isEmpty()) {
-            getMeasurements(getBridgeHandler(), getParentId(), getId(), ONE_MONTH, types, channels,
-                    channelMeasurements);
+            getMeasurements(getParentId(), getId(), ONE_MONTH, types, channels, channelMeasurements);
         }
     }
 
     @Override
     protected State getNAThingProperty(String channelId) {
-        if (module != null) {
-            NADashboardData dashboardData = module.getDashboardData();
-            if (dashboardData != null) {
-                switch (channelId) {
-                    case CHANNEL_TEMP_TREND:
-                        return toStringType(dashboardData.getTempTrend());
-                    case CHANNEL_TEMPERATURE:
-                        return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
-                    case CHANNEL_DATE_MIN_TEMP:
-                        return toDateTimeType(dashboardData.getDateMinTemp());
-                    case CHANNEL_DATE_MAX_TEMP:
-                        return toDateTimeType(dashboardData.getDateMaxTemp());
-                    case CHANNEL_MIN_TEMP:
-                        return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
-                    case CHANNEL_MAX_TEMP:
-                        return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
-                    case CHANNEL_HUMIDITY:
-                        return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
-                    case CHANNEL_TIMEUTC:
-                        return toDateTimeType(dashboardData.getTimeUtc());
-                    case CHANNEL_HUMIDEX:
-                        return toDecimalType(
-                                WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
-                    case CHANNEL_HEATINDEX:
-                        return toQuantityType(
-                                WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()),
-                                API_TEMPERATURE_UNIT);
-                    case CHANNEL_DEWPOINT:
-                        return toQuantityType(
-                                WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()),
-                                API_TEMPERATURE_UNIT);
-                    case CHANNEL_DEWPOINTDEP:
-                        Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
-                                dashboardData.getHumidity());
-                        return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint),
-                                API_TEMPERATURE_UNIT);
-                }
+        NADashboardData dashboardData = getModule().map(m -> m.getDashboardData()).orElse(null);
+        if (dashboardData != null) {
+            switch (channelId) {
+                case CHANNEL_TEMP_TREND:
+                    return toStringType(dashboardData.getTempTrend());
+                case CHANNEL_TEMPERATURE:
+                    return toQuantityType(dashboardData.getTemperature(), API_TEMPERATURE_UNIT);
+                case CHANNEL_DATE_MIN_TEMP:
+                    return toDateTimeType(dashboardData.getDateMinTemp(), timeZoneProvider.getTimeZone());
+                case CHANNEL_DATE_MAX_TEMP:
+                    return toDateTimeType(dashboardData.getDateMaxTemp(), timeZoneProvider.getTimeZone());
+                case CHANNEL_MIN_TEMP:
+                    return toQuantityType(dashboardData.getMinTemp(), API_TEMPERATURE_UNIT);
+                case CHANNEL_MAX_TEMP:
+                    return toQuantityType(dashboardData.getMaxTemp(), API_TEMPERATURE_UNIT);
+                case CHANNEL_HUMIDITY:
+                    return toQuantityType(dashboardData.getHumidity(), API_HUMIDITY_UNIT);
+                case CHANNEL_TIMEUTC:
+                    return toDateTimeType(dashboardData.getTimeUtc(), timeZoneProvider.getTimeZone());
+                case CHANNEL_HUMIDEX:
+                    return toDecimalType(
+                            WeatherUtils.getHumidex(dashboardData.getTemperature(), dashboardData.getHumidity()));
+                case CHANNEL_HEATINDEX:
+                    return toQuantityType(
+                            WeatherUtils.getHeatIndex(dashboardData.getTemperature(), dashboardData.getHumidity()),
+                            API_TEMPERATURE_UNIT);
+                case CHANNEL_DEWPOINT:
+                    return toQuantityType(
+                            WeatherUtils.getDewPoint(dashboardData.getTemperature(), dashboardData.getHumidity()),
+                            API_TEMPERATURE_UNIT);
+                case CHANNEL_DEWPOINTDEP:
+                    Double dewpoint = WeatherUtils.getDewPoint(dashboardData.getTemperature(),
+                            dashboardData.getHumidity());
+                    return toQuantityType(WeatherUtils.getDewPointDep(dashboardData.getTemperature(), dewpoint),
+                            API_TEMPERATURE_UNIT);
             }
         }
 
@@ -165,7 +165,7 @@ public class NAModule1Handler extends NetatmoModuleHandler<NAStationModule> {
             case CHANNEL_DATE_MIN_TEMP_THIS_MONTH:
             case CHANNEL_DATE_MAX_TEMP_THIS_WEEK:
             case CHANNEL_DATE_MAX_TEMP_THIS_MONTH:
-                return toDateTimeType(channelMeasurements.get(channelId));
+                return toDateTimeType(channelMeasurements.get(channelId), timeZoneProvider.getTimeZone());
         }
 
         return super.getNAThingProperty(channelId);

@@ -15,11 +15,8 @@ package org.openhab.io.homekit.internal.accessories;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.items.RollershutterItem;
-import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
-import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -32,67 +29,72 @@ import io.github.hapjava.services.impl.WindowCoveringService;
  *
  * @author epike - Initial contribution
  */
-public class HomekitWindowCoveringImpl extends AbstractHomekitAccessoryImpl implements WindowCoveringAccessory {
+@NonNullByDefault
+public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryImpl implements WindowCoveringAccessory {
 
     public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.getServices().add(new WindowCoveringService(this));
+        getServices().add(new WindowCoveringService(this));
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Integer> getCurrentPosition() {
-        PercentType value = getStateAs(HomekitCharacteristicType.CURRENT_POSITION, PercentType.class);
-        return CompletableFuture.completedFuture(value != null ? 100 - value.intValue() : 100);
+        return super.getCurrentPosition();
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<PositionStateEnum> getPositionState() {
-        return CompletableFuture.completedFuture(PositionStateEnum.STOPPED);
+        return super.getPositionState();
     }
 
     @Override
+    @NonNullByDefault({})
     public CompletableFuture<Integer> getTargetPosition() {
-        return getCurrentPosition();
+        return super.getTargetPosition();
     }
 
     @Override
-    public CompletableFuture<Void> setTargetPosition(int value) throws Exception {
-        final @Nullable RollershutterItem item = getItem(HomekitCharacteristicType.TARGET_POSITION,
-                RollershutterItem.class);
-        if (item != null) {
-            item.send(new PercentType(100 - value));
-        }
-        return CompletableFuture.completedFuture(null);
+    @NonNullByDefault({})
+    public CompletableFuture<Void> setTargetPosition(int value) {
+        return super.setTargetPosition(value);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribeCurrentPosition(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.CURRENT_POSITION, callback);
+        super.subscribeCurrentPosition(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribePositionState(HomekitCharacteristicChangeCallback callback) {
-        // Not implemented
+        super.subscribePositionState(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void subscribeTargetPosition(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.TARGET_POSITION, callback);
+        super.subscribeTargetPosition(callback);
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribeCurrentPosition() {
-        unsubscribe(HomekitCharacteristicType.CURRENT_POSITION);
+        super.unsubscribeCurrentPosition();
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribePositionState() {
-        // Not implemented
+        super.unsubscribePositionState();
     }
 
     @Override
+    @NonNullByDefault({})
     public void unsubscribeTargetPosition() {
-        unsubscribe(HomekitCharacteristicType.CURRENT_POSITION);
+        super.unsubscribeTargetPosition();
     }
 }

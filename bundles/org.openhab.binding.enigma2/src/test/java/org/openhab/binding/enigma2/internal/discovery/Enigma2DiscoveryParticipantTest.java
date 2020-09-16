@@ -12,6 +12,17 @@
  */
 package org.openhab.binding.enigma2.internal.discovery;
 
+import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+
+import javax.jmdns.ServiceInfo;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
@@ -20,17 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2HttpClient;
-
-import javax.jmdns.ServiceInfo;
-
-import java.net.Inet4Address;
-import java.net.InetAddress;
-
-import static org.eclipse.jdt.annotation.Checks.requireNonNull;
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 /**
  * The {@link Enigma2DiscoveryParticipantTest} class is responsible for testing {@link Enigma2DiscoveryParticipant}.
@@ -80,10 +80,8 @@ public class Enigma2DiscoveryParticipantTest {
                 is(new ThingUID(Enigma2BindingConstants.THING_TYPE_DEVICE, "192_168_10_3")));
         assertThat(discoveryResult.getProperties(), is(notNullValue()));
         assertThat(discoveryResult.getProperties(), hasEntry(Enigma2BindingConstants.CONFIG_HOST, "192.168.10.3"));
-        assertThat(discoveryResult.getProperties(),
-                hasEntry(Enigma2BindingConstants.CONFIG_REFRESH, 5));
-        assertThat(discoveryResult.getProperties(),
-                hasEntry(Enigma2BindingConstants.CONFIG_TIMEOUT, 5));
+        assertThat(discoveryResult.getProperties(), hasEntry(Enigma2BindingConstants.CONFIG_REFRESH, 5));
+        assertThat(discoveryResult.getProperties(), hasEntry(Enigma2BindingConstants.CONFIG_TIMEOUT, 5));
     }
 
     @Test

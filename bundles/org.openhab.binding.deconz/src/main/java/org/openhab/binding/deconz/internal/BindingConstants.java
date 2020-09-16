@@ -34,6 +34,7 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_POWER_SENSOR = new ThingTypeUID(BINDING_ID, "powersensor");
     public static final ThingTypeUID THING_TYPE_CONSUMPTION_SENSOR = new ThingTypeUID(BINDING_ID, "consumptionsensor");
     public static final ThingTypeUID THING_TYPE_DAYLIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "daylightsensor");
+    public static final ThingTypeUID THING_TYPE_COLOR_CONTROL = new ThingTypeUID(BINDING_ID, "colorcontrol");
     public static final ThingTypeUID THING_TYPE_SWITCH = new ThingTypeUID(BINDING_ID, "switch");
     public static final ThingTypeUID THING_TYPE_LIGHT_SENSOR = new ThingTypeUID(BINDING_ID, "lightsensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATURE_SENSOR = new ThingTypeUID(BINDING_ID, "temperaturesensor");
@@ -48,6 +49,8 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_BATTERY_SENSOR = new ThingTypeUID(BINDING_ID, "batterysensor");
     public static final ThingTypeUID THING_TYPE_CARBONMONOXIDE_SENSOR = new ThingTypeUID(BINDING_ID,
             "carbonmonoxidesensor");
+    // Special sensor - Thermostat
+    public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
 
     // lights
     public static final ThingTypeUID THING_TYPE_ONOFF_LIGHT = new ThingTypeUID(BINDING_ID, "onofflight");
@@ -58,10 +61,12 @@ public class BindingConstants {
     public static final ThingTypeUID THING_TYPE_EXTENDED_COLOR_LIGHT = new ThingTypeUID(BINDING_ID,
             "extendedcolorlight");
     public static final ThingTypeUID THING_TYPE_WINDOW_COVERING = new ThingTypeUID(BINDING_ID, "windowcovering");
+    public static final ThingTypeUID THING_TYPE_WARNING_DEVICE = new ThingTypeUID(BINDING_ID, "warningdevice");
 
     // List of all Channel ids
     public static final String CHANNEL_PRESENCE = "presence";
     public static final String CHANNEL_LAST_UPDATED = "last_updated";
+    public static final String CHANNEL_LAST_SEEN = "last_seen";
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_CONSUMPTION = "consumption";
     public static final String CHANNEL_VOLTAGE = "voltage";
@@ -88,12 +93,17 @@ public class BindingConstants {
     public static final String CHANNEL_BATTERY_LEVEL = "battery_level";
     public static final String CHANNEL_BATTERY_LOW = "battery_low";
     public static final String CHANNEL_CARBONMONOXIDE = "carbonmonoxide";
+    public static final String CHANNEL_HEATSETPOINT = "heatsetpoint";
+    public static final String CHANNEL_THERMOSTAT_MODE = "mode";
+    public static final String CHANNEL_TEMPERATURE_OFFSET = "offset";
+    public static final String CHANNEL_VALVE_POSITION = "valve";
 
     public static final String CHANNEL_SWITCH = "switch";
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR_TEMPERATURE = "color_temperature";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_POSITION = "position";
+    public static final String CHANNEL_ALERT = "alert";
 
     // Thing configuration
     public static final String CONFIG_HOST = "host";
@@ -101,4 +111,13 @@ public class BindingConstants {
     public static final String CONFIG_APIKEY = "apikey";
 
     public static final String UNIQUE_ID = "uid";
+
+    public static final String PROPERTY_CT_MIN = "ctmin";
+    public static final String PROPERTY_CT_MAX = "ctmax";
+
+    // CT value range according to ZCL Spec
+    public static final int ZCL_CT_UNDEFINED = 0; // 0x0000
+    public static final int ZCL_CT_MIN = 1;
+    public static final int ZCL_CT_MAX = 65279; // 0xFEFF
+    public static final int ZCL_CT_INVALID = 65535; // 0xFFFF
 }

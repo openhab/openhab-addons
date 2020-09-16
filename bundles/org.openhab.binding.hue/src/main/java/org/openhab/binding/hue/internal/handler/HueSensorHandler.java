@@ -41,7 +41,6 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.hue.internal.FullSensor;
-import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.SensorConfigUpdate;
 import org.openhab.binding.hue.internal.StateUpdate;
 import org.slf4j.Logger;
@@ -150,8 +149,9 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
             }
             ThingHandler handler = bridge.getHandler();
             if (handler instanceof HueBridgeHandler) {
-                hueClient = (HueClient) handler;
-                hueClient.registerSensorStatusListener(this);
+                HueClient bridgeHandler = (HueClient) handler;
+                hueClient = bridgeHandler;
+                bridgeHandler.registerSensorStatusListener(this);
             } else {
                 return null;
             }
@@ -226,7 +226,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     }
 
     @Override
-    public boolean onSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor) {
+    public boolean onSensorStateChanged(FullSensor sensor) {
         logger.trace("onSensorStateChanged() was called");
 
         final FullSensor lastSensor = lastFullSensor;
@@ -253,7 +253,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
         }
 
         // update specific sensor config
-        doSensorStateChanged(bridge, sensor, config);
+        doSensorStateChanged(sensor, config);
 
         Object lastUpdated = sensor.getState().get(STATE_LAST_UPDATED);
         if (lastUpdated != null) {
@@ -305,7 +305,7 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
     public void channelLinked(ChannelUID channelUID) {
         final FullSensor sensor = lastFullSensor;
         if (sensor != null) {
-            onSensorStateChanged(null, sensor);
+            onSensorStateChanged(sensor);
         }
     }
 
@@ -325,21 +325,21 @@ public abstract class HueSensorHandler extends BaseThingHandler implements Senso
      * @param sensor the sensor
      * @param config the configuration in which to update the config states of the sensor
      */
-    protected abstract void doSensorStateChanged(@Nullable HueBridge bridge, FullSensor sensor, Configuration config);
+    protected abstract void doSensorStateChanged(FullSensor sensor, Configuration config);
 
     @Override
-    public void onSensorRemoved(@Nullable HueBridge bridge, FullSensor sensor) {
+    public void onSensorRemoved() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/offline.sensor-not-reachable");
     }
 
     @Override
-    public void onSensorGone(@Nullable HueBridge bridge, FullSensor sensor) {
+    public void onSensorGone() {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "@text/offline.conf-error-wrong-sensor-id");
     }
 
     @Override
-    public void onSensorAdded(@Nullable HueBridge bridge, FullSensor sensor) {
-        onSensorStateChanged(bridge, sensor);
+    public void onSensorAdded(FullSensor sensor) {
+        onSensorStateChanged(sensor);
     }
 
     @Override

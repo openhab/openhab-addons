@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.avmfritz.internal.handler;
 
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 import static org.openhab.binding.avmfritz.internal.dto.DeviceModel.ETSUnitInfoModel.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,10 +43,8 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.StateOption;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
-import org.openhab.binding.avmfritz.internal.BindingConstants;
+import org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 import org.openhab.binding.avmfritz.internal.config.AVMFritzBoxConfiguration;
 import org.openhab.binding.avmfritz.internal.discovery.AVMFritzDiscoveryService;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
@@ -78,29 +75,33 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * Initial delay in s for polling job.
      */
     private static final int INITIAL_DELAY = 1;
+
     /**
      * Refresh interval which is used to poll values from the FRITZ!Box web interface (optional, defaults to 15 s)
      */
     private long refreshInterval = 15;
+
     /**
      * Interface object for querying the FRITZ!Box web interface
      */
-    private @Nullable FritzAhaWebInterface connection;
+    protected @Nullable FritzAhaWebInterface connection;
+
     /**
      * Schedule for polling
      */
     private @Nullable ScheduledFuture<?> pollingJob;
-    /**
-     * shared instance of HTTP client for asynchronous calls
-     */
-    private final HttpClient httpClient;
 
-    private final AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider;
+    /**
+     * Shared instance of HTTP client for asynchronous calls
+     */
+    protected final HttpClient httpClient;
+
+    private final AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider;
 
     protected final List<FritzAhaStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
-     * keeps track of the {@link ChannelUID} for the 'apply_tamplate' {@link Channel}
+     * keeps track of the {@link ChannelUID} for the 'apply_template' {@link Channel}
      */
     private final ChannelUID applyTemplateChannelUID;
 
@@ -110,10 +111,10 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param bridge Bridge object representing a FRITZ!Box
      */
     public AVMFritzBaseBridgeHandler(Bridge bridge, HttpClient httpClient,
-            AVMFritzDynamicStateDescriptionProvider stateDescriptionProvider) {
+            AVMFritzDynamicCommandDescriptionProvider commandDescriptionProvider) {
         super(bridge);
         this.httpClient = httpClient;
-        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.commandDescriptionProvider = commandDescriptionProvider;
 
         applyTemplateChannelUID = new ChannelUID(bridge.getUID(), CHANNEL_APPLY_TEMPLATE);
     }
@@ -130,11 +131,6 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
                     "The 'ipAddress' parameter must be configured.");
             configValid = false;
         }
-        String localPassword = config.password;
-        if (localPassword == null || localPassword.trim().isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No password set.");
-            configValid = false;
-        }
         refreshInterval = config.pollingInterval;
         if (refreshInterval < 5) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -143,11 +139,30 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         }
 
         if (configValid) {
-            this.connection = new FritzAhaWebInterface(config, this, httpClient);
+            updateStatus(ThingStatus.UNKNOWN);
+            manageConnections();
+        }
+    }
 
+    protected synchronized void manageConnections() {
+        AVMFritzBoxConfiguration config = getConfigAs(AVMFritzBoxConfiguration.class);
+        if (this.connection == null) {
+            this.connection = new FritzAhaWebInterface(config, this, httpClient);
             stopPolling();
             startPolling();
         }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        manageConnections();
+        super.channelLinked(channelUID);
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        manageConnections();
+        super.channelUnlinked(channelUID);
     }
 
     @Override
@@ -185,7 +200,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Start the polling.
      */
-    private void startPolling() {
+    protected void startPolling() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob == null || localPollingJob.isCancelled()) {
             logger.debug("Start polling job at interval {}s", refreshInterval);
@@ -196,7 +211,7 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     /**
      * Stops the polling.
      */
-    private void stopPolling() {
+    protected void stopPolling() {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob != null && !localPollingJob.isCancelled()) {
             logger.debug("Stop polling job");
@@ -241,12 +256,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
      * @param templateList list of template models
      */
     public void addTemplateList(List<TemplateModel> templateList) {
-        List<StateOption> options = new ArrayList<>();
-        for (TemplateModel template : templateList) {
-            logger.debug("Process template model: {}", template);
-            options.add(new StateOption(template.getIdentifier(), template.getName()));
-        }
-        stateDescriptionProvider.setStateOptions(applyTemplateChannelUID, options);
+        commandDescriptionProvider.setCommandOptions(applyTemplateChannelUID,
+                templateList.stream().map(TemplateModel::toCommandOption).collect(Collectors.toList()));
     }
 
     /**
@@ -279,7 +290,8 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Builds a {@link ThingUID} from a device model. The UID is build from the {@link BindingConstants#BINDING_ID} and
+     * Builds a {@link ThingUID} from a device model. The UID is build from the
+     * {@link AVMFritzBindingConstants#BINDING_ID} and
      * value of {@link AVMFritzBaseModel#getProductName()} in which all characters NOT matching the RegEx [^a-zA-Z0-9_]
      * are replaced by "_".
      *
@@ -291,7 +303,9 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
         ThingUID bridgeUID = thing.getUID();
         String thingName = getThingName(device);
 
-        if (SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
+        if (SUPPORTED_BUTTON_THING_TYPES_UIDS.contains(thingTypeUID)
+                || SUPPORTED_HEATING_THING_TYPES.contains(thingTypeUID)
+                || SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
             return new ThingUID(thingTypeUID, bridgeUID, thingName);
         } else if (device.isHeatingThermostat()) {
             return new ThingUID(GROUP_HEATING_THING_TYPE, bridgeUID, thingName);
@@ -348,21 +362,13 @@ public abstract class AVMFritzBaseBridgeHandler extends BaseBridgeHandler {
             logger.debug("Cannot handle command '{}' because connection is missing", command);
             return;
         }
-        switch (channelId) {
-            case CHANNEL_APPLY_TEMPLATE:
-                applyTemplate(command, fritzBox);
-                break;
-            default:
-                logger.debug("Received unknown channel {}", channelId);
-                break;
+        if (CHANNEL_APPLY_TEMPLATE.equals(channelId)) {
+            if (command instanceof StringType) {
+                fritzBox.applyTemplate(command.toString());
+            }
+        } else {
+            logger.debug("Received unknown channel {}", channelId);
         }
-    }
-
-    protected void applyTemplate(Command command, FritzAhaWebInterface fritzBox) {
-        if (command instanceof StringType) {
-            fritzBox.applyTemplate(command.toString());
-        }
-        updateState(CHANNEL_APPLY_TEMPLATE, UnDefType.UNDEF);
     }
 
     /**

@@ -99,7 +99,7 @@ public class ShellyComponents {
                 if (!profile.isEMeter) {
                     for (ShellySettingsMeter meter : status.meters) {
                         Integer meterIndex = m + 1;
-                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report das flag
+                        if (getBool(meter.isValid) || profile.isLight) { // RGBW2-white doesn't report valid flag
                                                                          // correctly in white mode
                             String groupName = "";
                             if (profile.numMeters > 1) {
@@ -109,8 +109,11 @@ public class ShellyComponents {
                             }
 
                             if (!thingHandler.areChannelsCreated()) {
-                                thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
-                                        .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                                // skip for Shelly Bulb: JSON has a meter, but values don't get updated
+                                if (!profile.isBulb) {
+                                    thingHandler.updateChannelDefinitions(ShellyChannelDefinitionsDTO
+                                            .createMeterChannels(thingHandler.getThing(), meter, groupName));
+                                }
                             }
 
                             updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_CURRENTWATTS,
@@ -119,22 +122,19 @@ public class ShellyComponents {
 
                             // convert Watt/Min to kw/h
                             if (meter.total != null) {
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH, toQuantityType(
-                                        getDouble(meter.total) / 60 / 1000, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
-                                accumulatedTotal += getDouble(meter.total);
+                                double kwh = getDouble(meter.total) / 60 / 1000;
+                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_TOTALKWH,
+                                        toQuantityType(kwh, DIGITS_KWH, SmartHomeUnits.KILOWATT_HOUR));
+                                accumulatedTotal += kwh;
                             }
                             if (meter.counters != null) {
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                                         toQuantityType(getDouble(meter.counters[0]), DIGITS_WATT, SmartHomeUnits.WATT));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN2,
-                                        toQuantityType(getDouble(meter.counters[1]), DIGITS_WATT, SmartHomeUnits.WATT));
-                                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
-                                        toQuantityType(getDouble(meter.counters[2]), DIGITS_WATT, SmartHomeUnits.WATT));
                             }
                             thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE,
                                     getTimestamp(getString(profile.settings.timezone), getLong(meter.timestamp)));
-                            m++;
                         }
+                        m++;
                     }
                 } else {
                     for (ShellySettingsEMeter emeter : status.emeters) {
@@ -160,22 +160,21 @@ public class ShellyComponents {
                                     toQuantityType(getDouble(emeter.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
 
                             if (emeter.current != null) {
-                                // Shelly EM3
+                                // Shelly
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_CURRENT,
                                         toQuantityType(getDouble(emeter.current), DIGITS_VOLT, SmartHomeUnits.AMPERE));
                                 updated |= thingHandler.updateChannel(groupName, CHANNEL_EMETER_PFACTOR,
                                         getDecimal(emeter.pf));
                             }
 
+                            accumulatedWatts += getDouble(emeter.power);
+                            accumulatedTotal += getDouble(emeter.total) / 1000;
+                            accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
                             if (updated) {
-                                accumulatedWatts += getDouble(emeter.power);
-                                accumulatedTotal += getDouble(emeter.total) / 1000;
-                                accumulatedReturned += getDouble(emeter.totalReturned) / 1000;
-
                                 thingHandler.updateChannel(groupName, CHANNEL_LAST_UPDATE, getTimestamp());
                             }
-                            m++;
                         }
+                        m++;
                     }
                 }
             } else {
@@ -184,8 +183,6 @@ public class ShellyComponents {
                 double currentWatts = 0.0;
                 double totalWatts = 0.0;
                 double lastMin1 = 0.0;
-                double lastMin2 = 0.0;
-                double lastMin3 = 0.0;
                 long timestamp = 0l;
                 String groupName = CHANNEL_GROUP_METER;
                 for (ShellySettingsMeter meter : status.meters) {
@@ -194,8 +191,6 @@ public class ShellyComponents {
                         totalWatts += getDouble(meter.total);
                         if (meter.counters != null) {
                             lastMin1 += getDouble(meter.counters[0]);
-                            lastMin2 += getDouble(meter.counters[1]);
-                            lastMin3 += getDouble(meter.counters[2]);
                         }
                         if (getLong(meter.timestamp) > timestamp) {
                             timestamp = getLong(meter.timestamp); // newest one
@@ -210,10 +205,6 @@ public class ShellyComponents {
 
                 updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN1,
                         toQuantityType(getDouble(lastMin1), DIGITS_WATT, SmartHomeUnits.WATT));
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN2,
-                        toQuantityType(getDouble(lastMin2), DIGITS_WATT, SmartHomeUnits.WATT));
-                updated |= thingHandler.updateChannel(groupName, CHANNEL_METER_LASTMIN3,
-                        toQuantityType(getDouble(lastMin3), DIGITS_WATT, SmartHomeUnits.WATT));
 
                 // convert totalWatts into kw/h
                 totalWatts = totalWatts / (60.0 * 10000.0);
@@ -256,29 +247,19 @@ public class ShellyComponents {
 
         boolean updated = false;
         if (profile.isSensor || profile.hasBattery || profile.isSense) {
-            thingHandler.logger.debug("{}: Updating sensor", thingHandler.thingName);
             ShellyStatusSensor sdata = thingHandler.api.getSensorStatus();
 
             if (!thingHandler.areChannelsCreated()) {
                 thingHandler.logger.trace("{}: Create missing sensor channel(s)", thingHandler.thingName);
                 thingHandler.updateChannelDefinitions(
-                        ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), sdata));
+                        ShellyChannelDefinitionsDTO.createSensorChannels(thingHandler.getThing(), profile, sdata));
             }
 
-            if (sdata.actReasons != null) {
-                boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_WAKEUP,
-                        getStringType(sdata.actReasons[0]));
-                updated |= changed;
-                if (changed) {
-                    thingHandler.postEvent(getString(sdata.actReasons[0]).toUpperCase(), true);
-                }
-            }
+            updated |= thingHandler.updateWakeupReason(sdata.actReasons);
 
             if ((sdata.contact != null) && sdata.contact.isValid) {
                 // Shelly DW: “sensor”:{“state”:“open”, “is_valid”:true},
-                thingHandler.logger.debug("{}: Updating DW state with {}", thingHandler.thingName,
-                        getString(sdata.contact.state));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_STATE,
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_CONTACT,
                         getString(sdata.contact.state).equalsIgnoreCase(SHELLY_API_DWSTATE_OPEN) ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED);
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ERROR,
@@ -329,13 +310,23 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SMOKE,
                         getOnOff(sdata.smoke));
             }
+            if (sdata.gasSensor != null) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_SELFTTEST,
+                        getStringType(sdata.gasSensor.selfTestState));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_ALARM_STATE,
+                        getStringType(sdata.gasSensor.alarmState));
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_SSTATE,
+                        getStringType(sdata.gasSensor.sensorState));
+            }
+            if ((sdata.concentration != null) && sdata.concentration.isValid) {
+                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM,
+                        getDecimal(sdata.concentration.ppm));
+            }
 
             if (sdata.bat != null) { // no update for Sense
                 thingHandler.logger.trace("{}: Updating battery", thingHandler.thingName);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LEVEL,
                         toQuantityType(getDouble(sdata.bat.value), DIGITS_PERCENT, SmartHomeUnits.PERCENT));
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_VOLT,
-                        toQuantityType(getDouble(sdata.bat.voltage), DIGITS_VOLT, SmartHomeUnits.VOLT));
                 boolean changed = thingHandler.updateChannel(CHANNEL_GROUP_BATTERY, CHANNEL_SENSOR_BAT_LOW,
                         getDouble(sdata.bat.value) < thingHandler.config.lowBattery ? OnOffType.ON : OnOffType.OFF);
                 updated |= changed;
@@ -351,8 +342,11 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_CHARGER,
                         getOnOff(sdata.charger));
             }
+
+            updated |= thingHandler.updateInputs(status);
+
             if (updated) {
-                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
+                thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
             }
         }
         return updated;

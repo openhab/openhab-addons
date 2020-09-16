@@ -29,13 +29,16 @@ import org.slf4j.LoggerFactory;
 public enum LightType {
     ON_OFF_LIGHT("On/Off light"),
     ON_OFF_PLUGIN_UNIT("On/Off plug-in unit"),
+    SMART_PLUG("Smart plug"),
     EXTENDED_COLOR_LIGHT("Extended color light"),
+    COLOR_LIGHT("Color light"),
     COLOR_DIMMABLE_LIGHT("Color dimmable light"),
     COLOR_TEMPERATURE_LIGHT("Color temperature light"),
     DIMMABLE_LIGHT("Dimmable light"),
     DIMMABLE_PLUGIN_UNIT("Dimmable plug-in unit"),
     WINDOW_COVERING_DEVICE("Window covering device"),
     CONFIGURATION_TOOL("Configuration tool"),
+    WARNING_DEVICE("Warning device"),
     UNKNOWN("");
 
     private static final Map<String, LightType> MAPPING = Arrays.stream(LightType.values())

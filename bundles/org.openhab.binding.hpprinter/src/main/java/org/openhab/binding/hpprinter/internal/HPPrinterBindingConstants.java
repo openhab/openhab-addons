@@ -87,14 +87,14 @@ public class HPPrinterBindingConstants {
     public static final String CHANNEL_FRONT_PANEL_CANCEL = "fpCancelCount";
     public static final String CHANNEL_CLOUD_PRINT = "cloudPrint";
 
-    //Scanner
+    // Scanner
     public static final String CHANNEL_TOTAL_ADF = "totalAdf";
     public static final String CHANNEL_TOTAL_FLATBED = "totalFlatbed";
     public static final String CHANNEL_TOTAL_TOEMAIL = "totalToEmail";
     public static final String CHANNEL_TOTAL_TOFOLDER = "totalToFolder";
     public static final String CHANNEL_TOTAL_TOHOST = "totalToHost";
 
-    //App Usage
+    // App Usage
     public static final String CHANNEL_TOTAL_WIN = "totalWin";
     public static final String CHANNEL_TOTAL_ANDROID = "totalAndroid";
     public static final String CHANNEL_TOTAL_IOS = "totalIos";
@@ -106,10 +106,9 @@ public class HPPrinterBindingConstants {
     public static final String CGROUP_INK = "ink";
     public static final String CGROUP_STATUS = "status";
     public static final String CGROUP_USAGE = "usage";
-    public static final String CGROUP_SCANNER = "scanner"; //Scanner Engine
+    public static final String CGROUP_SCANNER = "scanner"; // Scanner Engine
     public static final String CGROUP_SCAN = "scan"; // Scan Application
     public static final String CGROUP_COPY = "copy";
     public static final String CGROUP_APP = "app";
     public static final String CGROUP_OTHER = "other";
-    
 }

@@ -21,7 +21,9 @@ import org.eclipse.smarthome.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 /**
@@ -105,6 +107,44 @@ public class ActionConditions {
         return null;
     }
 
+    /**
+     * Check if the command value matches the condition value.
+     * The condition parameter element should be a Json array, containing Json objects with a matchValue element.
+     * Optionally it can contain a 'returnValue'element which will be returned in case of match.
+     * If no match this function will return a null
+     *
+     * @param condition.
+     * @param command
+     * @param value
+     * @return returnValue or value in case matching, return null if no match
+     */
+    private static @Nullable JsonElement matchValue(MiIoDeviceActionCondition condition, @Nullable Command command,
+            @Nullable JsonElement value) {
+        if (condition.getParameters().isJsonArray() && command != null) {
+            JsonArray conditionArray = condition.getParameters().getAsJsonArray();
+            for (int i = 0; i < conditionArray.size(); i++) {
+                if (conditionArray.get(i).isJsonObject() && conditionArray.get(i).getAsJsonObject().has("matchValue")) {
+                    JsonObject matchCondition = conditionArray.get(i).getAsJsonObject();
+                    String matchvalue = matchCondition.get("matchValue").getAsString();
+                    boolean matching = command.toString().matches(matchvalue);
+                    LOGGER.trace("Matching '{}' with '{}': {}", matchvalue, command, matching);
+                    if (matching) {
+                        if (matchCondition.has("returnValue")) {
+                            return matchCondition.get("returnValue");
+                        } else {
+                            return value;
+                        }
+                    }
+                } else {
+                    LOGGER.debug("Json DB condition is missing matchValue element in match parameter array.");
+                }
+            }
+        } else {
+            LOGGER.debug("Json DB condition is missing match parameter array.");
+        }
+        return null;
+    }
+
     public static @Nullable JsonElement executeAction(MiIoDeviceActionCondition condition,
             @Nullable Map<String, Object> deviceVariables, @Nullable JsonElement value, @Nullable Command command) {
         switch (condition.getName().toUpperCase()) {
@@ -116,6 +156,8 @@ public class ActionConditions {
                 return brightness(value);
             case "HSBONLY":
                 return hsbOnly(command, value);
+            case "MATCHVALUE":
+                return matchValue(condition, command, value);
             default:
                 LOGGER.debug("Condition {} not found. Returning '{}'", condition,
                         value != null ? value.toString() : "");

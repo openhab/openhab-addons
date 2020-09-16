@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -66,7 +65,7 @@ public class ShellyHttpApi {
 
     private final Logger logger = LoggerFactory.getLogger(ShellyHttpApi.class);
     private final HttpClient httpClient;
-    private ShellyThingConfiguration config = new ShellyThingConfiguration();;
+    private ShellyThingConfiguration config = new ShellyThingConfiguration();
     private String thingName;
     private final Gson gson = new Gson();
     private int timeoutErrors = 0;
@@ -99,7 +98,7 @@ public class ShellyHttpApi {
      */
     public ShellyDeviceProfile getDeviceProfile(String thingType) throws ShellyApiException {
         String json = request(SHELLY_URL_SETTINGS);
-        if (json.contains("\"type\":\"SHDM-1\"")) {
+        if (json.contains("\"type\":\"SHDM-")) {
             logger.trace("{}: Detected a Shelly Dimmer: fix Json (replace lights[] tag with dimmers[]", thingName);
             json = fixDimmerJson(json);
         }
@@ -133,10 +132,18 @@ public class ShellyHttpApi {
      * @throws ShellyApiException
      */
     public ShellySettingsStatus getStatus() throws ShellyApiException {
-        String json = request(SHELLY_URL_STATUS);
-        ShellySettingsStatus status = gson.fromJson(json, ShellySettingsStatus.class);
-        status.json = json;
-        return status;
+        String json = "";
+        try {
+            json = request(SHELLY_URL_STATUS);
+            // Dimmer2 returns invalid json type for loaderror :-(
+            json = json.replace("\"loaderror\":0,", "\"loaderror\":false,");
+            json = json.replace("\"loaderror\":1,", "\"loaderror\":true,");
+            ShellySettingsStatus status = gson.fromJson(json, ShellySettingsStatus.class);
+            status.json = json;
+            return status;
+        } catch (JsonSyntaxException e) {
+            throw new ShellyApiException("Unable to parse JSON: " + json, e);
+        }
     }
 
     public ShellyStatusRelay getRelayStatus(Integer relayIndex) throws ShellyApiException {
@@ -274,8 +281,8 @@ public class ShellyHttpApi {
     public Map<String, String> getIRCodeList() throws ShellyApiException {
         String result = request(SHELLY_URL_LIST_IR);
         // take pragmatic approach to make the returned JSon into named arrays for Gson parsing
-        String keyList = StringUtils.substringAfter(result, "[");
-        keyList = StringUtils.substringBeforeLast(keyList, "]");
+        String keyList = substringAfter(result, "[");
+        keyList = substringBeforeLast(keyList, "]");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("\",\""), "\", \"name\": \"");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("["), "{ \"id\":");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("]"), "} ");
@@ -367,7 +374,9 @@ public class ShellyHttpApi {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
             setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
-                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_CLOSE, SHELLY_EVENT_VIBRATION);
+                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_OPEN, SHELLY_EVENT_CLOSE,
+                    SHELLY_EVENT_VIBRATION, SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF,
+                    SHELLY_EVENT_TEMP_OVER, SHELLY_EVENT_TEMP_UNDER);
         }
     }
 
@@ -402,21 +411,26 @@ public class ShellyHttpApi {
     }
 
     private void setEventUrl(boolean enabled, String... eventTypes) throws ShellyApiException {
+        if (config.localIp.isEmpty()) {
+            throw new ShellyApiException(thingName + ": Local IP address was not detected, can't build Callback URL");
+        }
         for (String eventType : eventTypes) {
             if (profile.containsEventUrl(eventType)) {
-                // Sensors add the type=xx to report_url themself, so we need to ommit here
-                String urlParm = !eventType.equalsIgnoreCase(SHELLY_EVENT_SENSORREPORT) ? "?type=" + eventType : "";
+                // H&T adds the type=xx to report_url itself, so we need to ommit here
+                String eclass = profile.isSensor ? EVENT_TYPE_SENSORDATA : eventType;
+                String urlParm = eventType.contains("temp") || profile.isHT ? "" : "?type=" + eventType;
                 String callBackUrl = "http://" + config.localIp + ":" + config.localPort + SHELLY_CALLBACK_URI + "/"
-                        + profile.thingName + "/" + eventType + urlParm;
+                        + profile.thingName + "/" + eclass + urlParm;
                 String newUrl = enabled ? callBackUrl : SHELLY_NULL_URL;
-                String test = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
-                if (!enabled && !profile.settingsJson.contains(test)) {
+                String testUrl = "\"" + mkEventUrl(eventType) + "\":\"" + newUrl + "\"";
+                if (!enabled && !profile.settingsJson.contains(testUrl)) {
                     // Don't set URL to null when the current one doesn't point to this OH
                     // Don't interfere with a 3rd party App
                     continue;
                 }
-                if (!profile.settingsJson.contains(test)) {
+                if (!profile.settingsJson.contains(testUrl)) {
                     // Current Action URL is != new URL
+                    logger.debug("{}: Set new url for event type {}: {}", thingName, eventType, newUrl);
                     request(SHELLY_URL_SETTINGS + "?" + mkEventUrl(eventType) + "=" + urlEncode(newUrl));
                 }
             }
@@ -457,12 +471,11 @@ public class ShellyHttpApi {
      * @param uri: URI (e.g. "/settings")
      */
     public <T> T callApi(String uri, Class<T> classOfT) throws ShellyApiException {
-        String json = "Invalid API result";
         try {
-            json = request(uri);
+            String json = request(uri);
             return gson.fromJson(json, classOfT);
         } catch (JsonSyntaxException e) {
-            throw new ShellyApiException(e, "Unable to convert JSON");
+            throw new ShellyApiException("Unable to convert JSON", e);
         }
     }
 

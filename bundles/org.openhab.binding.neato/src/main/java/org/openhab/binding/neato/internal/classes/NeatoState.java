@@ -41,7 +41,7 @@ public class NeatoState {
 
         private int value;
 
-        private RobotState(int value) {
+        RobotState(int value) {
             this.value = value;
         }
 
@@ -75,7 +75,7 @@ public class NeatoState {
 
         private int value;
 
-        private RobotAction(int value) {
+        RobotAction(int value) {
             this.value = value;
         }
 
@@ -187,6 +187,14 @@ public class NeatoState {
 
     public Meta getMeta() {
         return meta;
+    }
+
+    @Override
+    public String toString() {
+        return "NeatoState{" + "version=" + version + ", reqId='" + reqId + '\'' + ", result='" + result + '\''
+                + ", error='" + error + '\'' + ", data=" + data + ", state=" + state + ", action=" + action
+                + ", cleaning=" + cleaning + ", details=" + details + ", availableCommands=" + availableCommands
+                + ", availableServices=" + availableServices + ", meta=" + meta + '}';
     }
 
     public void setMeta(Meta meta) {

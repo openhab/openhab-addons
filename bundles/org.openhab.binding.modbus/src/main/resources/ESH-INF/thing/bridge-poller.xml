@@ -26,7 +26,9 @@
 			</parameter>
 			<parameter name="length" type="integer" required="true">
 				<label>Length</label>
-				<description>Number of registers, coils or discrete inputs to read.</description>
+				<description><![CDATA[Number of registers, coils or discrete inputs to read.
+				<br />
+				<br />Maximum number of registers is 125 while 2000 is maximum for coils and discrete inputs.]]></description>
 			</parameter>
 			<parameter name="type" type="text" required="true">
 				<label>Type</label>

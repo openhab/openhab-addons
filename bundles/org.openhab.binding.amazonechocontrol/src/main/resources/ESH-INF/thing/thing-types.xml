@@ -8,6 +8,38 @@
 		<channels>
 			<channel id="sendMessage" typeId="sendMessage"/>
 		</channels>
+		<config-description>
+			<parameter name="discoverSmartHome" type="integer">
+				<label>Device Discovery Mode</label>
+				<description>Defines which devices shall be discovered.</description>
+				<options>
+					<option value="0">No Discovery</option>
+					<option value="1">Direct connected</option>
+					<option value="2">Direct and over Alexa skill</option>
+					<option value="3">Direct, over Alexa and openHAB skill</option>
+				</options>
+				<limitToOptions>true</limitToOptions>
+				<default>0</default>
+			</parameter>
+			<parameter name="pollingIntervalSmartHomeAlexa" type="decimal" min="10" unit="s">
+				<label>Polling Interval Alexa</label>
+				<description>
+					Defines the time in seconds for openHAB to pull the
+					state of the directly connected devices. The minimum
+					is 10 seconds.
+				</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="pollingIntervalSmartSkills" type="decimal" min="60" unit="s">
+				<label>Polling Interval Skill</label>
+				<description>
+					Defines the time in seconds for openHAB to pull the
+					state of the over a skill connected devices. The
+					minimum is 60 seconds.
+				</description>
+				<default>120</default>
+			</parameter>
+		</config-description>
 	</bridge-type>
 	<thing-type id="echo">
 		<supported-bridge-type-refs>
@@ -202,7 +234,6 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-
 	<thing-type id="flashbriefingprofile">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="account"/>
@@ -214,6 +245,34 @@
 			<channel id="active" typeId="active"/>
 			<channel id="playOnDevice" typeId="playOnDevice"/>
 		</channels>
+	</thing-type>
+	<thing-type id="smartHomeDevice">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Smart Home Device</label>
+		<description>Smart home device connected to Alexa</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Device Id</label>
+				<description>The id of the device (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<thing-type id="smartHomeDeviceGroup">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+		<label>Smart Home Device Group</label>
+		<description>Group of smart home devices in your amazon account</description>
+		<representation-property>id</representation-property>
+		<config-description>
+			<parameter name="id" type="text" required="true">
+				<label>Group Id</label>
+				<description>The id of the device group (Please use the discover function to get a configured Thing)</description>
+			</parameter>
+		</config-description>
 	</thing-type>
 	<channel-type id="save">
 		<item-type>Switch</item-type>

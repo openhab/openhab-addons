@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.CommandDescriptionBuilder;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
 import org.eclipse.smarthome.core.types.UnDefType;
@@ -168,5 +169,14 @@ public abstract class Value {
      */
     public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
         return StateDescriptionFragmentBuilder.create().withReadOnly(readOnly).withPattern("%s");
+    }
+
+    /**
+     * Return the command description builder for this value state.
+     *
+     * @return A command description builder
+     */
+    public CommandDescriptionBuilder createCommandDescription() {
+        return CommandDescriptionBuilder.create();
     }
 }

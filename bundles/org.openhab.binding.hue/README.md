@@ -94,7 +94,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64" ]
 
 A user to authenticate against the Hue bridge is automatically generated.
 Please note that the generated user name cannot be written automatically to the `.thing` file, and has to be set manually.
-The generated user name can be found in the log files after pressing the authentication button on the bridge.
+The generated user name can be found, after pressing the authentication button on the bridge, with the following console command: `hue <bridgeUID> username`.
 The user name can be set using the `userName` configuration value, e.g.:
 
 ```
@@ -107,7 +107,7 @@ Bridge hue:bridge:1 [ ipAddress="192.168.0.64", userName="qwertzuiopasdfghjklyxc
 | port                  |  Port of the Hue bridge. Optional, default value is 80 or 443, derived from protocol, otherwise user-defined.                                                                                                                            |
 | userName              | Name of a registered Hue bridge user, that allows to access the API. **Mandatory**                                                                                                                                                       |
 | pollingInterval       | Seconds between fetching light values from the Hue bridge. Optional, the default value is 10 (min="1", step="1").                                                                                                                        |
-| sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500 (min="50", step="1"). |
+| sensorPollingInterval | Milliseconds between fetching sensor-values from the Hue bridge. A higher value means more delay for the sensor values, but a too low value can cause congestion on the bridge. Optional, the default value is 500. Default value will be considered if the value is lower than 50. Use 0 to disable the polling for sensors. |
 
 ### Devices
 
@@ -170,7 +170,7 @@ The devices support some of the following channels:
 | color             | Color              | This channel supports full color control with hue, saturation and brightness values.                                                    | 0200, 0210, group                   |
 | brightness        | Dimmer             | This channel supports adjusting the brightness value. Note that this is not available, if the color channel is supported.               | 0100, 0110, 0220, group             |
 | color_temperature | Dimmer             | This channel supports adjusting the color temperature from cold (0%) to warm (100%).                                                    | 0210, 0220, group                   |
-| alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220        |
+| alert             | String             | This channel supports displaying alerts by flashing the bulb either once or multiple times. Valid values are: NONE, SELECT and LSELECT. | 0000, 0100, 0200, 0210, 0220, group |
 | effect            | Switch             | This channel supports color looping.                                                                                                    | 0200, 0210, 0220                    |
 | dimmer_switch     | Number             | This channel shows which button was last pressed on the dimmer switch.                                                                  | 0820                                |
 | illuminance       | Number:Illuminance | This channel shows the current illuminance measured by the sensor.                                                                      | 0106                                |
@@ -182,8 +182,12 @@ The devices support some of the following channels:
 | flag              | Switch             | This channel save flag state for a CLIP sensor.                                                                                         | 0850                                |
 | status            | Number             | This channel save status state for a CLIP sensor.                                                                                       | 0840                                |
 | last_updated      | DateTime           | This channel the date and time when the sensor was last updated.                                                                        | 0820, 0830, 0840, 0850, 0106, 0107, 0302|
-| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302             |
-| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302             |
+| battery_level     | Number             | This channel shows the battery level.                                                                                                   | 0820, 0106, 0107, 0302              |
+| battery_low       | Switch             | This channel indicates whether the battery is low or not.                                                                               | 0820, 0106, 0107, 0302              |
+| scene             | String             | This channel activates the scene with the given ID String. The ID String of each scene is assigned by the Hue bridge.                   | bridge, group |
+
+To load a hue scene inside a rule for example, the ID of the scene will be required.
+You can list all the scene IDs with the following console commands: `hue <bridgeUID> scenes` and `hue <groupThingUID> scenes`.
 
 ### Trigger Channels
 
@@ -300,7 +304,10 @@ Number   MotionSensorBatteryLevel { channel="hue:0107:1:motion-sensor:battery_le
 Switch   MotionSensorLowBattery   { channel="hue:0107:1:motion-sensor:battery_low" }
 
 // Temperature Sensor
-Number:Temperature TemperatureSensorTemperature { channel="hue:0302:temperature-sensor:temperature" }
+Number:Temperature TemperatureSensorTemperature { channel="hue:0302:1:temperature-sensor:temperature" }
+
+// Scenes
+String LightScene { channel="hue:bridge:1:scene"}
 ```
 
 Note: The bridge ID is in this example **1** but can be different in each system.
@@ -336,6 +343,9 @@ sitemap demo label="Main Menu"
         Text item=MotionSensorLastUpdate
         Text item=MotionSensorBatteryLevel
         Switch item=MotionSensorLowBattery
+
+        // Light Scenes
+        Default item=LightScene label="Scene []"
     }
 }
 ```

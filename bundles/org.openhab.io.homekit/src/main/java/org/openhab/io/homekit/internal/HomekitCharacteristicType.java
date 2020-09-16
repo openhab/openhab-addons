@@ -92,9 +92,22 @@ public enum HomekitCharacteristicType {
 
     VOLUME("Volume"),
     MUTE("Mute"),
+    LIGHT_LEVEL("LightLevel"),
 
     CURRENT_DOOR_STATE("CurrentDoorState"),
     TARGET_DOOR_STATE("TargetDoorState"),
+    TARGET_HEATER_COOLER_STATE("TargetHeaterCoolerState"),
+    CURRENT_HEATER_COOLER_STATE("CurrentHeaterCoolerState"),
+    COOLING_THRESHOLD_TEMPERATURE("CoolingThresholdTemperature"),
+    HEATING_THRESHOLD_TEMPERATURE("HeatingThresholdTemperature"),
+
+    AIR_QUALITY("AirQuality"),
+    OZONE_DENSITY("OzoneDensity"),
+    NITROGEN_DIOXIDE_DENSITY("NitrogenDioxideDensity"),
+    SULPHUR_DIOXIDE_DENSITY("SulphurDioxideDensity"),
+    PM25_DENSITY("PM25Density"),
+    PM10_DENSITY("PM10Density"),
+    VOC_DENSITY("VOCDensity"),
 
     @Deprecated()
     OLD_BATTERY_LEVEL("homekit:BatteryLevel"),

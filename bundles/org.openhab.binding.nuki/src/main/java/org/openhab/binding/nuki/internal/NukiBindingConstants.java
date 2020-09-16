@@ -24,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Markus Katter - Initial contribution
+ * @contributer Christian Hoefler - Door sensor integration
  */
 public class NukiBindingConstants {
 
@@ -43,6 +44,7 @@ public class NukiBindingConstants {
     public static final String CHANNEL_SMARTLOCK_LOCK = "lock";
     public static final String CHANNEL_SMARTLOCK_STATE = "lockState";
     public static final String CHANNEL_SMARTLOCK_LOW_BATTERY = "lowBattery";
+    public static final String CHANNEL_SMARTLOCK_DOOR_STATE = "doorsensorState";
 
     // List of all config-description parameters
     public static final String CONFIG_IP = "ip";
@@ -86,4 +88,12 @@ public class NukiBindingConstants {
     // Nuki Binding additional Lock States
     public static final int LOCK_STATES_UNLOCKING_LOCKNGO = 1002;
     public static final int LOCK_STATES_UNLATCHING_LOCKNGO = 1007;
+
+    // Nuki Binding Door States
+    public static final int DOORSENSOR_STATES_UNAVAILABLE = 0;
+    public static final int DOORSENSOR_STATES_DEACTIVATED = 1;
+    public static final int DOORSENSOR_STATES_CLOSED = 2;
+    public static final int DOORSENSOR_STATES_OPEN = 3;
+    public static final int DOORSENSOR_STATES_UNKNOWN = 4;
+    public static final int DOORSENSOR_STATES_CALIBRATING = 5;
 }

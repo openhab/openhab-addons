@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.paradoxalarm.internal.communication;
 
-import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacketPayload;
+import org.openhab.binding.paradoxalarm.internal.communication.messages.IPPacket;
 
 /**
  * The {@link LogonRequest}. Request for initial logon sequence.
@@ -23,8 +23,8 @@ public class LogonRequest extends Request {
 
     private CommunicationState logonSequenceSender;
 
-    public LogonRequest(CommunicationState logonSequenceSender, IPPacketPayload payload) {
-        super(RequestType.LOGON_SEQUENCE, payload);
+    public LogonRequest(CommunicationState logonSequenceSender, IPPacket payload) {
+        super(RequestType.LOGON_SEQUENCE, payload, logonSequenceSender);
         this.logonSequenceSender = logonSequenceSender;
     }
 

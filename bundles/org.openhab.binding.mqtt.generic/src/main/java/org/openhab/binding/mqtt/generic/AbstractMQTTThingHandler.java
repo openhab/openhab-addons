@@ -113,12 +113,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
      * You should clean up all resources that depend on a working connection.
      */
     protected void stop() {
-        availabilityStates.values().stream().map(s -> {
-            if (s != null) {
-                return s.stop();
-            }
-            return CompletableFuture.allOf();
-        }).collect(FutureCollector.allOf()).join();
+        clearAllAvailabilityTopics();
         resetMessageReceived();
     }
 

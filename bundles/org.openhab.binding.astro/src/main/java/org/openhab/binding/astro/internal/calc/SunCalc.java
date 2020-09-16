@@ -15,12 +15,12 @@ package org.openhab.binding.astro.internal.calc;
 import java.util.Calendar;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.time.DateUtils;
+import org.openhab.binding.astro.internal.model.Eclipse;
+import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Position;
 import org.openhab.binding.astro.internal.model.Radiation;
 import org.openhab.binding.astro.internal.model.Range;
 import org.openhab.binding.astro.internal.model.Sun;
-import org.openhab.binding.astro.internal.model.SunEclipse;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 import org.openhab.binding.astro.internal.util.DateTimeUtils;
 
@@ -135,11 +135,13 @@ public class SunCalc {
     /**
      * Calculates all sun rise and sets at the specified coordinates.
      */
-    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude) {
-        return getSunInfo(calendar, latitude, longitude, altitude, false);
+    public Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude,
+            boolean useMeteorologicalSeason) {
+        return getSunInfo(calendar, latitude, longitude, altitude, false, useMeteorologicalSeason);
     }
 
-    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude, boolean onlyAstro) {
+    private Sun getSunInfo(Calendar calendar, double latitude, double longitude, Double altitude, boolean onlyAstro,
+            boolean useMeteorologicalSeason) {
         double lw = -longitude * DEG2RAD;
         double phi = latitude * DEG2RAD;
         double j = DateTimeUtils.midnightDateToJulianDate(calendar) + 0.5;
@@ -201,10 +203,11 @@ public class SunCalc {
         sun.setDaylight(daylightRange);
 
         // morning night
-        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true);
+        Sun sunYesterday = getSunInfo(addDays(calendar, -1), latitude, longitude, altitude, true,
+                useMeteorologicalSeason);
         Range morningNightRange = null;
         if (sunYesterday.getAstroDusk().getEnd() != null
-                && DateUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
+                && DateTimeUtils.isSameDay(sunYesterday.getAstroDusk().getEnd(), calendar)) {
             morningNightRange = new Range(sunYesterday.getAstroDusk().getEnd(), sun.getAstroDawn().getStart());
         } else if (isSunUpAllDay || sun.getAstroDawn().getStart() == null) {
             morningNightRange = new Range();
@@ -215,7 +218,7 @@ public class SunCalc {
 
         // evening night
         Range eveningNightRange = null;
-        if (sun.getAstroDusk().getEnd() != null && DateUtils.isSameDay(sun.getAstroDusk().getEnd(), calendar)) {
+        if (sun.getAstroDusk().getEnd() != null && DateTimeUtils.isSameDay(sun.getAstroDusk().getEnd(), calendar)) {
             eveningNightRange = new Range(sun.getAstroDusk().getEnd(),
                     DateTimeUtils.truncateToMidnight(addDays(calendar, 1)));
         } else {
@@ -227,26 +230,25 @@ public class SunCalc {
         if (isSunUpAllDay) {
             sun.setNight(new Range());
         } else {
-            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true);
+            Sun sunTomorrow = getSunInfo(addDays(calendar, 1), latitude, longitude, altitude, true,
+                    useMeteorologicalSeason);
             sun.setNight(new Range(sun.getAstroDusk().getEnd(), sunTomorrow.getAstroDawn().getStart()));
         }
 
         // eclipse
-        SunEclipse eclipse = sun.getEclipse();
+        Eclipse eclipse = sun.getEclipse();
         MoonCalc mc = new MoonCalc();
 
-        double partial = mc.getEclipse(calendar, MoonCalc.ECLIPSE_TYPE_SUN, j, MoonCalc.ECLIPSE_MODE_PARTIAL);
-        eclipse.setPartial(DateTimeUtils.toCalendar(partial));
-        double ring = mc.getEclipse(calendar, MoonCalc.ECLIPSE_TYPE_SUN, j, MoonCalc.ECLIPSE_MODE_RING);
-        eclipse.setRing(DateTimeUtils.toCalendar(ring));
-        double total = mc.getEclipse(calendar, MoonCalc.ECLIPSE_TYPE_SUN, j, MoonCalc.ECLIPSE_MODE_TOTAL);
-        eclipse.setTotal(DateTimeUtils.toCalendar(total));
+        eclipse.getKinds().forEach(eclipseKind -> {
+            double jdate = mc.getEclipse(calendar, EclipseType.SUN, j, eclipseKind);
+            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate), new Position());
+        });
 
         SunZodiacCalc zodiacCalc = new SunZodiacCalc();
-        sun.setZodiac(zodiacCalc.getZodiac(calendar));
+        zodiacCalc.getZodiac(calendar).ifPresent(z -> sun.setZodiac(z));
 
         SeasonCalc seasonCalc = new SeasonCalc();
-        sun.setSeason(seasonCalc.getSeason(calendar, latitude));
+        sun.setSeason(seasonCalc.getSeason(calendar, latitude, useMeteorologicalSeason));
 
         // phase
         for (Entry<SunPhaseName, Range> rangeEntry : sun.getAllRanges().entrySet()) {

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client.entity.device;
 
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,30 +30,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Oliver Kuhl - Initial contribution
  */
 public class Device {
-
-    public static final String DEVICE_TYPE_SHC = "SHC";
-    public static final String DEVICE_TYPE_SHCA = "SHCA";
-    public static final String DEVICE_TYPE_ANALOG_METER = "AnalogMeter";
-    public static final String DEVICE_TYPE_BRC8 = "BRC8";
-    public static final String DEVICE_TYPE_GENERATION_METER = "GenerationMeter";
-    public static final String DEVICE_TYPE_ISC2 = "ISC2";
-    public static final String DEVICE_TYPE_ISD2 = "ISD2";
-    public static final String DEVICE_TYPE_ISR2 = "ISR2";
-    public static final String DEVICE_TYPE_ISS2 = "ISS2";
-    public static final String DEVICE_TYPE_PSD = "PSD";
-    public static final String DEVICE_TYPE_PSS = "PSS";
-    public static final String DEVICE_TYPE_PSSO = "PSSO";
-    public static final String DEVICE_TYPE_RST = "RST";
-    public static final String DEVICE_TYPE_SMARTMETER = "SmartMeter";
-    public static final String DEVICE_TYPE_TWO_WAY_METER = "TwoWayMeter";
-    public static final String DEVICE_TYPE_VARIABLE_ACTUATOR = "VariableActuator";
-    public static final String DEVICE_TYPE_WDS = "WDS";
-    public static final String DEVICE_TYPE_WMD = "WMD";
-    public static final String DEVICE_TYPE_WMDO = "WMDO";
-    public static final String DEVICE_TYPE_WRT = "WRT";
-    public static final String DEVICE_TYPE_WSC2 = "WSC2";
-    public static final String DEVICE_TYPE_WSD = "WSD";
-    public static final String DEVICE_TYPE_WSD2 = "WSD2";
 
     public static final String DEVICE_MANUFACTURER_RWE = "RWE";
     public static final String DEVICE_MANUFACTURER_INNOGY = "innogy";
@@ -474,7 +452,7 @@ public class Device {
      * @return
      */
     public boolean isController() {
-        return DEVICE_TYPE_SHC.equals(type) || DEVICE_TYPE_SHCA.equals(type);
+        return DEVICE_SHC.equals(type) || DEVICE_SHCA.equals(type);
     }
 
     /**

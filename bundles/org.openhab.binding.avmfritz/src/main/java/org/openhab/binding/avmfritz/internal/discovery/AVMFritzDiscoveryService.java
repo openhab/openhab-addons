@@ -13,11 +13,12 @@
 package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.eclipse.smarthome.core.thing.Thing.*;
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,9 +56,11 @@ public class AVMFritzDiscoveryService extends AbstractDiscoveryService
     private @NonNullByDefault({}) AVMFritzBaseBridgeHandler bridgeHandler;
 
     public AVMFritzDiscoveryService() {
-        super(Collections.unmodifiableSet(
-                Stream.concat(SUPPORTED_DEVICE_THING_TYPES_UIDS.stream(), SUPPORTED_GROUP_THING_TYPES_UIDS.stream())
-                        .collect(Collectors.toSet())),
+        super(Collections
+                .unmodifiableSet(Stream
+                        .of(SUPPORTED_BUTTON_THING_TYPES_UIDS, SUPPORTED_HEATING_THING_TYPES,
+                                SUPPORTED_DEVICE_THING_TYPES_UIDS, SUPPORTED_GROUP_THING_TYPES_UIDS)
+                        .flatMap(Set::stream).collect(Collectors.toSet())),
                 30);
     }
 

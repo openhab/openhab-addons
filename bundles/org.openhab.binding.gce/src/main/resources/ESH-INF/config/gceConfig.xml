@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:gce:ipx800v3Config">
+		<parameter name="hostname" type="text" required="true">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>Network/IP address of the IPX800 without http(s) prefix.</description>
+		</parameter>
+		<parameter name="portNumber" type="integer" required="false">
+			<label>Port Number</label>
+			<description>TCP client connection port.</description>
+			<default>9870</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="pullInterval" type="integer" required="false" min="500" max="60000" unit="ms">
+			<label>Pull Interval</label>
+			<description>Delay for pulling Analog and Counters info (in milliseconds).</description>
+			<default>5000</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:gce:contactConfig">
+		<parameter name="debouncePeriod" type="integer" min="0" max="3000" unit="ms">
+			<label>Debounce Time</label>
+			<default>0</default>
+		</parameter>
+		<parameter name="longPressTime" type="integer" step="1000" min="0" max="5000" unit="ms">
+			<label>Long Press Time</label>
+			<description>Long press time in milliseconds.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="pulsePeriod" type="integer" step="500" min="0" max="50000" unit="ms">
+			<label>Pulse Period</label>
+			<description>Pulse period in milliseconds.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="pulseTimeout" type="integer" step="500" min="0" max="50000" unit="ms">
+			<label>Pulse Timeout</label>
+			<description>Maximum period for sending pulses in milliseconds.</description>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:gce:relayConfig">
+		<parameter name="pulse" type="boolean">
+			<label>Pulse Output</label>
+			<default>false</default>
+		</parameter>
+	</config-description>
+
+	<config-description uri="channel-type:gce:analogConfig">
+		<parameter name="hysteresis" type="integer" min="0">
+			<label>Hysteresis</label>
+			<default>0</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

@@ -26,7 +26,6 @@ import java.time.ZonedDateTime;
 
 import javax.measure.Unit;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
@@ -35,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.shelly.internal.api.ShellyApiException;
@@ -53,6 +53,60 @@ public class ShellyUtils {
 
     public static String getString(@Nullable String value) {
         return value != null ? value : "";
+    }
+
+    public static String substringBefore(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.indexOf(pattern);
+            if (pos > 0) {
+                return string.substring(0, pos);
+            }
+        }
+        return "";
+    }
+
+    public static String substringBeforeLast(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.lastIndexOf(pattern);
+            if (pos > 0) {
+                return string.substring(0, pos);
+            }
+        }
+        return "";
+    }
+
+    public static String substringAfter(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.indexOf(pattern);
+            if (pos != -1) {
+                return string.substring(pos + pattern.length());
+            }
+        }
+        return "";
+    }
+
+    public static String substringAfterLast(@Nullable String string, String pattern) {
+        if (string != null) {
+            int pos = string.lastIndexOf(pattern);
+            if (pos != -1) {
+                return string.substring(pos + pattern.length());
+            }
+        }
+        return "";
+    }
+
+    public static String substringBetween(@Nullable String string, String begin, String end) {
+        if (string != null) {
+            int s = string.indexOf(begin);
+            if (s != -1) {
+                // The end tag might be included before the start tag, e.g.
+                // when using "http://" and ":" to get the IP from http://192.168.1.1:8081/xxx
+                // therefore make it 2 steps
+                String result = string.substring(s + begin.length());
+                return substringBefore(result, end);
+            }
+        }
+        return "";
     }
 
     public static String getMessage(Exception e) {
@@ -94,6 +148,16 @@ public class ShellyUtils {
         return new DecimalType((value != null ? value : 0));
     }
 
+    public static Double getNumber(Command command) throws IllegalArgumentException {
+        if (command instanceof DecimalType) {
+            return ((DecimalType) command).doubleValue();
+        }
+        if (command instanceof QuantityType) {
+            return ((QuantityType<?>) command).doubleValue();
+        }
+        throw new IllegalArgumentException("Unable to convert number");
+    }
+
     public static OnOffType getOnOff(@Nullable Boolean value) {
         return (value != null ? value ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
     }
@@ -128,8 +192,8 @@ public class ShellyUtils {
         try {
             return URLEncoder.encode(input, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new ShellyApiException(e,
-                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input);
+            throw new ShellyApiException(
+                    "Unsupported encoding format: " + StandardCharsets.UTF_8.toString() + ", input=" + input, e);
         }
     }
 
@@ -158,7 +222,7 @@ public class ShellyUtils {
 
     public static Integer getLightIdFromGroup(String groupName) {
         if (groupName.startsWith(CHANNEL_GROUP_LIGHT_CHANNEL)) {
-            return Integer.parseInt(StringUtils.substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
+            return Integer.parseInt(substringAfter(groupName, CHANNEL_GROUP_LIGHT_CHANNEL)) - 1;
         }
         return 0; // only 1 light, e.g. bulb or rgbw2 in color mode
     }

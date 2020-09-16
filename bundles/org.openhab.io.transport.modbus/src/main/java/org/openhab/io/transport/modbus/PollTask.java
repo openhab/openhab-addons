@@ -25,7 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @see ModbusManager.registerRegularPoll
  */
 @NonNullByDefault
-public interface PollTask extends TaskWithEndpoint<ModbusReadRequestBlueprint, ModbusReadCallback> {
+public interface PollTask extends
+        TaskWithEndpoint<ModbusReadRequestBlueprint, ModbusReadCallback, ModbusFailureCallback<ModbusReadRequestBlueprint>> {
     @Override
     default int getMaxTries() {
         return getRequest().getMaxTries();

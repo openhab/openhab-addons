@@ -19,6 +19,7 @@ As described in the Telegram Bot API, this is the manual procedure needed in ord
 
 - Open a browser and invoke `https://api.telegram.org/bot<token>/getUpdates` (where `<token>` is the authentication token previously obtained)
 - Look at the JSON result to find the value of `id`: that's the chatID.
+
 Note that if using a Telegram group chat, the group chatIDs are prefixed with a dash that must be included in the config (e.g. `-22334455`).
 If this does not work for you (the JSON response may be empty), or you want to send to *more* than one recipient (= another chatID), the alternative is to contact (= open a chat with) a Telegram bot to respond with the chatID.
 There's a number of them such as `@myidbot` or `@chatid_echo_bot` - open a chat, eventually tap `/start` and it will return the chatID you're looking for.
@@ -61,30 +62,45 @@ In order to send a message, an action must be used instead.
 | `proxyHost`             |  None   | No       | Proxy host for telegram binding.                                                             |
 | `proxyPort`             |  None   | No       | Proxy port for telegram binding.                                                             |
 | `proxyType`             |  SOCKS5 | No       | Type of proxy server for telegram binding (SOCKS5 or HTTP). Default: SOCKS5                  |
+| `longPollingTime`       |  25     | No       | Timespan for long polling the telegram API                                                   |
 
+By default chat ids are bi-directionally, i.e. they can send and receive messages.
+They can be prefixed with an access modifier:
+
+- `<` restricts the chat to send only, i.e. this chat id can send messages to openHAB, but will never receive a notification.
+- `>` restricts the chat to receive only, i.e. this chat id will receive all notifications, but messages from this chat id will be discarded. 
+
+To use the reply function, chat ids need to be bi-directional.
 
 telegram.thing (no proxy):
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN" ]
 ```
 
-telegram.thing (multiple chat ids and markdown format):
+telegram.thing (multiple chat ids, one bi-directional chat (ID1), one outbound-only (ID2)):
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID1 >","< ID2 >", botToken="< TOKEN >", parseMode ="Markdown" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID1",">ID2", botToken="TOKEN" ]
+```
+
+
+telegram.thing (markdown format):
+
+```
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", parseMode ="Markdown" ]
 ```
 
 telegram.thing (SOCKS5 proxy server is used): 
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="< HOST >", proxyPort="< PORT >", proxyType="< TYPE >" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="HOST", proxyPort="PORT", proxyType="TYPE" ]
 ```
 
 or HTTP proxy server
 
 ```
-Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
+Thing telegram:telegramBot:Telegram_Bot [ chatIds="ID", botToken="TOKEN", proxyHost="localhost", proxyPort="8123", proxyType="HTTP" ]
 ```
 
 
@@ -97,7 +113,7 @@ Thing telegram:telegramBot:Telegram_Bot [ chatIds="< ID >", botToken="< TOKEN >"
 | lastMessageDate                      | DateTime  | The date of the last received message (UTC)                     |
 | lastMessageName                      | String    | The full name of the sender of the last received message        |
 | lastMessageUsername                  | String    | The username of the sender of the last received message         |
-| chatId                               | String    | The id of the chat of the last received meesage                 |
+| chatId                               | String    | The id of the chat of the last received message                 |
 | replyId                              | String    | The id of the reply which was passed to sendTelegram() as replyId argument. This id can be used to have an unambiguous assignment of the users reply to the message which was sent by the bot             |
 
 All channels are read-only.

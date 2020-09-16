@@ -105,12 +105,12 @@ public class XiaomiItemDiscoveryService extends AbstractDiscoveryService impleme
             Map<String, Object> properties = new HashMap<>(1);
             properties.put(ITEM_ID, sid);
 
-            ThingUID thingUID = new ThingUID(thingType, sid);
+            ThingUID bridgeUID = xiaomiBridgeHandler.getThing().getUID();
+            ThingUID thingUID = new ThingUID(thingType, bridgeUID, sid);
 
             logger.debug("Discovered device - sid: {} model: {}", sid, model);
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingType).withProperties(properties)
-                    .withRepresentationProperty(ITEM_ID).withLabel(modelLabel)
-                    .withBridge(xiaomiBridgeHandler.getThing().getUID()).build());
+                    .withRepresentationProperty(ITEM_ID).withLabel(modelLabel).withBridge(bridgeUID).build());
         }
     }
 

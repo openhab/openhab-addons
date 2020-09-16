@@ -16,6 +16,14 @@ The binding has the following extensions:
 
 <!--list-subs-->
 
+The rest of this page contains details for configuring this binding:
+
+{::options toc_levels="2..4"/}
+
+- TOC
+{:toc}
+
+
 
 ## Main Features
 
@@ -168,16 +176,19 @@ You must give each of your bridge Things a reference (thing ID) that is unique f
 | Parameter     | Type    | Required | Default if omitted | Description                                                                                                                                                                                    |
 | ------------- | ------- | -------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `start`       | integer |          | `0`                | Address of the first register, coil, or discrete input to poll. Input as zero-based index number.                                                                                              |
-| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.                                                                                                                                         |
+| `length`      | integer | ✓        | (-)                | Number of registers, coils or discrete inputs to read.  Note that protocol limits max length, depending on type                                                                             |
 | `type`        | text    | ✓        | (-)                | Type of modbus items to poll. This matches directly to Modbus request type or function code (FC). Valid values are: `"coil"` (FC01), `"discrete"` (FC02), `"holding"`(FC03), `"input"` (FC04). |
 | `refresh`     | integer |          | `500`              | Poll interval in milliseconds. Use zero to disable automatic polling.                                                                                                                          |
 | `maxTries`    | integer |          | `3`                | Maximum tries when reading. <br /><br />Number of tries when reading data, if some of the reading fail. For single try, enter 1.                                                               |
 | `cacheMillis` | integer |          | `50`               | Duration for data cache to be valid, in milliseconds. This cache is used only to serve `REFRESH`  commands. Use zero to disable the caching.                                                   |
 
-Note: Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
+Polling can be manually triggered by sending `REFRESH` command to item bound to channel of `data` thing.
 When manually triggering polling, a new poll is executed as soon as possible, and sibling `data` things (i.e. things that share the same `poller` bridge) are updated.
 In case the `poller` had just received a data response or an error occurred, a cached response is used instead.
 See [Refresh command](#refresh-command) section for more details.
+
+Some devices do not allow to query too many registers in a single readout action or a range that spans reserved registers.
+Split your poller into multiple smaller ones to work around this problem.
 
 ### `data` Thing
 
@@ -302,7 +313,7 @@ Main documentation on `autoupdate` in [Items section of openHAB docs](https://ww
 
 Device specific modbus bindings can take part in the discovery of things, and detect devices automatically. The discovery is initiated by the `tcp` and `serial` bridges when they have `enableDiscovery` setting enabled.
 
-Note that the main binding does not recognize any device, so it is pointless to turn this on unless you have the correct binding installed.
+Note that the main binding does not recognize any devices, so it is pointless to turn this on unless you have a suitable add-on binding installed.
 
 ## Details
 
@@ -984,6 +995,23 @@ end
 ```
 
 Please be aware that `REFRESH` commands are "throttled" (to be exact, responses are cached) with `poller` parameter `cacheMillis`.
+
+## Troubleshooting
+
+Modbus, while simple at its heart, potentially is a complicated standard to use because there's a lot of freedom (and bugs) when it comes to implementations.
+There are many device or vendor specific quirks and wrinkles you might stumble across. Here's some:
+
+* With Modbus TCP devices, there may be multiple network interfaces available, e.g. Wifi and wired Ethernet. However, with some devices the Modbus data is accessible via only one of the interfaces. You need to check the device manufacturer manual, or simply try out which of the IPs are returning valid modbus data.
+Attention: a device may have an interface with a port open (502 or other) that it responds to Modbus requests on, but that may have no connection to the real bus hardware, resulting in generic Modbus error responses to _every_ request.
+So check ALL interfaces. Usually either the IP on Ethernet will do.
+
+* some devices do not allow to query a range of registers that is too large or spans reserved registers. Do not poll more than 123 registers.
+Devices may respond with an error or no error but invalid register data so this error can easily go undedetected.
+Turn your poller thing into multiple things to cover smaller ranges to work around this problem.
+
+* there's potentially many more or less weird inconsistencies with some devices.
+If you fail to read a register or you only ever get invalid values (such as 00 or FF bytes), try with various poller lengths such as the exact length of a register in question or twice the amount.
+In extreme cases you might even need more than a poller for a single register so you have two or more poller with two or more data things and need to combine these into another item using a rule.
 
 ## Changes From Modbus 1.x Binding
 

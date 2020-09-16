@@ -313,8 +313,8 @@ Rollershutter Kitchen   {channel="nikohomecontrol:blind:nhc1:4:rollershutter"}  
 Number:Temperature CurTemperature   "[%.1f °F]"  {channel="nikohomecontrol:thermostat:nhc1:5:measured"}   # Getting measured temperature from thermostat in °F, read only
 Number ThermostatMode   {channel="nikohomecontrol:thermostat:nhc1:5:mode"}        # Get and set thermostat mode
 Number:Temperature SetTemperature   "[%.1f °C]"  {channel="nikohomecontrol:thermostat:nhc1:5:setpoint"}   # Get and set target temperature in °C
-Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime} # Get and set the overrule time
-Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand}       # Get the current heating/cooling demand
+Number OverruleDuration {channel="nikohomecontrol:thermostat:nhc1:5:overruletime"} # Get and set the overrule time
+Number ThermostatDemand {channel="nikohomecontrol:thermostat:nhc1:5:demand"}       # Get the current heating/cooling demand
 Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeter:nhc2:6:power"}   # Get current power consumption
 ```
 
@@ -327,7 +327,7 @@ Slider item=TVRoom
 Switch item=TVRoom          # allows switching dimmer item off or on (with controller defined behavior)
 Rollershutter item=Kitchen
 Text item=CurTemperature
-Selection item=ThermostatMode mappings="[0="day", 1="night", 2="eco", 3="off", 4="cool", 5="prog 1", 6="prog 2", 7="prog 3"]
+Selection item=ThermostatMode mappings=[0="day", 1="night", 2="eco", 3="off", 4="cool", 5="prog 1", 6="prog 2", 7="prog 3"]
 Setpoint item=SetTemperature minValue=0 maxValue=30
 Slider item=OverruleDuration minValue=0 maxValue=120
 Text item=Power

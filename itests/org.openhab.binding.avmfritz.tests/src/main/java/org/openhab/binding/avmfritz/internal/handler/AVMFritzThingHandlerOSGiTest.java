@@ -14,7 +14,7 @@ package org.openhab.binding.avmfritz.internal.handler;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.binding.avmfritz.internal.BindingConstants.*;
+import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.openhab.binding.avmfritz.internal.AVMFritzDynamicStateDescriptionProvider;
+import org.openhab.binding.avmfritz.internal.AVMFritzDynamicCommandDescriptionProvider;
 
 /**
  * Tests for {@link AVMFritzThingHandlerOSGiTest}.
@@ -70,7 +70,7 @@ public abstract class AVMFritzThingHandlerOSGiTest extends JavaOSGiTest {
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
 
-        bridgeHandler = new BoxHandler(bridge, httpClient, new AVMFritzDynamicStateDescriptionProvider());
+        bridgeHandler = new BoxHandler(bridge, httpClient, mock(AVMFritzDynamicCommandDescriptionProvider.class));
         assertNotNull(bridgeHandler);
 
         bridgeHandler.setCallback(callback);

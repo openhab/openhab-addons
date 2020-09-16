@@ -15,9 +15,6 @@ package org.openhab.binding.astro.internal.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
-
 /**
  * Holds the calculated sun data.
  *
@@ -33,7 +30,7 @@ public class Sun extends RiseSet implements Planet {
 
     private Season season = new Season();
 
-    private SunEclipse eclipse = new SunEclipse();
+    private Eclipse eclipse = new Eclipse(EclipseKind.PARTIAL, EclipseKind.TOTAL, EclipseKind.RING);
 
     private Radiation radiation = new Radiation();
 
@@ -263,14 +260,14 @@ public class Sun extends RiseSet implements Planet {
     /**
      * Returns the eclipses.
      */
-    public SunEclipse getEclipse() {
+    public Eclipse getEclipse() {
         return eclipse;
     }
 
     /**
      * Sets the eclipses.
      */
-    public void setEclipse(SunEclipse eclipse) {
+    public void setEclipse(Eclipse eclipse) {
         this.eclipse = eclipse;
     }
 
@@ -293,17 +290,5 @@ public class Sun extends RiseSet implements Planet {
      */
     public Map<SunPhaseName, Range> getAllRanges() {
         return ranges;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("sunrise", getRise())
-                .append("noon", getNoon()).append("sunset", getSet()).append("night", getNight())
-                .append("morningNight", getMorningNight()).append("astroDawn", getAstroDawn())
-                .append("nauticDawn", getNauticDawn()).append("civilDawn", getCivilDawn())
-                .append("civilDusk", getCivilDusk()).append("nauticDusk", getNauticDawn())
-                .append("astroDusk", getAstroDusk()).append("daylight", getDaylight())
-                .append("eveningNight", getEveningNight()).append("eclipse", eclipse).append("phase", phase)
-                .append("radiation", radiation).toString();
     }
 }

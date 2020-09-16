@@ -13,6 +13,9 @@
 package org.openhab.binding.shelly.internal.api;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -62,6 +65,11 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_OUT_OFF = "out_off";
     public static final String SHELLY_EVENT_SHORTPUSH = "shortpush";
     public static final String SHELLY_EVENT_LONGPUSH = "longpush";
+    // Button
+    public static final String SHELLY_EVENT_DOUBLE_SHORTPUSH = "double_shortpush";
+    public static final String SHELLY_EVENT_TRIPLE_SHORTPUSH = "triple_shortpush";
+    public static final String SHELLY_EVENT_SHORT_LONGTPUSH = "shortpush_longpush";
+    public static final String SHELLY_EVENT_LONG_SHORTPUSH = "longpush_shortpush";
 
     // Dimmer
     public static final String SHELLY_EVENT_BTN1_ON = "btn1_on";
@@ -82,24 +90,37 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_EVENT_SENSORREPORT = "report";
     public static final String SHELLY_EVENT_DARK = "dark";
     public static final String SHELLY_EVENT_TWILIGHT = "twilight";
+    public static final String SHELLY_EVENT_BRIGHT = "bright";
     public static final String SHELLY_EVENT_FLOOD_DETECTED = "flood_detected";
     public static final String SHELLY_EVENT_FLOOD_GONE = "flood_gone";
     public static final String SHELLY_EVENT_VIBRATION = "vibration"; // DW 1.6.5+
-    public static final String SHELLY_EVENT_CLOSE = "close_url"; // DW 1.6.5+
+    public static final String SHELLY_EVENT_OPEN = "open"; // DW 1.6.5+
+    public static final String SHELLY_EVENT_CLOSE = "close"; // DW 1.6.5+
+    public static final String SHELLY_EVENT_TEMP_OVER = "temp_over"; // FW 1.7
+    public static final String SHELLY_EVENT_TEMP_UNDER = "temp_under"; // FW 1.7
+
+    // Gas
+    public static final String SHELLY_EVENT_ALARM_MILD = "alarm_mild"; // DW 1.7+
+    public static final String SHELLY_EVENT_ALARM_HEAVY = "alarm_heavy"; // DW 1.7+
+    public static final String SHELLY_EVENT_ALARM_OFF = "alarm_off"; // DW 1.7+
 
     //
     // API values
     //
     public static final String SHELLY_BTNT_MOMENTARY = "momentary";
     public static final String SHELLY_BTNT_MOM_ON_RELEASE = "momentary_on_release";
+    public static final String SHELLY_BTNT_ONE_BUTTON = "one_button";
     public static final String SHELLY_BTNT_TOGGLE = "toggle";
     public static final String SHELLY_BTNT_EDGE = "edge";
     public static final String SHELLY_BTNT_DETACHED = "detached";
+
     public static final String SHELLY_STATE_LAST = "last";
     public static final String SHELLY_STATE_STOP = "stop";
+
     public static final String SHELLY_INP_MODE_OPENCLOSE = "openclose";
     public static final String SHELLY_OBSTMODE_DISABLED = "disabled";
     public static final String SHELLY_SAFETYM_WHILEOPENING = "while_opening";
+
     public static final String SHELLY_ALWD_TRIGGER_NONE = "none";
     public static final String SHELLY_ALWD_ROLLER_TURN_OPEN = "open";
     public static final String SHELLY_ALWD_ROLLER_TURN_CLOSE = "close";
@@ -114,6 +135,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_CLASS_RELAY = "relay"; // Relay: relay mode
     public static final String SHELLY_CLASS_ROLLER = "roller"; // Relay: roller mode
     public static final String SHELLY_CLASS_LIGHT = "light"; // Bulb: color mode
+    public static final String SHELLY_CLASS_EMETER = "emeter"; // EM/EM3: emeter
 
     public static final String SHELLY_API_ON = "on";
     public static final String SHELLY_API_OFF = "off";
@@ -132,6 +154,7 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_API_STOPR_NORMAL = "normal";
     public static final String SHELLY_API_STOPR_SAFETYSW = "safety_switch";
     public static final String SHELLY_API_STOPR_OBSTACLE = "obstacle";
+    public static final String SHELLY_API_STOPR_OVERPOWER = "overpower";
 
     public static final String SHELLY_TIMER_AUTOON = "auto_on";
     public static final String SHELLY_TIMER_AUTOOFF = "auto_off";
@@ -186,8 +209,17 @@ public class ShellyApiJsonDTO {
     public static final String SHELLY_IR_CODET_PRONTO = "pronto";
     public static final String SHELLY_IR_CODET_PRONTO_HEX = "pronto_hex";
 
+    // Bulb/Duo/RGBW2
     public static final int SHELLY_MIN_EFFECT = 0;
     public static final int SHELLY_MAX_EFFECT = 6;
+
+    // Button
+    public static final String SHELLY_BTNEVENT_1SHORTPUSH = "S";
+    public static final String SHELLY_BTNEVENT_2SHORTPUSH = "SS";
+    public static final String SHELLY_BTNEVENT_3SHORTPUSH = "SSS";
+    public static final String SHELLY_BTNEVENT_LONGPUSH = "L";
+    public static final String SHELLY_BTNEVENT_SHORTLONGPUSH = "SL";
+    public static final String SHELLY_BTNEVENT_LONGSHORTPUSH = "LS";
 
     public static final String SHELLY_TEMP_CELSIUS = "C";
     public static final String SHELLY_TEMP_FAHRENHEIT = "F";
@@ -408,6 +440,11 @@ public class ShellyApiJsonDTO {
 
     public static class ShellyInputState {
         public Integer input;
+
+        // Shelly Button
+        public String event;
+        @SerializedName("event_cnt")
+        public Integer eventCount;
     }
 
     public static class ShellySettingsMeter {
@@ -429,8 +466,8 @@ public class ShellyApiJsonDTO {
         @SerializedName("total_returned")
         public Double totalReturned; // Total returned energy, Wh
 
-        public Double pf; // EM3
-        public Double current; // EM3
+        public Double pf; // 3EM
+        public Double current; // 3EM
     }
 
     public static class ShellySettingsUpdate {
@@ -469,6 +506,11 @@ public class ShellyApiJsonDTO {
         @SerializedName("sleep_mode")
         public ShellySensorSleepMode sleepMode; // FW 1.6
 
+        // @SerializedName("ext_temperature")
+        // public ShellyStatusSensor.ShellyExtTemperature extTemperature; // Shelly 1/1PM: sensor values
+        // @SerializedName("ext_humidity")
+        // public ShellyStatusSensor.ShellyExtHumidity extHumidity; // Shelly 1/1PM: sensor values
+
         public String timezone;
         public Double lat;
         public Double lng;
@@ -490,7 +532,7 @@ public class ShellyApiJsonDTO {
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsDimmer> dimmers;
         public ArrayList<ShellySettingsEMeter> emeters;
-        public ArrayList<ShellyInputState> inputs; // Firmware 1.5.6+
+        public ArrayList<ShellySettingsInput> inputs; // ix3
 
         @SerializedName("temperature_units")
         public String temperatureUnits; // Either'C'or'F'
@@ -528,6 +570,16 @@ public class ShellyApiJsonDTO {
         // public Boolean vibrationEnabled; // Whether vibration monitoring is activated
         // @SerializedName("reverse_open_close")
         // public Boolean reverseOpenClose; // Whether to reverse which position the sensor consideres "open"
+
+        // Gas FW 1.7
+        @SerializedName("set_volume")
+        public Integer volume; // Speaker volume for alarm
+        @SerializedName("alarm_off_url")
+        public String alarmOffUrl; // URL reports when alarm went off
+        @SerializedName("alarm_mild_url")
+        public String alarmMidUrl; // URL reports middle alarm
+        @SerializedName("alarm_heavy_url")
+        public String alarmHeavyfUrl; // URL reports heavy alarm
     }
 
     public static class ShellySettingsAttributes {
@@ -547,6 +599,8 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellySettingsStatus {
+        public String name; // FW 1.8: Symbolic Device name is configurable
+
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi client configuration. See /settings/sta for details
 
@@ -556,6 +610,9 @@ public class ShellyApiJsonDTO {
         public Boolean hasUpdate;
         public String mac;
         public Boolean discoverable; // FW 1.6+
+        @SerializedName("cfg_changed_cnt")
+        public Integer cfgChangedCount; // FW 1.8
+
         public ArrayList<ShellySettingsRelay> relays;
         public ArrayList<ShellySettingsRoller> rollers;
         public Integer input; // RGBW2 has no JSON array
@@ -590,6 +647,32 @@ public class ShellyApiJsonDTO {
         public String json;
     }
 
+    public static class ShellySettingsInput {
+        @SerializedName("btn_type")
+        public String btnType;
+
+        // included attributes not yet processed
+        // public String name;
+        // @SerializedName("btn_reverse")
+        // public Integer btnReverse;
+        // @SerializedName("btn_on_url")
+        // public String btnOnUrl;
+        // @SerializedName("btn_off_url")
+        // public String btnOffUrl;
+        // @SerializedName("shortpush_url")
+        // public String shortpushUrl;
+        // @SerializedName("longpush_url")
+        // public String longpushUrl;
+        // @SerializedName("double_shortpush_url")
+        // public String doubleShortpushUrl;
+        // @SerializedName("triple_shortpush_url")
+        // public String tripleShortpushUrl;
+        // @SerializedName("shortpush_longpush_url")
+        // public String shortpushLongpushUrl;
+        // @SerializedName("longpush_shortpush_url")
+        // public String longpushShortpushUrl;
+    }
+
     public static class ShellyControlRelay {
         // https://shelly-api-docs.shelly.cloud/#shelly1-1pm-settings-relay-0
         @SerializedName("is_valid")
@@ -606,6 +689,7 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyShortStatusRelay {
+        public String name; // FW 1.8+: Channel could now have a logical name
         @SerializedName("is_valid")
         public Boolean isValid;
         public Boolean ison; // Whether output channel is on or off
@@ -631,6 +715,8 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyStatusRelay {
+        public String name; // FW 1.8: Symbolic channel name is configurable
+
         @SerializedName("wifi_sta")
         public ShellySettingsWiFiNetwork wifiSta; // WiFi status
         // public ShellyStatusCloud cloud; // Cloud status
@@ -699,6 +785,8 @@ public class ShellyApiJsonDTO {
     }
 
     public static class ShellyControlRoller {
+        public String name; // FW 1.8: Symbolic name is configurable
+
         @SerializedName("roller_pos")
         public Integer rollerPos; // number Desired position in percent
         public Integer duration; // If specified, the motor will move for this period in seconds. If missing, the
@@ -810,10 +898,22 @@ public class ShellyApiJsonDTO {
         public Integer externalPower; // H&T FW 1.6, seems to be the same like charger for the Sense
 
         @SerializedName("act_reasons")
-        public String[] actReasons; // HT/Smoke/Flood: list of reasons which woke up the device
+        public List<Object> actReasons; // HT/Smoke/Flood: list of reasons which woke up the device
 
         @SerializedName("sensor_error")
         public String sensorError; // 1.5.7: Only displayed in case of error
+
+        // FW 1.7: Shelly Gas
+        @SerializedName("gas_sensor")
+        public ShellyStatusGasSensor gasSensor;
+        @SerializedName("concentration")
+        public ShellyStatusGasConcentration concentration;
+        public ArrayList<ShellyStatusValve> valves;
+
+        // FW 1.7 Button
+        @SerializedName("connect_retries")
+        public Integer connectRetries;
+        public ArrayList<ShellyInputState> inputs; // Firmware 1.5.6+
     }
 
     public static class ShellySettingsSmoke {
@@ -823,6 +923,28 @@ public class ShellyApiJsonDTO {
         public Integer temperatureThreshold; // Temperature delta (in configured degree units) which triggers an update
         @SerializedName("sleep_mode_period")
         public Integer sleepModePeriod; // Periodic update period in hours, between 1 and 24
+    }
+
+    // Shelly Gas
+    // "gas_sensor":{"sensor_state":"normal","self_test_state":"not_completed","alarm_state":"none"},
+    // "concentration":{"ppm":0,"is_valid":true},
+    public static class ShellyStatusGasSensor {
+        @SerializedName("sensor_state")
+        public String sensorState;
+        @SerializedName("self_test_state")
+        public String selfTestState;
+        @SerializedName("alarm_state")
+        public String alarmState;
+    }
+
+    public static class ShellyStatusGasConcentration {
+        public Integer ppm;
+        @SerializedName("is_valid")
+        public Boolean isValid;
+    }
+
+    public static class ShellyStatusValve {
+        public String state; // closed/opened/not_connected/failure/closing/opening/checking
     }
 
     public static class ShellySettingsLight {
@@ -916,5 +1038,44 @@ public class ShellyApiJsonDTO {
     public static String fixDimmerJson(String json) {
         return !json.contains("\"lights\":[") ? json
                 : json.replaceFirst(java.util.regex.Pattern.quote("\"lights\":["), "\"dimmers\":[");
+    }
+
+    /**
+     * Convert Shelly Button events into OH button states
+     *
+     * @param eventType S/SS/SSS or L
+     * @return OH button states
+     */
+    public static String mapButtonEvent(String eventType) {
+        // decode different codings
+        // 0..2: CoAP
+        // S/SS/SSS/L: CoAP for Button and xi3
+        // shortpush/double_shortpush/triple_shortpush/longpush: REST
+        switch (eventType) {
+            case "0":
+                return CommonTriggerEvents.RELEASED;
+            case "1":
+            case SHELLY_BTNEVENT_1SHORTPUSH:
+            case SHELLY_EVENT_SHORTPUSH:
+                return CommonTriggerEvents.SHORT_PRESSED;
+            case SHELLY_BTNEVENT_2SHORTPUSH:
+            case SHELLY_EVENT_DOUBLE_SHORTPUSH:
+                return CommonTriggerEvents.DOUBLE_PRESSED;
+            case SHELLY_BTNEVENT_3SHORTPUSH:
+            case SHELLY_EVENT_TRIPLE_SHORTPUSH:
+                return "TRIPLE_PRESSED";
+            case "2":
+            case SHELLY_BTNEVENT_LONGPUSH:
+            case SHELLY_EVENT_LONGPUSH:
+                return CommonTriggerEvents.LONG_PRESSED;
+            case SHELLY_BTNEVENT_SHORTLONGPUSH:
+            case SHELLY_EVENT_SHORT_LONGTPUSH:
+                return "SHORT_LONG_PRESSED";
+            case SHELLY_BTNEVENT_LONGSHORTPUSH:
+            case SHELLY_EVENT_LONG_SHORTPUSH:
+                return "LONG_SHORT_PRESSED";
+            default:
+                return "";
+        }
     }
 }

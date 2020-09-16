@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Switch Channel -->
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>Switch the power ON and OFF</description>
+		<category>Light</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Brightness Channel -->
+	<channel-type id="brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>Control the brightness and switch the light ON and OFF</description>
+		<category>DimmableLight</category>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
+	</channel-type>
+
+	<!-- Shutter Channel -->
+	<channel-type id="shutter">
+		<item-type>Rollershutter</item-type>
+		<label>Roller shutter</label>
+		<description>Control the roller shutter position</description>
+		<category>Blinds</category>
+		<tags>
+			<tag>Blinds</tag>
+		</tags>
+	</channel-type>
+
+</thing:thing-descriptions>

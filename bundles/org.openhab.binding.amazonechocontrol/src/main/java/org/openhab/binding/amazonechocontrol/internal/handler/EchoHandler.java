@@ -21,10 +21,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -105,7 +103,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private Set<String> capabilities = new HashSet<>();
     private @Nullable AccountHandler account;
     private @Nullable ScheduledFuture<?> updateStateJob;
-    private @Nullable ScheduledFuture<?> ignoreVolumeChange;
     private @Nullable ScheduledFuture<?> updateProgressJob;
     private Object progressLock = new Object();
     private @Nullable String wakeWord;
@@ -126,7 +123,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     private boolean updateRoutine = true;
     private boolean updatePlayMusicVoiceCommand = true;
     private boolean updateStartCommand = true;
-    private @Nullable Integer noticationVolumeLevel;
+    private @Nullable Integer notificationVolumeLevel;
     private @Nullable Boolean ascendingAlarm;
     private @Nullable JsonPlaylists playLists;
     private @Nullable JsonNotificationSound @Nullable [] alarmSounds;
@@ -246,6 +243,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
+            logger.trace("Command '{}' received for channel '{}'", command, channelUID);
             int waitForUpdate = 1000;
             boolean needBluetoothRefresh = false;
             String lastKnownBluetoothMAC = this.lastKnownBluetoothMAC;
@@ -302,7 +300,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (command instanceof PercentType) {
                     int volume = ((PercentType) command).intValue();
                     connection.notificationVolume(device, volume);
-                    this.noticationVolumeLevel = volume;
+                    this.notificationVolumeLevel = volume;
                     waitForUpdate = -1;
                     account.forceCheckData();
                 }
@@ -382,9 +380,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                         connection.command(device, "{\"type\":\"VolumeLevelCommand\",\"volumeLevel\":" + volume
                                 + ",\"contentFocusClientId\":\"Default\"}");
                     } else {
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put("value", volume);
-                        connection.executeSequenceCommand(device, "Alexa.DeviceControls.Volume", parameters);
+                        connection.volume(device, volume);
                     }
                     lastKnownVolume = volume;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
@@ -657,7 +653,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (bluetoothRefresh) {
                     JsonBluetoothStates states;
                     states = connection.getBluetoothConnectionStates();
-                    state = states.findStateByDevice(device);
+                    if (states != null) {
+                        state = states.findStateByDevice(device);
+                    }
                 }
 
                 updateState(account, device, state, null, null, null, null, null);
@@ -699,7 +697,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     newEqualizerSetting.treble = value.intValue();
                 }
                 try {
-                    connection.SetEqualizer(device, newEqualizerSetting);
+                    connection.setEqualizer(device, newEqualizerSetting);
                     return true;
                 } catch (HttpException | IOException | ConnectionException e) {
                     logger.debug("Update equalizer failed", e);
@@ -714,15 +712,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             throws IOException, URISyntaxException {
         Integer volume = null;
         if (textToSpeechVolume != 0) {
-            startIgnoreVolumeChange();
             volume = textToSpeechVolume;
         }
-        if (text.startsWith("<speak>") && text.endsWith("</speak>")) {
-            String bodyText = text.replaceAll("<[^>]+>", "");
-            connection.sendAnnouncement(device, text, bodyText, null, volume, lastKnownVolume);
-        } else {
-            connection.textToSpeech(device, text, volume, lastKnownVolume);
-        }
+        connection.textToSpeech(device, text, volume, lastKnownVolume);
     }
 
     @Override
@@ -738,10 +730,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (volume != null && volume < 0) {
             volume = null; // the meaning of negative values is 'do not use'. The api requires null in this case.
         }
-        if (volume != null) {
-            startIgnoreVolumeChange();
-        }
-        connection.sendAnnouncement(device, speak, bodyText, title, volume, lastKnownVolume);
+        connection.announcement(device, speak, bodyText, title, volume, lastKnownVolume);
     }
 
     private void stopCurrentNotification() {
@@ -765,22 +754,22 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
     }
 
     private void updateNotificationTimerState() {
-        boolean stopCurrentNotifcation = true;
+        boolean stopCurrentNotification = true;
         JsonNotificationResponse currentNotification = this.currentNotification;
         try {
             if (currentNotification != null) {
                 Connection currentConnection = this.findConnection();
                 if (currentConnection != null) {
                     JsonNotificationResponse newState = currentConnection.getNotificationState(currentNotification);
-                    if (StringUtils.equals(newState.status, "ON")) {
-                        stopCurrentNotifcation = false;
+                    if (newState != null && "ON".equals(newState.status)) {
+                        stopCurrentNotification = false;
                     }
                 }
             }
         } catch (IOException | URISyntaxException e) {
             logger.warn("update notification state fails", e);
         }
-        if (stopCurrentNotifcation) {
+        if (stopCurrentNotification) {
             if (currentNotification != null) {
                 String type = currentNotification.type;
                 if (type != null) {
@@ -807,7 +796,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             this.logger.debug("Handle updateState {}", this.getThing().getUID());
 
             if (deviceNotificationState != null) {
-                noticationVolumeLevel = deviceNotificationState.volumeLevel;
+                notificationVolumeLevel = deviceNotificationState.volumeLevel;
             }
             if (ascendingAlarmModel != null) {
                 ascendingAlarm = ascendingAlarmModel.ascendingAlarmEnabled;
@@ -851,44 +840,44 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             Progress progress = null;
             try {
                 JsonPlayerState playerState = connection.getPlayer(device);
-                playerInfo = playerState.playerInfo;
-                if (playerInfo != null) {
-                    infoText = playerInfo.infoText;
-                    if (infoText == null) {
-                        infoText = playerInfo.miniInfoText;
-                    }
-                    mainArt = playerInfo.mainArt;
-                    provider = playerInfo.provider;
-                    if (provider != null) {
-                        musicProviderId = provider.providerName;
-                        // Map the music provider id to the one used for starting music with voice command
-                        if (musicProviderId != null) {
-                            musicProviderId = musicProviderId.toUpperCase();
+                if (playerState != null) {
+                    playerInfo = playerState.playerInfo;
+                    if (playerInfo != null) {
+                        infoText = playerInfo.infoText;
+                        if (infoText == null) {
+                            infoText = playerInfo.miniInfoText;
+                        }
+                        mainArt = playerInfo.mainArt;
+                        provider = playerInfo.provider;
+                        if (provider != null) {
+                            musicProviderId = provider.providerName;
+                            // Map the music provider id to the one used for starting music with voice command
+                            if (musicProviderId != null) {
+                                musicProviderId = musicProviderId.toUpperCase();
 
-                            if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
-                                musicProviderId = "AMAZON_MUSIC";
-                            }
-                            if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
-                                musicProviderId = "AMAZON_MUSIC";
-                            }
-                            if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
-                                musicProviderId = "TUNEIN";
-                            }
-                            if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
-                                musicProviderId = "I_HEART_RADIO";
-                            }
-                            if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
-                                    && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
-                                musicProviderId = "APPLE_MUSIC";
+                                if (StringUtils.equals(musicProviderId, "AMAZON MUSIC")) {
+                                    musicProviderId = "AMAZON_MUSIC";
+                                }
+                                if (StringUtils.equals(musicProviderId, "CLOUD_PLAYER")) {
+                                    musicProviderId = "AMAZON_MUSIC";
+                                }
+                                if (StringUtils.startsWith(musicProviderId, "TUNEIN")) {
+                                    musicProviderId = "TUNEIN";
+                                }
+                                if (StringUtils.startsWithIgnoreCase(musicProviderId, "iHeartRadio")) {
+                                    musicProviderId = "I_HEART_RADIO";
+                                }
+                                if (StringUtils.containsIgnoreCase(musicProviderId, "Apple")
+                                        && StringUtils.containsIgnoreCase(musicProviderId, "Music")) {
+                                    musicProviderId = "APPLE_MUSIC";
+                                }
                             }
                         }
+                        progress = playerInfo.progress;
                     }
-                    progress = playerInfo.progress;
                 }
             } catch (HttpException e) {
-                if (e.getCode() == 400) {
-                    // Ignore
-                } else {
+                if (e.getCode() != 400) {
                     logger.info("getPlayer fails", e);
                 }
             } catch (IOException | URISyntaxException e) {
@@ -896,10 +885,8 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
             // check playing
             isPlaying = (playerInfo != null && StringUtils.equals(playerInfo.state, "PLAYING"));
-            // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PLAYING"));
 
             isPaused = (playerInfo != null && StringUtils.equals(playerInfo.state, "PAUSED"));
-            // || (mediaState != null && StringUtils.equals(mediaState.currentState, "PAUSED"));
             synchronized (progressLock) {
                 Boolean showTime = null;
                 Long mediaLength = null;
@@ -947,7 +934,6 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             }
 
             // handle music provider id
-
             if (provider != null && isPlaying) {
                 if (musicProviderId != null) {
                     this.musicProviderId = musicProviderId;
@@ -1062,7 +1048,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             // handle volume
             Integer volume = null;
-            if (this.ignoreVolumeChange == null) {
+            if (!connection.isSequenceNodeQueueRunning()) {
                 if (mediaState != null) {
                     volume = mediaState.volume;
                 }
@@ -1129,8 +1115,9 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             updateState(CHANNEL_ASCENDING_ALARM,
                     ascendingAlarm != null ? (ascendingAlarm ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
 
-            if (noticationVolumeLevel != null) {
-                updateState(CHANNEL_NOTIFICATION_VOLUME, new PercentType(noticationVolumeLevel));
+            final Integer notificationVolumeLevel = this.notificationVolumeLevel;
+            if (notificationVolumeLevel != null) {
+                updateState(CHANNEL_NOTIFICATION_VOLUME, new PercentType(notificationVolumeLevel));
             } else {
                 updateState(CHANNEL_NOTIFICATION_VOLUME, UnDefType.UNDEF);
             }
@@ -1155,14 +1142,16 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if (device == null) {
             return;
         }
-        Integer bass;
-        Integer midrange;
-        Integer treble;
+        Integer bass = null;
+        Integer midrange = null;
+        Integer treble = null;
         try {
             JsonEqualizer equalizer = connection.getEqualizer(device);
-            bass = equalizer.bass;
-            midrange = equalizer.mid;
-            treble = equalizer.treble;
+            if (equalizer != null) {
+                bass = equalizer.bass;
+                midrange = equalizer.mid;
+                treble = equalizer.treble;
+            }
             this.lastKnownEqualizer = equalizer;
         } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
             logger.debug("Get equalizer failes", e);
@@ -1214,7 +1203,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
         if ("DISCARDED_NON_DEVICE_DIRECTED_INTENT".equals(pushActivity.activityStatus)) {
             return;
         }
-        Description description = pushActivity.ParseDescription();
+        Description description = pushActivity.parseDescription();
         if (StringUtils.isEmpty(description.firstUtteranceId)
                 || StringUtils.startsWithIgnoreCase(description.firstUtteranceId, "TextClient:")) {
             return;
@@ -1233,25 +1222,12 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 }
             }
 
-            if (lastSpokenText.equals(spokenText)) {
+            if (lastSpokenText.isEmpty() || lastSpokenText.equals(spokenText)) {
                 updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(""));
             }
             lastSpokenText = spokenText;
             updateState(CHANNEL_LAST_VOICE_COMMAND, new StringType(spokenText));
         }
-    }
-
-    private void startIgnoreVolumeChange() {
-        @Nullable
-        ScheduledFuture<?> oldIgnoreVolumeChange = this.ignoreVolumeChange;
-        if (oldIgnoreVolumeChange != null) {
-            oldIgnoreVolumeChange.cancel(false);
-        }
-        this.ignoreVolumeChange = scheduler.schedule(this::stopIgnoreVolumeChange, 2000, TimeUnit.MILLISECONDS);
-    }
-
-    private void stopIgnoreVolumeChange() {
-        this.ignoreVolumeChange = null;
     }
 
     public void handlePushCommand(String command, String payload) {
@@ -1260,16 +1236,15 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             case "PUSH_VOLUME_CHANGE":
                 JsonCommandPayloadPushVolumeChange volumeChange = gson.fromJson(payload,
                         JsonCommandPayloadPushVolumeChange.class);
+                Connection connection = this.findConnection();
                 @Nullable
                 Integer volumeSetting = volumeChange.volumeSetting;
                 @Nullable
                 Boolean muted = volumeChange.isMuted;
                 if (muted != null && muted) {
                     updateState(CHANNEL_VOLUME, new PercentType(0));
-                } else if (volumeSetting != null) {
-                    if (ignoreVolumeChange != null) {
-                        return;
-                    }
+                }
+                if (volumeSetting != null && connection != null && !connection.isSequenceNodeQueueRunning()) {
                     lastKnownVolume = volumeSetting;
                     updateState(CHANNEL_VOLUME, new PercentType(lastKnownVolume));
                 }

@@ -61,11 +61,13 @@ When using the `nextDuration` channel, it is advised to setup persistence (e.g. 
 
 The following is supported by the `device` thing, but only when connected using the http interface.
 
-| Channel Type ID | Item Type              |    | Description                                                               |
-|-----------------|------------------------|----|---------------------------------------------------------------------------|
-| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.     |
-| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors |
-|                 |                        |    | for this metric, the channel will not be available.                       |
+| Channel Type ID | Item Type              |    | Description                                                                        |
+|-----------------|------------------------|----|------------------------------------------------------------------------------------|
+| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
+| currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device. If the device does not have sensors          |
+|                 |                        |    | for this metric, the channel will not be available.                                |
+| waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
+|                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
 
 ## Example
 
@@ -96,8 +98,8 @@ Switch Station04 (stations) { channel="opensprinkler:station:http:04:stationStat
 Switch Station05 (stations) { channel="opensprinkler:station:http:05:stationState" }
 Switch Station06 (stations) { channel="opensprinkler:station:http:06:stationState" }
 
-Switch RainSensor { channel="opensprinkler:station:http:device:rainsensor" }
-Number:ElectricCurrent CurrentDraw {channel="opensprinkler:station:http:device:currentDraw"}
+Switch RainSensor { channel="opensprinkler:device:http:device:rainsensor" }
+Number:ElectricCurrent CurrentDraw {channel="opensprinkler:device:http:device:currentDraw"}
 ```
 
 demo.sitemap:

@@ -12,6 +12,8 @@
  */
 package org.openhab.io.homekit.internal.accessories;
 
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.ACTIVE_STATUS;
+import static org.openhab.io.homekit.internal.HomekitCharacteristicType.INUSE_STATUS;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.REMAINING_DURATION;
 
 import java.util.HashMap;
@@ -73,10 +75,8 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
-        this.inUseReader = new BooleanItemReader(getItem(HomekitCharacteristicType.INUSE_STATUS, GenericItem.class),
-                OnOffType.ON, OpenClosedType.OPEN);
-        this.activeReader = new BooleanItemReader(getItem(HomekitCharacteristicType.ACTIVE_STATUS, GenericItem.class),
-                OnOffType.ON, OpenClosedType.OPEN);
+        inUseReader = createBooleanReader(INUSE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
+        activeReader = createBooleanReader(ACTIVE_STATUS, OnOffType.ON, OpenClosedType.OPEN);
         ValveService service = new ValveService(this);
         getServices().add(service);
         final String timerConfig = getAccessoryConfiguration(CONFIG_TIMER, "");
@@ -141,15 +141,13 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
 
     @Override
     public CompletableFuture<ActiveEnum> getValveActive() {
-        return CompletableFuture.completedFuture(
-                (this.activeReader.getValue() != null && this.activeReader.getValue()) ? ActiveEnum.ACTIVE
-                        : ActiveEnum.INACTIVE);
+        return CompletableFuture
+                .completedFuture(this.activeReader.getValue() ? ActiveEnum.ACTIVE : ActiveEnum.INACTIVE);
     }
 
     @Override
     public CompletableFuture<Void> setValveActive(ActiveEnum state) {
-        SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
-        if (item != null) {
+        getItem(ACTIVE_STATUS, SwitchItem.class).ifPresent(item -> {
             item.send(OnOffType.from(state == ActiveEnum.ACTIVE));
             if (homekitTimer) {
                 if ((state == ActiveEnum.ACTIVE)) {
@@ -160,42 +158,37 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
                 // let home app refresh the remaining duration
                 ((GenericItem) getRootAccessory().getItem()).send(RefreshType.REFRESH);
             }
-        }
+        });
         return CompletableFuture.completedFuture(null);
     }
 
     private void switchOffValve() {
-        SwitchItem item = getItem(HomekitCharacteristicType.ACTIVE_STATUS, SwitchItem.class);
-        if (item != null) {
-            item.send(OnOffType.OFF);
-        }
+        getItem(ACTIVE_STATUS, SwitchItem.class).ifPresent(item -> item.send(OnOffType.OFF));
     }
 
     @Override
     public void subscribeValveActive(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.ACTIVE_STATUS, callback);
+        subscribe(ACTIVE_STATUS, callback);
     }
 
     @Override
     public void unsubscribeValveActive() {
-        unsubscribe(HomekitCharacteristicType.ACTIVE_STATUS);
+        unsubscribe(ACTIVE_STATUS);
     }
 
     @Override
     public CompletableFuture<InUseEnum> getValveInUse() {
-        return CompletableFuture
-                .completedFuture((this.inUseReader.getValue() != null && this.inUseReader.getValue()) ? InUseEnum.IN_USE
-                        : InUseEnum.NOT_IN_USE);
+        return CompletableFuture.completedFuture(inUseReader.getValue() ? InUseEnum.IN_USE : InUseEnum.NOT_IN_USE);
     }
 
     @Override
     public void subscribeValveInUse(HomekitCharacteristicChangeCallback callback) {
-        subscribe(HomekitCharacteristicType.INUSE_STATUS, callback);
+        subscribe(INUSE_STATUS, callback);
     }
 
     @Override
     public void unsubscribeValveInUse() {
-        unsubscribe(HomekitCharacteristicType.INUSE_STATUS);
+        unsubscribe(INUSE_STATUS);
     }
 
     @Override

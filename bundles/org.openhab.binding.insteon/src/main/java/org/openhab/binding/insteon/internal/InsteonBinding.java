@@ -49,6 +49,7 @@ import org.openhab.binding.insteon.internal.driver.DriverListener;
 import org.openhab.binding.insteon.internal.driver.ModemDBEntry;
 import org.openhab.binding.insteon.internal.driver.Poller;
 import org.openhab.binding.insteon.internal.driver.Port;
+import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -158,6 +159,10 @@ public class InsteonBinding {
         logger.debug("dead device timeout set to {} seconds", deadDeviceTimeout / 1000);
     }
 
+    public Driver getDriver() {
+        return driver;
+    }
+
     public boolean startPolling() {
         logger.debug("starting to poll {}", driver.getPortName());
         driver.start();
@@ -244,11 +249,15 @@ public class InsteonBinding {
         handler.updateState(channelUID, state);
     }
 
-    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey) {
+    public InsteonDevice makeNewDevice(InsteonAddress addr, String productKey,
+            Map<String, @Nullable Object> deviceConfigMap) {
         DeviceType dt = DeviceTypeLoader.instance().getDeviceType(productKey);
         InsteonDevice dev = InsteonDevice.makeDevice(dt);
         dev.setAddress(addr);
+        dev.setProductKey(productKey);
         dev.setDriver(driver);
+        dev.setIsModem(productKey.equals(InsteonDeviceHandler.PLM_PRODUCT_KEY));
+        dev.setDeviceConfigMap(deviceConfigMap);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);
         }
@@ -474,7 +483,7 @@ public class InsteonBinding {
                 }
 
                 for (InsteonAddress k : dbes.keySet()) {
-                    if (!addrs.contains(k) && !k.equals(dbes.get(k).getPort().getAddress())) {
+                    if (!addrs.contains(k)) {
                         logger.debug("device {} found in the modem database, but is not configured as a thing and {}.",
                                 k, getLinkInfo(dbes, k, true));
 

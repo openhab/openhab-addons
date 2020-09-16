@@ -16,8 +16,8 @@ import static org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConst
 
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OpenClosedType;
@@ -31,10 +31,10 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.tankerkoenig.internal.TankerkoenigBindingConstants;
-import org.openhab.binding.tankerkoenig.internal.config.LittleStation;
-import org.openhab.binding.tankerkoenig.internal.config.OpeningTimes;
-import org.openhab.binding.tankerkoenig.internal.config.TankerkoenigDetailResult;
 import org.openhab.binding.tankerkoenig.internal.data.TankerkoenigService;
+import org.openhab.binding.tankerkoenig.internal.dto.LittleStation;
+import org.openhab.binding.tankerkoenig.internal.dto.OpeningTimes;
+import org.openhab.binding.tankerkoenig.internal.dto.TankerkoenigDetailResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +46,8 @@ import org.slf4j.LoggerFactory;
  * @author Jürgen Baginski - Initial contribution
  */
 public class StationHandler extends BaseThingHandler {
+    private static final Pattern IS_NUMERIC_PATTERN = Pattern.compile("\\d+(\\.\\d+)?");
+
     private final Logger logger = LoggerFactory.getLogger(StationHandler.class);
 
     private String apiKey;
@@ -73,7 +75,7 @@ public class StationHandler extends BaseThingHandler {
         Configuration config = getThing().getConfiguration();
         setLocationID((String) config.get(TankerkoenigBindingConstants.CONFIG_LOCATION_ID));
         setApiKey((String) config.get(TankerkoenigBindingConstants.CONFIG_API_KEY));
-        Bridge b = this.getBridge();
+        Bridge b = getBridge();
         if (b == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     "Could not find bridge (tankerkoenig config). Did you select one?");
@@ -83,9 +85,9 @@ public class StationHandler extends BaseThingHandler {
         userAgent = handler.getUserAgent();
         setApiKey(handler.getApiKey());
         setModeOpeningTime(handler.isModeOpeningTime());
-        if (getBridge().getThings().size() > 10) {
+        if (b.getThings().size() > 10) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "The limitation of station things for one tankerkoenig webservice (the bridge) is limited to 10");
+                    "The limitation of station things for one tankerkoenig webservice (the bridge) is limited to 10.");
             return;
         }
         updateStatus(ThingStatus.UNKNOWN);
@@ -126,19 +128,19 @@ public class StationHandler extends BaseThingHandler {
      */
     public void updateData(LittleStation station) {
         logger.debug("Update Tankerkoenig data '{}'", getThing().getUID());
-        if (StringUtils.containsOnly(station.getDiesel(), "01234567890.")) {
+        if (IS_NUMERIC_PATTERN.matcher(station.getDiesel()).matches()) {
             DecimalType diesel = new DecimalType(station.getDiesel());
             updateState(CHANNEL_DIESEL, diesel);
         } else {
             updateState(CHANNEL_DIESEL, UnDefType.UNDEF);
         }
-        if (StringUtils.containsOnly(station.getE10(), "01234567890.")) {
+        if (IS_NUMERIC_PATTERN.matcher(station.getE10()).matches()) {
             DecimalType e10 = new DecimalType(station.getE10());
             updateState(CHANNEL_E10, e10);
         } else {
             updateState(CHANNEL_E10, UnDefType.UNDEF);
         }
-        if (StringUtils.containsOnly(station.getE5(), "01234567890.")) {
+        if (IS_NUMERIC_PATTERN.matcher(station.getE5()).matches()) {
             DecimalType e5 = new DecimalType(station.getE5());
             updateState(CHANNEL_E5, e5);
         } else {
@@ -152,21 +154,20 @@ public class StationHandler extends BaseThingHandler {
      * Updates the detail-data from tankerkoenig api, actually only the opening times are used.
      */
     public void updateDetailData() {
-        result = service.getStationDetailData(this.getApiKey(), locationID, userAgent);
+        result = service.getStationDetailData(getApiKey(), locationID, userAgent);
 
         if (result.isOk()) {
             setOpeningTimes(result.getOpeningTimes());
-            StationHandler tkh = (StationHandler) this.getThing().getHandler();
             LittleStation s = result.getLittleStation();
             if (s == null) {
-                logger.debug("Station with id {}  is not updated!", tkh.getLocationID());
+                logger.debug("Station with id {} is not updated!", getLocationID());
             } else {
-                tkh.updateData(s);
+                updateData(s);
             }
             updateStatus(ThingStatus.ONLINE);
             WebserviceHandler handler = (WebserviceHandler) getBridge().getHandler();
             handler.updateStatus(ThingStatus.ONLINE);
-            logger.debug("updateDetailData openingTimes: {}", this.openingTimes);
+            logger.debug("updateDetailData openingTimes: {}", openingTimes);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, result.getMessage());
         }

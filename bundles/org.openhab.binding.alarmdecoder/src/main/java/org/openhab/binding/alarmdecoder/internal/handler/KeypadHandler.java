@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.alarmdecoder.internal.config.KeypadConfig;
+import org.openhab.binding.alarmdecoder.internal.protocol.ADAddress;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADCommand;
 import org.openhab.binding.alarmdecoder.internal.protocol.ADMessage;
 import org.openhab.binding.alarmdecoder.internal.protocol.IntCommandMap;
@@ -50,8 +51,10 @@ public class KeypadHandler extends ADThingHandler {
 
     private KeypadConfig config = new KeypadConfig();
     private boolean singleAddress;
+    private int sendingAddress;
     private @Nullable IntCommandMap intCommandMap;
     private @Nullable KeypadMessage previousMessage;
+    private long addressMaskLong = 0;
 
     public KeypadHandler(Thing thing) {
         super(thing);
@@ -61,11 +64,25 @@ public class KeypadHandler extends ADThingHandler {
     public void initialize() {
         config = getConfigAs(KeypadConfig.class);
 
-        if (config.addressMask < 0) {
+        try {
+            addressMaskLong = Long.parseLong(config.addressMask, 16);
+        } catch (NumberFormatException e) {
+            logger.debug("Number format exception parsing addressMask parameter: {}", e.getMessage());
+            addressMaskLong = -1;
+        }
+
+        if (addressMaskLong < 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Invalid addressMask setting");
             return;
         }
-        singleAddress = (Integer.bitCount(config.addressMask) == 1);
+        // If 1 and only 1 device is set in the addressMask parameter, use that device number as the sending address
+        singleAddress = ADAddress.singleAddress(addressMaskLong);
+        if (singleAddress) {
+            ADAddress device = ADAddress.getDevice(addressMaskLong);
+            if (device != null) {
+                sendingAddress = device.deviceNum();
+            }
+        }
 
         try {
             intCommandMap = new IntCommandMap(config.commandMapping);
@@ -139,9 +156,9 @@ public class KeypadHandler extends ADThingHandler {
             cmd = cmd.replace("H", ADCommand.SPECIAL_KEY_8);
 
             if (singleAddress) {
-                sendCommand(ADCommand.addressedMessage(config.addressMask, cmd)); // send from keypad address
+                sendCommand(ADCommand.addressedMessage(sendingAddress, cmd)); // Send from keypad address
             } else {
-                sendCommand(new ADCommand(cmd)); // send from AD address
+                sendCommand(new ADCommand(cmd)); // Send from AD address
             }
         }
     }
@@ -155,8 +172,10 @@ public class KeypadHandler extends ADThingHandler {
             return;
         }
         KeypadMessage kpMsg = (KeypadMessage) msg;
-        int addressMask = kpMsg.getIntAddressMask();
-        if (!(((config.addressMask & addressMask) != 0) || config.addressMask == 0 || addressMask == 0)) {
+
+        long msgAddressMask = kpMsg.getLongAddressMask();
+
+        if (!(((addressMaskLong & msgAddressMask) != 0) || addressMaskLong == 0 || msgAddressMask == 0)) {
             return;
         }
         logger.trace("Keypad handler for address mask {} received update: {}", config.addressMask, kpMsg);
@@ -167,10 +186,11 @@ public class KeypadHandler extends ADThingHandler {
 
         if (config.sendStar) {
             if (kpMsg.alphaMessage.contains("Hit * for faults") || kpMsg.alphaMessage.contains("Press * to show faults")
-                    || kpMsg.alphaMessage.contains("Press * Key")) {
+                    || kpMsg.alphaMessage.contains("Press * Key")
+                    || kpMsg.alphaMessage.contains("Press *  to show faults")) {
                 logger.debug("Sending * command to show faults.");
                 if (singleAddress) {
-                    sendCommand(ADCommand.addressedMessage(config.addressMask, "*")); // send from keypad address
+                    sendCommand(ADCommand.addressedMessage(sendingAddress, "*")); // Send from keypad address
                 } else {
                     sendCommand(new ADCommand("*")); // send from AD address
                 }

@@ -58,6 +58,7 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.BaseRequest;
 import com.pengrad.telegrambot.request.GetFile;
+import com.pengrad.telegrambot.request.GetUpdates;
 import com.pengrad.telegrambot.response.BaseResponse;
 
 import okhttp3.OkHttpClient;
@@ -105,7 +106,9 @@ public class TelegramHandler extends BaseThingHandler {
         }
     }
 
-    private final List<Long> chatIds = new ArrayList<>();
+    private final List<Long> authorizedSenderChatId = new ArrayList<>();
+    private final List<Long> receiverChatId = new ArrayList<>();
+
     private final Logger logger = LoggerFactory.getLogger(TelegramHandler.class);
     private @Nullable ScheduledFuture<?> thingOnlineStatusJob;
 
@@ -138,17 +141,15 @@ public class TelegramHandler extends BaseThingHandler {
         TelegramConfiguration config = getConfigAs(TelegramConfiguration.class);
 
         String botToken = config.getBotToken();
-        chatIds.clear();
-        for (String chatIdStr : config.getChatIds()) {
-            try {
-                chatIds.add(Long.valueOf(chatIdStr));
-            } catch (NumberFormatException e) {
-                logger.warn("The chat id {} is not a number and will be ignored", chatIdStr);
-            }
+
+        List<String> chatIds = config.getChatIds();
+        if (chatIds != null) {
+            createReceiverChatIdsAndAuthorizedSenderChatIds(chatIds);
         }
-        if (config.getParseMode() != null && !config.getParseMode().isEmpty()) {
+        String parseModeAsString = config.getParseMode();
+        if (!parseModeAsString.isEmpty()) {
             try {
-                parseMode = ParseMode.valueOf(config.getParseMode());
+                parseMode = ParseMode.valueOf(parseModeAsString);
             } catch (IllegalArgumentException e) {
                 logger.warn("parseMode is invalid and will be ignored. Only Markdown or HTML are allowed values");
             }
@@ -180,7 +181,37 @@ public class TelegramHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
         delayThingOnlineStatus();
         TelegramBot localBot = bot = new TelegramBot.Builder(botToken).okHttpClient(botLibClient).build();
-        localBot.setUpdatesListener(this::handleUpdates, this::handleExceptions);
+        localBot.setUpdatesListener(this::handleUpdates, this::handleExceptions,
+                getGetUpdatesRequest(config.getLongPollingTime()));
+    }
+
+    private void createReceiverChatIdsAndAuthorizedSenderChatIds(List<String> chatIds) {
+        authorizedSenderChatId.clear();
+        receiverChatId.clear();
+
+        for (String chatIdStr : chatIds) {
+            String trimmedChatId = chatIdStr.trim();
+            try {
+                if (trimmedChatId.startsWith("<")) {
+                    // inbound only
+                    authorizedSenderChatId.add(Long.valueOf(trimmedChatId.substring(1)));
+                } else if (trimmedChatId.startsWith(">")) {
+                    // outbound only
+                    receiverChatId.add(Long.valueOf(trimmedChatId.substring(1)));
+                } else {
+                    // bi-directional (default)
+                    Long chatId = Long.valueOf(trimmedChatId);
+                    authorizedSenderChatId.add(chatId);
+                    receiverChatId.add(chatId);
+                }
+            } catch (NumberFormatException e) {
+                logger.warn("The chat id {} is not a number and will be ignored", chatIdStr);
+            }
+        }
+    }
+
+    private GetUpdates getGetUpdatesRequest(int longPollingTime) {
+        return new GetUpdates().timeout(longPollingTime * 1000);
     }
 
     private void handleExceptions(TelegramException exception) {
@@ -190,7 +221,9 @@ public class TelegramHandler extends BaseThingHandler {
                 BaseResponse localResponse = exception.response();
                 if (localResponse.errorCode() == 401) { // unauthorized
                     cancelThingOnlineStatusJob();
-                    localBot.removeGetUpdatesListener();
+                    if (localBot != null) {
+                        localBot.removeGetUpdatesListener();
+                    }
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
                     return;
@@ -207,6 +240,10 @@ public class TelegramHandler extends BaseThingHandler {
     }
 
     private String getFullDownloadUrl(String fileId) {
+        final TelegramBot bot = this.bot;
+        if (bot == null) {
+            return "";
+        }
         return bot.getFullFilePath(bot.execute(new GetFile(fileId)).file());
     }
 
@@ -233,7 +270,7 @@ public class TelegramHandler extends BaseThingHandler {
 
             if (message != null) {
                 chatId = message.chat().id();
-                if (!chatIds.contains(chatId)) {
+                if (!authorizedSenderChatId.contains(chatId)) {
                     logger.warn(
                             "Ignored message from unknown chat id {}. If you know the sender of that chat, add it to the list of chat ids in the thing configuration to authorize it",
                             chatId);
@@ -344,8 +381,22 @@ public class TelegramHandler extends BaseThingHandler {
         return Collections.singleton(TelegramActions.class);
     }
 
-    public List<Long> getChatIds() {
-        return chatIds;
+    /**
+     * get the list of all authorized senders
+     *
+     * @return list of chatIds
+     */
+    public List<Long> getAuthorizedSenderChatIds() {
+        return authorizedSenderChatId;
+    }
+
+    /**
+     * get the list of all receivers
+     *
+     * @return list of chatIds
+     */
+    public List<Long> getReceiverChatIds() {
+        return receiverChatId;
     }
 
     public void addMessageId(Long chatId, String replyId, Integer messageId) {

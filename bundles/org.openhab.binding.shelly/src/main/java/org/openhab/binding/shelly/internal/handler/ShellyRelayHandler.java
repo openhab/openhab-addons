@@ -16,7 +16,6 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api.ShellyApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -24,6 +23,7 @@ import org.eclipse.smarthome.core.library.types.IncreaseDecreaseType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.library.unit.SIUnits;
 import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
@@ -85,12 +85,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
         Integer rIndex = 0;
         if (groupName.startsWith(CHANNEL_GROUP_RELAY_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_RELAY_CONTROL.length()) {
-            rIndex = Integer.parseInt(StringUtils.substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_RELAY_CONTROL))
-                    - 1;
+            rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_RELAY_CONTROL)) - 1;
         } else if (groupName.startsWith(CHANNEL_GROUP_ROL_CONTROL)
                 && groupName.length() > CHANNEL_GROUP_ROL_CONTROL.length()) {
-            rIndex = Integer.parseInt(StringUtils.substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_ROL_CONTROL))
-                    - 1;
+            rIndex = Integer.parseInt(substringAfter(channelUID.getGroupId(), CHANNEL_GROUP_ROL_CONTROL)) - 1;
         }
 
         switch (channelUID.getIdWithoutGroup()) {
@@ -122,20 +120,11 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
             case CHANNEL_TIMER_AUTOON:
                 logger.debug("{}: Set Auto-ON timer to {}", thingName, command);
-                api.setTimer(rIndex, SHELLY_TIMER_AUTOON, ((DecimalType) command).doubleValue());
+                api.setTimer(rIndex, SHELLY_TIMER_AUTOON, getNumber(command));
                 break;
             case CHANNEL_TIMER_AUTOOFF:
                 logger.debug("{}: Set Auto-OFF timer to {}", thingName, command);
-                api.setTimer(rIndex, SHELLY_TIMER_AUTOOFF, ((DecimalType) command).doubleValue());
-                break;
-
-            case CHANNEL_LED_STATUS_DISABLE:
-                logger.debug("{}: Set STATUS LED disabled to {}", thingName, command);
-                api.setLedStatus(SHELLY_LED_STATUS_DISABLE, command == OnOffType.ON);
-                break;
-            case CHANNEL_LED_POWER_DISABLE:
-                logger.debug("{}: Set POWER LED disabled to {}", thingName, command);
-                api.setLedStatus(SHELLY_LED_POWER_DISABLE, command == OnOffType.ON);
+                api.setTimer(rIndex, SHELLY_TIMER_AUTOOFF, getNumber(command));
                 break;
         }
         return true;
@@ -284,9 +273,9 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
     /**
      * Auto-create relay channels depending on relay type/mode
      */
-    private void createRelayChannels(ShellyStatusRelay relays) {
+    private void createRelayChannels(ShellyStatusRelay relay, int idx) {
         if (!areChannelsCreated()) {
-            updateChannelDefinitions(ShellyChannelDefinitionsDTO.createRelayChannels(getThing(), relays));
+            updateChannelDefinitions(ShellyChannelDefinitionsDTO.createRelayChannels(getThing(), profile, relay, idx));
         }
     }
 
@@ -313,12 +302,12 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
             int i = 0;
             ShellyStatusRelay rstatus = api.getRelayStatus(i);
-            createRelayChannels(rstatus);
             for (ShellyShortStatusRelay relay : rstatus.relays) {
+                createRelayChannels(rstatus, i);
                 if ((relay.isValid == null) || relay.isValid) {
-                    Integer r = i + 1;
-                    String groupName = profile.numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL
-                            : CHANNEL_GROUP_RELAY_CONTROL + r.toString();
+                    String groupName = profile.getControlGroup(i);
+                    ShellySettingsRelay rs = profile.settings.relays.get(i);
+                    updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(rs.name));
 
                     if (getBool(relay.overpower)) {
                         postEvent(ALARM_TYPE_OVERPOWER, false);
@@ -358,9 +347,8 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
                     // Update input(s) state
                     updated |= updateInputs(groupName, status, i);
-                    i++;
                 }
-
+                i++;
             }
         }
 
@@ -377,9 +365,14 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                             : CHANNEL_GROUP_ROL_CONTROL;
 
                     createRollerChannels(control);
-                    if (getString(control.state).equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
-                        Integer pos = Math.max(SHELLY_MIN_ROLLER_POS,
-                                Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
+
+                    if (control.name != null) {
+                        updated |= updateChannel(groupName, CHANNEL_OUTPUT_NAME, getStringType(control.name));
+                    }
+
+                    String state = getString(control.state);
+                    if (state.equals(SHELLY_ALWD_ROLLER_TURN_STOP)) { // only valid in stop state
+                        int pos = Math.max(SHELLY_MIN_ROLLER_POS, Math.min(control.currentPos, SHELLY_MAX_ROLLER_POS));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_CONTROL,
                                 toQuantityType(new Double(SHELLY_MAX_ROLLER_POS - pos), SmartHomeUnits.PERCENT));
                         updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_POS,
@@ -387,7 +380,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
                         scheduledUpdates = 1; // one more poll and then stop
                     }
 
-                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_DIR, getStringType(control.lastDirection));
+                    updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STATE, new StringType(state));
                     updated |= updateChannel(groupName, CHANNEL_ROL_CONTROL_STOPR, getStringType(control.stopReason));
                     updated |= updateInputs(groupName, status, i);
 
@@ -461,12 +454,10 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
      */
     public boolean updateLed(ShellySettingsStatus status) {
         boolean updated = false;
-        if (profile.hasLed) {
-            updated |= updateChannel(CHANNEL_GROUP_LED_CONTROL, CHANNEL_LED_STATUS_DISABLE,
-                    getOnOff(profile.settings.ledStatusDisable));
-            updated |= updateChannel(CHANNEL_GROUP_LED_CONTROL, CHANNEL_LED_POWER_DISABLE,
-                    getOnOff(profile.settings.ledPowerDisable));
-        }
+        updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_LED_STATUS_DISABLE,
+                getOnOff(profile.settings.ledStatusDisable));
+        updated |= updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_LED_POWER_DISABLE,
+                getOnOff(profile.settings.ledPowerDisable));
         return updated;
     }
 }

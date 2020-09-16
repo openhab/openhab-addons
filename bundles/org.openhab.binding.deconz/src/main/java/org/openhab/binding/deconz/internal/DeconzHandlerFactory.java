@@ -28,10 +28,13 @@ import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.eclipse.smarthome.io.net.http.WebSocketFactory;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.netutils.AsyncHttpClient;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.openhab.binding.deconz.internal.types.LightTypeDeserializer;
+import org.openhab.binding.deconz.internal.types.ThermostatMode;
+import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -50,21 +53,25 @@ import com.google.gson.GsonBuilder;
 public class DeconzHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(DeconzBridgeHandler.SUPPORTED_THING_TYPES, LightThingHandler.SUPPORTED_THING_TYPE_UIDS,
-                    SensorThingHandler.SUPPORTED_THING_TYPES)
+                    SensorThingHandler.SUPPORTED_THING_TYPES, SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
 
     private final Gson gson;
     private final WebSocketFactory webSocketFactory;
     private final HttpClientFactory httpClientFactory;
+    private final StateDescriptionProvider stateDescriptionProvider;
 
     @Activate
     public DeconzHandlerFactory(final @Reference WebSocketFactory webSocketFactory,
-            final @Reference HttpClientFactory httpClientFactory) {
+            final @Reference HttpClientFactory httpClientFactory,
+            final @Reference StateDescriptionProvider stateDescriptionProvider) {
         this.webSocketFactory = webSocketFactory;
         this.httpClientFactory = httpClientFactory;
+        this.stateDescriptionProvider = stateDescriptionProvider;
 
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
+        gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
         gson = gsonBuilder.create();
     }
 
@@ -81,9 +88,11 @@ public class DeconzHandlerFactory extends BaseThingHandlerFactory {
             return new DeconzBridgeHandler((Bridge) thing, webSocketFactory,
                     new AsyncHttpClient(httpClientFactory.getCommonHttpClient()), gson);
         } else if (LightThingHandler.SUPPORTED_THING_TYPE_UIDS.contains(thingTypeUID)) {
-            return new LightThingHandler(thing, gson);
+            return new LightThingHandler(thing, gson, stateDescriptionProvider);
         } else if (SensorThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new SensorThingHandler(thing, gson);
+        } else if (SensorThermostatThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            return new SensorThermostatThingHandler(thing, gson);
         }
 
         return null;

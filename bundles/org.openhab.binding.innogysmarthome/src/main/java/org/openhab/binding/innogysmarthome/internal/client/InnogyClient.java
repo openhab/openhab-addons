@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.client;
 
+import static org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants.*;
 import static org.openhab.binding.innogysmarthome.internal.client.Constants.*;
 
 import java.io.IOException;
@@ -39,6 +40,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
+import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.client.entity.StatusResponse;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.Action;
 import org.openhab.binding.innogysmarthome.internal.client.entity.action.ShutterAction;
@@ -446,8 +448,8 @@ public class InnogyClient {
         final List<Message> messageList = getMessages();
         final Map<String, List<Message>> deviceMessageMap = new HashMap<>();
         for (final Message m : messageList) {
-            if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {
-                final String deviceId = m.getDeviceLinkList().get(0).replace("/device/", "");
+            if (m.getDevices() != null && !m.getDevices().isEmpty()) {
+                final String deviceId = m.getDevices().get(0).replace("/device/", "");
                 List<Message> ml;
                 if (deviceMessageMap.containsKey(deviceId)) {
                     ml = deviceMessageMap.get(deviceId);
@@ -462,7 +464,7 @@ public class InnogyClient {
         // DEVICES
         final List<Device> deviceList = getDevices();
         for (final Device d : deviceList) {
-            if (BATTERY_POWERED_DEVICES.contains(d.getType())) {
+            if (InnogyBindingConstants.BATTERY_POWERED_DEVICES.contains(d.getType())) {
                 d.setIsBatteryPowered(true);
             }
 
@@ -544,8 +546,8 @@ public class InnogyClient {
 
         for (final Message m : messageList) {
             logger.trace("Message Type {} with ID {}", m.getType(), m.getId());
-            if (m.getDeviceLinkList() != null && !m.getDeviceLinkList().isEmpty()) {
-                for (final String li : m.getDeviceLinkList()) {
+            if (m.getDevices() != null && !m.getDevices().isEmpty()) {
+                for (final String li : m.getDevices()) {
                     if (deviceIdPath.equals(li)) {
                         ml.add(m);
                     }

@@ -13,8 +13,11 @@
 package org.openhab.binding.deconz.internal.handler;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
-import static org.openhab.binding.deconz.internal.Util.buildUrl;
+import static org.openhab.binding.deconz.internal.Util.*;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,9 +33,15 @@ import org.eclipse.smarthome.core.library.types.UpDownType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.StateDescription;
+import org.eclipse.smarthome.core.types.StateDescriptionFragmentBuilder;
+import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.deconz.internal.StateDescriptionProvider;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.DeconzBaseMessage;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.LightState;
@@ -59,10 +68,9 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream
-            .of(THING_TYPE_COLOR_TEMPERATURE_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT,
-                    THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT, THING_TYPE_WINDOW_COVERING)
-            .collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Stream.of(THING_TYPE_COLOR_TEMPERATURE_LIGHT,
+            THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_COLOR_LIGHT, THING_TYPE_EXTENDED_COLOR_LIGHT, THING_TYPE_ONOFF_LIGHT,
+            THING_TYPE_WINDOW_COVERING, THING_TYPE_WARNING_DEVICE).collect(Collectors.toSet());
 
     private static final double HUE_FACTOR = 65535 / 360.0;
     private static final double BRIGHTNESS_FACTOR = 2.54;
@@ -70,7 +78,10 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
 
     private final Logger logger = LoggerFactory.getLogger(LightThingHandler.class);
 
+    private final StateDescriptionProvider stateDescriptionProvider;
+
     private long lastCommandExpireTimestamp = 0;
+    private boolean needsPropertyUpdate = false;
 
     /**
      * The light state. Contains all possible fields for all supported lights
@@ -78,8 +89,40 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
     private LightState lightStateCache = new LightState();
     private LightState lastCommand = new LightState();
 
-    public LightThingHandler(Thing thing, Gson gson) {
+    // set defaults, we can override them later if we receive better values
+    private int ctMax = ZCL_CT_MAX;
+    private int ctMin = ZCL_CT_MIN;
+
+    public LightThingHandler(Thing thing, Gson gson, StateDescriptionProvider stateDescriptionProvider) {
         super(thing, gson);
+
+        this.stateDescriptionProvider = stateDescriptionProvider;
+    }
+
+    @Override
+    public void initialize() {
+        if (thing.getThingTypeUID().equals(THING_TYPE_COLOR_TEMPERATURE_LIGHT)
+                || thing.getThingTypeUID().equals(THING_TYPE_EXTENDED_COLOR_LIGHT)) {
+            try {
+                Map<String, String> properties = thing.getProperties();
+                ctMax = Integer.parseInt(properties.get(PROPERTY_CT_MAX));
+                ctMin = Integer.parseInt(properties.get(PROPERTY_CT_MIN));
+
+                // minimum and maximum are inverted due to mired/kelvin conversion!
+                StateDescription stateDescription = StateDescriptionFragmentBuilder.create()
+                        .withMinimum(new BigDecimal(miredToKelvin(ctMax)))
+                        .withMaximum(new BigDecimal(miredToKelvin(ctMin))).build().toStateDescription();
+                if (stateDescription != null) {
+                    stateDescriptionProvider.setDescription(new ChannelUID(thing.getUID(), CHANNEL_COLOR_TEMPERATURE),
+                            stateDescription);
+                } else {
+                    logger.warn("Failed to create state description in thing {}", thing.getUID());
+                }
+            } catch (NumberFormatException e) {
+                needsPropertyUpdate = true;
+            }
+        }
+        super.initialize();
     }
 
     @Override
@@ -115,6 +158,12 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         Integer currentBri = lightStateCache.bri;
 
         switch (channelUID.getId()) {
+            case CHANNEL_ALERT:
+                if (command instanceof OnOffType) {
+                    newLightState.alert = command == OnOffType.ON ? "alert" : "none";
+                } else {
+                    return;
+                }
             case CHANNEL_SWITCH:
                 if (command instanceof OnOffType) {
                     newLightState.on = (command == OnOffType.ON);
@@ -169,8 +218,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 if (command instanceof DecimalType) {
-                    newLightState.colormode = "ct";
-                    newLightState.ct = unscaleColorTemperature(((DecimalType) command).doubleValue());
+                    int miredValue = kelvinToMired(((DecimalType) command).intValue());
+                    newLightState.ct = constrainToRange(miredValue, ctMin, ctMax);
 
                     if (currentOn != null && !currentOn) {
                         // sending new color temperature is only allowed when light is on
@@ -235,7 +284,21 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         if (r.getResponseCode() == 403) {
             return null;
         } else if (r.getResponseCode() == 200) {
-            return gson.fromJson(r.getBody(), LightMessage.class);
+            LightMessage lightMessage = gson.fromJson(r.getBody(), LightMessage.class);
+            if (lightMessage != null && needsPropertyUpdate) {
+                // if we did not receive an ctmin/ctmax, then we probably don't need it
+                needsPropertyUpdate = false;
+
+                if (lightMessage.ctmin != null && lightMessage.ctmax != null) {
+                    Map<String, String> properties = new HashMap<>(thing.getProperties());
+                    properties.put(PROPERTY_CT_MAX,
+                            Integer.toString(Util.constrainToRange(lightMessage.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+                    properties.put(PROPERTY_CT_MIN,
+                            Integer.toString(Util.constrainToRange(lightMessage.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
+                    updateProperties(properties);
+                }
+            }
+            return lightMessage;
         } else {
             throw new IllegalStateException("Unknown status code " + r.getResponseCode() + " for full state request");
         }
@@ -246,9 +309,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         if (stateResponse == null) {
             return;
         }
-        messageReceived(config.id, stateResponse);
 
-        updateStatus(ThingStatus.ONLINE);
+        messageReceived(config.id, stateResponse);
     }
 
     private void valueUpdated(String channelId, LightState newState) {
@@ -256,20 +318,28 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
         Boolean on = newState.on;
 
         switch (channelId) {
+            case CHANNEL_ALERT:
+                updateState(channelId, "alert".equals(newState.alert) ? OnOffType.ON : OnOffType.OFF);
+                break;
             case CHANNEL_SWITCH:
                 if (on != null) {
                     updateState(channelId, OnOffType.from(on));
                 }
                 break;
             case CHANNEL_COLOR:
-                double @Nullable [] xy = newState.xy;
-                Integer hue = newState.hue;
-                Integer sat = newState.sat;
-                if (hue != null && sat != null && bri != null) {
+                if (on != null && on == false) {
+                    updateState(channelId, OnOffType.OFF);
+                } else if (bri != null && newState.colormode != null && newState.colormode.equals("xy")) {
+                    final double @Nullable [] xy = newState.xy;
+                    if (xy != null && xy.length == 2) {
+                        HSBType color = HSBType.fromXY((float) xy[0], (float) xy[1]);
+                        updateState(channelId, new HSBType(color.getHue(), color.getSaturation(), toPercentType(bri)));
+                    }
+                } else if (bri != null && newState.hue != null && newState.sat != null) {
+                    final Integer hue = newState.hue;
+                    final Integer sat = newState.sat;
                     updateState(channelId,
                             new HSBType(new DecimalType(hue / HUE_FACTOR), toPercentType(sat), toPercentType(bri)));
-                } else if (xy != null && xy.length == 2) {
-                    updateState(channelId, HSBType.fromXY((float) xy[0], (float) xy[1]));
                 }
                 break;
             case CHANNEL_BRIGHTNESS:
@@ -281,8 +351,8 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                 break;
             case CHANNEL_COLOR_TEMPERATURE:
                 Integer ct = newState.ct;
-                if (ct != null) {
-                    updateState(channelId, new DecimalType(scaleColorTemperature(ct)));
+                if (ct != null && ct >= ctMin && ct <= ctMax) {
+                    updateState(channelId, new DecimalType(miredToKelvin(ct)));
                 }
                 break;
             case CHANNEL_POSITION:
@@ -307,17 +377,15 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
                     return;
                 }
                 lightStateCache = lightState;
-                thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
+                if (lightState.reachable != null && lightState.reachable) {
+                    updateStatus(ThingStatus.ONLINE);
+                    thing.getChannels().stream().map(c -> c.getUID().getId()).forEach(c -> valueUpdated(c, lightState));
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.GONE, "Not reachable");
+                    thing.getChannels().stream().map(c -> c.getUID()).forEach(c -> updateState(c, UnDefType.UNDEF));
+                }
             }
         }
-    }
-
-    private int unscaleColorTemperature(double ct) {
-        return (int) (ct / 100.0 * (500 - 153) + 153);
-    }
-
-    private double scaleColorTemperature(int ct) {
-        return 100.0 * (ct - 153) / (500 - 153);
     }
 
     private PercentType toPercentType(int val) {
@@ -327,6 +395,7 @@ public class LightThingHandler extends DeconzBaseThingHandler<LightMessage> {
             scaledValue = scaledValue < 0 ? 0 : scaledValue;
             scaledValue = scaledValue > 100 ? 100 : scaledValue;
         }
+        logger.debug("val = '{}', scaledValue = '{}'", val, scaledValue);
         return new PercentType(scaledValue);
     }
 

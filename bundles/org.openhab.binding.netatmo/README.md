@@ -5,14 +5,20 @@ The Netatmo binding integrates the following Netatmo products:
 - *Personal Weather Station*. Reports temperature, humidity, air pressure, carbon dioxide concentration in the air, as well as the ambient noise level.
 - *Thermostat*. Reports ambient temperature, allow to check target temperature, consult and change furnace heating status.
 - *Indoor Camera / Welcome*. Reports last event and persons at home, consult picture and video from event/camera.
-- *Outdoor Camera / Presence*. Consult picture and video from camera. The last event is also available, but without content yet, this will get enhanced later.
+- *Outdoor Camera / Presence*. Reports last event, consult picture and video from event/camera.
 
 See http://www.netatmo.com/ for details on their product.
 
 
 ## Binding Configuration
 
-The binding has no configuration options itself, all configuration is done at 'Things' level but before, you will have to grant openHAB to access Netatmo API.
+The binding has the following configuration options:
+
+| Parameter           | Name                 | Description                       |
+|---------------------|----------------------|-----------------------------------|
+| backgroundDiscovery | Background Discovery | If set to true, the device and its associated modules are updated in the discovery inbox at each API call run to refresh device data. Default is false. |
+
+Before setting up your 'Things', you will have to grant openHAB to access Netatmo API.
 Here is the procedure:
 
 ### 1. Application Creation
@@ -42,6 +48,7 @@ Bridge netatmo:netatmoapi:home [ clientId="<CLIENT_ID>", clientSecret="<CLIENT_S
     Thing NATherm1  thermostat [ id="xx:xx:xx:xx:xx:xx", parentId="bb:bb:bb:bb:bb:bb" ]
     Thing NAWelcomeHome home   [ id="58yyacaaexxxebca99x999x", refreshInterval=600000 ]
     Thing NACamera camera [ id="cc:cc:cc:cc:cc:cc", parentId="58yyacaaexxxebca99x999x" ]
+    Thing NOC presenceOutdoorCamera [ id="dd:dd:dd:dd:dd:dd", parentId="58yyacaaexxxebca99x999x" ]
     Thing NAWelcomePerson sysadmin [ id="aaaaaaaa-bbbb-cccc-eeee-zzzzzzzzzzzz", parentId="58yyacaaexxxebca99x999x" ]
     ...
 }
@@ -446,60 +453,95 @@ All these channels except Sp_Temperature, SetpointMode and Planning are read onl
 
 ### Welcome Home
 
-**Supported channels for the Home thing:**
-
-| Channel ID              | Item Type | Description                                              |
-|-------------------------|-----------|----------------------------------------------------------|
-| welcomeHomeCity         | String    | City of the home                                         |
-| welcomeHomeCountry      | String    | Country of the home                                      |
-| welcomeHomeTimezone     | String    | Timezone of the home                                     |
-| welcomeHomePersonCount  | Number    | Total number of Persons that are at home                 |
-| welcomeHomeUnknownCount | Number    | Count how many Unknown Persons are at home               |
-| welcomeEventType        | String    | Type of event                                            |
-| welcomeEventTime        | DateTime  | Time of occurrence of event                               |
-| welcomeEventCameraId    | String    | Camera that detected the event                           |
-| welcomeEventPersonId    | String    | Id of the person the event is about (if any)             |
-| welcomeEventSnapshot    | Image     | picture of the last event, if it applies                 |
-| welcomeEventSnapshotURL | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
-| welcomeEventVideoURL    | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
-| welcomeEventVideoStatus | String    | Status of the video (recording, deleted or available)    |
-| welcomeEventIsArrival   | Switch    | If person was considered "away" before being seen during this event |
-| welcomeEventMessage     | String    | Message sent by Netatmo corresponding to given event     |
-| welcomeEventSubType     | String    | Sub-type of SD and Alim events                           |
-
 All these channels are read only.
 
+**Supported channels for the Home thing:**
+
+| Channel ID               | Item Type | Description                                              |
+|--------------------------|-----------|----------------------------------------------------------|
+| welcomeHomeCity          | String    | City of the home                                         |
+| welcomeHomeCountry       | String    | Country of the home                                      |
+| welcomeHomeTimezone      | String    | Timezone of the home                                     |
+| welcomeHomePersonCount   | Number    | Total number of Persons that are at home                 |
+| welcomeHomeUnknownCount  | Number    | Count how many Unknown Persons are at home               |
+| welcomeEventType         | String    | Type of event                                            |
+| welcomeEventTime         | DateTime  | Time of occurrence of event                               |
+| welcomeEventCameraId     | String    | Camera that detected the event                           |
+| welcomeEventPersonId     | String    | Id of the person the event is about (if any)             |
+| welcomeEventSnapshot     | Image     | picture of the last event, if it applies                 |
+| welcomeEventSnapshotURL  | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the picture URL will be available here |
+| welcomeEventVideoURL     | String    | if the last event (depending upon event type) in the home lead a snapshot picture, the corresponding video URL will be available here |
+| welcomeEventVideoStatus  | String    | Status of the video (recording, deleted or available)    |
+| welcomeEventIsArrival    | Switch    | If person was considered "away" before being seen during this event |
+| welcomeEventMessage      | String    | Message sent by Netatmo corresponding to given event     |
+| welcomeEventSubType      | String    | Sub-type of SD and Alim events                           |
+
+**Supported trigger channels for the Home thing:**
+
+| Channel Type ID  | Options                | Description                                           |
+|------------------|------------------------|-------------------------------------------------------|
+| cameraEvent      |                        | A camera event is triggered with a short delay but without requiring a webhook. The information of the event can get retrieved from the other "welcomeEvent" home thing channels |
+|                  | HUMAN                  | Triggered when a human (or person) was detected       |
+|                  | ANIMAL                 | Triggered when an animal was detected                 |
+|                  | MOVEMENT               | Triggered when an unspecified movement was detected   |
+|                  | VEHICLE                | Triggered when a vehicle was detected                 |
+| welcomeHomeEvent |                        | A welcome home event is triggered directly via a configured webhook |
+|                  | PERSON                 | Triggered when a concrete person was detected         |
+|                  | PERSON_AWAY            | Triggered when a concrete person leaves               |
+|                  | MOVEMENT               | Triggered when a movement was detected                |
+|                  | CONNECTION             | Triggered when a camera connection gets created       |
+|                  | DISCONNECTION          | Triggered when a camera connection got lost           |
+|                  | ON                     | Triggered when camera monitoring is switched on       |
+|                  | OFF                    | Triggered when camera monitoring is switched off      |
+|                  | BOOT                   | Triggered when a camera is booting                    |
+|                  | SD                     | Triggered when a camera SD card status was changed    |
+|                  | ALIM                   | Triggered when a power supply status was changed      |
+|                  | NEW_MODULE             | Triggered when a new module was discovered            |
+|                  | MODULE_CONNECT         | Triggered when a module gets connected                |
+|                  | MODULE_DISCONNECT      | Triggered when a module gets disconnected             |
+|                  | MODULE_LOW_BATTERY     | Triggered when the battery of a module gets low       |
+|                  | MODULE_END_UPDATE      | Triggered when a firmware update of a module is done  |
+|                  | TAG_BIG_MOVE           | Triggered when a big movement of a tag was detected   |
+|                  | TAG_SMALL_MOVE         | Triggered when a small movement of a tag was detected |
+|                  | TAG_UNINSTALLED        | Triggered when a tag gets uninstalled                 |
+|                  | TAG_OPEN               | Triggered when an open event of a tag was detected    |
 
 ### Welcome and Presence Camera
 
-All these channels are read only.
+Warnings:
 
-Warning : the URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding.
-So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+- The URL of the live snapshot is a fixed URL so the value of the channel cameraLivePictureUrl / welcomeCameraLivePictureUrl will never be updated once first set by the binding. So to get a refreshed picture, you need to use the refresh parameter in your sitemap image element.
+- Some features like the video surveillance are accessed via the local network, so it may be helpful to set a static IP address for the camera within your local network.
 
 **Supported channels for the Welcome Camera thing:**
 
-| Channel ID                  | Item Type | Description                                              |
-|-----------------------------|-----------|----------------------------------------------------------|
-| welcomeCameraStatus         | Switch    | State of the camera                                      |
-| welcomeCameraSdStatus       | Switch    | State of the SD card                                     |
-| welcomeCameraAlimStatus     | Switch    | State of the power connector                             |
-| welcomeCameraIsLocal        | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
-| welcomeCameraLivePicture    | Image     | Camera Live Snapshot                                     |
-| welcomeCameraLivePictureUrl | String    | Url of the live snapshot for this camera                 |
-| welcomeCameraLiveStreamUrl  | String    | Url of the live stream for this camera                   |
+| Channel ID                  | Item Type | Read/Write | Description                                                  |
+|-----------------------------|-----------|------------|--------------------------------------------------------------|
+| welcomeCameraStatus         | Switch    | Read-write | State of the camera (video surveillance on/off)              |
+| welcomeCameraSdStatus       | Switch    | Read-only  | State of the SD card                                         |
+| welcomeCameraAlimStatus     | Switch    | Read-only  | State of the power connector                                 |
+| welcomeCameraIsLocal        | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| welcomeCameraLivePicture    | Image     | Read-only  | Camera Live Snapshot                                         |
+| welcomeCameraLivePictureUrl | String    | Read-only  | Url of the live snapshot for this camera                     |
+| welcomeCameraLiveStreamUrl  | String    | Read-only  | Url of the live stream for this camera                       |
 
 **Supported channels for the Presence Camera thing:**
 
-| Channel ID                  | Item Type | Description                                              |
-|-----------------------------|-----------|----------------------------------------------------------|
-| cameraStatus                | Switch    | State of the camera                                      |
-| cameraSdStatus              | Switch    | State of the SD card                                     |
-| cameraAlimStatus            | Switch    | State of the power connector                             |
-| cameraIsLocal               | Switch    | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
-| cameraLivePicture           | Image     | Camera Live Snapshot                                     |
-| cameraLivePictureUrl        | String    | Url of the live snapshot for this camera                 |
-| cameraLiveStreamUrl         | String    | Url of the live stream for this camera                   |
+Warnings:
+
+- The floodlight auto-mode (cameraFloodlightAutoMode) isn't updated it is changed by another application. Therefore the binding handles its own state of the auto-mode. This has the advantage that the user can define its own floodlight switch off behaviour.
+
+| Channel ID                  | Item Type | Read/Write | Description                                                  |
+|-----------------------------|-----------|------------|--------------------------------------------------------------|
+| cameraStatus                | Switch    | Read-write | State of the camera (video surveillance on/off)              |
+| cameraSdStatus              | Switch    | Read-only  | State of the SD card                                         |
+| cameraAlimStatus            | Switch    | Read-only  | State of the power connector                                 |
+| cameraIsLocal               | Switch    | Read-only  | indicates whether the camera is on the same network than the openHAB Netatmo Binding |
+| cameraLivePicture           | Image     | Read-only  | Camera Live Snapshot                                         |
+| cameraLivePictureUrl        | String    | Read-only  | Url of the live snapshot for this camera                     |
+| cameraLiveStreamUrl         | String    | Read-only  | Url of the live stream for this camera                       |
+| cameraFloodlightAutoMode    | Switch    | Read-write | When set the floodlight gets switched to auto instead of off |
+| cameraFloodlight            | Switch    | Read-write | Switch for the floodlight                                    |
 
 
 ### Welcome Person

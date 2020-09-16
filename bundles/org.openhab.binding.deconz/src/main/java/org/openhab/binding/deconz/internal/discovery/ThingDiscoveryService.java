@@ -14,6 +14,8 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -26,15 +28,18 @@ import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
+import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
+import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.DeconzBridgeHandler;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
+import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.LightType;
 import org.slf4j.Logger;
@@ -49,7 +54,8 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES)
+            .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES,
+                    SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
@@ -107,14 +113,24 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             return;
         }
 
-        if (light.uniqueid.isEmpty()) {
-            logger.warn("No unique id reported for light {} ({})", light.modelid, light.name);
-            return;
+        Map<String, Object> properties = new HashMap<>();
+        properties.put("id", lightID);
+        properties.put(UNIQUE_ID, light.uniqueid);
+        properties.put(Thing.PROPERTY_FIRMWARE_VERSION, light.swversion);
+        properties.put(Thing.PROPERTY_VENDOR, light.manufacturername);
+        properties.put(Thing.PROPERTY_MODEL_ID, light.modelid);
+
+        if (light.ctmax != null && light.ctmin != null) {
+            properties.put(PROPERTY_CT_MAX,
+                    Integer.toString(Util.constrainToRange(light.ctmax, ZCL_CT_MIN, ZCL_CT_MAX)));
+            properties.put(PROPERTY_CT_MIN,
+                    Integer.toString(Util.constrainToRange(light.ctmin, ZCL_CT_MIN, ZCL_CT_MAX)));
         }
 
         switch (lightType) {
             case ON_OFF_LIGHT:
             case ON_OFF_PLUGIN_UNIT:
+            case SMART_PLUG:
                 thingTypeUID = THING_TYPE_ONOFF_LIGHT;
                 break;
             case DIMMABLE_LIGHT:
@@ -125,6 +141,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
                 thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
                 break;
             case COLOR_DIMMABLE_LIGHT:
+            case COLOR_LIGHT:
                 thingTypeUID = THING_TYPE_COLOR_LIGHT;
                 break;
             case EXTENDED_COLOR_LIGHT:
@@ -133,20 +150,23 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case WINDOW_COVERING_DEVICE:
                 thingTypeUID = THING_TYPE_WINDOW_COVERING;
                 break;
+            case WARNING_DEVICE:
+                thingTypeUID = THING_TYPE_WARNING_DEVICE;
+                break;
             case CONFIGURATION_TOOL:
                 // ignore configuration tool device
                 return;
             default:
                 logger.debug(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",
-                        light.modelid, light.name, lightType);
+                        light.modelid, light.name, light.type);
                 return;
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID)
-                .withLabel(light.name + " (" + light.manufacturername + ")").withProperty("id", lightID)
-                .withProperty(UNIQUE_ID, light.uniqueid).withRepresentationProperty(UNIQUE_ID).build();
+                .withLabel(light.name + " (" + light.manufacturername + ")").withProperties(properties)
+                .withRepresentationProperty(UNIQUE_ID).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -172,7 +192,11 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         } else if (sensor.type.contains("Presence")) { // ZHAPresence, CLIPPrensence
             thingTypeUID = THING_TYPE_PRESENCE_SENSOR;
         } else if (sensor.type.contains("Switch")) { // ZHASwitch
-            thingTypeUID = THING_TYPE_SWITCH;
+            if (sensor.modelid.contains("RGBW")) {
+                thingTypeUID = THING_TYPE_COLOR_CONTROL;
+            } else {
+                thingTypeUID = THING_TYPE_SWITCH;
+            }
         } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
             thingTypeUID = THING_TYPE_LIGHT_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
@@ -193,6 +217,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
         } else if (sensor.type.contains("ZHABattery")) {
             thingTypeUID = THING_TYPE_BATTERY_SENSOR; // ZHABattery
+        } else if (sensor.type.contains("ZHAThermostat")) {
+            thingTypeUID = THING_TYPE_THERMOSTAT; // ZHAThermostat
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;

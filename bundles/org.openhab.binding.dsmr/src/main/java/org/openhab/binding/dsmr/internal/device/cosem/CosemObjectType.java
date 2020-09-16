@@ -143,9 +143,9 @@ public enum CosemObjectType {
     EMETER_TOTAL_IMPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, null, 3, 8, 0, null), CosemQuantity.KILO_VAR_HOUR),
     EMETER_TOTAL_EXPORTED_ENERGY_REGISTER_Q(new OBISIdentifier(1, null, 4, 8, 0, null), CosemQuantity.KILO_VAR_HOUR),
     // The actual reactive's and threshold have no unit in the data and therefore are not quantity types.
-    EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 0, 3, 7, 0, null), CosemDecimal.INSTANCE),
-    EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 0, 4, 7, 0, null), CosemDecimal.INSTANCE),
-    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemDecimal.INSTANCE),
+    EMETER_ACTUAL_REACTIVE_DELIVERY(new OBISIdentifier(1, 0, 3, 7, 0, null), CosemDecimal.INSTANCE_WITH_UNITS),
+    EMETER_ACTUAL_REACTIVE_PRODUCTION(new OBISIdentifier(1, 0, 4, 7, 0, null), CosemDecimal.INSTANCE_WITH_UNITS),
+    EMETER_ACTIVE_THRESHOLD_SMAX(new OBISIdentifier(0, 0, 17, 0, 0, null, true), CosemDecimal.INSTANCE_WITH_UNITS),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L1(new OBISIdentifier(1, 0, 23, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L2(new OBISIdentifier(1, 0, 43, 7, 0, null), CosemQuantity.KILO_VAR),
     EMETER_INSTANT_REACTIVE_POWER_DELIVERY_L3(new OBISIdentifier(1, 0, 63, 7, 0, null), CosemQuantity.KILO_VAR),

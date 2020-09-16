@@ -48,10 +48,10 @@ import io.github.hapjava.services.impl.ThermostatService;
  * @author Andy Lintner - Initial contribution
  */
 class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements ThermostatAccessory {
-    private Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(HomekitThermostatImpl.class);
 
     public HomekitThermostatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         this.getServices().add(new ThermostatService(this));
     }
@@ -77,7 +77,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
         } else if (stringValue.equalsIgnoreCase(settings.thermostatCurrentModeOff)) {
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else if (stringValue.equals("UNDEF") || stringValue.equals("NULL")) {
-            logger.warn("Heating cooling target mode not available. Relaying value of OFF to Homekit");
+            logger.warn("Heating cooling current mode not available. Relaying value of OFF to Homekit");
             mode = CurrentHeatingCoolingStateEnum.OFF;
         } else {
             logger.warn("Unrecognized heatingCoolingCurrentMode: {}. Expected {}, {}, or {} strings in value.",
@@ -154,7 +154,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
     }
 
     @Override
-    public void setTemperatureDisplayUnit(final TemperatureDisplayUnitEnum value) throws Exception {
+    public void setTemperatureDisplayUnit(TemperatureDisplayUnitEnum value) {
         // TODO: add support for display unit change
     }
 
@@ -245,7 +245,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
     }
 
     @Override
-    public void subscribeTemperatureDisplayUnit(final HomekitCharacteristicChangeCallback callback) {
+    public void subscribeTemperatureDisplayUnit(HomekitCharacteristicChangeCallback callback) {
         // TODO: add support for display unit change
     }
 

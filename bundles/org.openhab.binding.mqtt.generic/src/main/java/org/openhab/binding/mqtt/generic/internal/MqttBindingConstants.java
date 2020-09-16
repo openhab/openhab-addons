@@ -32,6 +32,7 @@ public class MqttBindingConstants {
     // Generic thing channel types
     public static final String COLOR_RGB = "colorRGB";
     public static final String COLOR_HSB = "colorHSB";
+    public static final String COLOR = "color";
     public static final String CONTACT = "contact";
     public static final String DIMMER = "dimmer";
     public static final String NUMBER = "number";

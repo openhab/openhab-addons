@@ -44,7 +44,7 @@
 			</parameter>
 			<parameter name="refresh" type="integer">
 				<label>Refresh</label>
-				<description>The amount of time, in seconds, that OpenHab should poll EtherRain</description>
+				<description>The amount of time, in seconds, that openHAB should poll EtherRain</description>
 				<default>60</default>
 			</parameter>
 

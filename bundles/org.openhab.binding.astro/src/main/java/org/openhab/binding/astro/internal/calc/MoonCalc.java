@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 
 import org.openhab.binding.astro.internal.model.Eclipse;
+import org.openhab.binding.astro.internal.model.EclipseKind;
+import org.openhab.binding.astro.internal.model.EclipseType;
 import org.openhab.binding.astro.internal.model.Moon;
 import org.openhab.binding.astro.internal.model.MoonDistance;
 import org.openhab.binding.astro.internal.model.MoonPhase;
@@ -41,12 +43,6 @@ public class MoonCalc {
     private static final double FULL_MOON = 0.5;
     private static final double FIRST_QUARTER = 0.25;
     private static final double LAST_QUARTER = 0.75;
-
-    private static final double ECLIPSE_TYPE_MOON = 0.5;
-    protected static final double ECLIPSE_TYPE_SUN = 0;
-    protected static final int ECLIPSE_MODE_PARTIAL = 0;
-    protected static final int ECLIPSE_MODE_TOTAL = 1;
-    protected static final int ECLIPSE_MODE_RING = 2;
 
     /**
      * Calculates all moon data at the specified coordinates
@@ -84,10 +80,10 @@ public class MoonCalc {
         phase.setThirdQuarter(DateTimeUtils.toCalendar(getNextPhase(calendar, julianDateMidnight, LAST_QUARTER)));
 
         Eclipse eclipse = moon.getEclipse();
-        double eclipseJd = getEclipse(calendar, ECLIPSE_TYPE_MOON, julianDateMidnight, ECLIPSE_MODE_PARTIAL);
-        eclipse.setPartial(DateTimeUtils.toCalendar(eclipseJd));
-        eclipseJd = getEclipse(calendar, ECLIPSE_TYPE_MOON, julianDateMidnight, ECLIPSE_MODE_TOTAL);
-        eclipse.setTotal(DateTimeUtils.toCalendar(eclipseJd));
+        eclipse.getKinds().forEach(eclipseKind -> {
+            double jdate = getEclipse(calendar, EclipseType.MOON, julianDateMidnight, eclipseKind);
+            eclipse.set(eclipseKind, DateTimeUtils.toCalendar(jdate), new Position());
+        });
 
         double decimalYear = DateTimeUtils.getDecimalYear(calendar);
         MoonDistance apogee = moon.getApogee();
@@ -296,8 +292,8 @@ public class MoonCalc {
     /**
      * Calculates the eclipse.
      */
-    private double getEclipse(double k, double typ, int mode) {
-        double kMod = Math.floor(k) + typ;
+    private double getEclipse(double k, EclipseType typ, EclipseKind eclipse) {
+        double kMod = Math.floor(k) + ((typ == EclipseType.SUN) ? 0 : 0.5);
         double t = kMod / 1236.85;
         double f = var_f(kMod, t);
         double jd = 0;
@@ -316,47 +312,49 @@ public class MoonCalc {
             double g = (p * CS(f1) + q * SN(f1)) * (1 - .0048 * CS(Math.abs(f1)));
             double u = .0059 + .0046 * e * CS(m) - .0182 * CS(m1) + .0004 * CS(2 * m1) - .0005 * CS(m + m1);
             jd = var_jde(kMod, t);
-            jd += (typ == ECLIPSE_TYPE_MOON) ? -.4065 * SN(m1) + .1727 * e * SN(m)
-                    : -.4075 * SN(m1) + .1721 * e * SN(m);
+            jd += (typ == EclipseType.MOON) ? -.4065 * SN(m1) + .1727 * e * SN(m) : -.4075 * SN(m1) + .1721 * e * SN(m);
 
             jd += .0161 * SN(2 * m1) - .0097 * SN(2 * f1) + .0073 * e * SN(m1 - m) - .005 * e * SN(m1 + m)
                     - .0023 * SN(m1 - 2 * f1) + .0021 * e * SN(2 * m);
             jd += .0012 * SN(m1 + 2 * f1) + .0006 * e * SN(2 * m1 + m) - .0004 * SN(3 * m1) - .0003 * e * SN(m + 2 * f1)
                     + .0003 * SN(a1) - .0002 * e * SN(m - 2 * f1) - .0002 * e * SN(2 * m1 - m) - .0002 * SN(o);
-            if (typ == ECLIPSE_TYPE_MOON) {
-                if ((1.0248 - u - Math.abs(g)) / .545 <= 0) {
-                    jd = 0; // no moon eclipse
-                }
-                if (mode == ECLIPSE_MODE_PARTIAL && (1.0128 - u - Math.abs(g)) / .545 > 0
-                        && (.4678 - u) * (.4678 - u) - g * g > 0) {
-                    jd = 0; // no partial moon eclipse
-                }
-                if (mode == ECLIPSE_MODE_TOTAL
-                        && ((1.0128 - u - Math.abs(g)) / .545 <= 0 != (.4678 - u) * (.4678 - u) - g * g <= 0)) {
-                    jd = 0; // no total moon eclipse
-                }
-            } else {
-                if (Math.abs(g) > 1.5433 + u) {
-                    jd = 0; // no sun eclipse
-                }
-                if (mode == ECLIPSE_MODE_PARTIAL && ((g >= -.9972 && g <= .9972)
-                        || (Math.abs(g) >= .9972 && Math.abs(g) < .9972 + Math.abs(u)))) {
-                    jd = 0; // no partial sun eclipse
-                }
-                if (mode > ECLIPSE_MODE_PARTIAL) {
-                    if ((g < -.9972 || g > .9972) || (Math.abs(g) < .9972 && Math.abs(g) > .9972 + Math.abs(u))) {
-                        jd = 0; // no ring or total sun eclipse
+            switch (typ) {
+                case MOON:
+                    if ((1.0248 - u - Math.abs(g)) / .545 <= 0) {
+                        jd = 0; // no moon eclipse
                     }
-                    if (u > .0047 || u >= .00464 * Math.sqrt(1 - g * g)) {
-                        ringTest = 1; // no total sun eclipse
+                    if (eclipse == EclipseKind.PARTIAL && (1.0128 - u - Math.abs(g)) / .545 > 0
+                            && (.4678 - u) * (.4678 - u) - g * g > 0) {
+                        jd = 0; // no partial moon eclipse
                     }
-                    if (ringTest == 1 && mode == ECLIPSE_MODE_TOTAL) {
-                        jd = 0;
+                    if (eclipse == EclipseKind.TOTAL
+                            && ((1.0128 - u - Math.abs(g)) / .545 <= 0 != (.4678 - u) * (.4678 - u) - g * g <= 0)) {
+                        jd = 0; // no total moon eclipse
                     }
-                    if (ringTest == 0 && mode == ECLIPSE_MODE_RING) {
-                        jd = 0;
+                    break;
+                case SUN:
+                    if (Math.abs(g) > 1.5433 + u) {
+                        jd = 0; // no sun eclipse
                     }
-                }
+                    if (eclipse == EclipseKind.PARTIAL && ((g >= -.9972 && g <= .9972)
+                            || (Math.abs(g) >= .9972 && Math.abs(g) < .9972 + Math.abs(u)))) {
+                        jd = 0; // no partial sun eclipse
+                    }
+                    if (eclipse != EclipseKind.PARTIAL) {
+                        if ((g < -.9972 || g > .9972) || (Math.abs(g) < .9972 && Math.abs(g) > .9972 + Math.abs(u))) {
+                            jd = 0; // no ring or total sun eclipse
+                        }
+                        if (u > .0047 || u >= .00464 * Math.sqrt(1 - g * g)) {
+                            ringTest = 1; // no total sun eclipse
+                        }
+                        if (ringTest == 1 && eclipse == EclipseKind.TOTAL) {
+                            jd = 0;
+                        }
+                        if (ringTest == 0 && eclipse == EclipseKind.RING) {
+                            jd = 0;
+                        }
+                    }
+                    break;
             }
         }
         return jd;
@@ -406,13 +404,13 @@ public class MoonCalc {
     /**
      * Calculates the next eclipse.
      */
-    protected double getEclipse(Calendar cal, double type, double midnightJd, int mode) {
+    protected double getEclipse(Calendar cal, EclipseType type, double midnightJd, EclipseKind eclipse) {
         double tz = 0;
         double eclipseJd = 0;
         do {
             double k = var_k(cal, tz);
             tz += 1;
-            eclipseJd = getEclipse(k, type, mode);
+            eclipseJd = getEclipse(k, type, eclipse);
         } while (eclipseJd <= midnightJd);
         return eclipseJd;
     }

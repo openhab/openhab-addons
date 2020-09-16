@@ -20,11 +20,7 @@
 			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
-		<properties>
-			<property name="protocol">ASCII_V1</property>
-		</properties>
-
-		<config-description-ref uri="thing-type:rotel:serialandip"/>
+		<config-description-ref uri="thing-type:rotel:serialandipandprotocol"/>
 	</thing-type>
 
 </thing:thing-descriptions>

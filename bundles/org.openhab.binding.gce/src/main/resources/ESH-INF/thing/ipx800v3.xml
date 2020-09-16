@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gce" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="ipx800v3">
+		<label>IPX800v3</label>
+		<description>The GCE IPX800v3 device</description>
+
+		<channel-groups>
+			<channel-group id="contact" typeId="contacts"/>
+			<channel-group id="relay" typeId="relays"/>
+			<channel-group id="counter" typeId="counters"/>
+			<channel-group id="analog" typeId="analogs"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:gce:ipx800v3Config"/>
+	</thing-type>
+
+	<channel-group-type id="contacts">
+		<label>Digital Inputs</label>
+	</channel-group-type>
+
+	<channel-group-type id="relays">
+		<label>Digital Outputs</label>
+	</channel-group-type>
+
+	<channel-group-type id="counters">
+		<label>Counters</label>
+	</channel-group-type>
+
+	<channel-group-type id="analogs">
+		<label>Analog Inputs</label>
+	</channel-group-type>
+
+</thing:thing-descriptions>
