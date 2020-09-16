@@ -291,7 +291,7 @@ Bridge modbus:tcp:modbus-gateway "Modbus TCP/IP Gateway" [ host="192.168.47.11",
 
 ```
 // Manual operation
-Switch KWL_Manual                        "Manual operation"                          <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
+Number KWL_Manual                        "Manual operation"                          <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#operatingMode"}
 Number KWL_Stage                         "KWL fan stage"                             <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#fanStage"}
 Number:Dimensionless KWL_Stage_Percent   "KWL fan stage [%d %unit%]"                 <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:operation#percentageFanStage"}
 
@@ -314,8 +314,8 @@ Number:Temperature KWL_Temp_Outgoing_Air "Temperature outgoing air [%.1f °C]"  
 Number:Temperature KWL_Temp_Extract_Air  "Temperature extract air [%.1f °C]"         <temperature> (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#temperatureExtractAir"}
 Number KWL_Supply_Air_RPM                "RPM supply air [%d]"                       <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#supplyAirRpm"}
 Number KWL_Extract_Air_RPM               "RPM extract air [%d]"                      <fan>         (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#extractAirRpm"}
-Switch KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#filterChange"}
-Number KWL_Filter_Change_Remaining       "Filter change [%d min]"                    <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
+Number KWL_Filter_Change                 "Filter change [MAP(helios_yes_no.map):%s]" <none>        (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:unitConfig#filterChange"}
+Number KWL_Filter_Change_Remaining       "Filter change [%d %unit%]"                    <clock>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#filterChangeRemainingTime"}
 
 Number KWL_Errors                        "Number errors [%d]"                        <error>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#noOfErrors"}
 String KWL_Errors_String                 "Error messages [%s]"                       <error>       (gKWL) {channel="modbus:helios-ventilation-easycontrols:modbus-gateway:kwl:general#errorsMsg"}
@@ -341,7 +341,7 @@ NULL=-
 ```
 Text label="KWL" icon="fan" {
     Frame label="Manual operation" {
-        Switch item=KWL_Manual mappings=[OFF=Auto, ON=Manual]
+        Selection item=KWL_Manual mappings=[0=Auto, 1=Manual]
         Selection item=KWL_Stage mappings=[0=off, 1="Stage 1", 2="Stage 2", 3="Stage 3", 4="Stage 4"]
         Text item=KWL_Stage_Percent
     }
