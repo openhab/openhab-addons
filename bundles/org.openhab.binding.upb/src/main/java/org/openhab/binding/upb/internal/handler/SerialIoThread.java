@@ -35,8 +35,6 @@ import org.eclipse.smarthome.core.common.NamedThreadFactory;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.eclipse.smarthome.io.transport.serial.SerialPort;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
-import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.openhab.binding.upb.internal.handler.UPBIoHandler.CmdStatus;
 import org.openhab.binding.upb.internal.message.MessageBuilder;
 import org.openhab.binding.upb.internal.message.MessageParseException;
@@ -51,7 +49,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class SerialIoThread extends Thread implements SerialPortEventListener {
+public class SerialIoThread extends Thread {
     private static final int WRITE_QUEUE_LENGTH = 128;
     private static final int ACK_TIMEOUT_MS = 500;
     private static final byte[] ENABLE_MESSAGE_MODE_CMD = "\u001770028E\n".getBytes(StandardCharsets.US_ASCII);
@@ -74,16 +72,6 @@ public class SerialIoThread extends Thread implements SerialPortEventListener {
         this.listener = listener;
         setName("OH-binding-" + thingUID + "-serial-reader");
         setDaemon(true);
-    }
-
-    @Override
-    public void serialEvent(final SerialPortEvent event) {
-        try {
-            logger.trace("RXTX library CPU load workaround, sleep forever");
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (final InterruptedException e) {
-            // ignore
-        }
     }
 
     @Override
