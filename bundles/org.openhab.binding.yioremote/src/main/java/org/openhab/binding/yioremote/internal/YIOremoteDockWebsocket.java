@@ -38,15 +38,7 @@ public class YIOremoteDockWebsocket {
     private @Nullable Session session;
     private String stringreceivedmessage = "";
     private final Logger logger = LoggerFactory.getLogger(YIOremoteDockWebsocket.class);
-
-    private boolean booleannewmessagerecieved = false;
-    private String stringlastsendircode = "";
-    private @Nullable YIOremoteDockHandler yioremotedockhandler;
     private @Nullable YIOremoteDockWebsocketInterface yioremotedockwebsocketinterfacehandler;
-
-    public YIOremoteDockWebsocket(YIOremoteDockHandler thing) {
-        yioremotedockhandler = thing;
-    }
 
     public void addMessageHandler(YIOremoteDockWebsocketInterface yioremotedockwebsocketinterfacehandler) {
         this.yioremotedockwebsocketinterfacehandler = yioremotedockwebsocketinterfacehandler;
@@ -54,7 +46,9 @@ public class YIOremoteDockWebsocket {
 
     @OnWebSocketMessage
     public void onText(Session session, String stringreceivedmessage) {
-        yioremotedockwebsocketinterfacehandler.onMessage(stringreceivedmessage);
+        if (yioremotedockwebsocketinterfacehandler != null) {
+            yioremotedockwebsocketinterfacehandler.onMessage(stringreceivedmessage);
+        }
     }
 
     public String getstringreceivedmessage() {
@@ -64,20 +58,26 @@ public class YIOremoteDockWebsocket {
     @OnWebSocketConnect
     public void onConnect(Session session) {
         this.session = session;
-        yioremotedockwebsocketinterfacehandler.onConnect(true);
+        if (yioremotedockwebsocketinterfacehandler != null) {
+            yioremotedockwebsocketinterfacehandler.onConnect(true);
+        }
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
         logger.warn("WebSocketError {}", cause.getMessage());
-        yioremotedockwebsocketinterfacehandler.onError();
+        if (yioremotedockwebsocketinterfacehandler != null) {
+            yioremotedockwebsocketinterfacehandler.onError();
+        }
     }
 
     public void sendMessage(String str) {
-        try {
-            session.getRemote().sendString(str);
-        } catch (IOException e) {
-            logger.warn("Error during sendMessage function {}", e.getMessage());
+        if (session != null) {
+            try {
+                session.getRemote().sendString(str);
+            } catch (IOException e) {
+                logger.warn("Error during sendMessage function {}", e.getMessage());
+            }
         }
     }
 }

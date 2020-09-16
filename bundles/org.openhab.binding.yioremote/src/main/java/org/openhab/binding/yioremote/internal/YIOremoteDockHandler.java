@@ -58,7 +58,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     YIOremoteConfiguration localConfig = getConfigAs(YIOremoteConfiguration.class);
     private YIOremoteDockHandler yioremotedockhandler = this;
     private WebSocketClient yioremoteDockHandlerwebSocketClient = new WebSocketClient();
-    private YIOremoteDockWebsocket yioremoteDockwebSocketClient = new YIOremoteDockWebsocket(this);
+    private YIOremoteDockWebsocket yioremoteDockwebSocketClient = new YIOremoteDockWebsocket();
     private ClientUpgradeRequest yioremoteDockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI uriyiodockwebsocketaddress;
     private YIOREMOTEDOCKHANDLESTATUS yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.UNINITIALIZED_STATE;
@@ -66,11 +66,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private @Nullable Future<?> websocketpollingjob;
     public String stringreceivedmessage = "";
     private JsonObject jsonobjectrecievedJsonObject = new JsonObject();
-    private boolean booleanauthenticationrequired = false;
     private boolean booleanheartbeat = false;
     private boolean booleanauthenticationok = false;
-    private boolean booleansendirstatus = false;
-    private boolean booleanwebsocketconnected = false;
     private String stringreceivedstatus = "";
     private String stringlastsendircode = "";
 
@@ -95,7 +92,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onConnect(Boolean booleanconnectedflag) {
-                    yioremotedockhandler.booleanwebsocketconnected = booleanconnectedflag;
                     if (booleanconnectedflag) {
                         yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.CONNECTION_ESTABLISHED;
                         yioremotedockhandler.authenticate(booleanconnectedflag);
@@ -149,17 +145,15 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         });
     }
 
-    private boolean decodereceivedMessage(@Nullable JsonObject JsonObject_recievedJsonObject) {
+    private boolean decodereceivedMessage(JsonObject JsonObject_recievedJsonObject) {
         boolean booleanresult = false;
 
         if (JsonObject_recievedJsonObject.has("type")) {
             if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_required\"")) {
-                yioremotedockhandler.booleanauthenticationrequired = true;
                 yioremotedockhandler.booleanheartbeat = true;
                 booleanresult = true;
                 yioremotedockhandler.stringreceivedstatus = "Authentication required";
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
-                yioremotedockhandler.booleanauthenticationrequired = false;
                 yioremotedockhandler.booleanauthenticationok = true;
                 yioremotedockhandler.booleanheartbeat = true;
                 booleanresult = true;
@@ -171,7 +165,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 if (JsonObject_recievedJsonObject.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
                     if (JsonObject_recievedJsonObject.get("success").toString().equalsIgnoreCase("true")) {
                         yioremotedockhandler.stringreceivedstatus = "Send IR Code successfully";
-                        yioremotedockhandler.booleansendirstatus = true;
                         yioremotedockhandler.booleanheartbeat = true;
                         booleanresult = true;
                     } else {
@@ -180,7 +173,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                         } else {
                             stringreceivedstatus = "Send IR Code failure";
                         }
-                        yioremotedockhandler.booleansendirstatus = true;
                         yioremotedockhandler.booleanheartbeat = true;
                         booleanresult = true;
                     }

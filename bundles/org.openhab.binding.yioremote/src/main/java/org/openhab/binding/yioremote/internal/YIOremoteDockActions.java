@@ -29,16 +29,16 @@ import org.openhab.core.automation.annotation.RuleAction;
 @ThingActionsScope(name = "yioremote")
 @NonNullByDefault
 public class YIOremoteDockActions implements ThingActions {
-    private @Nullable YIOremoteDockHandler handler;
+    private @Nullable static YIOremoteDockHandler yioremotedockhandler;
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        this.handler = (YIOremoteDockHandler) handler;
+    public void setThingHandler(@Nullable ThingHandler yiremotedockhandler) {
+        yioremotedockhandler = (YIOremoteDockHandler) yiremotedockhandler;
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return handler;
+        return yioremotedockhandler;
     }
 
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
@@ -47,8 +47,8 @@ public class YIOremoteDockActions implements ThingActions {
     }
 
     public static void sendircode(@Nullable ThingActions actions, @Nullable String ircode) {
-        if (actions instanceof YIOremoteDockActions) {
-            ((YIOremoteDockActions) actions).handler.sendircode(ircode);
+        if (actions instanceof YIOremoteDockActions && yioremotedockhandler != null) {
+            yioremotedockhandler.sendircode(ircode);
         } else {
             throw new IllegalArgumentException("Instance is not an YIOremoteDockActions class.");
         }
