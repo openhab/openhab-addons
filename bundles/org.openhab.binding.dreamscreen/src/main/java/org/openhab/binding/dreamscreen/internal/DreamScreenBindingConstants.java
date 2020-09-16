@@ -29,7 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class DreamScreenBindingConstants {
 
-    private static final String BINDING_ID = "dreamscreen";
+    public static final String BINDING_ID = "dreamscreen";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_4K = new ThingTypeUID(BINDING_ID, "4k");
@@ -44,4 +44,27 @@ public class DreamScreenBindingConstants {
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_COLOR = "color";
+
+    // Mode values
+    public static final String MODE_VIDEO = "video";
+    public static final String MODE_MUSIC = "music";
+    public static final String MODE_AMBIENT = "ambient";
+
+    // Scene values
+    public static final String SCENE_COLOR = "color";
+    public static final String SCENE_RANDOM = "random";
+    public static final String SCENE_FIRESIDE = "fireside";
+    public static final String SCENE_TWINKLE = "twinkle";
+    public static final String SCENE_OCEAN = "ocean";
+    public static final String SCENE_RAINBOW = "rainbow";
+    public static final String SCENE_JULY_4TH = "july4th";
+    public static final String SCENE_HOLIDAY = "holiday";
+    public static final String SCENE_POP = "pop";
+    public static final String SCENE_ENCHANTED_FOREST = "eforrest";
+
+    // Input Names
+    public static final String INPUT_CHANNEL1 = "1";
+    public static final String INPUT_CHANNEL2 = "2";
+    public static final String INPUT_CHANNEL3 = "3";
+
 }

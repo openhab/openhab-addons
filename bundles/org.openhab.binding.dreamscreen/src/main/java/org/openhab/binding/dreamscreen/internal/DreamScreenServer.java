@@ -66,6 +66,8 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
     private final Logger logger = LoggerFactory.getLogger(DreamScreenServer.class);
     private final Set<DreamScreenBaseHandler> handlers = Collections.synchronizedSet(new HashSet<>());
     private final Map<InetAddress, Integer> devices = new ConcurrentHashMap<>();
+
+    private String thingUID = BINDING_ID;
     private @Nullable NetworkAddressService network;
     private @Nullable InetAddress hostAddress;
     private @Nullable InetAddress broadcastAddress;
@@ -87,7 +89,7 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
         if (address != null) {
             send(msg.broadcastReadPacket(address, DREAMSCREEN_PORT));
         } else {
-            logger.error("No broadcast address configured");
+            logger.debug("No broadcast address configured");
         }
     }
 
@@ -172,7 +174,7 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
             socket.setReuseAddress(true);
             this.socket = socket;
 
-            server = new Thread(this::runServer, "dreamscreen-tv");
+            server = new Thread(this::runServer, "OH-binding-" + thingUID);
             server.setDaemon(true);
             server.start();
             this.server = server;
@@ -204,7 +206,7 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
             } catch (DreamScreenMessageInvalid dsmi) {
                 logger.trace("Message received is not a DreamScreen message", dsmi);
             } catch (IOException ioe) {
-                logger.error("Error communicating with DreamScreen devices", ioe);
+                logger.debug("Error communicating with DreamScreen devices", ioe);
             }
         }
     }
@@ -219,7 +221,7 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
             try {
                 server.join(5000);
             } catch (InterruptedException e) {
-                logger.error("Failed to wait for server to stop", e);
+                logger.debug("Failed to wait for server to stop", e);
             }
         }
     }
@@ -231,16 +233,17 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
             this.scanning = System.currentTimeMillis();
             doScan();
         } catch (IOException e) {
-            logger.error("Error scanning for DreamScreen devices", e);
+            logger.debug("Error scanning for DreamScreen devices", e);
         }
     }
 
     public void addHandler(final DreamScreenBaseHandler handler) {
+        this.thingUID = handler.getThing().getThingTypeUID().toString();
         this.handlers.add(handler);
         try {
             startServer();
         } catch (IOException e) {
-            logger.error("Error starting DreamScreen server", e);
+            logger.debug("Error starting DreamScreen server", e);
         }
         for (final Entry<InetAddress, Integer> entry : this.devices.entrySet()) {
             if (handler.link(entry.getValue(), entry.getKey())) {
@@ -300,7 +303,7 @@ public class DreamScreenServer extends AbstractDiscoveryService implements Netwo
                     }
                 }
             } catch (IOException e) {
-                logger.error("Unable to configure network", e);
+                logger.debug("Unable to configure network", e);
             }
         }
     }

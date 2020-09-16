@@ -34,6 +34,7 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.PercentType;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -186,7 +187,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private void modeCommand(Command command) {
         if (command instanceof DecimalType) {
             logger.debug("Changing {} mode to {}", this.serialNumber, command);
-            final DreamScreenMode mode = DreamScreenMode.fromState((DecimalType) command);
+            final DreamScreenMode mode = DreamScreenMode.fromState((StringType) command);
             if (this.mode != 0) {
                 write(new ModeMessage(this.group, mode.deviceMode));
             } else {
@@ -226,7 +227,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private void sceneCommand(Command command) {
         if (command instanceof DecimalType) {
             logger.debug("Changing {} scene to {}", this.serialNumber, command);
-            final DreamScreenScene scene = DreamScreenScene.fromState((DecimalType) command);
+            final DreamScreenScene scene = DreamScreenScene.fromState((StringType) command);
             if (this.mode != AMBIENT.deviceMode) {
                 this.newScene = scene;
                 write(new ModeMessage(this.group, AMBIENT.deviceMode));
@@ -370,7 +371,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
                     try {
                         server.write(msg, address);
                     } catch (IOException e) {
-                        logger.error("Unable to send write message {} to {}", msg, this.serialNumber, e);
+                        logger.debug("Unable to send write message {} to {}", msg, this.serialNumber, e);
                         updateStatus(OFFLINE, COMMUNICATION_ERROR, "Cannot send message");
                     }
                 } else if (!this.reads.isEmpty()) {
@@ -378,7 +379,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
                     try {
                         server.read(msg, address);
                     } catch (IOException e) {
-                        logger.error("Unable to send read message {} to {}", msg, this.serialNumber, e);
+                        logger.debug("Unable to send read message {} to {}", msg, this.serialNumber, e);
                         updateStatus(OFFLINE, COMMUNICATION_ERROR, "Cannot send message");
                     }
                 } else if (sending != null) {
@@ -386,7 +387,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
                 }
             }
         } else {
-            logger.warn("DreamScreen {} is not on-line", this.serialNumber);
+            logger.debug("DreamScreen {} is not online", this.serialNumber);
         }
     }
 

@@ -11,34 +11,34 @@
 	</channel-type>
 
 	<channel-type id="mode">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>Switch the display mode</description>
 		<state>
 			<options>
-				<option value="0">Video</option>
-				<option value="1">Music</option>
-				<option value="2">Ambient</option>
+				<option value="video">Video</option>
+				<option value="music">Music</option>
+				<option value="ambient">Ambient</option>
 			</options>
 		</state>
 	</channel-type>
 
 	<channel-type id="scene">
-		<item-type>Number</item-type>
+		<item-type>String</item-type>
 		<label>Scene</label>
 		<description>Switch the ambient display scene</description>
 		<state>
 			<options>
-				<option value="0">Color</option>
-				<option value="1">Random Color</option>
-				<option value="2">Fireside</option>
-				<option value="3">Twinkle</option>
-				<option value="4">Ocean</option>
-				<option value="5">Rainbow</option>
-				<option value="6">July 4th</option>
-				<option value="7">Holiday</option>
-				<option value="8">Pop</option>
-				<option value="9">Enchanted Forest</option>
+				<option value="color">Color</option>
+				<option value="random">Random Color</option>
+				<option value="fireside">Fireside</option>
+				<option value="twinkle">Twinkle</option>
+				<option value="ocean">Ocean</option>
+				<option value="rainbow">Rainbow</option>
+				<option value="july_4th">July 4th</option>
+				<option value="holiday">Holiday</option>
+				<option value="pop">Pop</option>
+				<option value="forrest">Enchanted Forest</option>
 			</options>
 		</state>
 	</channel-type>

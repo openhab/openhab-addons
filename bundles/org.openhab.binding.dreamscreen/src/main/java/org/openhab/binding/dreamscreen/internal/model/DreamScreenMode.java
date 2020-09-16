@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.dreamscreen.internal.model;
 
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.StringType;
 
 /**
  * {@link DreamScreenMode} defines the enum for Device Modes.
@@ -23,25 +24,43 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
  */
 @NonNullByDefault
 public enum DreamScreenMode {
-    VIDEO(1),
-    MUSIC(2),
-    AMBIENT(3);
+    VIDEO(MODE_VIDEO, 1),
+    MUSIC(MODE_MUSIC, 2),
+    AMBIENT(MODE_AMBIENT, 3);
 
+    public final String name;
     public final byte deviceMode;
 
-    private DreamScreenMode(int deviceMode) {
+    private DreamScreenMode(String name, int deviceMode) {
+        this.name = name;
         this.deviceMode = (byte) deviceMode;
     }
 
-    public static @Nullable DreamScreenMode fromDevice(byte value) {
-        return value > 0 ? DreamScreenMode.values()[value - 1] : null;
+    public static DreamScreenMode fromDevice(byte value) {
+        if (value == VIDEO.deviceMode) {
+            return VIDEO;
+        } else if (value == MUSIC.deviceMode) {
+            return MUSIC;
+        } else if (value == AMBIENT.deviceMode) {
+            return AMBIENT;
+        }
+        throw new IllegalArgumentException("Invalid Mode value: " + String.valueOf(value));
     }
 
-    public static DreamScreenMode fromState(DecimalType command) {
-        return DreamScreenMode.values()[command.intValue()];
+    public static DreamScreenMode fromState(StringType command) {
+        String mode = command.toString().toLowerCase();
+        switch (mode) {
+            case MODE_VIDEO:
+                return VIDEO;
+            case MODE_MUSIC:
+                return MUSIC;
+            case MODE_AMBIENT:
+                return AMBIENT;
+        }
+        throw new IllegalArgumentException("Invalid Mode value: " + mode);
     }
 
-    public DecimalType state() {
-        return new DecimalType(this.ordinal());
+    public StringType state() {
+        return new StringType(name);
     }
 }
