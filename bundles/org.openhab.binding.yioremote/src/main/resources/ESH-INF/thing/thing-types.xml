@@ -4,8 +4,8 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="yioremotedock">
-		<label>YIOremote Dock Binding Thing</label>
+	<thing-type id="yioRemoteDock">
+		<label>YIO Remote Dock</label>
 		<description>YIOremote Dock Binding Thing</description>
 		<channel-groups>
 			<channel-group id="input" typeId="input"/>
@@ -40,12 +40,12 @@
 	</channel-group-type>
 	<channel-type id="receiverswitch">
 		<item-type>Switch</item-type>
-		<label>YIO Remote Dock receiverswitch</label>
+		<label>Receiver Switch</label>
 		<description>The switch to enable disable the IR receiving diode/function</description>
 	</channel-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
-		<label>YIO Remote Dock status</label>
+		<label>Status</label>
 		<description>The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise
 			the IR send status is displayed of the last IR code send.</description>
 

@@ -27,7 +27,7 @@ public class YIOremoteBindingConstants {
     public static final String BINDING_ID = "yioremote";
 
     // List of all used global variables
-    public static enum YIOREMOTEDOCKHANDLESTATUS {
+    public static enum YioRemoteDockHandleStatus {
         UNINITIALIZED_STATE,
         AUTHENTICATION_PROCESS,
         AUTHENTICATION_FAILED,
@@ -36,12 +36,12 @@ public class YIOremoteBindingConstants {
         CONNECTION_ESTABLISHED;
     }
 
-    public static enum YIOREMOTEMESSAGETYPE {
-        IRSEND,
-        AUTHENTICATE,
-        HEARTBEAT,
-        IRRECEIVERON,
-        IRRECEIVEROFF;
+    public static enum YioRemoteMessages {
+        IR_SEND,
+        AUTHENTICATE_MESSAGE,
+        HEARTBEAT_MESSAGE,
+        IR_RECEIVER_ON,
+        IR_RECEIVER_OFF;
     }
 
     // List of all Thing Type UIDs
@@ -52,8 +52,8 @@ public class YIOremoteBindingConstants {
     public static final String GROUP_OUTPUT = "output";
 
     // List of all Channel ids
-    public static final String YIODOCKRECEIVERSWITCH = "receiverswitch";
-    public static final String YIODOCKSTATUS = "status";
+    public static final String RECEIVER_SWITCH_CHANNEL = "receiverswitch";
+    public static final String STATUS_STRING_CHANNEL = "status";
 
     // Configuration elements
     public static final String CONFIG_YIODOCKHOST = "host";

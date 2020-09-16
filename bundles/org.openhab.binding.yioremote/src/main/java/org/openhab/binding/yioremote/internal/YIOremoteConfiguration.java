@@ -23,5 +23,5 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class YIOremoteConfiguration {
     public @Nullable String host;
-    public String accesstoken = "0";
+    public String accessToken = "0";
 }
