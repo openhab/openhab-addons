@@ -472,7 +472,7 @@
 	<channel-type id="dreameControl">
 		<item-type>String</item-type>
 		<label>Control Vacuum</label>
-		<state>
+		<command>
 			<options>
 				<option value="vacuum">Vacuum</option>
 				<option value="pause">Pause</option>
@@ -481,6 +481,6 @@
 				<option value="sweep">Sweep</option>
 				<option value="stopsweep">Stop Sweep</option>
 			</options>
-		</state>
+		</command>
 	</channel-type>
 </thing:thing-descriptions>

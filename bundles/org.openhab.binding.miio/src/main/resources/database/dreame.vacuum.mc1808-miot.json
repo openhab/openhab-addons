@@ -9,7 +9,7 @@
             {
                 "property": "",
                 "friendlyName": "Vacuum Action",
-                "channel": "dreameControl",
+                "channel": "vacuumaction",
                 "channelType": "dreameControl",
                 "type": "String",
                 "refresh": false,
