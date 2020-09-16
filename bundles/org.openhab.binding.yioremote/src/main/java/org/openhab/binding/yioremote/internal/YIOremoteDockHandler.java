@@ -347,31 +347,40 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public void sendMessage(YioRemoteMessages messagetype, String messagepyload) {
+        JsonObject sendobject = new JsonObject();
         if (messagetype.equals(YioRemoteMessages.AUTHENTICATE_MESSAGE)) {
-            yioremoteDockwebSocketClient.sendMessage("{\"type\":\"auth\", \"token\":\"" + messagepyload + "\"}");
-            logger.debug("sending authenticating message: \"{\"type\":\"auth\", \"token\":\"{}\"}\"", messagepyload);
+            sendobject.addProperty("type", "auth");
+            sendobject.addProperty("token", messagepyload);
+            yioremoteDockwebSocketClient.sendMessage(sendobject.toString());
+            logger.debug("sending authenticating {}", sendobject.toString());
         } else if (messagetype.equals(YioRemoteMessages.HEARTBEAT_MESSAGE)) {
             lastsendircode = "\"0;0x0;0;0\"";
-            yioremoteDockwebSocketClient.sendMessage(
-                    "{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
-            logger.debug(
-                    "sending heartbeat message: {\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"0;0x0;0;0\", \"format\":\"hex\"}");
+            sendobject.addProperty("type", "dock");
+            sendobject.addProperty("command", "ir_send");
+            sendobject.addProperty("code", "0;0x0;0;0");
+            sendobject.addProperty("format", "hex");
+            yioremoteDockwebSocketClient.sendMessage(sendobject.toString());
+            logger.debug("sending heartbeat message: {}", sendobject.toString());
         } else if (messagetype.equals(YioRemoteMessages.IR_RECEIVER_ON)
                 && getyioremotedockactualstatus().equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
-            yioremoteDockwebSocketClient.sendMessage("{\"type\":\"dock\", \"command\":\"ir_receive_on\"}");
-            logger.debug("sending IR receiver on message: {\"type\":\"dock\", \"command\":\"ir_receive_on\"");
+            sendobject.addProperty("type", "dock");
+            sendobject.addProperty("command", "ir_receive_on");
+            yioremoteDockwebSocketClient.sendMessage(sendobject.toString());
+            logger.debug("sending IR receiver on message: {}", sendobject.toString());
         } else if (messagetype.equals(YioRemoteMessages.IR_RECEIVER_OFF)
                 && getyioremotedockactualstatus().equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
-            yioremoteDockwebSocketClient.sendMessage("{\"type\":\"dock\", \"command\":\"ir_receive_off\"}");
-            logger.debug("sending IR receiver off message: {\"type\":\"dock\", \"command\":\"ir_receive_off\"");
+            sendobject.addProperty("type", "dock");
+            sendobject.addProperty("command", "ir_receive_off");
+            yioremoteDockwebSocketClient.sendMessage(sendobject.toString());
+            logger.debug("sending IR receiver on message: {}", sendobject.toString());
         } else if (messagetype.equals(YioRemoteMessages.IR_SEND)
                 && getyioremotedockactualstatus().equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
-            yioremoteDockwebSocketClient.sendMessage("{\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\""
-                    + messagepyload + "\", \"format\":\"hex\"}");
-            lastsendircode = messagepyload;
-            logger.debug(
-                    "sending IR message: {\"type\":\"dock\", \"command\":\"ir_send\",\"code\":\"{}\", \"format\":\"hex\"}",
-                    messagepyload);
+            sendobject.addProperty("type", "dock");
+            sendobject.addProperty("command", "ir_send");
+            sendobject.addProperty("code", messagepyload);
+            sendobject.addProperty("format", "hex");
+            yioremoteDockwebSocketClient.sendMessage(sendobject.toString());
+            logger.debug("sending heartbeat message: {}", sendobject.toString());
         }
     }
 }
