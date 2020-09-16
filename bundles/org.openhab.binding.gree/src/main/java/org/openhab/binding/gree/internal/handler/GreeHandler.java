@@ -87,6 +87,7 @@ public class GreeHandler extends BaseThingHandler {
             String message = messages.get("thinginit.invconf");
             logger.warn("{}: {}", thingId, message);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, message);
+            return;
         }
 
         // set the thing status to UNKNOWN temporarily and let the background task decide for the real status.
@@ -128,7 +129,9 @@ public class GreeHandler extends BaseThingHandler {
             logger.warn("{}: {}", thingId, messages.get("thinginit.exception", "RuntimeException"), e);
         }
 
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        if (getThing().getStatus() != ThingStatus.OFFLINE) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+        }
     }
 
     @Override
@@ -388,6 +391,7 @@ public class GreeHandler extends BaseThingHandler {
                     apiRetries++;
                     if (apiRetries > MAX_API_RETRIES) {
                         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+                        apiRetries = 0;
                     }
                 }
             } catch (RuntimeException e) {
