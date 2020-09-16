@@ -112,9 +112,9 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                             yioremotedockhandler.stringreceivedmessage);
                     if (jsonobjectrecievedJsonObject.size() > 0) {
                         if (yioremotedockhandler.decodereceivedMessage(jsonobjectrecievedJsonObject)) {
-                            triggerChannel(getChannelUuid(GROUP_OUTPUT, YIODOCKSTATUS));
-                            updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
-                                    yioremotedockhandler.stringreceivedmessage);
+                            yioremotedockhandler.triggerChannel(getChannelUuid(GROUP_OUTPUT, YIODOCKSTATUS));
+                            yioremotedockhandler.updateChannelString(GROUP_OUTPUT, YIODOCKSTATUS,
+                                    yioremotedockhandler.stringreceivedstatus);
                             logger.debug("Message {} decoded", yioremotedockhandler.stringreceivedmessage);
                         } else {
                             logger.debug("Error during message {} decoding",
@@ -157,11 +157,13 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 yioremotedockhandler.booleanauthenticationrequired = true;
                 yioremotedockhandler.booleanheartbeat = true;
                 booleanresult = true;
+                yioremotedockhandler.stringreceivedstatus = "Authentication required";
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
                 yioremotedockhandler.booleanauthenticationrequired = false;
                 yioremotedockhandler.booleanauthenticationok = true;
                 yioremotedockhandler.booleanheartbeat = true;
                 booleanresult = true;
+                yioremotedockhandler.stringreceivedstatus = "Authentication ok";
             } else if (JsonObject_recievedJsonObject.get("type").toString().equalsIgnoreCase("\"dock\"")
                     && JsonObject_recievedJsonObject.has("message"))
 
@@ -301,6 +303,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 } else if (yioremotedockactualstatus.equals(YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_PROCESS)) {
                     if (yioremotedockhandler.getbooleanauthenticationok()) {
                         yioremotedockhandler.yioremotedockactualstatus = YIOREMOTEDOCKHANDLESTATUS.AUTHENTICATION_COMPLETE;
+                        updateStatus(ThingStatus.ONLINE);
                         yioremotedockhandler.startwebsocketpollingthread();
                         if (authenticationjob != null) {
                             authenticationjob.cancel(true);
