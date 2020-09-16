@@ -12,10 +12,21 @@
  */
 package org.openhab.binding.publictransportswitzerland.internal.stationboard;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import static org.openhab.binding.publictransportswitzerland.internal.PublicTransportSwitzerlandBindingConstants.*;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
@@ -31,20 +42,10 @@ import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
-import static org.openhab.binding.publictransportswitzerland.internal.PublicTransportSwitzerlandBindingConstants.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * The {@link PublicTransportSwitzerlandStationboardHandler} is responsible for handling commands, which are
@@ -56,15 +57,12 @@ import static org.openhab.binding.publictransportswitzerland.internal.PublicTran
 public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHandler {
 
     // Limit the API response to the necessary fields
-    private static final String FIELD_FILTERS = createFilterForFields(
-            "stationboard/to",
-            "stationboard/category",
-            "stationboard/number",
-            "stationboard/stop/departureTimestamp",
-            "stationboard/stop/delay",
+    private static final String FIELD_FILTERS = createFilterForFields("stationboard/to", "stationboard/category",
+            "stationboard/number", "stationboard/stop/departureTimestamp", "stationboard/stop/delay",
             "stationboard/stop/platform");
 
-    private final ChannelGroupUID stationboardChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "stationboard");
+    private final ChannelGroupUID stationboardChannelGroupUID = new ChannelGroupUID(getThing().getUID(),
+            "stationboard");
     private final ChannelGroupUID dynamicChannelGroupUID = new ChannelGroupUID(getThing().getUID(), "departures");
 
     private final ChannelUID tsvChannelUID = new ChannelUID(stationboardChannelGroupUID, "tsv");
@@ -93,7 +91,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         // Together with the 10 second timeout, this should be less than a minute
         cache = new ExpiringCache<>(45_000, this::updateData);
 
-        PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+        PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(
+                PublicTransportSwitzerlandStationboardConfiguration.class);
         this.configuration = configuration;
 
         String configurationError = findConfigurationError(configuration);
@@ -115,7 +114,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
 
-        PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(PublicTransportSwitzerlandStationboardConfiguration.class);
+        PublicTransportSwitzerlandStationboardConfiguration configuration = getConfigAs(
+                PublicTransportSwitzerlandStationboardConfiguration.class);
         this.configuration = configuration;
 
         ScheduledFuture<?> updateJob = updateChannelsJob;
@@ -230,10 +230,11 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             JsonElement destinationElement = departureObject.get("to");
             JsonElement departureTimeElement = stopObject.get("departureTimestamp");
 
-            if (categoryElement == null || numberElement == null || destinationElement == null || departureTimeElement == null) {
-                logger.warn("Skipping stationboard item." +
-                            "One of the following is null: category: {}, number: {}, destination: {}, departureTime: {}",
-                            categoryElement, numberElement, destinationElement, departureTimeElement);
+            if (categoryElement == null || numberElement == null || destinationElement == null
+                    || departureTimeElement == null) {
+                logger.warn("Skipping stationboard item."
+                        + "One of the following is null: category: {}, number: {}, destination: {}, departureTime: {}",
+                        categoryElement, numberElement, destinationElement, departureTimeElement);
                 continue;
             }
 
@@ -247,7 +248,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
             String delay = getStringValueOrNull(departureObject.get("delay"));
             String track = getStringValueOrNull(stopObject.get("platform"));
 
-            updateState(getChannelUIDForPosition(i), new StringType(formatDeparture(identifier, departureTime, destination, track, delay)));
+            updateState(getChannelUIDForPosition(i),
+                    new StringType(formatDeparture(identifier, departureTime, destination, track, delay)));
             tsvRows.add(String.join("\t", identifier, departureTimeElement.toString(), destination, track, delay));
         }
 
@@ -268,7 +270,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         return stringValue;
     }
 
-    private String formatDeparture(String identifier, Long departureTimestamp, String destination, @Nullable String track, @Nullable String delay) {
+    private String formatDeparture(String identifier, Long departureTimestamp, String destination,
+            @Nullable String track, @Nullable String delay) {
         Date departureDate = new Date(departureTimestamp * 1000);
         String formattedDate = timeFormat.format(departureDate);
 
@@ -305,10 +308,8 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
         ThingBuilder thingBuilder = editThing();
 
         for (int i = existingChannels.size(); i < numberOfChannels; i++) {
-            Channel channel = ChannelBuilder
-                    .create(getChannelUIDForPosition(i), "String")
-                    .withLabel("Departure " + (i + 1))
-                    .build();
+            Channel channel = ChannelBuilder.create(getChannelUIDForPosition(i), "String")
+                    .withLabel("Departure " + (i + 1)).build();
             thingBuilder.withChannel(channel);
         }
 
@@ -316,14 +317,11 @@ public class PublicTransportSwitzerlandStationboardHandler extends BaseThingHand
     }
 
     private void setUnusedDynamicChannelsToUndef(int amountOfUsedChannels) {
-        getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId())
-                .stream()
-                .skip(amountOfUsedChannels)
+        getThing().getChannelsOfGroup(dynamicChannelGroupUID.getId()).stream().skip(amountOfUsedChannels)
                 .forEach(channel -> updateState(channel.getUID(), UnDefType.UNDEF));
     }
 
     private ChannelUID getChannelUIDForPosition(int position) {
         return new ChannelUID(dynamicChannelGroupUID, String.valueOf(position + 1));
     }
-
 }
