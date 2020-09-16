@@ -403,16 +403,15 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     Data data = gson.fromJson(resp.data.toString(), Data.class);
                     Dp dp = gson.fromJson(data.dp.toString(), Dp.class);
                     Datapoints[] datapoints = gson.fromJson(dp.datapoints, Datapoints[].class);
-                    for (int i = 0; i < datapoints.length; i++) {
-                        Descr descr = gson.fromJson(datapoints[i].descr, Descr.class);
+                    for (Datapoints datapoint : datapoints) {
+                        Descr descr = gson.fromJson(datapoint.descr, Descr.class);
                         String channelId = "";
                         String itemType = "String";
-                        switch (datapoints[i].uid) {
+                        switch (datapoint.uid) {
                             case 2:
                                 List<String> opModes = new ArrayList<>();
-                                String[] modString = descr.states;
-                                for (int i1 = 0; i1 < modString.length; i1++) {
-                                    switch (modString[i1]) {
+                                for (String modString : descr.states) {
+                                    switch (modString) {
                                         case "0":
                                             opModes.add("AUTO");
                                             break;
@@ -437,12 +436,11 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 break;
                             case 4:
                                 List<String> fanLevels = new ArrayList<>();
-                                String[] fanString = descr.states;
-                                for (int i1 = 0; i1 < fanString.length; i1++) {
-                                    if ("AUTO".contentEquals(fanString[i1])) {
+                                for (String fanString : descr.states) {
+                                    if ("AUTO".contentEquals(fanString)) {
                                         fanLevels.add("AUTO");
                                     } else {
-                                        fanLevels.add(fanString[i1]);
+                                        fanLevels.add(fanString);
                                     }
                                 }
                                 properties.put("Supported fan levels", fanLevels.toString());
@@ -451,66 +449,47 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                 addChannel(channelId, itemType, fanLevels);
                                 break;
                             case 5:
-                                List<String> swingUDModes = new ArrayList<>();
-                                String[] swingUDString = descr.states;
-                                for (int i1 = 0; i1 < swingUDString.length; i1++) {
-                                    if ("AUTO".contentEquals(swingUDString[i1])) {
-                                        swingUDModes.add("AUTO");
-                                    } else if ("10".contentEquals(swingUDString[i1])) {
-                                        swingUDModes.add("SWING");
-                                    } else if ("11".contentEquals(swingUDString[i1])) {
-                                        swingUDModes.add("SWIRL");
-                                    } else if ("12".contentEquals(swingUDString[i1])) {
-                                        swingUDModes.add("WIDE");
-                                    } else {
-                                        swingUDModes.add(swingUDString[i1]);
-                                    }
-                                }
-                                channelId = CHANNEL_TYPE_VANESUD;
-                                properties.put("Supported vane up/down modes", swingUDModes.toString());
-                                updateProperties(properties);
-                                addChannel(channelId, itemType, swingUDModes);
-                                break;
                             case 6:
-                                List<String> swingLRModes = new ArrayList<>();
-                                String[] swingLRString = descr.states;
-                                for (int i1 = 0; i1 < swingLRString.length; i1++) {
-                                    if ("AUTO".contentEquals(swingLRString[i1])) {
-                                        swingLRModes.add("AUTO");
-                                    } else if ("10".contentEquals(swingLRString[i1])) {
-                                        swingLRModes.add("SWING");
-                                    } else if ("11".contentEquals(swingLRString[i1])) {
-                                        swingLRModes.add("SWIRL");
-                                    } else if ("12".contentEquals(swingLRString[i1])) {
-                                        swingLRModes.add("WIDE");
+                                List<String> swingModes = new ArrayList<>();
+                                for (String swingString : descr.states) {
+                                    if ("AUTO".contentEquals(swingString)) {
+                                        swingModes.add("AUTO");
+                                    } else if ("10".contentEquals(swingString)) {
+                                        swingModes.add("SWING");
+                                    } else if ("11".contentEquals(swingString)) {
+                                        swingModes.add("SWIRL");
+                                    } else if ("12".contentEquals(swingString)) {
+                                        swingModes.add("WIDE");
                                     } else {
-                                        swingLRModes.add(swingLRString[i1]);
+                                        swingModes.add(swingString);
                                     }
                                 }
-                                channelId = CHANNEL_TYPE_VANESLR;
-                                properties.put("Supported vane left/right modes", swingLRModes.toString());
-                                updateProperties(properties);
-                                addChannel(channelId, itemType, swingLRModes);
+                                switch (datapoint.uid) {
+                                    case 5:
+                                        channelId = CHANNEL_TYPE_VANESUD;
+                                        properties.put("Supported vane up/down modes", swingModes.toString());
+                                        updateProperties(properties);
+                                        addChannel(channelId, itemType, swingModes);
+                                        break;
+                                    case 6:
+                                        channelId = CHANNEL_TYPE_VANESUD;
+                                        properties.put("Supported vane up/down modes", swingModes.toString());
+                                        updateProperties(properties);
+                                        addChannel(channelId, itemType, swingModes);
+                                        break;
+                                }
                                 break;
                             case 9:
-                                logger.trace("UID : {} ; minValue : {}", datapoints[i].uid, descr.minValue);
-                                logger.trace("UID : {} ; maxValue : {}", datapoints[i].uid, descr.maxValue);
                                 channelId = CHANNEL_TYPE_TARGETTEMP;
                                 itemType = "Number:Temperature";
                                 addChannel(channelId, itemType, null);
                                 break;
                             case 10:
-                                logger.trace("UID : {} ; minValue : {}", datapoints[i].uid, descr.minValue);
-                                logger.trace("UID : {} ; maxValue : {}", datapoints[i].uid, descr.maxValue);
                                 channelId = CHANNEL_TYPE_AMBIENTTEMP;
                                 itemType = "Number:Temperature";
                                 addChannel(channelId, itemType, null);
                                 break;
                             case 37:
-                                logger.trace("Add Channel Outdoor Temperature");
-                                logger.trace("UID : {} ; description : {}", datapoints[i].uid, datapoints[i].descr);
-                                logger.trace("UID : {} ; minValue : {}", datapoints[i].uid, descr.minValue);
-                                logger.trace("UID : {} ; maxValue : {}", datapoints[i].uid, descr.maxValue);
                                 channelId = CHANNEL_TYPE_OUTDOORTEMP;
                                 itemType = "Number:Temperature";
                                 addChannel(channelId, itemType, null);
