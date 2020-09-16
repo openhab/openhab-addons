@@ -53,8 +53,7 @@ public class Ism8Handler extends BaseThingHandler implements IDataPointChangeLis
         Channel channel = getThing().getChannel(channelUID);
         Server svr = this.server;
         if (channel != null && svr != null) {
-            if (channel.getConfiguration().containsKey("id") && channel.getConfiguration().containsKey("write")
-                    && channel.getConfiguration().get("write").toString().equalsIgnoreCase("true")) {
+            if (channel.getConfiguration().containsKey("id")) {
                 IDataPoint dataPoint = null;
                 try {
                     int id = Integer.parseInt(channel.getConfiguration().get("id").toString());
