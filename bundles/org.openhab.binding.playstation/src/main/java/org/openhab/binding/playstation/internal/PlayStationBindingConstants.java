@@ -45,16 +45,19 @@ public class PlayStationBindingConstants {
     static final String CHANNEL_APPLICATION_ID = "applicationId";
     static final String CHANNEL_APPLICATION_IMAGE = "applicationImage";
     static final String CHANNEL_OSK_TEXT = "oskText";
-    static final String CHANNEL_KEY_UP = "keyUp";
-    static final String CHANNEL_KEY_DOWN = "keyDown";
-    static final String CHANNEL_KEY_RIGHT = "keyRight";
-    static final String CHANNEL_KEY_LEFT = "keyLeft";
-    static final String CHANNEL_KEY_ENTER = "keyEnter";
-    static final String CHANNEL_KEY_BACK = "keyBack";
-    static final String CHANNEL_KEY_OPTION = "keyOption";
-    static final String CHANNEL_KEY_PS = "keyPS";
-    static final String CHANNEL_DISCONNECT = "disconnect";
+    static final String CHANNEL_SEND_KEY = "sendKey";
     static final String CHANNEL_2ND_SCREEN = "secondScreen";
+    static final String CHANNEL_CONNECT = "connect";
+
+    // List of sendKey commands
+    static final String SEND_KEY_UP = "keyUp";
+    static final String SEND_KEY_DOWN = "keyDown";
+    static final String SEND_KEY_RIGHT = "keyRight";
+    static final String SEND_KEY_LEFT = "keyLeft";
+    static final String SEND_KEY_ENTER = "keyEnter";
+    static final String SEND_KEY_BACK = "keyBack";
+    static final String SEND_KEY_OPTION = "keyOption";
+    static final String SEND_KEY_PS = "keyPS";
 
     // List of all known properties in the response from the PS3/PS4
     public static final String RESPONSE_HOST_ID = "host-id";

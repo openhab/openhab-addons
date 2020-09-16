@@ -16,7 +16,6 @@
 			<property name="vendor">Sony</property>
 			<property name="modelId">PlayStation 3</property>
 		</properties>
-		<representation-property>deviceId</representation-property>
 		<config-description-ref uri="thing-type:playstation:PS3"/>
 
 	</thing-type>
@@ -31,15 +30,8 @@
 			<channel id="applicationId" typeId="applicationId-channel"/>
 			<channel id="applicationImage" typeId="applicationImage-channel"/>
 			<channel id="oskText" typeId="oskText-channel"/>
-			<channel id="disconnect" typeId="disconnect-channel"/>
-			<channel id="keyUp" typeId="keyUp-channel"/>
-			<channel id="keyDown" typeId="keyDown-channel"/>
-			<channel id="keyRight" typeId="keyRight-channel"/>
-			<channel id="keyLeft" typeId="keyLeft-channel"/>
-			<channel id="keyEnter" typeId="keyEnter-channel"/>
-			<channel id="keyBack" typeId="keyBack-channel"/>
-			<channel id="keyOption" typeId="keyOption-channel"/>
-			<channel id="keyPS" typeId="keyPS-channel"/>
+			<channel id="connect" typeId="connect-channel"/>
+			<channel id="sendKey" typeId="sendKey-channel"/>
 			<channel id="secondScreen" typeId="secondScreen-channel"/>
 		</channels>
 
@@ -47,7 +39,6 @@
 			<property name="vendor">Sony</property>
 			<property name="modelId">PlayStation 4</property>
 		</properties>
-		<representation-property>deviceId</representation-property>
 		<config-description-ref uri="thing-type:playstation:PS4"/>
 
 	</thing-type>
@@ -55,7 +46,7 @@
 	<channel-type id="power-ps3-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 3 Power</label>
-		<description>Shows if PlayStation 3 is on or off.</description>
+		<description>Shows if PlayStation 3 is On or Off.</description>
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
@@ -64,7 +55,7 @@
 	<channel-type id="power-channel">
 		<item-type>Switch</item-type>
 		<label>PlayStation 4 Power</label>
-		<description>Shows if PlayStation 4 is on or in standby/off.</description>
+		<description>Shows if PlayStation 4 is On or in Standby/Off.</description>
 		<tags>
 			<tag>Switchable</tag>
 		</tags>
@@ -72,84 +63,54 @@
 	<channel-type id="application-channel">
 		<item-type>String</item-type>
 		<label>Application</label>
-		<description>Name of the currently running application.</description>
+		<description>Name of the Currently Running Application.</description>
 		<state pattern="%s" readOnly="true"/>
 	</channel-type>
 	<channel-type id="applicationId-channel">
 		<item-type>String</item-type>
 		<label>Application ID</label>
-		<description>ID of the currently running application.</description>
+		<description>ID of the Currently running application.</description>
 		<category>MediaControl</category>
 	</channel-type>
 	<channel-type id="applicationImage-channel">
 		<item-type>Image</item-type>
 		<label>Artwork</label>
-		<description>Application artwork.</description>
+		<description>Application Artwork.</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="oskText-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>OSK Text</label>
-		<description>The text from the OnScreenKeyboard.</description>
+		<description>The Text from the OnScreenKeyboard.</description>
 	</channel-type>
-	<channel-type id="disconnect-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Disconnect</label>
-		<description>Disconnect from PS4.</description>
-	</channel-type>
-	<channel-type id="keyUp-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Up button</label>
-		<description>Push Up button.</description>
+	<channel-type id="sendKey-channel" advanced="true">
+		<item-type>String</item-type>
+		<label>Send a Key Press</label>
+		<description>Send a Key Press to the PS4 UI.</description>
 		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyDown-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Down button</label>
-		<description>Push Down button.</description>
-		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyRight-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Right button</label>
-		<description>Push Right button.</description>
-		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyLeft-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Left button</label>
-		<description>Push Left button.</description>
-		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyEnter-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Enter button</label>
-		<description>Push Enter button.</description>
-		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyBack-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Back button</label>
-		<description>Push Back button.</description>
-		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyOption-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Option button</label>
-		<description>Push Option button.</description>
-		<category>MoveControl</category>
-	</channel-type>
-	<channel-type id="keyPS-channel" advanced="true">
-		<item-type>Switch</item-type>
-		<label>PS button</label>
-		<description>Push PS button.</description>
-		<category>MoveControl</category>
+		<command>
+			<options>
+				<option value="keyUp">Up</option>
+				<option value="keyDown">Down</option>
+				<option value="keyRight">Right</option>
+				<option value="keyLeft">Left</option>
+				<option value="keyEnter">Enter</option>
+				<option value="keyBack">Back</option>
+				<option value="keyOption">Option</option>
+				<option value="keyPS">PS</option>
+			</options>
+		</command>
 	</channel-type>
 	<channel-type id="secondScreen-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Second screen</label>
-		<description>Link to 2ndScreen HTTP server.</description>
+		<description>Link to 2ndScreen HTTP Server.</description>
 		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="connect-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Connected</label>
+		<description>Connect/Disconnect to/from PS4 without Sending Command.</description>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -47,23 +47,16 @@ Then, if you have a pass code when you log in to your PS4 you have to specify th
 
 ## Channels
 
-| Channel Type ID | Item Type | Description                                                              | Read/Write |
-|-----------------|-----------|--------------------------------------------------------------------------|------------|
-| power           | Switch    | Shows if PlayStation is ON or in standby.                                | RW         |
-| applicationName | String    | Name of the currently running application.                               | R          |
-| applicationId   | String    | Id of the currently running application.                                 | RW         |
-| applicationImage| Image     | Application artwork.                                                     | R          |
-| oskText         | String    | The text from the OnScreenKeyboard.                                      | RW         |
-| disconnect      | Switch    | Disconnect from PS4.                                                     | W          |
-| keyUp           | Switch    | Push Up button.                                                          | W          |
-| keyDown         | Switch    | Push Down button.                                                        | W          |
-| keyRight        | Switch    | Push Right button.                                                       | W          |
-| keyLeft         | Switch    | Push Left button.                                                        | W          |
-| keyEnter        | String    | Push Enter button.                                                       | W          |
-| keyBack         | Switch    | Push Back button.                                                        | W          |
-| keyOption       | Switch    | Push Option button.                                                      | W          |
-| keyPS           | Switch    | Push PS button.                                                          | W          |
-| secondScreen    | String    | HTTP link to the second screen.                                          | R          |
+| Channel Type ID  | Item Type | Description                                                             | Read/Write |
+|------------------|-----------|-------------------------------------------------------------------------|------------|
+| power            | Switch    | Shows if PlayStation is ON or in standby.                               | RW         |
+| applicationName  | String    | Name of the currently running application.                              | R          |
+| applicationId    | String    | Id of the currently running application.                                | RW         |
+| applicationImage | Image     | Application artwork.                                                    | R          |
+| oskText          | String    | The text from the OnScreenKeyboard.                                     | RW         |
+| sendKey          | String    | Send a key/button push to PS4.                                          | W          |
+| secondScreen     | String    | HTTP link to the second screen.                                         | R          |
+| connect          | Switch    | Connect/disconnect to/from PS4.                                         | RW         |
 
 ## Full Example
 
@@ -88,16 +81,9 @@ String PS4_Application "Application [%s]"        { channel="playstation:PS4:1234
 String PS4_ApplicationId "Application id [%s]"   { channel="playstation:PS4:123456789ABC:applicationId" }
 Image PS4_ArtWork "Artwork"                      { channel="playstation:PS4:123456789ABC:applicationImage" }
 String PS4_OSKText "OSK Text"                    { channel="playstation:PS4:123456789ABC:oskText" }
-Switch PS4_Disconnect "Disconnect"               { channel="playstation:PS4:123456789ABC:disconnect" }
-Switch PS4_Up "Up"                               { channel="playstation:PS4:123456789ABC:keyUp" }
-Switch PS4_Down "Down"                           { channel="playstation:PS4:123456789ABC:keyDown" }
-Switch PS4_Right "Right"                         { channel="playstation:PS4:123456789ABC:keyRight" }
-Switch PS4_Left "Left"                           { channel="playstation:PS4:123456789ABC:keyLeft" }
-Switch PS4_Enter "Enter"                         { channel="playstation:PS4:123456789ABC:keyEnter" }
-Switch PS4_Back "Back"                           { channel="playstation:PS4:123456789ABC:keyBack" }
-Switch PS4_Option "Option"                       { channel="playstation:PS4:123456789ABC:keyOption" }
-Switch PS4_PS "PS"                               { channel="playstation:PS4:123456789ABC:keyPS" }
+String PS4_SendKey "SendKey"                     { channel="playstation:PS4:123456789ABC:sendKey" }
 String PS4_2ndScr "2ndScreen"                    { channel="playstation:PS4:123456789ABC:secondScreen" }
+Switch PS4_Connect "Connect"                     { channel="playstation:PS4:123456789ABC:connect" }
 
 Switch PS3_Power "Power"                         { channel="playstation:PS3:123456789ABC:power" }
 ```
@@ -119,15 +105,17 @@ sitemap demo label="Main Menu"
             "CUSA11993"="Marvel's Spider-Man" ]
         Image item=PS4_Artwork
         Text item=PS4_OSKText
-        Switch item=PS4_Disconnect
-        Switch item=PS4_Up
-        Switch item=PS4_Down
-        Switch item=PS4_Right
-        Switch item=PS4_Left
-        Switch item=PS4_Enter
-        Switch item=PS4_Back
-        Switch item=PS4_Option
-        Switch item=PS4_PS
+        Switch item=PS4_Connect
+        String item=PS4_SendKey
+        Selection item=PS4_SendKey mappings=[
+            "keyUp"="Up",
+            "keyDown"="Down",
+            "keyRight"="Right",
+            "keyLeft"="Left",
+            "keySelect"="Select",
+            "keyBack"="Back",
+            "keyOption"="Option",
+            "keyPS"="PS" ]
         Text item=PS4_2ndScr
     }
 }

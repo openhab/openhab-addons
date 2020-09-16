@@ -116,53 +116,75 @@ public class PS4Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             refreshFromState(channelUID);
         } else {
-            if (CHANNEL_APPLICATION_ID.equals(channelUID.getId()) && command instanceof StringType) {
-                if (!currentApplicationId.equals(((StringType) command).toString())) {
-                    updateApplicationTitleid(((StringType) command).toString());
-                    startApplication(currentApplicationId);
-                }
-            }
-            if (CHANNEL_OSK_TEXT.equals(channelUID.getId()) && command instanceof StringType) {
-                setOSKText(((StringType) command).toString());
-            }
-            if (command instanceof OnOffType) {
+            if (command instanceof StringType) {
                 switch (channelUID.getId()) {
-                    case CHANNEL_POWER:
-                        currentPower = (OnOffType) command;
-                        if (currentPower.equals(OnOffType.ON)) {
-                            turnOnPS4();
-                        } else if (currentPower.equals(OnOffType.OFF)) {
-                            sendStandby();
+                    case CHANNEL_APPLICATION_ID:
+                        if (!currentApplicationId.equals(((StringType) command).toString())) {
+                            updateApplicationTitleid(((StringType) command).toString());
+                            startApplication(currentApplicationId);
                         }
                         break;
-                    case CHANNEL_KEY_UP:
-                        sendRemoteKey(PS4_KEY_UP);
+                    case CHANNEL_OSK_TEXT:
+                        setOSKText(((StringType) command).toString());
                         break;
-                    case CHANNEL_KEY_DOWN:
-                        sendRemoteKey(PS4_KEY_DOWN);
+                    case CHANNEL_SEND_KEY:
+                        int ps4Key = 0;
+                        switch (((StringType) command).toString()) {
+                            case SEND_KEY_UP:
+                                ps4Key = PS4_KEY_UP;
+                                break;
+                            case SEND_KEY_DOWN:
+                                ps4Key = PS4_KEY_DOWN;
+                                break;
+                            case SEND_KEY_RIGHT:
+                                ps4Key = PS4_KEY_RIGHT;
+                                break;
+                            case SEND_KEY_LEFT:
+                                ps4Key = PS4_KEY_LEFT;
+                                break;
+                            case SEND_KEY_ENTER:
+                                ps4Key = PS4_KEY_ENTER;
+                                break;
+                            case SEND_KEY_BACK:
+                                ps4Key = PS4_KEY_BACK;
+                                break;
+                            case SEND_KEY_OPTION:
+                                ps4Key = PS4_KEY_OPTION;
+                                break;
+                            case SEND_KEY_PS:
+                                ps4Key = PS4_KEY_PS;
+                                break;
+                            default:
+                                break;
+                        }
+                        if (ps4Key != 0) {
+                            sendRemoteKey(ps4Key);
+                        }
                         break;
-                    case CHANNEL_KEY_RIGHT:
-                        sendRemoteKey(PS4_KEY_RIGHT);
+                    default:
                         break;
-                    case CHANNEL_KEY_LEFT:
-                        sendRemoteKey(PS4_KEY_LEFT);
+                }
+            } else if (command instanceof OnOffType) {
+                OnOffType onOff = (OnOffType) command;
+                switch (channelUID.getId()) {
+                    case CHANNEL_POWER:
+                        if (currentPower != onOff) {
+                            currentPower = onOff;
+                            if (currentPower.equals(OnOffType.ON)) {
+                                turnOnPS4();
+                            } else if (currentPower.equals(OnOffType.OFF)) {
+                                sendStandby();
+                            }
+                        }
                         break;
-                    case CHANNEL_KEY_ENTER:
-                        sendRemoteKey(PS4_KEY_ENTER);
+                    case CHANNEL_CONNECT:
+                        boolean connected = socketChannelHandler != null && socketChannelHandler.isChannelOpen();
+                        if (connected && onOff.equals(OnOffType.OFF)) {
+                            sendByeBye();
+                        } else if (!connected && onOff.equals(OnOffType.ON)) {
+                            scheduler.execute(() -> login());
+                        }
                         break;
-                    case CHANNEL_KEY_BACK:
-                        sendRemoteKey(PS4_KEY_BACK);
-                        break;
-                    case CHANNEL_KEY_OPTION:
-                        sendRemoteKey(PS4_KEY_OPTION);
-                        break;
-                    case CHANNEL_KEY_PS:
-                        sendRemoteKey(PS4_KEY_PS);
-                        break;
-                    case CHANNEL_DISCONNECT:
-                        sendByeBye();
-                        break;
-
                     default:
                         break;
                 }
@@ -263,16 +285,11 @@ public class PS4Handler extends BaseThingHandler {
             case CHANNEL_2ND_SCREEN:
                 updateState(channelUID, UnDefType.UNDEF);
                 break;
-            case CHANNEL_KEY_UP:
-            case CHANNEL_KEY_DOWN:
-            case CHANNEL_KEY_RIGHT:
-            case CHANNEL_KEY_LEFT:
-            case CHANNEL_KEY_ENTER:
-            case CHANNEL_KEY_BACK:
-            case CHANNEL_KEY_OPTION:
-            case CHANNEL_KEY_PS:
-            case CHANNEL_DISCONNECT:
-                updateState(channelUID, OnOffType.OFF);
+            case CHANNEL_CONNECT:
+                boolean connected = socketChannelHandler != null && socketChannelHandler.isChannelOpen();
+                updateState(channelUID, OnOffType.from(connected));
+                break;
+            case CHANNEL_SEND_KEY:
                 break;
             default:
                 logger.warn("Channel refresh for {} not implemented!", channelUID.getId());
@@ -397,6 +414,7 @@ public class PS4Handler extends BaseThingHandler {
             if (!setupConnection(channel)) {
                 throw new IOException("Setup connection failed");
             }
+            updateState(CHANNEL_CONNECT, OnOffType.ON);
             return channel;
         }
 
@@ -427,6 +445,7 @@ public class PS4Handler extends BaseThingHandler {
                     logger.debug("Connection close exception: {}", e.getMessage());
                 }
             }
+            updateState(CHANNEL_CONNECT, OnOffType.OFF);
             logger.debug("SocketHandler done.");
             ps4Crypto.clearCiphers();
             loggedIn = false;
@@ -814,6 +833,7 @@ public class PS4Handler extends BaseThingHandler {
      */
     private void updateApplicationTitleid(String titleId) {
         currentApplicationId = titleId;
+        updateState(CHANNEL_APPLICATION_ID, StringType.valueOf(titleId));
         logger.debug("Current application title id: {}", titleId);
         if (!isLinked(CHANNEL_APPLICATION_IMAGE)) {
             return;
