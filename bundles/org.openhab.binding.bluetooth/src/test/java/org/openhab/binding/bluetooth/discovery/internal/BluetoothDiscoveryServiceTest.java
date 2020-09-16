@@ -531,7 +531,6 @@ public class BluetoothDiscoveryServiceTest {
                 BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
             publisher.accept(roamingAdapter, result);
         }
-
     }
 
     private class MockDiscoveryParticipant implements BluetoothDiscoveryParticipant {

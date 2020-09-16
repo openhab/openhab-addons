@@ -408,5 +408,4 @@ public abstract class BluetoothDevice {
             }
         }
     }
-
 }

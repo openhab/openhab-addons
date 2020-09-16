@@ -33,5 +33,4 @@ public class RoamingBindingConstants {
             "roaming");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_ROAMING);
-
 }

@@ -6,7 +6,7 @@
 
 	<thing-type id="beacon">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="roaming" />
+			<bridge-type-ref id="roaming"/>
 			<bridge-type-ref id="bluegiga"/>
 			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>

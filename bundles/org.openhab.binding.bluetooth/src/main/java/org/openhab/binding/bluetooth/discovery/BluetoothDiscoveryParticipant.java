@@ -78,5 +78,4 @@ public interface BluetoothDiscoveryParticipant {
             BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
         // do nothing by default
     }
-
 }

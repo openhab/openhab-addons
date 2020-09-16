@@ -164,6 +164,5 @@ public class RoamingBluetoothDevice extends DelegateBluetoothDevice {
         public void onAdapterChanged(BluetoothAdapter adapter) {
             // do nothing since we are the ones that are supposed to trigger this
         }
-
     }
 }

@@ -58,5 +58,4 @@ public class BluetoothHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
 }

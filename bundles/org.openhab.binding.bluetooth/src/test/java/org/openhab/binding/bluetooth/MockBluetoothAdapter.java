@@ -76,5 +76,4 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
     public @Nullable String getLabel() {
         return null;
     }
-
 }

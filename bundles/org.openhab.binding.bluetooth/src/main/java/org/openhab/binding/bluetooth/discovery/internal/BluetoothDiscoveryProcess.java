@@ -375,5 +375,4 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
     @Override
     public void onAdapterChanged(BluetoothAdapter adapter) {
     }
-
 }

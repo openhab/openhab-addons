@@ -100,5 +100,4 @@ public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryP
             }
         });
     }
-
 }
