@@ -190,31 +190,8 @@ public class SenecHomeHandler extends BaseThingHandler {
     private static BigDecimal parseFloatValue(String value) {
         // sample: value = 43E26188
 
-        String binaryString = Long.toString(Long.parseLong(value, 16), 2);
-        while (binaryString.length() < 32) {
-            binaryString = "0" + binaryString;
-        }
-
-        int sign = Character.getNumericValue(binaryString.charAt(0));
-        if (sign == 0) {
-            sign = -1;
-        }
-        sign = sign * -1;
-
-        if (Long.parseLong(binaryString.substring(1), 2) == 0L) {
-            return BigDecimal.ZERO;
-        } else {
-            int exponent = Integer.parseInt(binaryString.substring(1, 9), 2) - 127;
-
-            String mantissa = binaryString.substring(9);
-
-            double significand = 1;
-            for (int i = 1; i < 24; i++) {
-                significand += (1 / Math.pow(2, i)) * Character.getNumericValue(mantissa.charAt(i - 1));
-            }
-
-            return new BigDecimal(significand * Math.pow(2, exponent) * sign);
-        }
+        float f = Float.intBitsToFloat(Integer.parseUnsignedInt(value, 16));
+        return new BigDecimal(f);
     }
 
     protected void updatePowerLimitationStatus(Channel channel, boolean status, int duration) {
