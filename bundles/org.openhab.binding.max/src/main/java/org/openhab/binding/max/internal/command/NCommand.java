@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.max.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link N_CubeCommand} starts the inclusion mode for new MAX! devices.
- * 
+ *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class NCommand extends CubeCommand {
     // Example n:003c = start inclusion, timeout 003c = 60 sec
 

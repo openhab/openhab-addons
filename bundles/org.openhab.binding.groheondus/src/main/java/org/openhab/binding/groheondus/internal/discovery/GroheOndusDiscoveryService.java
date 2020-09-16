@@ -79,10 +79,10 @@ public class GroheOndusDiscoveryService extends AbstractDiscoveryService {
             ThingUID thingUID = null;
             switch (appliance.getType()) {
                 case org.grohe.ondus.api.model.guard.Appliance.TYPE:
-                    thingUID = new ThingUID(THING_TYPE_SENSEGUARD, appliance.getApplianceId());
+                    thingUID = new ThingUID(THING_TYPE_SENSEGUARD, bridgeUID, appliance.getApplianceId());
                     break;
                 case org.grohe.ondus.api.model.sense.Appliance.TYPE:
-                    thingUID = new ThingUID(THING_TYPE_SENSE, appliance.getApplianceId());
+                    thingUID = new ThingUID(THING_TYPE_SENSE, bridgeUID, appliance.getApplianceId());
                     break;
                 default:
                     return;

@@ -28,4 +28,5 @@ public class RadioThermostatConfiguration {
     public @Nullable Integer logRefresh;
     public boolean isCT80 = false;
     public boolean disableLogs = false;
+    public String setpointMode = "temporary";
 }

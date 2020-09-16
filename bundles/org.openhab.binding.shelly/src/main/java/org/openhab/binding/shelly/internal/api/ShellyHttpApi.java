@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -282,8 +281,8 @@ public class ShellyHttpApi {
     public Map<String, String> getIRCodeList() throws ShellyApiException {
         String result = request(SHELLY_URL_LIST_IR);
         // take pragmatic approach to make the returned JSon into named arrays for Gson parsing
-        String keyList = StringUtils.substringAfter(result, "[");
-        keyList = StringUtils.substringBeforeLast(keyList, "]");
+        String keyList = substringAfter(result, "[");
+        keyList = substringBeforeLast(keyList, "]");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("\",\""), "\", \"name\": \"");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("["), "{ \"id\":");
         keyList = keyList.replaceAll(java.util.regex.Pattern.quote("]"), "} ");
@@ -375,9 +374,9 @@ public class ShellyHttpApi {
         if (profile.isSensor) {
             logger.debug("{}: Set Sensor Reporting URL", thingName);
             setEventUrl(config.eventsSensorReport, SHELLY_EVENT_SENSORREPORT, SHELLY_EVENT_DARK, SHELLY_EVENT_TWILIGHT,
-                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_CLOSE, SHELLY_EVENT_VIBRATION,
-                    SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF, SHELLY_EVENT_TEMP_OVER,
-                    SHELLY_EVENT_TEMP_UNDER);
+                    SHELLY_EVENT_FLOOD_DETECTED, SHELLY_EVENT_FLOOD_GONE, SHELLY_EVENT_OPEN, SHELLY_EVENT_CLOSE,
+                    SHELLY_EVENT_VIBRATION, SHELLY_EVENT_ALARM_MILD, SHELLY_EVENT_ALARM_HEAVY, SHELLY_EVENT_ALARM_OFF,
+                    SHELLY_EVENT_TEMP_OVER, SHELLY_EVENT_TEMP_UNDER);
         }
     }
 

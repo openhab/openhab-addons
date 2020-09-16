@@ -282,7 +282,7 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
                     "application/json");
         }
 
-        requestLogger.listenTo(request);
+        requestLogger.listenTo(request, new String[] { config.apiKey });
 
         return request;
     }

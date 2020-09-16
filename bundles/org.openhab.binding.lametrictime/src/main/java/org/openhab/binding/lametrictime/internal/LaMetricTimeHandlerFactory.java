@@ -181,5 +181,4 @@ public class LaMetricTimeHandlerFactory extends BaseThingHandlerFactory {
         }
         return clientBuilder;
     }
-
 }

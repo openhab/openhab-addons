@@ -115,7 +115,7 @@ public class NeeoDeviceDiscoveryService extends AbstractDiscoveryService {
 
                 logger.debug("Device #{} found - {}", deviceKey, device.getName());
 
-                final ThingUID thingUID = new ThingUID(NeeoConstants.THING_TYPE_DEVICE, roomUid, device.getKey());
+                final ThingUID thingUID = new ThingUID(NeeoConstants.THING_TYPE_DEVICE, roomUid, deviceKey);
 
                 final DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(NeeoConstants.CONFIG_DEVICEKEY, deviceKey).withBridge(roomUid)

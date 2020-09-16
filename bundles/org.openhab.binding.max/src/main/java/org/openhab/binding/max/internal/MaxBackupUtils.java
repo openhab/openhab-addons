@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.core.ConfigConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class MaxBackupUtils {
 
     private final Logger logger = LoggerFactory.getLogger(MaxBackupUtils.class);
@@ -35,8 +37,8 @@ public class MaxBackupUtils {
     private final String dbFolderName;
     private final String backupId;
     private boolean inProgress = false;
-    private StringBuilder msg;
-    private String cube;
+    private StringBuilder msg = new StringBuilder();
+    private String cube = "";
 
     public MaxBackupUtils(String backupId) {
         this.backupId = backupId;

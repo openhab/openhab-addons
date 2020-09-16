@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SomfyTahomaBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private HashMap<String, Integer> typeTable = new HashMap<>();
     protected HashMap<String, String> stateNames = new HashMap<>();
 

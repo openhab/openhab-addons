@@ -26,13 +26,21 @@ import org.eclipse.smarthome.core.library.types.DecimalType;
 @NonNullByDefault
 class CosemDecimal extends CosemValueDescriptor<DecimalType> {
 
-    public static final CosemDecimal INSTANCE = new CosemDecimal();
+    public static final CosemDecimal INSTANCE = new CosemDecimal(false);
+    public static final CosemDecimal INSTANCE_WITH_UNITS = new CosemDecimal(true);
 
-    private CosemDecimal() {
+    /**
+     * If true it can be the input contains a unit. In that case the unit will be stripped before parsing.
+     */
+    private final boolean expectUnit;
+
+    private CosemDecimal(boolean expectUnit) {
+        this.expectUnit = expectUnit;
     }
 
     public CosemDecimal(String ohChannelId) {
         super(ohChannelId);
+        this.expectUnit = false;
     }
 
     /**
@@ -45,7 +53,15 @@ class CosemDecimal extends CosemValueDescriptor<DecimalType> {
     @Override
     protected DecimalType getStateValue(String cosemValue) throws ParseException {
         try {
-            return new DecimalType(cosemValue);
+            final String value;
+
+            if (expectUnit) {
+                final int sep = cosemValue.indexOf('*');
+                value = sep > 0 ? cosemValue.substring(0, sep) : cosemValue;
+            } else {
+                value = cosemValue;
+            }
+            return new DecimalType(value);
         } catch (NumberFormatException nfe) {
             throw new ParseException("Failed to parse value '" + cosemValue + "' as integer", 0);
         }

@@ -27,5 +27,4 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface IDimmerActions {
 
     public void setLevel(@Nullable Double level, @Nullable Double fadeTime, @Nullable Double delayTime);
-
 }

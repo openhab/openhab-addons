@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:jablotron:device">
+		<parameter name="refresh" type="integer" required="false" min="10" unit="s">
+			<label>Refresh</label>
+			<description>Specifies the refresh time of thing channels in seconds</description>
+			<default>60</default>
+		</parameter>
+
+		<parameter name="serviceId" type="text" required="true">
+			<label>Alarm Service ID</label>
+			<description>The service ID of the Oasis alarm</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:jablotron:ja100device">
+		<parameter name="refresh" type="integer" required="false" min="10" unit="s">
+			<label>Refresh</label>
+			<description>Specifies the refresh time of thing channels in seconds</description>
+			<default>60</default>
+		</parameter>
+
+		<parameter name="code" type="text" required="false">
+			<context>password</context>
+			<label>Code</label>
+			<description>Master code for the JA100 alarm</description>
+		</parameter>
+
+		<parameter name="serviceId" type="text" required="true">
+			<label>Alarm Service ID</label>
+			<description>The service ID of the JA100 alarm</description>
+		</parameter>
+	</config-description>
+
+	<config-description uri="bridge-type:jablotron:bridge">
+		<parameter name="login" type="text" required="true">
+			<label>Login</label>
+			<description>Login for Jablonet portal</description>
+		</parameter>
+
+		<parameter name="password" type="text" required="true">
+			<context>password</context>
+			<label>Password</label>
+			<description>Password for Jablonet portal</description>
+		</parameter>
+
+		<parameter name="lang" type="text" required="true">
+			<default>en</default>
+			<label>Language</label>
+			<description>Language for Jablonet portal</description>
+			<options>
+				<option value="cs">Česky</option>
+				<option value="da">Dansk</option>
+				<option value="de">Deutsch</option>
+				<option value="en">English</option>
+				<option value="es">Español</option>
+				<option value="fr">Français</option>
+				<option value="hr">Hrvatski</option>
+				<option value="it">Italiano</option>
+				<option value="hu">Magyar</option>
+				<option value="nl">Nederlands</option>
+				<option value="vi">Người việt nam</option>
+				<option value="no">Norsk</option>
+				<option value="pl">Polski</option>
+				<option value="pt">Portugues</option>
+				<option value="ro">Română</option>
+				<option value="sl">Slovenski</option>
+				<option value="sk">Slovensky</option>
+				<option value="sr">Srpski</option>
+				<option value="fi">Suomi</option>
+				<option value="sv">Svenska</option>
+				<option value="tr">Türkçe</option>
+			</options>
+		</parameter>
+
+		<parameter name="refresh" type="integer" required="false" min="10" unit="s">
+			<label>Refresh</label>
+			<description>Specifies the refresh time for all alarm warnings (alarm, service mode, ...)</description>
+			<default>30</default>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.astro.internal.config;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -31,42 +28,29 @@ public class AstroThingConfig {
     public @Nullable Double longitude;
     public boolean useMeteorologicalSeason;
     public int interval = 300;
-    private @Nullable String thingUid;
 
     /**
      * Splits the geolocation into latitude and longitude.
      */
     public void parseGeoLocation() {
-        String[] geoParts = StringUtils.split(geolocation, ",");
-        if (geoParts.length == 2) {
-            latitude = toDouble(geoParts[0]);
-            longitude = toDouble(geoParts[1]);
-        } else if (geoParts.length == 3) {
-            latitude = toDouble(geoParts[0]);
-            longitude = toDouble(geoParts[1]);
-            altitude = toDouble(geoParts[2]);
+        if (geolocation != null) {
+            String[] geoParts = geolocation.split(",");
+            if (geoParts.length == 2) {
+                latitude = toDouble(geoParts[0]);
+                longitude = toDouble(geoParts[1]);
+            } else if (geoParts.length == 3) {
+                latitude = toDouble(geoParts[0]);
+                longitude = toDouble(geoParts[1]);
+                altitude = toDouble(geoParts[2]);
+            }
         }
     }
 
     private @Nullable Double toDouble(String value) {
         try {
-            return Double.parseDouble(StringUtils.trimToNull(value));
+            return Double.parseDouble(value.trim());
         } catch (NumberFormatException ex) {
-            return null;
         }
-    }
-
-    /**
-     * Sets the thing uid as string.
-     */
-    public void setThingUid(String thingUid) {
-        this.thingUid = thingUid;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("thing", thingUid)
-                .append("geolocation", geolocation).append("altitude", altitude).append("interval", interval)
-                .append("useMeteorologicalSeason", useMeteorologicalSeason).toString();
+        return null;
     }
 }

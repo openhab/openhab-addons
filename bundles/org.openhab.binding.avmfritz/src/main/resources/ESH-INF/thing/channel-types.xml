@@ -158,7 +158,7 @@
 				<option value="COMFORT">Comfort</option>
 				<option value="ECO">Eco</option>
 				<option value="BOOST">Boost</option>
-				<option value="WINDOW_OPEN">Window open</option>
+				<option value="WINDOW_OPEN">Window Open</option>
 			</options>
 		</state>
 	</channel-type>

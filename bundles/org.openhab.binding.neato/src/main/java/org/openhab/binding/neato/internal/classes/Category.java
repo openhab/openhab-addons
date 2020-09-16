@@ -25,6 +25,7 @@ public enum Category {
     HOUSE(2),
     SPOT(3),
     MAP(4);
+
     private final int category;
 
     Category(int category) {
@@ -34,5 +35,4 @@ public enum Category {
     public int getCategory() {
         return category;
     }
-
 }

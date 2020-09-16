@@ -59,5 +59,4 @@ public class Module {
     public String toString() {
         return String.format("id=%s, name=%s, type=%s", id, name, deviceType);
     }
-
 }

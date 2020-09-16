@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.max.internal.command;
 
-import org.apache.commons.net.util.Base64;
+import java.util.Base64;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
 
@@ -22,6 +24,7 @@ import org.openhab.binding.max.internal.device.ThermostatModeType;
  * @author Andreas Heil (info@aheil.de) - Initial contribution
  * @author Marcel Verpaalen - OH2 update + simplification
  */
+@NonNullByDefault
 public class SCommand extends CubeCommand {
 
     private static final String BASE_STRING_S = "000040000000"; // for single devices
@@ -96,9 +99,9 @@ public class SCommand extends CubeCommand {
 
         final String commandString = baseString + rfAddress + Utils.toHex(roomId) + Utils.toHex(bits);
 
-        final String encodedString = Base64.encodeBase64String(Utils.hexStringToByteArray(commandString));
+        final String encodedString = Base64.getEncoder().encodeToString(Utils.hexStringToByteArray(commandString));
 
-        return "s:" + encodedString;
+        return "s:" + encodedString + "\r\n";
     }
 
     @Override

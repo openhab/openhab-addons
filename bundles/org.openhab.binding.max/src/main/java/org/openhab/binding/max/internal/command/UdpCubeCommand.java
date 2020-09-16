@@ -24,6 +24,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.max.internal.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Marcel Verpaalen - Initial contribution
  */
+@NonNullByDefault
 public class UdpCubeCommand {
 
     private static final String MAXCUBE_COMMAND_STRING = "eQ3Max*\0";
@@ -45,9 +48,10 @@ public class UdpCubeCommand {
     private final UdpCommandType commandType;
     private final String serialNumber;
     private Map<String, String> commandResponse = new HashMap<>();
+    @Nullable
     private String ipAddress;
 
-    public UdpCubeCommand(UdpCommandType commandType, String serialNumber) {
+    public UdpCubeCommand(UdpCommandType commandType, @Nullable String serialNumber) {
         this.commandType = commandType;
         if (serialNumber == null || serialNumber.isEmpty()) {
             this.serialNumber = "**********";
@@ -168,7 +172,7 @@ public class UdpCubeCommand {
      * @param ipAddress IP address of the MAX! Cube
      *
      */
-    private void sendUdpCommand(String commandString, String ipAddress) {
+    private void sendUdpCommand(String commandString, @Nullable String ipAddress) {
         DatagramSocket bcSend = null;
         try {
             bcSend = new DatagramSocket();
@@ -184,7 +188,6 @@ public class UdpCubeCommand {
                     continue;
                 }
                 for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
-
                     InetAddress[] broadcast = new InetAddress[3];
                     if (ipAddress != null && !ipAddress.isEmpty()) {
                         broadcast[0] = InetAddress.getByName(ipAddress);

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -45,15 +44,15 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(OwDiscoveryService.class);
 
     private final OwserverBridgeHandler owBridgeHandler;
+    private final ThingUID bridgeUID;
 
     Map<SensorId, OwDiscoveryItem> owDiscoveryItems = new HashMap<>();
     Set<SensorId> associatedSensors = new HashSet<>();
-    @Nullable
-    ThingUID bridgeUID;
 
     public OwDiscoveryService(OwserverBridgeHandler owBridgeHandler) {
         super(SUPPORTED_THING_TYPES, 60, false);
         this.owBridgeHandler = owBridgeHandler;
+        this.bridgeUID = owBridgeHandler.getThing().getUID();
         logger.debug("registering discovery service for {}", owBridgeHandler);
     }
 
@@ -94,8 +93,6 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-        bridgeUID = owBridgeHandler.getThing().getUID();
-
         scanDirectory("/");
 
         // remove duplicates

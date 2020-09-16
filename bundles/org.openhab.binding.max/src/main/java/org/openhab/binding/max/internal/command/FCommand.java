@@ -12,11 +12,15 @@
  */
 package org.openhab.binding.max.internal.command;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * The {@link F_CubeCommand} is used to query and update the NTP servers used by the Cube.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
+@NonNullByDefault
 public class FCommand extends CubeCommand {
 
     private String ntpServer1 = "";
@@ -31,7 +35,7 @@ public class FCommand extends CubeCommand {
     /**
      * Updates the Cube the NTP info
      */
-    public FCommand(String ntpServer1, String ntpServer2) {
+    public FCommand(@Nullable String ntpServer1, @Nullable String ntpServer2) {
         this.ntpServer1 = ntpServer1 != null ? ntpServer1 : "";
         this.ntpServer2 = ntpServer2 != null ? ntpServer2 : "";
     }
@@ -44,7 +48,6 @@ public class FCommand extends CubeCommand {
         } else {
             servers = ntpServer1 + ntpServer2;
         }
-
         return "f:" + servers + '\r' + '\n';
     }
 

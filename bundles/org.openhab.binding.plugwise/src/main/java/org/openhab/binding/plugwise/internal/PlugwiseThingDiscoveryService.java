@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -123,15 +122,19 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
         super.activate(new HashMap<>());
     }
 
-    private DiscoveryResult createDiscoveryResult(DiscoveredNode node) {
+    private void createDiscoveryResult(DiscoveredNode node) {
         String mac = node.macAddress.toString();
-        ThingUID thingUID = new ThingUID(PlugwiseUtils.getThingTypeUID(node.deviceType), mac);
+        ThingUID bridgeUID = stickHandler.getThing().getUID();
+        ThingTypeUID thingTypeUID = PlugwiseUtils.getThingTypeUID(node.deviceType);
+        if (thingTypeUID != null) {
+            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, mac);
 
-        return DiscoveryResultBuilder.create(thingUID).withBridge(stickHandler.getThing().getUID())
-                .withLabel("Plugwise " + node.deviceType.toString())
-                .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
-                .withProperties(new HashMap<>(node.properties))
-                .withRepresentationProperty(PlugwiseBindingConstants.PROPERTY_MAC_ADDRESS).build();
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
+                    .withLabel("Plugwise " + node.deviceType.toString())
+                    .withProperty(PlugwiseBindingConstants.CONFIG_PROPERTY_MAC_ADDRESS, mac)
+                    .withProperties(new HashMap<>(node.properties))
+                    .withRepresentationProperty(PlugwiseBindingConstants.PROPERTY_MAC_ADDRESS).build());
+        }
     }
 
     @Override
@@ -192,7 +195,7 @@ public class PlugwiseThingDiscoveryService extends AbstractDiscoveryService
             node.deviceType = message.getDeviceType();
             PlugwiseUtils.updateProperties(node.properties, message);
             if (node.isDataComplete()) {
-                thingDiscovered(createDiscoveryResult(node));
+                createDiscoveryResult(node);
                 discoveredNodes.remove(mac);
                 logger.debug("Finished discovery of {} ({})", node.deviceType, mac);
             }

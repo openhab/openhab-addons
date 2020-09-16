@@ -573,7 +573,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
                 writer.write(command.getCommandString());
                 logger.trace("Write string to Max! Cube {}: {}", ipAddress, command.getCommandString());
                 writer.flush();
-                if (command.getReturnStrings() != null) {
+                if (!command.getReturnStrings().isEmpty()) {
                     readLines(command.getReturnStrings());
                 } else {
                     socketClose();
@@ -788,7 +788,7 @@ public class MaxCubeBridgeHandler extends BaseBridgeHandler {
     }
 
     private void processNMessage(NMessage nMessage) {
-        if (nMessage.getRfAddress() != null) {
+        if (!nMessage.getRfAddress().isEmpty()) {
             logger.debug("New {} found. Serial: {}, rfaddress: {}", nMessage.getDeviceType(),
                     nMessage.getSerialNumber(), nMessage.getRfAddress());
             // Send C command to get the configuration so it will be added to discovery

@@ -60,7 +60,7 @@ public class InsteonDeviceDiscoveryService extends AbstractDiscoveryService {
             }
 
             String name = parts[0] + parts[1] + parts[2];
-            ThingUID uid = new ThingUID(InsteonBindingConstants.DEVICE_THING_TYPE, name);
+            ThingUID uid = new ThingUID(InsteonBindingConstants.DEVICE_THING_TYPE, bridgeUid, name);
             Map<String, Object> properties = new HashMap<>();
             properties.put(ADDRESS, address);
 

@@ -110,5 +110,4 @@ public class SmartherBindingConstants {
     // List of all adressable things
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .unmodifiableSet(Stream.of(THING_TYPE_BRIDGE, THING_TYPE_MODULE).collect(Collectors.toSet()));
-
 }

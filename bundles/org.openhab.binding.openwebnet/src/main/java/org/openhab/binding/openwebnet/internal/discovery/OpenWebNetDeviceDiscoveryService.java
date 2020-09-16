@@ -115,6 +115,20 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
                 thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_DIMMER;
                 deviceWho = Who.LIGHTING;
                 break;
+            case SCS_SHUTTER_SWITCH:
+            case SCS_SHUTTER_CONTROL: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_BUS_AUTOMATION;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_BUS_AUTOMATION;
+                deviceWho = Who.AUTOMATION;
+                break;
+            }
+            case ZIGBEE_SHUTTER_SWITCH:
+            case ZIGBEE_SHUTTER_CONTROL: {
+                thingTypeUID = OpenWebNetBindingConstants.THING_TYPE_ZB_AUTOMATION;
+                thingLabel = OpenWebNetBindingConstants.THING_LABEL_ZB_AUTOMATION;
+                deviceWho = Who.AUTOMATION;
+                break;
+            }
             default:
                 logger.warn("Device type {} is not supported, default to GENERIC device (WHERE={})", deviceType, where);
                 if (where instanceof WhereZigBee) {
@@ -173,7 +187,7 @@ public class OpenWebNetDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public ThingHandler getThingHandler() {
+    public @Nullable ThingHandler getThingHandler() {
         return bridgeHandler;
     }
 }

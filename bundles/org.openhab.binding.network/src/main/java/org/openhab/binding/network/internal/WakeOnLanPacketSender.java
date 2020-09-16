@@ -126,5 +126,4 @@ public class WakeOnLanPacketSender {
             }
         }).filter(Objects::nonNull);
     }
-
 }

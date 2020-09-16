@@ -99,5 +99,4 @@ public class BRC1HUartProcessor {
     public void abandon() {
         this.uartMessages.clear();
     }
-
 }

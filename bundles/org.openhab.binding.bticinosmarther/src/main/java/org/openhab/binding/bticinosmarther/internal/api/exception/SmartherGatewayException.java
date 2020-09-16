@@ -60,5 +60,4 @@ public class SmartherGatewayException extends IOException {
     public SmartherGatewayException(Throwable cause) {
         super(cause);
     }
-
 }

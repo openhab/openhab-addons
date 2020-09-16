@@ -42,5 +42,4 @@ public class MadokaMessageTest {
         assertArrayEquals(
                 new byte[] { 0x00, 0x07, 0x00, 0x40, 0x20, 0x20, 0x01, (byte) (powered == true ? 0x01 : 0x00) }, resp);
     }
-
 }

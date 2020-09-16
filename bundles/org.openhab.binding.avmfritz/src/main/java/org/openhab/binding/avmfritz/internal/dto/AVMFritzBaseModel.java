@@ -205,7 +205,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     public String toString() {
         return new StringBuilder().append("[ain=").append(ident).append(",bitmask=").append(bitmask)
                 .append(",isHANFUNDevice=").append(isHANFUNDevice()).append(",isHANFUNButton=").append(isHANFUNButton())
-                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append("isButton").append(isButton())
+                .append(",isHANFUNAlarmSensor=").append(isHANFUNAlarmSensor()).append(",isButton").append(isButton())
                 .append(",isSwitchableOutlet=").append(isSwitchableOutlet()).append(",isTempSensor=")
                 .append(isTempSensor()).append(",isPowermeter=").append(isPowermeter()).append(",isDectRepeater=")
                 .append(isDectRepeater()).append(",isHeatingThermostat=").append(isHeatingThermostat())

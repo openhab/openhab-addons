@@ -9,8 +9,8 @@
 		<description>Nova SDS011 Fine Dust Sensor connected via USB</description>
 
 		<channels>
-			<channel id="pm10" typeId="pm10-type" />
-			<channel id="pm25" typeId="pm25-type" />
+			<channel id="pm10" typeId="pm10-type"/>
+			<channel id="pm25" typeId="pm25-type"/>
 		</channels>
 
 		<config-description>
@@ -32,7 +32,8 @@
 				<default>1</default>
 				<advanced>true</advanced>
 				<label>Reporting Interval</label>
-				<description>Device will report every x minutes and sleep for x*60 - 30 seconds afterwards, 0 = as fast as possible without sleep</description>
+				<description>Device will report every x minutes and sleep for x*60 - 30 seconds afterwards, 0 = as fast as possible
+					without sleep</description>
 			</parameter>
 			<parameter name="pollingInterval" type="integer" min="3" max="3600" unit="s">
 				<default>10</default>

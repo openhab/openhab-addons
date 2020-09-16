@@ -58,5 +58,4 @@ public class Plant {
     public String toString() {
         return String.format("id=%s, name=%s", id, name);
     }
-
 }

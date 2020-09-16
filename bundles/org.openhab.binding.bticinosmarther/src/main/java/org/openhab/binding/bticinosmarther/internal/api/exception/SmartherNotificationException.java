@@ -45,5 +45,4 @@ public class SmartherNotificationException extends RuntimeException {
     public SmartherNotificationException(String message, Throwable exception) {
         super(message, exception);
     }
-
 }

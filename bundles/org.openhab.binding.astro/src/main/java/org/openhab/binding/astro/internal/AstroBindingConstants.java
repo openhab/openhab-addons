@@ -49,10 +49,6 @@ public final class AstroBindingConstants {
     public static final String EVENT_PHASE_FULL = "FULL";
     public static final String EVENT_PHASE_NEW = "NEW";
 
-    public static final String EVENT_ECLIPSE_PARTIAL = "PARTIAL";
-    public static final String EVENT_ECLIPSE_TOTAL = "TOTAL";
-    public static final String EVENT_ECLIPSE_RING = "RING";
-
     public static final String EVENT_PERIGEE = "PERIGEE";
     public static final String EVENT_APOGEE = "APOGEE";
 
