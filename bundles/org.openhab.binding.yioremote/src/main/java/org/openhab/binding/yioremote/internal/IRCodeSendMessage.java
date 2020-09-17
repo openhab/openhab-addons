@@ -59,4 +59,3 @@ public class IRCodeSendMessage {
         return ircodesendmessagejsonobject.toString();
     }
 }
-

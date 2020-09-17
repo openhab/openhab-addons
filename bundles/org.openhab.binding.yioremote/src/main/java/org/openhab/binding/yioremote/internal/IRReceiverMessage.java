@@ -49,4 +49,3 @@ public class IRReceiverMessage {
         return irreceivermessagejsonobject.toString();
     }
 }
-

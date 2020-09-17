@@ -53,4 +53,3 @@ public class AuthenticationMessage {
         return authenticationmessagejsonobject.toString();
     }
 }
-

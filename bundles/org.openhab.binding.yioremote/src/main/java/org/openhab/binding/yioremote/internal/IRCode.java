@@ -41,4 +41,3 @@ public class IRCode {
         this.code = code;
     }
 }
-
