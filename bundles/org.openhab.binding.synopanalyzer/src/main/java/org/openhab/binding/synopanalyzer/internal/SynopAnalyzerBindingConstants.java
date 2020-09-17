@@ -36,7 +36,6 @@ public class SynopAnalyzerBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_SYNOP = new ThingTypeUID(BINDING_ID, "synopanalyzer");
-    public static final String LOCAL = "local";
 
     // List of all Channel ids
     public static final String HORIZONTAL_VISIBILITY = "horizontal-visibility";

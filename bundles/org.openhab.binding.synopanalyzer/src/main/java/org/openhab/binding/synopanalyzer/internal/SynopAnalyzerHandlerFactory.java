@@ -19,16 +19,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -62,14 +59,11 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
     private final LocationProvider locationProvider;
     private final Gson gson;
     private @NonNullByDefault({}) StationDB stationDB;
-    private TimeZoneProvider timeZoneProvider;
-    private final Map<ThingTypeUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private @Nullable ServiceRegistration<?> serviceReg;
 
     @Activate
-    public SynopAnalyzerHandlerFactory(@Reference LocationProvider locationProvider,
-            @Reference TimeZoneProvider timeZoneProvider) {
+    public SynopAnalyzerHandlerFactory(@Reference LocationProvider locationProvider) {
         this.locationProvider = locationProvider;
-        this.timeZoneProvider = timeZoneProvider;
         this.gson = new Gson();
     }
 
@@ -82,9 +76,7 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return thingTypeUID.equals(THING_SYNOP)
-                ? new SynopAnalyzerHandler(thing, locationProvider, timeZoneProvider, stationDB)
-                : null;
+        return thingTypeUID.equals(THING_SYNOP) ? new SynopAnalyzerHandler(thing, locationProvider, stationDB) : null;
     }
 
     @Override
@@ -111,15 +103,15 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDiscoveryService() {
         SynopAnalyzerDiscoveryService discoveryService = new SynopAnalyzerDiscoveryService(stationDB, locationProvider);
-        discoveryServiceRegs.put(THING_SYNOP,
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
+
+        serviceReg = bundleContext.registerService(DiscoveryService.class.getName(), discoveryService,
+                new Hashtable<>());
     }
 
     private void unregisterDiscoveryService() {
-        if (discoveryServiceRegs.containsKey(THING_SYNOP)) {
-            ServiceRegistration<?> serviceReg = discoveryServiceRegs.get(THING_SYNOP);
+        if (serviceReg != null) {
             serviceReg.unregister();
-            discoveryServiceRegs.remove(THING_SYNOP);
+            serviceReg = null;
         }
     }
 }

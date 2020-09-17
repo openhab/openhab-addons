@@ -32,7 +32,6 @@ import javax.measure.quantity.Speed;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
-import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
@@ -82,14 +81,11 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> executionJob;
     // private @NonNullByDefault({}) SynopAnalyzerConfiguration configuration;
     private @NonNullByDefault({}) String formattedStationId;
-    private final TimeZoneProvider timeZoneProvider;
     private final LocationProvider locationProvider;
     private final StationDB stationDB;
 
-    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, TimeZoneProvider timeZoneProvider,
-            StationDB stationDB) {
+    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, StationDB stationDB) {
         super(thing);
-        this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
         this.stationDB = stationDB;
     }
@@ -115,15 +111,15 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
         Optional<Station> station = stationDB.stations.stream().filter(s -> stationId == s.idOmm).findFirst();
         station.ifPresent(s -> {
-            properties.put("usual name", s.usualName);
-            properties.put("location", s.getLocation());
+            properties.put("Usual name", s.usualName);
+            properties.put("Location", s.getLocation());
 
             PointType stationLocation = new PointType(s.getLocation());
             PointType serverLocation = locationProvider.getLocation();
             if (serverLocation != null) {
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
 
-                properties.put("distance", new QuantityType<>(distance, Units.METRE).toString());
+                properties.put("Distance", new QuantityType<>(distance, Units.METRE).toString());
             }
         });
 
