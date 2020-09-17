@@ -40,7 +40,6 @@ public class StationDB {
         public String getLocation() {
             return Double.toString(latitude) + "," + Double.toString(longitude);
         }
-
     }
 
     public List<Station> stations;

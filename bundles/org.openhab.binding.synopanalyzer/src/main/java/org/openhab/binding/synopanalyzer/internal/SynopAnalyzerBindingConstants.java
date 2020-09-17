@@ -59,5 +59,4 @@ public class SynopAnalyzerBindingConstants {
     public static final String LAND_STATION_CODE = "AAXX";
     public static final String SHIP_STATION_CODE = "BBXX";
     public static final String MOBILE_LAND_STATION_CODE = "OOXX";
-
 }

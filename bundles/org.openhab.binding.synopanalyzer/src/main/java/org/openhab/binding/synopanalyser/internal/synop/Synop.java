@@ -335,5 +335,4 @@ public abstract class Synop {
                 ? SmartHomeUnits.METRE_PER_SECOND
                 : SmartHomeUnits.KNOT;
     }
-
 }

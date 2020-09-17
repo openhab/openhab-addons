@@ -124,7 +124,6 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         });
 
         updateProperties(properties);
-
     }
 
     private Optional<Synop> getLastAvailableSynop() {
