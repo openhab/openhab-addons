@@ -31,6 +31,7 @@ public abstract class DreamScreenMessage {
     private final byte commandLower;
     protected final ByteBuffer payload;
     protected final int payloadLen;
+    protected int deviceType;
 
     public static DreamScreenMessage fromPacket(final DatagramPacket packet) throws DreamScreenMessageInvalid {
         final int len = packet.getLength();

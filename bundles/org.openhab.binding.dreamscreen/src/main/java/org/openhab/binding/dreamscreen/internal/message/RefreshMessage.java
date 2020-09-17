@@ -28,6 +28,20 @@ public class RefreshMessage extends DreamScreenMessage {
     static final byte COMMAND_UPPER = 0x01;
     static final byte COMMAND_LOWER = 0x0A;
 
+    // Set integers so we know which bytes to pull based on device
+
+    private int groupInt = 32;
+    private int modeInt = 33;
+    private int brightnessInt = 34;
+    private int colorInt = 40;
+    private int saturationInt = 43;
+    private int ambientSceneInt = 62;
+    // Throwback from original stuff, might not be needed
+    private int inputInt = 73;
+    private int n1Int = 75;
+    private int n2Int = 91;
+    private int n3Int = 107;
+
 
     public RefreshMessage() {
         super((byte) 0xFF, COMMAND_UPPER, COMMAND_LOWER, new byte[0]);
@@ -43,7 +57,7 @@ public class RefreshMessage extends DreamScreenMessage {
     }
 
     public byte getGroup() {
-        return this.payload.get(32);
+        return this.payload.get(groupInt);
     }
 
     public String getName() {
@@ -51,24 +65,30 @@ public class RefreshMessage extends DreamScreenMessage {
     }
 
     public byte getMode() {
-        return this.payload.get(33);
+        return this.payload.get(modeInt);
     }
 
     public byte getScene() {
-        return this.payload.get(62);
+        return this.payload.get(ambientSceneInt);
     }
 
     public byte getRed() {
-        return this.payload.get(40);
+        return this.payload.get(colorInt);
     }
 
     public byte getGreen() {
-        return this.payload.get(41);
+        return this.payload.get(colorInt + 1);
     }
 
     public byte getBlue() {
-        return this.payload.get(42);
+        return this.payload.get(colorInt + 2);
     }
+
+    public byte[] getColor() { return new byte[]{this.payload.get(colorInt), this.payload.get(colorInt + 1), this.payload.get(colorInt + 2)}; }
+
+    public byte getBrightness() { return this.payload.get(brightnessInt); }
+
+    public byte[] getSaturation() { return new byte[]{this.payload.get(saturationInt), this.payload.get(saturationInt + 1), this.payload.get(saturationInt + 2)}; }
 
     public byte getProductId() {
         return this.payload.get(this.payloadLen - 1);
@@ -82,5 +102,37 @@ public class RefreshMessage extends DreamScreenMessage {
     @Override
     public String toString() {
         return "Refresh";
+    }
+
+    private void refreshType() {
+        switch (super.deviceType) {
+            case 1:
+            case 2:
+            case 7:
+                groupInt = 32;
+                modeInt = 33;
+                brightnessInt = 34;
+                colorInt = 40;
+                saturationInt = 43;
+                ambientSceneInt = 62;
+                inputInt = 73;
+                n1Int = 75;
+                n2Int = 91;
+                n3Int = 107;
+                break;
+            case 3:
+            case 4:
+                groupInt = 32;
+                modeInt = 33;
+                brightnessInt = 34;
+                colorInt = 35;
+                saturationInt = 38;
+                ambientSceneInt = 60;
+                inputInt = -1;
+                n1Int = -1;
+                n2Int = -1;
+                n3Int = -1;
+                break;
+        }
     }
 }
