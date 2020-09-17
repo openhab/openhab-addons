@@ -22,11 +22,10 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.eclipse.smarthome.io.net.http.HttpClientFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-
-import com.google.gson.Gson;
 
 /**
  * The {@link SenecHomeHandlerFactory} is responsible for creating things and thing
@@ -41,11 +40,11 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
 
-    private final SenecHomeApiFactory apiFactory;
+    private final SenecHomeApi senecHomeApi;
 
     @Activate
-    public SenecHomeHandlerFactory(@Reference SenecHomeApiFactory apiFactory) {
-        this.apiFactory = apiFactory;
+    public SenecHomeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        this.senecHomeApi = new SenecHomeApi(httpClientFactory.getCommonHttpClient());
     }
 
     @Override
@@ -58,7 +57,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY.equals(thingTypeUID)) {
-            return new SenecHomeHandler(thing, new Gson(), apiFactory);
+            return new SenecHomeHandler(thing);
         }
 
         return null;

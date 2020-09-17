@@ -43,8 +43,6 @@ import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link SenecHomeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -62,14 +60,10 @@ public class SenecHomeHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable PowerLimitationStatusDTO limitationStatus = null;
     private @Nullable SenecHomeApi senecHomeApi;
-    private Gson gson;
-    private SenecHomeApiFactory apiFactory;
     private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
 
-    public SenecHomeHandler(Thing thing, Gson gson, SenecHomeApiFactory apiFactory) {
+    public SenecHomeHandler(Thing thing) {
         super(thing);
-        this.gson = gson;
-        this.apiFactory = apiFactory;
     }
 
     @Override
@@ -105,7 +99,8 @@ public class SenecHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SenecHomeConfigurationDTO.class);
-        senecHomeApi = apiFactory.getHttpApi(config, gson);
+        // senecHomeApi = apiFactory.getHttpApi(config, gson);
+        senecHomeApi.setHostname(config.hostname);
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 

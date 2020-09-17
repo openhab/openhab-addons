@@ -17,6 +17,7 @@ import java.net.MalformedURLException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -36,17 +37,20 @@ import com.google.gson.Gson;
  * @author Steven.Schwarznau - Initial contribution
  *
  */
+@NonNullByDefault
 public class SenecHomeApi {
     private static final String HTTP_PROTO_PREFIX = "http://";
 
-    private String hostname;
-    private HttpClient httpClient;
-    private Gson gson;
+    private final HttpClient httpClient;
+    private final Gson gson = new Gson();
+    private String hostname = "";
 
-    public SenecHomeApi(HttpClient httpClient, Gson gson, SenecHomeConfigurationDTO config) {
+    public SenecHomeApi(HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.gson = gson;
-        this.hostname = config.hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
     }
 
     /**
