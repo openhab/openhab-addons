@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class Ffmpeg {
     private IpCameraHandler ipCameraHandler;
     private @Nullable Process process = null;
     private String ffmpegCommand = "";
-    private ffmpegFormat format;
+    private FFmpegFormat format;
     private String[] commandArray;
     private StreamRunning streamRunning = new StreamRunning();
     private int keepAlive = 8;
@@ -67,7 +67,7 @@ public class Ffmpeg {
         return;
     }
 
-    public Ffmpeg(IpCameraHandler handle, ffmpegFormat format, String ffmpegLocation, String inputArguments,
+    public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
             String input, String outArguments, String output, String username, String password) {
         this.format = format;
         ipCameraHandler = handle;
@@ -100,7 +100,7 @@ public class Ffmpeg {
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
                     while ((line = bufferedReader.readLine()) != null) {
-                        if (format.equals(ffmpegFormat.RTSPHELPER)) {
+                        if (format.equals(FFmpegFormat.RTSPHELPER)) {
                             logger.debug("{}", line);
                             if (line.contains("lavfi.")) {
                                 if (countOfMotions == 4) {
@@ -164,7 +164,7 @@ public class Ffmpeg {
             logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
             streamRunning.start();
             running = true;
-            if (format.equals(ffmpegFormat.HLS)) {
+            if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
                 if (keepAlive > -1) {
                     try {
@@ -190,7 +190,7 @@ public class Ffmpeg {
             if (process != null) {
                 process.destroyForcibly();
             }
-            if (format.equals(ffmpegFormat.HLS)) {
+            if (format.equals(FFmpegFormat.HLS)) {
                 if (keepAlive == -1) {
                     logger.warn("HLS stopped when Stream should be running non stop, restarting HLS now.");
                     startConverting();

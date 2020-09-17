@@ -61,7 +61,7 @@ import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.HikvisionHandler;
 import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
 import org.openhab.binding.ipcamera.internal.onvif.OnvifConnection;
@@ -762,7 +762,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 mjpegChannelGroup.add(ctx.channel());
                 if (mjpegUri.isEmpty() || mjpegUri.equals("ffmpeg")) {
                     sendMjpegFirstPacket(ctx);
-                    setupFfmpegFormat(ffmpegFormat.MJPEG);
+                    setupFfmpegFormat(FFmpegFormat.MJPEG);
                 } else {
                     try {
                         // fix Dahua reboots when refreshing a mjpeg stream.
@@ -903,7 +903,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    public void setupFfmpegFormat(ffmpegFormat format) {
+    public void setupFfmpegFormat(FFmpegFormat format) {
         String inputOptions = cameraConfig.getFfmpegInputOptions();
         if (cameraConfig.getFfmpegOutput().isEmpty()) {
             logger.warn("The camera tried to use a FFmpeg feature when the output folder is not set.");
@@ -1200,7 +1200,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         motionThreshold = Double.valueOf(command.toString());
                         motionThreshold = motionThreshold / 10000;
                     }
-                    setupFfmpegFormat(ffmpegFormat.RTSPHELPER);
+                    setupFfmpegFormat(FFmpegFormat.RTSPHELPER);
                     return;
                 case CHANNEL_GIF_FILENAME:
                     gifFilename = command.toString();
@@ -1216,11 +1216,11 @@ public class IpCameraHandler extends BaseThingHandler {
                     return;
                 case CHANNEL_RECORD_MP4:
                     mp4RecordTime = Integer.parseInt(command.toString());
-                    setupFfmpegFormat(ffmpegFormat.RECORD);
+                    setupFfmpegFormat(FFmpegFormat.RECORD);
                     return;
                 case CHANNEL_START_STREAM:
                     if (OnOffType.ON.equals(command)) {
-                        setupFfmpegFormat(ffmpegFormat.HLS);
+                        setupFfmpegFormat(FFmpegFormat.HLS);
                         if (ffmpegHLS != null) {
                             ffmpegHLS.setKeepAlive(-1);// will keep running till manually stopped.
                         }
@@ -1246,7 +1246,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     if (OnOffType.ON.equals(command)) {
                         if (snapshotUri.isEmpty()) {
                             ffmpegSnapshotGeneration = true;
-                            setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
+                            setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
                             updateImageChannel = false;
                         } else {
                             updateImageChannel = true;
@@ -1265,7 +1265,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (preroll > 0) {
                             snapCount = postroll;
                         } else {
-                            setupFfmpegFormat(ffmpegFormat.GIF);
+                            setupFfmpegFormat(FFmpegFormat.GIF);
                         }
                     }
                     return;
@@ -1444,7 +1444,7 @@ public class IpCameraHandler extends BaseThingHandler {
         if (!rtspUri.isEmpty()) {
             updateImageChannel = false;
             ffmpegSnapshotGeneration = true;
-            setupFfmpegFormat(ffmpegFormat.SNAPSHOT);
+            setupFfmpegFormat(FFmpegFormat.SNAPSHOT);
             updateState(CHANNEL_POLL_IMAGE, OnOffType.ON);
         } else {
             cameraConfigError("Binding can not find a RTSP url for this camera, please provide a FFmpeg Input URL.");
@@ -1515,7 +1515,7 @@ public class IpCameraHandler extends BaseThingHandler {
         sendHttpGET(snapshotUri);
         if (snapCount > 0) {
             if (--snapCount == 0) {
-                setupFfmpegFormat(ffmpegFormat.GIF);
+                setupFfmpegFormat(FFmpegFormat.GIF);
             }
         }
     }

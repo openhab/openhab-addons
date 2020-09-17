@@ -26,7 +26,7 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.UnDefType;
-import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.ffmpegFormat;
+import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 
 import io.netty.channel.ChannelDuplexHandler;
@@ -262,7 +262,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     ipCameraHandler.motionAlarmEnabled = true;
                     ipCameraHandler.motionThreshold = Double.valueOf(command.toString()) / 10000;
                 }
-                ipCameraHandler.setupFfmpegFormat(ffmpegFormat.RTSPHELPER);
+                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSPHELPER);
                 return;
         }
     }
