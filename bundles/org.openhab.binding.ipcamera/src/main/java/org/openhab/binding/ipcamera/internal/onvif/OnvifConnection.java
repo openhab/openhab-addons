@@ -66,8 +66,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 @NonNullByDefault
 public class OnvifConnection {
-    @Nullable
-    private Bootstrap bootstrap;
+    private @Nullable Bootstrap bootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
     private String ipAddress = "";
     private String user = "";
