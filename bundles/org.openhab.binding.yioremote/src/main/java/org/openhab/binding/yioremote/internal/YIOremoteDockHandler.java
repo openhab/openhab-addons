@@ -106,7 +106,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 public void onMessage(String message) {
                     receivedmessage = message;
                     logger.debug("Message recieved {}", message);
-                    recievedjson = convertStringtoJsonObject(receivedmessage);
+                    recievedjson = convertStringToJsonObject(receivedmessage);
                     if (recievedjson.size() > 0) {
                         if (decodeReceivedMessage(recievedjson)) {
                             triggerChannel(getChannelUuid(GROUP_OUTPUT, STATUS_STRING_CHANNEL));
@@ -205,7 +205,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         return success;
     }
 
-    private JsonObject convertStringtoJsonObject(String jsonString) {
+    private JsonObject convertStringToJsonObject(String jsonString) {
         try {
             JsonParser parser = new JsonParser();
             JsonElement jsonElement = parser.parse(jsonString);
