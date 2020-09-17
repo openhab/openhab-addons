@@ -32,11 +32,13 @@ public abstract class DreamScreenMessage {
     protected final int payloadLen;
     protected int deviceType;
 
+    static final byte MAGIC_BYTE = (byte) 0xFC;
+
     public static DreamScreenMessage fromPacket(final DatagramPacket packet) throws DreamScreenMessageInvalid {
         final int len = packet.getLength();
         final byte[] data = packet.getData();
         final int msgLen;
-        if (len > 6 && data[0] == (byte) 0xFC) {
+        if (len > 6 && data[0] == MAGIC_BYTE) {
             msgLen = data[1] & 0xFF;
             if (msgLen + 2 > len) {
                 throw new DreamScreenMessageInvalid("Invalid length");
