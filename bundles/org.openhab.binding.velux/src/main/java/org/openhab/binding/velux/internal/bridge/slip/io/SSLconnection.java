@@ -270,7 +270,7 @@ class SSLconnection {
         int byteCount = inStream.available();
         if (byteCount > 0) {
             byte[] byteArray = new byte[byteCount];
-            inStream.read(byteArray, 0, byteCount, 0);
+            inStream.read(byteArray, 0, byteCount);
             if (logger.isTraceEnabled()) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (byte currByte : byteArray) {
