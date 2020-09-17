@@ -93,7 +93,7 @@
 			<!-- Trigger reset action from habmin menu -->
 			<parameter name="action-cubeReset" type="integer" groupName="actions">
 				<label>Reset Cube Configuration</label>
-				<description>Reset the MAX! Cube room and device information. Devices will
+				<description>Resets the MAX! Cube room and device information. Devices will
 					need to be included again!</description>
 				<options>
 					<option value="1234">Reset</option>

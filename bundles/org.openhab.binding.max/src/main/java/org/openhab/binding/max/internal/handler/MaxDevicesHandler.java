@@ -19,6 +19,8 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,8 +41,10 @@ import org.eclipse.smarthome.core.thing.ThingStatusInfo;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.max.actions.MaxDevicesActions;
 import org.openhab.binding.max.internal.command.CCommand;
 import org.openhab.binding.max.internal.command.QCommand;
 import org.openhab.binding.max.internal.command.SConfigCommand;
@@ -192,6 +196,11 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
         }
     }
 
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(MaxDevicesActions.class);
+    }
+
     private void sendPropertyUpdate(Map<String, Object> configurationParameters, Map<String, Object> deviceProperties) {
         if (getMaxCubeBridgeHandler() == null) {
             logger.debug("MAX! Cube LAN gateway bridge handler not found. Cannot handle update without bridge.");
@@ -241,7 +250,7 @@ public class MaxDevicesHandler extends BaseThingHandler implements DeviceStatusL
     /**
      * sends the T command to the Cube to disassociate the device from the MAX! Cube.
      */
-    private void deviceDelete() {
+    public void deviceDelete() {
         MaxCubeBridgeHandler maxCubeBridge = getMaxCubeBridgeHandler();
         if (maxCubeBridge != null) {
             maxCubeBridge.sendDeviceDelete(maxDeviceSerial);
