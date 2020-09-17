@@ -1003,7 +1003,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     setChannelState(CHANNEL_MP4_HISTORY, new StringType(mp4History));
                 }
                 break;
-            case RTSPHELPER:
+            case RTSP_ALARMS:
                 if (ffmpegRtspHelper != null) {
                     ffmpegRtspHelper.stopConverting();
                     if (!audioAlarmEnabled && !motionAlarmEnabled) {
@@ -1200,7 +1200,7 @@ public class IpCameraHandler extends BaseThingHandler {
                         motionThreshold = Double.valueOf(command.toString());
                         motionThreshold = motionThreshold / 10000;
                     }
-                    setupFfmpegFormat(FFmpegFormat.RTSPHELPER);
+                    setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;
                 case CHANNEL_GIF_FILENAME:
                     gifFilename = command.toString();

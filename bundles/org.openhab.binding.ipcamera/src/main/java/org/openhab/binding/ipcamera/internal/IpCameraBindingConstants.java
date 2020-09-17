@@ -39,7 +39,7 @@ public class IpCameraBindingConstants {
         HLS,
         GIF,
         RECORD,
-        RTSPHELPER,
+        RTSP_ALARMS,
         MJPEG,
         SNAPSHOT
     }

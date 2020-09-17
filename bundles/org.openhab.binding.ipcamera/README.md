@@ -278,7 +278,7 @@ item:
 
 ```java
 
-Number BabyCamGotoPreset "Goto Preset" { channel="ipcamera:dahua:BabyCamera:gotoPreset" }
+String BabyCamGotoPreset "Goto Preset" { channel="ipcamera:dahua:BabyCamera:gotoPreset" }
 Dimmer BabyCamPan "Pan [%d] left/right" { channel="ipcamera:dahua:BabyCamera:pan" }
 Dimmer BabyCamTilt "Tilt [%d] up/down" { channel="ipcamera:dahua:BabyCamera:tilt" }
 Dimmer BabyCamZoom "Zoom [%d] in/out" { channel="ipcamera:dahua:BabyCamera:zoom" }

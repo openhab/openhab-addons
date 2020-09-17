@@ -19,6 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +47,7 @@ public class Ffmpeg {
     private String ffmpegCommand = "";
     private FFmpegFormat format;
     private String[] commandArray;
-    private StreamRunning streamRunning = new StreamRunning();
+    private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
     private boolean running = false;
 
@@ -87,8 +90,26 @@ public class Ffmpeg {
         commandArray = ffmpegCommand.trim().split("\\s+");
     }
 
-    private class StreamRunning extends Thread {
-        public int countOfMotions = 0;
+    private class IpCameraFfmpegThread extends Thread {
+        private ScheduledExecutorService threadPool = Executors.newScheduledThreadPool(2);
+        public int countOfMotions;
+
+        IpCameraFfmpegThread() {
+            setDaemon(true);
+        }
+
+        private void gifCreated() {
+            // Without a small delay, Pushover sends no file 10% of time.
+            ipCameraHandler.setChannelState(CHANNEL_UPDATE_GIF, OnOffType.OFF);
+            ipCameraHandler.setChannelState(CHANNEL_GIF_HISTORY_LENGTH,
+                    new DecimalType(++ipCameraHandler.gifHistoryLength));
+        }
+
+        private void mp4Created() {
+            ipCameraHandler.setChannelState(CHANNEL_RECORD_MP4, DecimalType.ZERO);
+            ipCameraHandler.setChannelState(CHANNEL_MP4_HISTORY_LENGTH,
+                    new DecimalType(++ipCameraHandler.mp4HistoryLength));
+        }
 
         @Override
         public void run() {
@@ -100,7 +121,7 @@ public class Ffmpeg {
                     BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
                     String line = null;
                     while ((line = bufferedReader.readLine()) != null) {
-                        if (format.equals(FFmpegFormat.RTSPHELPER)) {
+                        if (format.equals(FFmpegFormat.RTSP_ALARMS)) {
                             logger.debug("{}", line);
                             if (line.contains("lavfi.")) {
                                 if (countOfMotions == 4) {
@@ -131,25 +152,10 @@ public class Ffmpeg {
             } finally {
                 switch (format) {
                     case GIF:
-                        try {
-                            // Without a small delay, Pushover sends no file 10% of time.
-                            Thread.sleep(800);
-                        } catch (InterruptedException e) {
-                        }
-                        logger.debug("Animated GIF has been created and is ready for use.");
-                        ipCameraHandler.setChannelState(CHANNEL_UPDATE_GIF, OnOffType.OFF);
-                        ipCameraHandler.setChannelState(CHANNEL_GIF_HISTORY_LENGTH,
-                                new DecimalType(++ipCameraHandler.gifHistoryLength));
+                        threadPool.schedule(this::gifCreated, 800, TimeUnit.MILLISECONDS);
                         break;
                     case RECORD:
-                        try {
-                            Thread.sleep(800);
-                        } catch (InterruptedException e) {
-                        }
-                        logger.debug("MP4 has been created and is ready for use.");
-                        ipCameraHandler.setChannelState(CHANNEL_RECORD_MP4, DecimalType.ZERO);
-                        ipCameraHandler.setChannelState(CHANNEL_MP4_HISTORY_LENGTH,
-                                new DecimalType(++ipCameraHandler.mp4HistoryLength));
+                        threadPool.schedule(this::mp4Created, 800, TimeUnit.MILLISECONDS);
                         break;
                     default:
                         break;
@@ -159,19 +165,13 @@ public class Ffmpeg {
     }
 
     public void startConverting() {
-        if (!streamRunning.isAlive()) {
-            streamRunning = new StreamRunning();
+        if (!ipCameraFfmpegThread.isAlive()) {
+            ipCameraFfmpegThread = new IpCameraFfmpegThread();
             logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
-            streamRunning.start();
+            ipCameraFfmpegThread.start();
             running = true;
             if (format.equals(FFmpegFormat.HLS)) {
                 ipCameraHandler.setChannelState(CHANNEL_START_STREAM, OnOffType.ON);
-                if (keepAlive > -1) {
-                    try {
-                        Thread.sleep(4500); // Used for on demand HLS to give ffmpeg time to produce the files needed.
-                    } catch (InterruptedException e) {
-                    }
-                }
             }
         }
         if (keepAlive != -1) {
@@ -184,7 +184,7 @@ public class Ffmpeg {
     }
 
     public void stopConverting() {
-        if (streamRunning.isAlive()) {
+        if (ipCameraFfmpegThread.isAlive()) {
             logger.debug("Stopping ffmpeg {} now", format);
             running = false;
             if (process != null) {

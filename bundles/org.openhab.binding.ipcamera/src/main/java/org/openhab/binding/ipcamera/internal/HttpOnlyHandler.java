@@ -26,19 +26,22 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.ReferenceCountUtil;
 
 /**
- * The {@link HttpOnlyHandler} is responsible for handling commands for httponly and Onvif thingtypes.
+ * The {@link HttpOnlyHandler} is responsible for handling commands for generic and onvif thing types.
  *
  * @author Matthew Skinner - Initial contribution
  */
 
 @NonNullByDefault
 public class HttpOnlyHandler extends ChannelDuplexHandler {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private IpCameraHandler ipCameraHandler;
 
     public HttpOnlyHandler(IpCameraHandler handler) {
@@ -65,9 +68,13 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
                     ipCameraHandler.audioAlarmEnabled = false;
                 } else {
                     ipCameraHandler.audioAlarmEnabled = true;
-                    ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
+                    try {
+                        ipCameraHandler.audioThreshold = Integer.valueOf(command.toString());
+                    } catch (NumberFormatException e) {
+                        logger.warn("Audio Threshold recieved an unexpected command, was it a number?");
+                    }
                 }
-                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSPHELPER);
+                ipCameraHandler.setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                 return;
         }
     }
