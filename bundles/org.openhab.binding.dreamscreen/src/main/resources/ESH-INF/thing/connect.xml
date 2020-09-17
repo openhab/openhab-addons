@@ -14,6 +14,8 @@
 			<channel id="mode" typeId="mode"/>
 			<channel id="scene" typeId="scene"/>
 			<channel id="color" typeId="color"/>
+			<channel id="saturation" typeId="saturation"/>
+			<channel id="brightness" typeId="brightness"/>
 		</channels>
 
 		<representation-property>serialNumber</representation-property>

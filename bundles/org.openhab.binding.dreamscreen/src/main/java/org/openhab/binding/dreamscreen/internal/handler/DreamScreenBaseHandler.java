@@ -84,6 +84,8 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private byte ambientScene = RANDOM_COLOR.ambientScene;
     private @Nullable DreamScreenScene newScene = null;
     private HSBType color = HSBType.WHITE;
+    private HSBType saturation = HSBType.WHITE;
+    private int brightness = 100;
     private boolean isOnline = false;
 
     public DreamScreenBaseHandler(DreamScreenServer server, final Thing thing) {
@@ -222,6 +224,9 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
         modeRefresh(msg.getMode());
         colorRefresh(msg.getRed(), msg.getGreen(), msg.getBlue());
         this.ambientScene = msg.getScene(); // ambientSceneRefresh(msg.getScene());
+        this.brightness = msg.getBrightness();
+        updateState(CHANNEL_BRIGHTNESS, new DecimalType(this.brightness));
+        saturationRefresh(msg.getSaturation());
         read(new AmbientModeTypeMessage(this.group, this.ambientModeType));
         return true;
     }
@@ -369,6 +374,11 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private void colorRefresh(final byte red, final byte green, final byte blue) {
         this.color = HSBType.fromRGB(red & 0xFF, green & 0xFF, blue & 0xFF);
         updateState(CHANNEL_COLOR, this.color);
+    }
+
+    private void saturationRefresh(HSBType sat) {
+        this.saturation = sat;
+        updateState(CHANNEL_SATURATION, sat);
     }
 
     protected void read(final DreamScreenMessage msg) {

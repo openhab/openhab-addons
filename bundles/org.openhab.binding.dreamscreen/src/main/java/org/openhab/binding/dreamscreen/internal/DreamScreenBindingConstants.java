@@ -54,6 +54,8 @@ public class DreamScreenBindingConstants {
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_SATURATION = "saturation";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
 
     // Mode values
     public static final String MODE_VIDEO = "video";

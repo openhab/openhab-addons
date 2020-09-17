@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.HSBType;
 
 /**
  * {@link RefreshMessage} handles the Refresh Message.
@@ -84,11 +85,16 @@ public class RefreshMessage extends DreamScreenMessage {
         return this.payload.get(colorInt + 2);
     }
 
-    public byte[] getColor() { return new byte[]{this.payload.get(colorInt), this.payload.get(colorInt + 1), this.payload.get(colorInt + 2)}; }
+    public byte getBrightness() {
+        return this.payload.get(brightnessInt);
+    }
 
-    public byte getBrightness() { return this.payload.get(brightnessInt); }
-
-    public byte[] getSaturation() { return new byte[]{this.payload.get(saturationInt), this.payload.get(saturationInt + 1), this.payload.get(saturationInt + 2)}; }
+    public HSBType getSaturation() {
+        int r = this.payload.get(saturationInt);
+        int g = this.payload.get(saturationInt + 1);
+        int b = this.payload.get(saturationInt + 2);
+        return HSBType.fromRGB(r & 0xFF, g & 0xFF, b & 0xFF);
+    }
 
     public byte getProductId() {
         return this.payload.get(this.payloadLen - 1);
