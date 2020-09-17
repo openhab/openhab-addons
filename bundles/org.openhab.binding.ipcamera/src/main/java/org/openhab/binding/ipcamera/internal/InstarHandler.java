@@ -77,7 +77,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     break;
                 case "/param.cgi?cmd=getoverlayattr&-region=1":// Text Overlays
                     if (content.contains("var show_1=\"0\"")) {
-                        ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.valueOf(""));
+                        ipCameraHandler.setChannelState(CHANNEL_TEXT_OVERLAY, StringType.EMPTY);
                     } else {
                         value1 = Helper.searchString(content, "var name_1=\"");
                         if (!value1.isEmpty()) {
