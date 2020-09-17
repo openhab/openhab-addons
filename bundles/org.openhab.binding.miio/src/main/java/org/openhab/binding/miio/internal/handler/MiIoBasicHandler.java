@@ -313,6 +313,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (!hasChannelStructure) {
             if (configuration.model == null || configuration.model.isEmpty()) {
                 logger.debug("Model needs to be determined");
+                isIdentified = false;
             } else {
                 hasChannelStructure = buildChannelStructure(configuration.model);
             }
