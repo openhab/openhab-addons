@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dreamscreen.internal.handler;
 
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.PRODUCT_ID_SIDEKICK;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.dreamscreen.internal.DreamScreenServer;
@@ -25,7 +27,7 @@ import org.openhab.binding.dreamscreen.internal.message.RefreshMessage;
 
 @NonNullByDefault
 public class DreamScreenSidekickHandler extends DreamScreenBaseHandler {
-    public final static byte PRODUCT_ID = 0x03;
+    public final static byte PRODUCT_ID = (byte) PRODUCT_ID_SIDEKICK;
 
     public DreamScreenSidekickHandler(DreamScreenServer server, Thing thing) {
         super(server, thing);
@@ -33,7 +35,7 @@ public class DreamScreenSidekickHandler extends DreamScreenBaseHandler {
 
     @Override
     protected boolean refreshMsg(final RefreshMessage msg) {
-        if (msg.getProductId() == PRODUCT_ID) {
+        if (msg.getProductId() == PRODUCT_ID_SIDEKICK) {
             return super.refreshMsg(msg);
         }
         return false;

@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.library.types.StringType;
  */
 @NonNullByDefault
 public enum DreamScreenMode {
+    SLEEP("", 0),
     VIDEO(MODE_VIDEO, 1),
     MUSIC(MODE_MUSIC, 2),
     AMBIENT(MODE_AMBIENT, 3);

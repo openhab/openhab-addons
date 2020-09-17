@@ -24,4 +24,5 @@ public class DreamScreenConfiguration {
     public static final String SERIAL_NUMBER = "serialNumber";
 
     public String serialNumber = "";
+    public String groupId = "";
 }

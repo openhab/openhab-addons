@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dreamscreen.internal.handler;
 
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.PRODUCT_ID_4K;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.openhab.binding.dreamscreen.internal.DreamScreenServer;
@@ -24,7 +26,7 @@ import org.openhab.binding.dreamscreen.internal.message.RefreshTvMessage;
  */
 @NonNullByDefault
 public class DreamScreen4kHandler extends DreamScreenBaseTvHandler {
-    public final static byte PRODUCT_ID = 0x02;
+    public final static byte PRODUCT_ID = (byte) PRODUCT_ID_4K;
 
     public DreamScreen4kHandler(DreamScreenServer server, Thing thing,
             DreamScreenInputDescriptionProvider descriptionProvider) {

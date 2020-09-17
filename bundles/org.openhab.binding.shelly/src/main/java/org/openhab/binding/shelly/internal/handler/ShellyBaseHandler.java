@@ -371,14 +371,9 @@ public class ShellyBaseHandler extends BaseThingHandler implements ShellyDeviceL
                 // map status to channels
                 updated |= this.updateDeviceStatus(status);
                 updated |= ShellyComponents.updateDeviceStatus(this, status);
-                // if (!channelsCreated || !cache.isEnabled() || (coap.getVersion() <
-                // ShellyCoapJSonDTO.COIOT_VERSION_2)) {
                 updated |= updateMeters(this, status);
                 updated |= updateSensors(this, status);
                 updated |= updateInputs(status);
-                // } else {
-                // logger.debug("Skipping Meter/Sensor/Input updates, because device is running CoIoT version 2");
-                // }
 
                 // All channels must be created after the first cycle
                 channelsCreated = true;

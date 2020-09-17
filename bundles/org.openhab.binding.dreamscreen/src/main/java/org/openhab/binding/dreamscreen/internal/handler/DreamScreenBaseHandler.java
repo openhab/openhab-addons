@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -77,7 +79,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     protected byte group = 0;
 
     private byte mode = 0;
-    private DreamScreenMode powerOnMode = VIDEO; // TODO: consider persisting this
+    private DreamScreenMode powerOnMode = VIDEO;
     private byte ambientModeType = COLOR.ambientModeType;
     private byte ambientScene = RANDOM_COLOR.ambientScene;
     private @Nullable DreamScreenScene newScene = null;
@@ -91,14 +93,40 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        DreamScreenConfiguration config = getConfigAs(DreamScreenConfiguration.class);
-        logger.debug("Initializing {}", this.getThing().getUID());
+        try {
+            DreamScreenConfiguration config = getConfigAs(DreamScreenConfiguration.class);
+            logger.debug("{}: Initializing device {}, group {}", config.serialNumber, this.getThing().getUID(),
+                    config.groupId.isEmpty() ? "<none>" : config.groupId);
+            if (config.serialNumber.isEmpty()) {
+                String message = "Can't initialize: Serial Number is missing in the Thing Configuration";
+                logger.warn("{}", message);
+                updateStatus(OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Cannot send message");
+                return;
+            }
 
-        updateStatus(UNKNOWN);
-        this.serialNumber = Integer.valueOf(config.serialNumber);
+            updateStatus(UNKNOWN);
+            serialNumber = Integer.valueOf(config.serialNumber);
+            if (!config.groupId.isEmpty()) {
+                group = (byte) Integer.valueOf(config.groupId).intValue();
+            }
 
-        // Attach to the server
-        server.addHandler(this);
+            // Check for persisted powerOnMode
+            final Map<String, String> properties = getThing().getProperties();
+            if (properties.containsKey(PROPERTY_POWERON_MODE)) {
+                int mi = Integer.valueOf(properties.get(PROPERTY_POWERON_MODE));
+                DreamScreenMode m = DreamScreenMode.fromDevice((byte) mi);
+                if (m != null) {
+                    powerOnMode = m;
+                }
+                logger.debug("{}: Restored powerOnMode={}", serialNumber, powerOnMode);
+            }
+
+            // Attach to the server
+            server.addHandler(this);
+        } catch (RuntimeException e) {
+            logger.warn("Unable to initialize thing", e);
+            updateStatus(OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unable to initialize: " + e.getMessage());
+        }
     }
 
     @Override
@@ -117,6 +145,29 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
                 colorCommand(command);
                 break;
         }
+    }
+
+    private void persistPowerOnMode(DreamScreenMode powerOnMode) {
+        this.powerOnMode = powerOnMode;
+
+        if (powerOnMode.deviceMode != SLEEP.deviceMode) {
+            // persist to Thing Properties so it can be restored when OH is restarted
+            Map<String, String> prop = new HashMap<>();
+            prop.put(PROPERTY_POWERON_MODE, String.valueOf(powerOnMode.deviceMode));
+            updateThingProperties(prop);
+        }
+    }
+
+    protected void updateThingProperties(Map<String, String> propertyUpdates) {
+        Map<String, String> thingProperties = editProperties();
+        for (Map.Entry<String, String> property : propertyUpdates.entrySet()) {
+            if (thingProperties.containsKey(property.getKey())) {
+                thingProperties.replace(property.getKey(), property.getValue());
+            } else {
+                thingProperties.put(property.getKey(), property.getValue());
+            }
+        }
+        updateProperties(thingProperties);
     }
 
     protected void online() {
@@ -178,7 +229,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private void powerCommand(Command command) {
         if (command instanceof OnOffType) {
             logger.debug("Changing {} power to {}", this.serialNumber, command);
-            write(new ModeMessage(this.group, command == ON ? powerOnMode.deviceMode : 0));
+            write(new ModeMessage(this.group, command == ON ? powerOnMode.deviceMode : SLEEP.deviceMode));
         } else if (command instanceof RefreshType) {
             updateState(CHANNEL_POWER, this.mode == 0 ? OFF : ON);
         }
@@ -187,11 +238,11 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
     private void modeCommand(Command command) {
         if (command instanceof StringType) {
             logger.debug("{}: Changing mode to {}", serialNumber, command);
-            final DreamScreenMode mode = DreamScreenMode.fromState((StringType) command);
-            if (this.mode != 0) {
-                write(new ModeMessage(this.group, mode.deviceMode));
+            final DreamScreenMode m = DreamScreenMode.fromState((StringType) command);
+            if (mode != 0) {
+                write(new ModeMessage(this.group, m.deviceMode));
             } else {
-                this.powerOnMode = mode;
+                persistPowerOnMode(m);
             }
         } else if (command instanceof RefreshType) {
             updateState(CHANNEL_MODE,
@@ -219,7 +270,7 @@ public abstract class DreamScreenBaseHandler extends BaseThingHandler {
             updateState(CHANNEL_POWER, OFF);
         } else {
             updateState(CHANNEL_POWER, ON);
-            this.powerOnMode = newMode;
+            persistPowerOnMode(newMode);
             updateState(CHANNEL_MODE, newMode.state());
         }
     }

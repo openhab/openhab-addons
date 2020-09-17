@@ -28,6 +28,7 @@ import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.type.DynamicStateDescriptionProvider;
 import org.openhab.binding.dreamscreen.internal.handler.DreamScreen4kHandler;
+import org.openhab.binding.dreamscreen.internal.handler.DreamScreenConnectHandler;
 import org.openhab.binding.dreamscreen.internal.handler.DreamScreenHdHandler;
 import org.openhab.binding.dreamscreen.internal.handler.DreamScreenInputDescriptionProvider;
 import org.openhab.binding.dreamscreen.internal.handler.DreamScreenSidekickHandler;
@@ -67,6 +68,8 @@ public class DreamScreenHandlerFactory extends BaseThingHandlerFactory {
             return new DreamScreen4kHandler(server, thing, registerDescriptionProvider(thing.getUID()));
         } else if (THING_TYPE_SIDEKICK.equals(thingTypeUID)) {
             return new DreamScreenSidekickHandler(server, thing);
+        } else if (THING_TYPE_CONNECT.equals(thingTypeUID)) {
+            return new DreamScreenConnectHandler(server, thing, registerDescriptionProvider(thing.getUID()));
         }
         return null;
     }

@@ -35,8 +35,17 @@ public class DreamScreenBindingConstants {
     public static final ThingTypeUID THING_TYPE_4K = new ThingTypeUID(BINDING_ID, "4k");
     public static final ThingTypeUID THING_TYPE_HD = new ThingTypeUID(BINDING_ID, "hd");
     public static final ThingTypeUID THING_TYPE_SIDEKICK = new ThingTypeUID(BINDING_ID, "sidekick");
+    public static final ThingTypeUID THING_TYPE_SOLO = new ThingTypeUID(BINDING_ID, "solo");
+    public static final ThingTypeUID THING_TYPE_CONNECT = new ThingTypeUID(BINDING_ID, "connect");
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
-            .of(THING_TYPE_HD, THING_TYPE_4K, THING_TYPE_SIDEKICK).collect(toSet());
+            .of(THING_TYPE_HD, THING_TYPE_4K, THING_TYPE_SIDEKICK, THING_TYPE_CONNECT).collect(toSet());
+
+    public static final String PROPERTY_POWERON_MODE = "powerOnMode";
+
+    public static final int PRODUCT_ID_HD = 1;
+    public static final int PRODUCT_ID_4K = 2;
+    public static final int PRODUCT_ID_SIDEKICK = 3;
+    public static final int PRODUCT_ID_CONNECT = 6;
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";

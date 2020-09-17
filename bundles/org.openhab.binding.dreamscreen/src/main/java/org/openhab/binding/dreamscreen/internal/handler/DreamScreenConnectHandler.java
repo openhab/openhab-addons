@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dreamscreen.internal.handler;
 
-import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.PRODUCT_ID_HD;
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.PRODUCT_ID_CONNECT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -20,16 +20,15 @@ import org.openhab.binding.dreamscreen.internal.DreamScreenServer;
 import org.openhab.binding.dreamscreen.internal.message.RefreshTvMessage;
 
 /**
- * The {@link DreamScreenHdHandler} is the Thing Handler for the DreamScreen HD device.
+ * The {@link DreamScreenConnectHandler} is the Thing Handler for the DreamScreen Connect device.
  *
  * @author Bruce Brouwer - Initial contribution
  */
-
 @NonNullByDefault
-public class DreamScreenHdHandler extends DreamScreenBaseTvHandler {
-    public final static byte PRODUCT_ID = (byte) PRODUCT_ID_HD;
+public class DreamScreenConnectHandler extends DreamScreenBaseTvHandler {
+    public final static byte PRODUCT_ID = (byte) PRODUCT_ID_CONNECT;
 
-    public DreamScreenHdHandler(DreamScreenServer server, Thing thing,
+    public DreamScreenConnectHandler(DreamScreenServer server, Thing thing,
             DreamScreenInputDescriptionProvider descriptionProvider) {
         super(server, thing, descriptionProvider);
     }
