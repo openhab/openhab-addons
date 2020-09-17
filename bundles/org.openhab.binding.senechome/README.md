@@ -63,6 +63,7 @@ Number SenecGridPowerSupply      "Power supply to grid [%d W]"         <energy> 
 ## Sitemap
 
 Sample:
+
 ```
 Text label="Power Grid"{
     Frame label="Photovoltaik" {
