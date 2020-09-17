@@ -197,19 +197,19 @@ As the bridge with firmware version one does not support a real rollershutter in
 
 ### Items
 
-[Sample items file for textual configuration](doc/conf/items/velux.items)
+[Sample items file for textual configuration](./doc/conf/items/velux.items)
 
 ### Sitemap
 
-[Sample sitemaps file for textual configuration](doc/conf/sitemaps/velux.sitemap)
+[Sample sitemaps file for textual configuration](./doc/conf/sitemaps/velux.sitemap)
 
 ### Rules
 
-[Sample rules file for textual configuration](doc/conf/rules/velux.rules)
+[Sample rules file for textual configuration](./doc/conf/rules/velux.rules)
 
 ### Things
 
-[Sample things file for textual configuration](doc/conf/things/velux.things)
+[Sample things file for textual configuration](./doc/conf/things/velux.things)
 
 ## More automation samples
 
@@ -221,7 +221,7 @@ At this point some interesting automation rules are included to demonstrate the 
 Especially in the colder months, it is advisable to close the window after adequate ventilation. Therefore, automatic closing after one minute is good to save on heating costs.
 However, to allow the case of intentional prolonged opening, an automatic closure is made only with the window fully open.
 
-```
+```java
 /*
  * Start of imports
  */
