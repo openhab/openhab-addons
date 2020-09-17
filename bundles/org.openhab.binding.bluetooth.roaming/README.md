@@ -26,16 +26,14 @@ There can be only a single roaming adapter on a system.
 
 ## Bridge Configuration
 
-The roaming bridge requires an `address` parameter which merely serves as an identifier for the virtual adapter, its value does not matter.  
-It is advised to make sure it is set to a value outside of the normal bluetooth mac address range, for example: "FF:FF:FF:FF:FF:FF".
-
-Additionally, the parameter `discovery` can be set to `true` or `false`. 
-When set to `true`, a device discovered on any adapter will have a corresponding `roaming` discovery.
+The roaming bridge has a single parameter `backgroundDiscovery` that can be set to `true` or `false`. 
+When set to `true`, a device discovered on any other adapter will have a corresponding `roaming` discovery.
+The `backgroundDiscovery` parameter is true by default.
 
 ## Example
 
 This is how an Roaming adapter can be configured textually in a *.things file:
 
 ```
-Bridge bluetooth:roaming:ctrl "BLE Roaming Adapter" [ address="FF:FF:FF:FF:FF:FF", discovery=true ]
+Bridge bluetooth:roaming:ctrl "BLE Roaming Adapter" [ backgroundDiscovery=true ]
 ```
