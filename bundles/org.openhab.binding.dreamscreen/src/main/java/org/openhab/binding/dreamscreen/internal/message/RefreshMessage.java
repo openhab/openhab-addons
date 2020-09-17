@@ -33,17 +33,17 @@ public class RefreshMessage extends DreamScreenMessage {
 
     // Set integers so we know which bytes to pull based on device
 
-    private int groupInt = 32;
-    private int modeInt = 33;
-    private int brightnessInt = 34;
-    private int colorInt = 40;
-    private int saturationInt = 43;
-    private int ambientSceneInt = 62;
+    static int OFF_GROUP = 32;
+    static int OFF_MODE = 33;
+    static int OFF_BRIGHTNESS = 34;
+    static int OFF_COLOR = 40;
+    static int OFF_SATURATION = 43;
+    static int OFF_AMBIENT_SCENE = 62;
     // Throwback from original stuff, might not be needed
-    private int inputInt = 73;
-    private int n1Int = 75;
-    private int n2Int = 91;
-    private int n3Int = 107;
+    static int OFF_INPUT_ID = 73;
+    static int OFF_INPUT_N1 = 75;
+    static int OFF_INPUT_N2 = 91;
+    static int OFF_INPUT_N3 = 107;
 
     public RefreshMessage() {
         super((byte) 0xFF, COMMAND_UPPER, COMMAND_LOWER, new byte[0]);
@@ -59,7 +59,7 @@ public class RefreshMessage extends DreamScreenMessage {
     }
 
     public byte getGroup() {
-        return this.payload.get(groupInt);
+        return this.payload.get(OFF_GROUP);
     }
 
     public String getName() {
@@ -67,33 +67,33 @@ public class RefreshMessage extends DreamScreenMessage {
     }
 
     public byte getMode() {
-        return this.payload.get(modeInt);
+        return this.payload.get(OFF_MODE);
     }
 
     public byte getScene() {
-        return this.payload.get(ambientSceneInt);
+        return this.payload.get(OFF_AMBIENT_SCENE);
     }
 
     public byte getRed() {
-        return this.payload.get(colorInt);
+        return this.payload.get(OFF_COLOR);
     }
 
     public byte getGreen() {
-        return this.payload.get(colorInt + 1);
+        return this.payload.get(OFF_COLOR + 1);
     }
 
     public byte getBlue() {
-        return this.payload.get(colorInt + 2);
+        return this.payload.get(OFF_COLOR + 2);
     }
 
     public byte getBrightness() {
-        return this.payload.get(brightnessInt);
+        return this.payload.get(OFF_BRIGHTNESS);
     }
 
     public HSBType getSaturation() {
-        int r = this.payload.get(saturationInt);
-        int g = this.payload.get(saturationInt + 1);
-        int b = this.payload.get(saturationInt + 2);
+        int r = this.payload.get(OFF_SATURATION);
+        int g = this.payload.get(OFF_SATURATION + 1);
+        int b = this.payload.get(OFF_SATURATION + 2);
         return HSBType.fromRGB(r & 0xFF, g & 0xFF, b & 0xFF);
     }
 
@@ -116,29 +116,29 @@ public class RefreshMessage extends DreamScreenMessage {
             case PRODUCT_ID_HD:
             case PRODUCT_ID_4K:
             case PRODUCT_ID_SOLO:
-                groupInt = 32;
-                modeInt = 33;
-                brightnessInt = 34;
-                colorInt = 40;
-                saturationInt = 43;
-                ambientSceneInt = 62;
-                inputInt = 73;
-                n1Int = 75;
-                n2Int = 91;
-                n3Int = 107;
+                OFF_GROUP = 32;
+                OFF_MODE = 33;
+                OFF_BRIGHTNESS = 34;
+                OFF_COLOR = 40;
+                OFF_SATURATION = 43;
+                OFF_AMBIENT_SCENE = 62;
+                OFF_INPUT_ID = 73;
+                OFF_INPUT_N1 = 75;
+                OFF_INPUT_N2 = 91;
+                OFF_INPUT_N3 = 107;
                 break;
             case PRODUCT_ID_SIDEKICK:
             case PRODUCT_ID_CONNECT:
-                groupInt = 32;
-                modeInt = 33;
-                brightnessInt = 34;
-                colorInt = 35;
-                saturationInt = 38;
-                ambientSceneInt = 60;
-                inputInt = -1;
-                n1Int = -1;
-                n2Int = -1;
-                n3Int = -1;
+                OFF_GROUP = 32;
+                OFF_MODE = 33;
+                OFF_BRIGHTNESS = 34;
+                OFF_COLOR = 35;
+                OFF_SATURATION = 38;
+                OFF_AMBIENT_SCENE = 60;
+                OFF_INPUT_ID = -1;
+                OFF_INPUT_N1 = -1;
+                OFF_INPUT_N2 = -1;
+                OFF_INPUT_N3 = -1;
                 break;
         }
     }
