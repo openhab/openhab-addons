@@ -45,7 +45,8 @@ public class DreamScreenBindingConstants {
     public static final int PRODUCT_ID_HD = 1;
     public static final int PRODUCT_ID_4K = 2;
     public static final int PRODUCT_ID_SIDEKICK = 3;
-    public static final int PRODUCT_ID_CONNECT = 6;
+    public static final int PRODUCT_ID_CONNECT = 4;
+    public static final int PRODUCT_ID_SOLO = 7;
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
