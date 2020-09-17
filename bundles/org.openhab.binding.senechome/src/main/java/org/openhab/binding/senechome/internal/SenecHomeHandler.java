@@ -59,11 +59,12 @@ public class SenecHomeHandler extends BaseThingHandler {
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable PowerLimitationStatusDTO limitationStatus = null;
-    private @Nullable SenecHomeApi senecHomeApi;
+    private final @Nullable SenecHomeApi senecHomeApi;
     private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
 
-    public SenecHomeHandler(Thing thing) {
+    public SenecHomeHandler(Thing thing, SenecHomeApi senecHomeApi) {
         super(thing);
+        this.senecHomeApi = senecHomeApi;
     }
 
     @Override
@@ -99,7 +100,6 @@ public class SenecHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(SenecHomeConfigurationDTO.class);
-        // senecHomeApi = apiFactory.getHttpApi(config, gson);
         senecHomeApi.setHostname(config.hostname);
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
     }

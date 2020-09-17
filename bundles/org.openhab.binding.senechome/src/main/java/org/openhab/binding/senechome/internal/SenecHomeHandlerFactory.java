@@ -57,7 +57,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY.equals(thingTypeUID)) {
-            return new SenecHomeHandler(thing);
+            return new SenecHomeHandler(thing, this.senecHomeApi);
         }
 
         return null;
