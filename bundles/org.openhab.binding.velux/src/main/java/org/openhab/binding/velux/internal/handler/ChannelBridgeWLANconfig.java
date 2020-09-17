@@ -14,6 +14,7 @@ package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
@@ -69,16 +70,15 @@ final class ChannelBridgeWLANconfig extends ChannelHandlerTemplate {
         if (thisBridgeHandler.bridgeParameters.wlanConfig.isRetrieved) {
             VeluxItemType itemType = VeluxItemType.getByThingAndChannel(thisBridgeHandler.thingTypeUIDOf(channelUID),
                     channelUID.getId());
+            final String msg = "Not supported";
             switch (itemType) {
                 case BRIDGE_WLANSSID:
-                    newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABipAddress);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_WLANSSID,
-                            thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanSSID.toString());
+                    newState = StateUtils.createState(new StringType(msg));
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_WLANSSID, msg);
                     break;
                 case BRIDGE_WLANPASSWORD:
-                    newState = StateUtils.createState(thisBridgeHandler.bridgeParameters.lanConfig.openHABsubnetMask);
-                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_WLANPASSWORD,
-                            thisBridgeHandler.bridgeParameters.wlanConfig.openHABwlanPassword.toString());
+                    newState = StateUtils.createState(new StringType(msg));
+                    ThingProperty.setValue(thisBridgeHandler, VeluxBindingConstants.PROPERTY_BRIDGE_WLANPASSWORD, msg);
                     break;
                 default:
             }
