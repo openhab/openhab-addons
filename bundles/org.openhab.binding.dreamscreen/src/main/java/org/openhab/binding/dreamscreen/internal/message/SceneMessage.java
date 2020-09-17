@@ -25,16 +25,16 @@ public class SceneMessage extends DreamScreenMessage {
     static final byte COMMAND_UPPER = 0x03;
     static final byte COMMAND_LOWER = 0x0D;
 
-    protected SceneMessage(final byte[] data, final int off) {
-        super(data, off);
+    protected SceneMessage(final byte[] data) {
+        super(data);
     }
 
     public SceneMessage(byte group, byte ambientScene) {
         super(group, COMMAND_UPPER, COMMAND_LOWER, new byte[] { ambientScene });
     }
 
-    static boolean matches(final byte[] data, final int off) {
-        return matches(data, off, COMMAND_UPPER, COMMAND_LOWER);
+    static boolean matches(final byte[] data) {
+        return matches(data, COMMAND_UPPER, COMMAND_LOWER);
     }
 
     public byte getScene() {

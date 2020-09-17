@@ -24,16 +24,16 @@ public class InputMessage extends DreamScreenMessage {
     static final byte COMMAND_UPPER = 0x03;
     static final byte COMMAND_LOWER = 0x20;
 
-    protected InputMessage(final byte[] data, final int off) {
-        super(data, off);
+    protected InputMessage(final byte[] data) {
+        super(data);
     }
 
     public InputMessage(byte group, byte input) {
         super(group, COMMAND_UPPER, COMMAND_LOWER, new byte[] { input });
     }
 
-    static boolean matches(final byte[] data, final int off) {
-        return matches(data, off, COMMAND_UPPER, COMMAND_LOWER);
+    static boolean matches(final byte[] data) {
+        return matches(data, COMMAND_UPPER, COMMAND_LOWER);
     }
 
     public byte getInput() {

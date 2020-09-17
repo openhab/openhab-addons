@@ -17,6 +17,7 @@ import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.types.RefreshType;
 
 /**
  * The {@link DreamScreenMessage} implements general message handling.
@@ -33,53 +34,52 @@ public abstract class DreamScreenMessage {
 
     public static DreamScreenMessage fromPacket(final DatagramPacket packet) throws DreamScreenMessageInvalid {
         final int len = packet.getLength();
-        final int off = packet.getOffset();
         final byte[] data = packet.getData();
         final int msgLen;
-
-        if (len > 6 && data[off] == (byte) 0xFC) {
-            msgLen = data[off + 1] & 0xFF;
+        if (len > 6 && data[0] == (byte) 0xFC) {
+            msgLen = data[1] & 0xFF;
             if (msgLen + 2 > len) {
                 throw new DreamScreenMessageInvalid("Invalid length");
-            } else if (data[off + msgLen + 1] != calcCRC8(data, off)) {
+            } else if (data[msgLen + 1] != calcCRC8(data)) {
                 throw new DreamScreenMessageInvalid("Invalid CRC");
             }
         } else {
             throw new DreamScreenMessageInvalid("Message not long enough");
         }
 
-        if (SerialNumberMessage.matches(data, off)) {
-            return new SerialNumberMessage(data, off);
-        } else if (RefreshTvMessage.matches(data, off)) {
-            return new RefreshTvMessage(data, off);
-        } else if (RefreshMessage.matches(data, off)) {
-            return new RefreshMessage(data, off);
-        } else if (ModeMessage.matches(data, off)) {
-            return new ModeMessage(data, off);
-        } else if (InputMessage.matches(data, off)) {
-            return new InputMessage(data, off);
-        } else if (ColorMessage.matches(data, off)) {
-            return new ColorMessage(data, off);
-        } else if (AmbientModeTypeMessage.matches(data, off)) {
-            return new AmbientModeTypeMessage(data, off);
-        } else if (SceneMessage.matches(data, off)) {
-            return new SceneMessage(data, off);
+        if (SerialNumberMessage.matches(data)) {
+            return new SerialNumberMessage(data);
+        } else if (RefreshTvMessage.matches(data)) {
+            return new RefreshTvMessage(data);
+        } else if (RefreshMessage.matches(data)) {
+            return new RefreshMessage(data);
+        } else if (ModeMessage.matches(data)) {
+            return new ModeMessage(data);
+        } else if (InputMessage.matches(data)) {
+            return new InputMessage(data);
+        } else if (ColorMessage.matches(data)) {
+            return new ColorMessage(data);
+        } else if (AmbientModeTypeMessage.matches(data)) {
+            return new AmbientModeTypeMessage(data);
+        } else if (SceneMessage.matches(data)) {
+            return new SceneMessage(data);
         }
         throw new DreamScreenMessageInvalid("Message not currently handled");
     }
 
-    protected static boolean matches(byte[] data, int off, byte commandUpper, byte commandLower) {
-        return data[off + 4] == commandUpper && data[off + 5] == commandLower;
+    protected static boolean matches(byte[] data, byte commandUpper, byte commandLower) {
+        return data[4] == commandUpper && data[5] == commandLower;
     }
 
-    protected DreamScreenMessage(final byte[] data, final int off) {
-        this.group = data[off + 2];
+    protected DreamScreenMessage(final byte[] data) {
+        this.group = data[2];
         // this.flags = data[off + 3];
-        this.commandUpper = data[off + 4];
-        this.commandLower = data[off + 5];
-        this.payloadLen = (data[off + 1] & 0xFF) - 5;
+        this.commandUpper = data[4];
+        this.commandLower = data[5];
+        this.deviceType = data[data.length - 1];
+        this.payloadLen = (data[1] & 0xFF) - 5;
         this.payload = ByteBuffer.allocate(payloadLen);
-        this.payload.put(data, off + 6, payloadLen);
+        this.payload.put(data, 6, payloadLen);
         this.payload.rewind();
     }
 
@@ -113,17 +113,17 @@ public abstract class DreamScreenMessage {
         data[4] = this.commandUpper;
         data[5] = this.commandLower;
         this.payload.get(data, 6, this.payloadLen);
-        data[this.payloadLen + 6] = calcCRC8(data, 0);
+        data[this.payloadLen + 6] = calcCRC8(data);
 
         return new DatagramPacket(data, this.payloadLen + 7, address, port);
     }
 
-    private static final byte calcCRC8(byte[] data, int off) {
-        int size = (data[off + 1] & 0xFF) + 1;
+    private static final byte calcCRC8(byte[] data) {
+        int size = (data[1] & 0xFF) + 1;
         int cntr = 0;
         byte crc = 0x00;
         while (cntr < size) {
-            crc = CRC_TABLE[(byte) (crc ^ (data[off + cntr])) & 0xFF];
+            crc = CRC_TABLE[(byte) (crc ^ (data[cntr])) & 0xFF];
             cntr++;
         }
         return crc;

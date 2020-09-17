@@ -26,14 +26,14 @@ import org.openhab.binding.dreamscreen.internal.handler.DreamScreenHdHandler;
 @NonNullByDefault
 public class RefreshTvMessage extends RefreshMessage {
 
-    protected RefreshTvMessage(final byte[] data, final int off) {
-        super(data, off);
+    protected RefreshTvMessage(final byte[] data) {
+        super(data);
     }
 
-    static boolean matches(final byte[] data, final int off) {
-        if (RefreshMessage.matches(data, off)) {
-            final int msgLen = data[off + 1] & 0xFF;
-            final byte productId = data[off + msgLen];
+    static boolean matches(final byte[] data) {
+        if (RefreshMessage.matches(data)) {
+            final int msgLen = data[1] & 0xFF;
+            final byte productId = data[msgLen];
             return productId == DreamScreenHdHandler.PRODUCT_ID || productId == DreamScreen4kHandler.PRODUCT_ID;
         }
         return false;
