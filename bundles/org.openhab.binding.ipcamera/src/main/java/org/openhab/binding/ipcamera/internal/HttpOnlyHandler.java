@@ -54,10 +54,6 @@ public class HttpOnlyHandler extends ChannelDuplexHandler {
     // This handles the commands that come from the Openhab event bus.
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            switch (channelUID.getId()) {
-                case CHANNEL_ENABLE_AUDIO_ALARM:
-                    return;
-            }
             return; // Return as we have handled the refresh command above and don't need to
                     // continue further.
         } // end of "REFRESH"
