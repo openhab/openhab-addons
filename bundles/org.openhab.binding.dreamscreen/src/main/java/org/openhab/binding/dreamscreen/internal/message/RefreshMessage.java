@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.dreamscreen.internal.message;
 
+import static org.openhab.binding.dreamscreen.internal.DreamScreenBindingConstants.*;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
@@ -42,7 +44,6 @@ public class RefreshMessage extends DreamScreenMessage {
     private int n1Int = 75;
     private int n2Int = 91;
     private int n3Int = 107;
-
 
     public RefreshMessage() {
         super((byte) 0xFF, COMMAND_UPPER, COMMAND_LOWER, new byte[0]);
@@ -112,9 +113,9 @@ public class RefreshMessage extends DreamScreenMessage {
 
     private void refreshType() {
         switch (super.deviceType) {
-            case 1:
-            case 2:
-            case 7:
+            case PRODUCT_ID_HD:
+            case PRODUCT_ID_4K:
+            case PRODUCT_ID_SOLO:
                 groupInt = 32;
                 modeInt = 33;
                 brightnessInt = 34;
@@ -126,8 +127,8 @@ public class RefreshMessage extends DreamScreenMessage {
                 n2Int = 91;
                 n3Int = 107;
                 break;
-            case 3:
-            case 4:
+            case PRODUCT_ID_SIDEKICK:
+            case PRODUCT_ID_CONNECT:
                 groupInt = 32;
                 modeInt = 33;
                 brightnessInt = 34;
