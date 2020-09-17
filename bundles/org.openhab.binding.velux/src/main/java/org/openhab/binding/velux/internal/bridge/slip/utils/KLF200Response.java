@@ -125,7 +125,7 @@ public class KLF200Response {
         logger.trace("check4matchingAnyID() called for request{} {} and response{} {}.", idName, requestID, idName,
                 responseID);
         if (requestID != responseID) {
-            logger.warn("Gateway response with {} {} unexpected as query asked for {} {}.", idName, requestID, idName,
+            logger.warn("Gateway query for {} {} received unexpected response of {} {}.", idName, requestID, idName,
                     responseID);
             return false;
         }
