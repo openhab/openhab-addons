@@ -32,11 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
-import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaActionGroup;
-import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaDevice;
-import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaGateway;
-import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaSetup;
-import org.openhab.binding.somfytahoma.internal.model.SomfyTahomaState;
+import org.openhab.binding.somfytahoma.internal.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +86,8 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
     protected void startBackgroundDiscovery() {
         logger.debug("Starting SomfyTahoma background discovery");
 
-        if (discoveryJob == null || discoveryJob.isCancelled()) {
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob == null || localDiscoveryJob.isCancelled()) {
             discoveryJob = scheduler.scheduleWithFixedDelay(this::runDiscovery, 10, DISCOVERY_REFRESH_SEC,
                     TimeUnit.SECONDS);
         }
@@ -99,9 +96,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
     @Override
     protected void stopBackgroundDiscovery() {
         logger.debug("Stopping SomfyTahoma background discovery");
-        if (discoveryJob != null && !discoveryJob.isCancelled()) {
-            discoveryJob.cancel(true);
-            discoveryJob = null;
+        ScheduledFuture<?> localDiscoveryJob = discoveryJob;
+        if (localDiscoveryJob != null && !localDiscoveryJob.isCancelled()) {
+            localDiscoveryJob.cancel(true);
         }
     }
 
@@ -118,8 +115,9 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
     private synchronized void runDiscovery() {
         logger.debug("Starting scanning for things...");
 
-        if (bridgeHandler.getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            SomfyTahomaSetup setup = bridgeHandler.getSetup();
+        SomfyTahomaBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null && ThingStatus.ONLINE == localBridgeHandler.getThing().getStatus()) {
+            SomfyTahomaSetup setup = localBridgeHandler.getSetup();
 
             if (setup == null) {
                 return;
@@ -132,7 +130,7 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
                 gatewayDiscovered(gw);
             }
 
-            List<SomfyTahomaActionGroup> actions = bridgeHandler.listActionGroups();
+            List<SomfyTahomaActionGroup> actions = localBridgeHandler.listActionGroups();
 
             for (SomfyTahomaActionGroup group : actions) {
                 String oid = group.getOid();
@@ -373,12 +371,15 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
             properties.put(RSSI_LEVEL_STATE, "-1");
         }
 
-        ThingUID thingUID = new ThingUID(thingTypeUID, bridgeHandler.getThing().getUID(), oid);
+        SomfyTahomaBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            ThingUID thingUID = new ThingUID(thingTypeUID, localBridgeHandler.getThing().getUID(), oid);
 
-        logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID).withProperties(properties)
-                .withRepresentationProperty("url").withLabel(label).withBridge(bridgeHandler.getThing().getUID())
-                .build());
+            logger.debug("Detected a/an {} - label: {} oid: {}", thingTypeUID.getId(), label, oid);
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                    .withProperties(properties).withRepresentationProperty("url").withLabel(label)
+                    .withBridge(localBridgeHandler.getThing().getUID()).build());
+        }
     }
 
     private void actionGroupDiscovered(String label, String deviceURL, String oid) {
@@ -392,11 +393,15 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
         properties.put("id", id);
         properties.put("type", type);
 
-        ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, bridgeHandler.getThing().getUID(), id);
+        SomfyTahomaBridgeHandler localBridgeHandler = bridgeHandler;
+        if (localBridgeHandler != null) {
+            ThingUID thingUID = new ThingUID(THING_TYPE_GATEWAY, localBridgeHandler.getThing().getUID(), id);
 
-        logger.debug("Detected a gateway with id: {} and type: {}", id, type);
-        thingDiscovered(DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY)
-                .withProperties(properties).withRepresentationProperty("id").withLabel("Somfy Gateway (" + type + ")")
-                .withBridge(bridgeHandler.getThing().getUID()).build());
+            logger.debug("Detected a gateway with id: {} and type: {}", id, type);
+            thingDiscovered(
+                    DiscoveryResultBuilder.create(thingUID).withThingType(THING_TYPE_GATEWAY).withProperties(properties)
+                            .withRepresentationProperty("id").withLabel("Somfy Gateway (" + type + ")")
+                            .withBridge(localBridgeHandler.getThing().getUID()).build());
+        }
     }
 }
