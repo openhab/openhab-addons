@@ -716,8 +716,8 @@ public class OnvifConnection {
             logger.debug("Pan is updating to:{} and the cam value is {}", Math.round(currentPanPercentage),
                     currentPanCamValue);
         } else {
-            logger.warn("turning off PTZ functions as binding could not determin current PTZ locations.");
-            ptzDevice = false;
+            logger.warn(
+                    "Binding could not determin the cameras current PTZ location. Not all cameras respond to GetStatus requests.");
             return;
         }
 
@@ -730,8 +730,6 @@ public class OnvifConnection {
             logger.debug("Tilt is updating to:{} and the cam value is {}", Math.round(currentTiltPercentage),
                     currentTiltCamValue);
         } else {
-            logger.warn("turning off PTZ functions as binding could not determin current PTZ locations.");
-            ptzDevice = false;
             return;
         }
 
@@ -743,11 +741,8 @@ public class OnvifConnection {
             logger.debug("Zoom is updating to:{} and the cam value is {}", Math.round(currentZoomPercentage),
                     currentZoomCamValue);
         } else {
-            logger.warn("turning off PTZ functions as binding could not determin current PTZ locations.");
-            ptzDevice = false;
             return;
         }
-        ptzDevice = true;
     }
 
     public void sendPTZRequest(String string) {
