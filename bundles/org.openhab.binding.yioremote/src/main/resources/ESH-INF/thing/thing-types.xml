@@ -13,12 +13,12 @@
 		</channel-groups>
 		<config-description>
 			<parameter name="host" type="text" required="true">
-				<label>Network address of the YIO Remote Dock</label>
+				<label>Network Address</label>
 				<description>Network address of the YIO Remote Dock</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="accesstoken" type="text" required="true">
-				<label>Access token of the YIO Remote Dock</label>
+			<parameter name="accessToken" type="text" required="true">
+				<label>Access Token</label>
 				<description>The authentication token for the access currently 0</description>
 				<default>0</default>
 			</parameter>
@@ -48,8 +48,5 @@
 		<label>Status</label>
 		<description>The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise
 			the IR send status is displayed of the last IR code send.</description>
-
-
-
 	</channel-type>
 </thing:thing-descriptions>

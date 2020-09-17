@@ -25,19 +25,19 @@ public class IRCode {
     private String code = "0;0x0;0;0";
     private String format = "hex";
 
-    public String getformat() {
+    public String getFormat() {
         return format;
     }
 
-    public void setformat(String format) {
+    public void setFormat(String format) {
         this.format = format;
     }
 
-    public String getcode() {
+    public String getCode() {
         return code;
     }
 
-    public void setcode(String code) {
+    public void setCode(String code) {
         this.code = code;
     }
 }

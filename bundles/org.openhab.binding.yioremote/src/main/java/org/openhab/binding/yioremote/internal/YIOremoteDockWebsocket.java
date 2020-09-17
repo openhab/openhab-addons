@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
 @WebSocket
-
 public class YIOremoteDockWebsocket {
 
     private @Nullable Session session;

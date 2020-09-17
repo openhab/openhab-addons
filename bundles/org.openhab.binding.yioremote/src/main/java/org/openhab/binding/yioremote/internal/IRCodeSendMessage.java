@@ -41,21 +41,21 @@ public class IRCodeSendMessage {
         return command;
     }
 
-    public JsonObject getircodesendmessagejsonobject() {
-        JsonObject ircodesendmessagejsonobject = new JsonObject();
-        ircodesendmessagejsonobject.addProperty("type", type);
-        ircodesendmessagejsonobject.addProperty("command", command);
-        ircodesendmessagejsonobject.addProperty("code", ircode.getcode());
-        ircodesendmessagejsonobject.addProperty("format", ircode.getformat());
-        return ircodesendmessagejsonobject;
+    public JsonObject getIRcodesendMessageJsonObject() {
+        JsonObject ircodesendmessage = new JsonObject();
+        ircodesendmessage.addProperty("type", type);
+        ircodesendmessage.addProperty("command", command);
+        ircodesendmessage.addProperty("code", ircode.getCode());
+        ircodesendmessage.addProperty("format", ircode.getFormat());
+        return ircodesendmessage;
     }
 
-    public String getircodesendmessagestring() {
-        JsonObject ircodesendmessagejsonobject = new JsonObject();
-        ircodesendmessagejsonobject.addProperty("type", type);
-        ircodesendmessagejsonobject.addProperty("command", command);
-        ircodesendmessagejsonobject.addProperty("code", ircode.getcode());
-        ircodesendmessagejsonobject.addProperty("format", ircode.getformat());
-        return ircodesendmessagejsonobject.toString();
+    public String getIRcodesendMessageString() {
+        JsonObject ircodesendmessage = new JsonObject();
+        ircodesendmessage.addProperty("type", type);
+        ircodesendmessage.addProperty("command", command);
+        ircodesendmessage.addProperty("code", ircode.getCode());
+        ircodesendmessage.addProperty("format", ircode.getFormat());
+        return ircodesendmessage.toString();
     }
 }

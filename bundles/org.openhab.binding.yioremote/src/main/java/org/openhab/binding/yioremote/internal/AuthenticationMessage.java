@@ -27,29 +27,29 @@ public class AuthenticationMessage {
     private String type = "auth";
     private String token = "0";
 
-    public String gettype() {
+    public String getType() {
         return type;
     }
 
-    public String gettoken() {
+    public String getToken() {
         return token;
     }
 
-    public void settoken(String token) {
+    public void setToken(String token) {
         this.token = token;
     }
 
-    public JsonObject getauthenticationmessagejsonobject() {
-        JsonObject authenticationmessagejsonobject = new JsonObject();
-        authenticationmessagejsonobject.addProperty("type", type);
-        authenticationmessagejsonobject.addProperty("token", token);
-        return authenticationmessagejsonobject;
+    public JsonObject getauthenticationMessageJsonObject() {
+        JsonObject authenticationMessage = new JsonObject();
+        authenticationMessage.addProperty("type", type);
+        authenticationMessage.addProperty("token", token);
+        return authenticationMessage;
     }
 
-    public String getauthenticationmessagejsonobjectstring() {
-        JsonObject authenticationmessagejsonobject = new JsonObject();
-        authenticationmessagejsonobject.addProperty("type", type);
-        authenticationmessagejsonobject.addProperty("token", token);
-        return authenticationmessagejsonobject.toString();
+    public String getauthenticationMessageString() {
+        JsonObject authenticationMessage = new JsonObject();
+        authenticationMessage.addProperty("type", type);
+        authenticationMessage.addProperty("token", token);
+        return authenticationMessage.toString();
     }
 }

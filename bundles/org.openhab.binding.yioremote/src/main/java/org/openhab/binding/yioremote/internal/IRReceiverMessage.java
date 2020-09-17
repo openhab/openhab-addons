@@ -27,25 +27,25 @@ public class IRReceiverMessage {
     private String type = "dock";
     private String command = "ir_receive_off";
 
-    public void seton() {
+    public void setOn() {
         command = "ir_receive_on";
     }
 
-    public void setoff() {
+    public void setOff() {
         command = "ir_receive_off";
     }
 
-    public JsonObject getirreceivermessagejsonobject() {
-        JsonObject irreceivermessagejsonobject = new JsonObject();
-        irreceivermessagejsonobject.addProperty("type", type);
-        irreceivermessagejsonobject.addProperty("command", command);
-        return irreceivermessagejsonobject;
+    public JsonObject getIRreceiverMessageJsonObject() {
+        JsonObject irreceivermessage = new JsonObject();
+        irreceivermessage.addProperty("type", type);
+        irreceivermessage.addProperty("command", command);
+        return irreceivermessage;
     }
 
-    public String getreceivermessagejsonobjectstring() {
-        JsonObject irreceivermessagejsonobject = new JsonObject();
-        irreceivermessagejsonobject.addProperty("type", type);
-        irreceivermessagejsonobject.addProperty("command", command);
-        return irreceivermessagejsonobject.toString();
+    public String getIRreceiverMessageString() {
+        JsonObject irreceivermessage = new JsonObject();
+        irreceivermessage.addProperty("type", type);
+        irreceivermessage.addProperty("command", command);
+        return irreceivermessage.toString();
     }
 }

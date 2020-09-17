@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public interface YIOremoteDockWebsocketInterface {
 
-    public void onConnect(boolean booleanconnectedflag);
+    public void onConnect(boolean connected);
 
     public void onMessage(String decodedmessage);
 

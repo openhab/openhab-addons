@@ -17,6 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteDockHandleStatus;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
 
@@ -46,9 +47,12 @@ public class YIOremoteDockActions implements ThingActions {
             @ActionInput(name = "ircode", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String ircode) {
     }
 
-    public static void sendircode(@Nullable ThingActions actions, @Nullable String ircode) {
+    public static void sendircode(@Nullable ThingActions actions, @Nullable String irCode) {
         if (actions instanceof YIOremoteDockActions && yioremotedockhandler != null) {
-            yioremotedockhandler.sendircode(ircode);
+            if (yioremotedockhandler.getyioRemoteDockActualStatus()
+                    .equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
+                yioremotedockhandler.sendIRCode(irCode);
+            }
         } else {
             throw new IllegalArgumentException("Instance is not an YIOremoteDockActions class.");
         }
