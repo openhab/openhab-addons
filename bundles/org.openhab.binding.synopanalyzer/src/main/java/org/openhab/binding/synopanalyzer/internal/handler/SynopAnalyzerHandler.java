@@ -15,9 +15,6 @@ package org.openhab.binding.synopanalyzer.internal.handler;
 import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.*;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -63,8 +60,6 @@ import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfigurat
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 import tec.uom.se.unit.Units;
 
 /**
@@ -85,37 +80,26 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerHandler.class);
 
     private @Nullable ScheduledFuture<?> executionJob;
-    private @NonNullByDefault({}) SynopAnalyzerConfiguration configuration;
+    // private @NonNullByDefault({}) SynopAnalyzerConfiguration configuration;
+    private @NonNullByDefault({}) String formattedStationId;
     private final TimeZoneProvider timeZoneProvider;
-    private final Gson gson;
     private final LocationProvider locationProvider;
-    private StationDB stationDB;
+    private final StationDB stationDB;
 
-    public SynopAnalyzerHandler(Thing thing, Gson gson, LocationProvider locationProvider,
-            TimeZoneProvider timeZoneProvider) {
+    public SynopAnalyzerHandler(Thing thing, LocationProvider locationProvider, TimeZoneProvider timeZoneProvider,
+            StationDB stationDB) {
         super(thing);
-        this.gson = gson;
         this.timeZoneProvider = timeZoneProvider;
         this.locationProvider = locationProvider;
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
-        try {
-            Reader reader = new InputStreamReader(is, "UTF-8");
-            stationDB = gson.fromJson(reader, StationDB.class);
-            reader.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            stationDB = new StationDB();
-        }
-
+        this.stationDB = stationDB;
     }
 
     @Override
     public void initialize() {
-        configuration = getConfigAs(SynopAnalyzerConfiguration.class);
-
+        SynopAnalyzerConfiguration configuration = getConfigAs(SynopAnalyzerConfiguration.class);
+        formattedStationId = String.format("%05d", configuration.stationId);
         logger.info("Scheduling Synop update thread to run every {} minute for Station '{}'",
-                configuration.refreshInterval, configuration.stationId);
+                configuration.refreshInterval, formattedStationId);
 
         if (thing.getProperties().isEmpty()) {
             discoverAttributes(configuration.stationId);
@@ -126,17 +110,15 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
     }
 
-    protected void discoverAttributes(String stationId) {
+    protected void discoverAttributes(int stationId) {
         final Map<String, String> properties = new HashMap<>();
 
-        Optional<Station> station = stationDB.stations.stream().filter(s -> Long.parseLong(stationId) == s.idOmm)
-                .findFirst();
+        Optional<Station> station = stationDB.stations.stream().filter(s -> stationId == s.idOmm).findFirst();
         station.ifPresent(s -> {
             properties.put("usual name", s.usualName);
-            String loc = Double.toString(s.latitude) + "," + Double.toString(s.longitude);
-            properties.put("location", loc);
+            properties.put("location", s.getLocation());
 
-            PointType stationLocation = new PointType(loc);
+            PointType stationLocation = new PointType(s.getLocation());
             PointType serverLocation = locationProvider.getLocation();
             if (serverLocation != null) {
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
@@ -159,7 +141,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             if (!messages.isEmpty()) {
                 String message = messages.get(messages.size() - 1);
                 logger.debug(message);
-                if (message.startsWith(configuration.stationId)) {
+                if (message.startsWith(formattedStationId)) {
                     logger.debug("Valid Synop message received");
 
                     List<String> messageParts = Arrays.asList(message.split(","));
@@ -167,7 +149,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
 
                     return createSynopObject(synopMessage);
                 }
-                logger.warn("Message does not belong to station {} : {}", configuration.stationId, message);
+                logger.warn("Message does not belong to station {} : {}", formattedStationId, message);
             }
             logger.warn("No valid Synop found for last 24h");
         } catch (IOException e) {
@@ -251,7 +233,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
     private String forgeURL() {
         ZonedDateTime utc = ZonedDateTime.now(ZoneOffset.UTC).minusDays(1);
         String beginDate = SYNOP_DATE_FORMAT.format(utc);
-        return String.format(OGIMET_SYNOP_PATH, configuration.stationId, beginDate);
+        return String.format(OGIMET_SYNOP_PATH, formattedStationId, beginDate);
     }
 
     @Override

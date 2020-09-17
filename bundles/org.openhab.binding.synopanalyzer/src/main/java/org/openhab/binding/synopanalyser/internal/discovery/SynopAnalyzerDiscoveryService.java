@@ -12,78 +12,55 @@
  */
 package org.openhab.binding.synopanalyser.internal.discovery;
 
-import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.BINDING_ID;
+import static org.openhab.binding.synopanalyzer.internal.SynopAnalyzerBindingConstants.THING_SYNOP;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.i18n.LocaleProvider;
 import org.eclipse.smarthome.core.i18n.LocationProvider;
-import org.eclipse.smarthome.core.i18n.TranslationProvider;
+import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.PointType;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
-import org.osgi.service.component.annotations.Modified;
-import org.osgi.service.component.annotations.Reference;
+import org.openhab.binding.synopanalyser.internal.synop.StationDB;
+import org.openhab.binding.synopanalyser.internal.synop.StationDB.Station;
+import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link SynopAnalyzerDiscoveryService} creates things based on the configured location.
  *
- * @author Gerhard Riegler - Initial Contribution
- * @author Stefan Triller - Use configured location
+ * @author Gaël L'hopital - Initial Contribution
  */
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.synopanalyzer")
+@NonNullByDefault
 public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
-    private static final int LOCATION_CHANGED_CHECK_INTERVAL = 60;
     private LocationProvider locationProvider;
-    private ScheduledFuture<?> astroDiscoveryJob;
-    private PointType previousLocation;
-
-    private static final ThingUID SUN_THING = new ThingUID(THING_TYPE_SUN, LOCAL);
-    private static final ThingUID MOON_THING = new ThingUID(THING_TYPE_MOON, LOCAL);
+    private final StationDB stationDB;
+    private final Map<Integer, Double> distances = new HashMap<>();
 
     /**
-     * Creates a AstroDiscoveryService with enabled autostart.
+     * Creates a SynopAnalyzerDiscoveryService with enabled autostart.
+     *
      */
-    public SynopAnalyzerDiscoveryService() {
-        super(new HashSet<>(Arrays.asList(new ThingTypeUID(BINDING_ID, "-"))), DISCOVER_TIMEOUT_SECONDS, true);
+    public SynopAnalyzerDiscoveryService(StationDB stationDB, LocationProvider locationProvider) {
+        super(Collections.singleton(THING_SYNOP), DISCOVER_TIMEOUT_SECONDS);
+        this.locationProvider = locationProvider;
+        this.stationDB = stationDB;
     }
 
     @Override
-    @Activate
-    protected void activate(Map<String, Object> configProperties) {
-        super.activate(configProperties);
-    }
-
-    @Override
-    @Modified
-    protected void modified(Map<String, Object> configProperties) {
-        super.modified(configProperties);
-    }
-
-    @Override
-    @Deactivate
-    protected void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    protected void startScan() {
-        logger.debug("Starting Astro discovery scan");
+    public void startScan() {
+        logger.debug("Starting Synop Analyzer discovery scan");
         PointType location = locationProvider.getLocation();
         if (location == null) {
             logger.debug("LocationProvider.getLocation() is not set -> Will not provide any discovery results");
@@ -92,67 +69,24 @@ public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
         createResults(location);
     }
 
-    @Override
-    protected void startBackgroundDiscovery() {
-        if (astroDiscoveryJob == null) {
-            astroDiscoveryJob = scheduler.scheduleWithFixedDelay(() -> {
-                PointType currentLocation = locationProvider.getLocation();
-                if (!Objects.equals(currentLocation, previousLocation)) {
-                    logger.debug("Location has been changed from {} to {}: Creating new discovery results",
-                            previousLocation, currentLocation);
-                    createResults(currentLocation);
-                    previousLocation = currentLocation;
-                }
-            }, 0, LOCATION_CHANGED_CHECK_INTERVAL, TimeUnit.SECONDS);
-            logger.debug("Scheduled astro location-changed job every {} seconds", LOCATION_CHANGED_CHECK_INTERVAL);
-        }
-    }
+    public void createResults(PointType serverLocation) {
+        distances.clear();
 
-    @Override
-    protected void stopBackgroundDiscovery() {
-        logger.debug("Stopping Astro device background discovery");
-        if (astroDiscoveryJob != null && !astroDiscoveryJob.isCancelled()) {
-            if (astroDiscoveryJob.cancel(true)) {
-                astroDiscoveryJob = null;
-                logger.debug("Stopped Astro device background discovery");
-            }
-        }
-    }
+        stationDB.stations.forEach(s -> {
+            PointType stationLocation = new PointType(s.getLocation());
+            DecimalType distance = serverLocation.distanceFrom(stationLocation);
+            distances.put(s.idOmm, distance.doubleValue());
+        });
 
-    public void createResults(PointType location) {
-        String propGeolocation;
-        propGeolocation = String.format("%s,%s,%s", location.getLatitude(), location.getLongitude(),
-                location.getAltitude());
-        thingDiscovered(DiscoveryResultBuilder.create(SUN_THING).withLabel("Local Sun")
-                .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
-        thingDiscovered(DiscoveryResultBuilder.create(MOON_THING).withLabel("Local Moon")
-                .withProperty("geolocation", propGeolocation).withRepresentationProperty("geolocation").build());
-    }
+        Map<Integer, Double> result = distances.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.naturalOrder())).collect(Collectors.toMap(
+                        Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
-    @Reference
-    protected void setLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = locationProvider;
-    }
-
-    protected void unsetLocationProvider(LocationProvider locationProvider) {
-        this.locationProvider = null;
-    }
-
-    @Reference
-    protected void setLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = localeProvider;
-    }
-
-    protected void unsetLocaleProvider(final LocaleProvider localeProvider) {
-        this.localeProvider = null;
-    }
-
-    @Reference
-    protected void setTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = i18nProvider;
-    }
-
-    protected void unsetTranslationProvider(TranslationProvider i18nProvider) {
-        this.i18nProvider = null;
+        Integer nearestId = result.entrySet().iterator().next().getKey();
+        Optional<Station> station = stationDB.stations.stream().filter(s -> s.idOmm == nearestId).findFirst();
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_SYNOP, Integer.toString(nearestId)))
+                .withLabel("Synop : " + station.get().usualName)
+                .withProperty(SynopAnalyzerConfiguration.STATION_ID, nearestId)
+                .withRepresentationProperty(SynopAnalyzerConfiguration.STATION_ID).build());
     }
 }

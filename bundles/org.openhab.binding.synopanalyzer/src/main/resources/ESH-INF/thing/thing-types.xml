@@ -29,8 +29,8 @@
 				<default>60</default>
 				<advanced>true</advanced>
 			</parameter>
-			<parameter name="stationId" type="text">
-				<label>Synop Station Number</label>
+			<parameter name="stationId" type="integer">
+				<label>Station Number</label>
 				<required>true</required>
 			</parameter>
 		</config-description>

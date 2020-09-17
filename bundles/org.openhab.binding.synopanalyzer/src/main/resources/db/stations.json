@@ -1,6 +1,7 @@
 {
    "stations":[
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7002,
          "numer_sta":62160001,
@@ -11,6 +12,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7003,
          "numer_sta":62826001,
@@ -21,6 +23,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7005,
          "numer_sta":80001001,
@@ -31,6 +34,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7009,
          "numer_sta":62548002,
@@ -41,6 +45,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7010,
          "numer_sta":59183001,
@@ -51,6 +56,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7015,
          "numer_sta":59343001,
@@ -61,6 +67,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7019,
          "numer_sta":50196001,
@@ -71,6 +78,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7020,
          "numer_sta":50020001,
@@ -81,6 +89,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7022,
          "numer_sta":50129001,
@@ -91,6 +100,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7024,
          "numer_sta":50209001,
@@ -101,6 +111,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7027,
          "numer_sta":14137001,
@@ -111,6 +122,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7028,
          "numer_sta":76552001,
@@ -121,6 +133,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7029,
          "numer_sta":14515001,
@@ -131,6 +144,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7031,
          "numer_sta":14578001,
@@ -141,6 +155,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7037,
          "numer_sta":76116001,
@@ -151,6 +166,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7038,
          "numer_sta":27347001,
@@ -161,6 +177,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7039,
          "numer_sta":50615001,
@@ -171,6 +188,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7040,
          "numer_sta":76217001,
@@ -181,6 +199,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7046,
          "numer_sta":76481001,
@@ -191,6 +210,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7053,
          "numer_sta":95078001,
@@ -201,6 +221,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7055,
          "numer_sta":60639001,
@@ -211,6 +232,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7057,
          "numer_sta":60175001,
@@ -221,6 +243,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7059,
          "numer_sta":80523001,
@@ -231,6 +254,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7061,
          "numer_sta":2320001,
@@ -241,6 +265,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7072,
          "numer_sta":51449002,
@@ -251,6 +276,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7075,
          "numer_sta":8105005,
@@ -261,6 +287,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7093,
          "numer_sta":57251001,
@@ -271,6 +298,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7100,
          "numer_sta":29155005,
@@ -281,6 +309,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7102,
          "numer_sta":29190001,
@@ -291,6 +320,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7103,
          "numer_sta":29168001,
@@ -301,6 +331,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7104,
          "numer_sta":29022001,
@@ -311,6 +342,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7106,
          "numer_sta":29264001,
@@ -321,6 +353,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7107,
          "numer_sta":29021001,
@@ -331,6 +364,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7109,
          "numer_sta":29120001,
@@ -341,6 +375,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7110,
          "numer_sta":29075001,
@@ -351,6 +386,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7116,
          "numer_sta":29082001,
@@ -361,6 +397,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7117,
          "numer_sta":22168001,
@@ -371,6 +408,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7118,
          "numer_sta":22113006,
@@ -381,6 +419,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7119,
          "numer_sta":22266001,
@@ -391,6 +430,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7120,
          "numer_sta":22372001,
@@ -401,6 +441,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7121,
          "numer_sta":22016001,
@@ -411,6 +452,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7125,
          "numer_sta":35228001,
@@ -421,6 +463,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7130,
          "numer_sta":35281001,
@@ -431,6 +474,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7134,
          "numer_sta":53130008,
@@ -441,6 +485,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7139,
          "numer_sta":61001001,
@@ -451,6 +496,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7140,
          "numer_sta":28198001,
@@ -461,6 +507,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7143,
          "numer_sta":28070001,
@@ -471,6 +518,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7145,
          "numer_sta":78621001,
@@ -481,6 +529,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7146,
          "numer_sta":78620001,
@@ -491,6 +540,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7147,
          "numer_sta":78640001,
@@ -501,6 +551,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7148,
          "numer_sta":91103001,
@@ -511,6 +562,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7149,
          "numer_sta":91027002,
@@ -521,6 +573,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7150,
          "numer_sta":95088001,
@@ -531,6 +584,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7153,
          "numer_sta":77306001,
@@ -541,6 +595,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7154,
          "numer_sta":94068001,
@@ -551,6 +606,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7156,
          "numer_sta":75114001,
@@ -561,6 +617,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7157,
          "numer_sta":95527001,
@@ -571,6 +628,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7166,
          "numer_sta":51595002,
@@ -581,6 +639,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7168,
          "numer_sta":10030001,
@@ -591,6 +650,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7169,
          "numer_sta":52448001,
@@ -601,6 +661,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7171,
          "numer_sta":55179001,
@@ -611,6 +672,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7180,
          "numer_sta":54526001,
@@ -621,6 +683,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7181,
          "numer_sta":54405001,
@@ -631,6 +694,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7186,
          "numer_sta":57168001,
@@ -641,6 +705,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7187,
          "numer_sta":57100001,
@@ -651,6 +716,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7190,
          "numer_sta":67124001,
@@ -661,6 +727,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7197,
          "numer_sta":68205001,
@@ -671,6 +738,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7200,
          "numer_sta":29158001,
@@ -681,6 +749,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7201,
          "numer_sta":29216001,
@@ -691,6 +760,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7203,
          "numer_sta":56069001,
@@ -701,6 +771,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7205,
          "numer_sta":56185001,
@@ -711,6 +782,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7207,
          "numer_sta":56009001,
@@ -721,6 +793,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7208,
          "numer_sta":56186002,
@@ -731,6 +804,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7210,
          "numer_sta":56243001,
@@ -741,6 +815,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7216,
          "numer_sta":44184001,
@@ -751,6 +826,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7217,
          "numer_sta":44103001,
@@ -761,6 +837,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7222,
          "numer_sta":44020001,
@@ -771,6 +848,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7228,
          "numer_sta":49188001,
@@ -781,6 +859,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7230,
          "numer_sta":49020001,
@@ -791,6 +870,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7233,
          "numer_sta":49099003,
@@ -801,6 +881,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7235,
          "numer_sta":72181001,
@@ -811,6 +892,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7240,
          "numer_sta":37179001,
@@ -821,6 +903,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7245,
          "numer_sta":41281001,
@@ -831,6 +914,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7247,
          "numer_sta":41097001,
@@ -841,6 +925,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7249,
          "numer_sta":45055001,
@@ -851,6 +936,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7255,
          "numer_sta":18033001,
@@ -861,6 +947,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7257,
          "numer_sta":18092001,
@@ -871,6 +958,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7260,
          "numer_sta":58160001,
@@ -881,6 +969,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7266,
          "numer_sta":89295001,
@@ -891,6 +980,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7270,
          "numer_sta":58062001,
@@ -901,6 +991,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7276,
          "numer_sta":21154001,
@@ -911,6 +1002,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7280,
          "numer_sta":21473001,
@@ -921,6 +1013,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7283,
          "numer_sta":52269001,
@@ -931,6 +1024,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7288,
          "numer_sta":25056001,
@@ -941,6 +1035,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7292,
          "numer_sta":70473001,
@@ -951,6 +1046,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7296,
          "numer_sta":90035001,
@@ -961,6 +1057,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7299,
          "numer_sta":68297001,
@@ -971,6 +1068,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7300,
          "numer_sta":85113001,
@@ -981,6 +1079,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7306,
          "numer_sta":85191003,
@@ -991,6 +1090,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7311,
          "numer_sta":17318001,
@@ -1001,6 +1101,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7314,
          "numer_sta":17323001,
@@ -1011,6 +1112,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7315,
          "numer_sta":17300001,
@@ -1021,6 +1123,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7316,
          "numer_sta":17300009,
@@ -1031,6 +1134,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7317,
          "numer_sta":17308001,
@@ -1041,6 +1145,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7330,
          "numer_sta":79191005,
@@ -1051,6 +1156,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7335,
          "numer_sta":86027001,
@@ -1061,6 +1167,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7354,
          "numer_sta":36063001,
@@ -1071,6 +1178,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7361,
          "numer_sta":23206002,
@@ -1081,6 +1189,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7374,
          "numer_sta":3060001,
@@ -1091,6 +1200,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7379,
          "numer_sta":71491001,
@@ -1101,6 +1211,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7382,
          "numer_sta":71320001,
@@ -1111,6 +1222,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7385,
          "numer_sta":71105001,
@@ -1121,6 +1233,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7386,
          "numer_sta":39526003,
@@ -1131,6 +1244,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7390,
          "numer_sta":39362001,
@@ -1141,6 +1255,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7412,
          "numer_sta":16089001,
@@ -1151,6 +1266,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7420,
          "numer_sta":16078001,
@@ -1161,6 +1277,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7434,
          "numer_sta":87085006,
@@ -1171,6 +1288,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7438,
          "numer_sta":19031008,
@@ -1181,6 +1299,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7439,
          "numer_sta":19147001,
@@ -1191,6 +1310,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7459,
          "numer_sta":63319002,
@@ -1201,6 +1321,7 @@
          "station_type":3
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7460,
          "numer_sta":63113001,
@@ -1211,6 +1332,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7469,
          "numer_sta":74056001,
@@ -1221,6 +1343,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7471,
          "numer_sta":43062001,
@@ -1231,6 +1354,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7475,
          "numer_sta":42005001,
@@ -1241,6 +1365,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7477,
          "numer_sta":42253002,
@@ -1251,6 +1376,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7480,
          "numer_sta":69029001,
@@ -1261,6 +1387,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7481,
          "numer_sta":69299001,
@@ -1271,6 +1398,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7482,
          "numer_sta":1089001,
@@ -1281,6 +1409,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7486,
          "numer_sta":38384001,
@@ -1291,6 +1420,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7487,
          "numer_sta":38538002,
@@ -1301,6 +1431,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7490,
          "numer_sta":74182001,
@@ -1311,6 +1442,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7491,
          "numer_sta":73329001,
@@ -1321,6 +1453,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7497,
          "numer_sta":73054001,
@@ -1331,6 +1464,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7500,
          "numer_sta":33236002,
@@ -1341,6 +1475,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7502,
          "numer_sta":33529001,
@@ -1351,6 +1486,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7503,
          "numer_sta":40046001,
@@ -1361,6 +1497,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7510,
          "numer_sta":33281001,
@@ -1371,6 +1508,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7524,
          "numer_sta":47091001,
@@ -1381,6 +1519,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7530,
          "numer_sta":24037005,
@@ -1391,6 +1530,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7535,
          "numer_sta":46127001,
@@ -1401,6 +1541,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7540,
          "numer_sta":82121002,
@@ -1411,6 +1552,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7549,
          "numer_sta":15014004,
@@ -1421,6 +1563,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7552,
          "numer_sta":12254001,
@@ -1431,6 +1574,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7554,
          "numer_sta":48095005,
@@ -1441,6 +1585,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7557,
          "numer_sta":30130001,
@@ -1451,6 +1596,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7558,
          "numer_sta":12145001,
@@ -1461,6 +1607,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7560,
          "numer_sta":30339001,
@@ -1471,6 +1618,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7562,
          "numer_sta":30269006,
@@ -1481,6 +1629,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7563,
          "numer_sta":84007005,
@@ -1491,6 +1640,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7570,
          "numer_sta":7131001,
@@ -1501,6 +1651,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7577,
          "numer_sta":26198001,
@@ -1511,6 +1662,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7579,
          "numer_sta":84087001,
@@ -1521,6 +1673,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7586,
          "numer_sta":84031001,
@@ -1531,6 +1684,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7587,
          "numer_sta":26168001,
@@ -1541,6 +1695,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7588,
          "numer_sta":4049001,
@@ -1551,6 +1706,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7591,
          "numer_sta":5046001,
@@ -1561,6 +1717,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7600,
          "numer_sta":64189001,
@@ -1571,6 +1728,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7602,
          "numer_sta":64024001,
@@ -1581,6 +1739,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7603,
          "numer_sta":40088001,
@@ -1591,6 +1750,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7607,
          "numer_sta":40192001,
@@ -1601,6 +1761,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7610,
          "numer_sta":64549001,
@@ -1611,6 +1772,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7621,
          "numer_sta":65344001,
@@ -1621,6 +1783,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7622,
          "numer_sta":32013005,
@@ -1631,6 +1794,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7627,
          "numer_sta":9289001,
@@ -1641,6 +1805,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7628,
          "numer_sta":31299001,
@@ -1651,6 +1816,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7630,
          "numer_sta":31069001,
@@ -1661,6 +1827,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7631,
          "numer_sta":31157001,
@@ -1671,6 +1838,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7632,
          "numer_sta":81284001,
@@ -1681,6 +1849,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7635,
          "numer_sta":11069001,
@@ -1691,6 +1860,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7638,
          "numer_sta":34209002,
@@ -1701,6 +1871,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7641,
          "numer_sta":34301002,
@@ -1711,6 +1882,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7643,
          "numer_sta":34154001,
@@ -1721,6 +1893,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7645,
          "numer_sta":30189001,
@@ -1731,6 +1904,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7646,
          "numer_sta":30258001,
@@ -1741,6 +1915,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7647,
          "numer_sta":13047001,
@@ -1751,6 +1926,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7648,
          "numer_sta":13103001,
@@ -1761,6 +1937,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7649,
          "numer_sta":13001006,
@@ -1771,6 +1948,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7650,
          "numer_sta":13054001,
@@ -1781,6 +1959,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7651,
          "numer_sta":30133005,
@@ -1791,6 +1970,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7653,
          "numer_sta":13056002,
@@ -1801,6 +1981,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7654,
          "numer_sta":13001009,
@@ -1811,6 +1992,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7656,
          "numer_sta":13028001,
@@ -1821,6 +2003,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7657,
          "numer_sta":84107002,
@@ -1831,6 +2014,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7660,
          "numer_sta":83137001,
@@ -1841,6 +2025,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7661,
          "numer_sta":83153001,
@@ -1851,6 +2036,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7666,
          "numer_sta":11202001,
@@ -1861,6 +2047,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7667,
          "numer_sta":83069001,
@@ -1871,6 +2058,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7670,
          "numer_sta":83069002,
@@ -1881,6 +2069,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7675,
          "numer_sta":83031001,
@@ -1891,6 +2080,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7677,
          "numer_sta":83101001,
@@ -1901,6 +2091,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7678,
          "numer_sta":83069003,
@@ -1911,6 +2102,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7680,
          "numer_sta":83061001,
@@ -1921,6 +2113,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7681,
          "numer_sta":83118002,
@@ -1931,6 +2124,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7684,
          "numer_sta":6029001,
@@ -1941,6 +2135,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7688,
          "numer_sta":6004002,
@@ -1951,6 +2146,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7690,
          "numer_sta":6088001,
@@ -1961,6 +2157,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7724,
          "numer_sta":31042012,
@@ -1971,6 +2168,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7737,
          "numer_sta":66082004,
@@ -1981,6 +2179,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7740,
          "numer_sta":66181001,
@@ -1991,6 +2190,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7747,
          "numer_sta":66136001,
@@ -2001,6 +2201,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7749,
          "numer_sta":66148001,
@@ -2011,6 +2212,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7752,
          "numer_sta":20004003,
@@ -2021,6 +2223,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7753,
          "numer_sta":20093002,
@@ -2031,6 +2234,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7754,
          "numer_sta":20050001,
@@ -2041,6 +2245,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7761,
          "numer_sta":20004002,
@@ -2051,6 +2256,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7765,
          "numer_sta":20342001,
@@ -2061,6 +2267,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7768,
          "numer_sta":20247001,
@@ -2071,6 +2278,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7770,
          "numer_sta":20041001,
@@ -2081,6 +2289,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7775,
          "numer_sta":20303002,
@@ -2091,6 +2300,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7780,
          "numer_sta":20114002,
@@ -2101,6 +2311,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7785,
          "numer_sta":20107001,
@@ -2111,6 +2322,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7790,
          "numer_sta":20148001,
@@ -2121,6 +2333,7 @@
          "station_type":0
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7791,
          "numer_sta":20281001,
@@ -2131,6 +2344,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7836,
          "numer_sta":25411005,
@@ -2141,6 +2355,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7837,
          "numer_sta":25356003,
@@ -2151,6 +2366,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7840,
          "numer_sta":68307001,
@@ -2161,6 +2377,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7843,
          "numer_sta":68247003,
@@ -2171,6 +2388,7 @@
          "station_type":1
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7845,
          "numer_sta":68102001,
@@ -2181,6 +2399,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"ETENDU",
          "id_omm":7846,
          "numer_sta":90065003,
@@ -2191,6 +2410,7 @@
          "station_type":2
       },
       {
+         "country":"FR",
          "pack":"RADOME",
          "id_omm":7850,
          "numer_sta":39413001,

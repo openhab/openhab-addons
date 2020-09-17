@@ -23,6 +23,7 @@ import org.openhab.binding.synopanalyzer.internal.handler.SynopAnalyzerHandler;
  */
 @NonNullByDefault
 public class SynopAnalyzerConfiguration {
+    public static final String STATION_ID = "stationId";
     public long refreshInterval = 60;
-    public String stationId = "";
+    public int stationId;
 }
