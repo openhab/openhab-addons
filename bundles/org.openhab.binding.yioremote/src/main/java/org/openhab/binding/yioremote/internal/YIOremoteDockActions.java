@@ -17,6 +17,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.openhab.core.automation.annotation.ActionInput;
+import org.openhab.core.automation.annotation.RuleAction;
 
 /**
  * The {@link YIOremoteDockActions} is responsible for handling the action commands
@@ -39,7 +41,17 @@ public class YIOremoteDockActions implements ThingActions {
         return dockHandler;
     }
 
-    public static void sendircode(@Nullable ThingActions actions, @Nullable String irCode) {
+    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
+    public void sendIRCode(
+            @ActionInput(name = "IRCode", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String irCode) {
+        switch (dockHandler.getyioRemoteDockActualStatus()) {
+            case AUTHENTICATION_COMPLETE:
+                dockHandler.sendIRCode(irCode);
+                break;
+        }
+    }
+
+    public static void sendIRCode(@Nullable ThingActions actions, @Nullable String irCode) {
         if (actions instanceof YIOremoteDockActions && dockHandler != null) {
             switch (dockHandler.getyioRemoteDockActualStatus()) {
                 case AUTHENTICATION_COMPLETE:
