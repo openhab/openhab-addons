@@ -65,8 +65,7 @@ These channels are available for generic devices:
 
 | Channel Type    | Item type | Description                                     |
 | --------------- | --------- | ----------------------------------------------- |
-| switch          | Switch    | On/off switch for lights and appliance switches |
-| dimmer          | Dimmer    | Dimmer brightness                               |
+| dimmer          | Dimmer    | Level/brightness, or on/off for switches        |
 | scene-selection | -         | Trigger channel for scene selection             |
 
 The virtual device supports the `link` channel type:
@@ -81,10 +80,7 @@ Here is a sample `.things configuration file:
 
 ```
 Bridge upb:serial-pim:pim "UPB PIM" @ "Basement" [port="/dev/ttyUSB0"] {
-  Thing generic light-switch "Living Room Light" [networkId=1, unitId=1] {
-    Channels:
-      Type dimmer : level
-  }
+  Thing generic light-switch "Living Room Light" [networkId=1, unitId=1]
 
   Thing virtual upb-scene "UPB Scene Control" [networkId=1, unitId=250]
 

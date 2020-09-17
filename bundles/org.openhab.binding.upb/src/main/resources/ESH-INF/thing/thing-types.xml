@@ -12,7 +12,7 @@
 		<category>WallSwitch</category>
 
 		<channels>
-			<channel id="dimmer" typeId="dimmer"/>
+			<channel id="dimmer" typeId="system.brightness"/>
 		</channels>
 
 		<config-description-ref uri="upb:device:address"/>

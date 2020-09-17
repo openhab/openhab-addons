@@ -27,15 +27,4 @@
 		</config-description>
 	</channel-type>
 
-	<channel-type id="dimmer">
-		<item-type>Dimmer</item-type>
-		<label>Brightness</label>
-		<category>DimmableLight</category>
-	</channel-type>
-
-	<channel-type id="switch">
-		<item-type>Switch</item-type>
-		<label>Switch</label>
-		<category>Switch</category>
-	</channel-type>
 </thing:thing-descriptions>

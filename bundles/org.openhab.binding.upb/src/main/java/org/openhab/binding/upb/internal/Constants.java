@@ -29,7 +29,6 @@ public final class Constants {
     public static final ThingTypeUID VIRTUAL_DEVICE_UID = new ThingTypeUID(BINDING_ID, "virtual");
     public static final String SCENE_CHANNEL_TYPE_ID = "scene-selection";
     public static final String LINK_CHANNEL_TYPE_ID = "link";
-    public static final String SWITCH_TYPE_ID = "switch";
     public static final String DIMMER_TYPE_ID = "dimmer";
     public static final ChannelTypeUID SCENE_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID, SCENE_CHANNEL_TYPE_ID);
     public static final ChannelTypeUID LINK_CHANNEL_TYPE_UID = new ChannelTypeUID(BINDING_ID, LINK_CHANNEL_TYPE_ID);
