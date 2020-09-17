@@ -37,36 +37,32 @@ public class YIOremoteDockWebsocket {
     private @Nullable Session session;
     private String stringreceivedmessage = "";
     private final Logger logger = LoggerFactory.getLogger(YIOremoteDockWebsocket.class);
-    private @Nullable YIOremoteDockWebsocketInterface yioremotedockwebsocketinterfacehandler;
+    private @Nullable YIOremoteDockWebsocketInterface websocketHandler;
 
     public void addMessageHandler(YIOremoteDockWebsocketInterface yioremotedockwebsocketinterfacehandler) {
-        this.yioremotedockwebsocketinterfacehandler = yioremotedockwebsocketinterfacehandler;
+        this.websocketHandler = yioremotedockwebsocketinterfacehandler;
     }
 
     @OnWebSocketMessage
-    public void onText(Session session, String stringreceivedmessage) {
-        if (yioremotedockwebsocketinterfacehandler != null) {
-            yioremotedockwebsocketinterfacehandler.onMessage(stringreceivedmessage);
+    public void onText(Session session, String receivedMessage) {
+        if (websocketHandler != null) {
+            websocketHandler.onMessage(receivedMessage);
         }
-    }
-
-    public String getstringreceivedmessage() {
-        return this.stringreceivedmessage;
     }
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
         this.session = session;
-        if (yioremotedockwebsocketinterfacehandler != null) {
-            yioremotedockwebsocketinterfacehandler.onConnect(true);
+        if (websocketHandler != null) {
+            websocketHandler.onConnect(true);
         }
     }
 
     @OnWebSocketError
     public void onError(Throwable cause) {
         logger.warn("WebSocketError {}", cause.getMessage());
-        if (yioremotedockwebsocketinterfacehandler != null) {
-            yioremotedockwebsocketinterfacehandler.onError();
+        if (websocketHandler != null) {
+            websocketHandler.onError();
         }
     }
 

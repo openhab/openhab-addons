@@ -39,14 +39,14 @@ public class AuthenticationMessage {
         this.token = token;
     }
 
-    public JsonObject getauthenticationMessageJsonObject() {
+    public JsonObject getAuthenticationMessageJsonObject() {
         JsonObject authenticationMessage = new JsonObject();
         authenticationMessage.addProperty("type", type);
         authenticationMessage.addProperty("token", token);
         return authenticationMessage;
     }
 
-    public String getauthenticationMessageString() {
+    public String getAuthenticationMessageString() {
         JsonObject authenticationMessage = new JsonObject();
         authenticationMessage.addProperty("type", type);
         authenticationMessage.addProperty("token", token);

@@ -17,9 +17,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.binding.ThingActions;
 import org.eclipse.smarthome.core.thing.binding.ThingActionsScope;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteDockHandleStatus;
-import org.openhab.core.automation.annotation.ActionInput;
-import org.openhab.core.automation.annotation.RuleAction;
 
 /**
  * The {@link YIOremoteDockActions} is responsible for handling the action commands
@@ -30,28 +27,24 @@ import org.openhab.core.automation.annotation.RuleAction;
 @ThingActionsScope(name = "yioremote")
 @NonNullByDefault
 public class YIOremoteDockActions implements ThingActions {
-    private @Nullable static YIOremoteDockHandler yioremotedockhandler;
+    private @Nullable static YIOremoteDockHandler dockHandler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler yiremotedockhandler) {
-        yioremotedockhandler = (YIOremoteDockHandler) yiremotedockhandler;
+        dockHandler = (YIOremoteDockHandler) yiremotedockhandler;
     }
 
     @Override
     public @Nullable ThingHandler getThingHandler() {
-        return yioremotedockhandler;
-    }
-
-    @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
-    public void sendircode(
-            @ActionInput(name = "ircode", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String ircode) {
+        return dockHandler;
     }
 
     public static void sendircode(@Nullable ThingActions actions, @Nullable String irCode) {
-        if (actions instanceof YIOremoteDockActions && yioremotedockhandler != null) {
-            if (yioremotedockhandler.getyioRemoteDockActualStatus()
-                    .equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
-                yioremotedockhandler.sendIRCode(irCode);
+        if (actions instanceof YIOremoteDockActions && dockHandler != null) {
+            switch (dockHandler.getyioRemoteDockActualStatus()) {
+                case AUTHENTICATION_COMPLETE:
+                    dockHandler.sendIRCode(irCode);
+                    break;
             }
         } else {
             throw new IllegalArgumentException("Instance is not an YIOremoteDockActions class.");

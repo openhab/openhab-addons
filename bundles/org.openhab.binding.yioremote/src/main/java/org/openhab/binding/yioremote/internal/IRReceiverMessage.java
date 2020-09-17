@@ -36,16 +36,16 @@ public class IRReceiverMessage {
     }
 
     public JsonObject getIRreceiverMessageJsonObject() {
-        JsonObject irreceivermessage = new JsonObject();
-        irreceivermessage.addProperty("type", type);
-        irreceivermessage.addProperty("command", command);
-        return irreceivermessage;
+        JsonObject irReceiverMessage = new JsonObject();
+        irReceiverMessage.addProperty("type", type);
+        irReceiverMessage.addProperty("command", command);
+        return irReceiverMessage;
     }
 
     public String getIRreceiverMessageString() {
-        JsonObject irreceivermessage = new JsonObject();
-        irreceivermessage.addProperty("type", type);
-        irreceivermessage.addProperty("command", command);
-        return irreceivermessage.toString();
+        JsonObject irReceiverMessage = new JsonObject();
+        irReceiverMessage.addProperty("type", type);
+        irReceiverMessage.addProperty("command", command);
+        return irReceiverMessage.toString();
     }
 }
