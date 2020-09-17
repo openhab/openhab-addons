@@ -62,4 +62,17 @@
 		<description>Select the active color to use with the Color scene</description>
 	</channel-type>
 
+	<channel-type id="saturation">
+		<item-type>Color</item-type>
+		<label>Saturation</label>
+		<description>Control the saturation of your DS device</description>
+	</channel-type>
+
+	<channel-type id="brightness">
+		<item-type>Brightness</item-type>
+		<label>Brightness</label>
+		<description>Select the device brightness</description>
+		<state min="0" max="100" step="1.0" readOnly="false"/>
+	</channel-type>
+
 </thing:thing-descriptions>

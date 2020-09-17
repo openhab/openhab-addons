@@ -45,7 +45,8 @@ public class DreamScreenBindingConstants {
     public static final int PRODUCT_ID_HD = 1;
     public static final int PRODUCT_ID_4K = 2;
     public static final int PRODUCT_ID_SIDEKICK = 3;
-    public static final int PRODUCT_ID_CONNECT = 6;
+    public static final int PRODUCT_ID_CONNECT = 4;
+    public static final int PRODUCT_ID_SOLO = 7;
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
@@ -53,6 +54,8 @@ public class DreamScreenBindingConstants {
     public static final String CHANNEL_SCENE = "scene";
     public static final String CHANNEL_INPUT = "input";
     public static final String CHANNEL_COLOR = "color";
+    public static final String CHANNEL_SATURATION = "saturation";
+    public static final String CHANNEL_BRIGHTNESS = "brightness";
 
     // Mode values
     public static final String MODE_VIDEO = "video";

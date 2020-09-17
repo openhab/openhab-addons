@@ -10,10 +10,10 @@
 			<description>The serial number of the DreamScreen device</description>
 		</parameter>
 
-        <parameter name="groupId" type="text">
-            <label>Group Id</label>
-            <description>Logical group Id to control multiple devices at once</description>
-        </parameter>
+		<parameter name="groupId" type="text">
+			<label>Group Id</label>
+			<description>Logical group Id to control multiple devices at once</description>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

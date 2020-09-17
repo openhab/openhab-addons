@@ -27,12 +27,12 @@ public class SerialNumberMessage extends DreamScreenMessage {
     private static final byte COMMAND_UPPER = 0x01;
     private static final byte COMMAND_LOWER = 0x03;
 
-    protected SerialNumberMessage(final byte[] data, final int off) {
-        super(data, off);
+    protected SerialNumberMessage(final byte[] data) {
+        super(data);
     }
 
-    static boolean matches(final byte[] data, final int off) {
-        return matches(data, off, COMMAND_UPPER, COMMAND_LOWER);
+    static boolean matches(final byte[] data) {
+        return matches(data, COMMAND_UPPER, COMMAND_LOWER);
     }
 
     public int getSerialNumber() {

@@ -4,13 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="connect">
-		<label>DreamScreen Connect</label>
-		<description>Controls the DreamScreen Connect</description>
+	<thing-type id="solo">
+		<label>DreamScreen Solo</label>
+		<description>Controls the DreamScreen Solo</description>
 
 		<channels>
 			<channel id="power" typeId="power"/>
-			<channel id="input" typeId="input"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="scene" typeId="scene"/>
 			<channel id="color" typeId="color"/>
@@ -22,5 +21,6 @@
 		<config-description-ref uri="thing-type:dreamscreen:serialnumber"/>
 
 	</thing-type>
+
 
 </thing:thing-descriptions>

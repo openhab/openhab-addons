@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.dreamscreen.internal.handler.DreamScreen4kHandler;
 import org.openhab.binding.dreamscreen.internal.handler.DreamScreenHdHandler;
+import org.openhab.binding.dreamscreen.internal.handler.DreamScreenSoloHandler;
 
 /**
  * {@link RefreshTvMessage} handles the Refresh TV Message.
@@ -26,15 +27,15 @@ import org.openhab.binding.dreamscreen.internal.handler.DreamScreenHdHandler;
 @NonNullByDefault
 public class RefreshTvMessage extends RefreshMessage {
 
-    protected RefreshTvMessage(final byte[] data, final int off) {
-        super(data, off);
+    protected RefreshTvMessage(final byte[] data) {
+        super(data);
     }
 
-    static boolean matches(final byte[] data, final int off) {
-        if (RefreshMessage.matches(data, off)) {
-            final int msgLen = data[off + 1] & 0xFF;
-            final byte productId = data[off + msgLen];
-            return productId == DreamScreenHdHandler.PRODUCT_ID || productId == DreamScreen4kHandler.PRODUCT_ID;
+    static boolean matches(final byte[] data) {
+        if (RefreshMessage.matches(data)) {
+            final int msgLen = data[1] & 0xFF;
+            final byte productId = data[msgLen];
+            return productId == DreamScreenHdHandler.PRODUCT_ID || productId == DreamScreen4kHandler.PRODUCT_ID || productId == DreamScreenSoloHandler.PRODUCT_ID;
         }
         return false;
     }
