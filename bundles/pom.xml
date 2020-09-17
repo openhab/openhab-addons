@@ -153,6 +153,7 @@
     <module>org.openhab.binding.lirc</module>
     <module>org.openhab.binding.logreader</module>
     <module>org.openhab.binding.loxone</module>
+    <module>org.openhab.binding.luftdateninfo</module>
     <module>org.openhab.binding.lutron</module>
     <module>org.openhab.binding.magentatv</module>
     <module>org.openhab.binding.mail</module>

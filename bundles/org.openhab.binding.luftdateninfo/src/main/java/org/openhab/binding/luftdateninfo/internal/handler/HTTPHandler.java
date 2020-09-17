@@ -76,7 +76,13 @@ public class HTTPHandler {
                 @Override
                 public void onComplete(org.eclipse.jetty.client.api.Result result) {
                     if (result.getResponse().getStatus() != 200) {
-                        callback.onError(result.getResponse().getReason());
+                        String failure;
+                        if (result.getResponse().getReason() != null) {
+                            failure = result.getResponse().getReason();
+                        } else {
+                            failure = result.getFailure().getMessage();
+                        }
+                        callback.onError(failure);
                     } else {
                         callback.onResponse(getContentAsString());
                     }
