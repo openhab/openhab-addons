@@ -17,6 +17,7 @@ import static org.eclipse.smarthome.core.types.RefreshType.REFRESH;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -28,6 +29,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -61,6 +63,7 @@ public class SenecHomeHandler extends BaseThingHandler {
     private @Nullable PowerLimitationStatusDTO limitationStatus = null;
     private final @Nullable SenecHomeApi senecHomeApi;
     private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
+    private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(5), this::refreshState);
 
     public SenecHomeHandler(Thing thing, SenecHomeApi senecHomeApi) {
         super(thing);
@@ -105,6 +108,10 @@ public class SenecHomeHandler extends BaseThingHandler {
     }
 
     private void refresh() {
+        refreshCache.getValue();
+    }
+
+    public @Nullable Boolean refreshState() {
         try {
             SenecHomeResponse response = senecHomeApi.getStatistics();
             logger.trace("received {}", response);
@@ -158,6 +165,8 @@ public class SenecHomeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to Senec web interface:" + e.getMessage());
         }
+
+        return Boolean.TRUE;
     }
 
     protected BigDecimal getSenecValue(String value) {
