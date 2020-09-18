@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
@@ -40,11 +41,11 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
             .singleton(SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY);
 
-    private final SenecHomeApi senecHomeApi;
+    private HttpClient httpClient;
 
     @Activate
     public SenecHomeHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
-        this.senecHomeApi = new SenecHomeApi(httpClientFactory.getCommonHttpClient());
+        this.httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -57,7 +58,7 @@ public class SenecHomeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SenecHomeBindingConstants.THING_TYPE_SENEC_HOME_BATTERY.equals(thingTypeUID)) {
-            return new SenecHomeHandler(thing, this.senecHomeApi);
+            return new SenecHomeHandler(thing, httpClient);
         }
 
         return null;

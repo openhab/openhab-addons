@@ -29,6 +29,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.smarthome.core.cache.ExpiringCache;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
@@ -65,9 +66,9 @@ public class SenecHomeHandler extends BaseThingHandler {
     private SenecHomeConfigurationDTO config = new SenecHomeConfigurationDTO();
     private final ExpiringCache<Boolean> refreshCache = new ExpiringCache<>(Duration.ofSeconds(5), this::refreshState);
 
-    public SenecHomeHandler(Thing thing, SenecHomeApi senecHomeApi) {
+    public SenecHomeHandler(Thing thing, HttpClient httpClient) {
         super(thing);
-        this.senecHomeApi = senecHomeApi;
+        this.senecHomeApi = new SenecHomeApi(httpClient);
     }
 
     @Override
