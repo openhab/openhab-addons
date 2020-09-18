@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SynopAnalyzerDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(SynopAnalyzerDiscoveryService.class);
-    private static final int DISCOVER_TIMEOUT_SECONDS = 2;
+    private static final int DISCOVER_TIMEOUT_SECONDS = 5;
     private LocationProvider locationProvider;
     private final StationDB stationDB;
     private final Map<Integer, Double> distances = new HashMap<>();

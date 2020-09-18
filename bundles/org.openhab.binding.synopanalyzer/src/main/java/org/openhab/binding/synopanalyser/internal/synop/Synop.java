@@ -66,13 +66,6 @@ public abstract class Synop {
     protected static final int HV_LESS_THAN_10_HP_LIMIT = 96;
     protected static final int HV_LESS_THAN_50_HP_LIMIT = 98;
 
-    public static enum Overcast {
-        UNDEFINED,
-        CLEAR_SKY,
-        CLOUDY,
-        SKY_NOT_VISIBLE
-    }
-
     public static enum HorizontalVisibility {
         UNDEFINED,
         LESS_THAN_1,
@@ -94,7 +87,6 @@ public abstract class Synop {
     private HorizontalVisibility horizontalVisibility = HorizontalVisibility.UNDEFINED;
     private float temperature;
 
-    private Overcast overcast = Overcast.UNDEFINED;
     private int octa;
     private int windDirection;
     private int windSpeed;
@@ -200,30 +192,21 @@ public abstract class Synop {
             if ("00".equals(gustyFlag)) {
                 setWindSpeed(true);
             } else {
-                setOvercast();
+                setOcta();
                 setWindDirection();
                 setWindSpeed(false);
             }
         } else {
-            overcast = Overcast.UNDEFINED;
             windDirection = INITIAL_VALUE;
             windSpeed = INITIAL_VALUE;
         }
     }
 
-    private void setOvercast() {
+    private void setOcta() {
         if (windString != null) {
             octa = Character.getNumericValue(windString.charAt(0));
-
-            if (octa == 0) {
-                overcast = Overcast.CLEAR_SKY;
-            } else if (octa > 0 && octa < 8) {
-                overcast = Overcast.CLOUDY;
-            } else if (octa == 9) {
-                overcast = Overcast.SKY_NOT_VISIBLE;
-            } else {
-                overcast = Overcast.UNDEFINED;
-            }
+        } else {
+            octa = -1;
         }
     }
 
@@ -308,10 +291,6 @@ public abstract class Synop {
 
     public float getTemperature() {
         return temperature;
-    }
-
-    public Overcast getOvercast() {
-        return overcast;
     }
 
     public int getWindDirection() {

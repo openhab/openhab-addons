@@ -47,10 +47,10 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.binding.synopanalyser.internal.synop.Overcast;
 import org.openhab.binding.synopanalyser.internal.synop.StationDB;
 import org.openhab.binding.synopanalyser.internal.synop.StationDB.Station;
 import org.openhab.binding.synopanalyser.internal.synop.Synop;
-import org.openhab.binding.synopanalyser.internal.synop.Synop.Overcast;
 import org.openhab.binding.synopanalyser.internal.synop.SynopLand;
 import org.openhab.binding.synopanalyser.internal.synop.SynopMobile;
 import org.openhab.binding.synopanalyser.internal.synop.SynopShip;
@@ -58,8 +58,6 @@ import org.openhab.binding.synopanalyser.internal.synop.WindDirections;
 import org.openhab.binding.synopanalyzer.internal.config.SynopAnalyzerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import tec.uom.se.unit.Units;
 
 /**
  * The {@link SynopAnalyzerHandler} is responsible for handling commands, which are
@@ -119,7 +117,7 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
             if (serverLocation != null) {
                 DecimalType distance = serverLocation.distanceFrom(stationLocation);
 
-                properties.put("Distance", new QuantityType<>(distance, Units.METRE).toString());
+                properties.put("Distance", new QuantityType<>(distance, SIUnits.METRE).toString());
             }
         });
 
@@ -177,7 +175,8 @@ public class SynopAnalyzerHandler extends BaseThingHandler {
                 kc = 1 - 0.75 * Math.pow(kc, KASTEN_POWER);
                 return new DecimalType(kc);
             case OVERCAST:
-                Overcast overcast = synop.getOvercast();
+                int octa = synop.getOcta();
+                Overcast overcast = Overcast.fromOcta(octa);
                 return overcast == Overcast.UNDEFINED ? UnDefType.NULL : new StringType(overcast.name());
             case PRESSURE:
                 return new QuantityType<>(synop.getPressure(), PRESSURE_UNIT);

@@ -82,11 +82,11 @@ public class SynopAnalyzerHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
-        try {
-            Reader reader = new InputStreamReader(is, "UTF-8");
+
+        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("/db/stations.json");
+                Reader reader = new InputStreamReader(is, "UTF-8");) {
+
             stationDB = gson.fromJson(reader, StationDB.class);
-            reader.close();
             registerDiscoveryService();
             logger.debug("Discovery service for Synop Stations registered.");
         } catch (IOException e) {
