@@ -34,7 +34,7 @@ The YIO Dock has the following channels:
 
 With the YIO remote action, you can send IR Codes via the YIO Remote Dock.
 
-## Examples
+## Example
 
 ```
 rule "yioremote Action Example"
