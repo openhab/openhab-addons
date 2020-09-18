@@ -82,7 +82,7 @@ public class SenecHomeHandler extends BaseThingHandler {
             logger.debug("Refreshing {}", channelUID);
             refresh();
         } else {
-            logger.warn("The SenecHome-Binding is a read-only binding and can not handle commands");
+            logger.trace("The SenecHome-Binding is a read-only binding and can not handle commands");
         }
     }
 
