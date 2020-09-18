@@ -14,45 +14,46 @@ package org.openhab.binding.synopanalyser.internal.synop;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SynopLand} is responsible for analyzing Land station
  * specifics Synop messages
  *
  * @author Jonarzz - Initial contribution
  */
+@NonNullByDefault
 public class SynopLand extends Synop {
-
-    private String temp;
-
-    private int rainfall;
-    private String rainfallString;
+    private int rainfall = INITIAL_VALUE;
 
     public SynopLand(List<String> stringArray) {
         super(stringArray);
 
-        setRainfall();
-    }
+        if (stringArray.size() >= 11) {
+            String rainfallString = stringArray.get(10);
+            if (isValidString(rainfallString) && rainfallString.charAt(0) == 6) {
+                try {
+                    rainfall = Integer.parseInt(rainfallString.substring(1, 4));
+                    if (rainfall >= 990) {
+                        rainfall = 0;
+                    }
+                } catch (NumberFormatException ignore) {
+                }
 
-    @Override
-    protected void setStationCode() {
-        if (stringArray.size() < 3 || (temp = stringArray.get(2)).length() > 10 || temp.contains("/")) {
-            return;
+            }
         }
-
-        stationCode = temp;
     }
 
     @Override
     protected void setHorizontalVisibilityInt() {
-        if (stringArray.size() < 4 || !isValidString((temp = stringArray.get(3)))) {
-            horizontalVisibilityInt = Constants.INITIAL_VALUE;
-            return;
-        }
-
-        try {
-            horizontalVisibilityInt = Integer.parseInt(temp.substring(3, 5));
-        } catch (NumberFormatException e) {
-            horizontalVisibilityInt = Constants.INITIAL_VALUE;
+        if (stringArray.size() >= 4) {
+            String horizontalVisibility = stringArray.get(3);
+            if (isValidString(horizontalVisibility)) {
+                try {
+                    horizontalVisibilityInt = Integer.parseInt(horizontalVisibility.substring(3, 5));
+                } catch (NumberFormatException ignore) {
+                }
+            }
         }
     }
 
@@ -75,53 +76,22 @@ public class SynopLand extends Synop {
 
     @Override
     protected void setWindString() {
-        if (stringArray.size() < 5 || !isValidString((temp = stringArray.get(4)))) {
-            return;
+        if (stringArray.size() >= 5) {
+            String windString = stringArray.get(4);
+            if (isValidString(windString)) {
+                this.windString = windString;
+            }
         }
-
-        windString = temp;
     }
 
     @Override
     protected void setPressureString() {
-        if (stringArray.size() < 8 || stringArray.get(7).charAt(0) != '3'
-                || !isValidString((temp = stringArray.get(7)))) {
-            return;
-        }
-
-        pressureString = temp;
-    }
-
-    private void setRainfall() {
-        setRainfallString();
-
-        if (rainfallString == null) {
-            rainfall = Constants.INITIAL_VALUE;
-            return;
-        }
-
-        try {
-            rainfall = Integer.parseInt(rainfallString.substring(1, 4));
-            if (rainfall >= 990) {
-                rainfall = 0;
+        if (stringArray.size() >= 8) {
+            String pressureString = stringArray.get(7);
+            if (isValidString(pressureString) && pressureString.charAt(0) == '3') {
+                this.pressureString = pressureString;
             }
-        } catch (NumberFormatException e) {
-            rainfall = Constants.INITIAL_VALUE;
         }
-    }
-
-    protected void setRainfallString() {
-        if (stringArray.size() < 11 || stringArray.get(10).charAt(0) != '6'
-                || !isValidString((temp = stringArray.get(10)))) {
-            return;
-        }
-
-        rainfallString = temp;
-    }
-
-    @Override
-    public String getStationCode() {
-        return stationCode;
     }
 
     public int getRainfall() {

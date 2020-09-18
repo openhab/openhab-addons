@@ -14,12 +14,15 @@ package org.openhab.binding.synopanalyser.internal.synop;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SynopMobile} is responsible for analyzing Mobile station
  * specifics Synop messages
  *
  * @author Jonarzz - Initial contribution
  */
+@NonNullByDefault
 public class SynopShip extends SynopMobile {
 
     public SynopShip(List<String> stringArray) {
