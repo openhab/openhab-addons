@@ -172,7 +172,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
         ctx.channel().writeAndFlush(footerBbuf);
     }
 
-    private void sendString(ChannelHandlerContext ctx, String contents, String contentType) throws IOException {
+    private void sendString(ChannelHandlerContext ctx, String contents, String contentType) {
         ByteBuf contentsBbuf = Unpooled.copiedBuffer(contents, 0, contents.length(), StandardCharsets.UTF_8);
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         response.headers().add(HttpHeaderNames.CONTENT_TYPE, contentType);
