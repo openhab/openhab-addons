@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="link">
+		<item-type>Number</item-type>
+		<label>Scene</label>
+		<description>Selected scene</description>
+		<state min="1" max="250" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="scene-selection">
+		<kind>trigger</kind>
+		<label>Scene Selection Events</label>
+		<event>
+			<options>
+				<option value="ACTIVATED">activated</option>
+				<option value="DEACTIVATED">deactivated</option>
+			</options>
+		</event>
+		<config-description>
+			<parameter name="linkId" type="integer" min="1" max="250" required="true">
+				<label>Link ID</label>
+				<description>The link ID or scene number that this channel corresponds to</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="virtual">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial-pim"/>
+		</supported-bridge-type-refs>
+		<label>Virtual UPB Device</label>
+		<description>This pseudo-device is useful for switching scenes and receiving scene updates.
+			It does not correspond to
+			any physical device on the network.
+		</description>
+		<category>WallSwitch</category>
+
+		<channels>
+			<channel id="linkActivated" typeId="link">
+				<label>Link Activated</label>
+			</channel>
+			<channel id="linkDeactivated" typeId="link">
+				<label>Link Deactivated</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="upb:device:address"/>
+	</thing-type>
+</thing:thing-descriptions>
