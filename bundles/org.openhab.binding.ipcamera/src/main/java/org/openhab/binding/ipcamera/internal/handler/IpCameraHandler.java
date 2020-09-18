@@ -1146,7 +1146,7 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     private void sendPTZRequest() {
-        onvifCamera.sendPTZRequest("AbsoluteMove");
+        onvifCamera.sendPTZRequest(OnvifConnection.RequestType.AbsoluteMove);
     }
 
     @Override
@@ -1170,7 +1170,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     return;
                 case CHANNEL_GOTO_PRESET:
                     if (onvifCamera.supportsPTZ()) {
-                        onvifCamera.sendPTZRequest("GetPresets");
+                        onvifCamera.sendPTZRequest(OnvifConnection.RequestType.GetPresets);
                     }
                     return;
             }
@@ -1276,20 +1276,20 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (command instanceof IncreaseDecreaseType) {
                             if (command == IncreaseDecreaseType.INCREASE) {
                                 if (cameraConfig.getPtzContinuous()) {
-                                    onvifCamera.sendPTZRequest("ContinuousMoveLeft");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveLeft);
                                 } else {
-                                    onvifCamera.sendPTZRequest("RelativeMoveLeft");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveLeft);
                                 }
                             } else {
                                 if (cameraConfig.getPtzContinuous()) {
-                                    onvifCamera.sendPTZRequest("ContinuousMoveRight");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveRight);
                                 } else {
-                                    onvifCamera.sendPTZRequest("RelativeMoveRight");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveRight);
                                 }
                             }
                             return;
                         } else if (OnOffType.OFF.equals(command)) {
-                            onvifCamera.sendPTZRequest("Stop");
+                            onvifCamera.sendPTZRequest(OnvifConnection.RequestType.Stop);
                             return;
                         }
                         onvifCamera.setAbsolutePan(Float.valueOf(command.toString()));
@@ -1301,20 +1301,20 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (command instanceof IncreaseDecreaseType) {
                             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                                 if (cameraConfig.getPtzContinuous()) {
-                                    onvifCamera.sendPTZRequest("ContinuousMoveUp");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveUp);
                                 } else {
-                                    onvifCamera.sendPTZRequest("RelativeMoveUp");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveUp);
                                 }
                             } else {
                                 if (cameraConfig.getPtzContinuous()) {
-                                    onvifCamera.sendPTZRequest("ContinuousMoveDown");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveDown);
                                 } else {
-                                    onvifCamera.sendPTZRequest("RelativeMoveDown");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveDown);
                                 }
                             }
                             return;
                         } else if (OnOffType.OFF.equals(command)) {
-                            onvifCamera.sendPTZRequest("Stop");
+                            onvifCamera.sendPTZRequest(OnvifConnection.RequestType.Stop);
                             return;
                         }
                         onvifCamera.setAbsoluteTilt(Float.valueOf(command.toString()));
@@ -1326,20 +1326,20 @@ public class IpCameraHandler extends BaseThingHandler {
                         if (command instanceof IncreaseDecreaseType) {
                             if (IncreaseDecreaseType.INCREASE.equals(command)) {
                                 if (cameraConfig.getPtzContinuous()) {
-                                    onvifCamera.sendPTZRequest("ContinuousMoveIn");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveIn);
                                 } else {
-                                    onvifCamera.sendPTZRequest("RelativeMoveIn");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveIn);
                                 }
                             } else {
                                 if (cameraConfig.getPtzContinuous()) {
-                                    onvifCamera.sendPTZRequest("ContinuousMoveOut");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.ContinuousMoveOut);
                                 } else {
-                                    onvifCamera.sendPTZRequest("RelativeMoveOut");
+                                    onvifCamera.sendPTZRequest(OnvifConnection.RequestType.RelativeMoveOut);
                                 }
                             }
                             return;
                         } else if (OnOffType.OFF.equals(command)) {
-                            onvifCamera.sendPTZRequest("Stop");
+                            onvifCamera.sendPTZRequest(OnvifConnection.RequestType.Stop);
                             return;
                         }
                         onvifCamera.setAbsoluteZoom(Float.valueOf(command.toString()));
