@@ -126,54 +126,6 @@
                 ]
             },
             {
-                "property": "firmware-revision",
-                "siid": 1,
-                "piid": 4,
-                "friendlyName": "Device Information-Current Firmware Version",
-                "channel": "FirmwareRevision",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "manufacturer",
-                "siid": 1,
-                "piid": 1,
-                "friendlyName": "Device Information-Device Manufacturer",
-                "channel": "Manufacturer",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "model",
-                "siid": 1,
-                "piid": 2,
-                "friendlyName": "Device Information-Device Model",
-                "channel": "Model",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "serial-number",
-                "siid": 1,
-                "piid": 3,
-                "friendlyName": "Device Information-Device Serial Number",
-                "channel": "SerialNumber",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
                 "property": "fault",
                 "siid": 3,
                 "piid": 1,
