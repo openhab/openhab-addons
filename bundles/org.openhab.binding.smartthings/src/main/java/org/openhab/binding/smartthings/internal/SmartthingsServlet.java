@@ -133,7 +133,7 @@ public class SmartthingsServlet extends HttpServlet {
                 break;
             case "error":
                 // This is an error message from smartthings
-                Map<String, Object> map = new HashMap<String, Object>();
+                Map<String, String> map = new HashMap<String, String>();
                 map = gson.fromJson(s, map.getClass());
                 logger.warn("Error message from Smartthings: {}", map.get("message"));
                 break;

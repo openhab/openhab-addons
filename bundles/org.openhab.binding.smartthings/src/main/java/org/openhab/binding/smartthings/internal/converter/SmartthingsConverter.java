@@ -128,7 +128,7 @@ public abstract class SmartthingsConverter {
         return jsonMsg;
     }
 
-    private String surroundWithQuotes(String param) {
+    protected String surroundWithQuotes(String param) {
         return (new StringBuilder()).append('"').append(param).append('"').toString();
     }
 

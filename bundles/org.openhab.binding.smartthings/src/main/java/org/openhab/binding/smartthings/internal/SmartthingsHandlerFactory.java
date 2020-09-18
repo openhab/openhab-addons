@@ -123,11 +123,11 @@ public class SmartthingsHandlerFactory extends BaseThingHandlerFactory implement
      * @throws TimeoutException
      * @throws ExecutionException
      */
-    public void sendDeviceCommand(String path, String data)
+    public void sendDeviceCommand(String path, int timeout, String data)
             throws InterruptedException, TimeoutException, ExecutionException {
         ContentResponse response = httpClient
                 .newRequest(bridgeHandler.getSmartthingsIp(), bridgeHandler.getSmartthingsPort())
-                .timeout(3, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
+                .timeout(timeout, TimeUnit.SECONDS).path(path).method(HttpMethod.POST)
                 .content(new StringContentProvider(data), "application/json").send();
 
         int status = response.getStatus();

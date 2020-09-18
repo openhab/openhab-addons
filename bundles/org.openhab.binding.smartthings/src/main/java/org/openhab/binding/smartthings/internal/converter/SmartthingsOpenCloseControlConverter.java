@@ -38,7 +38,7 @@ public class SmartthingsOpenCloseControlConverter extends SmartthingsConverter {
     @Override
     public String convertToSmartthings(ChannelUID channelUid, Command command) {
         String smartthingsValue = (command.toString().toLowerCase().equals("open")) ? "open" : "close";
-        smartthingsValue = (new StringBuilder()).append('"').append(smartthingsValue).append('"').toString();
+        smartthingsValue = surroundWithQuotes(smartthingsValue);
 
         String jsonMsg = String.format("{\"capabilityKey\": \"%s\", \"deviceDisplayName\": \"%s\", \"value\": %s}",
                 thingTypeId, smartthingsName, smartthingsValue);

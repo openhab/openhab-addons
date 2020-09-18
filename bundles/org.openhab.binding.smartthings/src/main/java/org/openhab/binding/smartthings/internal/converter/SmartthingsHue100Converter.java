@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.smartthings.internal.converter;
 
+import java.math.BigDecimal;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DecimalType;
@@ -76,12 +78,16 @@ public class SmartthingsHue100Converter extends SmartthingsConverter {
                 double d = Double.parseDouble((String) deviceValue);
                 d *= 3.6;
                 return new DecimalType(d);
-            } else if (deviceValue instanceof Double) {
-                double d = ((Double) deviceValue).doubleValue();
-                d *= 3.6;
-                return new DecimalType(d);
             } else if (deviceValue instanceof Long) {
                 double d = ((Long) deviceValue).longValue();
+                d *= 3.6;
+                return new DecimalType(d);
+            } else if (deviceValue instanceof BigDecimal) {
+                double d = ((BigDecimal) deviceValue).doubleValue();
+                d *= 3.6;
+                return new DecimalType(d);
+            } else if (deviceValue instanceof Number) {
+                double d = ((Number) deviceValue).doubleValue();
                 d *= 3.6;
                 return new DecimalType(d);
             } else {

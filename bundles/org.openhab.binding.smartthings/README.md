@@ -2,8 +2,6 @@
 
 This binding integrates the Samsung Smartthings Hub into openHAB. This is implemented as an openHAB 2 binding.
 
-**This binding only works with the Smartthings Classic App**
-
 ## Supported things
 
 This binding supports most of the Smartthings devices that are defined in the [Smartthings Capabilities list](http://docs.smartthings.com/en/latest/capabilities-reference.html). If you find a device that doesn't work [follow these instructions](doc/Troubleshooting.md) to collect the required data so it can be added in a future release.
@@ -41,13 +39,14 @@ where:
 
 Each attached thing must specify the type of device and it's Smartthings device name. The format of the Thing description is:
 
-    Thing <thingTypeId> name [ smartthingsName="<deviceName>" ]
+    Thing <thingTypeId> name [ smartthingsName="<deviceName>", {smartthingsTimeout=<timeout>} ]
     
 where:
 
 * **[thingTypeId](http://docs.smartthings.com/en/latest/capabilities-reference.html)** corresponds to the "Preferences Reference" in the Smartthings Capabilities document but without the capability. prefix. i.e. A dimmer switch in the Capabilities document has a Preferences reference of capability.switchLevel, therefore the &lt;thingTypeId&gt; is switchLevel.
 * **name** is what you want to call this thing and is used in defining the items that use this thing. 
 * **deviceName** is the name you assigned to the device when you discovered and connected to it in the Smartthings App
+* Optional: **timeout** is how long openHAB will wait for a response to the request before throwing a timeout exception. The default is 3 seconds. 
 
 
 **Example**
@@ -57,7 +56,7 @@ where:
         Thing contactSensor            MainGarageDoor          [ smartthingsName="Garage Door Open Sensor" ]
         Thing temperatureMeasurement   MainGarageTemp          [ smartthingsName="Garage Door Open Sensor" ]
         Thing battery                  MainGarageBattery       [ smartthingsName="Garage Door Open Sensor" ]
-        Thing switch                   OfficeLight             [ smartthingsName="Family Room" ]
+        Thing switch                   OfficeLight             [ smartthingsName="Office Light", smartthingsTimeout=7 ]
         Thing valve                    SimulatedValve          [ smartthingsName="Simulated Valve" ]
     }
 

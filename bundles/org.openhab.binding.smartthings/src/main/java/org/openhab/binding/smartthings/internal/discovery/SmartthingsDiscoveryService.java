@@ -59,13 +59,11 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
     private final Logger logger = LoggerFactory.getLogger(SmartthingsDiscoveryService.class);
 
-    public Gson gson;
+    private final Gson gson;
 
-    @Nullable
-    private SmartthingsHandlerFactory smartthingsHandlerFactory;
+    private @Nullable SmartthingsHandlerFactory smartthingsHandlerFactory;
 
-    @Nullable
-    private ScheduledFuture<?> scanningJob;
+    private @Nullable ScheduledFuture<?> scanningJob;
 
     /*
      * default constructor
@@ -138,7 +136,7 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
         if (currentSmartthingsHandlerFactory != null) {
             try {
                 String discoveryMsg = "{\"discovery\": \"yes\"}";
-                currentSmartthingsHandlerFactory.sendDeviceCommand("/discovery", discoveryMsg);
+                currentSmartthingsHandlerFactory.sendDeviceCommand("/discovery", 5, discoveryMsg);
                 // Smartthings will not return a response to this message but will send it's response message
                 // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
@@ -213,5 +211,4 @@ public class SmartthingsDiscoveryService extends AbstractDiscoveryService implem
 
         thingDiscovered(discoveryResult);
     }
-
 }

@@ -30,4 +30,8 @@ public class SmartthingsThingConfig {
      * The device location (optional)
      */
     public String smartthingsLocation = "";
+    /**
+     * Timeout (defaults to 3 seconds)
+     */
+    public int smartthingsTimeout = 3;
 }

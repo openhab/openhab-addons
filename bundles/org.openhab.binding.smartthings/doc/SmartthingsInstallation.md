@@ -62,16 +62,15 @@ The following files need to be deployed
      * port: 8080 (This is the port of the openHAB application on your server)
      * Save the preferences
 
-## Configuration in the Smartthings Classic App
-Next the App needs to be configured using **the Smartthings Classic App on your smartphone**.
+## Configuration in the Smartthings App
+Next the App needs to be configured using the Smartthings App on your smartphone. These instructions are for the new app.
 1. Start the Smartthings App on your phone
-2. Select **Automation** from the bottom menu
-3. Select **SmartApps** from the top menu
-4. Click on **+ Add a SmartApp**
-5. Scroll to the bottom and select **My Apps**
-6. Select **OpenHabAppV2**
+2. Select the menu (3 horizontal bars) in the upper left corner
+3. Select **SmartApps**
+4. Click the **+** (Add) in the upper right
+5. Scroll to the bottom and select **OpenHabAppV2**
      * In the selection screen select the devices you want to interact with openHAB. **Warning** devices not enabled (lacking the check mark in the box for the specific device) will be **ignored** by openHAB. 
      * Near the bottom of the screen is **Notify this virtual device**, click on it and select **OpenHabDevice**. 
-     * Finally click **Done** on the upper right.
+     * Finally click **Done** at the bottom of the screen.
 
 

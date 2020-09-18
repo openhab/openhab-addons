@@ -23,14 +23,14 @@
 		</config-description>
 	</bridge-type>
 
-	<!-- For all Things the thing-type id must match the Samsung Smartthings Capability Reference field "Preferences Reference" 
+	<!-- For all Things the thing-type id must match the Samsung Smartthings Capability Reference field "Preferences Reference"
 		without the capability. prefix -->
 	<!-- And the channel id's must match the Samsung Smartthings Capability Reference field "attribute" -->
 	<!-- Make sure that additions / removals to this are updated in the SmartthingsBindingConstants.java file -->
 	<!-- Thing Types -->
 	<thing-type id="accelerationSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Acceleration Sensor</label>
 		<description>Acceleration Sensor</description>
@@ -39,12 +39,12 @@
 				<label>Acceleration</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="airConditionerMode">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Air Conditioner Mode</label>
 		<description>Air Conditioner Mode</description>
@@ -53,12 +53,12 @@
 				<label>Air Conditioner Mode</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="alarm">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Alarm</label>
 		<description>Alarm</description>
@@ -67,12 +67,12 @@
 				<label>Alarm</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="battery">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Battery Status</label>
 		<description>An indication of the status of the battery</description>
@@ -81,12 +81,12 @@
 				<label>Battery</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="beacon">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Beacon</label>
 		<description>The presence value of the beacon</description>
@@ -95,12 +95,12 @@
 				<label>Presence</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="bulb">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Bulb</label>
 		<description>Allows for the control of a bulb device</description>
@@ -109,12 +109,12 @@
 				<label>Bulb</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="button">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Button</label>
 		<description>Button</description>
@@ -123,12 +123,12 @@
 				<label>Button</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="carbonDioxideMeasurement">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Carbon Dioxide Measurement</label>
 		<description>Carbon Dioxide Measurement</description>
@@ -141,7 +141,7 @@
 
 	<thing-type id="carbonMonoxideDetector">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>carbon Monoxide Detector</label>
 		<description>Carbon Monoxide Detector</description>
@@ -150,12 +150,12 @@
 				<label>Carbon Monoxide</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="colorControl">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color Control</label>
 		<description>Color Control</description>
@@ -178,13 +178,13 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- This is the new "proposed" color control -->
 	<thing-type id="color">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color</label>
 		<description>Color</description>
@@ -200,12 +200,12 @@
 				<label>Switch Level</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="colorTemperature">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Color Temperature</label>
 		<description>Color Temperature</description>
@@ -214,12 +214,12 @@
 				<label>Color Temperature</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="consumable">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Consumable</label>
 		<description>Consumable</description>
@@ -228,13 +228,13 @@
 				<label>Consumable</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 
 	<thing-type id="contactSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Contact Sensor</label>
 		<description>Allows reading the value of a contact sensor device</description>
@@ -243,12 +243,12 @@
 				<label>Contact</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="doorControl">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Door Control</label>
 		<description>Allow for the control of a door</description>
@@ -260,12 +260,12 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="dryerMode">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Dryer Mode</label>
 		<description>Controls a dryer temperature</description>
@@ -274,12 +274,12 @@
 				<label>Dryer Mode</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="dryerOperatingState">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Dryer Operating State</label>
 		<description>Dryer operating state info</description>
@@ -294,12 +294,12 @@
 				<label>Completion Time</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="energyMeter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Energy Meter</label>
 		<description>Read the energy consumption of an energy metering device</description>
@@ -308,13 +308,13 @@
 				<label>Energy</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Estimated Time Of Arrival -->
 	<thing-type id="estimatedTimeOfArrival">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>estimated Time of Arrival</label>
 		<description>Estimated Time Of Arrival</description>
@@ -323,13 +323,13 @@
 				<label>Estimated Time of Arrival</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Garage Door Control -->
 	<thing-type id="garageDoorControl">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Garage Door Control</label>
 		<description>Garage Door Control</description>
@@ -341,13 +341,13 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Holdable Button -->
 	<thing-type id="holdableButton">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Holdable Button</label>
 		<description>holdableButton</description>
@@ -359,13 +359,13 @@
 				<label>Button</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Illuminance Measurement -->
 	<thing-type id="illuminanceMeasurement">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Illuminance Measurement</label>
 		<description>Illuminance Measurement</description>
@@ -374,13 +374,13 @@
 				<label>Illuminance Measurement</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Image Capture -->
 	<thing-type id="imageCapture">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Image Capture</label>
 		<description>Allows for the capture of an image on devices that support it</description>
@@ -389,13 +389,13 @@
 				<label>Image Capture</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Indicator -->
 	<thing-type id="indicator">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Indicator</label>
 		<description>The indicator capability gives you the ability to set the indicator LED light on a Z-Wave switch</description>
@@ -404,13 +404,13 @@
 				<label>Indicator</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Infrared Level -->
 	<thing-type id="infraredLevel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Infrared Level</label>
 		<description>Allows for the control of the infrared level attribute of a device</description>
@@ -419,13 +419,13 @@
 				<label>Infrared Level</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Light -->
 	<thing-type id="light">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Light</label>
 		<description>Light</description>
@@ -434,13 +434,13 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Lock -->
 	<thing-type id="lock">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Lock</label>
 		<description>Allow for the control of a lock device</description>
@@ -449,13 +449,13 @@
 				<label>Lock</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Lock Only -->
 	<thing-type id="lockOnly">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Lock Only</label>
 		<description>Allow for the lock control of a lock device</description>
@@ -464,13 +464,13 @@
 				<label>Lock Only</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Media controller -->
 	<thing-type id="mediaController">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Media Controller</label>
 		<description>Allows for the control of a media controller device</description>
@@ -482,13 +482,13 @@
 				<label>Current Activity</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Motion Sensor -->
 	<thing-type id="motionSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Motion Sensor</label>
 		<description>Allows for the ability to read motion sensor device states</description>
@@ -497,13 +497,13 @@
 				<label>Motion</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Music Player -->
 	<thing-type id="musicPlayer">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Music Player</label>
 		<description>Allows for control of a music playing device</description>
@@ -524,13 +524,13 @@
 				<label>Mute</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Outlet -->
 	<thing-type id="outlet">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Outlet</label>
 		<description>Allows for the control of an outlet device</description>
@@ -539,13 +539,13 @@
 				<label>Outlet</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- pHMeasurement -->
 	<thing-type id="pHMeasurement">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>pH Measurement</label>
 		<description>Read the pH value off of a pH measurement capable device</description>
@@ -554,13 +554,13 @@
 				<label>pH Measurement</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 
 	<thing-type id="powerMeter">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>PowerMeter</label>
 		<description>Allows for reading the power consumption from devices that report it</description>
@@ -569,13 +569,13 @@
 				<label>Power</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Power Source -->
 	<thing-type id="powerSource">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Power Source</label>
 		<description>The current power source for the device</description>
@@ -584,13 +584,13 @@
 				<label>Power Source</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Presence Sensor -->
 	<thing-type id="presenceSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Presence Sensor</label>
 		<description>The ability to see the current status of a presence sensor device</description>
@@ -599,13 +599,13 @@
 				<label>Presence</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Relative Humidity Measurement -->
 	<thing-type id="relativeHumidityMeasurement">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Humidity Sensor</label>
 		<description>Allow reading the relative humidity from devices that support it</description>
@@ -614,12 +614,12 @@
 				<label>Humidity</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="relaySwitch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Relay Switch</label>
 		<description>Relay Switch</description>
@@ -628,13 +628,13 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- shock sensor -->
 	<thing-type id="shockSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Shock Sensor</label>
 		<description>A Device that senses whether or not there is a shock</description>
@@ -643,13 +643,13 @@
 				<label>Shock</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Signal Strength -->
 	<thing-type id="signalStrength">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Signal Strength</label>
 		<description>Gives the ability to read the signal stregth of Devices that support it</description>
@@ -661,13 +661,13 @@
 				<label>Received Signal Strength Indication</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Sleep sensor -->
 	<thing-type id="sleepSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Sleep Sensor</label>
 		<description>A Device that senses whether or not someone is sleeping</description>
@@ -676,13 +676,13 @@
 				<label>Sleeping Value</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- smoke detector -->
 	<thing-type id="smokeDetector">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Smoke Detector</label>
 		<description>Measure smoke and optionally carbon monoxide levels</description>
@@ -694,13 +694,13 @@
 				<label>Carbon Monoxide</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Sound Pressure Level -->
 	<thing-type id="soundPressureLevel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Sound Pressure Level</label>
 		<description>Sound Pressure Level</description>
@@ -709,13 +709,13 @@
 				<label>Sound Pressure Level</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Sound Sensor -->
 	<thing-type id="soundSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Sound Sensor</label>
 		<description>A Device that senses sound</description>
@@ -724,13 +724,13 @@
 				<label>Sound Sensor</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Speech Recognition -->
 	<thing-type id="speechRecognition">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Speech Recognition</label>
 		<description>Speech Recognition</description>
@@ -739,13 +739,13 @@
 				<label>Speech Recognition</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Step Sensor -->
 	<thing-type id="stepSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Step Sensor</label>
 		<description>A Device that works as a step counter</description>
@@ -757,13 +757,13 @@
 				<label>Current Step Count</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 
 	<thing-type id="switch">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Switch</label>
 		<description>Switch</description>
@@ -772,13 +772,13 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Switch Level -->
 	<thing-type id="switchLevel">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Switch Level</label>
 		<description>Allows for the control of the level attribute of a light</description>
@@ -790,13 +790,13 @@
 				<label>Switch</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Tamper Alert -->
 	<thing-type id="tamperAlert">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Tamper Alert</label>
 		<description>Tamper Alert</description>
@@ -805,12 +805,12 @@
 				<label>Tamper</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="temperatureMeasurement">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Temperature Measurement</label>
 		<description>Get the temperature from a Device that reports current temperature</description>
@@ -819,13 +819,13 @@
 				<label>Temperature</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat -->
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat</label>
 		<description>Allows for the control of a thermostat device</description>
@@ -849,13 +849,13 @@
 				<label>Thermostat Operating State</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat Cooling Setpoint -->
 	<thing-type id="thermostatCoolingSetpoint">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Cooling Setpoint</label>
 		<description>Thermostat Cooling Setpoint</description>
@@ -864,13 +864,13 @@
 				<label>Cooling Setpoint</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat Fan Mode -->
 	<thing-type id="thermostatFanMode">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Fan Mode</label>
 		<description>Thermostat Fan Mode</description>
@@ -879,13 +879,13 @@
 				<label>Thermostat Fan Mode</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat Heating Setpoint -->
 	<thing-type id="thermostatHeatingSetpoint">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Heating Setpoint</label>
 		<description>Thermostat Heating Setpoint</description>
@@ -894,13 +894,13 @@
 				<label>Heating Setpoint</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat Mode -->
 	<thing-type id="thermostatMode">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Mode</label>
 		<description>Thermostat Mode</description>
@@ -909,13 +909,13 @@
 				<label>Thermostat Mode</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat Operating State -->
 	<thing-type id="thermostatOperatingState">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Operating State</label>
 		<description>Thermostat Operating State</description>
@@ -924,13 +924,13 @@
 				<label>Thermostat Operating State</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Thermostat Setpoint -->
 	<thing-type id="thermostatSetpoint">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Thermostat Setpoint</label>
 		<description>Thermostat Setpoint</description>
@@ -939,12 +939,12 @@
 				<label>Thermostat Setpoint</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="threeAxis">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Three Axis</label>
 		<description>Gives the three axis coordinates for devices that support it</description>
@@ -953,13 +953,13 @@
 				<label>Three Axis</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Timed Session -->
 	<thing-type id="timedSession">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Timed Session</label>
 		<description>Timed Session</description>
@@ -971,13 +971,13 @@
 				<label>Time Remaining</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Touch Sensor -->
 	<thing-type id="touchSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Touch Sensor</label>
 		<description>Touch Sensor</description>
@@ -986,13 +986,13 @@
 				<label>Touch</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Ultraviolet Index -->
 	<thing-type id="ultravioletIndex">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Ultraviolet Index</label>
 		<description>Gives the ability to get the ultraviolet index from devices that report it</description>
@@ -1001,13 +1001,13 @@
 				<label>Ultraviolet Index</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Valve -->
 	<thing-type id="valve">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Valve</label>
 		<description>Allows for the control of a valve device</description>
@@ -1019,13 +1019,13 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Voltage Measurement -->
 	<thing-type id="voltageMeasurement">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Voltage Measurement</label>
 		<description>Get the value of voltage measured from devices that support it</description>
@@ -1034,13 +1034,13 @@
 				<label>Voltage</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Washing machine related -->
 	<thing-type id="washerMode">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Washer Mode</label>
 		<description>Controls a washer temperature</description>
@@ -1049,12 +1049,12 @@
 				<label>Washer Mode</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<thing-type id="washerOperatingState">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Washer Operating State</label>
 		<description>Washer operating state info</description>
@@ -1069,13 +1069,13 @@
 				<label>Completion Time</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Water Sensor -->
 	<thing-type id="waterSensor">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Water Sensor</label>
 		<description>Get the status off of a water sensor device</description>
@@ -1084,13 +1084,13 @@
 				<label>Water</label>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- Window Shade -->
 	<thing-type id="windowShade">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="smartthings" />
+			<bridge-type-ref id="smartthings"/>
 		</supported-bridge-type-refs>
 		<label>Window Shade</label>
 		<description>Window Shade</description>
@@ -1102,7 +1102,7 @@
 				</properties>
 			</channel>
 		</channels>
-		<config-description-ref uri="thing-type:smartthings:thing-type-parameters" />
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
 	</thing-type>
 
 	<!-- ============= -->

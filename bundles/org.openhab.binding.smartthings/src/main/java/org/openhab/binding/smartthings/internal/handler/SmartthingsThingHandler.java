@@ -52,6 +52,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
     private SmartthingsThingConfig config;
     private String smartthingsName;
+    private int timeout;
     private SmartthingsHandlerFactory smartthingsHandlerFactory;
     private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<ChannelUID, SmartthingsConverter>();
 
@@ -61,7 +62,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         super(thing);
         this.smartthingsHandlerFactory = smartthingsHandlerFactory;
         smartthingsName = ""; // Initialize here so it can be NonNull but it should always get a value in initialize()
-        config = getThing().getConfiguration().as(SmartthingsThingConfig.class);
+        config = new SmartthingsThingConfig();
     }
 
     /**
@@ -108,11 +109,12 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             }
 
             try {
-                smartthingsHandlerFactory.sendDeviceCommand(path, jsonMsg);
+                smartthingsHandlerFactory.sendDeviceCommand(path, timeout, jsonMsg);
                 // Smartthings will not return a response to this message but will send it's response message
                 // which will get picked up by the SmartthingBridgeHandler.receivedPushMessage handler
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
-                logger.warn("Attempt to send command to the Smartthings hub failed with exception: {}", e.getMessage());
+                logger.warn("Attempt to send command to the Smartthings hub for {} failed with exception: {}",
+                        smartthingsName, e.getMessage());
             }
         }
     }
@@ -170,6 +172,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
             return;
         }
         smartthingsName = config.smartthingsName;
+        timeout = config.smartthingsTimeout;
 
         // Create converters for each channel
         for (Channel ch : thing.getChannels()) {

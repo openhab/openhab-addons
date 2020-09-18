@@ -84,4 +84,5 @@ public class SmartthingsBindingConstants {
 
     // Thing config properties
     public static final String SMARTTHINGS_NAME = "smartthingsName";
+    public static final String THING_TIMEOUT = "timeout";
 }
