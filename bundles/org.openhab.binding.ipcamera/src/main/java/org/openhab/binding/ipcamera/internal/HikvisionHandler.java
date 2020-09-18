@@ -292,19 +292,8 @@ public class HikvisionHandler extends ChannelDuplexHandler {
     }
 
     public void hikChangeSetting(String httpGetPutURL, String removeElement, String replaceRemovedElementWith) {
-        String body = "";
-        ChannelTracking localTracker = null;
-        ipCameraHandler.lock.lock();
-        try {
-            for (ChannelTracking channelTracking : ipCameraHandler.channelTracker) {
-                if (channelTracking.getRequestUrl().equals(httpGetPutURL)) {
-                    body = channelTracking.getReply();
-                    localTracker = channelTracking;
-                }
-            }
-        } finally {
-            ipCameraHandler.lock.unlock();
-        }
+        ChannelTracking localTracker = ipCameraHandler.channelTrackingMap.get(httpGetPutURL);
+        String body = localTracker.getReply();
 
         if (body.isEmpty()) {
             logger.debug(
@@ -320,14 +309,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
             body = body.substring(0, elementIndexStart) + replaceRemovedElementWith
                     + body.substring(elementIndexEnd + removeElement.length() + 3, body.length());
             logger.trace("Body for this PUT is going to be:{}", body);
-            ipCameraHandler.lock.lock();
-            try {
-                if (localTracker != null) {
-                    localTracker.setReply(body);
-                }
-            } finally {
-                ipCameraHandler.lock.unlock();
-            }
+            localTracker.setReply(body);
             FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
                     httpGetPutURL);
             request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.cameraConfig.getIp());

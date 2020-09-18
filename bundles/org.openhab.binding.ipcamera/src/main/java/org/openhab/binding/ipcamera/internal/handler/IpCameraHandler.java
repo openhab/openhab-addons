@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -163,8 +165,7 @@ public class IpCameraHandler extends BaseThingHandler {
     private boolean updateAutoFps = false;
     private byte lowPriorityCounter = 0;
     public String hostIp;
-    public ReentrantLock lock = new ReentrantLock();
-    public List<ChannelTracking> channelTracker = new ArrayList<>(18);
+    public Map<String, ChannelTracking> channelTrackingMap = new ConcurrentHashMap<>();
     public List<String> lowPriorityRequests = new ArrayList<>(0);
 
     // basicAuth MUST remain private as it holds the password
@@ -364,30 +365,21 @@ public class IpCameraHandler extends BaseThingHandler {
                 IdleStateEvent e = (IdleStateEvent) evt;
                 // If camera does not use the channel for X amount of time it will close.
                 if (e.state() == IdleState.READER_IDLE) {
-                    lock.lock();
-                    try {
-                        String urlToKeepOpen = "";
-                        switch (thing.getThingTypeUID().getId()) {
-                            case DAHUA_THING:
-                                urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
-                                break;
-                            case HIKVISION_THING:
-                                urlToKeepOpen = "/ISAPI/Event/notification/alertStream";
-                                break;
-                            case DOORBIRD_THING:
-                                urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
-                                break;
-                        }
-
-                        for (ChannelTracking channelTracking : channelTracker) {
-                            if (channelTracking.getChannel().equals(ctx.channel())) {
-                                if (channelTracking.getRequestUrl().equals(urlToKeepOpen)) {
-                                    return; // don't auto close this as it is for the alarms.
-                                }
-                            }
-                        }
-                    } finally {
-                        lock.unlock();
+                    String urlToKeepOpen = "";
+                    switch (thing.getThingTypeUID().getId()) {
+                        case DAHUA_THING:
+                            urlToKeepOpen = "/cgi-bin/eventManager.cgi?action=attach&codes=[All]";
+                            break;
+                        case HIKVISION_THING:
+                            urlToKeepOpen = "/ISAPI/Event/notification/alertStream";
+                            break;
+                        case DOORBIRD_THING:
+                            urlToKeepOpen = "/bha-api/monitor.cgi?ring=doorbell,motionsensor";
+                            break;
+                    }
+                    ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
+                    if (channelTracking.getChannel() == ctx.channel()) {
+                        return; // don't auto close this as it is for the alarms.
                     }
                     ctx.close();
                 }
@@ -586,28 +578,14 @@ public class IpCameraHandler extends BaseThingHandler {
                         }
                         if (future.isDone() && future.isSuccess()) {
                             Channel ch = future.channel();
-                            boolean chTracked = false;
                             openChannels.add(ch);
                             if (!isOnline) {
                                 bringCameraOnline();
                             }
                             logger.trace("Sending camera: {}: http://{}:{}{}", httpMethod, cameraConfig.getIp(), port,
                                     httpRequestURL);
-                            lock.lock();
-                            try {
-                                for (ChannelTracking channelTracking : channelTracker) {
-                                    if (channelTracking.getRequestUrl().equals(httpRequestURL)) {
-                                        channelTracking.setChannel(ch);
-                                        chTracked = true;
-                                        break;
-                                    }
-                                }
-                                if (!chTracked) {
-                                    channelTracker.add(new ChannelTracking(ch, httpRequestURL));
-                                }
-                            } finally {
-                                lock.unlock();
-                            }
+                            channelTrackingMap.put(httpRequestURL, new ChannelTracking(ch, httpRequestURL));
+
                             CommonCameraHandler commonHandler = (CommonCameraHandler) ch.pipeline().get(COMMON_HANDLER);
                             commonHandler.setURL(httpRequestURLFull);
                             MyNettyAuthHandler authHandler = (MyNettyAuthHandler) ch.pipeline().get(AUTH_HANDLER);
@@ -794,54 +772,43 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("null")
     void closeChannel(String url) {
-        lock.lock();
-        try {
-            for (ChannelTracking channelTracking : channelTracker) {
-                if (channelTracking.getRequestUrl().equals(url)) {
-                    if (channelTracking.getChannel().isOpen()) {
-                        channelTracking.getChannel().close();
-                        return;
-                    }
-                }
+        ChannelTracking channelTracking = channelTrackingMap.get(url);
+        if (channelTracking != null) {
+            if (channelTracking.getChannel().isOpen()) {
+                channelTracking.getChannel().close();
+                return;
             }
-        } finally {
-            lock.unlock();
         }
     }
 
+    /**
+     * This method should never run under normal use, if there is a bug in a camera or binding it may be possible to
+     * open large amounts of channels. This may help to keep it under control and WARN the user every 8 seconds this is
+     * still occurring.
+     */
     void cleanChannels() {
-        ChannelTracking localTracking = null;
-        lock.lock();
-        try {
-            for (ChannelTracking channelTracking : channelTracker) {
-                logger.trace("Channel is open:{}, url is {}", channelTracking.getChannel().isOpen(),
-                        channelTracking.getRequestUrl());
+        for (Channel channel : openChannels) {
+            boolean oldChannel = true;
+            for (ChannelTracking channelTracking : channelTrackingMap.values()) {
                 if (!channelTracking.getChannel().isOpen() && channelTracking.getReply().isEmpty()) {
-                    localTracking = channelTracking;// Seems to create a deadlock if we remove whilst in loop
-                    break;
+                    channelTrackingMap.remove(channelTracking.getRequestUrl());
+                }
+                if (channelTracking.getChannel() == channel) {
+                    logger.trace("Open channel to camera is used for URL:{}", channelTracking.getRequestUrl());
+                    oldChannel = false;
                 }
             }
-            if (localTracking != null) {
-                channelTracker.remove(localTracking);// clean up one closed channel.
+            if (oldChannel) {
+                channel.close();
             }
-        } finally {
-            lock.unlock();
         }
     }
 
     public void storeHttpReply(String url, String content) {
-        lock.lock();
-        try {
-            for (ChannelTracking channelTracking : channelTracker) {
-                if (channelTracking.getRequestUrl().equals(url)) {
-                    channelTracking.setReply(content);
-                    return;
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
+        ChannelTracking channelTracking = channelTrackingMap.get(url);
+        channelTracking.setReply(content);
     }
 
     // sends direct to ctx so can be either snapshots.mjpeg or normal mjpeg stream
@@ -1499,17 +1466,9 @@ public class IpCameraHandler extends BaseThingHandler {
     }
 
     boolean streamIsStopped(String url) {
-        lock.lock();
-        try {
-            for (ChannelTracking channelTracking : channelTracker) {
-                if (channelTracking.getRequestUrl().equals(url)) {
-                    if (channelTracking.getChannel().isOpen()) {
-                        return false;// stream is running.
-                    }
-                }
-            }
-        } finally {
-            lock.unlock();
+        ChannelTracking channelTracking = channelTrackingMap.get(url);
+        if (channelTracking.getChannel().isOpen()) {
+            return false;// stream is running.
         }
         return true; // Stream stopped or never started.
     }
@@ -1621,9 +1580,8 @@ public class IpCameraHandler extends BaseThingHandler {
         if (ffmpegHLS != null) {
             ffmpegHLS.checkKeepAlive();
         }
-        if (openChannels.size() > 18 || channelTracker.size() > 18) {
-            logger.debug("There are {} Channels being tracked, {} are open.", channelTracker.size(),
-                    openChannels.size());
+        if (openChannels.size() > 18) {
+            logger.debug("There are {} open Channels being tracked.", openChannels.size());
             cleanChannels();
         }
     }
@@ -1778,12 +1736,7 @@ public class IpCameraHandler extends BaseThingHandler {
             ffmpegSnapshot.stopConverting();
             ffmpegSnapshot = null;
         }
-        lock.lock();
-        try {
-            channelTracker.clear();
-        } finally {
-            lock.unlock();
-        }
+        channelTrackingMap.clear();
     }
 
     @Override
