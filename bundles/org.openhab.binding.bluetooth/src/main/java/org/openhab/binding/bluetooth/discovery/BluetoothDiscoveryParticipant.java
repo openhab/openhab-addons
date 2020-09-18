@@ -27,7 +27,7 @@ import org.openhab.binding.bluetooth.BluetoothAdapter;
  * and can thus contribute {@link DiscoveryResult}s from Bluetooth scans.
  *
  * @author Kai Kreuzer - Initial contribution
- * @author Connor Petty - added 'requiresConnection' method
+ * @author Connor Petty - added 'requiresConnection' and 'publishAdditionalResults' methods
  */
 @NonNullByDefault
 public interface BluetoothDiscoveryParticipant {
@@ -74,6 +74,19 @@ public interface BluetoothDiscoveryParticipant {
         return false;
     }
 
+    /**
+     * Allows participants to perform any post-processing on each DiscoveryResult as well
+     * as produce additional DiscoveryResults as they see fit.
+     * Additional results can be published using the provided {@code publisher}.
+     * Results published in this way will create a new DiscoveryResult and ThingUID
+     * using the provided {@link BluetoothAdapter} as the bridge instead.
+     * A BluetoothAdapter instance must be provided for any additional results sent to the publisher.
+     * <p>
+     * Note: Any additional results will not be subject to post-processing.
+     *
+     * @param result the DiscoveryResult to post-process
+     * @param publisher the consumer to publish additional results to.
+     */
     public default void publishAdditionalResults(DiscoveryResult result,
             BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
         // do nothing by default
