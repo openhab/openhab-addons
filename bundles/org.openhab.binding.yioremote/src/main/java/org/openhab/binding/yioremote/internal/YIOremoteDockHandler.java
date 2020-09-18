@@ -38,6 +38,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteDockHandleStatus;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteMessages;
+import org.openhab.binding.yioremote.internal.DTOs.AuthenticationMessage;
+import org.openhab.binding.yioremote.internal.DTOs.IRCode;
+import org.openhab.binding.yioremote.internal.DTOs.IRCodeSendMessage;
+import org.openhab.binding.yioremote.internal.DTOs.IRReceiverMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
