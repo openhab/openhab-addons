@@ -14,22 +14,15 @@ package org.openhab.binding.velbus.internal;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
-import org.openhab.binding.velbus.internal.discovery.VelbusThingDiscoveryService;
 import org.openhab.binding.velbus.internal.handler.VelbusBlindsHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusDimmerHandler;
@@ -47,7 +40,6 @@ import org.openhab.binding.velbus.internal.handler.VelbusVMBGPHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBGPOHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBMeteoHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBPIROHandler;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -61,7 +53,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.velbus")
 public class VelbusHandlerFactory extends BaseThingHandlerFactory {
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private final SerialPortManager serialPortManager;
 
     @Activate
@@ -83,7 +74,6 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             VelbusBridgeHandler velbusBridgeHandler = thingTypeUID.equals(NETWORK_BRIDGE_THING_TYPE)
                     ? new VelbusNetworkBridgeHandler((Bridge) thing)
                     : new VelbusSerialBridgeHandler((Bridge) thing, serialPortManager);
-            registerDiscoveryService(velbusBridgeHandler);
             thingHandler = velbusBridgeHandler;
         } else if (VelbusRelayHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusRelayHandler(thing);
@@ -116,29 +106,5 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
         }
 
         return thingHandler;
-    }
-
-    @Override
-    protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof VelbusBridgeHandler) {
-            unregisterDiscoveryService((VelbusBridgeHandler) thingHandler);
-        }
-    }
-
-    private synchronized void registerDiscoveryService(VelbusBridgeHandler bridgeHandler) {
-        VelbusThingDiscoveryService discoveryService = new VelbusThingDiscoveryService(bridgeHandler);
-        discoveryService.activate();
-        this.discoveryServiceRegs.put(bridgeHandler.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-    }
-
-    private synchronized void unregisterDiscoveryService(VelbusBridgeHandler bridgeHandler) {
-        ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(bridgeHandler.getThing().getUID());
-        VelbusThingDiscoveryService service = (VelbusThingDiscoveryService) bundleContext
-                .getService(serviceReg.getReference());
-        serviceReg.unregister();
-        if (service != null) {
-            service.deactivate();
-        }
     }
 }

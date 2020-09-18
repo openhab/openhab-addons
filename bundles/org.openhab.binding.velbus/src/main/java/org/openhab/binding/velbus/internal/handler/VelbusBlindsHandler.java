@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -32,6 +33,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.VelbusFirstGenerationDeviceModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusModuleAddress;
+import org.openhab.binding.velbus.internal.config.VelbusThingConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusBlindOffPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusBlindPositionPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusBlindUpDownPacket;
@@ -107,14 +109,19 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
     }
 
     @Override
-    protected VelbusModuleAddress createVelbusModuleAddress(Thing thing, int numberOfSubAddresses) {
-        byte address = hexToByte((String) getConfig().get(ADDRESS));
+    protected @Nullable VelbusModuleAddress createVelbusModuleAddress(int numberOfSubAddresses) {
+        final VelbusThingConfig velbusThingConfig = this.velbusThingConfig;
+        if (velbusThingConfig != null) {
+            byte address = hexToByte(velbusThingConfig.address);
 
-        if (isFirstGenerationDevice()) {
-            return new VelbusFirstGenerationDeviceModuleAddress(address);
+            if (isFirstGenerationDevice()) {
+                return new VelbusFirstGenerationDeviceModuleAddress(address);
+            }
+
+            return new VelbusModuleAddress(address, numberOfSubAddresses);
         }
 
-        return new VelbusModuleAddress(address, numberOfSubAddresses);
+        return null;
     }
 
     private Boolean isFirstGenerationDevice() {

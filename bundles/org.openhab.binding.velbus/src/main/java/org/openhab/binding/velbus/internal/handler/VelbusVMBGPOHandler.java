@@ -43,7 +43,7 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     public static final int MODULESETTINGS_MEMORY_ADDRESS = 0x02F0;
     public static final int LAST_MEMORY_LOCATION_ADDRESS = 0x1A03;
 
-    private final ChannelUID screensaverChannel = new ChannelUID(thing.getUID(), "oledDisplay#SCREENSAVER");
+    private final ChannelUID screensaverChannel = new ChannelUID(thing.getUID(), "oledDisplay", "SCREENSAVER");
 
     private byte moduleSettings;
 

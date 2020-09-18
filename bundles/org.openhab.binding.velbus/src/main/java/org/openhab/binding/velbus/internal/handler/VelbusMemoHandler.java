@@ -31,10 +31,10 @@ import org.openhab.binding.velbus.internal.packets.VelbusMemoTextPacket;
 public abstract class VelbusMemoHandler extends VelbusThermostatHandler {
     public static final int MEMO_TEXT_MAX_LENGTH = 63;
 
-    private final ChannelUID memoChannel = new ChannelUID(thing.getUID(), "oledDisplay#MEMO");
+    private final ChannelUID memoChannel = new ChannelUID(thing.getUID(), "oledDisplay", "MEMO");
 
     public VelbusMemoHandler(Thing thing) {
-        super(thing, 4, new ChannelUID(thing.getUID(), "input#CH33"));
+        super(thing, 4, new ChannelUID(thing.getUID(), "input", "CH33"));
     }
 
     @Override

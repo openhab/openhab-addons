@@ -14,7 +14,6 @@ package org.openhab.binding.velbus.internal.handler;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.config.VelbusDimmerConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusDimmerPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusStatusRequestPacket;
@@ -45,7 +45,7 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB1DM,
             THING_TYPE_VMB1LED, THING_TYPE_VMB4DC, THING_TYPE_VMBDME, THING_TYPE_VMBDMI, THING_TYPE_VMBDMIR));
 
-    private int dimSpeed = 0;
+    private @NonNullByDefault({}) VelbusDimmerConfig dimmerConfig;
 
     public VelbusDimmerHandler(Thing thing) {
         super(thing, 0);
@@ -53,12 +53,9 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
 
     @Override
     public void initialize() {
-        super.initialize();
+        this.dimmerConfig = getConfigAs(VelbusDimmerConfig.class);
 
-        Object dimspeedObject = getConfig().get(DIMSPEED);
-        if (dimspeedObject != null) {
-            this.dimSpeed = ((BigDecimal) dimspeedObject).intValue();
-        }
+        super.initialize();
     }
 
     @Override
@@ -79,7 +76,8 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
             byte commandByte = COMMAND_SET_VALUE;
 
             VelbusDimmerPacket packet = new VelbusDimmerPacket(getModuleAddress().getChannelIdentifier(channelUID),
-                    commandByte, ((PercentType) command).byteValue(), this.dimSpeed, isFirstGenerationDevice());
+                    commandByte, ((PercentType) command).byteValue(), this.dimmerConfig.dimspeed,
+                    isFirstGenerationDevice());
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);
@@ -87,7 +85,7 @@ public class VelbusDimmerHandler extends VelbusThingHandler {
             byte commandByte = determineCommandByte((OnOffType) command);
 
             VelbusDimmerPacket packet = new VelbusDimmerPacket(getModuleAddress().getChannelIdentifier(channelUID),
-                    commandByte, (byte) 0x00, this.dimSpeed, isFirstGenerationDevice());
+                    commandByte, (byte) 0x00, this.dimmerConfig.dimspeed, isFirstGenerationDevice());
 
             byte[] packetBytes = packet.getBytes();
             velbusBridgeHandler.sendPacket(packetBytes);

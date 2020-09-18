@@ -36,6 +36,6 @@ public class VelbusVMBGPHandler extends VelbusThermostatHandler {
                     THING_TYPE_VMBGP4, THING_TYPE_VMBGP4_2, THING_TYPE_VMBGP4PIR, THING_TYPE_VMBGP4PIR_2));
 
     public VelbusVMBGPHandler(Thing thing) {
-        super(thing, 4, new ChannelUID(thing.getUID(), "input#CH9"));
+        super(thing, 4, new ChannelUID(thing.getUID(), "input", "CH9"));
     }
 }

@@ -55,11 +55,11 @@ public class VelbusVMBMeteoHandler extends VelbusTemperatureSensorHandler {
     private ChannelUID windspeedChannel;
 
     public VelbusVMBMeteoHandler(Thing thing) {
-        super(thing, 0, new ChannelUID(thing.getUID(), "weatherStation#CH10"));
+        super(thing, 0, new ChannelUID(thing.getUID(), "weatherStation", "CH10"));
 
-        this.rainfallChannel = new ChannelUID(thing.getUID(), "weatherStation#CH11");
-        this.illuminanceChannel = new ChannelUID(thing.getUID(), "weatherStation#CH12");
-        this.windspeedChannel = new ChannelUID(thing.getUID(), "weatherStation#CH13");
+        this.rainfallChannel = new ChannelUID(thing.getUID(), "weatherStation", "CH11");
+        this.illuminanceChannel = new ChannelUID(thing.getUID(), "weatherStation", "CH12");
+        this.windspeedChannel = new ChannelUID(thing.getUID(), "weatherStation", "CH13");
     }
 
     @Override

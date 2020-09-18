@@ -46,9 +46,9 @@ public class VelbusVMBPIROHandler extends VelbusTemperatureSensorHandler {
     private ChannelUID illuminanceChannel;
 
     public VelbusVMBPIROHandler(Thing thing) {
-        super(thing, 0, new ChannelUID(thing.getUID(), "input#CH9"));
+        super(thing, 0, new ChannelUID(thing.getUID(), "input", "CH9"));
 
-        this.illuminanceChannel = new ChannelUID(thing.getUID(), "input#LIGHT");
+        this.illuminanceChannel = new ChannelUID(thing.getUID(), "input", "LIGHT");
     }
 
     @Override

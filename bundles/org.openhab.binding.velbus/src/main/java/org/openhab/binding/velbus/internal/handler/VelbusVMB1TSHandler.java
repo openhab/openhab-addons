@@ -34,6 +34,6 @@ public class VelbusVMB1TSHandler extends VelbusThermostatHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB1TS));
 
     public VelbusVMB1TSHandler(Thing thing) {
-        super(thing, 0, new ChannelUID(thing.getUID(), "input#CH1"));
+        super(thing, 0, new ChannelUID(thing.getUID(), "input", "CH1"));
     }
 }

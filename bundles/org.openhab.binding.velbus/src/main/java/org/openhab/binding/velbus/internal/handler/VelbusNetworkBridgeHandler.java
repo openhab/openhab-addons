@@ -12,17 +12,14 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
-
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.Socket;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.openhab.binding.velbus.internal.config.VelbusNetworkBridgeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,60 +34,61 @@ public class VelbusNetworkBridgeHandler extends VelbusBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(VelbusNetworkBridgeHandler.class);
 
     private @Nullable Socket socket;
+    private @NonNullByDefault({}) VelbusNetworkBridgeConfig networkBridgeConfig;
 
     public VelbusNetworkBridgeHandler(Bridge velbusBridge) {
         super(velbusBridge);
     }
 
-    /**
-     * Runnable that handles inbound communication from Velbus network interface.
-     * <p>
-     * The thread listens to the TCP socket opened at initialization of the {@link VelbusNetworkBridgeHandler} class
-     * and interprets all inbound velbus packets.
-     */
-    private Runnable networkEvents = () -> {
-        readPackets();
-    };
-
     @Override
-    protected void connect() {
-        String address = (String) getConfig().get(ADDRESS);
-        BigDecimal port = (BigDecimal) getConfig().get(PORT);
+    public void initialize() {
+        this.networkBridgeConfig = getConfigAs(VelbusNetworkBridgeConfig.class);
 
-        if (address != null && port != null) {
-            int portInt = port.intValue();
-            try {
-                Socket socket = new Socket(address, portInt);
-                this.socket = socket;
+        super.initialize();
+    }
 
-                initializeStreams(socket.getOutputStream(), socket.getInputStream());
+    /**
+     * Makes a connection to the Velbus system.
+     *
+     * @return True if the connection succeeded, false if the connection did not succeed.
+     */
+    @Override
+    protected boolean connect() {
+        try {
+            Socket socket = new Socket(networkBridgeConfig.address, networkBridgeConfig.port);
+            this.socket = socket;
 
-                updateStatus(ThingStatus.ONLINE);
-                logger.debug("Bridge online on network address {}:{}", address, portInt);
-            } catch (IOException ex) {
-                onConnectionLost();
-                logger.debug("Failed to connect to network address {}:{}", address, port);
-            }
+            initializeStreams(socket.getOutputStream(), socket.getInputStream());
 
-            // Start Velbus packet listener. This listener will act on all packets coming from
-            // IP-interface.
-            (new Thread(networkEvents)).start();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Network address or port not configured");
-            logger.debug("Network address or port not configured");
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Bridge online on network address {}:{}", networkBridgeConfig.address,
+                    networkBridgeConfig.port);
+            return true;
+        } catch (IOException ex) {
+            onConnectionLost();
+            logger.debug("Failed to connect to network address {}:{}", networkBridgeConfig.address,
+                    networkBridgeConfig.port);
         }
+
+        // Start Velbus packet listener. This listener will act on all packets coming from
+        // IP-interface.
+        Thread thread = new Thread(this::readPackets, "OH-binding-" + this.thing.getUID());
+        thread.setDaemon(true);
+        thread.start();
+
+        return false;
     }
 
     @Override
     protected void disconnect() {
+        final Socket socket = this.socket;
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
-                logger.error("Error while closing socket", e);
+                logger.debug("Error while closing socket", e);
             }
-            socket = null;
+            this.socket = null;
         }
 
         super.disconnect();

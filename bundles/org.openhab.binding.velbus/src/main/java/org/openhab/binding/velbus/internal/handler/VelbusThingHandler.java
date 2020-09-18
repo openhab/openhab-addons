@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.SUB_ADDRESS;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -37,6 +37,7 @@ import org.eclipse.smarthome.core.thing.type.ChannelTypeUID;
 import org.eclipse.smarthome.core.util.HexUtils;
 import org.openhab.binding.velbus.internal.VelbusModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusPacketListener;
+import org.openhab.binding.velbus.internal.config.VelbusThingConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusReadMemoryBlockPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusReadMemoryPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusStatusRequestPacket;
@@ -53,6 +54,7 @@ import org.slf4j.LoggerFactory;
 public abstract class VelbusThingHandler extends BaseThingHandler implements VelbusPacketListener {
     protected final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    protected @Nullable VelbusThingConfig velbusThingConfig;
     private @Nullable VelbusBridgeHandler velbusBridgeHandler;
     private @NonNullByDefault({}) VelbusModuleAddress velbusModuleAddress;
 
@@ -67,6 +69,9 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
     @Override
     public void initialize() {
         logger.debug("Initializing velbus handler.");
+
+        this.velbusThingConfig = getConfigAs(VelbusThingConfig.class);
+
         Bridge bridge = getBridge();
         initializeThing(bridge == null ? ThingStatus.OFFLINE : bridge.getStatus());
         initializeChannelNames();
@@ -113,50 +118,55 @@ public abstract class VelbusThingHandler extends BaseThingHandler implements Vel
     }
 
     private void initializeThing(ThingStatus bridgeStatus) {
-        this.velbusModuleAddress = createVelbusModuleAddress(thing, numberOfSubAddresses);
+        this.velbusModuleAddress = createVelbusModuleAddress(numberOfSubAddresses);
 
-        logger.debug("initializeThing thing {} with address {} bridge status {}", getThing().getUID(),
-                velbusModuleAddress.getAddress(), bridgeStatus);
+        if (this.velbusModuleAddress != null) {
+            logger.debug("initializeThing thing {} with address {} bridge status {}", getThing().getUID(),
+                    velbusModuleAddress.getAddress(), bridgeStatus);
 
-        // note: this call implicitly registers our handler as a listener on
-        // the bridge
-        if (getVelbusBridgeHandler() != null) {
-            if (bridgeStatus == ThingStatus.ONLINE) {
-                updateStatus(ThingStatus.ONLINE);
+            // note: this call implicitly registers our handler as a listener on
+            // the bridge
+            if (getVelbusBridgeHandler() != null) {
+                if (bridgeStatus == ThingStatus.ONLINE) {
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             }
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Address is not known!");
         }
     }
 
-    protected VelbusModuleAddress createVelbusModuleAddress(Thing thing, int numberOfSubAddresses) {
-        byte address = hexToByte((String) getConfig().get(ADDRESS));
+    protected @Nullable VelbusModuleAddress createVelbusModuleAddress(int numberOfSubAddresses) {
+        final VelbusThingConfig velbusThingConfig = this.velbusThingConfig;
+        if (velbusThingConfig != null) {
+            byte address = hexToByte(velbusThingConfig.address);
 
-        byte[] subAddresses = new byte[numberOfSubAddresses];
-        for (int i = 0; i < numberOfSubAddresses; i++) {
-            String propertyKey = SUB_ADDRESS + (i + 1);
-            if (getThing().getProperties().containsKey(propertyKey)) {
-                String subAddress = getThing().getProperties().get(propertyKey);
-                subAddresses[i] = hexToByte(subAddress);
-            } else {
-                subAddresses[i] = (byte) 0xFF;
+            byte[] subAddresses = new byte[numberOfSubAddresses];
+            for (int i = 0; i < numberOfSubAddresses; i++) {
+                String propertyKey = SUB_ADDRESS + (i + 1);
+                if (getThing().getProperties().containsKey(propertyKey)) {
+                    String subAddress = getThing().getProperties().get(propertyKey);
+                    subAddresses[i] = hexToByte(subAddress);
+                } else {
+                    subAddresses[i] = (byte) 0xFF;
+                }
             }
+
+            return new VelbusModuleAddress(address, subAddresses);
         }
 
-        return new VelbusModuleAddress(address, subAddresses);
+        return null;
     }
 
     private void initializeChannelNames() {
         List<Channel> channels = this.getThing().getChannels();
         for (int i = 0; i < channels.size(); i++) {
             Channel channel = channels.get(i);
-            String channelUID = channel.getUID().getId();
-
-            if (channelUID.contains("#")) {
-                channelUID = channelUID.substring(channelUID.indexOf("#")).replace("#", "");
-            }
+            String channelUID = channel.getUID().getIdWithoutGroup();
 
             if (getConfig().containsKey(channelUID)) {
                 String channelName = getConfig().get(channelUID).toString();

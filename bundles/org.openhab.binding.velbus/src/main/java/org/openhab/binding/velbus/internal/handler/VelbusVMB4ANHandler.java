@@ -14,7 +14,6 @@ package org.openhab.binding.velbus.internal.handler;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +35,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.config.VelbusSensorConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusDimmerPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSensorReadoutRequestPacket;
@@ -51,10 +51,10 @@ import org.openhab.binding.velbus.internal.packets.VelbusStatusRequestPacket;
 public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB4AN));
 
-    private static final String ALARM_CHANNEL_PREFIX = "alarm#CH";
-    private static final String ANALOG_INPUT_CHANNEL_PREFIX = "analogInput#CH";
-    private static final String ANALOG_OUTPUT_CHANNEL_PREFIX = "analogOutput#CH";
-    private static final String RAW_CHANNEL_SUFFIX = "RAW";
+    private static final String ALARM_GROUP = "alarm";
+    private static final String ANALOG_INPUT_GROUP = "analogInput";
+    private static final String ANALOG_OUTPUT_GROUP = "analogOutput";
+    private static final String RAW_CHANNEL_SUFFIX = "Raw";
 
     private static final byte VOLTAGE_SENSOR_TYPE = 0x00;
     private static final byte CURRENT_SENSOR_TYPE = 0x01;
@@ -64,6 +64,7 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     private String[] channelText = new String[] { "", "", "", "" };
 
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @NonNullByDefault({}) VelbusSensorConfig sensorConfig;
 
     public VelbusVMB4ANHandler(Thing thing) {
         super(thing, 0);
@@ -71,24 +72,24 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
 
     @Override
     public void initialize() {
+        this.sensorConfig = getConfigAs(VelbusSensorConfig.class);
+
         super.initialize();
 
         initializeAutomaticRefresh();
     }
 
     private void initializeAutomaticRefresh() {
-        Object refreshIntervalObject = getConfig().get(REFRESH_INTERVAL);
-        if (refreshIntervalObject != null) {
-            int refreshInterval = ((BigDecimal) refreshIntervalObject).intValue();
+        int refreshInterval = sensorConfig.refresh;
 
-            if (refreshInterval > 0) {
-                startAutomaticRefresh(refreshInterval);
-            }
+        if (refreshInterval > 0) {
+            startAutomaticRefresh(refreshInterval);
         }
     }
 
     @Override
     public void dispose() {
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
@@ -227,36 +228,29 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected boolean isAlarmChannel(ChannelUID channelUID) {
-        return channelUID.getId().startsWith(ALARM_CHANNEL_PREFIX);
+        return channelUID.getGroupId() == ALARM_GROUP;
     }
 
     protected byte convertAlarmChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getId().replaceAll(ALARM_CHANNEL_PREFIX, ""));
-    }
-
-    protected String convertAlarmChannelByteToChannelUID(byte channelByte) {
-        return ALARM_CHANNEL_PREFIX + channelByte;
+        return Byte.parseByte(channelUID.getIdWithoutGroup());
     }
 
     protected boolean isTextAnalogInputChannel(ChannelUID channelUID) {
-        String id = channelUID.getId();
-
-        return id.startsWith(ANALOG_INPUT_CHANNEL_PREFIX) && !id.endsWith(RAW_CHANNEL_SUFFIX);
+        return channelUID.getGroupId() == ANALOG_INPUT_GROUP
+                && !channelUID.getIdWithoutGroup().endsWith(RAW_CHANNEL_SUFFIX);
     }
 
     protected boolean isRawAnalogInputChannel(ChannelUID channelUID) {
-        String id = channelUID.getId();
-
-        return id.startsWith(ANALOG_INPUT_CHANNEL_PREFIX) && id.endsWith(RAW_CHANNEL_SUFFIX);
+        return channelUID.getGroupId() == ANALOG_INPUT_GROUP
+                && channelUID.getIdWithoutGroup().endsWith(RAW_CHANNEL_SUFFIX);
     }
 
     protected byte convertRawAnalogInputChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(
-                channelUID.getId().replaceAll(ANALOG_INPUT_CHANNEL_PREFIX, "").replaceAll(RAW_CHANNEL_SUFFIX, ""));
+        return Byte.parseByte(channelUID.getIdWithoutGroup().replaceAll(RAW_CHANNEL_SUFFIX, ""));
     }
 
     protected byte convertTextAnalogInputChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getId().replaceAll(ANALOG_INPUT_CHANNEL_PREFIX, ""));
+        return Byte.parseByte(channelUID.getIdWithoutGroup());
     }
 
     protected String convertAnalogInputChannelByteToRawChannelUID(byte channelByte) {
@@ -264,18 +258,14 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected String convertAnalogInputChannelByteToChannelUID(byte channelByte) {
-        return ANALOG_INPUT_CHANNEL_PREFIX + channelByte;
+        return ANALOG_INPUT_GROUP + "#" + channelByte;
     }
 
     protected boolean isAnalogOutputChannel(ChannelUID channelUID) {
-        return channelUID.getId().startsWith(ANALOG_OUTPUT_CHANNEL_PREFIX);
+        return channelUID.getGroupId() == ANALOG_OUTPUT_GROUP;
     }
 
     protected byte convertAnalogOutputChannelUIDToChannelByte(ChannelUID channelUID) {
-        return Byte.parseByte(channelUID.getId().replaceAll(ANALOG_OUTPUT_CHANNEL_PREFIX, ""));
-    }
-
-    protected String convertOutputChannelByteToChannelUID(byte channelByte) {
-        return ANALOG_OUTPUT_CHANNEL_PREFIX + channelByte;
+        return Byte.parseByte(channelUID.getIdWithoutGroup());
     }
 }

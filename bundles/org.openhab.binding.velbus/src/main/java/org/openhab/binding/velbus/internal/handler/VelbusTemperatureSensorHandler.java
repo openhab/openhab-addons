@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_SENSOR_TEMPERATURE;
 
-import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +29,7 @@ import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.velbus.internal.config.VelbusSensorConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSensorTemperatureRequestPacket;
 
@@ -42,6 +42,7 @@ import org.openhab.binding.velbus.internal.packets.VelbusSensorTemperatureReques
 @NonNullByDefault
 public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAlarmClockHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
+    private @NonNullByDefault({}) VelbusSensorConfig sensorConfig;
     private ChannelUID temperatureChannel;
 
     public VelbusTemperatureSensorHandler(Thing thing, int numberOfSubAddresses, ChannelUID temperatureChannel) {
@@ -52,24 +53,24 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
 
     @Override
     public void initialize() {
+        this.sensorConfig = getConfigAs(VelbusSensorConfig.class);
+
         super.initialize();
 
         initializeAutomaticRefresh();
     }
 
     private void initializeAutomaticRefresh() {
-        Object refreshIntervalObject = getConfig().get(REFRESH_INTERVAL);
-        if (refreshIntervalObject != null) {
-            int refreshInterval = ((BigDecimal) refreshIntervalObject).intValue();
+        int refreshInterval = this.sensorConfig.refresh;
 
-            if (refreshInterval > 0) {
-                startAutomaticRefresh(refreshInterval);
-            }
+        if (refreshInterval > 0) {
+            startAutomaticRefresh(refreshInterval);
         }
     }
 
     @Override
     public void dispose() {
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }

@@ -13,7 +13,7 @@ Pushbutton, temperature sensors and input module states are retrieved and made a
 ## Supported Things
 
 
-A Velbus configuration module (e.g. VMBRSUSB) or a network server (e.g. [velserv](https://github.com/StefCoene/velserver/wiki/TCP-server-for-Velbus)) is required as a "bridge" for accessing any other Velbus devices.
+A Velbus configuration module (e.g. VMBRSUSB) or a network server (e.g. [VelServer](https://github.com/StefCoene/velserver/wiki/TCP-server-for-Velbus)) is required as a "bridge" for accessing any other Velbus devices.
 
 The supported Velbus devices are:
 
@@ -21,7 +21,8 @@ The supported Velbus devices are:
 vmb1bl, vmb1bls, vmb1dm, vmb1led, vmb1ry, vmb1ryno, vmb1rynos, vmb1rys, vmb1ts, vmb2bl, vmb2ble, vmb2pbn, vmb4an, vmb4dc, vmb4ry, vmb4ryld, vmb4ryno, vmb6in, vmb6pbn, vmb7in, vmb8ir, vmb8pb, vmb8pbu, vmbdme, vmbdmi, vmbdmir, vmbel1, vmbel2, vmbel4, vmbelo, vmbgp1, vmbgp2, vmbgp4, vmbgp4pir, vmbgpo, vmbgpod, vmbmeteo, vmbpirc, vmbpirm, vmbpiro
 ```
 
-The type of a specific device can be found in the configuration section for things in the Paper UI. It is part of the unique thing id which could look like:
+The type of a specific device can be found in the configuration section for things in the Paper UI. 
+It is part of the unique thing id which could look like:
 
 ```
 velbus:vmb4ryld:0424e5d2:01:CH1
@@ -31,9 +32,12 @@ The thing type is the second string behind the first colon and in this example i
 
 ## Discovery
 
-The Velbus bridge cannot be discovered automatically. It has to be added manually by defining the serial port of the Velbus Configuration module for the Velbus Serial Bridge or by defining the IP Address and port for the Velbus Network Bridge.
+The Velbus bridge cannot be discovered automatically. 
+It has to be added manually by defining the serial port of the Velbus Configuration module for the Velbus Serial Bridge or by defining the IP Address and port for the Velbus Network Bridge.
 
-Once the bridge has been added as a thing, a manual scan can be launched to discover all other supported Velbus devices on the bus. These devices will be available in the inbox. The discovery scan will also retrieve the channel names of the Velbus devices.
+Once the bridge has been added as a thing, a manual scan can be launched to discover all other supported Velbus devices on the bus. 
+These devices will be available in the inbox.
+The discovery scan will also retrieve the channel names of the Velbus devices.
 
 ## Thing Configuration
 
@@ -50,7 +54,8 @@ Bridge velbus:bridge:1 [ port="COM1" ]
 ```
 
 For the Velbus Network Bridge it is necessary to specify the IP Address or hostname and the port of the Velbus network server.
-This will usually be either the loopback address `127.0.0.1`, and port number. Or the specific IP of the machine `10.0.0.110` , and port number.
+This will usually be either the loopback address `127.0.0.1`, and port number. 
+Or the specific IP of the machine `10.0.0.110` , and port number.
 
 In the things file, this might look like
 
@@ -58,15 +63,18 @@ In the things file, this might look like
 Bridge velbus:networkbridge:1 "Velbus Network Bridge - Loopback" @ "Control" [ address="127.0.0.1", port=6000 ]
 ```
 
-Optionally, both the serial bridge and the network bridge can also update the realtime clock, date and daylight savings status of the Velbus modules. This is achieved by setting the Time Update Interval (in minutes) on the bridge, e.g.:
+Optionally, both the serial bridge and the network bridge can also update the realtime clock, date and daylight savings status of the Velbus modules. 
+This is achieved by setting the Time Update Interval (in minutes) on the bridge, e.g.:
 
 ```
 Bridge velbus:bridge:1 [ port="COM1", timeUpdateInterval="360" ]
 ```
 
-The default time update interval is every 360 minutes. Setting the interval to 0 minutes or leaving it empty disables the update of the realtime clock, date and daylight savings status of the Velbus modules.
+The default time update interval is every 360 minutes. 
+Setting the interval to 0 minutes or leaving it empty disables the update of the realtime clock, date and daylight savings status of the Velbus modules.
 
-In case of a connection error, the bridges can also try to reconnect automatically. You can specify at which interval the bridge should try to reconnect by setting the Reconnection Interval (in seconds), e.g.:
+In case of a connection error, the bridges can also try to reconnect automatically. 
+You can specify at which interval the bridge should try to reconnect by setting the Reconnection Interval (in seconds), e.g.:
 
 ```
 Bridge velbus:bridge:1 [ port="COM1", reconnectionInterval="15" ]
@@ -107,7 +115,8 @@ For thing types with builtin sensors (e.g. temperature), the interval at which t
 Thing velbus:vmbelo:<bridgeId>:<thingId> [refresh="300"]
 ```
 
-The default refresh interval for the sensors is 300 seconds. Setting the refresh interval to 0 or leaving it empty will prevent the thing from periodically refreshing the sensor values.
+The default refresh interval for the sensors is 300 seconds. 
+Setting the refresh interval to 0 or leaving it empty will prevent the thing from periodically refreshing the sensor values.
 
 The following thing types support a sensor refresh interval:
 
@@ -131,7 +140,8 @@ vmb1dm, vmb1led, vmb4dc, vmbdme, vmbdmi, vmbdmir
 
 ## Channels
 
-For thing types `vmb1bl` and `vmb1bls` the supported channel is `CH1`. UpDown, StopMove and Percent command types are supported.
+For thing types `vmb1bl` and `vmb1bls` the supported channel is `CH1`. 
+UpDown, StopMove and Percent command types are supported.
 
 For thing types `vmb1dm`, `vmb1led`, `vmbdme`, `vmbdmi` and `vmbdmir` the supported channel is `CH1`.
 OnOff and Percent command types are supported.
@@ -146,7 +156,7 @@ OnOff command types are supported.
 For thing types `vmb1ryno`, `vmb1rynos`, `vmb1rys`, `vmb4ryld` and `vmb4ryno` 5 channels are available `CH1` ... `CH5`.
 OnOff command types are supported.
 
-The module `vmb1ts` has a number of channels to set the module's thermostat (`thermostat:CURRENTTEMPERATURESETPOINT`, `thermostat:HEATINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEDAYTEMPERATURESETPOINT`, `thermostat:HEATINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEANTIFROSTTEMPERATURESETPOINT`, `thermostat:COOLINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:COOLINGMODEDAYTEMPERATURESETPOINT`, `thermostat:COOLINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:COOLINGMODESAFETEMPERATURESETPOINT`, `thermostat:OPERATINGMODE` and `thermostat:MODE`) and thermostat trigger channels: `thermostat:HEATER`, `thermostat:BOOST`, `thermostat:PUMP`, `thermostat:COOLER`, `thermostat:ALARM1`, `thermostat:ALARM2`, `thermostat:ALARM3`, `thermostat:ALARM4`.
+The module `vmb1ts` has a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
 
 For thing types `vmb2bl` and `vmb2ble` the supported channels are `CH1` and `CH2`. UpDown, StopMove and Percent command types are supported.
 
@@ -157,10 +167,12 @@ Thing type `vmb7in` has 8 trigger channels `input#CH1` ... `input#CH8`.
 Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu` and `vmbrfr8s` have 8 trigger channels (`input:CH1` ... `input:CH8`).
 Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8ir`, `vmb8pb`, `vmb8pbu` and `vmbrfr8s` have 8 trigger channels (`input:CH1` ... `input:CH8`).
 Thing types `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pb`, `vmb8pbu` and `vmbrfr8s` also have and 2 channels to steer the button LED feedback (`feedback:CH1` and `feedback:CH2`).
-Additionally, the modules `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pbu` and `vmbrfr8s` have a number of channels to set the module's alarms: `clockAlarm:CLOCKALARM1ENABLED`, `clockAlarm:CLOCKALARM1TYPE`, `clockAlarm:CLOCKALARM1WAKEUPHOUR`, `clockAlarm:CLOCKALARM1WAKEUPMINUTE`, `clockAlarm:CLOCKALARM1BEDTIMEHOUR`, `clockAlarm:CLOCKALARM1BEDTIMEMINUTE`, `clockAlarm:CLOCKALARM2ENABLED`, `clockAlarm:CLOCKALARM2TYPE`, `clockAlarm:CLOCKALARM2WAKEUPHOUR`, `clockAlarm:CLOCKALARM2WAKEUPMINUTE`, `clockAlarm:CLOCKALARM2BEDTIMEHOUR` and `clockAlarm:CLOCKALARM2BEDTIMEMINUTE`.
+Additionally, the modules `vmb2pbn`, `vmb6pbn`, `vmb7in`, `vmb8pbu` and `vmbrfr8s` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 
-For thing type`vmb4an` 8 trigger channels are avaiable `input:CH1` ... `input:CH8`. These channels will be triggered by the module's alarms.
-Four pairs of channels are available to retrieve the module's analog inputs. Each pair has a channel to retrieve the raw analog value (`analogInput:CH9RAW` ... `analogInput:CH12RAW`) and a channel to retrieve the textual analog value (`analogInput:CH9` ... `analogInput:CH12`).
+For thing type`vmb4an` 8 trigger channels are avaiable `input:CH1` ... `input:CH8`. 
+These channels will be triggered by the module's alarms.
+Four pairs of channels are available to retrieve the module's analog inputs. 
+Each pair has a channel to retrieve the raw analog value (`analogInput:CH9Raw` ... `analogInput:CH12Raw`) and a channel to retrieve the textual analog value (`analogInput:CH9` ... `analogInput:CH12`).
 Four channels are available to set the module's analog outputs `analogOutput:CH13` ... `analogOutput:CH16`. 
 
 For thing type `vmb4dc` 4 channels are available `CH1` ... `CH4`.
@@ -175,21 +187,21 @@ The thing types `vmbel1` and `vmbgp1` have one channel to steer the button LED f
 The thing types `vmbel2` and `vmbgp2` have two channels to steer the button LED feedback `feedback:CH1` and `feedback:CH2`.
 The thing types `vmbel4`, `vmbgp4` and `vmbgp4pir` have four channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH4`.
 The thing type `vmbpiro` has a channel `input:LIGHT` indicating the illuminance.
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` have a number of channels to set the module's alarms: `clockAlarm:CLOCKALARM1ENABLED`, `clockAlarm:CLOCKALARM1TYPE`, `clockAlarm:CLOCKALARM1WAKEUPHOUR`, `clockAlarm:CLOCKALARM1WAKEUPMINUTE`, `clockAlarm:CLOCKALARM1BEDTIMEHOUR`, `clockAlarm:CLOCKALARM1BEDTIMEMINUTE`, `clockAlarm:CLOCKALARM2ENABLED`, `clockAlarm:CLOCKALARM2TYPE`, `clockAlarm:CLOCKALARM2WAKEUPHOUR`, `clockAlarm:CLOCKALARM2WAKEUPMINUTE`, `clockAlarm:CLOCKALARM2BEDTIMEHOUR` and `clockAlarm:CLOCKALARM2BEDTIMEMINUTE`.
-Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` also have a number of channels to set the module's thermostat (`thermostat:CURRENTTEMPERATURESETPOINT`, `thermostat:HEATINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEDAYTEMPERATURESETPOINT`, `thermostat:HEATINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEANTIFROSTTEMPERATURESETPOINT`, `thermostat:COOLINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:COOLINGMODEDAYTEMPERATURESETPOINT`, `thermostat:COOLINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:COOLINGMODESAFETEMPERATURESETPOINT`, `thermostat:OPERATINGMODE`and `thermostat:MODE`) and thermostat trigger-channels `(thermostat:HEATER`, `thermostat:BOOST`, `thermostat:PUMP`, `thermostat:COOLER`, `thermostat:ALARM1`, `thermostat:ALARM2`, `thermostat:ALARM3`, `thermostat:ALARM4`).
+Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
+Thing types `vmbel1`, `vmbel2`, `vmbel4`, `vmbgp1`, `vmbgp2`, `vmbgp4` and `vmbgp4pir` also have a number of channels to set the module's thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
 
 Thing types `vmbelo`, `vmbgpo` and `vmbgpod` have 32 trigger channels `input:CH1` ... `input:CH32` and one temperature channel `input:CH33`.
 They have have 32 channels to steer the button LED feedback `feedback:CH1` ... `feedback:CH32`.
-They have a number of channels to set the module's alarms: `clockAlarm:CLOCKALARM1ENABLED`, `clockAlarm:CLOCKALARM1TYPE`, `clockAlarm:CLOCKALARM1WAKEUPHOUR`, `clockAlarm:CLOCKALARM1WAKEUPMINUTE`, `clockAlarm:CLOCKALARM1BEDTIMEHOUR`, `clockAlarm:CLOCKALARM1BEDTIMEMINUTE`, `clockAlarm:CLOCKALARM2ENABLED`, `clockAlarm:CLOCKALARM2TYPE`, `clockAlarm:CLOCKALARM2WAKEUPHOUR`, `clockAlarm:CLOCKALARM2WAKEUPMINUTE`, `clockAlarm:CLOCKALARM2BEDTIMEHOUR` and `clockAlarm:CLOCKALARM2BEDTIMEMINUTE`.
-They have a number of channels to set the module's thermostat (`thermostat:CURRENTTEMPERATURESETPOINT`, `thermostat:HEATINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEDAYTEMPERATURESETPOINT`, `thermostat:HEATINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:HEATINGMODEANTIFROSTTEMPERATURESETPOINT`, `thermostat:COOLINGMODECOMFORTTEMPERATURESETPOINT`, `thermostat:COOLINGMODEDAYTEMPERATURESETPOINT`, `thermostat:COOLINGMODENIGHTTEMPERATURESETPOINT`, `thermostat:COOLINGMODESAFETEMPERATURESETPOINT`, `thermostat:OPERATINGMODE`and `thermostat:MODE`) and thermostat trigger-channels `(thermostat:HEATER`, `thermostat:BOOST`, `thermostat:PUMP`, `thermostat:COOLER`, `thermostat:ALARM1`, `thermostat:ALARM2`, `thermostat:ALARM3`, `thermostat:ALARM4`).
+They have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
+They have a number of channels to set the module's thermostat thermostat (`thermostat:currentTemperatureSetpoint`, `thermostat:heatingModeComfortTemperatureSetpoint`, `thermostat:heatingModeDayTemperatureSetpoint`, `thermostat:heatingModeNightTemperatureSetpoint`, `thermostat:heatingModeAntiFrostTemperatureSetpoint`, `thermostat:coolingModeComfortTemperatureSetpoint`, `thermostat:coolingModeDayTemperatureSetpoint`, `thermostat:coolingModeNightTemperatureSetpoint`, `thermostat:coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat:mode`) and thermostat trigger channels: `thermostat:heater`, `thermostat:boost`, `thermostat:pump`, `thermostat:cooler`, `thermostat:alarm1`, `thermostat:alarm2`, `thermostat:alarm3`, `thermostat:alarm4`.
 They also have two channels to control the module's display `oledDisplay:MEMO` and `oledDisplay:SCREENSAVER`.
 
 Thing type `vmbmeteo`has 8 trigger channels (`input:CH1` ... `input:CH8`). These channels will be triggered by the module's alarms.
-It has a number of channels to set the module's alarms: `clockAlarm:CLOCKALARM1ENABLED`, `clockAlarm:CLOCKALARM1TYPE`, `clockAlarm:CLOCKALARM1WAKEUPHOUR`, `clockAlarm:CLOCKALARM1WAKEUPMINUTE`, `clockAlarm:CLOCKALARM1BEDTIMEHOUR`, `clockAlarm:CLOCKALARM1BEDTIMEMINUTE`, `clockAlarm:CLOCKALARM2ENABLED`, `clockAlarm:CLOCKALARM2TYPE`, `clockAlarm:CLOCKALARM2WAKEUPHOUR`, `clockAlarm:CLOCKALARM2WAKEUPMINUTE`, `clockAlarm:CLOCKALARM2BEDTIMEHOUR` and `clockAlarm:CLOCKALARM2BEDTIMEMINUTE`.
+It has a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 It also has a number of channels to read out the weather station's sensors: `weatherStation:temperature`, `weatherStation:rainfall`, `weatherStation:illuminance` and `weatherStation:windspeed`.
 
 Thing types `vmbpirc` and `vmbpirm` have 7 trigger channels `input:CH1` ... `input:CH7`.
-Additionally, these modules have a number of channels to set the module's alarms: `clockAlarm:CLOCKALARM1ENABLED`, `clockAlarm:CLOCKALARM1TYPE`, `clockAlarm:CLOCKALARM1WAKEUPHOUR`, `clockAlarm:CLOCKALARM1WAKEUPMINUTE`, `clockAlarm:CLOCKALARM1BEDTIMEHOUR`, `clockAlarm:CLOCKALARM1BEDTIMEMINUTE`, `clockAlarm:CLOCKALARM2ENABLED`, `clockAlarm:CLOCKALARM2TYPE`, `clockAlarm:CLOCKALARM2WAKEUPHOUR`, `clockAlarm:CLOCKALARM2WAKEUPMINUTE`, `clockAlarm:CLOCKALARM2BEDTIMEHOUR` and `clockAlarm:CLOCKALARM2BEDTIMEMINUTE`.
+Additionally, these modules have a number of channels to set the module's alarms: `clockAlarm:clockAlarm1Enabled`, `clockAlarm:clockAlarm1Type`, `clockAlarm:clockAlarm1WakeupHour`, `clockAlarm:clockAlarm1WakeupMinute`, `clockAlarm:clockAlarm1BedtimeHour`, `clockAlarm:clockAlarm1BedtimeMinute`, `clockAlarm:clockAlarm2Enabled`, `clockAlarm:clockAlarm2Type`, `clockAlarm:clockAlarm2WakeupHour`, `clockAlarm:clockAlarm2WakeupMinute`, `clockAlarm:clockAlarm2BedtimeHour` and `clockAlarm:clockAlarm2BedtimeMinute`.
 
 The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED`or `LONG_PRESSED`.
 

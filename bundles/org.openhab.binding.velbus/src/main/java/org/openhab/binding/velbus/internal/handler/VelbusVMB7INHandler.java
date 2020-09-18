@@ -14,7 +14,6 @@ package org.openhab.binding.velbus.internal.handler;
 
 import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +31,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.config.VelbusVMB7INConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusCounterStatusRequestPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 
@@ -45,19 +45,16 @@ import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_VMB7IN));
 
-    private final ChannelUID counter1Channel = new ChannelUID(thing.getUID(), "counter#COUNTER1");
-    private final ChannelUID counter1ChannelCurrent = new ChannelUID(thing.getUID(), "counter#COUNTER1_CURRENT");
-    private final ChannelUID counter2Channel = new ChannelUID(thing.getUID(), "counter#COUNTER2");
-    private final ChannelUID counter2ChannelCurrent = new ChannelUID(thing.getUID(), "counter#COUNTER2_CURRENT");
-    private final ChannelUID counter3Channel = new ChannelUID(thing.getUID(), "counter#COUNTER3");
-    private final ChannelUID counter3ChannelCurrent = new ChannelUID(thing.getUID(), "counter#COUNTER3_CURRENT");
-    private final ChannelUID counter4Channel = new ChannelUID(thing.getUID(), "counter#COUNTER4");
-    private final ChannelUID counter4ChannelCurrent = new ChannelUID(thing.getUID(), "counter#COUNTER4_CURRENT");
+    private final ChannelUID counter1Channel = new ChannelUID(thing.getUID(), "counter", "counter1");
+    private final ChannelUID counter1ChannelCurrent = new ChannelUID(thing.getUID(), "counter", "counter1Current");
+    private final ChannelUID counter2Channel = new ChannelUID(thing.getUID(), "counter", "counter2");
+    private final ChannelUID counter2ChannelCurrent = new ChannelUID(thing.getUID(), "counter", "counter2Current");
+    private final ChannelUID counter3Channel = new ChannelUID(thing.getUID(), "counter", "counter3");
+    private final ChannelUID counter3ChannelCurrent = new ChannelUID(thing.getUID(), "counter", "counter3Current");
+    private final ChannelUID counter4Channel = new ChannelUID(thing.getUID(), "counter", "counter4");
+    private final ChannelUID counter4ChannelCurrent = new ChannelUID(thing.getUID(), "counter", "counter4Current");
 
-    private double counter1PulseMultiplier = 1;
-    private double counter2PulseMultiplier = 1;
-    private double counter3PulseMultiplier = 1;
-    private double counter4PulseMultiplier = 1;
+    public @NonNullByDefault({}) VelbusVMB7INConfig vmb7inConfig;
 
     private @Nullable ScheduledFuture<?> refreshJob;
 
@@ -67,47 +64,24 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
 
     @Override
     public void initialize() {
+        this.vmb7inConfig = getConfigAs(VelbusVMB7INConfig.class);
+
         super.initialize();
 
-        initializePulseCounterMultipliers();
         initializeAutomaticRefresh();
     }
 
     private void initializeAutomaticRefresh() {
-        Object refreshIntervalObject = getConfig().get(REFRESH_INTERVAL);
-        if (refreshIntervalObject != null) {
-            int refreshInterval = ((BigDecimal) refreshIntervalObject).intValue();
+        int refreshInterval = vmb7inConfig.refresh;
 
-            if (refreshInterval > 0) {
-                startAutomaticRefresh(refreshInterval);
-            }
-        }
-    }
-
-    private void initializePulseCounterMultipliers() {
-        Object counter1PulseMultiplierObject = getConfig().get(COUNTER1_PULSE_MULTIPLIER);
-        if (counter1PulseMultiplierObject != null) {
-            counter1PulseMultiplier = ((BigDecimal) counter1PulseMultiplierObject).doubleValue();
-        }
-
-        Object counter2PulseMultiplierObject = getConfig().get(COUNTER2_PULSE_MULTIPLIER);
-        if (counter2PulseMultiplierObject != null) {
-            counter2PulseMultiplier = ((BigDecimal) counter2PulseMultiplierObject).doubleValue();
-        }
-
-        Object counter3PulseMultiplierObject = getConfig().get(COUNTER3_PULSE_MULTIPLIER);
-        if (counter3PulseMultiplierObject != null) {
-            counter3PulseMultiplier = ((BigDecimal) counter3PulseMultiplierObject).doubleValue();
-        }
-
-        Object counter4PulseMultiplierObject = getConfig().get(COUNTER4_PULSE_MULTIPLIER);
-        if (counter4PulseMultiplierObject != null) {
-            counter4PulseMultiplier = ((BigDecimal) counter4PulseMultiplierObject).doubleValue();
+        if (refreshInterval > 0) {
+            startAutomaticRefresh(refreshInterval);
         }
     }
 
     @Override
     public void dispose() {
+        final ScheduledFuture<?> refreshJob = this.refreshJob;
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
@@ -176,18 +150,22 @@ public class VelbusVMB7INHandler extends VelbusSensorWithAlarmClockHandler {
 
                 switch (counterChannel) {
                     case 0x00:
+                        double counter1PulseMultiplier = vmb7inConfig.counter1PulseMultiplier;
                         updateState(counter1Channel, new DecimalType(counterValue / counter1PulseMultiplier));
                         updateState(counter1ChannelCurrent, new DecimalType(currentValue / counter1PulseMultiplier));
                         break;
                     case 0x01:
+                        double counter2PulseMultiplier = vmb7inConfig.counter2PulseMultiplier;
                         updateState(counter2Channel, new DecimalType(counterValue / counter2PulseMultiplier));
                         updateState(counter2ChannelCurrent, new DecimalType(currentValue / counter2PulseMultiplier));
                         break;
                     case 0x02:
+                        double counter3PulseMultiplier = vmb7inConfig.counter3PulseMultiplier;
                         updateState(counter3Channel, new DecimalType(counterValue / counter3PulseMultiplier));
                         updateState(counter3ChannelCurrent, new DecimalType(currentValue / counter3PulseMultiplier));
                         break;
                     case 0x03:
+                        double counter4PulseMultiplier = vmb7inConfig.counter4PulseMultiplier;
                         updateState(counter4Channel, new DecimalType(counterValue / counter4PulseMultiplier));
                         updateState(counter4ChannelCurrent, new DecimalType(currentValue / counter4PulseMultiplier));
                         break;

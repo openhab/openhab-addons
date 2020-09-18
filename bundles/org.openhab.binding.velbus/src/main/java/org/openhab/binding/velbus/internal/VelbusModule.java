@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.velbus.internal.handler.VelbusBridgeHandler;
@@ -106,10 +107,12 @@ public class VelbusModule {
         return channelName;
     }
 
-    public void sendChannelNameRequests(VelbusBridgeHandler bridgeHandler) {
-        VelbusChannelNameRequestPacket channelNameRequest = new VelbusChannelNameRequestPacket(
-                velbusModuleAddress.getAddress());
-        bridgeHandler.sendPacket(channelNameRequest.getBytes());
+    public void sendChannelNameRequests(@Nullable VelbusBridgeHandler bridgeHandler) {
+        if (bridgeHandler != null) {
+            VelbusChannelNameRequestPacket channelNameRequest = new VelbusChannelNameRequestPacket(
+                    velbusModuleAddress.getAddress());
+            bridgeHandler.sendPacket(channelNameRequest.getBytes());
+        }
     }
 
     public void setChannelName(VelbusChannelIdentifier channelIdentifier, int namePartNumber, byte[] namePart) {

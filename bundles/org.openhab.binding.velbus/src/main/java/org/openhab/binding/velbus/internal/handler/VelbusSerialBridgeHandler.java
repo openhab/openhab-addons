@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.PORT;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,6 +28,7 @@ import org.eclipse.smarthome.io.transport.serial.SerialPortEvent;
 import org.eclipse.smarthome.io.transport.serial.SerialPortEventListener;
 import org.eclipse.smarthome.io.transport.serial.SerialPortIdentifier;
 import org.eclipse.smarthome.io.transport.serial.SerialPortManager;
+import org.openhab.binding.velbus.internal.config.VelbusSerialBridgeConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,10 +45,18 @@ public class VelbusSerialBridgeHandler extends VelbusBridgeHandler implements Se
     private SerialPortManager serialPortManager;
 
     private @Nullable SerialPort serialPort;
+    private @NonNullByDefault({}) VelbusSerialBridgeConfig serialBridgeConfig;
 
     public VelbusSerialBridgeHandler(Bridge velbusBridge, SerialPortManager serialPortManager) {
         super(velbusBridge);
         this.serialPortManager = serialPortManager;
+    }
+
+    @Override
+    public void initialize() {
+        this.serialBridgeConfig = getConfigAs(VelbusSerialBridgeConfig.class);
+
+        super.initialize();
     }
 
     @Override
@@ -61,58 +68,59 @@ public class VelbusSerialBridgeHandler extends VelbusBridgeHandler implements Se
         }
     }
 
+    /**
+     * Makes a connection to the Velbus system.
+     *
+     * @return True if the connection succeeded, false if the connection did not succeed.
+     */
     @Override
-    protected void connect() {
-        String port = (String) getConfig().get(PORT);
-        if (port != null) {
-            // parse ports and if the port is found, initialize the reader
-            SerialPortIdentifier portId = serialPortManager.getIdentifier(port);
-            if (portId == null) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known!");
-                return;
-            }
-
-            // initialize serial port
-            try {
-                SerialPort serialPort = portId.open(getThing().getUID().toString(), 2000);
-                this.serialPort = serialPort;
-
-                OutputStream outputStream = serialPort.getOutputStream();
-                InputStream inputStream = serialPort.getInputStream();
-
-                if (outputStream != null && inputStream != null) {
-                    initializeStreams(outputStream, inputStream);
-
-                    serialPort.addEventListener(this);
-                    serialPort.notifyOnDataAvailable(true);
-
-                    updateStatus(ThingStatus.ONLINE);
-                    logger.debug("Bridge online on serial port {}", port);
-                }
-            } catch (final IOException ex) {
-                onConnectionLost();
-                logger.debug("I/O error on serial port {}", port);
-            } catch (PortInUseException e) {
-                onConnectionLost();
-                logger.debug("Port {} is in use", port);
-            } catch (TooManyListenersException e) {
-                onConnectionLost();
-                logger.debug("Cannot attach listener to port {}", port);
-            }
-        } else
-
-        {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Serial port name not configured");
-            logger.debug("Serial port name not configured");
+    protected boolean connect() {
+        // parse ports and if the port is found, initialize the reader
+        SerialPortIdentifier portId = serialPortManager.getIdentifier(serialBridgeConfig.port);
+        if (portId == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, "Port is not known!");
+            return false;
         }
+
+        // initialize serial port
+        try {
+            SerialPort serialPort = portId.open(getThing().getUID().toString(), 2000);
+            this.serialPort = serialPort;
+
+            OutputStream outputStream = serialPort.getOutputStream();
+            InputStream inputStream = serialPort.getInputStream();
+
+            if (outputStream != null && inputStream != null) {
+                initializeStreams(outputStream, inputStream);
+
+                serialPort.addEventListener(this);
+                serialPort.notifyOnDataAvailable(true);
+
+                updateStatus(ThingStatus.ONLINE);
+                logger.debug("Bridge online on serial port {}", serialBridgeConfig.port);
+                return true;
+            }
+        } catch (final IOException ex) {
+            onConnectionLost();
+            logger.debug("I/O error on serial port {}", serialBridgeConfig.port);
+        } catch (PortInUseException e) {
+            onConnectionLost();
+            logger.debug("Port {} is in use", serialBridgeConfig.port);
+        } catch (TooManyListenersException e) {
+            onConnectionLost();
+            logger.debug("Cannot attach listener to port {}", serialBridgeConfig.port);
+        }
+
+        return false;
     }
 
     @Override
     protected void disconnect() {
+        final SerialPort serialPort = this.serialPort;
         if (serialPort != null) {
             serialPort.removeEventListener();
             serialPort.close();
-            serialPort = null;
+            this.serialPort = null;
         }
 
         super.disconnect();

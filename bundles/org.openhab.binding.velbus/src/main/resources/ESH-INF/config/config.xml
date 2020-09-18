@@ -12,15 +12,15 @@
 			<description>Select serial port (COM1, /dev/ttyS0, ...)</description>
 			<required>true</required>
 		</parameter>
-		<parameter name="timeUpdateInterval" type="integer">
-			<label>Time Update interval</label>
+		<parameter name="timeUpdateInterval" type="integer" unit="min">
+			<label>Time Update Interval</label>
 			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
 				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>360</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="reconnectionInterval" type="integer">
-			<label>Reconnection interval</label>
+		<parameter name="reconnectionInterval" type="integer" unit="s">
+			<label>Reconnection Interval</label>
 			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
 				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
 			<default>15</default>
@@ -40,15 +40,15 @@
 			<description>Network port to communicate with Velbus server</description>
 			<required>true</required>
 		</parameter>
-		<parameter name="timeUpdateInterval" type="integer">
-			<label>Time Update interval</label>
+		<parameter name="timeUpdateInterval" type="integer" unit="min">
+			<label>Time Update Interval</label>
 			<description>The interval (in minutes) at which the realtime clock, date and daylight savings status of the modules
 				will be updated, default 360. If set to 0 or left empty, no refresh will be scheduled.</description>
 			<default>360</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="reconnectionInterval" type="integer">
-			<label>Reconnection interval</label>
+		<parameter name="reconnectionInterval" type="integer" unit="s">
+			<label>Reconnection Interval</label>
 			<description>The interval (in seconds) at which reconnections should be reattempted in case of a communication
 				problem, default 15. If set to 0 or left empty, no reconnections will be attempted.</description>
 			<default>15</default>
@@ -61,8 +61,8 @@
 			<label>Address</label>
 			<description>The velbus address of the device</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
-			<label>Refresh interval</label>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
 			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
 				refresh will be scheduled.</description>
 			<default>300</default>
@@ -89,7 +89,7 @@
 			<description>The velbus address of the device</description>
 		</parameter>
 		<parameter name="CH1" type="text">
-			<label>CH1 name</label>
+			<label>CH1 Name</label>
 			<description>The name of CH1.</description>
 			<default>CH1</default>
 			<advanced>true</advanced>
@@ -158,25 +158,25 @@
 			<description>The velbus address of the device</description>
 		</parameter>
 		<parameter name="CH1" type="text">
-			<label>CH1 name</label>
+			<label>CH1 Name</label>
 			<description>The name of CH1.</description>
 			<default>CH1</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH2" type="text">
-			<label>CH2 name</label>
+			<label>CH2 Name</label>
 			<description>The name of CH2.</description>
 			<default>CH2</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH3" type="text">
-			<label>CH3 name</label>
+			<label>CH3 Name</label>
 			<description>The name of CH3.</description>
 			<default>CH3</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH4" type="text">
-			<label>CH4 name</label>
+			<label>CH4 Name</label>
 			<description>The name of CH4.</description>
 			<default>CH4</default>
 			<advanced>true</advanced>
@@ -274,8 +274,8 @@
 			<label>Address</label>
 			<description>The velbus address of the device</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
-			<label>Refresh interval</label>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
 			<description>Refresh interval for the counters (in seconds), default 300. If set to 0 or left empty, no refresh will
 				be scheduled.</description>
 			<default>300</default>
@@ -323,7 +323,7 @@
 			<default>CH7</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER1_UNIT" type="text">
+		<parameter name="counter1Unit" type="text">
 			<label>Counter 1 Unit</label>
 			<description>The unit for Counter 1.</description>
 			<default>kWh</default>
@@ -334,8 +334,8 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER1_PULSE_MULTIPLIER" type="decimal">
-			<label>Counter 1 Pulse multiplier</label>
+		<parameter name="counter1PulseMultiplier" type="decimal">
+			<label>Counter 1 Pulse Multiplier</label>
 			<description>The pulse multiplier for counter 1</description>
 			<default>1</default>
 			<options>
@@ -346,7 +346,7 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER2_UNIT" type="text">
+		<parameter name="counter2Unit" type="text">
 			<label>Counter 2 Unit</label>
 			<description>The unit for Counter 2.</description>
 			<default>kWh</default>
@@ -357,8 +357,8 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER2_PULSE_MULTIPLIER" type="decimal">
-			<label>Counter 2 Pulse multiplier</label>
+		<parameter name="counter2PulseMultiplier" type="decimal">
+			<label>Counter 2 Pulse Multiplier</label>
 			<description>The pulse multiplier for counter 2</description>
 			<default>1</default>
 			<options>
@@ -369,7 +369,7 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER3_UNIT" type="text">
+		<parameter name="counter3Unit" type="text">
 			<label>Counter 3 Unit</label>
 			<description>The unit for Counter 3.</description>
 			<default>kWh</default>
@@ -380,8 +380,8 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER3_PULSE_MULTIPLIER" type="decimal">
-			<label>Counter 3 Pulse multiplier</label>
+		<parameter name="counter3PulseMultiplier" type="decimal">
+			<label>Counter 3 Pulse Multiplier</label>
 			<description>The pulse multiplier for counter 3</description>
 			<default>1</default>
 			<options>
@@ -392,7 +392,7 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER4_UNIT" type="text">
+		<parameter name="counter4Unit" type="text">
 			<label>Counter 4 Unit</label>
 			<description>The unit for Counter 4.</description>
 			<default>kWh</default>
@@ -403,8 +403,8 @@
 			</options>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="COUNTER4_PULSE_MULTIPLIER" type="decimal">
-			<label>Counter 4 Pulse multiplier</label>
+		<parameter name="counter4PulseMultiplier" type="decimal">
+			<label>Counter 4 Pulse Multiplier</label>
 			<description>The pulse multiplier for counter 4</description>
 			<default>1</default>
 			<options>
@@ -422,7 +422,7 @@
 			<label>Address</label>
 			<description>The velbus address of the device</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
+		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
 			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
 				refresh will be scheduled.</description>
@@ -533,7 +533,7 @@
 			<label>Address</label>
 			<description>The velbus address of the device</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
+		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
 			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
 				refresh will be scheduled.</description>
@@ -601,87 +601,87 @@
 			<label>Address</label>
 			<description>The velbus address of the device</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
-			<label>Refresh interval</label>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
 			<description>Refresh interval for the sensors (in seconds), default 300. If set to 0 or left empty, no refresh will
 				be scheduled.</description>
 			<default>300</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH1" type="text">
-			<label>CH1 name</label>
+			<label>CH1 Name</label>
 			<description>The name of CH1.</description>
 			<default>CH1</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH2" type="text">
-			<label>CH2 name</label>
+			<label>CH2 Name</label>
 			<description>The name of CH2.</description>
 			<default>CH2</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH3" type="text">
-			<label>CH3 name</label>
+			<label>CH3 Name</label>
 			<description>The name of CH3.</description>
 			<default>CH3</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH4" type="text">
-			<label>CH4 name</label>
+			<label>CH4 Name</label>
 			<description>The name of CH4.</description>
 			<default>CH4</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH5" type="text">
-			<label>CH5 name</label>
+			<label>CH5 Name</label>
 			<description>The name of CH5.</description>
 			<default>CH5</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH6" type="text">
-			<label>CH6 name</label>
+			<label>CH6 Name</label>
 			<description>The name of CH6.</description>
 			<default>CH6</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH7" type="text">
-			<label>CH7 name</label>
+			<label>CH7 Name</label>
 			<description>The name of CH7.</description>
 			<default>CH7</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH8" type="text">
-			<label>CH8 name</label>
+			<label>CH8 Name</label>
 			<description>The name of CH8.</description>
 			<default>CH8</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH9" type="text">
-			<label>CH9 name</label>
+			<label>CH9 Name</label>
 			<description>The name of CH9.</description>
 			<default>CH9</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH10" type="text">
-			<label>CH10 name</label>
+			<label>CH10 Name</label>
 			<description>The name of CH10.</description>
 			<default>CH10</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH11" type="text">
-			<label>CH11 name</label>
+			<label>CH11 Name</label>
 			<description>The name of CH11.</description>
 			<default>CH11</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH12" type="text">
-			<label>CH12 name</label>
+			<label>CH12 Name</label>
 			<description>The name of CH12.</description>
 			<default>CH12</default>
 			<advanced>true</advanced>
 		</parameter>
 		<parameter name="CH13" type="text">
-			<label>CH13 name</label>
+			<label>CH13 Name</label>
 			<description>The name of CH13.</description>
 			<default>CH13</default>
 			<advanced>true</advanced>
@@ -693,7 +693,7 @@
 			<label>Address</label>
 			<description>The velbus address of the device</description>
 		</parameter>
-		<parameter name="refresh" type="integer">
+		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
 			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
 				refresh will be scheduled.</description>

@@ -20,10 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
+import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.ThingUID;
+import org.eclipse.smarthome.core.thing.binding.ThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 import org.openhab.binding.velbus.internal.VelbusFirstGenerationDeviceModuleAddress;
 import org.openhab.binding.velbus.internal.VelbusModule;
@@ -43,28 +47,28 @@ import org.slf4j.LoggerFactory;
  * @author Cedric Boon - Initial contribution
  */
 @NonNullByDefault
-public class VelbusThingDiscoveryService extends AbstractDiscoveryService implements VelbusPacketListener {
+public class VelbusThingDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService, VelbusPacketListener {
     private static final int SEARCH_TIME = 60;
 
     private final Logger logger = LoggerFactory.getLogger(VelbusThingDiscoveryService.class);
 
     private Map<Byte, VelbusModule> velbusModules = new HashMap<>();
 
-    private VelbusBridgeHandler velbusBridgeHandler;
+    private @Nullable VelbusBridgeHandler velbusBridgeHandler;
 
-    public VelbusThingDiscoveryService(VelbusBridgeHandler velbusBridgeHandler) {
+    public VelbusThingDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME);
-        this.velbusBridgeHandler = velbusBridgeHandler;
-    }
-
-    public void activate() {
-        this.velbusBridgeHandler.setDefaultPacketListener(this);
     }
 
     @Override
     public void deactivate() {
         removeOlderResults(new Date().getTime());
-        velbusBridgeHandler.clearDefaultPacketListener();
+
+        final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
+        if (velbusBridgeHandler != null) {
+            velbusBridgeHandler.clearDefaultPacketListener();
+        }
     }
 
     @Override
@@ -72,7 +76,11 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService implem
         for (int i = 0x00; i <= 0xFF; i++) {
             VelbusScanPacket packet = new VelbusScanPacket((byte) i);
             byte[] packetBytes = packet.getBytes();
-            velbusBridgeHandler.sendPacket(packetBytes);
+
+            final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
+            if (velbusBridgeHandler != null) {
+                velbusBridgeHandler.sendPacket(packetBytes);
+            }
         }
     }
 
@@ -325,7 +333,6 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService implem
     protected void registerVelbusModule(byte address, VelbusModule velbusModule) {
         velbusModules.put(address, velbusModule);
         notifyDiscoveredVelbusModule(velbusModule);
-
         velbusModule.sendChannelNameRequests(velbusBridgeHandler);
     }
 
@@ -343,12 +350,30 @@ public class VelbusThingDiscoveryService extends AbstractDiscoveryService implem
     }
 
     private void notifyDiscoveredVelbusModule(VelbusModule velbusModule) {
-        ThingUID bridgeUID = velbusBridgeHandler.getThing().getUID();
+        final VelbusBridgeHandler velbusBridgeHandler = this.velbusBridgeHandler;
+        if (velbusBridgeHandler != null) {
+            ThingUID bridgeUID = velbusBridgeHandler.getThing().getUID();
 
-        DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(velbusModule.getThingUID(bridgeUID))
-                .withThingType(velbusModule.getThingTypeUID()).withProperties(velbusModule.getProperties())
-                .withRepresentationProperty(ADDRESS).withBridge(bridgeUID).withLabel(velbusModule.getLabel()).build();
+            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(velbusModule.getThingUID(bridgeUID))
+                    .withThingType(velbusModule.getThingTypeUID()).withProperties(velbusModule.getProperties())
+                    .withRepresentationProperty(ADDRESS).withBridge(bridgeUID).withLabel(velbusModule.getLabel())
+                    .build();
 
-        thingDiscovered(discoveryResult);
+            thingDiscovered(discoveryResult);
+        }
+    }
+
+    @Override
+    public void setThingHandler(@Nullable ThingHandler handler) {
+        if (handler instanceof VelbusBridgeHandler) {
+            final VelbusBridgeHandler velbusBridgeHandler = (VelbusBridgeHandler) handler;
+            this.velbusBridgeHandler = velbusBridgeHandler;
+            velbusBridgeHandler.setDefaultPacketListener(this);
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return this.velbusBridgeHandler;
     }
 }

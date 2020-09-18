@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.velbus.internal.handler;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -33,9 +32,12 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.velbus.internal.VelbusPacketInputStream;
 import org.openhab.binding.velbus.internal.VelbusPacketListener;
+import org.openhab.binding.velbus.internal.config.VelbusBridgeConfig;
+import org.openhab.binding.velbus.internal.discovery.VelbusThingDiscoveryService;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDatePacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetDaylightSavingsStatusPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusSetRealtimeClockPacket;
@@ -55,8 +57,9 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     private long lastPacketTimeMillis;
 
     protected @Nullable VelbusPacketListener defaultPacketListener;
-    protected Map<Byte, VelbusPacketListener> packetListeners = new HashMap<Byte, VelbusPacketListener>();
+    protected Map<Byte, VelbusPacketListener> packetListeners = new HashMap<>();
 
+    private @NonNullByDefault({}) VelbusBridgeConfig bridgeConfig;
     private @Nullable ScheduledFuture<?> timeUpdateJob;
     private @Nullable ScheduledFuture<?> reconnectionHandler;
 
@@ -73,25 +76,23 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         logger.debug("Initializing velbus bridge handler.");
 
+        bridgeConfig = getConfigAs(VelbusBridgeConfig.class);
+
         connect();
         initializeTimeUpdate();
     }
 
     private void initializeTimeUpdate() {
-        Object timeUpdateIntervalObject = getConfig().get(TIME_UPDATE_INTERVAL);
-        if (timeUpdateIntervalObject != null) {
-            int timeUpdateInterval = ((BigDecimal) timeUpdateIntervalObject).intValue();
+        int timeUpdateInterval = bridgeConfig.timeUpdateInterval;
 
-            if (timeUpdateInterval > 0) {
-                startTimeUpdates(timeUpdateInterval);
-            }
+        if (timeUpdateInterval > 0) {
+            startTimeUpdates(timeUpdateInterval);
         }
     }
 
     private void startTimeUpdates(int timeUpdatesInterval) {
-        timeUpdateJob = scheduler.scheduleWithFixedDelay(() -> {
-            updateDateTime();
-        }, 0, timeUpdatesInterval, TimeUnit.MINUTES);
+        timeUpdateJob = scheduler.scheduleWithFixedDelay(this::updateDateTime, 0, timeUpdatesInterval,
+                TimeUnit.MINUTES);
     }
 
     private void updateDateTime() {
@@ -131,6 +132,7 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
+        final ScheduledFuture<?> timeUpdateJob = this.timeUpdateJob;
         if (timeUpdateJob != null) {
             timeUpdateJob.cancel(true);
         }
@@ -168,8 +170,11 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
         if (packetListeners.containsKey(address)) {
             VelbusPacketListener packetListener = packetListeners.get(address);
             packetListener.onPacketReceived(packet);
-        } else if (defaultPacketListener != null) {
-            defaultPacketListener.onPacketReceived(packet);
+        } else {
+            final VelbusPacketListener defaultPacketListener = this.defaultPacketListener;
+            if (defaultPacketListener != null) {
+                defaultPacketListener.onPacketReceived(packet);
+            }
         }
     }
 
@@ -215,7 +220,12 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
         startReconnectionHandler();
     }
 
-    protected abstract void connect();
+    /**
+     * Makes a connection to the Velbus system.
+     *
+     * @return True if the connection succeeded, false if the connection did not succeed.
+     */
+    protected abstract boolean connect();
 
     protected void disconnect() {
         listenerStopped = true;
@@ -225,7 +235,7 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
                 outputStream.close();
             }
         } catch (IOException e) {
-            logger.error("Error while closing output stream", e);
+            logger.debug("Error while closing output stream", e);
         }
 
         try {
@@ -233,34 +243,27 @@ public abstract class VelbusBridgeHandler extends BaseBridgeHandler {
                 inputStream.close();
             }
         } catch (IOException e) {
-            logger.error("Error while closing input stream", e);
+            logger.debug("Error while closing input stream", e);
         }
     }
 
     public void startReconnectionHandler() {
+        final ScheduledFuture<?> reconnectionHandler = this.reconnectionHandler;
         if (reconnectionHandler == null || reconnectionHandler.isCancelled()) {
-            Object reconnectionIntervalObject = getConfig().get(RECONNECTION_INTERVAL);
-            if (reconnectionIntervalObject != null) {
-                long reconnectionInterval = ((BigDecimal) reconnectionIntervalObject).longValue();
-
-                if (reconnectionInterval > 0) {
-                    reconnectionHandler = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                connect();
-                                if (reconnectionHandler != null) {
-                                    reconnectionHandler.cancel(false);
-                                }
-                            } catch (Exception e) {
-                                logger.error("Reconnection failed", e);
-                            }
-                        }
-                    }, reconnectionInterval, reconnectionInterval, TimeUnit.SECONDS);
-                }
+            int reconnectionInterval = bridgeConfig.reconnectionInterval;
+            if (reconnectionInterval > 0) {
+                this.reconnectionHandler = scheduler.scheduleWithFixedDelay(() -> {
+                    if (connect() && reconnectionHandler != null) {
+                        reconnectionHandler.cancel(false);
+                    }
+                }, reconnectionInterval, reconnectionInterval, TimeUnit.SECONDS);
             }
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(VelbusThingDiscoveryService.class);
     }
 
     public void setDefaultPacketListener(VelbusPacketListener velbusPacketListener) {

@@ -992,13 +992,13 @@
 			This is a generic analog module with 4 input channels.
 		</description>
 		<channels>
-			<channel id="CH9RAW" typeId="voltage"/>
+			<channel id="CH9Raw" typeId="voltage"/>
 			<channel id="CH9" typeId="text"/>
-			<channel id="CH10RAW" typeId="voltage"/>
+			<channel id="CH10Raw" typeId="voltage"/>
 			<channel id="CH10" typeId="text"/>
-			<channel id="CH11RAW" typeId="voltage"/>
+			<channel id="CH11Raw" typeId="voltage"/>
 			<channel id="CH11" typeId="text"/>
-			<channel id="CH12RAW" typeId="voltage"/>
+			<channel id="CH12Raw" typeId="voltage"/>
 			<channel id="CH12" typeId="text"/>
 		</channels>
 	</channel-group-type>
@@ -1018,14 +1018,14 @@
 		<label>Counters</label>
 		<description>This is a generic module with 4 counter channels.</description>
 		<channels>
-			<channel id="COUNTER1" typeId="counter"/>
-			<channel id="COUNTER1_CURRENT" typeId="counter"/>
-			<channel id="COUNTER2" typeId="counter"/>
-			<channel id="COUNTER2_CURRENT" typeId="counter"/>
-			<channel id="COUNTER3" typeId="counter"/>
-			<channel id="COUNTER3_CURRENT" typeId="counter"/>
-			<channel id="COUNTER4" typeId="counter"/>
-			<channel id="COUNTER4_CURRENT" typeId="counter"/>
+			<channel id="counter1" typeId="counter"/>
+			<channel id="counter1Current" typeId="counter"/>
+			<channel id="counter" typeId="counter"/>
+			<channel id="counter2Current" typeId="counter"/>
+			<channel id="counter3" typeId="counter"/>
+			<channel id="counter3Current" typeId="counter"/>
+			<channel id="counter4" typeId="counter"/>
+			<channel id="counter4Current" typeId="counter"/>
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="6channelInputModule">
@@ -1256,57 +1256,57 @@
 		<description>This is a thermostat that supports heating/cooling and comfort/day/night/safe modes.</description>
 		<category>Temperatures</category>
 		<channels>
-			<channel id="CURRENTTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="currentTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Current Temperature Setpoint</label>
 			</channel>
-			<channel id="HEATINGMODECOMFORTTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="heatingModeComfortTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Heating Mode Comfort Temperature Setpoint</label>
 			</channel>
-			<channel id="HEATINGMODEDAYTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="heatingModeDayTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Heating Mode Day Temperature Setpoint</label>
 			</channel>
-			<channel id="HEATINGMODENIGHTTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="heatingModeNightTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Heating Mode Night Temperature Setpoint</label>
 			</channel>
-			<channel id="HEATINGMODEANTIFROSTTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="heatingModeAntiFrostTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Heating Mode Antifrost Temperature Setpoint</label>
 			</channel>
-			<channel id="COOLINGMODECOMFORTTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="coolingModeComfortTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Cooling Mode Comfort Temperature Setpoint</label>
 			</channel>
-			<channel id="COOLINGMODEDAYTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="coolingModeDayTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Cooling Mode Day Temperature Setpoint</label>
 			</channel>
-			<channel id="COOLINGMODENIGHTTEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="coolingModeNightTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Cooling Mode Night Temperature Setpoint</label>
 			</channel>
-			<channel id="COOLINGMODESAFETEMPERATURESETPOINT" typeId="temperatureSetpoint">
+			<channel id="coolingModeSafeTemperatureSetpoint" typeId="temperatureSetpoint">
 				<label>Cooling Mode Safe Temperature Setpoint</label>
 			</channel>
-			<channel id="OPERATINGMODE" typeId="heatingOperatingMode"/>
-			<channel id="MODE" typeId="heatingMode"/>
-			<channel id="HEATER" typeId="thermostat-trigger-channel">
+			<channel id="operatingMode" typeId="heatingOperatingMode"/>
+			<channel id="mode" typeId="heatingMode"/>
+			<channel id="heater" typeId="thermostat-trigger-channel">
 				<label>Heater</label>
 			</channel>
-			<channel id="BOOST" typeId="thermostat-trigger-channel">
+			<channel id="boost" typeId="thermostat-trigger-channel">
 				<label>Boost</label>
 			</channel>
-			<channel id="PUMP" typeId="thermostat-trigger-channel">
+			<channel id="pump" typeId="thermostat-trigger-channel">
 				<label>Pump</label>
 			</channel>
-			<channel id="COOLER" typeId="thermostat-trigger-channel">
+			<channel id="cooler" typeId="thermostat-trigger-channel">
 				<label>Cooler</label>
 			</channel>
-			<channel id="ALARM1" typeId="thermostat-trigger-channel">
+			<channel id="alarm1" typeId="thermostat-trigger-channel">
 				<label>Alarm 1</label>
 			</channel>
-			<channel id="ALARM2" typeId="thermostat-trigger-channel">
+			<channel id="alarm2" typeId="thermostat-trigger-channel">
 				<label>Alarm 2</label>
 			</channel>
-			<channel id="ALARM3" typeId="thermostat-trigger-channel">
+			<channel id="alarm3" typeId="thermostat-trigger-channel">
 				<label>Alarm 3</label>
 			</channel>
-			<channel id="ALARM4" typeId="thermostat-trigger-channel">
+			<channel id="alarm4" typeId="thermostat-trigger-channel">
 				<label>Alarm 4</label>
 			</channel>
 		</channels>
@@ -1328,40 +1328,40 @@
 			time.
 		</description>
 		<channels>
-			<channel id="CLOCKALARM1ENABLED" typeId="switch">
+			<channel id="clockAlarm1Enabled" typeId="switch">
 				<label>Clock Alarm 1 Enabled</label>
 			</channel>
-			<channel id="CLOCKALARM1TYPE" typeId="alarmType">
+			<channel id="clockAlarm1Type" typeId="alarmType">
 				<label>Clock Alarm 1 Type</label>
 			</channel>
-			<channel id="CLOCKALARM1WAKEUPHOUR" typeId="hour">
+			<channel id="clockAlarm1WakeupHour" typeId="hour">
 				<label>Clock Alarm 1 Wakeup Hour</label>
 			</channel>
-			<channel id="CLOCKALARM1WAKEUPMINUTE" typeId="minute">
+			<channel id="clockAlarm1WakeupMinute" typeId="minute">
 				<label>Clock Alarm 1 Minute</label>
 			</channel>
-			<channel id="CLOCKALARM1BEDTIMEHOUR" typeId="hour">
+			<channel id="clockAlarm1BedtimeHour" typeId="hour">
 				<label>Clock Alarm 1 Bedtime Hour</label>
 			</channel>
-			<channel id="CLOCKALARM1BEDTIMEMINUTE" typeId="minute">
+			<channel id="clockAlarm1BedtimeMinute" typeId="minute">
 				<label>Clock Alarm 1 Bedtime Minute</label>
 			</channel>
-			<channel id="CLOCKALARM2ENABLED" typeId="switch">
+			<channel id="clockAlarm2Enabled" typeId="switch">
 				<label>Clock Alarm 2 Enabled</label>
 			</channel>
-			<channel id="CLOCKALARM2TYPE" typeId="alarmType">
+			<channel id="clockAlarm2Type" typeId="alarmType">
 				<label>Clock Alarm 2 Type</label>
 			</channel>
-			<channel id="CLOCKALARM2WAKEUPHOUR" typeId="hour">
+			<channel id="clockAlarm2WakeupHour" typeId="hour">
 				<label>Clock Alarm 2 Wakeup Hour</label>
 			</channel>
-			<channel id="CLOCKALARM2WAKEUPMINUTE" typeId="minute">
+			<channel id="clockAlarm2WakeupMinute" typeId="minute">
 				<label>Clock Alarm 2 Wakeup Minute</label>
 			</channel>
-			<channel id="CLOCKALARM2BEDTIMEHOUR" typeId="hour">
+			<channel id="clockAlarm2BedtimeHour" typeId="hour">
 				<label>Clock Alarm 2 Bedtime Hour</label>
 			</channel>
-			<channel id="CLOCKALARM2BEDTIMEMINUTE" typeId="minute">
+			<channel id="clockAlarm2BedtimeMinute" typeId="minute">
 				<label>Clock Alarm 2 Bedtime Minute</label>
 			</channel>
 		</channels>

@@ -84,24 +84,26 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
     private static final StringType ALARM_TYPE_LOCAL = new StringType("LOCAL");
     private static final StringType ALARM_TYPE_GLOBAL = new StringType("GLOBAL");
 
-    private final ChannelUID clockAlarm1Enabled = new ChannelUID(thing.getUID(), "clockAlarm#CLOCKALARM1ENABLED");
-    private final ChannelUID clockAlarm1Type = new ChannelUID(thing.getUID(), "clockAlarm#CLOCKALARM1TYPE");
-    private final ChannelUID clockAlarm1WakeupHour = new ChannelUID(thing.getUID(), "clockAlarm#CLOCKALARM1WAKEUPHOUR");
-    private final ChannelUID clockAlarm1WakeupMinute = new ChannelUID(thing.getUID(),
-            "clockAlarm#CLOCKALARM1WAKEUPMINUTE");
-    private final ChannelUID clockAlarm1BedtimeHour = new ChannelUID(thing.getUID(),
-            "clockAlarm#CLOCKALARM1BEDTIMEHOUR");
-    private final ChannelUID clockAlarm1BedtimeMinute = new ChannelUID(thing.getUID(),
-            "clockAlarm#CLOCKALARM1BEDTIMEMINUTE");
-    private final ChannelUID clockAlarm2Enabled = new ChannelUID(thing.getUID(), "clockAlarm#CLOCKALARM2ENABLED");
-    private final ChannelUID clockAlarm2Type = new ChannelUID(thing.getUID(), "clockAlarm#CLOCKALARM2TYPE");
-    private final ChannelUID clockAlarm2WakeupHour = new ChannelUID(thing.getUID(), "clockAlarm#CLOCKALARM2WAKEUPHOUR");
-    private final ChannelUID clockAlarm2WakeupMinute = new ChannelUID(thing.getUID(),
-            "clockAlarm#CLOCKALARM2WAKEUPMINUTE");
-    private final ChannelUID clockAlarm2BedtimeHour = new ChannelUID(thing.getUID(),
-            "clockAlarm#CLOCKALARM2BEDTIMEHOUR");
-    private final ChannelUID clockAlarm2BedtimeMinute = new ChannelUID(thing.getUID(),
-            "clockAlarm#CLOCKALARM2BEDTIMEMINUTE");
+    private final ChannelUID clockAlarm1Enabled = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm1Enabled");
+    private final ChannelUID clockAlarm1Type = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm1Type");
+    private final ChannelUID clockAlarm1WakeupHour = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm1WakeupHour");
+    private final ChannelUID clockAlarm1WakeupMinute = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm1WakeupMinute");
+    private final ChannelUID clockAlarm1BedtimeHour = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm1BedtimeHour");
+    private final ChannelUID clockAlarm1BedtimeMinute = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm1BedtimeMinute");
+    private final ChannelUID clockAlarm2Enabled = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm2Enabled");
+    private final ChannelUID clockAlarm2Type = new ChannelUID(thing.getUID(), "clockAlarm", "clockAlarm2Type");
+    private final ChannelUID clockAlarm2WakeupHour = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm2WakeupHour");
+    private final ChannelUID clockAlarm2WakeupMinute = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm2WakeupMinute");
+    private final ChannelUID clockAlarm2BedtimeHour = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm2BedtimeHour");
+    private final ChannelUID clockAlarm2BedtimeMinute = new ChannelUID(thing.getUID(), "clockAlarm",
+            "clockAlarm2BedtimeMinute");
 
     private int clockAlarmConfigurationMemoryAddress;
     private VelbusClockAlarmConfiguration alarmClockConfiguration = new VelbusClockAlarmConfiguration();
@@ -144,11 +146,11 @@ public class VelbusSensorWithAlarmClockHandler extends VelbusSensorHandler {
 
             if ((channelUID.equals(clockAlarm1Enabled) || channelUID.equals(clockAlarm2Enabled))
                     && command instanceof OnOffType) {
-                boolean enabled = (command == OnOffType.ON) ? true : false;
+                boolean enabled = command == OnOffType.ON;
                 alarmClock.setEnabled(enabled);
             } else if ((channelUID.equals(clockAlarm1Type) || channelUID.equals(clockAlarm2Type))
                     && command instanceof StringType) {
-                boolean isLocal = (((StringType) command).equals(ALARM_TYPE_LOCAL)) ? true : false;
+                boolean isLocal = ((StringType) command).equals(ALARM_TYPE_LOCAL);
                 alarmClock.setLocal(isLocal);
             } else if (channelUID.equals(clockAlarm1WakeupHour)
                     || channelUID.equals(clockAlarm2WakeupHour) && command instanceof DecimalType) {

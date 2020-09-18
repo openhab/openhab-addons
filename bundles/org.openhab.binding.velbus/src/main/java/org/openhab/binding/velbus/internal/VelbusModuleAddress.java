@@ -75,8 +75,7 @@ public class VelbusModuleAddress {
     }
 
     public int getChannelNumber(ChannelUID channelUID) {
-        String id = channelUID.getId();
-        return Integer.parseInt(id.substring(id.indexOf("#") + 1).substring(2));
+        return Integer.parseInt(channelUID.getIdWithoutGroup().substring(2));
     }
 
     public int getChannelIndex(ChannelUID channelUID) {

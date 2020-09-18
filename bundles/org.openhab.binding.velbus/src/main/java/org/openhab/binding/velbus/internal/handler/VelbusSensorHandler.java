@@ -92,7 +92,7 @@ public class VelbusSensorHandler extends VelbusThingHandler {
     }
 
     private boolean isFeedbackChannel(ChannelUID channelUID) {
-        return channelUID.getId().startsWith("feedback#");
+        return "feedback".equals(channelUID.getGroupId());
     }
 
     @Override

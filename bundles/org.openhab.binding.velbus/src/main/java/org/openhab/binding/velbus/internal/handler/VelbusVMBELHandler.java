@@ -35,6 +35,6 @@ public class VelbusVMBELHandler extends VelbusThermostatHandler {
             Arrays.asList(THING_TYPE_VMBEL1, THING_TYPE_VMBEL2, THING_TYPE_VMBEL4));
 
     public VelbusVMBELHandler(Thing thing) {
-        super(thing, 4, new ChannelUID(thing.getUID(), "input#CH9"));
+        super(thing, 4, new ChannelUID(thing.getUID(), "input", "CH9"));
     }
 }
