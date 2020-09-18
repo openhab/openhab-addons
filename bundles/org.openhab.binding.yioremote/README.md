@@ -30,7 +30,28 @@ The YIO Dock has the following channels:
 | 	receiverswitch     		| Input         | Switch       | The switch to enable disable the IR receiving diode/function                                 																			|
 | 	status			    	| Output        | String       | The status of the YIO Dock. If the reciever is on than the recognized IR code will be displayed otherwise the IR send status is displayed of the last IR code send.	|
 
+# Actions
 
+With the YIO remote action, you can send IR Codes via the YIO Remote Dock.
+
+## Examples
+
+```
+rule "yioremote Action Example"
+when
+  ...
+then
+	val actions = getActions("yioremote", "yioremote:yioremotedock:livingroom")
+	if (actions === null)
+	{
+		......
+	}
+	else
+	{
+		actions.sendIRCode("3;0x20DF40BF;32;0")
+	}
+end
+```
 ## Full Example
 
 .things
