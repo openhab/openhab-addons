@@ -1,0 +1,66 @@
+{
+	"vehicleStatus": {
+		"mileage": 25659,
+		"remainingFuel": 55.0,
+		"remainingRangeElectric": 0.0,
+		"remainingRangeElectricMls": 0.0,
+		"remainingRangeFuel": 794.0,
+		"remainingRangeFuelMls": 493.0,
+		"maxRangeElectric": 0.0,
+		"maxRangeElectricMls": 0.0,
+		"maxFuel": 0.0,
+		"chargingLevelHv": 0.0,
+		"vin": "ANONYMOUS",
+		"updateReason": "VEHICLE_SHUTDOWN",
+		"updateTime": "2020-09-18T12:11:38+0000",
+		"doorDriverFront": "CLOSED",
+		"doorDriverRear": "CLOSED",
+		"doorPassengerFront": "CLOSED",
+		"doorPassengerRear": "CLOSED",
+		"windowDriverFront": "INTERMEDIATE",
+		"windowDriverRear": "CLOSED",
+		"windowPassengerFront": "CLOSED",
+		"windowPassengerRear": "CLOSED",
+		"trunk": "CLOSED",
+		"rearWindow": "CLOSED",
+		"hood": "CLOSED",
+		"doorLockState": "SECURED",
+		"parkingLight": "OFF",
+		"positionLight": "OFF",
+		"position": {
+			"lat": -1.0,
+			"lon": -1.0,
+			"heading": -1,
+			"status": "OK"
+		},
+		"internalDataTimeUTC": "2020-09-18T12:11:38",
+		"singleImmediateCharging": false,
+		"vehicleCountry": "NL",
+		"DCS_CCH_Activation": "NA",
+		"DCS_CCH_Ongoing": false,
+		"checkControlMessages": [],
+		"cbsData": [
+			{
+				"cbsType": "OIL",
+				"cbsState": "OK",
+				"cbsDueDate": "2022-07",
+				"cbsDescription": "Next service due when the stated distance has been covered or by the specified date.",
+				"cbsRemainingMileage": 29000
+			},
+			{
+				"cbsType": "VEHICLE_CHECK",
+				"cbsState": "OK",
+				"cbsDueDate": "2022-07",
+				"cbsDescription": "Next visual inspection due when the stated distance has been covered or by the stated date.",
+				"cbsRemainingMileage": 29000
+			},
+			{
+				"cbsType": "BRAKE_FLUID",
+				"cbsState": "OK",
+				"cbsDueDate": "2022-01",
+				"cbsDescription": "Next change due at the latest by the stated date.",
+				"cbsRemainingMileage": 0
+			}
+		]
+	}
+}

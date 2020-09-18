@@ -192,13 +192,17 @@ public class StatusWrapper {
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 Windows windowState = GSON.fromJson(GSON.toJson(vStatus), Windows.class);
-                assertEquals("Windows Closed", VehicleStatus.checkClosed(windowState), st.toString());
+                if (specialHandlingMap.containsKey(WINDOWS)) {
+                    assertEquals("Windows", specialHandlingMap.get(WINDOWS).toString(), st.toString());
+                } else {
+                    assertEquals("Windows", VehicleStatus.checkClosed(windowState), st.toString());
+                }
                 break;
             case CHECK_CONTROL:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 if (specialHandlingMap.containsKey(CHECK_CONTROL)) {
-                    assertEquals("Next Service", specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString());
+                    assertEquals("Check Control", specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString());
                 } else {
                     assertEquals("Check Control", vStatus.getCheckControl(), st.toString());
                 }
