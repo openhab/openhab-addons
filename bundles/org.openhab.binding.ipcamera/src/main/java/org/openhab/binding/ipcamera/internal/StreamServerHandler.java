@@ -210,7 +210,7 @@ public class StreamServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void sendSnapshotImage(ChannelHandlerContext ctx, String contentType) throws IOException {
+    private void sendSnapshotImage(ChannelHandlerContext ctx, String contentType) {
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         ipCameraHandler.lockCurrentSnapshot.lock();
         try {
