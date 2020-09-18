@@ -12,17 +12,7 @@
  */
 package org.openhab.binding.wlanthermo.internal;
 
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM;
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.SYSTEM_ONLINE;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import com.google.gson.Gson;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -31,23 +21,21 @@ import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.util.DigestAuthentication;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.smarthome.core.common.ThreadPoolManager;
-import org.eclipse.smarthome.core.library.types.OnOffType;
-import org.eclipse.smarthome.core.thing.Channel;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.ThingStatusDetail;
+import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.openhab.binding.wlanthermo.internal.api.nano.WlanThermoNanoCommandHandler;
 import org.openhab.binding.wlanthermo.internal.api.nano.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.concurrent.*;
 
 /**
  * The {@link WlanThermoNanoHandler} is responsible for handling commands, which are
@@ -61,6 +49,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(WlanThermoNanoHandler.class);
 
     private WlanThermoNanoConfiguration config = new WlanThermoNanoConfiguration();
+    private WlanThermoNanoCommandHandler wlanThermoNanoCommandHandler = new WlanThermoNanoCommandHandler();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> pollingScheduler;
     private final ScheduledExecutorService scheduler = ThreadPoolManager
@@ -90,7 +79,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
 
             logger.debug("Finished initializing WlanThermo Nano!");
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to initialize WlanThermo Nano!");
             logger.debug("Failed to initialize WlanThermo Nano!", e);
@@ -98,7 +87,6 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     }
 
     private void checkConnection() {
-        updateState(SYSTEM + "#" + SYSTEM_ONLINE, OnOffType.OFF);
         try {
             if (httpClient.GET(config.getUri()).getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
@@ -107,7 +95,6 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 }
                 pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
                         TimeUnit.SECONDS);
-                updateState(SYSTEM + "#" + SYSTEM_ONLINE, OnOffType.ON);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "WlanThermo not found under given address.");
@@ -126,11 +113,11 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            State s = data.getState(channelUID, this);
+            State s = wlanThermoNanoCommandHandler.getState(channelUID, data, settings);
             if (s != null)
                 updateState(channelUID, s);
         } else {
-            if (data.setState(channelUID, command)) {
+            if (wlanThermoNanoCommandHandler.setState(channelUID, command, data)) {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
@@ -152,12 +139,12 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
 
             // Update channels
             for (Channel channel : thing.getChannels()) {
-                State state = data.getState(channel.getUID(), this);
+                State state = wlanThermoNanoCommandHandler.getState(channel.getUID(), data, settings);
                 if (state != null) {
                     updateState(channel.getUID(), state);
                 } else {
                     // if we could not obtain a state, try trigger instead
-                    String trigger = data.getTrigger(channel.getUID());
+                    String trigger = wlanThermoNanoCommandHandler.getTrigger(channel.getUID(), data);
                     if (trigger != null) {
                         triggerChannel(channel.getUID(), trigger);
                     }
@@ -170,11 +157,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 pollingScheduler.cancel(false);
             }
             for (Channel channel : thing.getChannels()) {
-                if (channel.getUID().getId().equals(SYSTEM + "#" + SYSTEM_ONLINE)) {
-                    updateState(channel.getUID(), OnOffType.OFF);
-                } else {
-                    updateState(channel.getUID(), UnDefType.UNDEF);
-                }
+                updateState(channel.getUID(), UnDefType.UNDEF);
             }
             checkConnection();
         }
@@ -215,15 +198,5 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             boolean stopped = pollingScheduler.cancel(true);
             logger.debug("Stopped polling: {}", stopped);
         }
-        try {
-            httpClient.stop();
-            logger.debug("HTTP client stopped");
-        } catch (Exception e) {
-            logger.error("Failed to stop HttpClient", e);
-        }
-    }
-
-    public Settings getSettings() {
-        return settings;
     }
 }

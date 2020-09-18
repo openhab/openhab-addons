@@ -40,7 +40,6 @@ public class WlanThermoBindingConstants {
     public static final String SYSTEM_CHARGE = "charge";
     public static final String SYSTEM_RSSI = "rssi";
     public static final String SYSTEM_RSSI_SIGNALSTRENGTH = "rssi_signalstrength";
-    public static final String SYSTEM_ONLINE = "online";
     public static final String SYSTEM_CPU_LOAD = "cpu_load";
     public static final String SYSTEM_CPU_TEMP = "cpu_temp";
 

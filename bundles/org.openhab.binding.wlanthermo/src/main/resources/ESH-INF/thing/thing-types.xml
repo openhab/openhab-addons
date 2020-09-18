@@ -154,7 +154,6 @@
 			<channel id="charge" typeId="charging"/>
 			<channel id="rssi" typeId="rssi"/>
 			<channel id="rssi_signalstrength" typeId="system.signal-strength"/>
-			<channel id="online" typeId="online"/>
 		</channels>
 	</channel-group-type>
 
@@ -162,13 +161,6 @@
 		<item-type>Switch</item-type>
 		<label>Charging</label>
 		<category>Energy</category>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="online" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Online</label>
-		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -186,7 +178,6 @@
 		<channels>
 			<channel id="cpu_load" typeId="cpu_load"/>
 			<channel id="cpu_temp" typeId="temperature"/>
-			<channel id="online" typeId="online"/>
 		</channels>
 	</channel-group-type>
 

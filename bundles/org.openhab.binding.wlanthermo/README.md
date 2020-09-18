@@ -42,7 +42,6 @@ If username/password is given in the thing, most channels are writeable.
 
 | channel             | type                 | description                              |
 |---------------------|----------------------|------------------------------------------|
-| online              | Switch               | Indicates if device is online            |
 | soc                 | Number:Dimensionless | Battery Level in %                       |
 | charging            | Switch               | On, if device is charging, off otherwise |
 | rssi_signalstrength | Number               | Signal Strength in range [0 ... 4]       |
@@ -86,7 +85,6 @@ All channels are read only!
 
 | channel  | type                 | description                   |
 |----------|----------------------|-------------------------------|
-| online   | Switch               | Indicates if device is online |
 | cpu_load | Number:Dimensionless | CPU Load in %                 |
 | cpu_temp | Number:Temperature   | CPU Temperature               |
 
@@ -142,7 +140,6 @@ Group                   gWlanThermoNano         "WlanThermo Nano"
 Number:Dimensionless    nano_soc                "State of Charge"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#soc"}
 Number                  nano_rssi               "Signal Strength"       (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#rssi"}
 Switch                  nano_charging           "Charging"              (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#charge"}
-Switch                  nano_online             "Online"                (gWlanThermoNano)   {channel="wlanthermo:nano:<nano_thing_id>:system#online"}
 
 Group                   gProbeNano1             "Probe 1"               (gWlanThermoNano)
 String                  nano_name_1             "Name"                  (gProbeNano1)       {channel="wlanthermo:nano:<nano_thing_id>:channel1#name"}
@@ -261,7 +258,6 @@ Number                  nano_pit_channel        "Input Channel ID"      (gPitmas
 Group                   gWlanThermoMini         "WlanThermo Mini"
 Number                  mini_cpuload            "CPU Load"              (gWlanThermoMini)   {channel="wlanthermo:mini:<mini_thing_id>:system#cpu_load"}
 Number:Temperature      mini_cputemp            "CPU Temp"              (gWlanThermoMini)   {channel="wlanthermo:mini:<mini_thing_id>:system#cpu_temp"}
-Switch                  mini_online             "Online"                (gWlanThermoMini)   {channel="wlanthermo:mini:<mini_thing_id>:system#online"}
 
 Group                   gProbeMini0             "Probe 0"               (gWlanThermoMini)
 String                  mini_name_0             "Name"                  (gProbeMini0)       {channel="wlanthermo:mini:<mini_thing_id>:channel0#name"}
@@ -397,7 +393,6 @@ Number                  mini_pit_channel_2      "Input Channel ID"      (gPitmas
 ```
 sitemap wlanthermo label="WlanThermo" {
     Frame label="WlanThermo" {
-        Default item=nano_online
         Default item=nano_rssi icon="qualityofservice"
         Default item=nano_soc icon="batterylevel"
         Default item=nano_charging icon="energy"
