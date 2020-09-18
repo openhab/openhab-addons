@@ -27,6 +27,8 @@ public final class Constants {
     public static final ThingTypeUID PIM_UID = new ThingTypeUID(BINDING_ID, "serial-pim");
     public static final ThingTypeUID GENERIC_DEVICE_UID = new ThingTypeUID(BINDING_ID, "generic");
     public static final ThingTypeUID VIRTUAL_DEVICE_UID = new ThingTypeUID(BINDING_ID, "virtual");
+    public static final ThingTypeUID LEVITON_38A00_DEVICE_UID = new ThingTypeUID(BINDING_ID, "leviton-38a00-1");
+
     public static final String SCENE_CHANNEL_TYPE_ID = "scene-selection";
     public static final String LINK_CHANNEL_TYPE_ID = "link";
     public static final String DIMMER_TYPE_ID = "dimmer";

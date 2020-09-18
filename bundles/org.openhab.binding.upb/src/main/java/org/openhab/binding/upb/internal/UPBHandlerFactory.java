@@ -81,8 +81,11 @@ public class UPBHandlerFactory extends BaseThingHandlerFactory {
             return new SerialPIMHandler((Bridge) thing, serialPortManager);
         } else if (thingTypeUID.equals(Constants.VIRTUAL_DEVICE_UID)) {
             return new VirtualThingHandler(thing, networkId);
-        } else {
+        } else if (thingTypeUID.equals(Constants.GENERIC_DEVICE_UID)
+                || thingTypeUID.equals(Constants.LEVITON_38A00_DEVICE_UID)) {
+            // generic UPB thing handler
             return new UPBThingHandler(thing, networkId);
         }
+        return null;
     }
 }
