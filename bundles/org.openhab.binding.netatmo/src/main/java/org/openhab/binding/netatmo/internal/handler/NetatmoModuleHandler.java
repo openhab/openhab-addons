@@ -99,7 +99,7 @@ public class NetatmoModuleHandler<MODULE> extends AbstractNetatmoThingHandler {
     protected void updateChannels(Object module) {
         MODULE theModule = (MODULE) module;
         setModule(theModule);
-        updateStatus(ThingStatus.ONLINE);
+        updateStatus(isReachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
         getRadioHelper().ifPresent(helper -> helper.setModule(module));
         getBatteryHelper().ifPresent(helper -> helper.setModule(module));
         updateProperties(theModule);

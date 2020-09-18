@@ -15,6 +15,8 @@ package org.openhab.binding.netatmo.internal.station;
 import static org.openhab.binding.netatmo.internal.ChannelTypeUtils.*;
 import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -64,5 +66,16 @@ public class NAModule2Handler extends NetatmoModuleHandler<NAStationModule> {
             }
         }
         return super.getNAThingProperty(channelId);
+    }
+
+    @Override
+    protected boolean isReachable() {
+        boolean result = false;
+        Optional<NAStationModule> module = getModule();
+        if (module.isPresent()) {
+            Boolean reachable = module.get().getReachable();
+            result = reachable != null ? reachable.booleanValue() : false;
+        }
+        return result;
     }
 }
