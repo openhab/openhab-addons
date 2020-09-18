@@ -358,6 +358,7 @@ public class OnvifConnection {
         String security = "";
         String extraEnvelope = " xmlns:a=\"http://www.w3.org/2005/08/addressing\"";
         String headerTo = "";
+        String getXmlCache = getXml(requestType);
         if (requestType.equals(RequestType.CreatePullPointSubscription) || requestType.equals(RequestType.PullMessages)
                 || requestType.equals(RequestType.Renew) || requestType.equals(RequestType.Unsubscribe)) {
             headerTo = "<a:To s:mustUnderstand=\"1\">http://" + ipAddress + xAddr + "</a:To>";
@@ -395,8 +396,8 @@ public class OnvifConnection {
         String fullXml = "<s:Envelope xmlns:s=\"http://www.w3.org/2003/05/soap-envelope\"" + extraEnvelope + ">"
                 + headers
                 + "<s:Body xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-                + getXml(requestType) + "</s:Body></s:Envelope>";
-        String actionString = Helper.fetchXML(getXml(requestType), requestType.toString(), "xmlns=\"");
+                + getXmlCache + "</s:Body></s:Envelope>";
+        String actionString = Helper.fetchXML(getXmlCache, requestType.toString(), "xmlns=\"");
         request.headers().add("SOAPAction", "\"" + actionString + "/" + requestType + "\"");
         ByteBuf bbuf = Unpooled.copiedBuffer(fullXml, StandardCharsets.UTF_8);
         request.headers().set("Content-Length", bbuf.readableBytes());
