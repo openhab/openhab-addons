@@ -130,7 +130,7 @@ public class StreamServerGroupHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void sendSnapshotImage(ChannelHandlerContext ctx, String contentType) throws IOException {
+    private void sendSnapshotImage(ChannelHandlerContext ctx, String contentType) {
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         if (ipCameraGroupHandler.cameraIndex >= ipCameraGroupHandler.cameraOrder.size()) {
             logger.debug("WARN: Openhab may still be starting, or all cameras in the group are OFFLINE.");
