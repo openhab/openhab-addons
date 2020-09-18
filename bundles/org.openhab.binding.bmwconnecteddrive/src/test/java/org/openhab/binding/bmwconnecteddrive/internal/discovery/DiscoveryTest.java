@@ -42,6 +42,7 @@ import com.google.gson.Gson;
 public class DiscoveryTest {
     private final Logger logger = LoggerFactory.getLogger(DiscoveryTest.class);
     private static final Gson GSON = new Gson();
+    private static final int DISCOVERY_VEHICLES = 9;
 
     @Test
     public void testDiscovery() {
@@ -80,7 +81,7 @@ public class DiscoveryTest {
         ArgumentCaptor<DiscoveryService> services = ArgumentCaptor.forClass(DiscoveryService.class);
 
         discovery.onResponse(container);
-        verify(listener, times(8)).thingDiscovered(services.capture(), discoveries.capture());
+        verify(listener, times(DISCOVERY_VEHICLES)).thingDiscovered(services.capture(), discoveries.capture());
         List<DiscoveryResult> results = discoveries.getAllValues();
         results.forEach(entry -> {
             logger.info("{}", entry.toString());

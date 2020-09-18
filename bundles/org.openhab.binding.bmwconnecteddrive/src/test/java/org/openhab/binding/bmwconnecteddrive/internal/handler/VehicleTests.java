@@ -339,4 +339,14 @@ public class VehicleTests {
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
         assertTrue(testVehicle(content, HYBRID_CALL_TIMES, Optional.empty()));
     }
+
+    @Test
+    public void test318iF31() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), false);
+        String content = FileReader.readFileInString("src/test/resources/responses/F31/status-318i.json");
+        Map<String, State> m = new HashMap<String, State>();
+        m.put(ConnectedDriveConstants.WINDOWS, StringType.valueOf("Driverfront Intermediate"));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.of(m)));
+    }
 }
