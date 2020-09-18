@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.mini.builtin;
 
+import java.awt.*;
+
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.HSBType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
@@ -20,8 +22,6 @@ import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants;
-
-import java.awt.*;
 
 /**
  * The {@link WlanThermoMiniCommandHandler} is responsible for mapping the Commands to the respective data fields

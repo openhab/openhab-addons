@@ -12,6 +12,12 @@
  */
 package org.openhab.binding.wlanthermo.internal.api.nano;
 
+import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
+
+import java.awt.*;
+import java.math.BigInteger;
+import java.util.List;
+
 import org.eclipse.smarthome.core.library.types.*;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.types.Command;
@@ -22,12 +28,6 @@ import org.openhab.binding.wlanthermo.internal.api.nano.data.Data;
 import org.openhab.binding.wlanthermo.internal.api.nano.data.Pm;
 import org.openhab.binding.wlanthermo.internal.api.nano.data.System;
 import org.openhab.binding.wlanthermo.internal.api.nano.settings.Settings;
-
-import java.awt.*;
-import java.math.BigInteger;
-import java.util.List;
-
-import static org.openhab.binding.wlanthermo.internal.WlanThermoBindingConstants.*;
 
 /**
  * The {@link WlanThermoNanoCommandHandler} is responsible for mapping the Commands to the respective data fields

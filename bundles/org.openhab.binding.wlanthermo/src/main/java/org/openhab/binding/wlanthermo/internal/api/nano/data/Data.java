@@ -13,11 +13,11 @@
 
 package org.openhab.binding.wlanthermo.internal.api.nano.data;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This DTO is used to parse the JSON

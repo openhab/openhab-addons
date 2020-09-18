@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.wlanthermo.internal;
 
-import com.google.gson.Gson;
+import java.net.URISyntaxException;
+import java.util.concurrent.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -28,8 +30,7 @@ import org.openhab.binding.wlanthermo.internal.api.mini.builtin.WlanThermoMiniCo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URISyntaxException;
-import java.util.concurrent.*;
+import com.google.gson.Gson;
 
 /**
  * The {@link WlanThermoMiniHandler} is responsible for handling commands, which are
