@@ -1078,9 +1078,13 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    // Change alarms that are not counted as motion detecting.
-    public void changeAlarmState(String thisAlarmsChannel, String state) {
-        updateState(thisAlarmsChannel, OnOffType.valueOf(state));
+    /**
+     * The {@link changeAlarmState} To only be used to change alarms channels that are not counted as motion. This will
+     * allow logic to be added here in the future. Example more than 1 type of alarm may indicate that someone is
+     * tampering with the camera.
+     */
+    public void changeAlarmState(String thisAlarmsChannel, OnOffType state) {
+        updateState(thisAlarmsChannel, state);
     }
 
     public void motionDetected(String thisAlarmsChannel) {

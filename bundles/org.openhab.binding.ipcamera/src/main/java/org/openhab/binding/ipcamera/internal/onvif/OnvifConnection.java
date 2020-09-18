@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.handler.IpCameraHandler;
 import org.slf4j.Logger;
@@ -611,52 +612,52 @@ public class OnvifConnection {
                 break;
             case "RuleEngine/TamperDetector/Tamper":
                 if (dataValue.equals("true")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, "ON");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, "OFF");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TAMPER_ALARM, OnOffType.OFF);
                 }
                 break;
             case "Device/HardwareFailure/StorageFailure":
                 if (dataValue.equals("true")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, "ON");
+                    ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, "OFF");
+                    ipCameraHandler.changeAlarmState(CHANNEL_STORAGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooDark/AnalyticsService":
             case "VideoSource/ImageTooDark/ImagingService":
             case "VideoSource/ImageTooDark/RecordingService":
                 if (dataValue.equals("true")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, "ON");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, "OFF");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_DARK_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/GlobalSceneChange/AnalyticsService":
             case "VideoSource/GlobalSceneChange/ImagingService":
             case "VideoSource/GlobalSceneChange/RecordingService":
                 if (dataValue.equals("true")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, "ON");
+                    ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, "OFF");
+                    ipCameraHandler.changeAlarmState(CHANNEL_SCENE_CHANGE_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooBright/AnalyticsService":
             case "VideoSource/ImageTooBright/ImagingService":
             case "VideoSource/ImageTooBright/RecordingService":
                 if (dataValue.equals("true")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, "ON");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, "OFF");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BRIGHT_ALARM, OnOffType.OFF);
                 }
                 break;
             case "VideoSource/ImageTooBlurry/AnalyticsService":
             case "VideoSource/ImageTooBlurry/ImagingService":
             case "VideoSource/ImageTooBlurry/RecordingService":
                 if (dataValue.equals("true")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, "ON");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.ON);
                 } else if (dataValue.equals("false")) {
-                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, "OFF");
+                    ipCameraHandler.changeAlarmState(CHANNEL_TOO_BLURRY_ALARM, OnOffType.OFF);
                 }
                 break;
             default:
