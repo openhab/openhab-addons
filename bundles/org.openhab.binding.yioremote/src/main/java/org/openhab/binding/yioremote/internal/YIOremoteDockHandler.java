@@ -38,10 +38,12 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteDockHandleStatus;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteMessages;
-import org.openhab.binding.yioremote.internal.DTOs.AuthenticationMessage;
-import org.openhab.binding.yioremote.internal.DTOs.IRCode;
-import org.openhab.binding.yioremote.internal.DTOs.IRCodeSendMessage;
-import org.openhab.binding.yioremote.internal.DTOs.IRReceiverMessage;
+import org.openhab.binding.yioremote.internal.dtos.AuthenticationMessage;
+import org.openhab.binding.yioremote.internal.dtos.IRCode;
+import org.openhab.binding.yioremote.internal.dtos.IRCodeSendMessage;
+import org.openhab.binding.yioremote.internal.dtos.IRReceiverMessage;
+import org.openhab.binding.yioremote.internal.utils.Websocket;
+import org.openhab.binding.yioremote.internal.utils.WebsocketInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     YIOremoteConfiguration localConfig = getConfigAs(YIOremoteConfiguration.class);
     private WebSocketClient webSocketClient = new WebSocketClient();
-    private YIOremoteDockWebsocket yioremoteDockwebSocketClient = new YIOremoteDockWebsocket();
+    private Websocket yioremoteDockwebSocketClient = new Websocket();
     private ClientUpgradeRequest yioremoteDockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI websocketAddress;
     private YioRemoteDockHandleStatus yioRemoteDockActualStatus = YioRemoteDockHandleStatus.UNINITIALIZED_STATE;
@@ -95,7 +97,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                         "Initialize web socket failed: " + e.getMessage());
             }
 
-            yioremoteDockwebSocketClient.addMessageHandler(new YIOremoteDockWebsocketInterface() {
+            yioremoteDockwebSocketClient.addMessageHandler(new WebsocketInterface() {
 
                 @Override
                 public void onConnect(boolean connected) {
@@ -121,6 +123,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                                     break;
                                 case AUTHENTICATION_PROCESS:
                                     authenticate();
+                                    break;
+                                default:
                                     break;
                             }
                             logger.debug("Message {} decoded", receivedmessage);
@@ -260,6 +264,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     } else {
                         logger.debug("YIODOCKRECEIVERSWITCH no procedure");
                     }
+                    break;
+                default:
                     break;
             }
         }

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yioremote.internal;
+package org.openhab.binding.yioremote.internal.utils;
 
 import java.io.IOException;
 
@@ -25,21 +25,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link YIOremoteDockWebsocket} is responsible for the Websocket Connection to the YIO Remote Dock
+ * The {@link Websocket} is responsible for the Websocket Connection
  *
  * @author Michael Loercher - Initial contribution
  */
 
 @NonNullByDefault
 @WebSocket
-public class YIOremoteDockWebsocket {
+public class Websocket {
 
     private @Nullable Session session;
-    private String stringreceivedmessage = "";
-    private final Logger logger = LoggerFactory.getLogger(YIOremoteDockWebsocket.class);
-    private @Nullable YIOremoteDockWebsocketInterface websocketHandler;
+    private final Logger logger = LoggerFactory.getLogger(Websocket.class);
+    private @Nullable WebsocketInterface websocketHandler;
 
-    public void addMessageHandler(YIOremoteDockWebsocketInterface yioremotedockwebsocketinterfacehandler) {
+    public void addMessageHandler(WebsocketInterface yioremotedockwebsocketinterfacehandler) {
         this.websocketHandler = yioremotedockwebsocketinterfacehandler;
     }
 

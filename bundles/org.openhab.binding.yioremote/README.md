@@ -52,6 +52,7 @@ then
 	}
 end
 ```
+
 ## Full Example
 
 .things

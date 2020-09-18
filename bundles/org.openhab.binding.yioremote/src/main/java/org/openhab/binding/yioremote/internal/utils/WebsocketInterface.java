@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yioremote.internal;
+package org.openhab.binding.yioremote.internal.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link YIOremoteDockWebsocketInterface} is responsible for interfacing the Websocket.
+ * The {@link WebsocketInterface} is responsible for interfacing the Websocket.
  *
  * @author Michael Loercher - Initial contribution
  */
 @NonNullByDefault
-public interface YIOremoteDockWebsocketInterface {
+public interface WebsocketInterface {
 
     public void onConnect(boolean connected);
 

@@ -48,6 +48,8 @@ public class YIOremoteDockActions implements ThingActions {
             case AUTHENTICATION_COMPLETE:
                 dockHandler.sendIRCode(irCode);
                 break;
+            default:
+                break;
         }
     }
 
