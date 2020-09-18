@@ -238,7 +238,7 @@
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarlog</module>
-    <module>org.openhab.binding.somfymylink</module>
+<module>org.openhab.binding.somfymylink</module>
     <module>org.openhab.binding.somfytahoma</module>
     <module>org.openhab.binding.sonos</module>
     <module>org.openhab.binding.sonyaudio</module>
@@ -456,7 +456,6 @@
       </plugin>
     </plugins>
   </build>
-
   <profiles>
     <!-- remove unused classes / shrink jar -->
     <profile>

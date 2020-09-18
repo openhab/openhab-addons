@@ -44,12 +44,14 @@ public class YIOremoteDockActions implements ThingActions {
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void sendIRCode(
             @ActionInput(name = "IRCode", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String irCode) {
-        switch (dockHandler.getyioRemoteDockActualStatus()) {
-            case AUTHENTICATION_COMPLETE:
-                dockHandler.sendIRCode(irCode);
-                break;
-            default:
-                break;
+        if (dockHandler != null) {
+            switch (dockHandler.getyioRemoteDockActualStatus()) {
+                case AUTHENTICATION_COMPLETE:
+                    dockHandler.sendIRCode(irCode);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -57,7 +59,9 @@ public class YIOremoteDockActions implements ThingActions {
         if (actions instanceof YIOremoteDockActions && dockHandler != null) {
             switch (dockHandler.getyioRemoteDockActualStatus()) {
                 case AUTHENTICATION_COMPLETE:
-                    dockHandler.sendIRCode(irCode);
+                    ((YIOremoteDockActions) actions).sendIRCode(irCode);
+                    break;
+                default:
                     break;
             }
         } else {

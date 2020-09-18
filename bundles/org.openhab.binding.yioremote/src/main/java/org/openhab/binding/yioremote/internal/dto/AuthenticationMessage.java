@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.yioremote.internal.dtos;
+package org.openhab.binding.yioremote.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

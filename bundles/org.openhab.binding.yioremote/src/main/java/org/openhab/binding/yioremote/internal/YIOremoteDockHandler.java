@@ -38,10 +38,10 @@ import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteDockHandleStatus;
 import org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.YioRemoteMessages;
-import org.openhab.binding.yioremote.internal.dtos.AuthenticationMessage;
-import org.openhab.binding.yioremote.internal.dtos.IRCode;
-import org.openhab.binding.yioremote.internal.dtos.IRCodeSendMessage;
-import org.openhab.binding.yioremote.internal.dtos.IRReceiverMessage;
+import org.openhab.binding.yioremote.internal.dto.AuthenticationMessage;
+import org.openhab.binding.yioremote.internal.dto.IRCode;
+import org.openhab.binding.yioremote.internal.dto.IRCodeSendMessage;
+import org.openhab.binding.yioremote.internal.dto.IRReceiverMessage;
 import org.openhab.binding.yioremote.internal.utils.Websocket;
 import org.openhab.binding.yioremote.internal.utils.WebsocketInterface;
 import org.slf4j.Logger;
@@ -69,12 +69,11 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private @Nullable URI websocketAddress;
     private YioRemoteDockHandleStatus yioRemoteDockActualStatus = YioRemoteDockHandleStatus.UNINITIALIZED_STATE;
     private @Nullable Future<?> webSocketPollingJob;
-    public String receivedmessage = "";
-    private JsonObject recievedjson = new JsonObject();
-    private boolean heartbeat = false;
-    private boolean authenticationok = false;
-    private String receivedstatus = "";
-    private String lastsendircode = "";
+    public String receivedMessage = "";
+    private JsonObject recievedJson = new JsonObject();
+    private boolean heartBeat = false;
+    private boolean authenticationOk = false;
+    private String receivedStatus = "";
     private IRCode irCodeReceivedHandler = new IRCode();
     private IRCode irCodeSendHandler = new IRCode();
     private IRCodeSendMessage irCodeSendMessageHandler = new IRCodeSendMessage(irCodeSendHandler);
@@ -110,26 +109,24 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
                 @Override
                 public void onMessage(String message) {
-                    receivedmessage = message;
+                    receivedMessage = message;
                     logger.debug("Message recieved {}", message);
-                    recievedjson = convertStringToJsonObject(receivedmessage);
-                    if (recievedjson.size() > 0) {
-                        if (decodeReceivedMessage(recievedjson)) {
+                    recievedJson = convertStringToJsonObject(receivedMessage);
+                    if (recievedJson.size() > 0) {
+                        if (decodeReceivedMessage(recievedJson)) {
                             triggerChannel(getChannelUuid(GROUP_OUTPUT, STATUS_STRING_CHANNEL));
-                            updateChannelString(GROUP_OUTPUT, STATUS_STRING_CHANNEL, receivedstatus);
+                            updateChannelString(GROUP_OUTPUT, STATUS_STRING_CHANNEL, receivedStatus);
                             switch (yioRemoteDockActualStatus) {
                                 case CONNECTION_ESTABLISHED:
-                                    authenticate();
-                                    break;
                                 case AUTHENTICATION_PROCESS:
                                     authenticate();
                                     break;
                                 default:
                                     break;
                             }
-                            logger.debug("Message {} decoded", receivedmessage);
+                            logger.debug("Message {} decoded", receivedMessage);
                         } else {
-                            logger.debug("Error during message {} decoding", receivedmessage);
+                            logger.debug("Error during message {} decoding", receivedMessage);
                         }
                     }
                 }
@@ -162,52 +159,52 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
         if (message.has("type")) {
             if (message.get("type").toString().equalsIgnoreCase("\"auth_required\"")) {
-                heartbeat = true;
+                heartBeat = true;
                 success = true;
-                receivedstatus = "Authentication required";
+                receivedStatus = "Authentication required";
             } else if (message.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
-                authenticationok = true;
-                heartbeat = true;
+                authenticationOk = true;
+                heartBeat = true;
                 success = true;
-                receivedstatus = "Authentication ok";
+                receivedStatus = "Authentication ok";
             } else if (message.get("type").toString().equalsIgnoreCase("\"dock\"") && message.has("message")) {
                 if (message.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
                     if (message.get("success").toString().equalsIgnoreCase("true")) {
-                        receivedstatus = "Send IR Code successfully";
-                        heartbeat = true;
+                        receivedStatus = "Send IR Code successfully";
+                        heartBeat = true;
                         success = true;
                     } else {
-                        if (lastsendircode.equalsIgnoreCase("\"0;0x0;0;0\"")) {
-                            logger.debug("Send heartbeat Code success");
+                        if (irCodeSendHandler.getCode().equalsIgnoreCase("\"0;0x0;0;0\"")) {
+                            logger.debug("Send heartBeat Code success");
                         } else {
-                            receivedstatus = "Send IR Code failure";
+                            receivedStatus = "Send IR Code failure";
                         }
-                        heartbeat = true;
+                        heartBeat = true;
                         success = true;
                     }
                 } else {
-                    logger.warn("No known message {}", receivedmessage);
-                    heartbeat = false;
+                    logger.warn("No known message {}", receivedMessage);
+                    heartBeat = false;
                     success = false;
                 }
             } else if (message.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
-                receivedstatus = message.get("code").toString().replace("\"", "");
-                if (receivedstatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
+                receivedStatus = message.get("code").toString().replace("\"", "");
+                if (receivedStatus.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                     irCodeReceivedHandler.setCode(message.get("code").toString().replace("\"", ""));
                 } else {
                     irCodeReceivedHandler.setCode("");
                 }
                 logger.debug("ir_receive message {}", irCodeReceivedHandler.getCode());
-                heartbeat = true;
+                heartBeat = true;
                 success = true;
             } else {
                 logger.warn("No known message {}", irCodeReceivedHandler.getCode());
-                heartbeat = false;
+                heartBeat = false;
                 success = false;
             }
         } else {
             logger.warn("No known message {}", irCodeReceivedHandler.getCode());
-            heartbeat = false;
+            heartBeat = false;
             success = false;
         }
         return success;
@@ -298,7 +295,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_PROCESS;
                 break;
             case AUTHENTICATION_PROCESS:
-                if (authenticationok) {
+                if (authenticationOk) {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE;
                     updateStatus(ThingStatus.ONLINE);
                     webSocketPollingJob = scheduler.scheduleWithFixedDelay(this::pollingWebsocket, 0, 30,
@@ -321,7 +318,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 if (getAndResetHeartbeat()) {
                     updateChannelString(GROUP_OUTPUT, STATUS_STRING_CHANNEL,
                             irCodeReceivedHandler.getCode() + irCodeReceivedHandler.getFormat());
-                    logger.debug("heartbeat ok");
+                    logger.debug("heartBeat ok");
                     sendMessage(YioRemoteMessages.HEARTBEAT_MESSAGE, "");
                 } else {
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.CONNECTION_FAILED;
@@ -345,8 +342,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public boolean getAndResetHeartbeat() {
-        boolean result = heartbeat;
-        heartbeat = false;
+        boolean result = heartBeat;
+        heartBeat = false;
         return result;
     }
 
@@ -364,7 +361,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             case HEARTBEAT_MESSAGE:
                 irCodeSendHandler.setCode("0;0x0;0;0");
                 yioremoteDockwebSocketClient.sendMessage(irCodeSendMessageHandler.getIRcodeSendMessageString());
-                logger.debug("sending heartbeat message: {}", irCodeSendMessageHandler.getIRcodeSendMessageString());
+                logger.debug("sending heartBeat message: {}", irCodeSendMessageHandler.getIRcodeSendMessageString());
                 break;
             case IR_RECEIVER_ON:
                 irReceiverMessageHandler.setOn();
@@ -381,7 +378,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             case IR_SEND:
                 irCodeSendHandler.setCode(messagePayload);
                 yioremoteDockwebSocketClient.sendMessage(irCodeSendMessageHandler.getIRcodeSendMessageString());
-                logger.debug("sending heartbeat message: {}", irCodeSendMessageHandler.getIRcodeSendMessageString());
+                logger.debug("sending heartBeat message: {}", irCodeSendMessageHandler.getIRcodeSendMessageString());
                 break;
         }
     }
