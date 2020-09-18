@@ -18,7 +18,7 @@ import java.util.Date;
  * The {@link PowerLimitationStatusDTO} class is used as a POJO to
  * in-memory persist the last limitation state change.
  *
- * @author Steven.Schwarznau - Initial contribution
+ * @author Steven Schwarznau - Initial contribution
  *
  */
 public class PowerLimitationStatusDTO {

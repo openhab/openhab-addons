@@ -16,7 +16,7 @@ package org.openhab.binding.senechome.internal;
  * The {@link SenecBatteryStatus} class defines available Senec specific
  * battery states.
  *
- * @author Steven.Schwarznau - Initial contribution
+ * @author Steven Schwarznau - Initial contribution
  *
  */
 public enum SenecBatteryStatus {

@@ -34,7 +34,7 @@ import com.google.gson.Gson;
  * The {@link SenecHomeApi} class configures http client and
  * performs status requests
  *
- * @author Steven.Schwarznau - Initial contribution
+ * @author Steven Schwarznau - Initial contribution
  *
  */
 @NonNullByDefault
