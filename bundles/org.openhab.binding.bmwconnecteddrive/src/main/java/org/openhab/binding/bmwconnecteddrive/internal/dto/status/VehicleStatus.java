@@ -150,24 +150,31 @@ public class VehicleStatus {
      * @return Closed if all "Closed", "Open" otherwise
      */
     public static String checkClosed(Object dto) {
-        boolean validDoorFound = false;
+        boolean validObjectFound = false;
         for (Field field : dto.getClass().getDeclaredFields()) {
             try {
-                if (field.get(dto) != null) {
-                    if (field.get(dto).equals(OPEN)) {
-                        // report the first door which is still open
-                        return Converter
-                                .toTitleCase(new StringBuffer(field.getName()).append(" ").append(OPEN).toString());
-                        // Ignore INVALID fields == Door not present } else if (field.get(dto).equals(INVALID)) {
-                    } else if (field.get(dto).equals(CLOSED)) {
-                        validDoorFound = true;
+                Object d = field.get(dto);
+                if (d != null) {
+                    String state = d.toString();
+                    // skip invalid entries - they don't apply to this Vehicle
+                    if (!state.equals(INVALID)) {
+                        if (!state.equals(CLOSED)) {
+                            // report the first field - remove DOOR / WINDOW Strings because they are reported to the
+                            // corresponding Channel
+                            String id = field.getName().toLowerCase().replace("door", Constants.EMPTY).replace("window",
+                                    Constants.EMPTY);
+                            return Converter.toTitleCase(new StringBuffer(id).append(" ").append(state).toString());
+                        } else {
+                            // at least one valid object needs to be found in order to reply "CLOSED"
+                            validObjectFound = true;
+                        }
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
                 return Converter.toTitleCase(UNKNOWN);
             }
         }
-        if (validDoorFound) {
+        if (validObjectFound) {
             return Converter.toTitleCase(CLOSED);
         } else {
             return Converter.toTitleCase(UNKNOWN);
