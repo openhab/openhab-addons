@@ -922,7 +922,7 @@
 		</state>
 	</channel-type>
 	<channel-type id="percentage">
-		<item-type>Dimmer</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Percentage</label>
 		<description>Current percentage</description>
 		<category>Percentage</category>
@@ -980,7 +980,7 @@
 		</event>
 	</channel-type>
 	<channel-group-type id="1channelInputModuleWithTemperatureSensor">
-		<label>Input Module with Temperature sensor</label>
+		<label>Input with Temperature Sensor</label>
 		<description>This is a generic module with 8 input channels and a temperature sensor.</description>
 		<channels>
 			<channel id="CH1" typeId="temperature"/>
@@ -1070,7 +1070,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="9channelInputModuleWithTemperatureSensor">
-		<label>Input Module with Temperature sensor</label>
+		<label>Input with Temperature Sensor</label>
 		<description>This is a generic module with 8 input channels and a temperature sensor.</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel"/>
@@ -1085,7 +1085,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="9channelInputModuleWithTemperatureAndLightSensor">
-		<label>Input Module with Temperature sensor</label>
+		<label>Input with Temperature/Light Sensor</label>
 		<description>This is a generic module with 8 input channels, a temperature sensor and a light sensor.</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel"/>
@@ -1101,7 +1101,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="33channelInputModuleWithTemperatureSensor">
-		<label>Input Module with Temperature sensor</label>
+		<label>Input with Temperature Sensor</label>
 		<description>This is a generic module with 32 input channels and a temperature sensor.</description>
 		<channels>
 			<channel id="CH1" typeId="trigger-channel"/>
