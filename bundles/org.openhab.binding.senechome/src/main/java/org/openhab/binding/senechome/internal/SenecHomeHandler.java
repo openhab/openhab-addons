@@ -105,6 +105,7 @@ public class SenecHomeHandler extends BaseThingHandler {
         config = getConfigAs(SenecHomeConfigurationDTO.class);
         senecHomeApi.setHostname(config.hostname);
         refreshJob = scheduler.scheduleWithFixedDelay(this::refresh, 0, config.refreshInterval, TimeUnit.SECONDS);
+        limitationStatus = null;
     }
 
     private void refresh() {
