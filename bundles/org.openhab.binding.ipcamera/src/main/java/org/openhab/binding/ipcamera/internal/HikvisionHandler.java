@@ -282,7 +282,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
     public void hikSendXml(String httpPutURL, String xml) {
         logger.trace("Body for PUT:{} is going to be:{}", httpPutURL, xml);
         FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"), httpPutURL);
-        request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.ipAddress);
+        request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.cameraConfig.getIp());
         request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
         request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
         ByteBuf bbuf = Unpooled.copiedBuffer(xml, StandardCharsets.UTF_8);
@@ -330,7 +330,7 @@ public class HikvisionHandler extends ChannelDuplexHandler {
             }
             FullHttpRequest request = new DefaultFullHttpRequest(HttpVersion.HTTP_1_1, new HttpMethod("PUT"),
                     httpGetPutURL);
-            request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.ipAddress);
+            request.headers().set(HttpHeaderNames.HOST, ipCameraHandler.cameraConfig.getIp());
             request.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.CLOSE);
             request.headers().add(HttpHeaderNames.CONTENT_TYPE, "application/xml; charset=\"UTF-8\"");
             ByteBuf bbuf = Unpooled.copiedBuffer(body, StandardCharsets.UTF_8);

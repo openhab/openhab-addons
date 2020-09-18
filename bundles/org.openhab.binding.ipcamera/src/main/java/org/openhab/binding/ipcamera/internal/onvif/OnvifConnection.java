@@ -66,6 +66,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 @NonNullByDefault
 public class OnvifConnection {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private @Nullable Bootstrap bootstrap;
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
     private String ipAddress = "";
@@ -107,7 +108,6 @@ public class OnvifConnection {
     private LinkedList<String> presetTokens = new LinkedList<>();
     private LinkedList<String> mediaProfileTokens = new LinkedList<>();
     private boolean ptzDevice = true;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public OnvifConnection(IpCameraHandler ipCameraHandler, String ipAddress, String user, String password) {
         this.ipCameraHandler = ipCameraHandler;
@@ -183,7 +183,7 @@ public class OnvifConnection {
                 return "<GetSystemDateAndTime xmlns=\"http://www.onvif.org/ver10/device/wsdl\"/>";
             case "Subscribe":
                 return "<Subscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"><ConsumerReference><Address>http://"
-                        + ipCameraHandler.hostIp + ":" + ipCameraHandler.serverPort
+                        + ipCameraHandler.hostIp + ":" + ipCameraHandler.cameraConfig.getServerPort()
                         + "/OnvifEvent</Address></ConsumerReference></Subscribe>";
             case "Unsubscribe":
                 return "<Unsubscribe xmlns=\"http://docs.oasis-open.org/wsn/b-2/\"></Unsubscribe>";
@@ -308,7 +308,7 @@ public class OnvifConnection {
         } else if (message.contains("GetStreamUriResponse")) {
             rtspUri = Helper.fetchXML(message, ":MediaUri", ":Uri>");
             logger.debug("GetStreamUri:{}", rtspUri);
-            if (ipCameraHandler.rtspUri.isEmpty()) {
+            if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
                 ipCameraHandler.rtspUri = rtspUri;
             }
         }

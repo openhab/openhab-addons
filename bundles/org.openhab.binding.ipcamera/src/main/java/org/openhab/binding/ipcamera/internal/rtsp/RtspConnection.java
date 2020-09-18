@@ -143,7 +143,7 @@ public class RtspConnection {
             });
         }
 
-        rtspBootstrap.connect(new InetSocketAddress(ipCameraHandler.ipAddress, 554))
+        rtspBootstrap.connect(new InetSocketAddress(ipCameraHandler.cameraConfig.getIp(), 554))
                 .addListener(new ChannelFutureListener() {
 
                     @Override

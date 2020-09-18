@@ -37,7 +37,7 @@ import io.netty.handler.codec.http.HttpResponse;
 @NonNullByDefault
 public class MyNettyAuthHandler extends ChannelDuplexHandler {
     public final Logger logger = LoggerFactory.getLogger(getClass());
-    private IpCameraHandler myHandler;
+    private IpCameraHandler ipCameraHandler;
     private String username, password;
     private String httpMethod = "", httpUrl = "";
     private byte ncCounter = 0;
@@ -45,7 +45,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     private String realm = "";
 
     public MyNettyAuthHandler(String user, String pass, IpCameraHandler handle) {
-        myHandler = handle;
+        ipCameraHandler = handle;
         username = user;
         password = pass;
     }
@@ -76,13 +76,13 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
     // nonce is reused if authenticate is null so the NC needs to increment to allow this//
     public void processAuth(String authenticate, String httpMethod, String requestURI, boolean reSend) {
         if (authenticate.contains("Basic realm=\"")) {
-            if (myHandler.useDigestAuth == true) {
+            if (ipCameraHandler.useDigestAuth == true) {
                 // Possible downgrade authenticate attack avoided.
                 return;
             }
             logger.debug("Setting up the camera to use Basic Auth and resending last request with correct auth.");
-            if (myHandler.setBasicAuth(true)) {
-                myHandler.sendHttpRequest(httpMethod, requestURI, null);
+            if (ipCameraHandler.setBasicAuth(true)) {
+                ipCameraHandler.sendHttpRequest(httpMethod, requestURI, null);
             }
             return;
         }
@@ -98,7 +98,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         qop = Helper.searchString(authenticate, "qop=\"");
 
         if (!qop.isEmpty() && !realm.isEmpty()) {
-            myHandler.useDigestAuth = true;
+            ipCameraHandler.useDigestAuth = true;
         } else {
             logger.warn(
                     "!!!! Something is wrong with the reply back from the camera. WWW-Authenticate header: qop:{}, realm:{}",
@@ -112,7 +112,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
         }
 
         if (password.isEmpty()) {
-            myHandler.cameraConfigError("Camera gave a 401 reply: You need to provide a password.");
+            ipCameraHandler.cameraConfigError("Camera gave a 401 reply: You need to provide a password.");
             return;
         }
         // create the MD5 hashes
@@ -133,7 +133,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                 + response + "\", opaque=\"" + opaque + "\"";
 
         if (reSend) {
-            myHandler.sendHttpRequest(httpMethod, requestURI, digestString);
+            ipCameraHandler.sendHttpRequest(httpMethod, requestURI, digestString);
             return;
         }
     }
@@ -165,7 +165,7 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     if (!authenticate.isEmpty()) {
                         processAuth(authenticate, httpMethod, httpUrl, true);
                     } else {
-                        myHandler.cameraConfigError(
+                        ipCameraHandler.cameraConfigError(
                                 "Camera gave no WWW-Authenticate: Your login details must be wrong.");
                     }
                     if (closeConnection) {
@@ -173,8 +173,8 @@ public class MyNettyAuthHandler extends ChannelDuplexHandler {
                     }
                 }
             } else if (response.status().code() != 200) {
-                logger.debug("Camera at IP:{} gave a reply with a response code of :{}", myHandler.ipAddress,
-                        response.status().code());
+                logger.debug("Camera at IP:{} gave a reply with a response code of :{}",
+                        ipCameraHandler.cameraConfig.getIp(), response.status().code());
             }
         }
         // Pass the Message back to the pipeline for the next handler to process//
