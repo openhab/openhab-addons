@@ -62,7 +62,6 @@ public class IntesisHomeHttpApi {
             ContentResponse contentResponse = request.timeout(5, TimeUnit.SECONDS).send();
 
             String response = contentResponse.getContentAsString().replace("\t", "").replace("\r\n", "").trim();
-            logger.trace("HTTP Response {}: {}", contentResponse.getStatus(), response);
 
             if (response != null && !response.isEmpty()) {
                 return response;

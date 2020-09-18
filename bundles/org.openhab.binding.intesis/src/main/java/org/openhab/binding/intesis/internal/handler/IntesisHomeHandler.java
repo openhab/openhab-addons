@@ -84,7 +84,6 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     private String ipAddress = "";
     private String password = "";
-    private String sessionId = "";
 
     final Gson gson = new Gson();
 
@@ -108,7 +107,8 @@ public class IntesisHomeHandler extends BaseThingHandler {
         // start background initialization:
         scheduler.schedule(() -> {
             populateProperties();
-            getDataPoints();
+            populateChannels();
+            updateProperties(properties);
 
         }, 0, TimeUnit.SECONDS);
     }
@@ -198,27 +198,32 @@ public class IntesisHomeHandler extends BaseThingHandler {
             }
         }
         if (uid != 0) {
-            login();
-            String contentString = "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
-                    + "\", \"uid\":" + uid + ",\"value\":" + value + "}}";
-            String response = api.postRequest(ipAddress, contentString);
-            if (response != null) {
-                try {
-                    Response resp = gson.fromJson(response, Response.class);
-                    boolean success = resp.success;
-                    if (!success) {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        String sessionString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\""
-                                + password + "\"}}";
-                        response = api.postRequest(ipAddress, sessionString);
-                    } else {
-                        logout();
-                        updateStatus(ThingStatus.ONLINE);
+            final int uId = uid;
+            final int newValue = value;
+            scheduler.schedule(() -> {
+                login();
+                String sessionId = login();
+                if (sessionId != null) {
+                    String contentString = "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+                            + "\", \"uid\":" + uId + ",\"value\":" + newValue + "}}";
+                    String response = api.postRequest(ipAddress, contentString);
+                    if (response != null) {
+                        try {
+                            Response resp = gson.fromJson(response, Response.class);
+                            boolean success = resp.success;
+                            if (!success) {
+                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                            } else {
+                                logout(sessionId);
+                                updateStatus(ThingStatus.ONLINE);
+                            }
+                        } catch (JsonSyntaxException e) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                        }
                     }
-                } catch (JsonSyntaxException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-            }
+
+            }, 0, TimeUnit.SECONDS);
         }
     }
 
@@ -227,127 +232,138 @@ public class IntesisHomeHandler extends BaseThingHandler {
      */
     public void getAllUidValues() {
         logger.debug("Polling IntesisHome device");
-        login();
-        String contentString = "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
-                + "\", \"uid\":\"all\"}}";
-        String response = api.postRequest(ipAddress, contentString);
-        logger.debug("Thing {} received response {}", this.getThing().getUID(), response);
-        if (response != null) {
-            try {
-                Response resp = gson.fromJson(response, Response.class);
-                boolean success = resp.success;
-                if (!success) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                } else {
-                    logout();
-                    Data data = gson.fromJson(resp.data, Data.class);
-                    Dpval[] dpval = gson.fromJson(data.dpval, Dpval[].class);
-                    for (Dpval element : dpval) {
-                        logger.trace("UID : {} ; value : {}", element.uid, element.value);
-                        switch (element.uid) {
-                            case 1:
-                                updateState(CHANNEL_TYPE_POWER,
-                                        String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
-                                break;
-                            case 2:
-                                switch (element.value) {
-                                    case 0:
-                                        updateState(CHANNEL_TYPE_MODE, StringType.valueOf("AUTO"));
-                                        break;
-                                    case 1:
-                                        updateState(CHANNEL_TYPE_MODE, StringType.valueOf("HEAT"));
-                                        break;
-                                    case 2:
-                                        updateState(CHANNEL_TYPE_MODE, StringType.valueOf("DRY"));
-                                        break;
-                                    case 3:
-                                        updateState(CHANNEL_TYPE_MODE, StringType.valueOf("FAN"));
-                                        break;
-                                    case 4:
-                                        updateState(CHANNEL_TYPE_MODE, StringType.valueOf("COOL"));
-                                        break;
-                                }
-                                break;
-                            case 4:
-                                if ((element.value) == 0) {
-                                    updateState(CHANNEL_TYPE_FANSPEED, StringType.valueOf("AUTO"));
-                                } else {
-                                    updateState(CHANNEL_TYPE_FANSPEED,
-                                            StringType.valueOf(String.valueOf(element.value)));
-                                }
-                                break;
-                            case 5:
-                            case 6:
-                                State state;
-                                if ((element.value) == 0) {
-                                    state = StringType.valueOf("AUTO");
-                                } else if ((element.value) == 10) {
-                                    state = StringType.valueOf("SWING");
-                                } else if ((element.value) == 11) {
-                                    state = StringType.valueOf("SWIRL");
-                                } else if ((element.value) == 12) {
-                                    state = StringType.valueOf("WIDE");
-                                } else {
-                                    state = StringType.valueOf(String.valueOf(element.value));
-                                }
-                                switch (element.uid) {
-                                    case 5:
-                                        updateState(CHANNEL_TYPE_VANESUD, state);
-                                        break;
-                                    case 6:
-                                        updateState(CHANNEL_TYPE_VANESLR, state);
-                                        break;
-                                }
-                                break;
-                            case 9:
-                                int unit = Math.round((element.value) / 10);
-                                State stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-                                updateState(CHANNEL_TYPE_TARGETTEMP, stateValue);
-                                break;
-                            case 10:
-                                unit = Math.round((element.value) / 10);
-                                stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-                                updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
-                                break;
-                            case 37:
-                                unit = Math.round((element.value) / 10);
-                                stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
-                                updateState(CHANNEL_TYPE_OUTDOORTEMP, stateValue);
-                                break;
+        String sessionId = login();
+        if (sessionId != null) {
+            String contentString = "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+                    + "\", \"uid\":\"all\"}}";
+            String response = api.postRequest(ipAddress, contentString);
+            logger.debug("Thing {} received response {}", this.getThing().getUID(), response);
+            if (response != null) {
+                try {
+                    Response resp = gson.fromJson(response, Response.class);
+                    boolean success = resp.success;
+                    if (!success) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    } else {
+                        logout(sessionId);
+                        Data data = gson.fromJson(resp.data, Data.class);
+                        Dpval[] dpval = gson.fromJson(data.dpval, Dpval[].class);
+                        for (Dpval element : dpval) {
+                            logger.trace("UID : {} ; value : {}", element.uid, element.value);
+                            switch (element.uid) {
+                                case 1:
+                                    updateState(CHANNEL_TYPE_POWER,
+                                            String.valueOf(element.value).equals("0") ? OnOffType.OFF : OnOffType.ON);
+                                    break;
+                                case 2:
+                                    switch (element.value) {
+                                        case 0:
+                                            updateState(CHANNEL_TYPE_MODE, StringType.valueOf("AUTO"));
+                                            break;
+                                        case 1:
+                                            updateState(CHANNEL_TYPE_MODE, StringType.valueOf("HEAT"));
+                                            break;
+                                        case 2:
+                                            updateState(CHANNEL_TYPE_MODE, StringType.valueOf("DRY"));
+                                            break;
+                                        case 3:
+                                            updateState(CHANNEL_TYPE_MODE, StringType.valueOf("FAN"));
+                                            break;
+                                        case 4:
+                                            updateState(CHANNEL_TYPE_MODE, StringType.valueOf("COOL"));
+                                            break;
+                                    }
+                                    break;
+                                case 4:
+                                    if ((element.value) == 0) {
+                                        updateState(CHANNEL_TYPE_FANSPEED, StringType.valueOf("AUTO"));
+                                    } else {
+                                        updateState(CHANNEL_TYPE_FANSPEED,
+                                                StringType.valueOf(String.valueOf(element.value)));
+                                    }
+                                    break;
+                                case 5:
+                                case 6:
+                                    State state;
+                                    if ((element.value) == 0) {
+                                        state = StringType.valueOf("AUTO");
+                                    } else if ((element.value) == 10) {
+                                        state = StringType.valueOf("SWING");
+                                    } else if ((element.value) == 11) {
+                                        state = StringType.valueOf("SWIRL");
+                                    } else if ((element.value) == 12) {
+                                        state = StringType.valueOf("WIDE");
+                                    } else {
+                                        state = StringType.valueOf(String.valueOf(element.value));
+                                    }
+                                    switch (element.uid) {
+                                        case 5:
+                                            updateState(CHANNEL_TYPE_VANESUD, state);
+                                            break;
+                                        case 6:
+                                            updateState(CHANNEL_TYPE_VANESLR, state);
+                                            break;
+                                    }
+                                    break;
+                                case 9:
+                                    int unit = Math.round((element.value) / 10);
+                                    State stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                                    updateState(CHANNEL_TYPE_TARGETTEMP, stateValue);
+                                    break;
+                                case 10:
+                                    unit = Math.round((element.value) / 10);
+                                    stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                                    updateState(CHANNEL_TYPE_AMBIENTTEMP, stateValue);
+                                    break;
+                                case 37:
+                                    unit = Math.round((element.value) / 10);
+                                    stateValue = QuantityType.valueOf(unit, SIUnits.CELSIUS);
+                                    updateState(CHANNEL_TYPE_OUTDOORTEMP, stateValue);
+                                    break;
+                            }
                         }
                     }
+                } catch (JsonSyntaxException e) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
                 }
-            } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             }
         }
     }
 
-    public void login() {
+    public @Nullable String login() {
         String contentString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + password
                 + "\"}}";
         String response = api.postRequest(ipAddress, contentString);
+        String sessionId = null;
         if (response != null) {
             try {
                 Response resp = gson.fromJson(response, Response.class);
                 boolean success = resp.success;
                 if (success) {
-                    Data data = gson.fromJson(resp.data.toString(), Data.class);
-                    Id id = gson.fromJson(data.id.toString(), Id.class);
-                    if (id.sessionID.toString() != null && !id.sessionID.toString().isEmpty()) {
-                        sessionId = id.sessionID.toString();
+                    Data data = gson.fromJson(resp.data, Data.class);
+                    Id id = gson.fromJson(data.id, Id.class);
+                    sessionId = id.sessionID.toString();
+                    if (sessionId != null && !sessionId.isEmpty()) {
                         updateStatus(ThingStatus.ONLINE);
+                        return sessionId;
                     } else {
                         updateStatus(ThingStatus.OFFLINE);
                     }
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    return null;
                 }
             } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return null;
         }
+        return sessionId;
     }
 
-    public @Nullable String logout() {
+    public @Nullable String logout(String sessionId) {
         String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
         String response = api.postRequest(ipAddress, contentString);
         return response;
@@ -362,14 +378,13 @@ public class IntesisHomeHandler extends BaseThingHandler {
                 Response resp = gson.fromJson(response, Response.class);
                 boolean success = resp.success;
                 if (success) {
-                    Data data = gson.fromJson(resp.data.toString(), Data.class);
-                    Info info = gson.fromJson(data.info.toString(), Info.class);
+                    Data data = gson.fromJson(resp.data, Data.class);
+                    Info info = gson.fromJson(data.info, Info.class);
                     properties.put(PROPERTY_VENDOR, "Intesis");
                     properties.put(PROPERTY_MODEL_ID, info.deviceModel);
                     properties.put(PROPERTY_SERIAL_NUMBER, info.sn);
                     properties.put(PROPERTY_FIRMWARE_VERSION, info.fwVersion);
                     properties.put(PROPERTY_MAC_ADDRESS, info.wlanSTAMAC);
-                    updateProperties(properties);
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (JsonSyntaxException e) {
@@ -378,9 +393,9 @@ public class IntesisHomeHandler extends BaseThingHandler {
         }
     }
 
-    public void getDataPoints() {
-        login();
-        if (!sessionId.isEmpty()) {
+    public void populateChannels() {
+        String sessionId = login();
+        if (sessionId != null && !sessionId.isEmpty()) {
             String contentString = "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\"" + sessionId
                     + "\"}}";
             String response = api.postRequest(ipAddress, contentString);
@@ -390,9 +405,9 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     Response resp = gson.fromJson(response, Response.class);
                     boolean success = resp.success;
                     if (success) {
-                        logout();
-                        Data data = gson.fromJson(resp.data.toString(), Data.class);
-                        Dp dp = gson.fromJson(data.dp.toString(), Dp.class);
+                        logout(sessionId);
+                        Data data = gson.fromJson(resp.data, Data.class);
+                        Dp dp = gson.fromJson(data.dp, Dp.class);
                         Datapoints[] datapoints = gson.fromJson(dp.datapoints, Datapoints[].class);
                         for (Datapoints datapoint : datapoints) {
                             Descr descr = gson.fromJson(datapoint.descr, Descr.class);
@@ -421,7 +436,6 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                         }
                                     }
                                     properties.put("Supported modes", opModes.toString());
-                                    updateProperties(properties);
                                     channelId = CHANNEL_TYPE_MODE;
                                     addChannel(channelId, itemType, opModes);
                                     break;
@@ -435,7 +449,6 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                         }
                                     }
                                     properties.put("Supported fan levels", fanLevels.toString());
-                                    updateProperties(properties);
                                     channelId = CHANNEL_TYPE_FANSPEED;
                                     addChannel(channelId, itemType, fanLevels);
                                     break;
@@ -459,13 +472,11 @@ public class IntesisHomeHandler extends BaseThingHandler {
                                         case 5:
                                             channelId = CHANNEL_TYPE_VANESUD;
                                             properties.put("Supported vane up/down modes", swingModes.toString());
-                                            updateProperties(properties);
                                             addChannel(channelId, itemType, swingModes);
                                             break;
                                         case 6:
                                             channelId = CHANNEL_TYPE_VANESLR;
                                             properties.put("Supported vane left/right modes", swingModes.toString());
-                                            updateProperties(properties);
                                             addChannel(channelId, itemType, swingModes);
                                             break;
                                     }
@@ -490,7 +501,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
                     }
 
                 } catch (JsonSyntaxException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
@@ -503,7 +514,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
         }
     }
 
-    public void addChannel(String channelId, String itemType, @Nullable final Collection<?> options) {
+    public void addChannel(String channelId, String itemType, @Nullable final Collection<String> options) {
         if (thing.getChannel(channelId) == null) {
             logger.trace("Channel '{}' for UID to be added", channelId);
             ThingBuilder thingBuilder = editThing();
@@ -515,14 +526,10 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
             if (options != null) {
                 final List<StateOption> stateOptions = options.stream()
-                        .map(e -> new StateOption(e.toString(),
-                                e.toString().substring(0, 1) + e.toString().substring(1).toLowerCase()))
+                        .map(e -> new StateOption(e, e.substring(0, 1) + e.toString().substring(1).toLowerCase()))
                         .collect(Collectors.toList());
                 logger.trace("StateOptions : '{}'", stateOptions);
-                channel = thing.getChannel(channelId);
-                if (channel != null) {
-                    intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
-                }
+                intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
             }
         }
     }
