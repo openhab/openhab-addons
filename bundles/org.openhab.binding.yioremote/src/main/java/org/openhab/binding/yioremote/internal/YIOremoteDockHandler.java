@@ -269,7 +269,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     public void sendIRCode(@Nullable String irCode) {
-        if (irCode != null) {
+        if (irCode != null && yioRemoteDockActualStatus.equals(YioRemoteDockHandleStatus.AUTHENTICATION_COMPLETE)) {
             if (irCode.matches("[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                 sendMessage(YioRemoteMessages.IR_SEND, irCode);
             } else {
@@ -345,10 +345,6 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         boolean result = heartBeat;
         heartBeat = false;
         return result;
-    }
-
-    public YioRemoteDockHandleStatus getyioRemoteDockActualStatus() {
-        return yioRemoteDockActualStatus;
     }
 
     public void sendMessage(YioRemoteMessages messageType, String messagePayload) {

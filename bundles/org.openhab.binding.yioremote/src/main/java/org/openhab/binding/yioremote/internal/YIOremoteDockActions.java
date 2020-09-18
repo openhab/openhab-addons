@@ -29,7 +29,7 @@ import org.openhab.core.automation.annotation.RuleAction;
 @ThingActionsScope(name = "yioremote")
 @NonNullByDefault
 public class YIOremoteDockActions implements ThingActions {
-    private @Nullable static YIOremoteDockHandler dockHandler;
+    private @Nullable YIOremoteDockHandler dockHandler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler yiremotedockhandler) {
@@ -44,26 +44,15 @@ public class YIOremoteDockActions implements ThingActions {
     @RuleAction(label = "@text/actionLabel", description = "@text/actionDesc")
     public void sendIRCode(
             @ActionInput(name = "IRCode", label = "@text/actionInputTopicLabel", description = "@text/actionInputTopicDesc") @Nullable String irCode) {
-        if (dockHandler != null) {
-            switch (dockHandler.getyioRemoteDockActualStatus()) {
-                case AUTHENTICATION_COMPLETE:
-                    dockHandler.sendIRCode(irCode);
-                    break;
-                default:
-                    break;
-            }
+        YIOremoteDockHandler dockHandlerLocal = dockHandler;
+        if (dockHandlerLocal != null) {
+            dockHandlerLocal.sendIRCode(irCode);
         }
     }
 
     public static void sendIRCode(@Nullable ThingActions actions, @Nullable String irCode) {
-        if (actions instanceof YIOremoteDockActions && dockHandler != null) {
-            switch (dockHandler.getyioRemoteDockActualStatus()) {
-                case AUTHENTICATION_COMPLETE:
-                    ((YIOremoteDockActions) actions).sendIRCode(irCode);
-                    break;
-                default:
-                    break;
-            }
+        if (actions instanceof YIOremoteDockActions) {
+            ((YIOremoteDockActions) actions).sendIRCode(irCode);
         } else {
             throw new IllegalArgumentException("Instance is not an YIOremoteDockActions class.");
         }
