@@ -670,45 +670,43 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
-    public void startStreamServer(boolean start) {
+    public void stopStreamServer() {
+        serversLoopGroup.shutdownGracefully();
+        serverBootstrap = null;
+    }
 
-        if (!start) {
-            serversLoopGroup.shutdownGracefully();
-            serverBootstrap = null;
-        } else {
-            if (serverBootstrap == null) {
-                try {
-                    serversLoopGroup = new NioEventLoopGroup();
-                    serverBootstrap = new ServerBootstrap();
-                    serverBootstrap.group(serversLoopGroup);
-                    serverBootstrap.channel(NioServerSocketChannel.class);
-                    // IP "0.0.0.0" will bind the server to all network connections//
-                    serverBootstrap.localAddress(new InetSocketAddress("0.0.0.0", cameraConfig.getServerPort()));
-                    serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 60, 0));
-                            socketChannel.pipeline().addLast("HttpServerCodec", new HttpServerCodec());
-                            socketChannel.pipeline().addLast("ChunkedWriteHandler", new ChunkedWriteHandler());
-                            socketChannel.pipeline().addLast("streamServerHandler",
-                                    new StreamServerHandler(getHandle()));
-                        }
-                    });
-                    serverFuture = serverBootstrap.bind().sync();
-                    serverFuture.await(4000);
-                    logger.debug("File server for camera at {} has started on port {} for all NIC's.",
-                            cameraConfig.getIp(), cameraConfig.getServerPort());
-                    updateState(CHANNEL_MJPEG_URL, new StringType(
-                            "http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
-                    updateState(CHANNEL_HLS_URL,
-                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.m3u8"));
-                    updateState(CHANNEL_IMAGE_URL,
-                            new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
-                } catch (Exception e) {
-                    cameraConfigError(
-                            "Exception when starting server. Try changing the cameraConfig.getServerPort() to another number.");
-                }
+    @SuppressWarnings("null")
+    public void startStreamServer() {
+        if (serverBootstrap == null) {
+            try {
+                serversLoopGroup = new NioEventLoopGroup();
+                serverBootstrap = new ServerBootstrap();
+                serverBootstrap.group(serversLoopGroup);
+                serverBootstrap.channel(NioServerSocketChannel.class);
+                // IP "0.0.0.0" will bind the server to all network connections//
+                serverBootstrap.localAddress(new InetSocketAddress("0.0.0.0", cameraConfig.getServerPort()));
+                serverBootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    protected void initChannel(SocketChannel socketChannel) throws Exception {
+                        socketChannel.pipeline().addLast("idleStateHandler", new IdleStateHandler(0, 60, 0));
+                        socketChannel.pipeline().addLast("HttpServerCodec", new HttpServerCodec());
+                        socketChannel.pipeline().addLast("ChunkedWriteHandler", new ChunkedWriteHandler());
+                        socketChannel.pipeline().addLast("streamServerHandler", new StreamServerHandler(getHandle()));
+                    }
+                });
+                serverFuture = serverBootstrap.bind().sync();
+                serverFuture.await(4000);
+                logger.debug("File server for camera at {} has started on port {} for all NIC's.", cameraConfig.getIp(),
+                        cameraConfig.getServerPort());
+                updateState(CHANNEL_MJPEG_URL,
+                        new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.mjpeg"));
+                updateState(CHANNEL_HLS_URL,
+                        new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.m3u8"));
+                updateState(CHANNEL_IMAGE_URL,
+                        new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
+            } catch (Exception e) {
+                cameraConfigError(
+                        "Exception when starting server. Try changing the cameraConfig.getServerPort() to another number.");
             }
         }
     }
@@ -1695,7 +1693,7 @@ public class IpCameraHandler extends BaseThingHandler {
 
         // Onvif and Instar event handling needs the host IP and the server started.
         if (cameraConfig.getServerPort() > 0) {
-            startStreamServer(true);
+            startStreamServer();
         }
 
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
@@ -1749,7 +1747,7 @@ public class IpCameraHandler extends BaseThingHandler {
         }
         basicAuth = ""; // clear out stored password hash
         useDigestAuth = false;
-        startStreamServer(false);
+        stopStreamServer();
         openChannels.close();
 
         if (ffmpegHLS != null) {
