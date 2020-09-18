@@ -87,8 +87,6 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 authStore.addAuthentication(new DigestAuthentication(config.getUri(), Authentication.ANY_REALM,
                         config.getUsername(), config.getPassword()));
             }
-            httpClient.start();
-
             scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
 
             logger.debug("Finished initializing WlanThermo Nano!");

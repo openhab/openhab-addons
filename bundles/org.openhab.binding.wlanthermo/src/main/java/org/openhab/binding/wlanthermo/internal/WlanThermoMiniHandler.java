@@ -70,8 +70,6 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
         try {
-            httpClient.start();
-
             scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
 
             logger.debug("Finished initializing WlanThermo Mini!");

@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class UtilNano {
 
-    private static final Map<String, String> colorMappings = createColorMap();
+    private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";
     private static final String DEFAULT_COLORNAME = "niagara";
 
@@ -52,7 +52,7 @@ public class UtilNano {
      * @return The color as Hex String
      */
     public static String toHex(String colorName) {
-        return colorMappings.getOrDefault(colorName, DEFAULT_HEX);
+        return COLOR_MAPPINGS.getOrDefault(colorName, DEFAULT_HEX);
     }
 
     public static String toColorName(String colorHex) {
@@ -60,7 +60,7 @@ public class UtilNano {
         if (!colorHex.startsWith("#")) {
             colorHex = "#" + colorHex;
         }
-        for (Map.Entry<String, String> entry : colorMappings.entrySet()) {
+        for (Map.Entry<String, String> entry : COLOR_MAPPINGS.entrySet()) {
             if (entry.getValue().equalsIgnoreCase(colorHex)) {
                 colorName = entry.getKey();
             }

@@ -21,7 +21,7 @@ import java.util.Map;
  * @author Christian Schlipp - Initial contribution
  */
 public class UtilMini {
-    private static final Map<String, String> colorMappings = createColorMap();
+    private static final Map<String, String> COLOR_MAPPINGS = createColorMap();
     private static final String DEFAULT_HEX = "#ffffff";
 
     private UtilMini() {
@@ -73,6 +73,6 @@ public class UtilMini {
      * @return The color as Hex String
      */
     public static String toHex(String colorName) {
-        return colorMappings.getOrDefault(colorName, DEFAULT_HEX);
+        return COLOR_MAPPINGS.getOrDefault(colorName, DEFAULT_HEX);
     }
 }
