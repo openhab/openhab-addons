@@ -76,18 +76,16 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(IntesisHomeHandler.class);
     private final IntesisHomeHttpApi api;
-    private IntesisConfiguration config = new IntesisConfiguration();
 
     private final Map<String, String> properties = new HashMap<>();
 
-    private IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
+    private final IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider;
+
+    private final Gson gson = new Gson();
+
+    private IntesisConfiguration config = new IntesisConfiguration();
 
     private @Nullable ScheduledFuture<?> refreshJob;
-
-    private String ipAddress = "";
-    private String password = "";
-
-    final Gson gson = new Gson();
 
     public IntesisHomeHandler(final Thing thing, final HttpClient httpClient,
             IntesisDynamicStateDescriptionProvider intesisStateDescriptionProvider) {
@@ -99,21 +97,22 @@ public class IntesisHomeHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        final IntesisConfiguration config = getConfigAs(IntesisConfiguration.class);
-        ipAddress = config.ipAddress;
-        password = config.password;
-        if (ipAddress.isEmpty() || password.isEmpty()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        config = getConfigAs(IntesisConfiguration.class);
+        if (config.ipAddress.isEmpty() && config.password.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address and password not set");
+        } else if (config.ipAddress.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address not set");
+        } else if (config.password.isEmpty()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
         }
 
         // start background initialization:
         scheduler.submit(() -> {
             populateProperties();
             // query available dataPoints and build dynamic channels
-            postRequest(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\"" + sessionId
-                    + "\"}}", this::handleDataPointsResponse);
+            postRequestInSession(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
+                    + sessionId + "\"}}", this::handleDataPointsResponse);
             updateProperties(properties);
-
         });
     }
 
@@ -205,93 +204,50 @@ public class IntesisHomeHandler extends BaseThingHandler {
             final int uId = uid;
             final int newValue = value;
             scheduler.submit(() -> {
-                login();
-                String sessionId = login();
-                if (sessionId != null) {
-                    String contentString = "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
-                            + "\", \"uid\":" + uId + ",\"value\":" + newValue + "}}";
-                    String response = api.postRequest(ipAddress, contentString);
-                    if (response != null) {
-                        try {
-                            Response resp = gson.fromJson(response, Response.class);
-                            boolean success = resp.success;
-                            if (!success) {
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                            } else {
-                                logout(sessionId);
-                                updateStatus(ThingStatus.ONLINE);
-                            }
-                        } catch (JsonSyntaxException e) {
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                        }
-                    }
-                }
-
+                postRequestInSession(
+                        sessionId -> "{\"command\":\"setdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+                                + "\", \"uid\":" + uId + ",\"value\":" + newValue + "}}",
+                        r -> updateStatus(ThingStatus.ONLINE));
             });
         }
     }
 
     public @Nullable String login() {
-        String contentString = "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + password
-                + "\"}}";
-        String response = api.postRequest(ipAddress, contentString);
-        String sessionId = null;
-        if (response != null) {
-            try {
-                Response resp = gson.fromJson(response, Response.class);
-                boolean success = resp.success;
-                if (success) {
+        // lambda's can't modify local variables, so we use an array here to get around the issue
+        String[] sessionId = new String[1];
+        postRequest(
+                "{\"command\":\"login\",\"data\":{\"username\":\"Admin\",\"password\":\"" + config.password + "\"}}",
+                resp -> {
                     Data data = gson.fromJson(resp.data, Data.class);
                     Id id = gson.fromJson(data.id, Id.class);
-                    sessionId = id.sessionID.toString();
-                    if (sessionId != null && !sessionId.isEmpty()) {
-                        updateStatus(ThingStatus.ONLINE);
-                        return sessionId;
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE);
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                    return null;
-                }
-            } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
+                    sessionId[0] = id.sessionID.toString();
+                });
+        if (sessionId[0] != null && !sessionId[0].isEmpty()) {
+            updateStatus(ThingStatus.ONLINE);
+            return sessionId[0];
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "SessionId not received");
             return null;
         }
-        return sessionId;
     }
 
     public @Nullable String logout(String sessionId) {
         String contentString = "{\"command\":\"logout\",\"data\":{\"sessionID\":\"" + sessionId + "\"}}";
-        String response = api.postRequest(ipAddress, contentString);
+        String response = api.postRequest(config.ipAddress, contentString);
         return response;
     }
 
     public void populateProperties() {
-        String contentString = "{\"command\":\"getinfo\",\"data\":\"\"}";
-        String response = api.postRequest(ipAddress, contentString);
-        logger.trace("getInfo response : {}", response);
-        if (response != null) {
-            try {
-                Response resp = gson.fromJson(response, Response.class);
-                boolean success = resp.success;
-                if (success) {
-                    Data data = gson.fromJson(resp.data, Data.class);
-                    Info info = gson.fromJson(data.info, Info.class);
-                    properties.put(PROPERTY_VENDOR, "Intesis");
-                    properties.put(PROPERTY_MODEL_ID, info.deviceModel);
-                    properties.put(PROPERTY_SERIAL_NUMBER, info.sn);
-                    properties.put(PROPERTY_FIRMWARE_VERSION, info.fwVersion);
-                    properties.put(PROPERTY_MAC_ADDRESS, info.wlanSTAMAC);
-                    updateStatus(ThingStatus.ONLINE);
-                }
-            } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            }
-        }
+        postRequest("{\"command\":\"getinfo\",\"data\":\"\"}", resp -> {
+            Data data = gson.fromJson(resp.data, Data.class);
+            Info info = gson.fromJson(data.info, Info.class);
+            properties.put(PROPERTY_VENDOR, "Intesis");
+            properties.put(PROPERTY_MODEL_ID, info.deviceModel);
+            properties.put(PROPERTY_SERIAL_NUMBER, info.sn);
+            properties.put(PROPERTY_FIRMWARE_VERSION, info.fwVersion);
+            properties.put(PROPERTY_MAC_ADDRESS, info.wlanSTAMAC);
+            updateStatus(ThingStatus.ONLINE);
+        });
     }
 
     public void addChannel(String channelId, String itemType, @Nullable final Collection<String> options) {
@@ -306,7 +262,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
 
             if (options != null) {
                 final List<StateOption> stateOptions = options.stream()
-                        .map(e -> new StateOption(e, e.substring(0, 1) + e.toString().substring(1).toLowerCase()))
+                        .map(e -> new StateOption(e, e.substring(0, 1) + e.substring(1).toLowerCase()))
                         .collect(Collectors.toList());
                 logger.trace("StateOptions : '{}'", stateOptions);
                 intesisStateDescriptionProvider.setStateOptions(channel.getUID(), stateOptions);
@@ -314,29 +270,32 @@ public class IntesisHomeHandler extends BaseThingHandler {
         }
     }
 
-    private void postRequest(UnaryOperator<String> requestFactory, Consumer<Response> handler) {
+    private void postRequest(String request, Consumer<Response> handler) {
+        try {
+            logger.trace("request : '{}'", request);
+            String response = api.postRequest(config.ipAddress, request);
+            if (response != null) {
+                Response resp = gson.fromJson(response, Response.class);
+                boolean success = resp.success;
+                if (success) {
+                    handler.accept(resp);
+                } else {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Request unsuccessful");
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No Response");
+            }
+        } catch (JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
+    }
+
+    private void postRequestInSession(UnaryOperator<String> requestFactory, Consumer<Response> handler) {
         String sessionId = login();
         if (sessionId != null) {
             try {
                 String request = requestFactory.apply(sessionId);
-                logger.trace("request : '{}'", request);
-
-                String response = api.postRequest(ipAddress, request);
-                if (response != null) {
-
-                    Response resp = gson.fromJson(response, Response.class);
-                    boolean success = resp.success;
-                    if (success) {
-                        handler.accept(resp);
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Request unsuccessful");
-                    }
-                } else {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No Response");
-                }
-            } catch (JsonSyntaxException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                postRequest(request, handler);
             } finally {
                 logout(sessionId);
             }
@@ -449,7 +408,7 @@ public class IntesisHomeHandler extends BaseThingHandler {
      * Update device status and all channels
      */
     private void getAllUidValues() {
-        postRequest(sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
+        postRequestInSession(sessionId -> "{\"command\":\"getdatapointvalue\",\"data\":{\"sessionID\":\"" + sessionId
                 + "\", \"uid\":\"all\"}}", this::handleDataPointValues);
     }
 
