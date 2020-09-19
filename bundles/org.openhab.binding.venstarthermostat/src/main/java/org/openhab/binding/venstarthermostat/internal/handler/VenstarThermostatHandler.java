@@ -212,9 +212,8 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     private void connect() {
         stopUpdateTasks();
         VenstarThermostatConfiguration config = getConfigAs(VenstarThermostatConfiguration.class);
-        String url = getThing().getProperties().get(PROPERTY_URL);
         try {
-            baseURL = new URL(url);
+            baseURL = new URL(config.url);
             if (!httpClient.isStarted()) {
                 httpClient.start();
             }
@@ -225,7 +224,7 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             refresh = config.refresh;
             startUpdatesTask(0);
         } catch (Exception e) {
-            log.debug("Could not conntect to URL  {}", url, e);
+            log.debug("Could not conntect to URL  {}", config.url, e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
     }

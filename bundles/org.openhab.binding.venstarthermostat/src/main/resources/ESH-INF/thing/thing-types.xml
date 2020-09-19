@@ -23,7 +23,6 @@
 
 		<properties>
 			<property name="uuid"></property>
-			<property name="url"></property>
 		</properties>
 
 		<config-description>
@@ -35,6 +34,10 @@
 				<label>Password</label>
 				<context>password</context>
 				<description></description>
+			</parameter>
+			<parameter name="url" type="text" required="true">
+				<label>URL</label>
+				<description> URL of the thermostat in the format 'proto://host' (example: https://192.168.1.100)</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="1">
 				<label>Refresh interval</label>

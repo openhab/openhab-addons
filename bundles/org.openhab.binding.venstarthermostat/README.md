@@ -1,7 +1,6 @@
 # Venstar Thermostat Binding
 
-The Venstar Thermostat binding supports an interface to WiFi enabled ColorTouch and Explorer thermostats manufactured by Venstar[1].
-
+The Venstar Thermostat binding supports an interface to WiFi enabled ColorTouch and Explorer thermostats manufactured by [Venstar](http://www.venstar.com).
 
 Venstar WiFi enabled thermostats provide a local API that this binding uses
 to communicate with the thermostat. This binding does not require "cloud" 
@@ -16,7 +15,6 @@ to provide as secure an installation as possible.
 
 When you've set the username and password, make a note of these, as you'll need
 to enter them in the thermostat configuration in openHAB.   
-
 
 ## Supported Things
 
@@ -34,11 +32,12 @@ After adding the Inbox item, enter the user name and password from the physical 
 
 ### ColorTouch Thermostat
 
-| Parameter | Description                                                                                                            |
-|-----------|------------------------------------------------------------------------------------------------------------------------|
-| username  | The username set on the thermostats configuration screen (typically 'admin') |
-| password  | The password set set on the thermostats configuration screen                                                           |
-| refresh   | The frequency in which the binding will pool for update information                                                    |
+| Parameter | Description                                                                  | Required |
+|-----------|------------------------------------------------------------------------------|----------|
+| username  | The username set on the thermostats configuration screen (typically 'admin') | yes      |
+| password  | The password set set on the thermostats configuration screen                 | yes      |
+| url       | URL of the thermostat in the format 'proto://host'                           | yes      |
+| refresh   | The frequency in which the binding will pool for update information          | no       |
 
 ### Channels
 
@@ -60,7 +59,7 @@ After adding the Inbox item, enter the user name and password from the physical 
 ### thermostat.things 
 
 ```
-Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ refresh=30, password="secret", username="admin" ]
+Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ username="admin", password="secret", host="https://192.168.1.100", refresh=30 ]
 ```
 
 ### thermostat.items
