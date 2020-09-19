@@ -611,7 +611,6 @@ public class IpCameraHandler extends BaseThingHandler {
                                     "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
                         }
                     }
-
                 });
     }
 
