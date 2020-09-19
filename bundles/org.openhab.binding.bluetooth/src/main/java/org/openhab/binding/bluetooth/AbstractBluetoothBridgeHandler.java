@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @author Connor Petty - Initial contribution from refactored code
  */
 @NonNullByDefault
-public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice> extends BaseBridgeHandler
+public abstract class AbstractBluetoothBridgeHandler<BD extends BaseBluetoothDevice> extends BaseBridgeHandler
         implements BluetoothAdapter {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractBluetoothBridgeHandler.class);
@@ -72,6 +72,16 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     @Override
     public ThingUID getUID() {
         return getThing().getUID();
+    }
+
+    @Override
+    public @Nullable String getLocation() {
+        return getThing().getLocation();
+    }
+
+    @Override
+    public @Nullable String getLabel() {
+        return getThing().getLabel();
     }
 
     @Override
@@ -114,7 +124,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
         }
     }
 
-    protected void removeDevice(BluetoothDevice device) {
+    protected void removeDevice(BD device) {
         device.dispose();
         synchronized (devices) {
             devices.remove(device.getAddress());
@@ -122,7 +132,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
         discoveryListeners.forEach(listener -> listener.deviceRemoved(device));
     }
 
-    private boolean shouldRemove(BluetoothDevice device) {
+    private boolean shouldRemove(BD device) {
         // we can't remove devices with listeners since that means they have a handler.
         if (device.hasListeners()) {
             return false;
@@ -132,9 +142,14 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
             return false;
         }
 
+        ZonedDateTime lastActiveTime = device.getLastSeenTime();
+        if (lastActiveTime == null) {
+            // we want any new device to at least live a certain amount of time so it has a chance to be discovered or
+            // listened to.
+            lastActiveTime = device.createTime;
+        }
         // we remove devices we haven't seen in a while
-        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold)
-                .isAfter(device.getLastSeenTime());
+        return ZonedDateTime.now().minusSeconds(config.inactiveDeviceCleanupThreshold).isAfter(lastActiveTime);
     }
 
     @Override
@@ -171,13 +186,7 @@ public abstract class AbstractBluetoothBridgeHandler<BD extends BluetoothDevice>
     @Override
     public BD getDevice(BluetoothAddress address) {
         synchronized (devices) {
-            if (devices.containsKey(address)) {
-                return devices.get(address);
-            }
-            BD device = createDevice(address);
-            device.updateLastSeenTime();
-            devices.put(address, device);
-            return device;
+            return devices.computeIfAbsent(address, this::createDevice);
         }
     }
 

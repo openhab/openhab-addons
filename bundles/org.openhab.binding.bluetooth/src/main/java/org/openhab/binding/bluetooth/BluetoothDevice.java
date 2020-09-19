@@ -12,22 +12,27 @@
  */
 package org.openhab.binding.bluetooth;
 
-import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
+import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link BluetoothDevice} class provides a base implementation of a Bluetooth Low Energy device
  *
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - Refactored class to use Integer instead of int, fixed bugs, diverse improvements
+ * @author Connor Petty - Made most of the methods abstract
  */
 @NonNullByDefault
 public abstract class BluetoothDevice {
+
+    private final Logger logger = LoggerFactory.getLogger(BluetoothDevice.class);
 
     /**
      * Enumeration of Bluetooth connection states
@@ -67,7 +72,8 @@ public abstract class BluetoothDevice {
         CHARACTERISTIC_WRITE_COMPLETE,
         CHARACTERISTIC_UPDATED,
         DESCRIPTOR_UPDATED,
-        SERVICES_DISCOVERED
+        SERVICES_DISCOVERED,
+        ADAPTER_CHANGED
     }
 
     /**
@@ -90,20 +96,6 @@ public abstract class BluetoothDevice {
         this.address = address;
         this.adapter = adapter;
     }
-
-    /**
-     * Returns the last time this device was active
-     *
-     * @return The last time this device was active
-     */
-    public abstract ZonedDateTime getLastSeenTime();
-
-    /**
-     * Updates the last activity timestamp for this device.
-     * Should be called whenever activity occurs on this device.
-     *
-     */
-    public abstract void updateLastSeenTime();
 
     /**
      * Returns the name of the Bluetooth device.
@@ -310,23 +302,6 @@ public abstract class BluetoothDevice {
     protected abstract boolean addService(BluetoothService service);
 
     /**
-     * Adds a list of services to the device
-     *
-     * @param uuids
-     */
-    protected void addServices(List<UUID> uuids) {
-        for (UUID uuid : uuids) {
-            // Check if we already know about this service
-            if (supportsService(uuid)) {
-                continue;
-            }
-
-            // Create a new service and add it to the device
-            addService(new BluetoothService(uuid));
-        }
-    }
-
-    /**
      * Gets a service based on the handle.
      * This will return a service if the handle falls within the start and end handles for the service.
      *
@@ -361,21 +336,27 @@ public abstract class BluetoothDevice {
      *
      * @param listener the {@link BluetoothDeviceListener} to add
      */
-    public abstract void addListener(BluetoothDeviceListener listener);
+    public final void addListener(BluetoothDeviceListener listener) {
+        getListeners().add(listener);
+    }
 
     /**
      * Removes a device listener
      *
      * @param listener the {@link BluetoothDeviceListener} to remove
      */
-    public abstract void removeListener(BluetoothDeviceListener listener);
+    public final void removeListener(BluetoothDeviceListener listener) {
+        getListeners().remove(listener);
+    }
 
     /**
      * Checks if this device has any listeners
      *
      * @return true if this device has listeners
      */
-    public abstract boolean hasListeners();
+    public final boolean hasListeners() {
+        return !getListeners().isEmpty();
+    }
 
     /**
      * Releases resources that this device is using.
@@ -383,11 +364,48 @@ public abstract class BluetoothDevice {
      */
     protected abstract void dispose();
 
+    protected abstract Collection<BluetoothDeviceListener> getListeners();
+
     /**
      * Notify the listeners of an event
      *
      * @param event the {@link BluetoothEventType} of this event
      * @param args an array of arguments to pass to the callback
      */
-    protected abstract void notifyListeners(BluetoothEventType event, Object... args);
+    protected void notifyListeners(BluetoothEventType event, Object... args) {
+        for (BluetoothDeviceListener listener : getListeners()) {
+            try {
+                switch (event) {
+                    case SCAN_RECORD:
+                        listener.onScanRecordReceived((BluetoothScanNotification) args[0]);
+                        break;
+                    case CONNECTION_STATE:
+                        listener.onConnectionStateChange((BluetoothConnectionStatusNotification) args[0]);
+                        break;
+                    case SERVICES_DISCOVERED:
+                        listener.onServicesDiscovered();
+                        break;
+                    case CHARACTERISTIC_READ_COMPLETE:
+                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
+                                (BluetoothCompletionStatus) args[1]);
+                        break;
+                    case CHARACTERISTIC_WRITE_COMPLETE:
+                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
+                                (BluetoothCompletionStatus) args[1]);
+                        break;
+                    case CHARACTERISTIC_UPDATED:
+                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
+                        break;
+                    case DESCRIPTOR_UPDATED:
+                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
+                        break;
+                    case ADAPTER_CHANGED:
+                        listener.onAdapterChanged((BluetoothAdapter) args[0]);
+                        break;
+                }
+            } catch (Exception e) {
+                logger.error("Failed to inform listener '{}': {}", listener, e.getMessage(), e);
+            }
+        }
+    }
 }

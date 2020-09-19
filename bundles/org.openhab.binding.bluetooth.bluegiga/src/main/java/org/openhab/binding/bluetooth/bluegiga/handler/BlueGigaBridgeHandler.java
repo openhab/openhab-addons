@@ -402,7 +402,7 @@ public class BlueGigaBridgeHandler extends AbstractBluetoothBridgeHandler<BlueGi
     }
 
     @Override
-    public BluetoothAddress getAddress() {
+    public @Nullable BluetoothAddress getAddress() {
         BluetoothAddress addr = address;
         if (addr != null) {
             return addr;

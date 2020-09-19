@@ -53,7 +53,7 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
     }
 
     @Override
-    public BluetoothAddress getAddress() {
+    public @Nullable BluetoothAddress getAddress() {
         return address;
     }
 
@@ -65,5 +65,15 @@ public class MockBluetoothAdapter implements BluetoothAdapter {
     @Override
     public boolean hasHandlerForDevice(BluetoothAddress address) {
         return false;
+    }
+
+    @Override
+    public @Nullable String getLocation() {
+        return null;
+    }
+
+    @Override
+    public @Nullable String getLabel() {
+        return null;
     }
 }

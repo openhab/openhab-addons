@@ -77,4 +77,13 @@ public interface BluetoothDeviceListener {
      * @param characteristic the updated {@link BluetoothCharacteristic}
      */
     void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor);
+
+    /**
+     * Called when the BluetoothAdapter for this BluetoothDevice changes.
+     * Implementations should call this whenever they change the adapter used by this device.
+     * Note: In general this is only called by a RoamingBluetoothDevice
+     *
+     * @param adapter the new {@link BluetoothAdapter} used by this device
+     */
+    void onAdapterChanged(BluetoothAdapter adapter);
 }

@@ -6,6 +6,7 @@
 
 	<thing-type id="beacon">
 		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
 			<bridge-type-ref id="bluegiga"/>
 			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>
@@ -26,15 +27,13 @@
 
 	<thing-type id="connected">
 		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
 			<bridge-type-ref id="bluegiga"/>
 			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>
 
 		<label>Connected Bluetooth Device</label>
 		<description>A generic Bluetooth device in connected-mode</description>
-		<channels>
-			<channel id="rssi" typeId="rssi"/>
-		</channels>
 
 		<config-description>
 			<parameter name="address" type="text">

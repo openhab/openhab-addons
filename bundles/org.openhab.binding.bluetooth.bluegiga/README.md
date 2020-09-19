@@ -18,12 +18,12 @@ The adapter cannot be discovered; its serial port must be manually configured.
 ## Bridge Configuration
 
 The bluegiga bridge requires the configuration parameter `port`, which corresponds to the serial port the dongle is connected to.
-Additionally, the parameter `discovery` can be set to true/false. When set to true, any Bluetooth device of which broadcasts are received is added to the Inbox.
+Additionally, the parameter `backgroundDiscovery` can be set to true/false. When set to true, any Bluetooth device of which broadcasts are received is added to the Inbox.
 
 ## Example
 
 This is how an BlueGiga adapter can be configured textually in a *.things file:
 
 ```
-Bridge bluetooth:bluegiga:1 [ port="/dev/ttyS0", discovery=false ]
+Bridge bluetooth:bluegiga:1 [ port="/dev/ttyS0", backgroundDiscovery=false ]
 ```

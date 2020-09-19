@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jdt.annotation.NonNull;
@@ -450,6 +451,86 @@ public class BluetoothDiscoveryServiceTest {
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant2.typeUID)));
 
         Assert.assertEquals(1, callCount.get());
+    }
+
+    @Test
+    public void roamingDiscoveryTest() {
+        RoamingDiscoveryParticipant roamingParticipant = new RoamingDiscoveryParticipant();
+        MockBluetoothAdapter roamingAdapter = roamingParticipant.roamingAdapter;
+        discoveryService.addBluetoothDiscoveryParticipant(roamingParticipant);
+
+        BluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        BluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        discoveryService.deviceDiscovered(device);
+
+        ArgumentCaptor<DiscoveryResult> resultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2))
+                .thingDiscovered(ArgumentMatchers.same(discoveryService), resultCaptor.capture());
+
+        List<DiscoveryResult> results = resultCaptor.getAllValues();
+        DiscoveryResult result1 = results.get(0);
+        DiscoveryResult result2 = results.get(1);
+
+        Assert.assertNotEquals(result1.getBridgeUID(), result2.getBridgeUID());
+        Assert.assertThat(result1.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(roamingAdapter.getUID())));
+        Assert.assertThat(result2.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(roamingAdapter.getUID())));
+        Assert.assertEquals(result1.getThingUID().getId(), result2.getThingUID().getId());
+        Assert.assertEquals(result1.getLabel(), result2.getLabel());
+        Assert.assertEquals(result1.getRepresentationProperty(), result2.getRepresentationProperty());
+    }
+
+    @Test
+    public void roamingDiscoveryRetractionTest() {
+        RoamingDiscoveryParticipant roamingParticipant = new RoamingDiscoveryParticipant();
+        MockBluetoothAdapter roamingAdapter = roamingParticipant.roamingAdapter;
+        discoveryService.addBluetoothDiscoveryParticipant(roamingParticipant);
+
+        MockBluetoothAdapter mockAdapter1 = new MockBluetoothAdapter();
+        MockBluetoothDevice device = mockAdapter1.getDevice(TestUtils.randomAddress());
+        discoveryService.deviceDiscovered(device);
+        device.setName("dasf");
+        discoveryService.deviceDiscovered(device);
+
+        ArgumentCaptor<ThingUID> resultCaptor = ArgumentCaptor.forClass(ThingUID.class);
+        Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(2))
+                .thingRemoved(ArgumentMatchers.same(discoveryService), resultCaptor.capture());
+
+        List<ThingUID> results = resultCaptor.getAllValues();
+        ThingUID result1 = results.get(0);
+        ThingUID result2 = results.get(1);
+
+        Assert.assertNotEquals(result1.getBridgeIds(), result2.getBridgeIds());
+        Assert.assertThat(result1.getBridgeIds().get(0),
+                anyOf(is(mockAdapter1.getUID().getId()), is(roamingAdapter.getUID().getId())));
+        Assert.assertThat(result2.getBridgeIds().get(0),
+                anyOf(is(mockAdapter1.getUID().getId()), is(roamingAdapter.getUID().getId())));
+        Assert.assertEquals(result1.getId(), result2.getId());
+    }
+
+    private class RoamingDiscoveryParticipant implements BluetoothDiscoveryParticipant {
+
+        private MockBluetoothAdapter roamingAdapter = new MockBluetoothAdapter();
+
+        @Override
+        public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public @Nullable DiscoveryResult createResult(BluetoothDiscoveryDevice device) {
+            return null;
+        }
+
+        @Override
+        public @Nullable ThingUID getThingUID(BluetoothDiscoveryDevice device) {
+            return null;
+        }
+
+        @Override
+        public void publishAdditionalResults(DiscoveryResult result,
+                BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
+            publisher.accept(roamingAdapter, result);
+        }
     }
 
     private class MockDiscoveryParticipant implements BluetoothDiscoveryParticipant {

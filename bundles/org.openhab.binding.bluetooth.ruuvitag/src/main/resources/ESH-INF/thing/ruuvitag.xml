@@ -6,6 +6,7 @@
 
 	<thing-type id="ruuvitag_beacon">
 		<supported-bridge-type-refs>
+			<bridge-type-ref id="roaming"/>
 			<bridge-type-ref id="bluegiga"/>
 			<bridge-type-ref id="bluez"/>
 		</supported-bridge-type-refs>
@@ -15,7 +16,6 @@
 
 		<channels>
 			<channel id="rssi" typeId="rssi"/>
-
 			<channel id="accelerationx" typeId="ruuvitag_accelerationx"/>
 			<channel id="accelerationy" typeId="ruuvitag_accelerationy"/>
 			<channel id="accelerationz" typeId="ruuvitag_accelerationz"/>
