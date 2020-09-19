@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="intesis"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="intesisHome">
+		<label>IntesisHome WiFi Adapter</label>
+		<description>IntesisHome WiFi Adapter</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+		</channels>
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>@text/thing-type.config.intesis.ipAddress.label</label>
+				<description>@text/thing-type.config.intesis.ipAddress.description</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>@text/thing-type.config.intesisHome.password.label</label>
+				<description>@text/thing-type.config.intesisHome.password.description</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
