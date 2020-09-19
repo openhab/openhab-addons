@@ -2,7 +2,7 @@
 
 This binding allows you to use most IP cameras in openHAB and has many hidden features, so please take the time to read through this guide to learn different ways to work with cameras that you may not know about.
 I recommend purchasing a brand of camera that has an open API, as many features use far less CPU when done with an API camera.
-They usually have better picture quality and also more advanced features compared to lower priced cameras.
+They usually have better picture quality and more advanced features compared to lower priced cameras.
 
 To see what features each brand has implemented from their APIs, please see this post:
 
@@ -10,9 +10,9 @@ To see what features each brand has implemented from their APIs, please see this
 
 ## How to Get Help
 
-+ Check this readme to see if there are any special setup steps for your brand.
-+ Check to see if the camera is offline, if so there will be a reason listed.
-+ Always look at the log files with TRACE enabled as any FFmpeg and camera errors may not reach the INFO logs.
++ Check this readme for any setup steps for your brand.
++ Check if the camera is offline, if so there will be a reason listed.
++ Always look at the log files with TRACE enabled, as any FFmpeg and camera errors may not reach the INFO logs.
 To enable TRACE logging, enter this in the openHAB console `log:set TRACE org.openhab.binding.ipcamera`.
 + Search the forum using any log messages to find how others have already solved it.
 + Only after doing the above ask for help in the forum and create a new thread.
@@ -603,30 +603,29 @@ KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
 
 ## MP4 and GIF Recordings
 
-You can use FFmpeg to recording to a file in either GIF or MP4 format.
+You can use FFmpeg to recording to either GIF or MP4 format.
 
-To do this:
+The steps to do this are:
 
-+ Use the Action called `recordMP4(String filename, int secondsToRecord)` or `recordGIF(String filename, int secondsToRecord)` with the first argument being the filename you wish to use and the second the time in seconds you wish to record for.
-+ You can leave the filename empty and the binding will use ipcamera as the name, example recordMp4("", 5).
-+ Once the file is created, the channel `recordingMp4` or `recordingGif` will change itself back to OFF, which can be used to trigger a rule to send/use the file which will appear in the `ffmpegOutput` folder.
-+ The channel `mp4History` or `gifHistory` keeps a string of the last 50 recording filenames (separated by commas) until you reset the history. If you use an empty filename this stops the history from growing.
++ Use the Action called `recordMP4(String filename, int secondsToRecord)` or `recordGIF(String filename, int secondsToRecord)` with the first argument being the filename you wish to use, and the second the time in seconds you wish to record for.
++ Once the file is created, the channel `recordingMp4` or `recordingGif` will change itself back to `0`, which can be used to trigger a rule to send/use the file which will appear in the `ffmpegOutput` folder.
++ The channel `mp4History` or `gifHistory` keeps a string of the last 50 filenames (comma separated values CSV) until you reset the history. If you use `ipcamera` as the filename, this stops the history from growing.
 + The channel `mp4HistoryLength` and `gifHistoryLength` keeps track of how many recordings were made since it was last reset.
 You can send the `0` command to this channel to clear the `mp4History` at the same time as setting this channel back to 0.
-+ You can use the `mp4OutOptions` or `gifOutOptions` configs to apply any FFmpeg filters that you wish.
++ You can use the `mp4OutOptions` or `gifOutOptions` config's to apply any FFmpeg filters that you wish.
 
 There is also a HABpanel Widget worth checking out that uses the history feature to display a list of recent recordings.
 <https://community.openhab.org/t/custom-widget-camera-history-and-live-popup/103082>
 
-**NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space.
+**NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space by moving the files with a rule.
 
 **GIF Preroll**
 
-This feature has a config called `gifPreroll` to be aware of.
+There is also a config called `gifPreroll` to be aware of.
 When `gifPreroll` is 0 (the default) the binding will use the `ffmpegInput` stream to record from.
-By changing the `gifPreroll` to a value above 0, the binding will change to using snapshots as the source preventing the need to have or open a RTSP stream.
+By changing the `gifPreroll` to a value above 0, the binding will change to using snapshots as the source, preventing the need to have or open a RTSP stream.
 The time between the snapshots then becomes the `pollTime` of the camera (1 second by default) and can be raised if you desire.
-The snapshots are saved to disk and can be used as a feature that is described in the snapshot section above.
+The snapshots are saved to disk and can be used as a feature that is described in the snapshot section.
 
 You can request the GIF and MP4 by using this URL format, or by the direct path to where the file is stored:
 
@@ -635,7 +634,8 @@ You can request the GIF and MP4 by using this URL format, or by the direct path 
 .items
 
 ```java
-Switch DoorCamCreateGif "Create animated GIF" { channel="ipcamera:dahua:DoorCam:updateGif" }
+
+Number Doorbell_recordingGif "Update GIF" { channel="ipcamera:dahua:DoorCam:recordingGif" }
 
 ```
 
@@ -647,14 +647,14 @@ when
     Item FrontDoorbellButton changed to ON
 then
     //Start creating the GIF
-    DoorCamCreateGif.sendCommand(ON)
+    getActions("ipcamera", "ipcamera:dahua:DoorCam").recordGIF("ipcamera",5)
     //Cast a doorbell sound using the Chromecast binding.
     KitchenHomeHubPlayURI.sendCommand("http://192.168.1.8:8080/static/doorbell.mp3")
 end
 
 rule "Send doorbell GIF via Pushover"
 when
-    Item DoorCamCreateGif changed to OFF
+    Item Doorbell_recordingGif changed to 0
 then
     sendPushoverMessage(pushoverBuilder("Sending GIF from backyard").withApiKey("dsfhghj6546fghfg").withUser("qwerty54657").withDevice("Phone1").withAttachment("/tmpfs/DoorCam/ipcamera.gif"))
 end
@@ -758,7 +758,6 @@ Thing ipcamera:generic:TTGoCamera "ESP32 TTGo Camera" @ "Cameras"
 
 ```java
 
-Switch BabyCamCreateGif "Create animated GIF" { channel="ipcamera:dahua:001:updateGif" }
 Number BabyCamDirection "Camera Direction"
 Switch BabyCamEnableMotion "MotionAlarm on/off" { channel="ipcamera:dahua:001:enableMotionAlarm" }
 Switch BabyCamMotionAlarm "Motion detected" { channel="ipcamera:dahua:001:motionAlarm" }
@@ -777,7 +776,6 @@ Dimmer GenericMotionControl "Motion Threshold [%d]" { channel="ipcamera:generic:
 Switch GenericMotionAlarm "Motion detected" { channel="ipcamera:generic:TestCam:motionAlarm" }
 Dimmer GenericAudioThreshold "Audio Threshold [%d]" { channel="ipcamera:generic:TestCam:thresholdAudioAlarm" }
 Switch GenericAudioAlarm "Audio detected" { channel="ipcamera:generic:TestCam:audioAlarm" }
-Switch GenericCreateGif "Create animated GIF" { channel="ipcamera:generic:TestCam:updateGif" }
 
 String OutsideCameraGroupHlsUrl "Outside Cameras" { channel="ipcamera:group:OutsideCameras:hlsUrl", ga="Camera" [ protocols="hls" ] }
 Switch OutsideCameraGroupStartHLS "Start outside HLS" { channel="ipcamera:group:OutsideCameras:startStream" }
@@ -801,7 +799,6 @@ Text label="Outside Camera Group" icon="camera"{Image url="http://192.168.0.2:54
         }
         Text label="Last Movement" icon="motion"{
                     Webview url="http://192.168.0.2:54321/ipcamera.gif" height=9
-                    Switch item=BabyCamCreateGif
                     Default item=BabyCamMotionAlarm icon=siren
                     Default item=BabyCamLastMotionTime
                     Default item=BabyCamLastMotionType
@@ -815,7 +812,6 @@ Text label="Outside Camera Group" icon="camera"{Image url="http://192.168.0.2:54
     }
     
     Text label="Generic Camera" icon="camera"{
-            Switch item=GenericCreateGif
             Switch item=GenericMotionControl
             Slider item=GenericMotionControl
             Default item=GenericMotionAlarm
