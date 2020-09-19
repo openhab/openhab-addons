@@ -21,8 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusVMB7INConfig extends VelbusSensorConfig {
-    public @NonNullByDefault({}) Double counter1PulseMultiplier;
-    public @NonNullByDefault({}) Double counter2PulseMultiplier;
-    public @NonNullByDefault({}) Double counter3PulseMultiplier;
-    public @NonNullByDefault({}) Double counter4PulseMultiplier;
+    public double counter1PulseMultiplier;
+    public double counter2PulseMultiplier;
+    public double counter3PulseMultiplier;
+    public double counter4PulseMultiplier;
 }

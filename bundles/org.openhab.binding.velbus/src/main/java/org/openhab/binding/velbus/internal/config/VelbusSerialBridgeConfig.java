@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusSerialBridgeConfig {
-    public @NonNullByDefault({}) String port;
+    public String port = "";
 }

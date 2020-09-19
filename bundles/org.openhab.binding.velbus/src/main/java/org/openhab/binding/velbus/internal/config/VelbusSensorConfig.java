@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusSensorConfig {
-    public @NonNullByDefault({}) Integer refresh;
+    public int refresh;
 }

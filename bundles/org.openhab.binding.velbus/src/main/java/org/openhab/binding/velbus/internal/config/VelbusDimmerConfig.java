@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusDimmerConfig {
-    public @NonNullByDefault({}) Integer dimspeed;
+    public int dimspeed;
 }

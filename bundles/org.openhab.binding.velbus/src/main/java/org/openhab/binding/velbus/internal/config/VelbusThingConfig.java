@@ -21,5 +21,5 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusThingConfig {
-    public @NonNullByDefault({}) String address;
+    public String address = "";
 }

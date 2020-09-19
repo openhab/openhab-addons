@@ -21,6 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VelbusBridgeConfig {
-    public @NonNullByDefault({}) Integer timeUpdateInterval;
-    public @NonNullByDefault({}) Integer reconnectionInterval;
+    public int timeUpdateInterval;
+    public int reconnectionInterval;
 }

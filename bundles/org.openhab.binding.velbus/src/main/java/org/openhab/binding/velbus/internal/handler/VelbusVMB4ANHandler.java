@@ -228,7 +228,7 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected boolean isAlarmChannel(ChannelUID channelUID) {
-        return channelUID.getGroupId() == ALARM_GROUP;
+        return ALARM_GROUP.equals(channelUID.getGroupId());
     }
 
     protected byte convertAlarmChannelUIDToChannelByte(ChannelUID channelUID) {
@@ -236,12 +236,12 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected boolean isTextAnalogInputChannel(ChannelUID channelUID) {
-        return channelUID.getGroupId() == ANALOG_INPUT_GROUP
+        return ANALOG_INPUT_GROUP.equals(channelUID.getGroupId())
                 && !channelUID.getIdWithoutGroup().endsWith(RAW_CHANNEL_SUFFIX);
     }
 
     protected boolean isRawAnalogInputChannel(ChannelUID channelUID) {
-        return channelUID.getGroupId() == ANALOG_INPUT_GROUP
+        return ANALOG_INPUT_GROUP.equals(channelUID.getGroupId())
                 && channelUID.getIdWithoutGroup().endsWith(RAW_CHANNEL_SUFFIX);
     }
 
@@ -262,7 +262,7 @@ public class VelbusVMB4ANHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     protected boolean isAnalogOutputChannel(ChannelUID channelUID) {
-        return channelUID.getGroupId() == ANALOG_OUTPUT_GROUP;
+        return ANALOG_OUTPUT_GROUP.equals(channelUID.getGroupId());
     }
 
     protected byte convertAnalogOutputChannelUIDToChannelByte(ChannelUID channelUID) {
