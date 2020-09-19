@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.transform.TransformationService;
+import org.openhab.core.transform.TransformationService;
 
 /**
  * The {@link CascadedValueTransformationImpl} implements {@link ValueTransformation for a cascaded set of

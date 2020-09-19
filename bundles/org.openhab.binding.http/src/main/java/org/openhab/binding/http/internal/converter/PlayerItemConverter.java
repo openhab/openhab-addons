@@ -16,17 +16,17 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.NextPreviousType;
-import org.eclipse.smarthome.core.library.types.PlayPauseType;
-import org.eclipse.smarthome.core.library.types.RewindFastforwardType;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.transform.ValueTransformation;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.RewindFastforwardType;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link PlayerItemConverter} implements {@link org.eclipse.smarthome.core.library.items.RollershutterItem}
+ * The {@link PlayerItemConverter} implements {@link org.openhab.core.library.items.RollershutterItem}
  * conversions
  *
  * @author Jan N. Klug - Initial contribution

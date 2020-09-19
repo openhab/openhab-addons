@@ -13,8 +13,8 @@
 package org.openhab.binding.http.internal.converter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.http.internal.http.Content;
+import org.openhab.core.types.Command;
 
 /**
  * The {@link ItemValueConverter} defines the interface for converting received content to item state and converting

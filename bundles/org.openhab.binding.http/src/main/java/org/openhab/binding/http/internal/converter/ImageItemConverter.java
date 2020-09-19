@@ -15,13 +15,13 @@ package org.openhab.binding.http.internal.converter;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.library.types.RawType;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.http.internal.http.Content;
+import org.openhab.core.library.types.RawType;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
 
 /**
- * The {@link ImageItemConverter} implements {@link org.eclipse.smarthome.core.library.items.ImageItem} conversions
+ * The {@link ImageItemConverter} implements {@link org.openhab.core.library.items.ImageItem} conversions
  *
  * @author Jan N. Klug - Initial contribution
  */

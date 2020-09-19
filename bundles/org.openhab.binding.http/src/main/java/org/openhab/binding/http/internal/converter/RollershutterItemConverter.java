@@ -17,17 +17,17 @@ import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.PercentType;
-import org.eclipse.smarthome.core.library.types.StopMoveType;
-import org.eclipse.smarthome.core.library.types.UpDownType;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.State;
-import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.http.internal.config.HttpChannelConfig;
 import org.openhab.binding.http.internal.transform.ValueTransformation;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StopMoveType;
+import org.openhab.core.library.types.UpDownType;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link RollershutterItemConverter} implements {@link org.eclipse.smarthome.core.library.items.RollershutterItem}
+ * The {@link RollershutterItemConverter} implements {@link org.openhab.core.library.items.RollershutterItem}
  * conversions
  *
  * @author Jan N. Klug - Initial contribution
