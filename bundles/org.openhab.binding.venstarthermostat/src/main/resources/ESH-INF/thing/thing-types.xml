@@ -10,15 +10,15 @@
 		<description>Venstar ColorTouch Thermostat</description>
 
 		<channels>
-			<channel id="temperature" typeId="temperature" />
-			<channel id="humidity" typeId="humidity" />
-			<channel id="outdoorTemperature" typeId="outdoorTemperature" />
-			<channel id="systemMode" typeId="systemMode" />
-			<channel id="systemModeRaw" typeId="systemModeRaw" />
-			<channel id="heatingSetpoint" typeId="heatingSetpoint" />
-			<channel id="coolingSetpoint" typeId="coolingSetpoint" />
-			<channel id="systemState" typeId="systemState" />
-			<channel id="systemStateRaw" typeId="systemStateRaw" />
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="outdoorTemperature" typeId="outdoorTemperature"/>
+			<channel id="systemMode" typeId="systemMode"/>
+			<channel id="systemModeRaw" typeId="systemModeRaw"/>
+			<channel id="heatingSetpoint" typeId="heatingSetpoint"/>
+			<channel id="coolingSetpoint" typeId="coolingSetpoint"/>
+			<channel id="systemState" typeId="systemState"/>
+			<channel id="systemStateRaw" typeId="systemStateRaw"/>
 		</channels>
 
 		<properties>
@@ -62,7 +62,7 @@
 		<item-type>Number</item-type>
 		<label>System Mode (Raw)</label>
 		<description>Current System Operating Mode, as an integer number</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="systemState">
@@ -84,7 +84,7 @@
 		<item-type>Number</item-type>
 		<label>System State (Raw)</label>
 		<description>Current System Operating State, as an integer</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="heatingSetpoint">
@@ -92,7 +92,7 @@
 		<label>Heating Setpoint</label>
 		<description>Heating Setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="40" max="80" step="1.0" />
+		<state readOnly="false" pattern="%.1f %unit%" min="40" max="80" step="1.0"/>
 	</channel-type>
 
 	<channel-type id="coolingSetpoint">
@@ -100,7 +100,7 @@
 		<label>Cooling Setpoint</label>
 		<description>Cooling Setpoint</description>
 		<category>Temperature</category>
-		<state readOnly="false" pattern="%.1f %unit%" min="60" max="95" step="1.0" />
+		<state readOnly="false" pattern="%.1f %unit%" min="60" max="95" step="1.0"/>
 	</channel-type>
 
 	<channel-type id="temperature">
@@ -126,7 +126,7 @@
 		<label>Humidity</label>
 		<description>Indoor Humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%d %unit%" />
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

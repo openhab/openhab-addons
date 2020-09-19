@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.venstarthermostat.internal.model;
 
-
 /**
  * The {@link VenstarSensor} represents a sensor returned from the REST API.
  *
@@ -46,5 +45,4 @@ public class VenstarSensor {
     public void setHum(float hum) {
         this.hum = hum;
     }
-
 }

@@ -2,7 +2,6 @@
 
 The Venstar Thermostat binding supports an interface to WiFi enabled ColorTouch and Explorer thermostats manufactured by Venstar[1].
 
-## Prerequisites
 
 Venstar WiFi enabled thermostats provide a local API that this binding uses
 to communicate with the thermostat. This binding does not require "cloud" 
@@ -16,16 +15,30 @@ without HTTPS and authentication, the binding doesn't support it, in an effort
 to provide as secure an installation as possible.
 
 When you've set the username and password, make a note of these, as you'll need
-to enter them in the thermostat configuration in OpenHAB.
+to enter them in the thermostat configuration in openHAB.   
 
 
-## Usage
+## Supported Things
 
-### Discovery
+| Thing Type           | Description                                                                       |
+|----------------------|-----------------------------------------------------------------------------------|
+| colorTouchThermostat | A Venstar [ColorTouch](http://www.venstar.com/thermostats/colortouch/) thermostat |
+
+## Discovery
 
 Once the binding is installed it will attempt to auto discovery Venstar thermostats located on the local network.
 These will appear as Things in the system Inbox. 
 After adding the Inbox item, enter the user name and password from the physical thermostat in the Thing's configuration.
+
+## Thing Configuration
+
+### ColorTouch Thermostat
+
+| Parameter | Description                                                                                                            |
+|-----------|------------------------------------------------------------------------------------------------------------------------|
+| username  | The username set on the thermostats configuration screen (typically 'admin') |
+| password  | The password set set on the thermostats configuration screen                                                           |
+| refresh   | The frequency in which the binding will pool for update information                                                    |
 
 ### Channels
 
@@ -42,18 +55,36 @@ After adding the Inbox item, enter the user name and password from the physical 
 | humidity           | Number             | Humidity                     |                                                        |
 
 
-### Item Configuration
+## Example
 
+### thermostat.things 
 
-```perl
-    Number:Temperature Guest_HVAC_Temperature   "Temperature [%d °F]"   {channel="venstarthermostat:colorTouchThermostat:001122334455:temperature"}
-    Number:Temperature Guest_HVAC_HeatSetpoint  "Heat Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:heatingSetpoint"}
-    Number:Temperature Guest_HVAC_CoolSetpoint  "Cool Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:coolingSetpoint"}
-    Number Guest_HVAC_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:systemMode"}
-    Number Guest_HVAC_Humidity                  "Humidity [%d %%]"      {channel="venstarthermostat:colorTouchThermostat:001122334455:humidity"}
-    Number Guest_HVAC_State                     "State [%s]"            {channel="venstarthermostat:colorTouchThermostat:001122334455:systemState"}
+```
+Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ refresh=30, password="secret", username="admin" ]
 ```
 
-## References
+### thermostat.items
 
-[1] http://www.venstar.com/thermostats/colortouch/
+
+```
+Number:Temperature Guest_HVAC_Temperature   "Temperature [%d °F]"   {channel="venstarthermostat:colorTouchThermostat:001122334455:temperature"}
+Number:Temperature Guest_HVAC_HeatSetpoint  "Heat Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:heatingSetpoint"}
+Number:Temperature Guest_HVAC_CoolSetpoint  "Cool Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:coolingSetpoint"}
+Number Guest_HVAC_Mode                      "Mode [%s]"             {channel="venstarthermostat:colorTouchThermostat:001122334455:systemMode"}
+Number Guest_HVAC_Humidity                  "Humidity [%d %%]"      {channel="venstarthermostat:colorTouchThermostat:001122334455:humidity"}
+Number Guest_HVAC_State                     "State [%s]"            {channel="venstarthermostat:colorTouchThermostat:001122334455:systemState"}
+```
+
+### thermostat.sitemap
+
+```
+sitemap demo label="Venstar Color Thermostat Demo"
+{
+   Frame {
+    Setpoint item=Guest_HVAC_HeatSetpoint minValue=50 maxValue=99
+    Setpoint item=Guest_HVAC_CoolSetpoint minValue=50 maxValue=99 
+    Switch item=Guest_HVAC_Mode mappings=[off=Off,heat=Heat,cool=Cool,auto=Auto]
+    Text item=Guest_HVAC_State
+   }
+}
+```

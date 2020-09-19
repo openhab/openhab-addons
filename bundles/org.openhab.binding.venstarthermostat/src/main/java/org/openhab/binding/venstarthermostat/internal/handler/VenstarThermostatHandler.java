@@ -63,7 +63,14 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.venstarthermostat.internal.VenstarThermostatConfiguration;
-import org.openhab.binding.venstarthermostat.internal.model.*;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarInfoData;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarResponse;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarSensor;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarSensorData;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemMode;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemModeSerializer;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemState;
+import org.openhab.binding.venstarthermostat.internal.model.VenstarSystemStateSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,31 +157,26 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
             if (channelUID.getId().equals(CHANNEL_HEATING_SETPOINT)) {
                 QuantityType<Temperature> quantity = commandToQuantityType(command, unitSystem);
                 int value = quantityToRoundedTemperature(quantity, unitSystem).intValue();
-
                 log.debug("Setting heating setpoint to {}", value);
                 setHeatingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_COOLING_SETPOINT)) {
                 QuantityType<Temperature> quantity = commandToQuantityType(command, unitSystem);
                 int value = quantityToRoundedTemperature(quantity, unitSystem).intValue();
-
                 log.debug("Setting cooling setpoint to {}", value);
                 setCoolingSetpoint(value);
             } else if (channelUID.getId().equals(CHANNEL_SYSTEM_MODE)) {
                 VenstarSystemMode value;
                 if (command instanceof StringType) {
                     value = VenstarSystemMode.valueOf(((StringType) command).toString().toUpperCase());
-
                 } else {
                     value = VenstarSystemMode.fromInt(((DecimalType) command).intValue());
                 }
                 log.debug("Setting system mode to  {}", value);
                 setSystemMode(value);
                 updateIfChanged(CHANNEL_SYSTEM_MODE_RAW, new StringType("" + value));
-
             }
             startUpdatesTask(UPDATE_AFTER_COMMAND_SECONDS);
         }
-
     }
 
     @Override
@@ -286,21 +288,18 @@ public class VenstarThermostatHandler extends ConfigStatusThingHandler {
     private void setCoolingSetpoint(int cool) {
         int heat = getHeatingSetpoint().intValue();
         VenstarSystemMode mode = getSystemMode();
-
         updateThermostat(heat, cool, mode);
     }
 
     private void setSystemMode(VenstarSystemMode mode) {
         int cool = getCoolingSetpoint().intValue();
         int heat = getHeatingSetpoint().intValue();
-
         updateThermostat(heat, cool, mode);
     }
 
     private void setHeatingSetpoint(int heat) {
         int cool = getCoolingSetpoint().intValue();
         VenstarSystemMode mode = getSystemMode();
-
         updateThermostat(heat, cool, mode);
     }
 
