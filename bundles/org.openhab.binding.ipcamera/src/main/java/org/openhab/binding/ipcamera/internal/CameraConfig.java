@@ -48,7 +48,6 @@ public class CameraConfig {
     private String motionOptions = "";
     private boolean ptzContinuous;
     private int gifPreroll;
-    private int gifPostroll;
 
     public int getOnvifMediaProfile() {
         return onvifMediaProfile;
@@ -152,10 +151,6 @@ public class CameraConfig {
 
     public int getGifPreroll() {
         return gifPreroll;
-    }
-
-    public int getGifPostroll() {
-        return gifPostroll;
     }
 
     public int getPort() {

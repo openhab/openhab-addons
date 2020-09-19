@@ -97,7 +97,6 @@ public class IpCameraBindingConstants {
     public static final String CONFIG_FFMPEG_MOTION_ARGUMENTS = "motionOptions";
     public static final String CONFIG_PTZ_CONTINUOUS = "ptzContinuous";
     public static final String CONFIG_GIF_PREROLL = "gifPreroll";
-    public static final String CONFIG_GIF_POSTROLL = "gifPostroll";
     // group thing configs
     public static final String CONFIG_FIRST_CAM = "firstCamera";
     public static final String CONFIG_SECOND_CAM = "secondCamera";
@@ -107,13 +106,11 @@ public class IpCameraBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POLL_IMAGE = "pollImage";
-    public static final String CHANNEL_UPDATE_GIF = "updateGif";
-    public static final String CHANNEL_GIF_FILENAME = "gifFilename";
+    public static final String CHANNEL_RECORDING_GIF = "recordingGif";
     public static final String CHANNEL_GIF_HISTORY = "gifHistory";
     public static final String CHANNEL_GIF_HISTORY_LENGTH = "gifHistoryLength";
-    public static final String CHANNEL_RECORD_MP4 = "recordMp4";
+    public static final String CHANNEL_RECORDING_MP4 = "recordingMp4";
     public static final String CHANNEL_MP4_PREROLL = "mp4Preroll";
-    public static final String CHANNEL_MP4_FILENAME = "mp4Filename";
     public static final String CHANNEL_MP4_HISTORY = "mp4History";
     public static final String CHANNEL_MP4_HISTORY_LENGTH = "mp4HistoryLength";
     public static final String CHANNEL_IMAGE = "image";

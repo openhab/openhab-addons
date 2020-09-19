@@ -108,11 +108,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -342,11 +342,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -623,11 +623,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -906,11 +906,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -1201,11 +1201,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -1469,11 +1469,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -1757,11 +1757,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -2051,11 +2051,11 @@
 			<channel id="startStream" typeId="startStream"/>
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
-			<channel id="updateGif" typeId="updateGif"/>
+			<channel id="recordingGif" typeId="recordingGif"/>
 			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
-			<channel id="recordMp4" typeId="recordMp4"/>
+			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
 			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
@@ -2335,18 +2335,14 @@
 			this channel ON.</description>
 	</channel-type>
 
-	<channel-type id="gifFilename">
-		<item-type>String</item-type>
-		<label>GIF Filename</label>
-		<description>The filename you wish the GIF to be named with.</description>
-		<category>Text</category>
-	</channel-type>
-
-	<channel-type id="updateGif">
-		<item-type>Switch</item-type>
-		<label>Update GIF</label>
-		<description>Turn ON to create an animated GIF called ipcamera.gif with FFmpeg. When the file is created the switch
-			will move itself back to OFF.</description>
+	<channel-type id="recordingGif">
+		<item-type>Number</item-type>
+		<label>GIF Recording (Seconds)</label>
+		<description>Indicates how long the recording will occur for and when the file is created, the channel will
+			change to 0
+			by itself.</description>
+		<category>Time</category>
+		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="gifHistory">
@@ -2361,20 +2357,14 @@
 		<description>How many GIFs are stored in the history.</description>
 	</channel-type>
 
-	<channel-type id="mp4Filename">
-		<item-type>String</item-type>
-		<label>MP4 Filename</label>
-		<description>The filename you wish the MP4 to be named with.</description>
-		<category>Text</category>
-	</channel-type>
-
-	<channel-type id="recordMp4">
+	<channel-type id="recordingMp4">
 		<item-type>Number</item-type>
-		<label>MP4 Record (Seconds)</label>
-		<description>Set this channel to how many seconds you wish to record for. When the file is created the channel will
-			change to 0 by itself.</description>
+		<label>MP4 Recording (Seconds)</label>
+		<description>Indicates how long the recording will occur for and when the file is created, the channel will
+			change to 0
+			by itself.</description>
 		<category>Time</category>
-		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="false"/>
+		<state min="0" max="10800" step="1" pattern="%.1f Seconds" readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="mp4History">

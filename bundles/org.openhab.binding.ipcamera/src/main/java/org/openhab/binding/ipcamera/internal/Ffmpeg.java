@@ -104,13 +104,13 @@ public class Ffmpeg {
 
         private void gifCreated() {
             // Without a small delay, Pushover sends no file 10% of time.
-            ipCameraHandler.setChannelState(CHANNEL_UPDATE_GIF, OnOffType.OFF);
+            ipCameraHandler.setChannelState(CHANNEL_RECORDING_GIF, DecimalType.ZERO);
             ipCameraHandler.setChannelState(CHANNEL_GIF_HISTORY_LENGTH,
                     new DecimalType(++ipCameraHandler.gifHistoryLength));
         }
 
         private void mp4Created() {
-            ipCameraHandler.setChannelState(CHANNEL_RECORD_MP4, DecimalType.ZERO);
+            ipCameraHandler.setChannelState(CHANNEL_RECORDING_MP4, DecimalType.ZERO);
             ipCameraHandler.setChannelState(CHANNEL_MP4_HISTORY_LENGTH,
                     new DecimalType(++ipCameraHandler.mp4HistoryLength));
         }

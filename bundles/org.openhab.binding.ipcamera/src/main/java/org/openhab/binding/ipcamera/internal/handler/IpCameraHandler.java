@@ -25,6 +25,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +50,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
 import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
+import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
@@ -63,6 +66,7 @@ import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.HikvisionHandler;
 import org.openhab.binding.ipcamera.internal.HttpOnlyHandler;
 import org.openhab.binding.ipcamera.internal.InstarHandler;
+import org.openhab.binding.ipcamera.internal.IpCameraActions;
 import org.openhab.binding.ipcamera.internal.IpCameraBindingConstants.FFmpegFormat;
 import org.openhab.binding.ipcamera.internal.MyNettyAuthHandler;
 import org.openhab.binding.ipcamera.internal.StreamServerHandler;
@@ -158,6 +162,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public int mp4HistoryLength;
     private String mp4Filename = "ipcamera";
     private int mp4RecordTime;
+    private int gifRecordTime = 5;
     private int mp4Preroll;
     private LinkedList<byte[]> fifoSnapshotBuffer = new LinkedList<byte[]>();
     private int snapCount;
@@ -616,7 +621,7 @@ public class IpCameraHandler extends BaseThingHandler {
             currentSnapshot = incommingSnapshot;
             if (cameraConfig.getGifPreroll() > 0) {
                 fifoSnapshotBuffer.add(incommingSnapshot);
-                if (fifoSnapshotBuffer.size() > (cameraConfig.getGifPreroll() + cameraConfig.getGifPostroll())) {
+                if (fifoSnapshotBuffer.size() > (cameraConfig.getGifPreroll() + gifRecordTime)) {
                     fifoSnapshotBuffer.removeFirst();
                 }
             }
@@ -913,15 +918,14 @@ public class IpCameraHandler extends BaseThingHandler {
                 if (cameraConfig.getGifPreroll() > 0) {
                     ffmpegGIF = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(),
                             "-y -r 1 -hide_banner -loglevel warning", cameraConfig.getFfmpegOutput() + "snapshot%d.jpg",
-                            "-frames:v " + (cameraConfig.getGifPreroll() + cameraConfig.getGifPostroll()) + " "
+                            "-frames:v " + (cameraConfig.getGifPreroll() + gifRecordTime) + " "
                                     + cameraConfig.getGifOutOptions(),
                             cameraConfig.getFfmpegOutput() + gifFilename + ".gif", username, password);
                 } else {
                     if (!inputOptions.isEmpty()) {
-                        inputOptions = "-y -t " + cameraConfig.getGifPostroll() + " -hide_banner -loglevel warning "
-                                + inputOptions;
+                        inputOptions = "-y -t " + gifRecordTime + " -hide_banner -loglevel warning " + inputOptions;
                     } else {
-                        inputOptions = "-y -t " + cameraConfig.getGifPostroll() + " -hide_banner -loglevel warning";
+                        inputOptions = "-y -t " + gifRecordTime + " -hide_banner -loglevel warning";
                     }
                     ffmpegGIF = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getGifOutOptions(), cameraConfig.getFfmpegOutput() + gifFilename + ".gif",
@@ -1098,6 +1102,23 @@ public class IpCameraHandler extends BaseThingHandler {
         audioAlarmUpdateSnapshot = false;
     }
 
+    public void recordMp4(String filename, int seconds) {
+        mp4Filename = filename;
+        mp4RecordTime = seconds;
+        setupFfmpegFormat(FFmpegFormat.RECORD);
+        setChannelState(CHANNEL_RECORDING_MP4, DecimalType.valueOf(new String("" + seconds)));
+    }
+
+    public void recordGif(String filename, int seconds) {
+        gifFilename = filename;
+        if (cameraConfig.getGifPreroll() > 0) {
+            snapCount = seconds;
+        } else {
+            setupFfmpegFormat(FFmpegFormat.GIF);
+        }
+        setChannelState(CHANNEL_RECORDING_GIF, DecimalType.valueOf(new String("" + seconds)));
+    }
+
     public String returnValueFromString(String rawString, String searchedString) {
         String result = "";
         int index = rawString.indexOf(searchedString);
@@ -1173,22 +1194,6 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     setupFfmpegFormat(FFmpegFormat.RTSP_ALARMS);
                     return;
-                case CHANNEL_GIF_FILENAME:
-                    gifFilename = command.toString();
-                    if (gifFilename.isEmpty()) {
-                        gifFilename = "ipcamera";
-                    }
-                    return;
-                case CHANNEL_MP4_FILENAME:
-                    mp4Filename = command.toString();
-                    if (mp4Filename.isEmpty()) {
-                        mp4Filename = "ipcamera";
-                    }
-                    return;
-                case CHANNEL_RECORD_MP4:
-                    mp4RecordTime = Integer.parseInt(command.toString());
-                    setupFfmpegFormat(FFmpegFormat.RECORD);
-                    return;
                 case CHANNEL_START_STREAM:
                     if (OnOffType.ON.equals(command)) {
                         setupFfmpegFormat(FFmpegFormat.HLS);
@@ -1229,15 +1234,6 @@ public class IpCameraHandler extends BaseThingHandler {
                             ffmpegSnapshotGeneration = false;
                         }
                         updateImageChannel = false;
-                    }
-                    return;
-                case CHANNEL_UPDATE_GIF:
-                    if (OnOffType.ON.equals(command)) {
-                        if (cameraConfig.getGifPreroll() > 0) {
-                            snapCount = cameraConfig.getGifPostroll();
-                        } else {
-                            setupFfmpegFormat(FFmpegFormat.GIF);
-                        }
                     }
                     return;
                 case CHANNEL_PAN:
@@ -1750,5 +1746,10 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public String getWhiteList() {
         return cameraConfig.getIpWhitelist();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(IpCameraActions.class);
     }
 }

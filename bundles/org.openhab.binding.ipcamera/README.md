@@ -215,7 +215,6 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `fieldDetectionAlarm` | Switch (read only) | Reflects the cameras status for the field or intrusion alarm. |
 | `ffmpegMotionAlarm` | Switch (read only) | The status of the FFmpeg based motion alarm. |
 | `ffmpegMotionControl` | Dimmer | This control allows FFmpeg to detect movement from a RTSP or HTTP source and inform openHAB. The channel that will move is called `ffmpegMotionAlarm`. |
-| `gifFilename` | String | The name the GIF feature will use for the next filename. If empty the filename will be `ipcamera.gif` |
 | `gifHistory` | String | The 50 most recent filenames the binding has used unless reset. |
 | `gifHistoryLength` | Number | How many filenames are in the `gifHistory`. |
 | `gotoPreset` | String | ONVIF cameras that can move only. Will cause the camera to move to a preset location. |
@@ -225,16 +224,15 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `itemTaken` | Switch (read only) | Will turn ON if an API camera detects an item has been stolen. |
 | `lastMotionType` | String | Cameras with multiple alarm types will update this with which alarm last detected motion, i.e. a lineCrossing, faceDetection or item stolen alarm. You can also use this to create a timestamp of when the last motion was detected by creating a rule when this channel changes. |
 | `lineCrossingAlarm` | Switch (read only) | Will turn on if the API camera detects motion has crossed a line. |
-| `recordMp4` | Number | Set this channel to a number of how many seconds that you wish to record for, then the recording will start. Once completed the channel automatically changes to 0 to indicate the file is ready to be used. |
 | `mjpegUrl` | String | The URL for the ipcamera.mjpeg stream. |
 | `motionAlarm` | Switch (read only) | The status of the 'video motion' events in ONVIF and API cameras. Also see `cellMotionAlarm` as these can give different results. |
-| `mp4Filename` | String | The name the MP4 feature will use for the next filename. If empty the filename will be `ipcamera.mp4` |
 | `mp4History` | String | The 50 most recent filenames the binding has used unless reset. |
 | `mp4HistoryLength` | Number | How many filenames are in the `mp4History`. Setting this to 0 will clear the history. |
 | `pan` | Dimmer | Works with ONVIF cameras that can be moved. |
 | `parkingAlarm` | Switch (read only) | When an API camera detects a car, this will turn ON. |
 | `pirAlarm` | Switch (read only) | When a camera with PIR ability detects motion, this turns ON. |
-| `recordMp4` | Number | Set this to how many seconds you wish to record to MP4 for. |
+| `recordingGif` | Number (read only) | How many seconds recording to GIF for. 0 when file ready. |
+| `recordingMp4` | Number (read only) | How many seconds recording to MP4 for. 0 when file ready. |
 | `rtspUrl` | String | The URL for the cameras auto detected RTSP stream. |
 | `sceneChangeAlarm` | Switch (read only) | When an API camera detects the camera has moved, this turns ON. |
 | `startStream` | Switch | Starts the HLS files being created, if it not manually moved it will indicate if the files are being created on demand. |
@@ -247,7 +245,6 @@ The channels are kept consistent as much as possible from brand to brand to make
 | `tooBlurryAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `tooBrightAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
 | `tooDarkAlarm` | Switch (read only) | ONVIF cameras only will reflect the status of the ONVIF event of the same name. |
-| `updateGif` | Switch | When this control is turned ON it will trigger an animated Gif to be created by FFmpeg. Once the file is created the control will auto turn itself back to OFF which can be used to trigger a rule. |
 | `pollImage` | Switch | This control can be used to manually start and stop using your CPU to create snapshots from a RTSP source. If you have a snapshot URL setup in the binding, only then can this control can be used to update the Image channel. |
 | `zoom` | Dimmer | Works with ONVIF cameras that can be moved. |
 
@@ -604,24 +601,36 @@ KitchenHomeHubPlayURI.sendCommand("http://192.168.1.2:54321/ipcamera.m3u8")
 
 ```
 
-## Animated GIF
+## MP4 and GIF Recordings
 
-This binding has a channel called `updateGif` and when this switch is turned 'ON' (either by a rule or manually) the binding will create an animated GIF called ipcamera.gif in the `ffmpegOutput` folder.
-You can change the filename using the channel that is called `gifFilename`.
-Once the file is created the switch will turn 'OFF' and this can be used to trigger a rule to send the picture via email, pushover or telegram messages.
-The channel `gifHistory` keeps a string of the last 50 filenames (separated by commas) until you reset the history.
-The channel `gifHistoryLength` keeps track of how many filenames are in the gifHistory string.
-You can send the '0' command to this channel to clear the gifHistory string at the same time as setting this channel back to 0.
+You can use FFmpeg to recording to a file in either GIF or MP4 format.
 
-This feature has two options called `gifPreroll` and `gifPostroll` to be aware of.
-When `gifPreroll` is 0 (the default) the binding will use the `ffmpegInput` stream to fetch the amount of seconds specified in the `gifPostroll` to create the GIF from.
-By changing the `gifPreroll` to a value above 0, the binding will change to using snapshots as the source.
+To do this:
+
++ Use the Action called `recordMP4(String filename, int secondsToRecord)` or `recordGIF(String filename, int secondsToRecord)` with the first argument being the filename you wish to use and the second the time in seconds you wish to record for.
++ You can leave the filename empty and the binding will use ipcamera as the name, example recordMp4("", 5).
++ Once the file is created, the channel `recordingMp4` or `recordingGif` will change itself back to OFF, which can be used to trigger a rule to send/use the file which will appear in the `ffmpegOutput` folder.
++ The channel `mp4History` or `gifHistory` keeps a string of the last 50 recording filenames (separated by commas) until you reset the history. If you use an empty filename this stops the history from growing.
++ The channel `mp4HistoryLength` and `gifHistoryLength` keeps track of how many recordings were made since it was last reset.
+You can send the `0` command to this channel to clear the `mp4History` at the same time as setting this channel back to 0.
++ You can use the `mp4OutOptions` or `gifOutOptions` configs to apply any FFmpeg filters that you wish.
+
+There is also a HABpanel Widget worth checking out that uses the history feature to display a list of recent recordings.
+<https://community.openhab.org/t/custom-widget-camera-history-and-live-popup/103082>
+
+**NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space.
+
+**GIF Preroll**
+
+This feature has a config called `gifPreroll` to be aware of.
+When `gifPreroll` is 0 (the default) the binding will use the `ffmpegInput` stream to record from.
+By changing the `gifPreroll` to a value above 0, the binding will change to using snapshots as the source preventing the need to have or open a RTSP stream.
 The time between the snapshots then becomes the `pollTime` of the camera (1 second by default) and can be raised if you desire.
 The snapshots are saved to disk and can be used as a feature that is described in the snapshot section above.
 
-You can request the GIF by using this URL, or by the path to where the file is stored:
+You can request the GIF and MP4 by using this URL format, or by the direct path to where the file is stored:
 
-<http://openHABIP:ServerPort/ipcamera.gif>
+<http://openHAB.IP:serverPort/ipcamera.gif>
 
 .items
 
@@ -650,26 +659,6 @@ then
     sendPushoverMessage(pushoverBuilder("Sending GIF from backyard").withApiKey("dsfhghj6546fghfg").withUser("qwerty54657").withDevice("Phone1").withAttachment("/tmpfs/DoorCam/ipcamera.gif"))
 end
 ```
-
-## MP4 Recordings
-
-The binding can use FFmpeg to create a recording to a file.
-
-To do this:
-
-+ Set the string channel called `mp4Filename` to whatever you like, or leave the channel empty for the filename to default to `ipcamera.mp4`.
-+ Change the Number channel called `recordMp4` to a number of how many seconds that you wish to record for.
-The recording will then start.
-+ Once the file is created, the channel `recordMp4` will change itself back to 0 which can be used to trigger a rule to send the file.
-+ The channel `mp4History` keeps a string of the last 50 recording filenames (separated by commas) until you reset the history.
-+ The channel `mp4HistoryLength` keeps track of how many filenames are in the `mp4History`.
-You can send the `0` command to this channel to clear the `mp4History` at the same time as setting this channel back to 0.
-+ You can use the `mp4OutOptions` config to apply any FFmpeg filters that you wish.
-
-There is also a HABpanel Widget worth checking out that uses the history feature to display a list of recent recordings.
-<https://community.openhab.org/t/custom-widget-camera-history-and-live-popup/103082>
-
-**NOTE:** If you are using a tmpfs folder, you will need to ensure you do not run out of space.
 
 ## HABpanel
 
