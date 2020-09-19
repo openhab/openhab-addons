@@ -91,8 +91,9 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
         try {
             if (httpClient.GET(config.getUri()).getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
-                if (pollingScheduler != null) {
-                    pollingScheduler.cancel(true);
+                ScheduledFuture<?> oldScheduler = pollingScheduler;
+                if (oldScheduler != null) {
+                    oldScheduler.cancel(false);
                 }
                 pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
                         TimeUnit.SECONDS);
@@ -104,8 +105,9 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
             logger.debug("Failed to connect.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to WlanThermo at " + config.getIpAddress());
-            if (pollingScheduler != null) {
-                pollingScheduler.cancel(false);
+            ScheduledFuture<?> oldScheduler = pollingScheduler;
+            if (oldScheduler != null) {
+                oldScheduler.cancel(false);
             }
             pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
@@ -122,7 +124,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
-                logger.warn("Could not handle command of type {} for channel {}!", command.getClass().toGenericString(),
+                logger.debug("Could not handle command of type {} for channel {}!", command.getClass().toGenericString(),
                         channelUID.getId());
             }
         }
@@ -154,8 +156,9 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Update failed, checking connection", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
-            if (pollingScheduler != null) {
-                pollingScheduler.cancel(false);
+            ScheduledFuture<?> oldScheduler = pollingScheduler;
+            if (oldScheduler != null) {
+                oldScheduler.cancel(false);
             }
             for (Channel channel : thing.getChannels()) {
                 updateState(channel.getUID(), UnDefType.UNDEF);
@@ -165,7 +168,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
     }
 
     private void push() {
-        for (org.openhab.binding.wlanthermo.internal.api.nano.data.Channel c : data.getChannel()) {
+        data.getChannel().forEach(c -> {
             try {
                 String json = gson.toJson(c);
                 logger.debug("Pushing: {}", json);
@@ -175,29 +178,27 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 if (status == 401) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
-                    logger.warn(
-                            "No or wrong login credentials provided. Please configure username/password for write access to WlanThermo!");
                 } else if (status != 200) {
                     updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Failed to update channel "
                             + c.getName() + " on device, Statuscode " + status + " on URI " + uri.toString());
-                    logger.warn("Failed to update channel {} on device, Statuscode {} on URI {}", c.getName(), status,
-                            uri.toString());
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException | URISyntaxException e) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Failed to update channel " + c.getName() + " on device!");
-                logger.warn("Failed to update channel {} on device", c.getName(), e);
+                logger.debug("Failed to update channel {} on device", c.getName(), e);
             }
-        }
+        });
     }
 
     @Override
     public void dispose() {
-        if (pollingScheduler != null) {
-            boolean stopped = pollingScheduler.cancel(true);
+        ScheduledFuture<?> oldScheduler = pollingScheduler;
+        if (oldScheduler != null) {
+            boolean stopped = oldScheduler.cancel(true);
             logger.debug("Stopped polling: {}", stopped);
         }
+        pollingScheduler = null;
     }
 }

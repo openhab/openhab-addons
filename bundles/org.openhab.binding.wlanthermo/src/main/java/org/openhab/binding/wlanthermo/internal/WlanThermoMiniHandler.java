@@ -72,8 +72,9 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         try {
             if (httpClient.GET(config.getUri("/app.php")).getStatus() == 200) {
                 updateStatus(ThingStatus.ONLINE);
-                if (pollingScheduler != null) {
-                    pollingScheduler.cancel(false);
+                ScheduledFuture<?> oldScheduler = pollingScheduler;
+                if (oldScheduler != null) {
+                    oldScheduler.cancel(false);
                 }
                 pollingScheduler = scheduler.scheduleWithFixedDelay(this::update, 0, config.getPollingInterval(),
                         TimeUnit.SECONDS);
@@ -85,8 +86,9 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
             logger.debug("Failed to connect.", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not connect to WlanThermo at " + config.getIpAddress());
-            if (pollingScheduler != null) {
-                pollingScheduler.cancel(false);
+            ScheduledFuture<?> oldScheduler = pollingScheduler;
+            if (oldScheduler != null) {
+                oldScheduler.cancel(false);
             }
             pollingScheduler = scheduler.schedule(this::checkConnection, config.getPollingInterval(), TimeUnit.SECONDS);
         }
@@ -126,8 +128,9 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
         } catch (URISyntaxException | InterruptedException | ExecutionException | TimeoutException e) {
             logger.debug("Update failed, checking connection", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Update failed, reconnecting...");
-            if (pollingScheduler != null) {
-                pollingScheduler.cancel(false);
+            ScheduledFuture<?> oldScheduler = pollingScheduler;
+            if (oldScheduler != null) {
+                oldScheduler.cancel(false);
             }
             for (Channel channel : thing.getChannels()) {
                 updateState(channel.getUID(), UnDefType.UNDEF);
@@ -138,9 +141,11 @@ public class WlanThermoMiniHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingScheduler != null) {
-            boolean stopped = pollingScheduler.cancel(true);
+        ScheduledFuture<?> oldScheduler = pollingScheduler;
+        if (oldScheduler != null) {
+            boolean stopped = oldScheduler.cancel(true);
             logger.debug("Stopped polling: {}", stopped);
         }
+        pollingScheduler = null;
     }
 }
