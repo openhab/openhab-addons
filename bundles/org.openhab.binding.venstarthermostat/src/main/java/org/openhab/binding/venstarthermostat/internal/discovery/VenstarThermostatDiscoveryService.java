@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 
 @Component(service = DiscoveryService.class, configurationPid = "discovery.venstarthermostat")
-public class    VenstarThermostatDiscoveryService extends AbstractDiscoveryService {
+public class VenstarThermostatDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(VenstarThermostatDiscoveryService.class);
     private static final String COLOR_TOUCH_DISCOVERY_MESSAGE = "M-SEARCH * HTTP/1.1\r\n"
             + "Host: 239.255.255.250:1900\r\n" + "Man: ssdp:discover\r\n" + "ST: colortouch:ecp\r\n" + "\r\n";
@@ -239,11 +239,11 @@ public class    VenstarThermostatDiscoveryService extends AbstractDiscoveryServi
         logger.trace("Got discovered device.");
 
         String label = String.format("Venstar Thermostat (%s)", name);
-        result = DiscoveryResultBuilder.create(thingUid).withLabel(label).withRepresentationProperty(uuid)
+        result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
+                .withRepresentationProperty(VenstarThermostatBindingConstants.PROPERTY_UUID)
                 .withProperty(VenstarThermostatBindingConstants.PROPERTY_UUID, uuid)
                 .withProperty(VenstarThermostatBindingConstants.PROPERTY_URL, url).build();
         logger.trace("New venstar thermostat discovered with ID=<{}>", uuid);
         this.thingDiscovered(result);
     }
-
 }

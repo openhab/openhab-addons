@@ -55,6 +55,5 @@ public enum VenstarSystemState {
         }
 
         throw (new IllegalArgumentException("Invalid system state " + state));
-
     }
 }

@@ -37,5 +37,4 @@ public class VenstarResponse {
     public void setSuccess(boolean success) {
         this.success = success;
     }
-
 }

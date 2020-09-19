@@ -42,6 +42,12 @@ After adding the Inbox item, enter the user name and password from the physical 
 | humidity           | Number             | Humidity                     |                                                        |
 
 
+### Thing Configuration 
+
+```perl
+Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ refresh=30, password="secret", username="admin" ]
+```
+
 ### Item Configuration
 
 

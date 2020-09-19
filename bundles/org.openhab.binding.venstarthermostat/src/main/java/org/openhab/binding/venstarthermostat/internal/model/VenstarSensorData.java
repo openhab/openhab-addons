@@ -29,5 +29,4 @@ public class VenstarSensorData {
     public void setSensors(List<VenstarSensor> sensors) {
         this.sensors = sensors;
     }
-
 }
