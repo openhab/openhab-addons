@@ -1450,7 +1450,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public void cameraConfigError(String reason) {
         // wont try to reconnect again due to a config error being the cause.
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
-        restart();
+        dispose();
     }
 
     public void cameraCommunicationError(String reason) {
@@ -1673,12 +1673,12 @@ public class IpCameraHandler extends BaseThingHandler {
 
     // What the camera needs to re-connect if the initialize() is not called.
     private void resetAndRetryConnecting() {
-        restart();
+        dispose();
         initialize();
     }
 
-    // Called when camera goes offline but the main handler is not destroyed.
-    private void restart() {
+    @Override
+    public void dispose() {
         isOnline = false;
         snapshotPolling = false;
         onvifCamera.disconnect();
@@ -1733,11 +1733,6 @@ public class IpCameraHandler extends BaseThingHandler {
             ffmpegSnapshot = null;
         }
         channelTrackingMap.clear();
-    }
-
-    @Override
-    public void dispose() {
-        restart();
     }
 
     public void setStreamServerHandler(StreamServerHandler streamServerHandler2) {
