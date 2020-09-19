@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -51,6 +50,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.modbus.handler.ModbusEndpointThingHandler;
+import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
 import org.openhab.io.transport.modbus.ModbusReadRequestBlueprint;
@@ -684,24 +684,8 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
      * @return The value or <tt>null</tt> if an error occurred
      */
     private void processResponse(HeliosVariable v, ModbusRegisterArray registers) {
-        // decode response
-        byte[] b = new byte[registers.size() * 2];
-        int actSize = 0; // track the actual size of the usable array (excluding any 0x00
-                         // characters)
-        for (int i = 0; i < registers.size(); i++) {
-            byte[] reg = registers.getRegister(i).getBytes();
-            if (reg.length == 2) { // only add to the array if it's a usable character
-                if (reg[0] != 0x00) {
-                    b[actSize++] = reg[0];
-                }
-                if (reg[1] != 0x00) {
-                    b[actSize++] = reg[1];
-                }
-            }
-        }
-        b = Arrays.copyOf(b, actSize); // before creating a string of it the array needs to be
-                                       // truncated
-        String r = new String(b, StandardCharsets.US_ASCII);
+        String r = ModbusBitUtilities
+                .extractStringFromRegisters(registers, 0, registers.size() * 2, StandardCharsets.US_ASCII).toString();
         String[] parts = r.split("=", 2); // remove the part "vXXXX=" from the string
         // making sure we have a proper response and the response matches the requested variable
         if ((parts.length == 2) && (v.getVariableString().equals(parts[0]))) {
