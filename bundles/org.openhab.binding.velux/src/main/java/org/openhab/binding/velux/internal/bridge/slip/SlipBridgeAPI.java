@@ -83,25 +83,25 @@ import org.slf4j.LoggerFactory;
 class SlipBridgeAPI implements BridgeAPI {
     private final Logger logger = LoggerFactory.getLogger(SlipBridgeAPI.class);
 
-    private static final GetDeviceStatus GETDEVICESTATUS = new SCgetDeviceStatus();
-    private static final GetFirmware GETFIRMWARE = new SCgetFirmware();
-    private static final GetHouseStatus GETHOUSESTATUS = new SCgetHouseStatus();
-    private static final GetLANConfig GETLANCONFIG = new SCgetLANConfig();
-    private static final GetProduct GETPRODUCT = new SCgetProduct();
-    private static final GetProductLimitation GETPRODUCTLIMITATION = new SCgetLimitation();
-    private static final GetProducts GETPRODUCTS = new SCgetProducts();
-    private static final GetScenes GETSCENES = new SCgetScenes();
-    private static final GetWLANConfig GETWLANCONFIG = new SCgetWLANConfig();
-    private static final Login LOGIN = new SClogin();
-    private static final Logout LOGOUT = new SClogout();
-    private static final RunProductCommand RUNPRODUCTCOMMAND = new SCrunProductCommand();
-    private static final RunProductDiscovery RUNPRODUCTDISCOVERY = new SCrunProductDiscovery();
-    private static final RunProductIdentification RUNPRODUCTIDENTIFICATION = new SCrunProductIdentification();
-    private static final RunProductSearch RUNPRODUCTSEARCH = new SCrunProductSearch();
-    private static final RunScene RUNSCENE = new SCrunScene();
-    private static final SetHouseStatusMonitor SETHOUSESTATUSMONITOR = new SCsetHouseStatusMonitor();
-    private static final SetProductLimitation SETPRODUCTLIMITATION = new SCsetLimitation();
-    private static final SetSceneVelocity SETSCENEVELOCITY = new SCsetSceneVelocity();
+    private final GetDeviceStatus GETDEVICESTATUS = new SCgetDeviceStatus();
+    private final GetFirmware GETFIRMWARE = new SCgetFirmware();
+    private final GetHouseStatus GETHOUSESTATUS = new SCgetHouseStatus();
+    private final GetLANConfig GETLANCONFIG = new SCgetLANConfig();
+    private final GetProduct GETPRODUCT = new SCgetProduct();
+    private final GetProductLimitation GETPRODUCTLIMITATION = new SCgetLimitation();
+    private final GetProducts GETPRODUCTS = new SCgetProducts();
+    private final GetScenes GETSCENES = new SCgetScenes();
+    private final GetWLANConfig GETWLANCONFIG = new SCgetWLANConfig();
+    private final Login LOGIN = new SClogin();
+    private final Logout LOGOUT = new SClogout();
+    private final RunProductCommand RUNPRODUCTCOMMAND = new SCrunProductCommand();
+    private final RunProductDiscovery RUNPRODUCTDISCOVERY = new SCrunProductDiscovery();
+    private final RunProductIdentification RUNPRODUCTIDENTIFICATION = new SCrunProductIdentification();
+    private final RunProductSearch RUNPRODUCTSEARCH = new SCrunProductSearch();
+    private final RunScene RUNSCENE = new SCrunScene();
+    private final SetHouseStatusMonitor SETHOUSESTATUSMONITOR = new SCsetHouseStatusMonitor();
+    private final SetProductLimitation SETPRODUCTLIMITATION = new SCsetLimitation();
+    private final SetSceneVelocity SETSCENEVELOCITY = new SCsetSceneVelocity();
 
     /**
      * Constructor.
