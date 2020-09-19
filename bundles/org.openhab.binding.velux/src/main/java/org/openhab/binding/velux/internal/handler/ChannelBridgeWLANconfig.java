@@ -70,7 +70,7 @@ final class ChannelBridgeWLANconfig extends ChannelHandlerTemplate {
         if (thisBridgeHandler.bridgeParameters.wlanConfig.isRetrieved) {
             VeluxItemType itemType = VeluxItemType.getByThingAndChannel(thisBridgeHandler.thingTypeUIDOf(channelUID),
                     channelUID.getId());
-            final String msg = "Not supported";
+            String msg = thisBridgeHandler.localization.getText("config.velux.bridge.unAvailable");
             switch (itemType) {
                 case BRIDGE_WLANSSID:
                     newState = StateUtils.createState(new StringType(msg));
