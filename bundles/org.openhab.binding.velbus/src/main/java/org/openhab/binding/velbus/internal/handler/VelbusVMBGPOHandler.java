@@ -18,9 +18,16 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.eclipse.smarthome.core.types.Command;
+import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 
 /**
  * The {@link VelbusVMBGPOHandler} is responsible for handling commands, which are
@@ -28,11 +35,71 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  *
  * @author Cedric Boon - Initial contribution
  */
-public class VelbusVMBGPOHandler extends VelbusTemperatureSensorHandler {
+@NonNullByDefault
+public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD));
+            Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2));
+
+    public static final int MODULESETTINGS_MEMORY_ADDRESS = 0x02F0;
+    public static final int LAST_MEMORY_LOCATION_ADDRESS = 0x1A03;
+
+    private final ChannelUID screensaverChannel = new ChannelUID(thing.getUID(), "oledDisplay", "SCREENSAVER");
+
+    private byte moduleSettings;
 
     public VelbusVMBGPOHandler(Thing thing) {
-        super(thing, 4, new ChannelUID(thing.getUID(), "CH33"));
+        super(thing);
+    }
+
+    @Override
+    public void handleCommand(ChannelUID channelUID, Command command) {
+        super.handleCommand(channelUID, command);
+
+        VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
+        if (velbusBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        if (channelUID.equals(screensaverChannel) && command instanceof RefreshType) {
+            sendReadMemoryPacket(velbusBridgeHandler, MODULESETTINGS_MEMORY_ADDRESS);
+        }
+
+        if (channelUID.equals(screensaverChannel) && command instanceof OnOffType) {
+            byte screenSaverOnOffByte = (byte) ((command == OnOffType.ON) ? 0x80 : 0x00);
+            moduleSettings = (byte) (screenSaverOnOffByte | (moduleSettings & 0x7F));
+            sendWriteMemoryPacket(velbusBridgeHandler, MODULESETTINGS_MEMORY_ADDRESS, moduleSettings);
+            sendWriteMemoryPacket(velbusBridgeHandler, LAST_MEMORY_LOCATION_ADDRESS, (byte) 0xFF);
+        }
+    }
+
+    @Override
+    public void onPacketReceived(byte[] packet) {
+        super.onPacketReceived(packet);
+
+        logger.trace("onPacketReceived() was called");
+
+        if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
+            byte command = packet[4];
+
+            if ((command == COMMAND_MEMORY_DATA_BLOCK && packet.length >= 11)
+                    || (command == COMMAND_MEMORY_DATA && packet.length >= 8)) {
+                byte highMemoryAddress = packet[5];
+                byte lowMemoryAddress = packet[6];
+                int memoryAddress = ((highMemoryAddress & 0xff) << 8) | (lowMemoryAddress & 0xff);
+                byte[] data = (command == COMMAND_MEMORY_DATA_BLOCK)
+                        ? new byte[] { packet[7], packet[8], packet[9], packet[10] }
+                        : new byte[] { packet[7] };
+
+                for (int i = 0; i < data.length; i++) {
+
+                    if ((memoryAddress + i) == MODULESETTINGS_MEMORY_ADDRESS) {
+                        this.moduleSettings = data[i];
+                        OnOffType state = ((this.moduleSettings & 0x80) != 0x00) ? OnOffType.ON : OnOffType.OFF;
+                        updateState(screensaverChannel, state);
+                    }
+                }
+            }
+        }
     }
 }

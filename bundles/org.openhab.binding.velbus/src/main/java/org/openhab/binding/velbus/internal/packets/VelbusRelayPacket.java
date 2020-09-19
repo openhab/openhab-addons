@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 
 /**
@@ -20,6 +21,7 @@ import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusRelayPacket extends VelbusPacket {
     private byte command;
     private byte channel;

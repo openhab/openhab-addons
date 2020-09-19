@@ -18,12 +18,17 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.CommonTriggerEvents;
 import org.eclipse.smarthome.core.thing.Thing;
+import org.eclipse.smarthome.core.thing.ThingStatus;
+import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.packets.VelbusFeedbackLEDPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusPacket;
 
 /**
@@ -32,21 +37,62 @@ import org.openhab.binding.velbus.internal.packets.VelbusPacket;
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusSensorHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMB2PBN, THING_TYPE_VMB6IN, THING_TYPE_VMB6PBN, THING_TYPE_VMB7IN,
-                    THING_TYPE_VMB8IR, THING_TYPE_VMB8PB, THING_TYPE_VMB8PBU, THING_TYPE_VMBPIRC, THING_TYPE_VMBPIRM));
+            Arrays.asList(THING_TYPE_VMB6IN, THING_TYPE_VMB8IR, THING_TYPE_VMB8PB));
+
+    private static final StringType SET_LED = new StringType("SET_LED");
+    private static final StringType SLOW_BLINK_LED = new StringType("SLOW_BLINK_LED");
+    private static final StringType FAST_BLINK_LED = new StringType("FAST_BLINK_LED");
+    private static final StringType VERY_FAST_BLINK_LED = new StringType("VERY_FAST_BLINK_LED");
+    private static final StringType CLEAR_LED = new StringType("CLEAR_LED");
 
     public VelbusSensorHandler(Thing thing) {
         this(thing, 0);
     }
 
     public VelbusSensorHandler(Thing thing, int numberOfSubAddresses) {
-        super(thing, numberOfSubAddresses, null);
+        super(thing, numberOfSubAddresses);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        VelbusBridgeHandler velbusBridgeHandler = getVelbusBridgeHandler();
+        if (velbusBridgeHandler == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+            return;
+        }
+
+        if (isFeedbackChannel(channelUID) && command instanceof StringType) {
+            byte commandByte;
+
+            StringType stringTypeCommand = (StringType) command;
+            if (stringTypeCommand.equals(SET_LED)) {
+                commandByte = COMMAND_SET_LED;
+            } else if (stringTypeCommand.equals(SLOW_BLINK_LED)) {
+                commandByte = COMMAND_SLOW_BLINK_LED;
+            } else if (stringTypeCommand.equals(FAST_BLINK_LED)) {
+                commandByte = COMMAND_FAST_BLINK_LED;
+            } else if (stringTypeCommand.equals(VERY_FAST_BLINK_LED)) {
+                commandByte = COMMAND_VERY_FAST_BLINK_LED;
+            } else if (stringTypeCommand.equals(CLEAR_LED)) {
+                commandByte = COMMAND_CLEAR_LED;
+            } else {
+                throw new UnsupportedOperationException(
+                        "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
+            }
+
+            VelbusFeedbackLEDPacket packet = new VelbusFeedbackLEDPacket(
+                    getModuleAddress().getChannelIdentifier(channelUID), commandByte);
+
+            byte[] packetBytes = packet.getBytes();
+            velbusBridgeHandler.sendPacket(packetBytes);
+        }
+    }
+
+    private boolean isFeedbackChannel(ChannelUID channelUID) {
+        return "feedback".equals(channelUID.getGroupId());
     }
 
     @Override
@@ -62,7 +108,7 @@ public class VelbusSensorHandler extends VelbusThingHandler {
                 if (channelJustPressed != 0) {
                     VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
                             channelJustPressed);
-                    triggerChannel(getModuleAddress().getChannelId(velbusChannelIdentifier),
+                    triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
                             CommonTriggerEvents.PRESSED);
                 }
 
@@ -70,7 +116,7 @@ public class VelbusSensorHandler extends VelbusThingHandler {
                 if (channelJustReleased != 0) {
                     VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
                             channelJustReleased);
-                    triggerChannel(getModuleAddress().getChannelId(velbusChannelIdentifier),
+                    triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
                             CommonTriggerEvents.RELEASED);
                 }
 
@@ -78,7 +124,7 @@ public class VelbusSensorHandler extends VelbusThingHandler {
                 if (channelLongPressed != 0) {
                     VelbusChannelIdentifier velbusChannelIdentifier = new VelbusChannelIdentifier(address,
                             channelLongPressed);
-                    triggerChannel(getModuleAddress().getChannelId(velbusChannelIdentifier),
+                    triggerChannel("input#" + getModuleAddress().getChannelId(velbusChannelIdentifier),
                             CommonTriggerEvents.LONG_PRESSED);
                 }
             }

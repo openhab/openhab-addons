@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.PercentType;
 import org.eclipse.smarthome.core.library.types.StopMoveType;
 import org.eclipse.smarthome.core.library.types.UpDownType;
@@ -29,6 +31,9 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.VelbusFirstGenerationDeviceModuleAddress;
+import org.openhab.binding.velbus.internal.VelbusModuleAddress;
+import org.openhab.binding.velbus.internal.config.VelbusThingConfig;
 import org.openhab.binding.velbus.internal.packets.VelbusBlindOffPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusBlindPositionPacket;
 import org.openhab.binding.velbus.internal.packets.VelbusBlindUpDownPacket;
@@ -41,12 +46,13 @@ import org.openhab.binding.velbus.internal.packets.VelbusStatusRequestPacket;
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusBlindsHandler extends VelbusThingHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMB1BLS, THING_TYPE_VMB2BLE));
+            Arrays.asList(THING_TYPE_VMB1BL, THING_TYPE_VMB1BLS, THING_TYPE_VMB2BL, THING_TYPE_VMB2BLE));
 
     public VelbusBlindsHandler(Thing thing) {
-        super(thing, 0, "Rollershutter");
+        super(thing, 0);
     }
 
     @Override
@@ -100,6 +106,27 @@ public class VelbusBlindsHandler extends VelbusThingHandler {
         } else {
             logger.debug("The command '{}' is not supported by this handler.", command.getClass());
         }
+    }
+
+    @Override
+    protected @Nullable VelbusModuleAddress createVelbusModuleAddress(int numberOfSubAddresses) {
+        final VelbusThingConfig velbusThingConfig = this.velbusThingConfig;
+        if (velbusThingConfig != null) {
+            byte address = hexToByte(velbusThingConfig.address);
+
+            if (isFirstGenerationDevice()) {
+                return new VelbusFirstGenerationDeviceModuleAddress(address);
+            }
+
+            return new VelbusModuleAddress(address, numberOfSubAddresses);
+        }
+
+        return null;
+    }
+
+    private Boolean isFirstGenerationDevice() {
+        ThingTypeUID thingTypeUID = this.getThing().getThingTypeUID();
+        return thingTypeUID.equals(THING_TYPE_VMB1BL) || thingTypeUID.equals(THING_TYPE_VMB2BL);
     }
 
     @Override

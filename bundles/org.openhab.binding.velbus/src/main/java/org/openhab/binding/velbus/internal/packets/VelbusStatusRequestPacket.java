@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
-import static org.openhab.binding.velbus.internal.VelbusBindingConstants.COMMAND_STATUS_REQUEST;
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
 
 /**
@@ -22,9 +23,8 @@ import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public class VelbusStatusRequestPacket extends VelbusPacket {
-    private static final byte ALL_CHANNELS = (byte) 0xFF;
-
     private byte channel;
 
     public VelbusStatusRequestPacket(byte address) {

@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link VelbusPacket} represents a base class for a Velbus packet and contains
  * functionality that is applicable to all Velbus packets.
  *
  * @author Cedric Boon - Initial contribution
  */
+@NonNullByDefault
 public abstract class VelbusPacket {
     public static final byte STX = 0x0F;
     public static final byte PRIO_HI = (byte) 0xF8;
