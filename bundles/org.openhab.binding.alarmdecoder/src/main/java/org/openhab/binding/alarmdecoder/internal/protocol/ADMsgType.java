@@ -43,6 +43,7 @@ public enum ADMsgType {
         startToMsgType.put("!EXP", ADMsgType.EXP);
         startToMsgType.put("!LRR", ADMsgType.LRR);
         startToMsgType.put("!VER", ADMsgType.VER);
+        startToMsgType.put("!KPM", ADMsgType.KPM);
     }
 
     /**

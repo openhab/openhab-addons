@@ -56,7 +56,7 @@ public class KeypadMessage extends ADMessage {
 
     public KeypadMessage(String message) throws IllegalArgumentException {
         super(message);
-        List<String> parts = splitMsg(message);
+        List<String> parts = splitMsg(message.replace("!KPM:", ""));
 
         if (parts.size() != 4) {
             throw new IllegalArgumentException("Invalid number of parts in keypad message");
