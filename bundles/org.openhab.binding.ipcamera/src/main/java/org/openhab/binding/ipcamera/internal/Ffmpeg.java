@@ -19,6 +19,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,10 +49,31 @@ public class Ffmpeg {
     private @Nullable Process process = null;
     private String ffmpegCommand = "";
     private FFmpegFormat format;
-    private String[] commandArray;
+    private List<String> commandArrayList = new ArrayList<String>();
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
     private boolean running = false;
+
+    public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
+            String input, String outArguments, String output, String username, String password) {
+        this.format = format;
+        ipCameraHandler = handle;
+        String altInput = input;
+        // Input can be snapshots not just rtsp or http
+        if (!password.isEmpty() && !input.contains("@") && input.contains("rtsp")) {
+            String credentials = username + ":" + password + "@";
+            // will not work for https: but currently binding does not use https
+            altInput = input.substring(0, 7) + credentials + input.substring(7);
+        }
+        if (inputArguments.isEmpty()) {
+            ffmpegCommand = "-i " + altInput + " " + outArguments + " " + output;
+        } else {
+            ffmpegCommand = inputArguments + " -i " + altInput + " " + outArguments + " " + output;
+        }
+        Collections.addAll(commandArrayList, ffmpegCommand.trim().split("\\s+"));
+        // ffmpegLocation may have a space in its folder
+        commandArrayList.add(0, ffmpegLocation);
+    }
 
     public void setKeepAlive(int seconds) {
         if (seconds == -1) {
@@ -68,26 +92,6 @@ public class Ffmpeg {
             keepAlive--;
         }
         return;
-    }
-
-    public Ffmpeg(IpCameraHandler handle, FFmpegFormat format, String ffmpegLocation, String inputArguments,
-            String input, String outArguments, String output, String username, String password) {
-        this.format = format;
-        ipCameraHandler = handle;
-        String altInput = input;
-        // Input can be snapshots not just rtsp or http
-        if (!password.isEmpty() && !input.contains("@") && input.contains("rtsp")) {
-            String credentials = username + ":" + password + "@";
-            // will not work for https: but currently binding does not use https
-            altInput = input.substring(0, 7) + credentials + input.substring(7);
-        }
-        if (inputArguments.isEmpty()) {
-            ffmpegCommand = ffmpegLocation + " -i " + altInput + " " + outArguments + " " + output;
-        } else {
-            ffmpegCommand = ffmpegLocation + " " + inputArguments + " -i " + altInput + " " + outArguments + " "
-                    + output;
-        }
-        commandArray = ffmpegCommand.trim().split("\\s+");
     }
 
     private class IpCameraFfmpegThread extends Thread {
@@ -114,7 +118,7 @@ public class Ffmpeg {
         @Override
         public void run() {
             try {
-                process = Runtime.getRuntime().exec(commandArray);
+                process = Runtime.getRuntime().exec(commandArrayList.toArray(new String[commandArrayList.size()]));
                 if (process != null) {
                     InputStream errorStream = process.getErrorStream();
                     InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
