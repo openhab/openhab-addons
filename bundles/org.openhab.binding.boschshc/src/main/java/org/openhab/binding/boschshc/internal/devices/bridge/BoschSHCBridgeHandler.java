@@ -29,6 +29,7 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.*;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
@@ -88,10 +89,18 @@ public class BoschSHCBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
+        SslContextFactory factory;
+        try {
+            // prepare SSL key and certificates
+            factory = new BoschSslUtil(config.password).getSslContextFactory();
+        } catch (PairingFailedException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.conf-error-ssl");
+            return;
+        }
+
         // Instantiate HttpClient with the SslContextFactory
-        BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(config.ipAddress, config.password,
-                // prepare SSL key and certificates
-                new BoschSslUtil(config.password).getSslContextFactory());
+        BoschHttpClient httpClient = this.httpClient = new BoschHttpClient(config.ipAddress, config.password, factory);
 
         // Initialize bridge in the background.
         scheduler.execute(() -> {

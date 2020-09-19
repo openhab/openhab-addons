@@ -42,6 +42,7 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.id.InstanceUUID;
 import org.slf4j.Logger;
@@ -71,7 +72,7 @@ public class BoschSslUtil {
         this.keystorePassword = keystorePassword;
     }
 
-    public SslContextFactory getSslContextFactory() {
+    public SslContextFactory getSslContextFactory() throws PairingFailedException {
         // Instantiate and configure the SslContextFactory
         SslContextFactory sslContextFactory = new SslContextFactory(true); // Accept all certificates
 
@@ -92,7 +93,7 @@ public class BoschSslUtil {
         return sslContextFactory;
     }
 
-    public KeyStore getKeyStoreAndCreateIfNecessary() {
+    public KeyStore getKeyStoreAndCreateIfNecessary() throws PairingFailedException {
         try {
             File file = new File(keystorePath);
             if (!file.exists()) {
@@ -111,9 +112,9 @@ public class BoschSslUtil {
                 return keyStore;
             }
         } catch (OperatorCreationException | GeneralSecurityException | IOException e) {
-            logger.warn("Can not create or load keystore {}. Check path, write access and JKS content.", keystorePath);
-            logger.debug("Exception during kesstore creation", e);
-            throw new IllegalStateException(e);
+            logger.debug("Exception during keystore creation {}", e.getMessage());
+            throw new PairingFailedException("Can not create or load keystore file: " + keystorePath
+                    + ". Check path, write access and JKS content.");
         }
     }
 

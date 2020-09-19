@@ -109,14 +109,13 @@ public class BoschHttpClient extends HttpClient {
     }
 
     public boolean doPairing() {
-        logger.debug("Starting pairing openHAB Client with Bosch SmartHomeController!");
-        logger.debug("Please press the Bosch SHC button until LED starts blinking");
+        logger.trace("Starting pairing openHAB Client with Bosch SmartHomeController!");
+        logger.trace("Please press the Bosch SHC button until LED starts blinking");
 
         ContentResponse contentResponse;
         try {
             String publicCert = getCertFromSslContextFactory();
-            logger.debug("Pairing this Client '{}' with SHC {} using Cert {}", BoschSslUtil.getBoschSHCId(), ipAddress,
-                    publicCert);
+            logger.trace("Pairing this Client '{}' with SHC {}", BoschSslUtil.getBoschSHCId(), ipAddress);
 
             // JSON Rest content
             Map<String, String> items = new HashMap<>();
@@ -134,7 +133,7 @@ public class BoschHttpClient extends HttpClient {
 
             contentResponse = request.send();
 
-            logger.debug("Pairing response complete: {} - return code: {}", contentResponse.getContentAsString(),
+            logger.trace("Pairing response complete: {} - return code: {}", contentResponse.getContentAsString(),
                     contentResponse.getStatus());
             if (201 == contentResponse.getStatus()) {
                 logger.info("Pairing successful.");
@@ -150,21 +149,21 @@ public class BoschHttpClient extends HttpClient {
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => usually the pairing failed, because hardware button was not pressed.
-            logger.warn("Pairing failed with exception {}, was the Bosch SHC button pressed?", e.getMessage());
+            logger.warn("Pairing failed. Was the Bosch SHC button pressed?");
             return false;
         }
     }
 
     public String createUrl(String endpoint) {
-        return String.format("https://{}:8444/{}", this.ipAddress, endpoint);
+        return String.format("https://%s:8444/%s", this.ipAddress, endpoint);
     }
 
     public String createSmartHomeUrl(String endpoint) {
-        return this.createUrl(String.format("smarthome/{}", endpoint));
+        return this.createUrl(String.format("smarthome/%s", endpoint));
     }
 
     public String createServiceUrl(String serviceName, String deviceId) {
-        return this.createSmartHomeUrl(String.format("devices/{}/services/{}/state", deviceId, serviceName));
+        return this.createSmartHomeUrl(String.format("devices/%s/services/%s/state", deviceId, serviceName));
     }
 
     public Request createRequest(String url, HttpMethod method) {
@@ -172,6 +171,7 @@ public class BoschHttpClient extends HttpClient {
     }
 
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
+        logger.trace("create request for {}", url);
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
         if (content != null) {
             String body = gson.toJson(content);
