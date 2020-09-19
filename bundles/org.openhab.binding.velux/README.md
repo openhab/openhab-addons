@@ -206,30 +206,35 @@ The bridge Thing provides the following properties.
 
 ### Things
 
-=> TODO: the example needs to be updated !!
+```
+Bridge velux:klf200:g24 "Velux KLF200 Hub" @ "Under Stairs" [ipAddress="192.168.1.xxx", password="secret"] {
+    Thing window w56-36-13-5A-11-2A-05-70 "Bathroom Roof Window" @ "Bathroom" [serial="56:36:13:5A:11:2A:05:70", inverted=true]
+}
+```
 
-[Sample things file for textual configuration](./doc/conf/things/velux.things)
+[=> download sample things file for textual configuration](./doc/conf/things/velux.things)
 
 ### Items
 
-=> TODO: the example needs to be updated !!
+```
+Rollershutter Bathroom_Roof_Window_Position "Bathroom Roof Window Position [%.0f %%]" {channel="velux:window:g24:w56-36-13-5A-11-2A-05-70:position"}
+```
 
-[Sample items file for textual configuration](./doc/conf/items/velux.items)
+[=> download sample items file for textual configuration](./doc/conf/items/velux.items)
 
 ### Sitemap
 
-=> TODO: the example needs to be updated !!
+```
+Frame label="Velux Windows" {
+	Slider item=Bathroom_Roof_Window_Position
+}
+```
 
-[Sample sitemaps file for textual configuration](./doc/conf/sitemaps/velux.sitemap)
+[=> download sample sitemaps file for textual configuration](./doc/conf/sitemaps/velux.sitemap)
 
 ### Rules
 
-=> TODO: the example needs to be updated !!
-
-[Sample rules file for textual configuration](./doc/conf/rules/velux.rules)
-
-**Rule for closing windows after a period of time** 
-
+**Rule for closing windows after a period of time**:
 Especially in the colder months, it is advisable to close the window after adequate ventilation. Therefore, automatic closing after one minute is good to save on heating costs.
 However, to allow the case of intentional prolonged opening, an automatic closure is made only with the window fully open.
 
@@ -260,6 +265,8 @@ then
 	logDebug("rules.V_WINDOW",	"V_WINDOW_changes finished.")
 end
 ```
+
+[=> download sample rules file for textual configuration](./doc/conf/rules/velux.rules)
 
 ## Debugging
 
@@ -344,7 +351,6 @@ However if you have set the configuration parameter isProtocolTraceEnabled to tr
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_CFM.
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Received answer GW_GET_NODE_INFORMATION_NTF.
 [INFO ] [internal.bridge.slip.SlipVeluxBridge] - Sending command GW_GET_LIMITATION_STATUS_REQ.
-...
 ```
 
 ## Supported/Tested Firmware Revisions
@@ -359,7 +365,7 @@ The next-generation firmware version two is not backward compatible, and does no
 | 0.1.1.0.41.0      | 2016-06-01   | Default factory shipping revision.                                      |
 | 0.1.1.0.42.0      | 2017-07-01   | Public Web Frontend w/ JSON-API.                                        |
 | 0.1.1.0.44.0      | 2017-12-14   | Public Web Frontend w/ JSON-API.                                        |
-| 2.0.0.71	        | 2018-09-27   | Public SLIP-API w/ private-only WLAN-based Web Frontend w/ JSON-API.    |
+| 0.2.0.0.71.0      | 2018-09-27   | Public SLIP-API w/ private-only WLAN-based Web Frontend w/ JSON-API.    |
 
 Notes:
 
