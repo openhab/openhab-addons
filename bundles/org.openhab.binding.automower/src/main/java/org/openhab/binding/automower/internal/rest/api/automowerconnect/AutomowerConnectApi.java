@@ -13,6 +13,7 @@
 package org.openhab.binding.automower.internal.rest.api.automowerconnect;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,17 +53,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers");
         request.method(HttpMethod.GET);
 
-        request.header("Authorization-Provider", "husqvarna");
-        request.header("Authorization", "Bearer " + token);
-        request.header("X-Api-Key", appKey);
-        request.header("Content-Type", "application/vnd.api+json");
-
-        ContentResponse response;
-        try {
-            response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new AutomowerCommunicationException(e);
-        }
+        ContentResponse response = executeRequest(appKey, token, request);
 
         return parseResponse(response, MowerListResult.class);
     }
@@ -71,17 +62,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + mowerId);
         request.method(HttpMethod.GET);
 
-        request.header("Authorization-Provider", "husqvarna");
-        request.header("Authorization", "Bearer " + token);
-        request.header("X-Api-Key", appKey);
-        request.header("Content-Type", "application/vnd.api+json");
-
-        ContentResponse response;
-        try {
-            response = request.send();
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new AutomowerCommunicationException(e);
-        }
+        ContentResponse response = executeRequest(appKey, token, request);
 
         return parseResponse(response, MowerResult.class);
     }
@@ -91,12 +72,22 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         final Request request = getHttpClient().newRequest(getBaseUrl() + "/mowers/" + id + "/actions");
         request.method(HttpMethod.POST);
 
+        request.content(new StringContentProvider(gson.toJson(command)));
+
+        ContentResponse response = executeRequest(appKey, token, request);
+
+        checkForError(response, response.getStatus());
+    }
+
+    private ContentResponse executeRequest(String appKey, String token, final Request request)
+            throws AutomowerCommunicationException {
+
+        request.timeout(10, TimeUnit.SECONDS);
+
         request.header("Authorization-Provider", "husqvarna");
         request.header("Authorization", "Bearer " + token);
         request.header("X-Api-Key", appKey);
         request.header("Content-Type", "application/vnd.api+json");
-
-        request.content(new StringContentProvider(gson.toJson(command)));
 
         ContentResponse response;
         try {
@@ -104,8 +95,7 @@ public class AutomowerConnectApi extends HusqvarnaApi {
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             throw new AutomowerCommunicationException(e);
         }
-
-        checkForError(response, response.getStatus());
+        return response;
     }
 
     private <T> T parseResponse(ContentResponse response, Class<T> type) throws AutomowerCommunicationException {

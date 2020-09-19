@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthFactory;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.ThingStatus;
@@ -45,43 +47,35 @@ import org.slf4j.LoggerFactory;
 public class AutomowerBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AutomowerBridgeHandler.class);
 
+    private static final String HUSQVARNA_API_TOKEN_URL = "https://api.authentication.husqvarnagroup.dev/v1/oauth2/token";
+
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_S = TimeUnit.HOURS.toSeconds(1);
 
-    private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
+    private final OAuthFactory oAuthFactory;
 
+    private @NonNullByDefault({}) OAuthClientService oAuthService;
+    private @Nullable ScheduledFuture<?> automowerBridgePollingJob;
     private @Nullable AutomowerBridge bridge;
     private final HttpClient httpClient;
 
-    private static class AutomowerBridgePollingRunnable implements Runnable {
-        private final Logger logger = LoggerFactory.getLogger(AutomowerBridgePollingRunnable.class);
-
-        private final AutomowerBridgeHandler handler;
-        private final AutomowerBridge bridge;
-
-        private AutomowerBridgePollingRunnable(AutomowerBridgeHandler handler, AutomowerBridge bridge) {
-            this.handler = handler;
-            this.bridge = bridge;
-        }
-
-        @Override
-        public void run() {
-            MowerListResult automowers;
-            try {
-                automowers = bridge.getAutomowers();
-                handler.updateStatus(ThingStatus.ONLINE);
-                logger.debug("Found {} automowers", automowers.getData().size());
-            } catch (AutomowerCommunicationException e) {
-                handler.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/comm-error-query-mowers-failed");
-                logger.warn("Unable to fetch automowers: {}", e.getMessage());
-            }
-        }
+    public AutomowerBridgeHandler(Bridge bridge, OAuthFactory oAuthFactory, HttpClient httpClient) {
+        super(bridge);
+        this.oAuthFactory = oAuthFactory;
+        this.httpClient = httpClient;
     }
 
-    public AutomowerBridgeHandler(Bridge bridge, HttpClient httpClient) {
-        super(bridge);
-        this.httpClient = httpClient;
+    private void pollAutomowers(AutomowerBridge bridge) {
+        MowerListResult automowers;
+        try {
+            automowers = bridge.getAutomowers();
+            updateStatus(ThingStatus.ONLINE);
+            logger.debug("Found {} automowers", automowers.getData().size());
+        } catch (AutomowerCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/comm-error-query-mowers-failed");
+            logger.warn("Unable to fetch automowers: {}", e.getMessage());
+        }
     }
 
     @Override
@@ -91,6 +85,7 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             stopAutomowerBridgePolling(currentBridge);
             bridge = null;
         }
+        oAuthFactory.ungetOAuthService(thing.getUID().getAsString());
     }
 
     @Override
@@ -112,8 +107,12 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/conf-error-invalid-polling-interval");
         } else {
+            oAuthService = oAuthFactory.createOAuthClientService(thing.getUID().getAsString(), HUSQVARNA_API_TOKEN_URL,
+                    null, appKey, null, null, null);
+
             if (bridge == null) {
-                AutomowerBridge currentBridge = new AutomowerBridge(appKey, userName, password, httpClient, scheduler);
+                AutomowerBridge currentBridge = new AutomowerBridge(oAuthService, appKey, userName, password,
+                        httpClient, scheduler);
                 bridge = currentBridge;
                 startAutomowerBridgePolling(currentBridge, pollingIntervalS);
             }
@@ -125,8 +124,8 @@ public class AutomowerBridgeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> currentPollingJob = automowerBridgePollingJob;
         if (currentPollingJob == null) {
             final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
-            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(
-                    new AutomowerBridgePollingRunnable(this, bridge), 1, pollingIntervalToUse, TimeUnit.SECONDS);
+            automowerBridgePollingJob = scheduler.scheduleWithFixedDelay(() -> pollAutomowers(bridge), 1,
+                    pollingIntervalToUse, TimeUnit.SECONDS);
         }
     }
 

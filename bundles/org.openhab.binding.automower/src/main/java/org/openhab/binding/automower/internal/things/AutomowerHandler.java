@@ -25,11 +25,15 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.measure.quantity.Dimensionless;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.library.types.StringType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
@@ -70,21 +74,17 @@ public class AutomowerHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> automowerPollingJob;
     private long maxQueryFrequencyNanos = TimeUnit.MINUTES.toNanos(1);
 
+    private Runnable automowerPollingRunnable = () -> {
+        Bridge bridge = getBridge();
+        if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
+            updateAutomowerState();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+        }
+    };
+
     public AutomowerHandler(Thing thing) {
         super(thing);
-    }
-
-    class AutomowerPollingRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            Bridge bridge = getBridge();
-            if (bridge != null && bridge.getStatus() == ThingStatus.ONLINE) {
-                updateAutomowerState();
-            } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-            }
-        }
     }
 
     @Override
@@ -151,8 +151,8 @@ public class AutomowerHandler extends BaseThingHandler {
     private void startAutomowerPolling(@Nullable Integer pollingIntervalS) {
         if (automowerPollingJob == null) {
             final long pollingIntervalToUse = pollingIntervalS == null ? DEFAULT_POLLING_INTERVAL_S : pollingIntervalS;
-            automowerPollingJob = scheduler.scheduleWithFixedDelay(new AutomowerPollingRunnable(), 1,
-                    pollingIntervalToUse, TimeUnit.SECONDS);
+            automowerPollingJob = scheduler.scheduleWithFixedDelay(automowerPollingRunnable, 1, pollingIntervalToUse,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -214,8 +214,6 @@ public class AutomowerHandler extends BaseThingHandler {
      *
      * @param command The command that should be sent. Valid values are: "Start", "ResumeSchedule", "Pause", "Park",
      *            "ParkUntilNextSchedule", "ParkUntilFurtherNotice"
-     *
-     * @param command
      */
     public void sendAutomowerCommand(AutomowerCommand command) {
         sendAutomowerCommand(command, DEFAULT_COMMAND_DURATION_MIN);
@@ -256,8 +254,8 @@ public class AutomowerHandler extends BaseThingHandler {
             Instant statusTimestamp = Instant.ofEpochMilli(mower.getAttributes().getMetadata().getStatusTimestamp());
             updateState(CHANNEL_STATUS_LAST_UPDATE,
                     new DateTimeType(ZonedDateTime.ofInstant(statusTimestamp, ZoneId.systemDefault())));
-            updateState(CHANNEL_STATUS_BATTERY,
-                    new DecimalType(mower.getAttributes().getBattery().getBatteryPercent()));
+            updateState(CHANNEL_STATUS_BATTERY, new QuantityType<Dimensionless>(
+                    mower.getAttributes().getBattery().getBatteryPercent(), SmartHomeUnits.PERCENT));
 
             updateState(CHANNEL_STATUS_ERROR_CODE, new DecimalType(mower.getAttributes().getMower().getErrorCode()));
 

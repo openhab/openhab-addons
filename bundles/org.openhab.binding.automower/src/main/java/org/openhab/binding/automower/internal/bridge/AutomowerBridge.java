@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.automower.internal.bridge;
 
+import java.io.IOException;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.automower.internal.rest.api.authentication.AuthenticationApi;
-import org.openhab.binding.automower.internal.rest.api.authentication.dto.PostOAuth2Response;
+import org.eclipse.smarthome.core.auth.client.oauth2.AccessTokenResponse;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthException;
+import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.AutomowerConnectApi;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mower;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommand;
@@ -26,7 +28,6 @@ import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.Mowe
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerCommandRequest;
 import org.openhab.binding.automower.internal.rest.api.automowerconnect.dto.MowerListResult;
 import org.openhab.binding.automower.internal.rest.exceptions.AutomowerCommunicationException;
-import org.openhab.binding.automower.internal.rest.exceptions.UnauthorizedException;
 import org.openhab.binding.automower.internal.things.AutomowerCommand;
 
 /**
@@ -38,42 +39,32 @@ import org.openhab.binding.automower.internal.things.AutomowerCommand;
 @NonNullByDefault
 public class AutomowerBridge {
 
+    private final OAuthClientService authService;
     private final String appKey;
     private final String userName;
     private final String password;
 
-    private @Nullable PostOAuth2Response authResponse;
     private final AutomowerConnectApi automowerApi;
-    private final AuthenticationApi authApi;
 
-    public AutomowerBridge(String appKey, String userName, String password, HttpClient httpClient,
-            ScheduledExecutorService scheduler) {
+    public AutomowerBridge(OAuthClientService authService, String appKey, String userName, String password,
+            HttpClient httpClient, ScheduledExecutorService scheduler) {
+        this.authService = authService;
         this.appKey = appKey;
         this.userName = userName;
         this.password = password;
 
         this.automowerApi = new AutomowerConnectApi(httpClient);
-        this.authApi = new AuthenticationApi(httpClient);
     }
 
-    private PostOAuth2Response authenticate() throws AutomowerCommunicationException {
-        PostOAuth2Response result = authResponse;
-        if (result == null) {
-            result = authApi.loginOAuth2(appKey, userName, password);
-            authResponse = result;
-        }
-        return result;
-    }
-
-    private PostOAuth2Response refreshAuthentication() throws AutomowerCommunicationException {
-        PostOAuth2Response currentResponse = authResponse;
-        if (currentResponse == null) {
-            throw new AutomowerCommunicationException(
-                    "Unable to refresh authentication. Initial authentication has not been performed");
-        } else {
-            PostOAuth2Response result = authApi.loginWithRefreshToken(appKey, currentResponse.getRefreshToken());
-            authResponse = result;
+    private AccessTokenResponse authenticate() throws AutomowerCommunicationException {
+        try {
+            AccessTokenResponse result = authService.getAccessTokenResponse();
+            if (result == null) {
+                result = authService.getAccessTokenByResourceOwnerPasswordCredentials(userName, password, null);
+            }
             return result;
+        } catch (OAuthException | IOException | OAuthResponseException e) {
+            throw new AutomowerCommunicationException("Unable to authenticate", e);
         }
     }
 
@@ -82,12 +73,7 @@ public class AutomowerBridge {
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public MowerListResult getAutomowers() throws AutomowerCommunicationException {
-        try {
-            return getAutomowersInt();
-        } catch (UnauthorizedException e) {
-            refreshAuthentication();
-            return getAutomowersInt();
-        }
+        return automowerApi.getMowers(appKey, authenticate().getAccessToken());
     }
 
     /**
@@ -96,12 +82,7 @@ public class AutomowerBridge {
      * @throws AutomowerCommunicationException In case the query cannot be executed successfully
      */
     public Mower getAutomowerStatus(String id) throws AutomowerCommunicationException {
-        try {
-            return getAutomowerStatusInt(id);
-        } catch (UnauthorizedException e) {
-            refreshAuthentication();
-            return getAutomowerStatusInt(id);
-        }
+        return automowerApi.getMower(appKey, authenticate().getAccessToken(), id).getData();
     }
 
     /**
@@ -115,24 +96,7 @@ public class AutomowerBridge {
      */
     public void sendAutomowerCommand(String id, AutomowerCommand command, long commandDuration)
             throws AutomowerCommunicationException {
-        try {
-            sendAutomowerCommandInt(id, command, commandDuration);
-        } catch (UnauthorizedException e) {
-            refreshAuthentication();
-            sendAutomowerCommandInt(id, command, commandDuration);
-        }
-    }
 
-    private MowerListResult getAutomowersInt() throws AutomowerCommunicationException {
-        return automowerApi.getMowers(appKey, authenticate().getAccessToken());
-    }
-
-    private Mower getAutomowerStatusInt(String id) throws AutomowerCommunicationException {
-        return automowerApi.getMower(appKey, authenticate().getAccessToken(), id).getData();
-    }
-
-    private void sendAutomowerCommandInt(String id, AutomowerCommand command, long commandDuration)
-            throws AutomowerCommunicationException {
         MowerCommandAttributes attributes = new MowerCommandAttributes();
         attributes.setDuration(commandDuration);
 

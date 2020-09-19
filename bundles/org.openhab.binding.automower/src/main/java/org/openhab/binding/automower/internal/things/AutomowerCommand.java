@@ -24,7 +24,7 @@ public enum AutomowerCommand {
     PARK_UNTIL_NEXT_SCHEDULE("ParkUntilNextSchedule"),
     PARK_UNTIL_FURTHER_NOTICE("ParkUntilFurtherNotice");
 
-    private String command;
+    private final String command;
 
     private AutomowerCommand(String command) {
         this.command = command;

@@ -25,42 +25,46 @@ Once the bridge is created and configured, registered automowers will be discove
 - password (mandatory): The password for the given user
 - pollingInterval (optional): How often the bridge state should be queried in seconds. Default is 1h (3600s)
 
-Keep in mind that the status of the bridge should not be queried too often. According to the Husqvarna documentation not more than 10000 requests per month and application key are allowed. With the default value of 1h this would mean ~720 requests per month for the bridge state
+Keep in mind that the status of the bridge should not be queried too often.
+According to the Husqvarna documentation not more than 10000 requests per month and application key are allowed.
+With the default value of 1h this would mean ~720 requests per month for the bridge state
 
 `automower:`
 
 - mowerId (mandatory): The Id of an automower as used by the Automower Connect Api to identify a mower. This is automatically filled when the thing is discovered
 - pollingInterval (optional): How often the current automower state should be polled in seconds. Default is 10min (600s)
 
-Keep in mind that the status of the automowers should not be queried too often. According to the Husqvarna documentation not more than 10000 requests per month and application key are allowed. With the default value of 10min this would mean ~4300 requests per month per automower
+Keep in mind that the status of the automowers should not be queried too often.
+According to the Husqvarna documentation not more than 10000 requests per month and application key are allowed.
+With the default value of 10min this would mean ~4300 requests per month per automower
 
 ## Channels
 
 
-| channel  | type   | description                  |
-|----------|--------|------------------------------|
-| name  | String | (readonly) The name of the Automower  |
-| mode  | String | (readonly) The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)  |
-| activity  | String | (readonly) The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)  |
-| state  | String | (readonly) The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP)  |
-| last-update  | DateTime | (readonly) The time when the automower updated its states  |
-| battery  | Number | (readonly) The battery state of charge in percent  |
-| error-code  | Number | (readonly) The current error code  |
-| error-timestamp  | DateTime | (readonly) The timestamp when the current error occurred  |
+| channel         | type     | description                                                                                                                                                                 |
+|-----------------|----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name            | String   | (readonly) The name of the Automower                                                                                                                                        |
+| mode            | String   | (readonly) The current mode (MAIN_AREA, SECONDARY_AREA, HOME, DEMO, UNKNOWN)                                                                                                |
+| activity        | String   | (readonly) The current activity (UNKNOWN, NOT_APPLICABLE, MOWING, GOING_HOME, CHARGING, LEAVING, PARKED_IN_CS, STOPPED_IN_GARDEN)                                           |
+| state           | String   | (readonly) The current state (UNKNOWN, NOT_APPLICABLE, PAUSED, IN_OPERATION, WAIT_UPDATING, WAIT_POWER_UP, RESTRICTED, OFF, STOPPED, ERROR, FATAL_ERROR, ERROR_AT_POWER_UP) |
+| last-update     | DateTime | (readonly) The time when the automower updated its states                                                                                                                   |
+| battery         | Number   | (readonly) The battery state of charge in percent                                                                                                                           |
+| error-code      | Number   | (readonly) The current error code                                                                                                                                           |
+| error-timestamp | DateTime | (readonly) The timestamp when the current error occurred                                                                                                                    |
 
 
 ## Actions
 
 The following actions are available for `automower`things:
 
-| action name  | arguments   | description                  |
-|----------|--------|------------------------------|
-| start  | duration (int) | Starts the automower for the given duration (minutes), overriding the schedule  |
-| pause  | - | Pauses the automower wherever it is currently located  |
-| parkUntilNextSchedule  | - | Parks the automower, fully charges it and starts afterwards according to the schedule  |
-| parkUntilFurtherNotice  | - | Parks the automower until it is started again by the start action or the schedule gets resumed  |
-| park | duration (int) | Parks the automower for the given duration (minutes), overriding the schedule  |
-| resumeSchedule  | - | Resumes the schedule for the automower  |
+| action name            | arguments      | description                                                                                    |
+|------------------------|----------------|------------------------------------------------------------------------------------------------|
+| start                  | duration (int) | Starts the automower for the given duration (minutes), overriding the schedule                 |
+| pause                  | -              | Pauses the automower wherever it is currently located                                          |
+| parkUntilNextSchedule  | -              | Parks the automower, fully charges it and starts afterwards according to the schedule          |
+| parkUntilFurtherNotice | -              | Parks the automower until it is started again by the start action or the schedule gets resumed |
+| park                   | duration (int) | Parks the automower for the given duration (minutes), overriding the schedule                  |
+| resumeSchedule         | -              | Resumes the schedule for the automower                                                         |
 
 
 ## Full Example

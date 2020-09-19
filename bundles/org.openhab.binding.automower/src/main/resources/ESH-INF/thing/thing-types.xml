@@ -139,28 +139,28 @@
 	<channel-type id="lastUpdateType">
 		<item-type>DateTime</item-type>
 		<label>Last Update</label>
-		<description></description>
+		<description>The time when the mower sent the last update</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="batteryType">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Battery</label>
-		<description></description>
+		<description>The battery level of the mower at the time of last update</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
 	<channel-type id="errorCodeType">
 		<item-type>Number</item-type>
 		<label>Error Code</label>
-		<description></description>
+		<description>The error code at the time of last update</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="errorTimestampType">
 		<item-type>DateTime</item-type>
 		<label>Error Time</label>
-		<description></description>
+		<description>The time when the error occurred</description>
 		<state readOnly="true"/>
 	</channel-type>
 
