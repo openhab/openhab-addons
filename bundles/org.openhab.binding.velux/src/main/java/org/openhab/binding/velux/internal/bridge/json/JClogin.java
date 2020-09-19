@@ -39,8 +39,8 @@ class JClogin extends Login implements JsonBridgeCommunicationProtocol {
     private static final String URL = "/api/v1/auth";
     private static final String DESCRIPTION = "authenticate / login";
 
-    private static Request request = new Request();
-    private static Response response = new Response();
+    private Request request = new Request();
+    private Response response = new Response();
 
     /*
      * Message Objects

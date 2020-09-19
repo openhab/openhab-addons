@@ -83,19 +83,19 @@ import org.slf4j.LoggerFactory;
 class JsonBridgeAPI implements BridgeAPI {
     private final Logger logger = LoggerFactory.getLogger(JsonBridgeAPI.class);
 
-    private static final GetDeviceStatus GETDEVICESTATUS = new JCgetDeviceStatus();
-    private static final GetFirmware GETFIRMWARE = new JCgetFirmware();
-    private static final GetLANConfig GETLANCONFIG = new JCgetLANConfig();
-    private static final GetProducts GETPRODUCTS = new JCgetProducts();
-    private static final GetScenes GETSCENES = new JCgetScenes();
-    private static final GetWLANConfig GETWLANCONFIG = new JCgetWLANConfig();
-    private static final Login LOGIN = new JClogin();
-    private static final Logout LOGOUT = new JClogout();
-    private static final RunProductDiscovery RUNPRODUCTDISCOVERY = new JCrunProductDiscovery();
-    private static final RunProductIdentification RUNPRODUCTIDENTIFICATION = new JCrunProductIdentification();
-    private static final RunProductSearch RUNPRODUCTSEARCH = new JCrunProductSearch();
-    private static final RunScene RUNSCENE = new JCrunScene();
-    private static final SetSceneVelocity SETSCENEVELOCITY = new JCsetSceneVelocity();
+    private final GetDeviceStatus GETDEVICESTATUS = new JCgetDeviceStatus();
+    private final GetFirmware GETFIRMWARE = new JCgetFirmware();
+    private final GetLANConfig GETLANCONFIG = new JCgetLANConfig();
+    private final GetProducts GETPRODUCTS = new JCgetProducts();
+    private final GetScenes GETSCENES = new JCgetScenes();
+    private final GetWLANConfig GETWLANCONFIG = new JCgetWLANConfig();
+    private final Login LOGIN = new JClogin();
+    private final Logout LOGOUT = new JClogout();
+    private final RunProductDiscovery RUNPRODUCTDISCOVERY = new JCrunProductDiscovery();
+    private final RunProductIdentification RUNPRODUCTIDENTIFICATION = new JCrunProductIdentification();
+    private final RunProductSearch RUNPRODUCTSEARCH = new JCrunProductSearch();
+    private final RunScene RUNSCENE = new JCrunScene();
+    private final SetSceneVelocity SETSCENEVELOCITY = new JCsetSceneVelocity();
 
     /**
      * Constructor.
