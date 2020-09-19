@@ -149,8 +149,16 @@ public class TeleinfoSerialControllerHandler extends TeleinfoAbstractControllerH
             serialPort = commPort;
 
             commPort.setSerialPortParams(1200, SerialPort.DATABITS_7, SerialPort.STOPBITS_1, SerialPort.PARITY_EVEN);
-            commPort.enableReceiveThreshold(1);
-            commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MS);
+            try {
+                commPort.enableReceiveThreshold(1);
+            } catch (UnsupportedCommOperationException e) {
+                // rfc2217
+            }
+            try {
+                commPort.enableReceiveTimeout(SERIAL_RECEIVE_TIMEOUT_MS);
+            } catch (UnsupportedCommOperationException e) {
+                // rfc2217
+            }
             logger.debug("Starting receive thread");
             TeleinfoReceiveThread receiveThread = new TeleinfoReceiveThread(commPort, this,
                     config.autoRepairInvalidADPSgroupLine, scheduler);
