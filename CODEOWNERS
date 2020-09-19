@@ -97,6 +97,7 @@
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.ipp/ @peuter
 /bundles/org.openhab.binding.irtrans/ @kgoderis
+/bundles/org.openhab.binding.ism8/ @hans-reiner
 /bundles/org.openhab.binding.jablotron/ @octa22
 /bundles/org.openhab.binding.jeelink/ @vbier
 /bundles/org.openhab.binding.kaleidescape/ @mlobstein
