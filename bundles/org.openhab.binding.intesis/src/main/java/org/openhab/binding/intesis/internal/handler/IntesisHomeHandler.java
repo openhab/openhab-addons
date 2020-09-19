@@ -100,20 +100,23 @@ public class IntesisHomeHandler extends BaseThingHandler {
         config = getConfigAs(IntesisConfiguration.class);
         if (config.ipAddress.isEmpty() && config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address and password not set");
+            return;
         } else if (config.ipAddress.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP-Address not set");
+            return;
         } else if (config.password.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Password not set");
+            return;
+        } else {
+            // start background initialization:
+            scheduler.submit(() -> {
+                populateProperties();
+                // query available dataPoints and build dynamic channels
+                postRequestInSession(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
+                        + sessionId + "\"}}", this::handleDataPointsResponse);
+                updateProperties(properties);
+            });
         }
-
-        // start background initialization:
-        scheduler.submit(() -> {
-            populateProperties();
-            // query available dataPoints and build dynamic channels
-            postRequestInSession(sessionId -> "{\"command\":\"getavailabledatapoints\",\"data\":{\"sessionID\":\""
-                    + sessionId + "\"}}", this::handleDataPointsResponse);
-            updateProperties(properties);
-        });
     }
 
     @Override
