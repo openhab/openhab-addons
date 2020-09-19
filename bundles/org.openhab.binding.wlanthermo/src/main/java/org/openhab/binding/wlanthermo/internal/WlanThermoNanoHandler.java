@@ -124,8 +124,8 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
                 logger.debug("Data updated, pushing changes");
                 push();
             } else {
-                logger.debug("Could not handle command of type {} for channel {}!", command.getClass().toGenericString(),
-                        channelUID.getId());
+                logger.debug("Could not handle command of type {} for channel {}!",
+                        command.getClass().toGenericString(), channelUID.getId());
             }
         }
     }
