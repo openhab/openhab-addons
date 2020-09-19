@@ -148,8 +148,6 @@ public class IpCameraHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> snapshotJob = null;
     private @Nullable Bootstrap mainBootstrap;
     private @Nullable ServerBootstrap serverBootstrap;
-    private String username = "";
-    private String password = "";
 
     private EventLoopGroup mainEventLoopGroup = new NioEventLoopGroup();
     private EventLoopGroup serversLoopGroup = new NioEventLoopGroup();
@@ -173,7 +171,7 @@ public class IpCameraHandler extends BaseThingHandler {
     public Map<String, ChannelTracking> channelTrackingMap = new ConcurrentHashMap<>();
     public List<String> lowPriorityRequests = new ArrayList<>(0);
 
-    // basicAuth MUST remain private as it holds the password
+    // basicAuth MUST remain private as it holds the cameraConfig.getPassword()
     private String basicAuth = "";
     public boolean useBasicAuth = false;
     public boolean useDigestAuth = false;
@@ -415,11 +413,11 @@ public class IpCameraHandler extends BaseThingHandler {
             return false;
         } else if (!basicAuth.isEmpty()) {
             // due to camera may have been sent multiple requests before the auth was set, this may trigger falsely.
-            logger.warn("Camera is reporting your username and/or password is wrong.");
+            logger.warn("Camera is reporting your cameraConfig.getUser() and/or cameraConfig.getPassword() is wrong.");
             return false;
         }
-        if (!username.isEmpty() && !password.isEmpty()) {
-            String authString = username + ":" + password;
+        if (!cameraConfig.getUser().isEmpty() && !cameraConfig.getPassword().isEmpty()) {
+            String authString = cameraConfig.getUser() + ":" + cameraConfig.getPassword();
             ByteBuf byteBuf = null;
             try {
                 byteBuf = Base64.encode(Unpooled.wrappedBuffer(authString.getBytes(CharsetUtil.UTF_8)));
@@ -432,7 +430,7 @@ public class IpCameraHandler extends BaseThingHandler {
             return true;
         } else {
             cameraConfigError(
-                    "Camera is asking for Basic Auth when you have not provided a username and/or password !");
+                    "Camera is asking for Basic Auth when you have not provided a cameraConfig.getUser() and/or cameraConfig.getPassword() !");
         }
         return false;
     }
@@ -517,7 +515,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     socketChannel.pipeline().addLast(new IdleStateHandler(18, 0, 0));
                     socketChannel.pipeline().addLast(new HttpClientCodec());
                     socketChannel.pipeline().addLast(AUTH_HANDLER,
-                            new MyNettyAuthHandler(username, password, getHandle()));
+                            new MyNettyAuthHandler(cameraConfig.getUser(), cameraConfig.getPassword(), getHandle()));
                     socketChannel.pipeline().addLast(COMMON_HANDLER, new CommonCameraHandler());
 
                     switch (thing.getThingTypeUID().getId()) {
@@ -532,7 +530,8 @@ public class IpCameraHandler extends BaseThingHandler {
                             socketChannel.pipeline().addLast(new DoorBirdHandler(getHandle()));
                             break;
                         case FOSCAM_THING:
-                            socketChannel.pipeline().addLast(new FoscamHandler(getHandle(), username, password));
+                            socketChannel.pipeline().addLast(
+                                    new FoscamHandler(getHandle(), cameraConfig.getUser(), cameraConfig.getPassword()));
                             break;
                         case HIKVISION_THING:
                             socketChannel.pipeline()
@@ -612,6 +611,7 @@ public class IpCameraHandler extends BaseThingHandler {
                                     "Connection Timeout: Check your IP and PORT are correct and the camera can be reached.");
                         }
                     }
+
                 });
     }
 
@@ -903,11 +903,12 @@ public class IpCameraHandler extends BaseThingHandler {
                         ffmpegHLS = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(),
                                 "-hide_banner -loglevel warning " + inputOptions, rtspUri,
                                 cameraConfig.getHlsOutOptions(), cameraConfig.getFfmpegOutput() + "ipcamera.m3u8",
-                                username, password);
+                                cameraConfig.getUser(), cameraConfig.getPassword());
                     } else {
                         ffmpegHLS = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(),
                                 "-hide_banner -loglevel warning", rtspUri, cameraConfig.getHlsOutOptions(),
-                                cameraConfig.getFfmpegOutput() + "ipcamera.m3u8", username, password);
+                                cameraConfig.getFfmpegOutput() + "ipcamera.m3u8", cameraConfig.getUser(),
+                                cameraConfig.getPassword());
                     }
                 }
                 if (ffmpegHLS != null) {
@@ -920,7 +921,8 @@ public class IpCameraHandler extends BaseThingHandler {
                             "-y -r 1 -hide_banner -loglevel warning", cameraConfig.getFfmpegOutput() + "snapshot%d.jpg",
                             "-frames:v " + (cameraConfig.getGifPreroll() + gifRecordTime) + " "
                                     + cameraConfig.getGifOutOptions(),
-                            cameraConfig.getFfmpegOutput() + gifFilename + ".gif", username, password);
+                            cameraConfig.getFfmpegOutput() + gifFilename + ".gif", cameraConfig.getUser(),
+                            cameraConfig.getPassword());
                 } else {
                     if (!inputOptions.isEmpty()) {
                         inputOptions = "-y -t " + gifRecordTime + " -hide_banner -loglevel warning " + inputOptions;
@@ -929,7 +931,7 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     ffmpegGIF = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getGifOutOptions(), cameraConfig.getFfmpegOutput() + gifFilename + ".gif",
-                            username, password);
+                            cameraConfig.getUser(), cameraConfig.getPassword());
                 }
                 if (cameraConfig.getGifPreroll() > 0) {
                     storeSnapshots();
@@ -956,7 +958,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 ffmpegRecord = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                         cameraConfig.getMp4OutOptions(), cameraConfig.getFfmpegOutput() + mp4Filename + ".mp4",
-                        username, password);
+                        cameraConfig.getUser(), cameraConfig.getPassword());
                 if (mp4Preroll > 0) {
                     // fetchFromHLS(); todo: not done yet
                 }
@@ -999,7 +1001,8 @@ public class IpCameraHandler extends BaseThingHandler {
                     filterOptions += " ";// add space as the Framework does not allow spaces at start of config.
                 }
                 ffmpegRtspHelper = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, input,
-                        filterOptions + cameraConfig.getMotionOptions(), OutputOptions, username, password);
+                        filterOptions + cameraConfig.getMotionOptions(), OutputOptions, cameraConfig.getUser(),
+                        cameraConfig.getPassword());
                 ffmpegRtspHelper.startConverting();
                 break;
             case MJPEG:
@@ -1011,7 +1014,8 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     ffmpegMjpeg = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             cameraConfig.getMjpegOptions(),
-                            "http://127.0.0.1:" + cameraConfig.getServerPort() + "/ipcamera.jpg", username, password);
+                            "http://127.0.0.1:" + cameraConfig.getServerPort() + "/ipcamera.jpg",
+                            cameraConfig.getUser(), cameraConfig.getPassword());
                 }
                 if (ffmpegMjpeg != null) {
                     ffmpegMjpeg.startConverting();
@@ -1028,7 +1032,8 @@ public class IpCameraHandler extends BaseThingHandler {
                     }
                     ffmpegSnapshot = new Ffmpeg(this, format, cameraConfig.getFfmpegLocation(), inputOptions, rtspUri,
                             "-an -vsync vfr -update 1",
-                            "http://127.0.0.1:" + cameraConfig.getServerPort() + "/snapshot.jpg", username, password);
+                            "http://127.0.0.1:" + cameraConfig.getServerPort() + "/snapshot.jpg",
+                            cameraConfig.getUser(), cameraConfig.getPassword());
                 }
                 if (ffmpegSnapshot != null) {
                     ffmpegSnapshot.startConverting();
@@ -1344,7 +1349,8 @@ public class IpCameraHandler extends BaseThingHandler {
                 }
                 break;
             case FOSCAM_THING:
-                FoscamHandler foscamHandler = new FoscamHandler(getHandle(), username, password);
+                FoscamHandler foscamHandler = new FoscamHandler(getHandle(), cameraConfig.getUser(),
+                        cameraConfig.getPassword());
                 foscamHandler.handleCommand(channelUID, command);
                 if (lowPriorityRequests.isEmpty()) {
                     lowPriorityRequests = foscamHandler.getLowPriorityRequests();
@@ -1585,10 +1591,6 @@ public class IpCameraHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         cameraConfig = getConfigAs(CameraConfig.class);
-        // user and pass need to have special char replaced to become URL friendly.
-        // space becomes %20
-        username = cameraConfig.getUser();
-        password = cameraConfig.getPassword();
         snapshotUri = getCorrectUrlFormat(cameraConfig.getSnapshotUrl());
         mjpegUri = getCorrectUrlFormat(cameraConfig.getMjpegUrl());
         rtspUri = cameraConfig.getFfmpegInput();
@@ -1622,13 +1624,15 @@ public class IpCameraHandler extends BaseThingHandler {
                 break;
             case FOSCAM_THING:
                 // Foscam needs any special char like spaces (%20) to be encoded for URLs.
-                username = Helper.encodeSpecialChars(username);
-                password = Helper.encodeSpecialChars(password);
+                cameraConfig.setUser(Helper.encodeSpecialChars(cameraConfig.getUser()));
+                cameraConfig.setPassword(Helper.encodeSpecialChars(cameraConfig.getPassword()));
                 if (mjpegUri.isEmpty()) {
-                    mjpegUri = "/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=" + username + "&pwd=" + password;
+                    mjpegUri = "/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=" + cameraConfig.getUser() + "&pwd="
+                            + cameraConfig.getPassword();
                 }
                 if (snapshotUri.isEmpty()) {
-                    snapshotUri = "/cgi-bin/CGIProxy.fcgi?usr=" + username + "&pwd=" + password + "&cmd=snapPicture2";
+                    snapshotUri = "/cgi-bin/CGIProxy.fcgi?usr=" + cameraConfig.getUser() + "&pwd="
+                            + cameraConfig.getPassword() + "&cmd=snapPicture2";
                 }
                 break;
             case HIKVISION_THING:// The 02 gives you the first sub stream which needs to be set to MJPEG
@@ -1655,8 +1659,8 @@ public class IpCameraHandler extends BaseThingHandler {
         }
 
         if (!thing.getThingTypeUID().getId().equals(GENERIC_THING)) {
-            onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(), username,
-                    password);
+            onvifCamera = new OnvifConnection(this, cameraConfig.getIp() + ":" + cameraConfig.getOnvifPort(),
+                    cameraConfig.getUser(), cameraConfig.getPassword());
             onvifCamera.setSelectedMediaProfile(cameraConfig.getOnvifMediaProfile());
             // Only use ONVIF events if it is not an API camera.
             onvifCamera.connect(thing.getThingTypeUID().getId().equals(ONVIF_THING));
@@ -1703,7 +1707,7 @@ public class IpCameraHandler extends BaseThingHandler {
         for (IpCameraGroupHandler handle : groupTracker.listOfGroupHandlers) {
             handle.cameraOffline(this);
         }
-        basicAuth = ""; // clear out stored password hash
+        basicAuth = ""; // clear out stored Password hash
         useDigestAuth = false;
         stopStreamServer();
         openChannels.close();
