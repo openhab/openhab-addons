@@ -8,6 +8,20 @@
 		<label>Roaming Bluetooth Controller</label>
 		<description>A virtual Bluetooth adapter that handles roaming between other adapters</description>
 		<config-description>
+			<parameter name="groupUIDs" type="text" multiple="true">
+				<label>Adapter UIDs</label>
+				<description>
+					<![CDATA[ Specifies which Bluetooth adapters that roaming devices can interact through.
+					<br>
+					Should be formatted as a comma separated list of thing UIDs.
+					<br>
+					If not specified, roaming devices can interact through any other Bluetooth adapter thing.
+					]]>
+				</description>
+				<context>thing</context>
+				<advanced>true</advanced>
+				<default></default>
+			</parameter>
 			<parameter name="backgroundDiscovery" type="boolean">
 				<label>Device Discovery</label>
 				<description>Whether this adapter participates in Bluetooth device discovery</description>
