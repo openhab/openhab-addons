@@ -13,7 +13,6 @@
 package org.openhab.binding.bluetooth.roaming.internal;
 
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
@@ -30,7 +29,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
 
 /**
  * The {@link RoamingBluetoothDiscoveryParticipant} acts as the roaming adapter's gateway
@@ -44,17 +42,18 @@ import org.osgi.service.component.annotations.ReferencePolicyOption;
 public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryParticipant {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
+    private final Set<RoamingBluetoothAdapter> roamingAdapters = new CopyOnWriteArraySet<>();
 
-    private Optional<RoamingBluetoothAdapter> roamingAdapter = Optional.empty();
+    // private Optional<RoamingBluetoothAdapter> roamingAdapter = Optional.empty();
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
+    @Reference(cardinality = ReferenceCardinality.MULTIPLE, policy = ReferencePolicy.DYNAMIC)
     protected void setRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
-        this.roamingAdapter = Optional.of(roamingAdapter);
+        roamingAdapters.add(roamingAdapter);
         adapters.forEach(roamingAdapter::addBluetoothAdapter);
     }
 
     protected void unsetRoamingBluetoothAdapter(RoamingBluetoothAdapter roamingAdapter) {
-        this.roamingAdapter = Optional.empty();
+        roamingAdapters.remove(roamingAdapter);
         adapters.forEach(roamingAdapter::removeBluetoothAdapter);
     }
 
@@ -62,7 +61,7 @@ public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryP
     protected void addBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.add(adapter);
 
-        roamingAdapter.ifPresent(ra -> {
+        roamingAdapters.forEach(ra -> {
             ra.addBluetoothAdapter(adapter);
         });
     }
@@ -70,7 +69,7 @@ public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryP
     protected void removeBluetoothAdapter(BluetoothAdapter adapter) {
         this.adapters.remove(adapter);
 
-        roamingAdapter.ifPresent(ra -> {
+        roamingAdapters.forEach(ra -> {
             ra.removeBluetoothAdapter(adapter);
         });
     }
@@ -94,8 +93,10 @@ public class RoamingBluetoothDiscoveryParticipant implements BluetoothDiscoveryP
     public void publishAdditionalResults(DiscoveryResult result,
             BiConsumer<BluetoothAdapter, DiscoveryResult> publisher) {
         // we create a roaming version of every discoveryResult.
-        roamingAdapter.ifPresent(roamingAdapter -> {
-            if (roamingAdapter.isDiscoveryEnabled()) {
+        roamingAdapters.forEach(roamingAdapter -> {
+            ThingUID adapterUID = result.getBridgeUID();
+            if (adapterUID != null && roamingAdapter.isDiscoveryEnabled()
+                    && roamingAdapter.isRoamingMember(adapterUID)) {
                 publisher.accept(roamingAdapter, result);
             }
         });

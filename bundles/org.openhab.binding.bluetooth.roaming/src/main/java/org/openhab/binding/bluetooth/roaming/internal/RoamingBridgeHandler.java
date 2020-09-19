@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -30,7 +31,6 @@ import org.eclipse.smarthome.core.types.Command;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
 
 /**
@@ -40,8 +40,7 @@ import org.openhab.binding.bluetooth.BluetoothDiscoveryListener;
  * @author Connor Petty - Initial contribution
  */
 @NonNullByDefault
-public class RoamingBridgeHandler extends BaseBridgeHandler
-        implements RoamingBluetoothAdapter, BluetoothDiscoveryListener {
+public class RoamingBridgeHandler extends BaseBridgeHandler implements RoamingBluetoothAdapter {
 
     private final Set<BluetoothAdapter> adapters = new CopyOnWriteArraySet<>();
 
@@ -50,6 +49,7 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
      * to do periodic cleanup.
      */
     private Map<BluetoothAddress, RoamingBluetoothDevice> devices = new HashMap<>();
+    private ThingUID[] groupUIDs = new ThingUID[0];
 
     public RoamingBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -57,15 +57,28 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void initialize() {
-        updateStatus();
+        Object value = getConfig().get(RoamingBindingConstants.CONFIGURATION_GROUP_ADAPTER_UIDS);
+        if (value == null || !(value instanceof String) || "".equals(value)) {
+            groupUIDs = new ThingUID[0];
+        } else {
+            String groupIds = (String) value;
+            groupUIDs = Stream.of(groupIds.split(",")).map(ThingUID::new).toArray(ThingUID[]::new);
+        }
+
+        if (adapters.stream().map(BluetoothAdapter::getUID).anyMatch(this::isGroupMember)) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "No Physical Bluetooth adapters found");
+        }
     }
 
     private void updateStatus() {
-        if (adapters.isEmpty()) {
+        if (adapters.stream().anyMatch(this::isRoamingMember)) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "No Physical Bluetooth adapters found");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
         }
     }
 
@@ -90,6 +103,32 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
         return getThing().getLabel();
     }
 
+    private boolean isRoamingMember(BluetoothAdapter adapter) {
+        return isRoamingMember(adapter.getUID());
+    }
+
+    @Override
+    public boolean isRoamingMember(ThingUID adapterUID) {
+        if (!isInitialized()) {
+            // an unitialized roaming adapter has no members
+            return false;
+        }
+        return isGroupMember(adapterUID);
+    }
+
+    private boolean isGroupMember(ThingUID adapterUID) {
+        if (groupUIDs.length == 0) {
+            // if there are no members of the group then it is treated as all adapters are members.
+            return true;
+        }
+        for (ThingUID uid : groupUIDs) {
+            if (adapterUID.equals(uid)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isDiscoveryEnabled() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
@@ -107,12 +146,14 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
         if (adapter == this) {
             return;
         }
-        this.adapters.add(adapter);
-        adapter.addDiscoveryListener(this);
 
-        synchronized (devices) {
-            for (RoamingBluetoothDevice roamingDevice : devices.values()) {
-                roamingDevice.addBluetoothDevice(adapter.getDevice(roamingDevice.getAddress()));
+        this.adapters.add(adapter);
+
+        if (isRoamingMember(adapter)) {
+            synchronized (devices) {
+                for (RoamingBluetoothDevice roamingDevice : devices.values()) {
+                    roamingDevice.addBluetoothDevice(adapter.getDevice(roamingDevice.getAddress()));
+                }
             }
         }
 
@@ -127,11 +168,12 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
             return;
         }
         this.adapters.remove(adapter);
-        adapter.removeDiscoveryListener(this);
 
-        synchronized (devices) {
-            for (RoamingBluetoothDevice roamingDevice : devices.values()) {
-                roamingDevice.removeBluetoothDevice(adapter.getDevice(roamingDevice.getAddress()));
+        if (isRoamingMember(adapter)) {
+            synchronized (devices) {
+                for (RoamingBluetoothDevice roamingDevice : devices.values()) {
+                    roamingDevice.removeBluetoothDevice(adapter.getDevice(roamingDevice.getAddress()));
+                }
             }
         }
 
@@ -172,28 +214,15 @@ public class RoamingBridgeHandler extends BaseBridgeHandler
 
     @Override
     public RoamingBluetoothDevice getDevice(BluetoothAddress address) {
+        // this will only get called by a bluetooth device handler
         synchronized (devices) {
-            return devices.computeIfAbsent(address, addr -> new RoamingBluetoothDevice(this, addr));
-        }
-    }
+            RoamingBluetoothDevice roamingDevice = devices.computeIfAbsent(address,
+                    addr -> new RoamingBluetoothDevice(this, addr));
 
-    @Override
-    public void deviceDiscovered(BluetoothDevice device) {
-        synchronized (devices) {
-            BluetoothAddress address = device.getAddress();
-            if (devices.containsKey(address)) {
-                devices.get(address).addBluetoothDevice(device);
-            }
-        }
-    }
+            adapters.stream().filter(this::isRoamingMember)
+                    .forEach(adapter -> roamingDevice.addBluetoothDevice(adapter.getDevice(address)));
 
-    @Override
-    public void deviceRemoved(BluetoothDevice device) {
-        synchronized (devices) {
-            BluetoothAddress address = device.getAddress();
-            if (devices.containsKey(address)) {
-                devices.remove(address).removeBluetoothDevice(device);
-            }
+            return roamingDevice;
         }
     }
 

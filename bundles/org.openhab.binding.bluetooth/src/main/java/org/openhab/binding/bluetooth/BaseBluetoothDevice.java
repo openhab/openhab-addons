@@ -14,11 +14,11 @@ package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,7 +78,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     /**
      * The event listeners will be notified of device updates
      */
-    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
+    private final Set<BluetoothDeviceListener> eventListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address

@@ -13,6 +13,7 @@
 package org.openhab.binding.bluetooth.roaming.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.thing.ThingUID;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 
 /**
@@ -29,4 +30,6 @@ public interface RoamingBluetoothAdapter extends BluetoothAdapter {
     void removeBluetoothAdapter(BluetoothAdapter adapter);
 
     boolean isDiscoveryEnabled();
+
+    boolean isRoamingMember(ThingUID adapterUID);
 }

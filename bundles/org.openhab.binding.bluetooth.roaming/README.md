@@ -22,11 +22,11 @@ Devices which use a `roaming` adapter as their bridge also gain the following ch
 ## Discovery
 
 Roaming adapters cannot be discovered, they can only be created manually.
-There can be only a single roaming adapter on a system.
 
 ## Bridge Configuration
+The Roaming bridge has an optional parameter `groupUIDs` that configures which Bluetooth adapters this roaming bridge will be monitored for the purpose of roaming devices. `groupUIDs` must be formatted as a comma separated list of Bluetooth adapter thing UID values. If the `groupUIDs` parameter is not specified or left empty then the Roaming adapter will track devices across all other Bluetooth adapters.
 
-The roaming bridge has a single parameter `backgroundDiscovery` that can be set to `true` or `false`. 
+Additionally, the Roaming bridge has the parameter `backgroundDiscovery` that can be set to `true` or `false`. 
 When set to `true`, a device discovered on any other adapter will have a corresponding `roaming` discovery.
 The `backgroundDiscovery` parameter is true by default.
 
@@ -35,5 +35,6 @@ The `backgroundDiscovery` parameter is true by default.
 This is how an Roaming adapter can be configured textually in a *.things file:
 
 ```
-Bridge bluetooth:roaming:ctrl "BLE Roaming Adapter" [ backgroundDiscovery=true ]
+Bridge bluetooth:roaming:ctrl "BLE Roaming Adapter" [ backgroundDiscovery=true]
+Bridge bluetooth:roaming:other "BLE Roaming Adapter" [ backgroundDiscovery=true, groupUIDs="bluetooth:bluez:hci0,bluetooth:bluez:hci1"]
 ```
