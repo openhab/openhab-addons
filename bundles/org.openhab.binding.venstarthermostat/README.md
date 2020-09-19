@@ -20,9 +20,9 @@ to enter them in the thermostat configuration in OpenHAB.
 
 ## Supported Things
 
-| Thing Type           | Description                                                                                  |
-|----------------------|----------------------------------------------------------------------------------------------|
-| colorTouchThermostat | A Venstar ColorTouch [ColorTouch](http://www.venstar.com/thermostats/colortouch/) thermostat |
+| Thing Type           | Description                                                                       |
+|----------------------|-----------------------------------------------------------------------------------|
+| colorTouchThermostat | A Venstar [ColorTouch](http://www.venstar.com/thermostats/colortouch/) thermostat |
 
 ## Discovery
 
