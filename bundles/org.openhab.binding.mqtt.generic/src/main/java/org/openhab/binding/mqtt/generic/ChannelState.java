@@ -60,7 +60,8 @@ public class ChannelState implements MqttMessageSubscriber {
     private @Nullable ChannelStateUpdateListener channelStateUpdateListener;
     protected boolean hasSubscribed = false;
     private @Nullable ScheduledFuture<?> scheduledFuture;
-    private CompletableFuture<@Nullable Void> future = new CompletableFuture<>();
+    private CompletableFuture<@Nullable Void> future = CompletableFuture.completedFuture(null);
+    private final Object futureLock = new Object();
 
     /**
      * Creates a new channel state.
@@ -287,20 +288,21 @@ public class ChannelState implements MqttMessageSubscriber {
      */
     public CompletableFuture<@Nullable Void> start(MqttBrokerConnection connection, ScheduledExecutorService scheduler,
             int timeout) {
-        // if the connection is still the same, the subscription is still present, otherwise we need to renew
-        if (hasSubscribed && connection.equals(this.connection)) {
-            return CompletableFuture.completedFuture(null);
-        } else {
+        synchronized (futureLock) {
+            // if the connection is still the same, the subscription is still present, otherwise we need to renew
+            if (hasSubscribed || !future.isDone() && connection.equals(this.connection)) {
+                return future;
+            }
             hasSubscribed = false;
+
+            this.connection = connection;
+
+            if (StringUtils.isBlank(config.stateTopic)) {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            this.future = new CompletableFuture<>();
         }
-
-        this.connection = connection;
-
-        if (StringUtils.isBlank(config.stateTopic)) {
-            return CompletableFuture.completedFuture(null);
-        }
-
-        this.future = new CompletableFuture<>();
         connection.subscribe(config.stateTopic, this).thenRun(() -> {
             hasSubscribed = true;
             logger.debug("Subscribed channel {} to topic: {}", this.channelUID, config.stateTopic);
