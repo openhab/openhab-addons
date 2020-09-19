@@ -134,12 +134,8 @@
     <module>org.openhab.binding.intesis</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irtrans</module>
-<<<<<<< HEAD
 	<module>org.openhab.binding.ism8</module>
     <module>org.openhab.binding.jablotron</module>
-=======
-    <module>org.openhab.binding.ism8</module>
->>>>>>> ee408e2bf... Fixing spacing violations in the bundles/pom.xml
     <module>org.openhab.binding.jeelink</module>
     <module>org.openhab.binding.kaleidescape</module>
     <module>org.openhab.binding.keba</module>
