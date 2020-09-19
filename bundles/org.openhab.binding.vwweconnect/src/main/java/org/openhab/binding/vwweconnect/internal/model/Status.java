@@ -355,7 +355,6 @@ public class Status {
                     .append(rightFront, rhs.rightFront).append(leftBack, rhs.leftBack).append(trunk, rhs.trunk)
                     .isEquals();
         }
-
     }
 
     public class Doors {

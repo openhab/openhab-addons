@@ -473,7 +473,6 @@ public class VehicleHandler extends VWWeConnectHandler {
             this.vin = vin;
             this.requestStatusUrl = requestStatusUrl;
             this.session = session;
-
         }
 
         @Override
@@ -896,5 +895,4 @@ public class VehicleHandler extends VWWeConnectHandler {
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(VWWeConnectActions.class);
     }
-
 }

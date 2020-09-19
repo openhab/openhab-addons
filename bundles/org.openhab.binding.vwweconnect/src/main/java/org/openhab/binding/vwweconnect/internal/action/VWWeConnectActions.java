@@ -287,5 +287,4 @@ public class VWWeConnectActions implements ThingActions {
             throw new IllegalArgumentException("Instance is not an VWWeConnectActionsService class.");
         }
     }
-
 }

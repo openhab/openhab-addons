@@ -119,7 +119,5 @@ public class ActionNotification {
                     .append(actionType, rhs.actionType).append(errorTitle, rhs.errorTitle)
                     .append(actionState, rhs.actionState).isEquals();
         }
-
     }
-
 }

@@ -25,5 +25,4 @@ import org.openhab.binding.vwweconnect.internal.handler.VWWeConnectHandler;
 @NonNullByDefault
 public class VehicleConfiguration {
     public @Nullable String vin;
-
 }

@@ -48,5 +48,4 @@ public interface DeviceStatusListener {
      *            The thing which is added.
      */
     void onDeviceAdded(BaseVehicle thing);
-
 }

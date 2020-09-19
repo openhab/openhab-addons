@@ -88,5 +88,4 @@ public class VWWeConnectHandlerFactory extends BaseThingHandlerFactory {
         }
         return thingHandler;
     }
-
 }

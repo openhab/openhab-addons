@@ -6,22 +6,22 @@
 
 	<thing-type id="vehicle">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="vwweconnectapi" />
+			<bridge-type-ref id="vwweconnectapi"/>
 		</supported-bridge-type-refs>
 
 		<label>VW Vehicle</label>
 		<description>A VW Vehicle.</description>
 
 		<channel-groups>
-			<channel-group typeId="details" id="details" />
-			<channel-group typeId="odometer" id="odometer" />
-			<channel-group typeId="fuel" id="fuel" />
-			<channel-group typeId="electric" id="electric" />
-			<channel-group typeId="doors" id="doors" />
-			<channel-group typeId="windows" id="windows" />
-			<channel-group typeId="position" id="position" />
-			<channel-group typeId="lasttrip" id="lasttrip" />
-			<channel-group typeId="action" id="action" />
+			<channel-group typeId="details" id="details"/>
+			<channel-group typeId="odometer" id="odometer"/>
+			<channel-group typeId="fuel" id="fuel"/>
+			<channel-group typeId="electric" id="electric"/>
+			<channel-group typeId="doors" id="doors"/>
+			<channel-group typeId="windows" id="windows"/>
+			<channel-group typeId="position" id="position"/>
+			<channel-group typeId="lasttrip" id="lasttrip"/>
+			<channel-group typeId="action" id="action"/>
 		</channel-groups>
 
 		<properties>
@@ -41,13 +41,13 @@
 	<channel-group-type id="action">
 		<label>Actions and status</label>
 		<channels>
-			<channel id="remoteHeater" typeId="remoteHeater" />
-			<channel id="remoteVentilation" typeId="remoteVentilation" />
-			<channel id="temperature" typeId="temperature" />
-			<channel id="remainingTime" typeId="remainingTime" />
-			<channel id="emanagerCharge" typeId="emanagerCharge" />
-			<channel id="emanagerClimate" typeId="emanagerClimate" />
-			<channel id="emanagerWindowHeat" typeId="emanagerWindowHeat" />
+			<channel id="remoteHeater" typeId="remoteHeater"/>
+			<channel id="remoteVentilation" typeId="remoteVentilation"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="remainingTime" typeId="remainingTime"/>
+			<channel id="emanagerCharge" typeId="emanagerCharge"/>
+			<channel id="emanagerClimate" typeId="emanagerClimate"/>
+			<channel id="emanagerWindowHeat" typeId="emanagerWindowHeat"/>
 		</channels>
 	</channel-group-type>
 
@@ -108,7 +108,7 @@
 				<label>End Time</label>
 				<description>Trip end time</description>
 			</channel>
-			<channel id="tripDuration" typeId="tripDuration" />
+			<channel id="tripDuration" typeId="tripDuration"/>
 		</channels>
 	</channel-group-type>
 
@@ -133,8 +133,8 @@
 			<channel id="hood" typeId="door">
 				<label>Hood</label>
 			</channel>
-			<channel id="doorsLocked" typeId="doorsLocked" />
-			<channel id="trunkLocked" typeId="trunkLocked" />
+			<channel id="doorsLocked" typeId="doorsLocked"/>
+			<channel id="trunkLocked" typeId="trunkLocked"/>
 		</channels>
 	</channel-group-type>
 
@@ -165,9 +165,9 @@
 	<channel-group-type id="fuel">
 		<label>Fuel Info</label>
 		<channels>
-			<channel id="fuelLevel" typeId="fuelLevel" />
-			<channel id="fuelConsumption" typeId="fuelConsumption" />
-			<channel id="fuelAlert" typeId="fuelAlert" />
+			<channel id="fuelLevel" typeId="fuelLevel"/>
+			<channel id="fuelConsumption" typeId="fuelConsumption"/>
+			<channel id="fuelAlert" typeId="fuelAlert"/>
 			<channel id="fuelRange" typeId="odometer">
 				<label>Distance Left</label>
 				<description>Distance left with given quantity of fuel</description>
@@ -178,9 +178,9 @@
 	<channel-group-type id="cng">
 		<label>Compressed Natural Gas Info</label>
 		<channels>
-			<channel id="cngLevel" typeId="cngLevel" />
-			<channel id="cngConsumption" typeId="cngConsumption" />
-			<channel id="cngAlert" typeId="fuelAlert" />
+			<channel id="cngLevel" typeId="cngLevel"/>
+			<channel id="cngConsumption" typeId="cngConsumption"/>
+			<channel id="cngAlert" typeId="fuelAlert"/>
 			<channel id="cngRange" typeId="odometer">
 				<label>Distance Left</label>
 				<description>Distance left with given quantity of CNG</description>
@@ -191,28 +191,28 @@
 	<channel-group-type id="electric">
 		<label>Electric/Hybrid Info</label>
 		<channels>
-			<channel id="batteryLevel" typeId="batteryLevel" />
-			<channel id="electricConsumption" typeId="electricConsumption" />
-			<channel id="batteryAlert" typeId="batteryAlert" />
+			<channel id="batteryLevel" typeId="batteryLevel"/>
+			<channel id="electricConsumption" typeId="electricConsumption"/>
+			<channel id="batteryAlert" typeId="batteryAlert"/>
 			<channel id="batteryRange" typeId="odometer">
 				<label>Distance Left</label>
 				<description>Distance left with given battery level</description>
 			</channel>
-			<channel id="chargingState" typeId="chargingState" />
-			<channel id="chargingRemainingHour" typeId="chargingRemainingHour" />
-			<channel id="chargingRemainingMinute" typeId="chargingRemainingMinute" />
-			<channel id="chargingReason" typeId="chargingReason" />
-			<channel id="pluginState" typeId="pluginState" />
-			<channel id="lockState" typeId="lockState" />
-			<channel id="extPowerSupplyState" typeId="extPowerSupplyState" />
-			<channel id="chargerMaxCurrent" typeId="chargerMaxCurrent" />
-			<channel id="maxAmpere" typeId="maxAmpere" />
-			<channel id="maxCurrentReduced" typeId="maxCurrentReduced" />
-			<channel id="climatisationState" typeId="climatisationState" />
-			<channel id="climatisationRemainingTime" typeId="climatisationRemainingTime" />
-			<channel id="climatisationReason" typeId="climatisationReason" />
-			<channel id="windowHeatingStateFront" typeId="windowHeatingStateFront" />
-			<channel id="windowHeatingStateRear" typeId="windowHeatingStateRear" />
+			<channel id="chargingState" typeId="chargingState"/>
+			<channel id="chargingRemainingHour" typeId="chargingRemainingHour"/>
+			<channel id="chargingRemainingMinute" typeId="chargingRemainingMinute"/>
+			<channel id="chargingReason" typeId="chargingReason"/>
+			<channel id="pluginState" typeId="pluginState"/>
+			<channel id="lockState" typeId="lockState"/>
+			<channel id="extPowerSupplyState" typeId="extPowerSupplyState"/>
+			<channel id="chargerMaxCurrent" typeId="chargerMaxCurrent"/>
+			<channel id="maxAmpere" typeId="maxAmpere"/>
+			<channel id="maxCurrentReduced" typeId="maxCurrentReduced"/>
+			<channel id="climatisationState" typeId="climatisationState"/>
+			<channel id="climatisationRemainingTime" typeId="climatisationRemainingTime"/>
+			<channel id="climatisationReason" typeId="climatisationReason"/>
+			<channel id="windowHeatingStateFront" typeId="windowHeatingStateFront"/>
+			<channel id="windowHeatingStateRear" typeId="windowHeatingStateRear"/>
 		</channels>
 	</channel-group-type>
 
@@ -229,20 +229,20 @@
 	<channel-group-type id="details">
 		<label>Vehicle Details</label>
 		<channels>
-			<channel id="name" typeId="name" />
-			<channel id="model" typeId="model" />
-			<channel id="modelCode" typeId="modelCode" />
-			<channel id="modelYear" typeId="modelYear" />
-			<channel id="enrollmentDate" typeId="enrollmentDate" />
-			<channel id="dashboardURL" typeId="dashboardURL" />
-			<channel id="imageURL" typeId="imageURL" />
-			<channel id="engineTypeCombustian" typeId="engineTypeCombustian" />
-			<channel id="engineTypeElectric" typeId="engineTypeElectric" />
-			<channel id="engineTypeHybridOCU1" typeId="engineTypeHybridOCU1" />
-			<channel id="engineTypeHybridOCU2" typeId="engineTypeHybridOCU2" />
-			<channel id="engineTypeCNG" typeId="engineTypeCNG" />
-			<channel id="serviceInspectionStatus" typeId="serviceInspectionStatus" />
-			<channel id="oilInspectionStatus" typeId="oilInspectionStatus" />
+			<channel id="name" typeId="name"/>
+			<channel id="model" typeId="model"/>
+			<channel id="modelCode" typeId="modelCode"/>
+			<channel id="modelYear" typeId="modelYear"/>
+			<channel id="enrollmentDate" typeId="enrollmentDate"/>
+			<channel id="dashboardURL" typeId="dashboardURL"/>
+			<channel id="imageURL" typeId="imageURL"/>
+			<channel id="engineTypeCombustian" typeId="engineTypeCombustian"/>
+			<channel id="engineTypeElectric" typeId="engineTypeElectric"/>
+			<channel id="engineTypeHybridOCU1" typeId="engineTypeHybridOCU1"/>
+			<channel id="engineTypeHybridOCU2" typeId="engineTypeHybridOCU2"/>
+			<channel id="engineTypeCNG" typeId="engineTypeCNG"/>
+			<channel id="serviceInspectionStatus" typeId="serviceInspectionStatus"/>
+			<channel id="oilInspectionStatus" typeId="oilInspectionStatus"/>
 		</channels>
 	</channel-group-type>
 
@@ -452,7 +452,7 @@
 		<item-type>DateTime</item-type>
 		<label>Timestamp</label>
 		<description>Data timestamp</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="doorsLocked">
@@ -515,14 +515,14 @@
 		<item-type>Switch</item-type>
 		<label>Fuel Alarm</label>
 		<description>set to 'ON' when the tank level is low</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="batteryAlert">
 		<item-type>Switch</item-type>
 		<label>Battery Alarm</label>
 		<description>set to 'ON' when the battery level is low</description>
-		<state readOnly="true" />
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="name">
@@ -621,7 +621,7 @@
 		<label>Temperature</label>
 		<description>Current temperature.</description>
 		<category>Temperature</category>
-		<state pattern="%.1f °C" readOnly="true" />
+		<state pattern="%.1f °C" readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>
