@@ -109,12 +109,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -285,15 +283,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="serverPort" type="integer" required="true" min="1" max="65535" groupName="Settings">
 				<label>Server Port</label>
 				<description>The port that will serve any files back to openHAB without authentication. It must be unique for each
@@ -343,12 +332,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -595,15 +582,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="snapshotUrl" type="text" required="false" groupName="Settings">
 				<context>url</context>
 				<label>Snapshot URL</label>
@@ -624,12 +602,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -772,15 +748,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
 				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
@@ -907,12 +874,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1067,15 +1032,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="updateImageWhen" type="text" groupName="Image ch Settings" multiple="false">
 				<label>Update Image Channel When:</label>
 				<description>The Image channel can be set to update in a number of ways. Recommend you set this to never updates as
@@ -1202,12 +1158,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1344,15 +1298,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
 				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
@@ -1470,12 +1415,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1618,15 +1561,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
 				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
@@ -1758,12 +1692,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -1917,15 +1849,6 @@
 				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
-				<advanced>true</advanced>
-			</parameter>
-
 			<parameter name="serverPort" type="integer" required="true" min="-1" max="65535" groupName="Settings">
 				<label>Server Port</label>
 				<description>The port that will serve any files back to openHAB without authentication. It must be unique and unused
@@ -2052,12 +1975,10 @@
 			<channel id="pollImage" typeId="pollImage"/>
 			<channel id="image" typeId="image"/>
 			<channel id="recordingGif" typeId="recordingGif"/>
-			<channel id="gifFilename" typeId="gifFilename"/>
 			<channel id="gifHistory" typeId="gifHistory"/>
 			<channel id="gifHistoryLength" typeId="gifHistoryLength"/>
 			<channel id="recordingMp4" typeId="recordingMp4"/>
 			<channel id="mp4Preroll" typeId="mp4Preroll"/>
-			<channel id="mp4Filename" typeId="mp4Filename"/>
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
@@ -2200,15 +2121,6 @@
 				<description>Store this many snapshots from BEFORE you trigger a GIF creation.
 				</description>
 				<default>0</default>
-				<advanced>true</advanced>
-			</parameter>
-
-			<parameter name="gifPostroll" type="integer" required="true" min="1" max="30" groupName="Settings">
-				<label>GIF Postroll</label>
-				<description>How long in seconds to create a GIF from a stream. Alternatively if using gifPreroll this is how many
-					snapshots to use AFTER you trigger a GIF creation.
-				</description>
-				<default>8</default>
 				<advanced>true</advanced>
 			</parameter>
 
