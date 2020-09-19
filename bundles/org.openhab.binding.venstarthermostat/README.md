@@ -15,7 +15,7 @@ without HTTPS and authentication, the binding doesn't support it, in an effort
 to provide as secure an installation as possible.
 
 When you've set the username and password, make a note of these, as you'll need
-to enter them in the thermostat configuration in OpenHAB.   
+to enter them in the thermostat configuration in openHAB.   
 
 
 ## Supported Things
