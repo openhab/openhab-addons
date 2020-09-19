@@ -1,0 +1,1749 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smartthings"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- The Bridge Type -->
+	<bridge-type id="smartthings">
+		<label>Smartthings Hub</label>
+		<description>Smartthings Hub V2 that is attached to the same network</description>
+
+		<config-description>
+			<parameter name="smartthingsIp" type="text" required="true">
+				<context>network-address</context>
+				<label>IP Address</label>
+				<description>IP address of the Smartthings Hub</description>
+			</parameter>
+			<parameter name="smartthingsPort" type="integer" min="0" max="65535" required="false">
+				<label>IP Port Number</label>
+				<description>Port number of the Smartthings Hub</description>
+				<default>39500</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<!-- For all Things the thing-type id must match the Samsung Smartthings Capability Reference field "Preferences Reference"
+		without the capability. prefix -->
+	<!-- And the channel id's must match the Samsung Smartthings Capability Reference field "attribute" -->
+	<!-- Make sure that additions / removals to this are updated in the SmartthingsBindingConstants.java file -->
+	<!-- Thing Types -->
+	<thing-type id="accelerationSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Acceleration Sensor</label>
+		<description>Acceleration Sensor</description>
+		<channels>
+			<channel id="acceleration" typeId="acceleration-channel">
+				<label>Acceleration</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="airConditionerMode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Air Conditioner Mode</label>
+		<description>Air Conditioner Mode</description>
+		<channels>
+			<channel id="airConditionerMode" typeId="airConditionerMode-channel">
+				<label>Air Conditioner Mode</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="alarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Alarm</label>
+		<description>Alarm</description>
+		<channels>
+			<channel id="alarm" typeId="alarm-channel">
+				<label>Alarm</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="battery">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Battery Status</label>
+		<description>An indication of the status of the battery</description>
+		<channels>
+			<channel id="battery" typeId="battery-channel">
+				<label>Battery</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="beacon">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Beacon</label>
+		<description>The presence value of the beacon</description>
+		<channels>
+			<channel id="presence" typeId="presence-channel">
+				<label>Presence</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="bulb">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Bulb</label>
+		<description>Allows for the control of a bulb device</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel">
+				<label>Bulb</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="button">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Button</label>
+		<description>Button</description>
+		<channels>
+			<channel id="button" typeId="button-channel">
+				<label>Button</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="carbonDioxideMeasurement">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Carbon Dioxide Measurement</label>
+		<description>Carbon Dioxide Measurement</description>
+		<channels>
+			<channel id="carbonDioxide" typeId="carbonDioxide-channel">
+				<label>Carbon Dioxide</label>
+			</channel>
+		</channels>
+	</thing-type>
+
+	<thing-type id="carbonMonoxideDetector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>carbon Monoxide Detector</label>
+		<description>Carbon Monoxide Detector</description>
+		<channels>
+			<channel id="carbonMonoxide" typeId="carbonMonoxide-channel">
+				<label>Carbon Monoxide</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="colorControl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Color Control</label>
+		<description>Color Control</description>
+		<channels>
+			<channel id="hue" typeId="hue-channel">
+				<label>Hue</label>
+				<properties>
+					<!-- The Smartthings colorControl:hue has a range of 0-100% where OH2 uses the normal 0-360 degrees -->
+					<property name="smartthings-converter">hue100</property>
+				</properties>
+			</channel>
+			<channel id="saturation" typeId="saturation-channel">
+				<label>Saturation</label>
+			</channel>
+			<channel id="color" typeId="color-channel">
+				<label>Color</label>
+				<properties>
+					<!-- The Smartthings colorControl:color has a hue component range of 0-100% where OH2 uses the normal 0-360 degrees -->
+					<property name="smartthings-converter">color100</property>
+				</properties>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- This is the new "proposed" color control -->
+	<thing-type id="color">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Color</label>
+		<description>Color</description>
+		<channels>
+			<channel id="colorValue" typeId="colorValue-channel">
+				<label>Color Value</label>
+				<properties>
+					<!-- This converter handles both color and colorValue channels -->
+					<property name="smartthings-converter">color</property>
+				</properties>
+			</channel>
+			<channel id="switchlevel" typeId="level-channel">
+				<label>Switch Level</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="colorTemperature">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Color Temperature</label>
+		<description>Color Temperature</description>
+		<channels>
+			<channel id="colorTemperature" typeId="colorTemperature-channel">
+				<label>Color Temperature</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="consumable">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Consumable</label>
+		<description>Consumable</description>
+		<channels>
+			<channel id="consumable" typeId="consumable-channel">
+				<label>Consumable</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+
+	<thing-type id="contactSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Contact Sensor</label>
+		<description>Allows reading the value of a contact sensor device</description>
+		<channels>
+			<channel id="contact" typeId="contact-channel">
+				<label>Contact</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="doorControl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Door Control</label>
+		<description>Allow for the control of a door</description>
+		<channels>
+			<channel id="door" typeId="door-control-channel">
+				<label>Door</label>
+				<properties>
+					<property name="smartthings-converter">openCloseControl</property>
+				</properties>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="dryerMode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Dryer Mode</label>
+		<description>Controls a dryer temperature</description>
+		<channels>
+			<channel id="dryerMode" typeId="dryer-mode-channel">
+				<label>Dryer Mode</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="dryerOperatingState">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Dryer Operating State</label>
+		<description>Dryer operating state info</description>
+		<channels>
+			<channel id="machineState" typeId="machine-state-channel">
+				<label>Machine State</label>
+			</channel>
+			<channel id="dryerJobState" typeId="dryer-job-state-channel">
+				<label>Dryer Job State</label>
+			</channel>
+			<channel id="completionTime" typeId="completion-time-channel">
+				<label>Completion Time</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="energyMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Energy Meter</label>
+		<description>Read the energy consumption of an energy metering device</description>
+		<channels>
+			<channel id="energy" typeId="energy-channel">
+				<label>Energy</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Estimated Time Of Arrival -->
+	<thing-type id="estimatedTimeOfArrival">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>estimated Time of Arrival</label>
+		<description>Estimated Time Of Arrival</description>
+		<channels>
+			<channel id="estimatedTimeOfArrival" typeId="estimatedTimeOfArrival-channel">
+				<label>Estimated Time of Arrival</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Garage Door Control -->
+	<thing-type id="garageDoorControl">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Garage Door Control</label>
+		<description>Garage Door Control</description>
+		<channels>
+			<channel id="door" typeId="door-control-channel">
+				<label>Door</label>
+				<properties>
+					<property name="smartthings-converter">openCloseControl</property>
+				</properties>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Holdable Button -->
+	<thing-type id="holdableButton">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Holdable Button</label>
+		<description>holdableButton</description>
+		<channels>
+			<channel id="button" typeId="button-channel">
+				<label>Button</label>
+			</channel>
+			<channel id="numberOfButtons" typeId="numberOfButtons-channel">
+				<label>Button</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Illuminance Measurement -->
+	<thing-type id="illuminanceMeasurement">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Illuminance Measurement</label>
+		<description>Illuminance Measurement</description>
+		<channels>
+			<channel id="illuminance" typeId="illuminance-channel">
+				<label>Illuminance Measurement</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Image Capture -->
+	<thing-type id="imageCapture">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Image Capture</label>
+		<description>Allows for the capture of an image on devices that support it</description>
+		<channels>
+			<channel id="imageCapture" typeId="imageCapture-channel">
+				<label>Image Capture</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Indicator -->
+	<thing-type id="indicator">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Indicator</label>
+		<description>The indicator capability gives you the ability to set the indicator LED light on a Z-Wave switch</description>
+		<channels>
+			<channel id="indicatorStatus" typeId="indicatorStatus-channel">
+				<label>Indicator</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Infrared Level -->
+	<thing-type id="infraredLevel">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Infrared Level</label>
+		<description>Allows for the control of the infrared level attribute of a device</description>
+		<channels>
+			<channel id="infraredLevel" typeId="infraredLevel-channel">
+				<label>Infrared Level</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Light -->
+	<thing-type id="light">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Light</label>
+		<description>Light</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel">
+				<label>Switch</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Lock -->
+	<thing-type id="lock">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Lock</label>
+		<description>Allow for the control of a lock device</description>
+		<channels>
+			<channel id="lock" typeId="lock-channel">
+				<label>Lock</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Lock Only -->
+	<thing-type id="lockOnly">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Lock Only</label>
+		<description>Allow for the lock control of a lock device</description>
+		<channels>
+			<channel id="lock" typeId="lock-only-channel">
+				<label>Lock Only</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Media controller -->
+	<thing-type id="mediaController">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Media Controller</label>
+		<description>Allows for the control of a media controller device</description>
+		<channels>
+			<channel id="activities" typeId="activities-channel">
+				<label>Activities</label>
+			</channel>
+			<channel id="currentActivity" typeId="currentActivity-channel">
+				<label>Current Activity</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Motion Sensor -->
+	<thing-type id="motionSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Motion Sensor</label>
+		<description>Allows for the ability to read motion sensor device states</description>
+		<channels>
+			<channel id="motion" typeId="motion-channel">
+				<label>Motion</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Music Player -->
+	<thing-type id="musicPlayer">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Music Player</label>
+		<description>Allows for control of a music playing device</description>
+		<channels>
+			<channel id="status" typeId="status-channel">
+				<label>Status</label>
+			</channel>
+			<channel id="level" typeId="volumeLevel-channel">
+				<label>Level</label>
+			</channel>
+			<channel id="trackDescription" typeId="trackDescription-channel">
+				<label>Track Description</label>
+			</channel>
+			<channel id="trackData" typeId="trackData-channel">
+				<label>Track Data</label>
+			</channel>
+			<channel id="mute" typeId="mute-channel">
+				<label>Mute</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Outlet -->
+	<thing-type id="outlet">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Outlet</label>
+		<description>Allows for the control of an outlet device</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel">
+				<label>Outlet</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- pHMeasurement -->
+	<thing-type id="pHMeasurement">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>pH Measurement</label>
+		<description>Read the pH value off of a pH measurement capable device</description>
+		<channels>
+			<channel id="pH" typeId="pH-channel">
+				<label>pH Measurement</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+
+	<thing-type id="powerMeter">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>PowerMeter</label>
+		<description>Allows for reading the power consumption from devices that report it</description>
+		<channels>
+			<channel id="power" typeId="power-channel">
+				<label>Power</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Power Source -->
+	<thing-type id="powerSource">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Power Source</label>
+		<description>The current power source for the device</description>
+		<channels>
+			<channel id="powerSource" typeId="powerSource-channel">
+				<label>Power Source</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Presence Sensor -->
+	<thing-type id="presenceSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Presence Sensor</label>
+		<description>The ability to see the current status of a presence sensor device</description>
+		<channels>
+			<channel id="presence" typeId="presence-channel">
+				<label>Presence</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Relative Humidity Measurement -->
+	<thing-type id="relativeHumidityMeasurement">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Humidity Sensor</label>
+		<description>Allow reading the relative humidity from devices that support it</description>
+		<channels>
+			<channel id="humidity" typeId="humidity-channel">
+				<label>Humidity</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="relaySwitch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Relay Switch</label>
+		<description>Relay Switch</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel">
+				<label>Switch</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- shock sensor -->
+	<thing-type id="shockSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Shock Sensor</label>
+		<description>A Device that senses whether or not there is a shock</description>
+		<channels>
+			<channel id="shock" typeId="shock-channel">
+				<label>Shock</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Signal Strength -->
+	<thing-type id="signalStrength">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Signal Strength</label>
+		<description>Gives the ability to read the signal stregth of Devices that support it</description>
+		<channels>
+			<channel id="lqi" typeId="lqi-channel">
+				<label>Link Quality Indicator</label>
+			</channel>
+			<channel id="rssi" typeId="rssi-channel">
+				<label>Received Signal Strength Indication</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Sleep sensor -->
+	<thing-type id="sleepSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Sleep Sensor</label>
+		<description>A Device that senses whether or not someone is sleeping</description>
+		<channels>
+			<channel id="sleeping" typeId="sleeping-channel">
+				<label>Sleeping Value</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- smoke detector -->
+	<thing-type id="smokeDetector">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Smoke Detector</label>
+		<description>Measure smoke and optionally carbon monoxide levels</description>
+		<channels>
+			<channel id="smoke" typeId="smoke-channel">
+				<label>Smoke</label>
+			</channel>
+			<channel id="carbonMonoxide" typeId="carbonMonoxide-channel">
+				<label>Carbon Monoxide</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Sound Pressure Level -->
+	<thing-type id="soundPressureLevel">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Sound Pressure Level</label>
+		<description>Sound Pressure Level</description>
+		<channels>
+			<channel id="soundPressureLevel" typeId="soundPressureLevel-channel">
+				<label>Sound Pressure Level</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Sound Sensor -->
+	<thing-type id="soundSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Sound Sensor</label>
+		<description>A Device that senses sound</description>
+		<channels>
+			<channel id="sound" typeId="sound-channel">
+				<label>Sound Sensor</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Speech Recognition -->
+	<thing-type id="speechRecognition">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Speech Recognition</label>
+		<description>Speech Recognition</description>
+		<channels>
+			<channel id="phraseSpoken" typeId="phraseSpoken-channel">
+				<label>Speech Recognition</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Step Sensor -->
+	<thing-type id="stepSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Step Sensor</label>
+		<description>A Device that works as a step counter</description>
+		<channels>
+			<channel id="goal" typeId="goal-channel">
+				<label>Step Goal</label>
+			</channel>
+			<channel id="steps" typeId="steps-channel">
+				<label>Current Step Count</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+
+	<thing-type id="switch">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Switch</label>
+		<description>Switch</description>
+		<channels>
+			<channel id="switch" typeId="switch-channel">
+				<label>Switch</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Switch Level -->
+	<thing-type id="switchLevel">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Switch Level</label>
+		<description>Allows for the control of the level attribute of a light</description>
+		<channels>
+			<channel id="level" typeId="level-channel">
+				<label>Level</label>
+			</channel>
+			<channel id="switch" typeId="switch-channel">
+				<label>Switch</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Tamper Alert -->
+	<thing-type id="tamperAlert">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Tamper Alert</label>
+		<description>Tamper Alert</description>
+		<channels>
+			<channel id="tamper" typeId="tamper-channel">
+				<label>Tamper</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="temperatureMeasurement">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Temperature Measurement</label>
+		<description>Get the temperature from a Device that reports current temperature</description>
+		<channels>
+			<channel id="temperature" typeId="temperature-channel">
+				<label>Temperature</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat -->
+	<thing-type id="thermostat">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat</label>
+		<description>Allows for the control of a thermostat device</description>
+		<channels>
+			<channel id="heatingSetpoint" typeId="heatingSetpoint-channel">
+				<label>Heating Setpoint</label>
+			</channel>
+			<channel id="coolingSetpoint" typeId="coolingSetpoint-channel">
+				<label>Cooling Setpoint</label>
+			</channel>
+			<channel id="thermostatSetpoint" typeId="thermostatSetpoint-channel">
+				<label>Thermostat Setpoint</label>
+			</channel>
+			<channel id="thermostatMode" typeId="thermostatMode-channel">
+				<label>Thermostat Mode</label>
+			</channel>
+			<channel id="thermostatFanMode" typeId="thermostatFanMode-channel">
+				<label>Thermostat Fan Mode</label>
+			</channel>
+			<channel id="thermostatOperatingState" typeId="thermostatOperatingState-channel">
+				<label>Thermostat Operating State</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat Cooling Setpoint -->
+	<thing-type id="thermostatCoolingSetpoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat Cooling Setpoint</label>
+		<description>Thermostat Cooling Setpoint</description>
+		<channels>
+			<channel id="coolingSetpoint" typeId="coolingSetpoint-channel">
+				<label>Cooling Setpoint</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat Fan Mode -->
+	<thing-type id="thermostatFanMode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat Fan Mode</label>
+		<description>Thermostat Fan Mode</description>
+		<channels>
+			<channel id="thermostatFanMode" typeId="thermostatFanMode-channel">
+				<label>Thermostat Fan Mode</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat Heating Setpoint -->
+	<thing-type id="thermostatHeatingSetpoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat Heating Setpoint</label>
+		<description>Thermostat Heating Setpoint</description>
+		<channels>
+			<channel id="heatingSetpoint" typeId="heatingSetpoint-channel">
+				<label>Heating Setpoint</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat Mode -->
+	<thing-type id="thermostatMode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat Mode</label>
+		<description>Thermostat Mode</description>
+		<channels>
+			<channel id="thermostatMode" typeId="thermostatMode-channel">
+				<label>Thermostat Mode</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat Operating State -->
+	<thing-type id="thermostatOperatingState">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat Operating State</label>
+		<description>Thermostat Operating State</description>
+		<channels>
+			<channel id="thermostatOperatingState" typeId="thermostatOperatingState-channel">
+				<label>Thermostat Operating State</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Thermostat Setpoint -->
+	<thing-type id="thermostatSetpoint">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Thermostat Setpoint</label>
+		<description>Thermostat Setpoint</description>
+		<channels>
+			<channel id="thermostatSetpoint" typeId="thermostatSetpoint-channel">
+				<label>Thermostat Setpoint</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="threeAxis">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Three Axis</label>
+		<description>Gives the three axis coordinates for devices that support it</description>
+		<channels>
+			<channel id="threeAxis" typeId="three-axis-channel">
+				<label>Three Axis</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Timed Session -->
+	<thing-type id="timedSession">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Timed Session</label>
+		<description>Timed Session</description>
+		<channels>
+			<channel id="sessionStatus" typeId="sessionStatus-channel">
+				<label>Session Status</label>
+			</channel>
+			<channel id="timeRemaining" typeId="timeRemaining-channel">
+				<label>Time Remaining</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Touch Sensor -->
+	<thing-type id="touchSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Touch Sensor</label>
+		<description>Touch Sensor</description>
+		<channels>
+			<channel id="touch" typeId="touch-channel">
+				<label>Touch</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Ultraviolet Index -->
+	<thing-type id="ultravioletIndex">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Ultraviolet Index</label>
+		<description>Gives the ability to get the ultraviolet index from devices that report it</description>
+		<channels>
+			<channel id="ultravioletIndex" typeId="ultravioletIndex-channel">
+				<label>Ultraviolet Index</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Valve -->
+	<thing-type id="valve">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Valve</label>
+		<description>Allows for the control of a valve device</description>
+		<channels>
+			<channel id="valve" typeId="valve-channel">
+				<label>Valve</label>
+				<properties>
+					<property name="smartthings-converter">openCloseControl</property>
+				</properties>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Voltage Measurement -->
+	<thing-type id="voltageMeasurement">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Voltage Measurement</label>
+		<description>Get the value of voltage measured from devices that support it</description>
+		<channels>
+			<channel id="voltage" typeId="voltage-channel">
+				<label>Voltage</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Washing machine related -->
+	<thing-type id="washerMode">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Washer Mode</label>
+		<description>Controls a washer temperature</description>
+		<channels>
+			<channel id="washerMode" typeId="washer-mode-channel">
+				<label>Washer Mode</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<thing-type id="washerOperatingState">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Washer Operating State</label>
+		<description>Washer operating state info</description>
+		<channels>
+			<channel id="machineState" typeId="machine-state-channel">
+				<label>Machine State</label>
+			</channel>
+			<channel id="washerJobState" typeId="washer-job-state-channel">
+				<label>Washer Job State</label>
+			</channel>
+			<channel id="completionTime" typeId="completion-time-channel">
+				<label>Completion Time</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Water Sensor -->
+	<thing-type id="waterSensor">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Water Sensor</label>
+		<description>Get the status off of a water sensor device</description>
+		<channels>
+			<channel id="water" typeId="water-channel">
+				<label>Water</label>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- Window Shade -->
+	<thing-type id="windowShade">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="smartthings"/>
+		</supported-bridge-type-refs>
+		<label>Window Shade</label>
+		<description>Window Shade</description>
+		<channels>
+			<channel id="windowShade" typeId="windowShade-channel">
+				<label>Window Shade</label>
+				<properties>
+					<property name="smartthings-converter">openCloseControl</property>
+				</properties>
+			</channel>
+		</channels>
+		<config-description-ref uri="thing-type:smartthings:thing-type-parameters"/>
+	</thing-type>
+
+	<!-- ============= -->
+	<!-- Channel Types -->
+	<!-- ============= -->
+	<channel-type id="acceleration-channel">
+		<item-type>String</item-type>
+		<label>Acceleration</label>
+		<description>Acceleration</description>
+		<category>Motion</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="active">Active</option>
+				<option value="inactive">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="airConditionerMode-channel">
+		<item-type>String</item-type>
+		<label>Air Conditioner Mode</label>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="cool">Cool</option>
+				<option value="dry">Dry</option>
+				<option value="coolClean">Cool clean</option>
+				<option value="dryClean">Dry clean</option>
+				<option value="fanOn">Fan on</option>
+				<option value="fanAuto">Fan auto</option>
+				<option value="fanCirculate">Fan circulate</option>
+				<option value="heat">Heat</option>
+				<option value="emergencyHeat">Emergency heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm-channel">
+		<item-type>String</item-type>
+		<label>Alarm</label>
+		<category>Alarm</category>
+		<state>
+			<options>
+				<option value="both">Both</option>
+				<option value="off">Off</option>
+				<option value="siren">Siren</option>
+				<option value="strobe">Strobe</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="battery-channel">
+		<item-type>Number</item-type>
+		<label>Battery</label>
+		<category>Battery</category>
+	</channel-type>
+
+	<channel-type id="contact-channel">
+		<item-type>Contact</item-type>
+		<label>Contact</label>
+		<category>contact</category>
+	</channel-type>
+
+	<channel-type id="button-channel">
+		<item-type>String</item-type>
+		<label>Button</label>
+		<state>
+			<options>
+				<option value="pushed">Pushed</option>
+				<option value="held">Held</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="carbonDioxide-channel">
+		<item-type>Number</item-type>
+		<label>Carbon Dioxide</label>
+		<category>CarbonDioxide</category>
+	</channel-type>
+
+	<channel-type id="carbonMonoxide-channel">
+		<item-type>String</item-type>
+		<label>Carbon Monoxide</label>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="clear">Clear</option>
+				<option value="detected">Detected</option>
+				<option value="tested">Test button activated</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="hue-channel">
+		<item-type>Number</item-type>
+		<label>Hue</label>
+		<category>Color</category>
+	</channel-type>
+
+	<channel-type id="saturation-channel">
+		<item-type>Number</item-type>
+		<label>Saturation</label>
+		<category>Color</category>
+	</channel-type>
+
+	<channel-type id="color-channel">
+		<item-type>Color</item-type>
+		<label>Color</label>
+		<category>Color</category>
+	</channel-type>
+
+	<channel-type id="colorValue-channel">
+		<item-type>Color</item-type>
+		<label>Color Value</label>
+		<category>Color</category>
+	</channel-type>
+
+	<channel-type id="colorTemperature-channel">
+		<item-type>Number</item-type>
+		<label>Color Temperature</label>
+		<category>ColorLight</category>
+	</channel-type>
+
+	<channel-type id="consumable-channel">
+		<!-- For now assume that this will work for both the consumableStatus setConsumableStatus -->
+		<item-type>String</item-type>
+		<label>Consumable Status</label>
+		<state>
+			<options>
+				<option value="good">Good</option>
+				<option value="maintenance_required">Maintenance required</option>
+				<option value="missing">Missing</option>
+				<option value="order">Order</option>
+				<option value="replace">Replace</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="door-control-channel">
+		<item-type>String</item-type>
+		<label>Door Status</label>
+		<category>Door</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="closed">Closed</option>
+				<option value="closing">Closing</option>
+				<option value="open">Open</option>
+				<option value="opening">Opening</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dryer-mode-channel">
+		<item-type>String</item-type>
+		<label>Dryer Temperature</label>
+		<state>
+			<options>
+				<option value="regular">Regular</option>
+				<option value="lowHeat">Low heat</option>
+				<option value="highHeat">High heat</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="dryer-job-state-channel">
+		<item-type>String</item-type>
+		<label>Dryer Job State</label>
+	</channel-type>
+
+	<channel-type id="machine-state-channel">
+		<item-type>String</item-type>
+		<label>Machine Operating State</label>
+		<state>
+			<options>
+				<option value="pause">Pause</option>
+				<option value="run">Run</option>
+				<option value="stop">Stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="energy-channel">
+		<item-type>Number</item-type>
+		<label>Energy</label>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="power-channel">
+		<item-type>Number</item-type>
+		<label>Power</label>
+		<category>Energy</category>
+	</channel-type>
+
+	<channel-type id="estimatedTimeOfArrival-channel">
+		<item-type>String</item-type>
+		<label>Estimated Time of Arrival</label>
+	</channel-type>
+
+	<channel-type id="numberOfButtons-channel">
+		<item-type>Number</item-type>
+		<label>Number of Buttons</label>
+	</channel-type>
+
+	<channel-type id="illuminance-channel">
+		<item-type>Number</item-type>
+		<label>Illuminance</label>
+	</channel-type>
+
+	<channel-type id="imageCapture-channel">
+		<item-type>String</item-type>
+		<label>Image Capture</label>
+		<category>Recorder</category>
+	</channel-type>
+
+	<channel-type id="indicatorStatus-channel">
+		<item-type>String</item-type>
+		<label>Indicator Status</label>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="infraredLevel-channel">
+		<item-type>Number</item-type>
+		<label>Current Infrared Light Level</label>
+		<category>Light</category>
+	</channel-type>
+
+	<channel-type id="lock-channel">
+		<item-type>String</item-type>
+		<label>Lock State</label>
+		<category></category>
+		<state>
+			<options>
+				<option value="locked">Locked</option>
+				<option value="unknown">Unknown</option>
+				<option value="unlocked">Unlocked</option>
+				<option value="unlocked with timeout">Unlocked with timeout</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lock-only-channel">
+		<item-type>String</item-type>
+		<label>Lock Only State</label>
+		<category></category>
+		<state>
+			<options>
+				<option value="locked">Locked</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="activities-channel">
+		<item-type>String</item-type>
+		<label>Media Activity</label>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="currentActivity-channel">
+		<item-type>String</item-type>
+		<label>Current Media Activity</label>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="motion-channel">
+		<item-type>String</item-type>
+		<label>Motion Sensor</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="active">Active</option>
+				<option value="inactive">Inactive</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="status-channel">
+		<item-type>String</item-type>
+		<label>Current Status</label>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="level-channel">
+		<item-type>Dimmer</item-type>
+		<label>Light Level</label>
+		<category>DimmableLight</category>
+	</channel-type>
+
+	<channel-type id="volumeLevel-channel">
+		<item-type>Number</item-type>
+		<label>Volume Level</label>
+		<category>SoundVolume</category>
+	</channel-type>
+
+	<channel-type id="trackDescription-channel">
+		<item-type>String</item-type>
+		<label>Description of Current Track</label>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="trackData-channel">
+		<item-type>String</item-type>
+		<label>Track Data</label>
+		<category>Player</category>
+	</channel-type>
+
+	<channel-type id="mute-channel">
+		<item-type>String</item-type>
+		<label>Mute</label>
+		<category>Player</category>
+		<state readOnly="true">
+			<options>
+				<option value="muted">Muted</option>
+				<option value="unmuted">Unmuted</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="pH-channel">
+		<item-type>Number</item-type>
+		<label>pH Level</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="powerSource-channel">
+		<item-type>String</item-type>
+		<label>Power Source</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="battery">Battery power</option>
+				<option value="dc">DC power</option>
+				<option value="mains">AC power</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="presence-channel">
+		<item-type>String</item-type>
+		<label>Presence</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="not present">Not present</option>
+				<option value="present">Present</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity-channel">
+		<item-type>Number</item-type>
+		<label>Relative Humidity</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="shock-channel">
+		<item-type>String</item-type>
+		<label>Shock</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="clear">Clear</option>
+				<option value="detected">Detected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lqi-channel">
+		<item-type>Number</item-type>
+		<label>Link Quality Indication</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="rssi-channel">
+		<item-type>Number</item-type>
+		<label>Received Signal Strength Indication</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="sleeping-channel">
+		<item-type>String</item-type>
+		<label>Sleeping</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="not sleeping">Not sleeping</option>
+				<option value="sleeping">Sleeping</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="smoke-channel">
+		<item-type>String</item-type>
+		<label>Smoke</label>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="clear">Clear</option>
+				<option value="detected">Detected</option>
+				<option value="tested">Test button activated</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="soundPressureLevel-channel">
+		<item-type>Number</item-type>
+		<label>Sound Pressure Level</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="sound-channel">
+		<item-type>String</item-type>
+		<label>Sound Detected</label>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="detected">Detected</option>
+				<option value="not_detected">Not detected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="phraseSpoken-channel">
+		<item-type>String</item-type>
+		<label>Spoken Phrase</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="goal-channel">
+		<item-type>Number</item-type>
+		<label>Current Step Goal</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="steps-channel">
+		<item-type>Number</item-type>
+		<label>Current Step Count</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="switch-channel">
+		<item-type>Switch</item-type>
+		<label>Switch</label>
+		<description>This is a switch</description>
+		<category>switch</category>
+	</channel-type>
+
+	<channel-type id="tamper-channel">
+		<item-type>String</item-type>
+		<label>Tamper Alert Sensor</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="clear">Clear</option>
+				<option value="detected">Detected</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperature-channel">
+		<item-type>Number</item-type>
+		<label>Current Temperature</label>
+		<category>Temperature</category>
+	</channel-type>
+
+	<channel-type id="heatingSetpoint-channel">
+		<item-type>Number</item-type>
+		<label>Heating Setpoint</label>
+		<category>Temperature</category>
+	</channel-type>
+
+	<channel-type id="coolingSetpoint-channel">
+		<item-type>Number</item-type>
+		<label>Cooling Setpoint</label>
+		<category>Temperature</category>
+	</channel-type>
+
+	<channel-type id="thermostatSetpoint-channel">
+		<item-type>Number</item-type>
+		<label>Current Setpoint</label>
+		<category>Temperature</category>
+	</channel-type>
+
+	<channel-type id="thermostatMode-channel">
+		<item-type>String</item-type>
+		<label>Thermostat Mode</label>
+		<category>Temperature</category>
+		<state>
+			<options>
+				<option value="auto">Auto</option>
+				<option value="eco">Eco</option>
+				<option value="cool">Cool</option>
+				<option value="heat">Heat</option>
+				<option value="emergency heat">Emergency heat</option>
+				<option value="rush hourheat">Rush hour</option>
+				<option value="off">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostatFanMode-channel">
+		<item-type>String</item-type>
+		<label>Fan Mode</label>
+		<category>Temperature</category>
+		<state readOnly="true">
+			<options>
+				<option value="auto">Auto</option>
+				<option value="circulate">Circulate</option>
+				<option value="on">On</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="thermostatOperatingState-channel">
+		<item-type>String</item-type>
+		<label>Operating State</label>
+		<category>Temperature</category>
+		<state readOnly="true">
+			<options>
+				<option value="cooling">Cooling</option>
+				<option value="fan only">Fan only</option>
+				<option value="heating">Heating</option>
+				<option value="idle">Idle</option>
+				<option value="pending cool">Pending cool</option>
+				<option value="pending heat">Pending heat</option>
+				<option value="vent economizer">Vent economizer</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="timeRemaining-channel">
+		<item-type>Number</item-type>
+		<label>Time Remaining</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="completion-time-channel">
+		<item-type>String</item-type>
+		<label>Completion Time</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="three-axis-channel">
+		<item-type>String</item-type>
+		<label>Three Axis</label>
+		<description>This string contains the x, y, z coordinates</description>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="sessionStatus-channel">
+		<item-type>String</item-type>
+		<label>Timed Session Status</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="canceled">Canceled</option>
+				<option value="paused">Paused</option>
+				<option value="running">Running</option>
+				<option value="stopped">Stopped</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="touch-channel">
+		<item-type>String</item-type>
+		<label>Device Touched, or Not</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="touched">Touched</option>
+				<option value="">Not touched</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ultravioletIndex-channel">
+		<item-type>Number</item-type>
+		<label>Ultraviolet Index</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="valve-channel">
+		<item-type>String</item-type>
+		<label>Valve status</label>
+		<category></category>
+		<state>
+			<options>
+				<option value="closed">Closed</option>
+				<option value="open">Open</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="voltage-channel">
+		<item-type>Number</item-type>
+		<label>Voltage Measurement</label>
+		<category></category>
+	</channel-type>
+
+	<channel-type id="washer-mode-channel">
+		<item-type>String</item-type>
+		<label>Washer Mode</label>
+		<state>
+			<options>
+				<option value="regular">Regular</option>
+				<option value="heavy">Heavy</option>
+				<option value="rinse">Rinse</option>
+				<option value="spinDry">Spin dry</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="washer-job-state-channel">
+		<item-type>String</item-type>
+		<label>Washer Job State</label>
+	</channel-type>
+
+	<channel-type id="water-channel">
+		<item-type>String</item-type>
+		<label>Water Sensor</label>
+		<category></category>
+		<state readOnly="true">
+			<options>
+				<option value="dry">Dry</option>
+				<option value="wet">Wet</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="windowShade-channel">
+		<item-type>String</item-type>
+		<label>Window Shade</label>
+		<category></category>
+		<state>
+			<options>
+				<option value="closed">Closed</option>
+				<option value="closing">Closing</option>
+				<option value="open">Open</option>
+				<option value="opening">Opening</option>
+				<option value="partially open">Partially open</option>
+				<option value="unknown">Unknown</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>
