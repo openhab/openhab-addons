@@ -1370,10 +1370,6 @@ e.g. `smarthome:send actionCommand 'upd_timer["1498595904821", "on"]'` would ena
 | vacuumaction     | String  | Vacuum Action                       |
 | BatteryLevel     | Number  | Battery-Battery Level               |
 | ChargingState    | Number  | Battery-Charging State              |
-| FirmwareRevision | String  | Device Information-Current Firmware Version |
-| Manufacturer     | String  | Device Information-Device Manufacturer |
-| Model            | String  | Device Information-Device Model     |
-| SerialNumber     | String  | Device Information-Device Serial Number |
 | Fault            | Number  | Robot Cleaner-Device Fault          |
 | Status           | Number  | Robot Cleaner-Status                |
 | BrushLeftTime    | String  | Main Cleaning Brush-Brush Left Time |
@@ -3190,10 +3186,6 @@ Group G_vacuum "Vacuum 1C STYTJ01ZHM" <status>
 String vacuumaction "Vacuum Action" (G_vacuum) {channel="miio:basic:vacuum:vacuumaction"}
 Number BatteryLevel "Battery-Battery Level" (G_vacuum) {channel="miio:basic:vacuum:BatteryLevel"}
 Number ChargingState "Battery-Charging State" (G_vacuum) {channel="miio:basic:vacuum:ChargingState"}
-String FirmwareRevision "Device Information-Current Firmware Version" (G_vacuum) {channel="miio:basic:vacuum:FirmwareRevision"}
-String Manufacturer "Device Information-Device Manufacturer" (G_vacuum) {channel="miio:basic:vacuum:Manufacturer"}
-String Model "Device Information-Device Model" (G_vacuum) {channel="miio:basic:vacuum:Model"}
-String SerialNumber "Device Information-Device Serial Number" (G_vacuum) {channel="miio:basic:vacuum:SerialNumber"}
 Number Fault "Robot Cleaner-Device Fault" (G_vacuum) {channel="miio:basic:vacuum:Fault"}
 Number Status "Robot Cleaner-Status" (G_vacuum) {channel="miio:basic:vacuum:Status"}
 String BrushLeftTime "Main Cleaning Brush-Brush Left Time" (G_vacuum) {channel="miio:basic:vacuum:BrushLeftTime"}

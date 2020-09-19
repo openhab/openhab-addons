@@ -322,12 +322,10 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
         logger.debug("Doing cleanup");
         stopPolling();
         executions.clear();
-        if (httpClient != null) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.debug("Error during http client stopping", e);
-            }
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Error during http client stopping", e);
         }
     }
 
@@ -343,17 +341,17 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
      * Stops this thing's polling future
      */
     private void stopPolling() {
-        if (pollFuture != null && !pollFuture.isCancelled()) {
-            pollFuture.cancel(true);
-            pollFuture = null;
+        ScheduledFuture<?> localPollFuture = pollFuture;
+        if (localPollFuture != null && !localPollFuture.isCancelled()) {
+            localPollFuture.cancel(true);
         }
-        if (statusFuture != null && !statusFuture.isCancelled()) {
-            statusFuture.cancel(true);
-            statusFuture = null;
+        ScheduledFuture<?> localStatusFuture = statusFuture;
+        if (localStatusFuture != null && !localStatusFuture.isCancelled()) {
+            localStatusFuture.cancel(true);
         }
-        if (reconciliationFuture != null && !reconciliationFuture.isCancelled()) {
-            reconciliationFuture.cancel(true);
-            reconciliationFuture = null;
+        ScheduledFuture<?> localReconciliationFuture = reconciliationFuture;
+        if (localReconciliationFuture != null && !localReconciliationFuture.isCancelled()) {
+            localReconciliationFuture.cancel(true);
         }
     }
 
@@ -753,7 +751,8 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                 return th.getProperties().get(NAME_STATE).replace("\"", "");
             }
             // Return label from OH2
-            return th.getLabel() != null ? th.getLabel().replace("\"", "") : "";
+            String label = th.getLabel();
+            return label != null ? label.replace("\"", "") : "";
         }
         return "null";
     }

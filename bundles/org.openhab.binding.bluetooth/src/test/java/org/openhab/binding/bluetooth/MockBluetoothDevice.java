@@ -15,7 +15,8 @@ package org.openhab.binding.bluetooth;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic.GattCharacteristic;
 import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
 
@@ -24,6 +25,7 @@ import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotif
  *
  * @author Connor Petty - Initial contribution
  */
+@NonNullByDefault
 public class MockBluetoothDevice extends BaseBluetoothDevice {
 
     private AtomicBoolean servicesDiscovered = new AtomicBoolean(false);
@@ -31,7 +33,7 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     /**
      * This is the name that returned in the DEVICE_NAME characteristic
      */
-    private String deviceName = null;
+    private @Nullable String deviceName = null;
 
     public MockBluetoothDevice(BluetoothAdapter adapter, BluetoothAddress address) {
         super(adapter, address);
@@ -91,27 +93,27 @@ public class MockBluetoothDevice extends BaseBluetoothDevice {
     }
 
     @Override
-    public boolean writeCharacteristic(@NonNull BluetoothCharacteristic characteristic) {
+    public boolean writeCharacteristic(BluetoothCharacteristic characteristic) {
         return false;
     }
 
     @Override
-    public boolean enableNotifications(@NonNull BluetoothCharacteristic characteristic) {
+    public boolean enableNotifications(BluetoothCharacteristic characteristic) {
         return false;
     }
 
     @Override
-    public boolean disableNotifications(@NonNull BluetoothCharacteristic characteristic) {
+    public boolean disableNotifications(BluetoothCharacteristic characteristic) {
         return false;
     }
 
     @Override
-    public boolean enableNotifications(@NonNull BluetoothDescriptor descriptor) {
+    public boolean enableNotifications(BluetoothDescriptor descriptor) {
         return false;
     }
 
     @Override
-    public boolean disableNotifications(@NonNull BluetoothDescriptor descriptor) {
+    public boolean disableNotifications(BluetoothDescriptor descriptor) {
         return false;
     }
 }

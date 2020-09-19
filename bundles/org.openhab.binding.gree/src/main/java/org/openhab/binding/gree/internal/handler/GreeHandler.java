@@ -151,6 +151,7 @@ public class GreeHandler extends BaseThingHandler {
                     // force refresh on next status refresh cycle
                     forceRefresh = true;
                     apiRetries = 0;
+                    return; // successful
                 } catch (GreeException e) {
                     retries--;
                     if (retries > 0) {

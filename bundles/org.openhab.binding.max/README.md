@@ -44,7 +44,6 @@ Note that several configuration options are automatically populated.
 Later versions of the binding may allow you to update this information.
 These properties can be found in the `Device Settings` section of parameters.
 
-
 ## Channels
 
 Depending on the thing it supports different Channels
@@ -112,13 +111,12 @@ This can be enabled by showing the "advanced settings" (e.g. in HABmin UI).
 Then the "Actual Temperature Refresh Rate" can be set.
 Minimum refresh rate once/10 minutes, recommended 60min to avoid excessive battery drain.
 
-
 ## New Device Inclusion
 
 When clicking the discovery button for MAX! devices manually in the UI, you  will start New Device Inclusion mode for 60seconds.
 During this time, holding the _boost_ button on your device will link it to the Cube.
 
-## Device configuration
+## Device Configuration
 
 In the _Configuration Parameters_ section of the device Things you can update some of the device configuration parameters.
 Currently the following parameters can be updated:
@@ -132,15 +130,34 @@ _Cube device configurable parameters_
 
 ## Action Buttons (visible in HABmin)
 
-In the HABmin thing configuration screen, several action buttons are available to trigger special actions on the Cube
+The Action Buttons are deprecated and will be removed in a future version.
 
-*   _Reset Cube Configuration_ resets the MAX! Cube room and device information. Devices will need to be included again! To use this button you need to enable 'Advanced settings'
+## Thing Actions
 
-*   _Restart Cube_ triggers the reboot of a Cube. This can be used if a Cube became unresponsive to commands or no connection can be made. (e.g. if you tried to connect to the Cube with multiple applications at the same time)
+Several Thing Actions are available to trigger special actions on the MAX! Cube
+
+*   `reset()`: _Reset Cube Configuration_ resets the MAX! Cube room and device information. Devices will need to be included again!
+
+*   `reboot()`: _Restart Cube_ triggers the reboot of a Cube. This can be used if a Cube became unresponsive to commands or no connection can be made. (e.g. if you tried to connect to the Cube with multiple applications at the same time)
 
 On the MAX! devices you can trigger the following action
 
-*   _Delete Device from Cube_ deletes the device from the MAX! Cube. Device will need to be included again! To use this button you need to enable 'Advanced settings'
+*   `deleteFromCube()`: _Delete Device from Cube_ deletes the device from the MAX! Cube. Device will need to be included again!
 
 Note: In Paper UI there are no action buttons.
 You can trigger these actions changing from 'No Action' in the dropdown to the action value.
+
+### Example Rule
+
+demo.rules:
+
+```java
+rule "Reboot MAX! Cube"
+when
+    ...
+then
+    val maxCubeActions = getActions("max-cube", "max:bridge:KEQ0565026")
+    val Boolean success = maxCubeActions.reboot()
+    logInfo("max", "Action 'reboot' returned '{}'", success)
+end
+```

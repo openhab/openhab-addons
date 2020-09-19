@@ -25,9 +25,11 @@ import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.types.RawType;
 import org.eclipse.smarthome.core.library.types.StringType;
 import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
+import org.eclipse.smarthome.io.net.http.HttpUtil;
 
 /**
  * This class holds various channel values conversion methods
@@ -126,5 +128,10 @@ public class ChannelTypeUtils {
 
     public static State toQuantityType(@Nullable BigDecimal value, Unit<?> unit) {
         return value == null ? UnDefType.NULL : new QuantityType<>(value, unit);
+    }
+
+    public static State toRawType(String pictureUrl) {
+        RawType picture = HttpUtil.downloadImage(pictureUrl);
+        return picture == null ? UnDefType.UNDEF : picture;
     }
 }

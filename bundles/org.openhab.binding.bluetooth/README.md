@@ -21,7 +21,7 @@ Two thing types are supported by this binding:
 
 | Thing Type ID | Description                                                                                             |
 |---------------|---------------------------------------------------------------------------------------------------------|
-| beacon        | A Bluetooth device that is not connected, but only broadcasts annoucements.                             |
+| beacon        | A Bluetooth device that is not connected, but only broadcasts announcements.                             |
 | connected     | A Bluetooth device that allows a direct connection and which provides specific services when connected. |
 
 

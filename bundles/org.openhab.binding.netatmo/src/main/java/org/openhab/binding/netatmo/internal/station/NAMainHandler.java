@@ -282,4 +282,15 @@ public class NAMainHandler extends NetatmoDeviceHandler<NAMain> {
     protected Optional<Integer> getDataTimestamp() {
         return getDevice().map(d -> d.getLastStatusStore());
     }
+
+    @Override
+    protected boolean isReachable() {
+        boolean result = false;
+        Optional<NAMain> device = getDevice();
+        if (device.isPresent()) {
+            Boolean reachable = device.get().getReachable();
+            result = reachable != null ? reachable.booleanValue() : false;
+        }
+        return result;
+    }
 }

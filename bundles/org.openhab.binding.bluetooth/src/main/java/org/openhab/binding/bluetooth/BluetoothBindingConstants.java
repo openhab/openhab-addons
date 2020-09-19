@@ -14,6 +14,7 @@ package org.openhab.binding.bluetooth;
 
 import java.util.UUID;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.thing.ThingTypeUID;
 
 /**
@@ -23,6 +24,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
  * @author Chris Jackson - Initial contribution
  * @author Kai Kreuzer - refactoring and extension
  */
+@NonNullByDefault
 public class BluetoothBindingConstants {
 
     public static final String BINDING_ID = "bluetooth";
@@ -33,11 +35,14 @@ public class BluetoothBindingConstants {
 
     // List of all Channel Type IDs
     public static final String CHANNEL_TYPE_RSSI = "rssi";
+    public static final String CHANNEL_TYPE_ADAPTER = "adapterUID";
+    public static final String CHANNEL_TYPE_ADAPTER_LOCATION = "adapterLocation";
 
     public static final String PROPERTY_TXPOWER = "txpower";
     public static final String PROPERTY_MAXCONNECTIONS = "maxconnections";
 
     public static final String CONFIGURATION_ADDRESS = "address";
+    public static final String CONFIGURATION_DISCOVERY = "backgroundDiscovery";
 
     public static final long BLUETOOTH_BASE_UUID = 0x800000805f9b34fbL;
 

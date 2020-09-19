@@ -177,7 +177,6 @@
 		<item-type>Switch</item-type>
 		<label>Mop Forbidden</label>
 		<state readOnly="true"/>
-		<config-description-ref uri="channel-type:miio:dynamic-channel-config"/>
 	</channel-type>
 
 	<!-- Consumables channels -->

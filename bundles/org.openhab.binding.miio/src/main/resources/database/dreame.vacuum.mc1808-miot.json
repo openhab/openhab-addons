@@ -10,6 +10,7 @@
                 "property": "",
                 "friendlyName": "Vacuum Action",
                 "channel": "vacuumaction",
+                "channelType": "dreameControl",
                 "type": "String",
                 "refresh": false,
                 "actions": [
@@ -93,7 +94,7 @@
                             "name": "matchValue",
                             "parameters": [
                                 {
-                                    "matchValue": "home"
+                                    "matchValue": "dock"
                                 }
                             ]
                         }
@@ -120,54 +121,6 @@
                 "channel": "ChargingState",
                 "channelType": "miot_uint8",
                 "type": "Number",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "firmware-revision",
-                "siid": 1,
-                "piid": 4,
-                "friendlyName": "Device Information-Current Firmware Version",
-                "channel": "FirmwareRevision",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "manufacturer",
-                "siid": 1,
-                "piid": 1,
-                "friendlyName": "Device Information-Device Manufacturer",
-                "channel": "Manufacturer",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "model",
-                "siid": 1,
-                "piid": 2,
-                "friendlyName": "Device Information-Device Model",
-                "channel": "Model",
-                "channelType": "miot_string",
-                "type": "String",
-                "refresh": true,
-                "actions": [
-                ]
-            },
-            {
-                "property": "serial-number",
-                "siid": 1,
-                "piid": 3,
-                "friendlyName": "Device Information-Device Serial Number",
-                "channel": "SerialNumber",
-                "channelType": "miot_string",
-                "type": "String",
                 "refresh": true,
                 "actions": [
                 ]

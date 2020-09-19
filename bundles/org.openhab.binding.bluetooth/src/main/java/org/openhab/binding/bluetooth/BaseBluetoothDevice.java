@@ -14,16 +14,14 @@ package org.openhab.binding.bluetooth;
 
 import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.notification.BluetoothConnectionStatusNotification;
-import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,15 +68,17 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      */
     protected @Nullable Integer txPower = null;
 
+    protected final transient ZonedDateTime createTime = ZonedDateTime.now();
+
     /**
      * Last time when activity occurred on this device.
      */
-    protected ZonedDateTime lastSeenTime;
+    protected @Nullable ZonedDateTime lastSeenTime = null;
 
     /**
      * The event listeners will be notified of device updates
      */
-    private final List<BluetoothDeviceListener> eventListeners = new CopyOnWriteArrayList<>();
+    private final Set<BluetoothDeviceListener> eventListeners = new CopyOnWriteArraySet<>();
 
     /**
      * Construct a Bluetooth device taking the Bluetooth address
@@ -88,7 +88,6 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      */
     public BaseBluetoothDevice(BluetoothAdapter adapter, BluetoothAddress address) {
         super(adapter, address);
-        this.lastSeenTime = ZonedDateTime.now();
     }
 
     /**
@@ -96,8 +95,7 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      *
      * @return The last time this device was active
      */
-    @Override
-    public ZonedDateTime getLastSeenTime() {
+    public @Nullable ZonedDateTime getLastSeenTime() {
         return lastSeenTime;
     }
 
@@ -106,7 +104,6 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
      * Should be called whenever activity occurs on this device.
      *
      */
-    @Override
     public void updateLastSeenTime() {
         lastSeenTime = ZonedDateTime.now();
     }
@@ -248,34 +245,9 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
         return false;
     }
 
-    /**
-     * Adds a device listener
-     *
-     * @param listener the {@link BluetoothDeviceListener} to add
-     */
     @Override
-    public void addListener(BluetoothDeviceListener listener) {
-        eventListeners.add(listener);
-    }
-
-    /**
-     * Removes a device listener
-     *
-     * @param listener the {@link BluetoothDeviceListener} to remove
-     */
-    @Override
-    public void removeListener(BluetoothDeviceListener listener) {
-        eventListeners.remove(listener);
-    }
-
-    /**
-     * Checks if this device has any listeners
-     *
-     * @return true if this device has listeners
-     */
-    @Override
-    public boolean hasListeners() {
-        return !eventListeners.isEmpty();
+    protected Collection<BluetoothDeviceListener> getListeners() {
+        return eventListeners;
     }
 
     /**
@@ -286,45 +258,19 @@ public abstract class BaseBluetoothDevice extends BluetoothDevice {
     protected void dispose() {
     }
 
-    /**
-     * Notify the listeners of an event
-     *
-     * @param event the {@link BluetoothEventType} of this event
-     * @param args an array of arguments to pass to the callback
-     */
     @Override
     protected void notifyListeners(BluetoothEventType event, Object... args) {
-        for (BluetoothDeviceListener listener : eventListeners) {
-            try {
-                switch (event) {
-                    case SCAN_RECORD:
-                        listener.onScanRecordReceived((BluetoothScanNotification) args[0]);
-                        break;
-                    case CONNECTION_STATE:
-                        listener.onConnectionStateChange((BluetoothConnectionStatusNotification) args[0]);
-                        break;
-                    case SERVICES_DISCOVERED:
-                        listener.onServicesDiscovered();
-                        break;
-                    case CHARACTERISTIC_READ_COMPLETE:
-                        listener.onCharacteristicReadComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_WRITE_COMPLETE:
-                        listener.onCharacteristicWriteComplete((BluetoothCharacteristic) args[0],
-                                (BluetoothCompletionStatus) args[1]);
-                        break;
-                    case CHARACTERISTIC_UPDATED:
-                        listener.onCharacteristicUpdate((BluetoothCharacteristic) args[0]);
-                        break;
-                    case DESCRIPTOR_UPDATED:
-                        listener.onDescriptorUpdate((BluetoothDescriptor) args[0]);
-                        break;
-                }
-            } catch (Exception e) {
-                logger.error("Failed to inform listener '{}': {}", listener, e.getMessage(), e);
-            }
+        switch (event) {
+            case SCAN_RECORD:
+            case CHARACTERISTIC_UPDATED:
+            case DESCRIPTOR_UPDATED:
+            case SERVICES_DISCOVERED:
+                updateLastSeenTime();
+                break;
+            default:
+                break;
         }
+        super.notifyListeners(event, args);
     }
 
     @Override

@@ -14,16 +14,16 @@ package org.openhab.binding.synopanalyser.internal.synop;
 
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SynopMobile} is responsible for analyzing Mobile station
  * specifics Synop messages
  *
  * @author Jonarzz - Initial contribution
  */
-public abstract class SynopMobile extends Synop {
-
-    private String temp;
-
+@NonNullByDefault
+public class SynopMobile extends Synop {
     private float latitude;
     private float longitude;
 
@@ -38,30 +38,23 @@ public abstract class SynopMobile extends Synop {
     }
 
     @Override
-    protected void setStationCode() {
-        if (stringArray.size() < 2 || (temp = stringArray.get(1)).length() > 10 || temp.contains("/")) {
-            return;
-        }
-
-        stationCode = temp;
-    }
-
-    @Override
     protected void setHorizontalVisibilityInt() {
+        String temp;
         if (stringArray.size() < 6 || !isValidString((temp = stringArray.get(5)))) {
-            horizontalVisibilityInt = Constants.INITIAL_VALUE;
+            horizontalVisibilityInt = INITIAL_VALUE;
             return;
         }
 
         try {
             horizontalVisibilityInt = Integer.parseInt(temp.substring(3, 5));
         } catch (NumberFormatException e) {
-            horizontalVisibilityInt = Constants.INITIAL_VALUE;
+            horizontalVisibilityInt = INITIAL_VALUE;
         }
     }
 
     @Override
     protected void setTemperatureString() {
+        String temp;
         if (stringArray.size() < 8 || !isValidString((temp = stringArray.get(7)))) {
             return;
         }
@@ -71,6 +64,7 @@ public abstract class SynopMobile extends Synop {
 
     @Override
     protected void setWindString() {
+        String temp;
         if (stringArray.size() < 7 || !isValidString((temp = stringArray.get(6)))) {
             return;
         }
@@ -79,9 +73,12 @@ public abstract class SynopMobile extends Synop {
     }
 
     @Override
-    protected abstract void setPressureString();
+    protected void setPressureString() {
+        return;
+    }
 
-    protected void setLatitude() {
+    private void setLatitude() {
+        String temp;
         if (stringArray.size() < 4 || !isValidString((temp = stringArray.get(3)))) {
             return;
         }
@@ -92,14 +89,15 @@ public abstract class SynopMobile extends Synop {
         try {
             tempInt = Integer.parseInt(latitudeString);
         } catch (NumberFormatException e) {
-            latitude = Constants.INITIAL_VALUE;
+            latitude = INITIAL_VALUE;
             return;
         }
 
         latitude = (float) tempInt / 10;
     }
 
-    protected void setLongitudeAndQuadrant() {
+    private void setLongitudeAndQuadrant() {
+        String temp;
         if (stringArray.size() < 5 || !isValidString((temp = stringArray.get(4)))) {
             return;
         }
@@ -108,7 +106,7 @@ public abstract class SynopMobile extends Synop {
         setLongitude(temp.substring(1, 5));
     }
 
-    protected void setQuadrantMultipliers(char q) {
+    private void setQuadrantMultipliers(char q) {
         switch (q) {
             case '1':
                 verticalQuadrantMultiplier = 1;
@@ -133,13 +131,13 @@ public abstract class SynopMobile extends Synop {
         }
     }
 
-    protected void setLongitude(String str) {
+    private void setLongitude(String str) {
         int tempInt = 0;
 
         try {
             tempInt = Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            longitude = Constants.INITIAL_VALUE;
+            longitude = INITIAL_VALUE;
             return;
         }
 

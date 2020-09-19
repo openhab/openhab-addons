@@ -117,7 +117,7 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
                         }
                     } catch (RuntimeException ex) {
                         logger.warn("Error occurred during bluetooth discovery for device {} on adapter {}", address,
-                                device.getAdapter().getAddress(), ex);
+                                device.getAdapter().getUID(), ex);
                     }
                 }
             }
@@ -370,5 +370,9 @@ public class BluetoothDiscoveryProcess implements Supplier<DiscoveryResult>, Blu
 
     @Override
     public void onDescriptorUpdate(BluetoothDescriptor bluetoothDescriptor) {
+    }
+
+    @Override
+    public void onAdapterChanged(BluetoothAdapter adapter) {
     }
 }

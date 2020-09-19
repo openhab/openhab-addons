@@ -21,8 +21,14 @@ The binding supports two different kinds of connections:
 
 ## Supported Things
 
-There is exactly one supported thing type, which represents an individual Kaleidescape component.
-It has the `player` id.
+There are four supported thing types, which represent the different models of Kaleidescape components.
+It is important to choose the correct thing type to ensure the available channels are correct for the component being used.  
+
+The supported thing types are:  
+`player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player  
+`cinemaone` Cinema One (2nd Gen)  
+`alto`  
+`strato` Includes Strato, Strato S, or Strato C   
 
 ## Discovery
 
@@ -41,7 +47,6 @@ The thing has the following configuration parameters:
 
 | Parameter Label        | Parameter ID  | Description                                                                        | Accepted values                                      |
 |------------------------|---------------|------------------------------------------------------------------------------------|------------------------------------------------------|
-| Component type         | componentType | The type of Kaleidescape component                                                 | 'Player', 'Cinema One', 'Alto', or 'Strato'          |
 | Address                | host          | Host name or IP address of the Kaleidescape component                              | A host name or IP address                            |
 | Port                   | port          | Communication port of the IP connection                                            | 10000 (default - should not need to change)          |
 | Serial Port            | serialPort    | Serial port for connecting directly a component                                    | Serial port name (optional)                          |
@@ -52,7 +57,6 @@ The thing has the following configuration parameters:
 Some notes:
 
 * Due to a bug in the control protocol, a Strato C player will be identified as a Premiere 'Player' by the auto discovery process.
-* The thing configuration parameter 'Component type' should be manually updated to correctly identify the Strato C as a 'Strato' component.
 * The only caveat of note about this binding is the updatePeriod configuration parameter.
 * When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
 * In this case, the running time channels will also only sporadically update.
@@ -149,8 +153,8 @@ The following channels are available:
 kaleidescape.things:
 
 ```java
-kaleidescape:player:myzone1 "M500 Living Rm" [componentType="Player", host="192.168.1.10", updatePeriod=0, volumeEnabled=true, initialVolume=20]
-kaleidescape:player:myzone2 "My Cinema One" [componentType="Cinema One", host="192.168.1.11", updatePeriod=0, volumeEnabled=true, initialVolume=20]
+kaleidescape:player:myzone1 "M500 Living Rm" [host="192.168.1.10", updatePeriod=0, volumeEnabled=true, initialVolume=20]
+kaleidescape:cinemaone:myzone2 "My Cinema One" [host="192.168.1.11", updatePeriod=0, volumeEnabled=true, initialVolume=20]
 ```
 
 kaleidescape.items:

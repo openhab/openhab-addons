@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="upb:device:address">
+		<parameter name="networkId" type="integer" min="0" max="255" required="false">
+			<label>Network ID</label>
+			<description>The ID of the UPB network that the device belongs to</description>
+		</parameter>
+		<parameter name="unitId" type="integer" min="1" max="250" required="true">
+			<label>Unit ID</label>
+			<description>The unit ID of the device on the UPB network</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
