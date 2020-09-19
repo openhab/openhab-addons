@@ -61,7 +61,7 @@ In addition there are some optional Configuration Parameters.
 (\*\*) Note: This password is the API password that is printed on the back of the unit.
 Normally it differs from the password of the web frontend.
 
-Advice: if you see a significant number of messages per day as follws, you should increase the parameters retries or/and timeoutMsecs...
+Advice: if you see a significant number of messages per day as follows, you should increase the parameters retries or/and timeoutMsecs...
 
 ```
  communicate(): socket I/O failed continuously (x times).
