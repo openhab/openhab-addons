@@ -1,7 +1,6 @@
 # Venstar Thermostat Binding
 
-The Venstar Thermostat binding supports an interface to WiFi enabled 
-ColorTouch and Explorer thermostats manufactured by Venstar[1].
+The Venstar Thermostat binding supports an interface to WiFi enabled ColorTouch and Explorer thermostats manufactured by Venstar[1].
 
 ## Prerequisites
 
