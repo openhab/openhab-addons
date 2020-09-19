@@ -56,7 +56,7 @@ public class HomeConnectDynamicStateDescriptionProvider implements DynamicStateD
             return stateDescriptions.get(channel.getUID().getAsString());
         }
 
-        return originalStateDescription;
+        return null;
     }
 
     public void putStateDescriptions(String channelUid, StateDescription stateDescription) {

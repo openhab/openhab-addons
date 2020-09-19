@@ -18,13 +18,15 @@ import static org.openhab.binding.homeconnect.internal.client.OkHttpHelper.forma
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.eclipse.smarthome.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
@@ -64,8 +66,8 @@ public class HomeConnectSseClient {
     private final String apiUrl;
     private final OkSse oksse;
     private final OAuthClientService oAuthClientService;
-    private final HashSet<ServerSentEventListener> eventListeners;
-    private final HashMap<ServerSentEventListener, ServerSentEvent> serverSentEventConnections;
+    private final Set<ServerSentEventListener> eventListeners;
+    private final Map<ServerSentEventListener, ServerSentEvent> serverSentEventConnections;
     private final LogWriter logger;
 
     public HomeConnectSseClient(OAuthClientService oAuthClientService, boolean simulated,
@@ -75,8 +77,8 @@ public class HomeConnectSseClient {
                 .retryOnConnectionFailure(true).build());
         this.oAuthClientService = oAuthClientService;
 
-        eventListeners = new HashSet<>();
-        serverSentEventConnections = new HashMap<>();
+        eventListeners = new ConcurrentHashSet<>();
+        serverSentEventConnections = new ConcurrentHashMap<>();
 
         logger = loggingService.getLogger(HomeConnectSseClient.class);
     }
@@ -120,8 +122,7 @@ public class HomeConnectSseClient {
                     }
 
                     if (message != null && !StringUtils.isEmpty(message) && !EMPTY_EVENT.equals(message)) {
-                        ArrayList<Event> events = mapToEvents(message, haId);
-                        events.forEach(e -> eventListener.onEvent(e));
+                        mapToEvents(message, haId).forEach(eventListener::onEvent);
                     }
 
                     if (CONNECTED.equals(event) || DISCONNECTED.equals(event)) {

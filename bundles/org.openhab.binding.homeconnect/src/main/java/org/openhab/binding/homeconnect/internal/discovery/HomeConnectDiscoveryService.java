@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -75,45 +76,18 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService {
 
             // add found devices
             for (HomeAppliance appliance : appliances) {
+                ThingTypeUID thingTypeUID = getThingTypeUID(appliance);
+
                 if (alreadyExists(appliance.getHaId())) {
                     logger.debug("Device {} ({}) already added as thing.", appliance.getHaId(),
                             appliance.getType().toUpperCase());
-                } else if (THING_TYPE_DISHWASHER.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_OVEN.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_WASHER.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_DRYER.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_COFFEE_MAKER.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_WASHER_DRYER.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_HOOD.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_COOKTOP.getId().equalsIgnoreCase(appliance.getType())
-                        || THING_TYPE_FRIDGE_FREEZER.getId().equalsIgnoreCase(appliance.getType())) {
+                } else if (thingTypeUID != null && DISCOVERABLE_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID)) {
                     logger.info("Found {} ({}).", appliance.getHaId(), appliance.getType().toUpperCase());
                     bridgeHandler.getThing().getThings().forEach(thing -> thing.getProperties().get(HA_ID));
 
                     Map<String, Object> properties = new HashMap<>();
                     properties.put(HA_ID, appliance.getHaId());
                     String name = appliance.getBrand() + " " + appliance.getName() + " (" + appliance.getHaId() + ")";
-
-                    ThingTypeUID thingTypeUID;
-                    if (THING_TYPE_DISHWASHER.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_DISHWASHER;
-                    } else if (THING_TYPE_OVEN.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_OVEN;
-                    } else if (THING_TYPE_FRIDGE_FREEZER.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_FRIDGE_FREEZER;
-                    } else if (THING_TYPE_DRYER.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_DRYER;
-                    } else if (THING_TYPE_COFFEE_MAKER.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_COFFEE_MAKER;
-                    } else if (THING_TYPE_HOOD.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_HOOD;
-                    } else if (THING_TYPE_WASHER_DRYER.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_WASHER_DRYER;
-                    } else if (THING_TYPE_COOKTOP.getId().equalsIgnoreCase(appliance.getType())) {
-                        thingTypeUID = THING_TYPE_COOKTOP;
-                    } else {
-                        thingTypeUID = THING_TYPE_WASHER;
-                    }
 
                     DiscoveryResult discoveryResult = DiscoveryResultBuilder
                             .create(new ThingUID(BINDING_ID, appliance.getType(), appliance.getHaId()))
@@ -158,5 +132,31 @@ public class HomeConnectDiscoveryService extends AbstractDiscoveryService {
             }
         }
         return exists;
+    }
+
+    private @Nullable ThingTypeUID getThingTypeUID(HomeAppliance appliance) {
+        ThingTypeUID thingTypeUID = null;
+
+        if (THING_TYPE_DISHWASHER.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_DISHWASHER;
+        } else if (THING_TYPE_OVEN.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_OVEN;
+        } else if (THING_TYPE_FRIDGE_FREEZER.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_FRIDGE_FREEZER;
+        } else if (THING_TYPE_DRYER.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_DRYER;
+        } else if (THING_TYPE_COFFEE_MAKER.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_COFFEE_MAKER;
+        } else if (THING_TYPE_HOOD.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_HOOD;
+        } else if (THING_TYPE_WASHER_DRYER.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_WASHER_DRYER;
+        } else if (THING_TYPE_COOKTOP.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_COOKTOP;
+        } else if (THING_TYPE_WASHER.getId().equalsIgnoreCase(appliance.getType())) {
+            thingTypeUID = THING_TYPE_WASHER;
+        }
+
+        return thingTypeUID;
     }
 }

@@ -36,6 +36,7 @@ import org.eclipse.smarthome.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationException;
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.exception.ProxySetupException;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -59,10 +60,13 @@ public class OkHttpHelper {
     private static final String BEARER = "Bearer ";
     private static final int OAUTH_EXPIRE_BUFFER = 10;
 
+    private static JsonParser jsonParser = new JsonParser();
+    private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private static Logger logger = LoggerFactory.getLogger(OkHttpHelper.class);
+
     public static Builder builder() {
         if (HTTP_PROXY_ENABLED) {
-            LoggerFactory.getLogger(OkHttpHelper.class).warn("Using http proxy! {}:{}", HTTP_PROXY_HOST,
-                    HTTP_PROXY_PORT);
+            logger.warn("Using http proxy! {}:{}", HTTP_PROXY_HOST, HTTP_PROXY_PORT);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(HTTP_PROXY_HOST, HTTP_PROXY_PORT));
 
             try {
@@ -109,10 +113,8 @@ public class OkHttpHelper {
             return "";
         }
         try {
-            JsonParser parser = new JsonParser();
-            JsonObject json = parser.parse(jsonString).getAsJsonObject();
+            JsonObject json = jsonParser.parse(jsonString).getAsJsonObject();
 
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String prettyJson = gson.toJson(json);
             return prettyJson;
         } catch (Exception e) {

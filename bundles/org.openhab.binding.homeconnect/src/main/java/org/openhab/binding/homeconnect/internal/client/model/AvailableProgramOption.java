@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homeconnect.internal.client.model;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -26,9 +26,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class AvailableProgramOption {
 
     private final String key;
-    private final ArrayList<String> allowedValues;
+    private final List<String> allowedValues;
 
-    public AvailableProgramOption(String key, ArrayList<String> allowedValues) {
+    public AvailableProgramOption(String key, List<String> allowedValues) {
         this.key = key;
         this.allowedValues = allowedValues;
     }
@@ -37,7 +37,7 @@ public class AvailableProgramOption {
         return key;
     }
 
-    public ArrayList<String> getAllowedValues() {
+    public List<String> getAllowedValues() {
         return allowedValues;
     }
 
