@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="unifiedremote"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="server">
+		<label>Unified Remote Binding Thing</label>
+		<description>Unified Remote Server Thing for Unified Remote Binding</description>
+
+		<channel-groups>
+			<channel-group typeId="mouse-controls" id="mouse-control"/>
+			<channel-group typeId="navigation-controls" id="navigation-control"/>
+			<channel-group typeId="power-controls" id="power-control"/>
+			<channel-group typeId="monitor-controls" id="monitor-control"/>
+			<channel-group typeId="media-controls" id="media-control"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>Hostname</label>
+				<description>Unified Remote Server Hostname</description>
+			</parameter>
+			<parameter name="name" type="text" required="true">
+				<label>Friendly Name</label>
+				<description>Unified Remote Server Name</description>
+			</parameter>
+			<parameter name="macAddress" type="text" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})">
+				<label>MAC Address</label>
+				<description>Unified Remote Server MAC address</description>
+			</parameter>
+			<parameter name="tcpPort" type="integer">
+				<label>TCP Port</label>
+				<description>Unified Remote Server Port TCP</description>
+			</parameter>
+			<parameter name="udpPort" type="integer">
+				<label>UDP Port</label>
+				<description>Unified Remote Server Port UDP</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="relmtech_basic__input-left-channel">
+		<item-type>String</item-type>
+		<label>Left Click Channel</label>
+		<description>Perform left click on the server host</description>
+	</channel-type>
+
+	<channel-type id="relmtech_basic__input-right-channel">
+		<item-type>String</item-type>
+		<label>Right Click Channel</label>
+		<description>Perform right click on the server host</description>
+	</channel-type>
+
+	<channel-type id="relmtech_basic__input-delta-channel">
+		<item-type>String</item-type>
+		<label>Delta Channel</label>
+		<description>Relative mouse control on the server host</description>
+	</channel-type>
+
+	<channel-type id="unified_navigation-toggle-channel">
+		<item-type>String</item-type>
+		<label>Toggle Key Channel</label>
+		<description>Toggle Key</description>
+		<state>
+			<options>
+				<option value="ESCAPE">ESCAPE</option>
+				<option value="SPACE">SPACE</option>
+				<option value="BACK">BACK</option>
+				<option value="LWIN">LWIN</option>
+				<option value="CONTROL">CONTROL</option>
+				<option value="TAB">TAB</option>
+				<option value="MENU">MENU</option>
+				<option value="RETURN">RETURN</option>
+				<option value="UP">UP</option>
+				<option value="DOWN">DOWN</option>
+				<option value="LEFT">LEFT</option>
+				<option value="RIGHT">RIGHT</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="unified_power-lock-channel">
+		<item-type>String</item-type>
+		<label>Lock Channel</label>
+		<description>Lock user session</description>
+	</channel-type>
+	<channel-type id="unified_power-sleep-channel">
+		<item-type>String</item-type>
+		<label>Sleep Channel</label>
+		<description>Sleep Host</description>
+	</channel-type>
+	<channel-type id="unified_power-shutdown-channel">
+		<item-type>String</item-type>
+		<label>Shutdown Channel</label>
+		<description>Shutdown Host</description>
+	</channel-type>
+	<channel-type id="unified_power-restart-channel">
+		<item-type>String</item-type>
+		<label>Restart Channel</label>
+		<description>Restart Host</description>
+	</channel-type>
+	<channel-type id="unified_power-logoff-channel">
+		<item-type>String</item-type>
+		<label>Log off Channel</label>
+		<description>Log off Host user</description>
+	</channel-type>
+
+	<channel-type id="unified_media-play_pause-channel">
+		<item-type>String</item-type>
+		<label>Play/Pause Channel</label>
+		<description>Play/Pause Media</description>
+	</channel-type>
+	<channel-type id="unified_media-next-channel">
+		<item-type>String</item-type>
+		<label>Next Channel</label>
+		<description>Next Media</description>
+	</channel-type>
+	<channel-type id="unified_media-previous-channel">
+		<item-type>String</item-type>
+		<label>Previous Channel</label>
+		<description>Previous Media</description>
+	</channel-type>
+	<channel-type id="unified_media-stop-channel">
+		<item-type>String</item-type>
+		<label>Stop Channel</label>
+		<description>Stop Media</description>
+	</channel-type>
+	<channel-type id="unified_media-volume_mute-channel">
+		<item-type>String</item-type>
+		<label>Volume Mute Channel</label>
+		<description>Volume Mute</description>
+	</channel-type>
+	<channel-type id="unified_media-volume_up-channel">
+		<item-type>String</item-type>
+		<label>Volume Up Channel</label>
+		<description>Volume Up</description>
+	</channel-type>
+	<channel-type id="unified_media-volume_down-channel">
+		<item-type>String</item-type>
+		<label>Volume Down Channel</label>
+		<description>Volume Down</description>
+	</channel-type>
+
+
+	<channel-type id="unified_monitor-brightness_down-channel">
+		<item-type>String</item-type>
+		<label>Brightness Down Channel</label>
+		<description>Brightness Down</description>
+	</channel-type>
+	<channel-type id="unified_monitor-brightness_up-channel">
+		<item-type>String</item-type>
+		<label>Brightness Up Channel</label>
+		<description>Brightness Up</description>
+	</channel-type>
+	<channel-type id="unified_monitor-turn_off-channel">
+		<item-type>String</item-type>
+		<label>Turn Off Channel</label>
+		<description>Turn Off Monitor</description>
+	</channel-type>
+	<channel-type id="unified_monitor-turn_on-channel">
+		<item-type>String</item-type>
+		<label>Turn On Channel</label>
+		<description>Turn On Monitor</description>
+	</channel-type>
+
+	<channel-group-type id="mouse-controls">
+		<label>Mouse Controls</label>
+		<channels>
+			<channel id="relmtech_basic__input-left" typeId="relmtech_basic__input-left-channel"/>
+			<channel id="relmtech_basic__input-right" typeId="relmtech_basic__input-right-channel"/>
+			<channel id="relmtech_basic__input-delta" typeId="relmtech_basic__input-delta-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="navigation-controls">
+		<label>Navigation Controls</label>
+		<channels>
+			<channel id="unified_navigation-toggle" typeId="unified_navigation-toggle-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="power-controls">
+		<label>Power Controls</label>
+		<channels>
+			<channel id="unified_power-lock" typeId="unified_power-lock-channel"/>
+			<channel id="unified_power-sleep" typeId="unified_power-sleep-channel"/>
+			<channel id="unified_power-shutdown" typeId="unified_power-shutdown-channel"/>
+			<channel id="unified_power-restart" typeId="unified_power-restart-channel"/>
+			<channel id="unified_power-logoff" typeId="unified_power-logoff-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="monitor-controls">
+		<label>Monitor Controls</label>
+		<channels>
+			<channel id="unified_monitor-brightness_down" typeId="unified_monitor-brightness_down-channel"/>
+			<channel id="unified_monitor-brightness_up" typeId="unified_monitor-brightness_up-channel"/>
+			<channel id="unified_monitor-turn_off" typeId="unified_monitor-turn_off-channel"/>
+			<channel id="unified_monitor-turn_on" typeId="unified_monitor-turn_on-channel"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="media-controls">
+		<label>Media Controls</label>
+		<channels>
+			<channel id="unified_media-play_pause" typeId="unified_media-play_pause-channel"/>
+			<channel id="unified_media-next" typeId="unified_media-next-channel"/>
+			<channel id="unified_media-previous" typeId="unified_media-previous-channel"/>
+			<channel id="unified_media-stop" typeId="unified_media-stop-channel"/>
+			<channel id="unified_media-volume_mute" typeId="unified_media-volume_mute-channel"/>
+			<channel id="unified_media-volume_up" typeId="unified_media-volume_up-channel"/>
+			<channel id="unified_media-volume_down" typeId="unified_media-volume_down-channel"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
