@@ -81,7 +81,7 @@ public class WlanThermoNanoHandler extends BaseThingHandler {
 
             logger.debug("Finished initializing WlanThermo Nano!");
         } catch (URISyntaxException e) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Failed to initialize WlanThermo Nano!");
             logger.debug("Failed to initialize WlanThermo Nano!", e);
         }
