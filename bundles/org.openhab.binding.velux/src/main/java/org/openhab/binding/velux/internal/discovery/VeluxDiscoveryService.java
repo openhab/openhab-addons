@@ -14,8 +14,10 @@ package org.openhab.binding.velux.internal.discovery;
 
 import static org.openhab.binding.velux.internal.VeluxBindingConstants.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResult;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
@@ -60,7 +62,7 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
     private @NonNullByDefault({}) LocaleProvider localeProvider;
     private @NonNullByDefault({}) TranslationProvider i18nProvider;
     private Localization localization = Localization.UNKNOWN;
-    private static @Nullable VeluxBridgeHandler bridgeHandler = null;
+    private final Set<VeluxBridgeHandler> bridgeHandlers = new HashSet<>();
 
     // Private
 
@@ -102,21 +104,11 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      * Initializes the {@link VeluxDiscoveryService} with a reference to the well-prepared environment with a
      * {@link VeluxBridgeHandler}.
      *
-     * @param bridge Initialized Velux bridge handler.
      * @param localizationHandler Initialized localization handler.
      */
-    public VeluxDiscoveryService(VeluxBridgeHandler bridge, Localization localizationHandler) {
+    public VeluxDiscoveryService(Localization localizationHandler) {
         super(VeluxBindingConstants.SUPPORTED_THINGS_ITEMS, DISCOVER_TIMEOUT_SECONDS);
-        logger.trace("VeluxDiscoveryService(bridge={},locale={},i18n={}) just initialized.", bridge, localeProvider,
-                i18nProvider);
-
-        if (bridgeHandler == null) {
-            logger.trace("VeluxDiscoveryService(): registering bridge {} for lateron use for Discovery.", bridge);
-        } else if (!bridge.equals(bridgeHandler)) {
-            logger.trace("VeluxDiscoveryService(): replacing already registered bridge {} by {}.", bridgeHandler,
-                    bridge);
-        }
-        bridgeHandler = bridge;
+        logger.trace("VeluxDiscoveryService(locale={},i18n={}) just initialized.", localeProvider, i18nProvider);
         localization = localizationHandler;
     }
 
@@ -126,16 +118,14 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      * Initializes the {@link VeluxDiscoveryService} with a reference to the well-prepared environment with a
      * {@link VeluxBridgeHandler}.
      *
-     * @param bridge Initialized Velux bridge handler.
      * @param locationProvider Provider for a location.
      * @param localeProvider Provider for a locale.
      * @param i18nProvider Provider for the internationalization.
      */
-    public VeluxDiscoveryService(VeluxBridgeHandler bridge, LocationProvider locationProvider,
-            LocaleProvider localeProvider, TranslationProvider i18nProvider) {
-        this(bridge, new Localization(localeProvider, i18nProvider));
-        logger.trace("VeluxDiscoveryService(bridge={},locale={},i18n={}) finished.", bridge, localeProvider,
-                i18nProvider);
+    public VeluxDiscoveryService(LocationProvider locationProvider, LocaleProvider localeProvider,
+            TranslationProvider i18nProvider) {
+        this(new Localization(localeProvider, i18nProvider));
+        logger.trace("VeluxDiscoveryService(locale={},i18n={}) finished.", localeProvider, i18nProvider);
     }
 
     @Override
@@ -157,8 +147,8 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
         logger.debug("startScan(): registering new thing {}.", discoveryResult);
         thingDiscovered(discoveryResult);
 
-        if (bridgeHandler == null) {
-            logger.debug("startScan(): VeluxDiscoveryService cannot proceed due to missing Velux bridge.");
+        if (bridgeHandlers.isEmpty()) {
+            logger.debug("startScan(): VeluxDiscoveryService cannot proceed due to missing Velux bridge(s).");
         } else {
             logger.debug("startScan(): Starting Velux discovery scan for scenes and actuators.");
             discoverScenes();
@@ -185,29 +175,25 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      */
     private void discoverScenes() {
         logger.trace("discoverScenes() called.");
-        // Just for avoidance of Potential null pointer access
-        VeluxBridgeHandler bridgeHandlerX = bridgeHandler;
-        if (bridgeHandlerX == null) {
-            logger.debug("discoverScenes(): VeluxDiscoveryService.bridgeHandler not initialized, aborting discovery.");
-            return;
-        }
-        ThingUID bridgeUID = bridgeHandlerX.getThing().getUID();
-        logger.debug("discoverScenes(): discovering all scenes.");
-        for (VeluxScene scene : bridgeHandlerX.existingScenes().values()) {
-            String sceneName = scene.getName().toString();
-            logger.trace("discoverScenes(): found scene {}.", sceneName);
+        for (VeluxBridgeHandler bridgeHandlerX : bridgeHandlers) {
+            ThingUID bridgeUID = bridgeHandlerX.getThing().getUID();
+            logger.debug("discoverScenes(): discovering all scenes on bridge {}.", bridgeUID);
+            for (VeluxScene scene : bridgeHandlerX.existingScenes().values()) {
+                String sceneName = scene.getName().toString();
+                logger.trace("discoverScenes(): found scene {}.", sceneName);
 
-            String label = sceneName.replaceAll("\\P{Alnum}", "_");
-            logger.trace("discoverScenes(): using label {}.", label);
+                String label = sceneName.replaceAll("\\P{Alnum}", "_");
+                logger.trace("discoverScenes(): using label {}.", label);
 
-            ThingTypeUID thingTypeUID = THING_TYPE_VELUX_SCENE;
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, label);
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperty(VeluxBindingProperties.PROPERTY_SCENE_NAME, sceneName)
-                    .withRepresentationProperty(VeluxBindingProperties.PROPERTY_SCENE_NAME).withBridge(bridgeUID)
-                    .withLabel(label).build();
-            logger.debug("discoverScenes(): registering new thing {}.", discoveryResult);
-            thingDiscovered(discoveryResult);
+                ThingTypeUID thingTypeUID = THING_TYPE_VELUX_SCENE;
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, label);
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                        .withProperty(VeluxBindingProperties.PROPERTY_SCENE_NAME, sceneName)
+                        .withRepresentationProperty(VeluxBindingProperties.PROPERTY_SCENE_NAME).withBridge(bridgeUID)
+                        .withLabel(label).build();
+                logger.debug("discoverScenes(): registering new thing {}.", discoveryResult);
+                thingDiscovered(discoveryResult);
+            }
         }
         logger.trace("discoverScenes() finished.");
     }
@@ -217,56 +203,87 @@ public class VeluxDiscoveryService extends AbstractDiscoveryService implements R
      */
     private void discoverProducts() {
         logger.trace("discoverProducts() called.");
-        // Just for avoidance of Potential null pointer access
-        VeluxBridgeHandler bridgeHandlerX = bridgeHandler;
-        if (bridgeHandlerX == null) {
-            logger.debug("discoverScenes() VeluxDiscoveryService.bridgeHandlerR not initialized, aborting discovery.");
-            return;
-        }
-        ThingUID bridgeUID = bridgeHandlerX.getThing().getUID();
-        logger.debug("discoverProducts(): discovering all actuators.");
-        for (VeluxProduct product : bridgeHandlerX.existingProducts().values()) {
-            String serialNumber = product.getSerialNumber();
-            String actuatorName = product.getProductName().toString();
-            logger.trace("discoverProducts() found actuator {} (name {}).", serialNumber, actuatorName);
-            String identifier;
-            if (serialNumber.equals(VeluxProductSerialNo.UNKNOWN)) {
-                identifier = actuatorName;
-            } else {
-                identifier = serialNumber;
+        for (VeluxBridgeHandler bridgeHandlerX : bridgeHandlers) {
+            ThingUID bridgeUID = bridgeHandlerX.getThing().getUID();
+            logger.debug("discoverProducts(): discovering all actuators on bridge {}.", bridgeUID);
+            for (VeluxProduct product : bridgeHandlerX.existingProducts().values()) {
+                String serialNumber = product.getSerialNumber();
+                String actuatorName = product.getProductName().toString();
+                logger.trace("discoverProducts() found actuator {} (name {}).", serialNumber, actuatorName);
+                String identifier;
+                if (serialNumber.equals(VeluxProductSerialNo.UNKNOWN)) {
+                    identifier = actuatorName;
+                } else {
+                    identifier = serialNumber;
+                }
+                String label = actuatorName.replaceAll("\\P{Alnum}", "_");
+                logger.trace("discoverProducts(): using label {}.", label);
+                ThingTypeUID thingTypeUID;
+                boolean isInverted = false;
+                logger.trace("discoverProducts() dealing with {} (type {}).", product, product.getProductType());
+                switch (product.getProductType()) {
+                    case SLIDER_WINDOW:
+                        logger.trace("discoverProducts(): creating window.");
+                        thingTypeUID = THING_TYPE_VELUX_WINDOW;
+                        isInverted = true;
+                        break;
+
+                    case SLIDER_SHUTTER:
+                        logger.trace("discoverProducts(): creating rollershutter.");
+                        thingTypeUID = THING_TYPE_VELUX_ROLLERSHUTTER;
+                        break;
+
+                    default:
+                        logger.trace("discoverProducts(): creating actuator.");
+                        thingTypeUID = THING_TYPE_VELUX_ACTUATOR;
+                }
+                ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, label);
+
+                DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
+                        .withProperty(VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER, identifier)
+                        .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_NAME, actuatorName)
+                        .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED, isInverted)
+                        .withRepresentationProperty(VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)
+                        .withBridge(bridgeUID).withLabel(actuatorName).build();
+                logger.debug("discoverProducts(): registering new thing {}.", discoveryResult);
+                thingDiscovered(discoveryResult);
             }
-            String label = actuatorName.replaceAll("\\P{Alnum}", "_");
-            logger.trace("discoverProducts(): using label {}.", label);
-            ThingTypeUID thingTypeUID;
-            boolean isInverted = false;
-            logger.trace("discoverProducts() dealing with {} (type {}).", product, product.getProductType());
-            switch (product.getProductType()) {
-                case SLIDER_WINDOW:
-                    logger.trace("discoverProducts(): creating window.");
-                    thingTypeUID = THING_TYPE_VELUX_WINDOW;
-                    isInverted = true;
-                    break;
-
-                case SLIDER_SHUTTER:
-                    logger.trace("discoverProducts(): creating rollershutter.");
-                    thingTypeUID = THING_TYPE_VELUX_ROLLERSHUTTER;
-                    break;
-
-                default:
-                    logger.trace("discoverProducts(): creating actuator.");
-                    thingTypeUID = THING_TYPE_VELUX_ACTUATOR;
-            }
-            ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, label);
-
-            DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withThingType(thingTypeUID)
-                    .withProperty(VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER, identifier)
-                    .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_NAME, actuatorName)
-                    .withProperty(VeluxBindingProperties.PROPERTY_ACTUATOR_INVERTED, isInverted)
-                    .withRepresentationProperty(VeluxBindingProperties.CONFIG_ACTUATOR_SERIALNUMBER)
-                    .withBridge(bridgeUID).withLabel(actuatorName).build();
-            logger.debug("discoverProducts(): registering new thing {}.", discoveryResult);
-            thingDiscovered(discoveryResult);
         }
         logger.trace("discoverProducts() finished.");
+    }
+
+    /**
+     * Add a {@link VeluxBridgeHandler} to the {@link VeluxDiscoveryService}
+     *
+     * @param bridge Velux bridge handler.
+     * @return true if the bridge was added, or false if it was already present
+     */
+    public boolean addBridge(VeluxBridgeHandler bridge) {
+        if (!bridgeHandlers.contains(bridge)) {
+            logger.trace("VeluxDiscoveryService(): registering bridge {} for discovery.", bridge);
+            bridgeHandlers.add(bridge);
+            return true;
+        }
+        logger.trace("VeluxDiscoveryService(): bridge {} already registered for discovery.", bridge);
+        return false;
+    }
+
+    /**
+     * Remove a {@link VeluxBridgeHandler} from the {@link VeluxDiscoveryService}
+     *
+     * @param bridge Velux bridge handler.
+     * @return true if the bridge was removed, or false if it was not present
+     */
+    public boolean removeBridge(VeluxBridgeHandler bridge) {
+        return bridgeHandlers.remove(bridge);
+    }
+
+    /**
+     * Check if the {@link VeluxDiscoveryService} list of {@link VeluxBridgeHandler} is empty
+     *
+     * @return true if empty
+     */
+    public boolean isEmpty() {
+        return bridgeHandlers.isEmpty();
     }
 }
