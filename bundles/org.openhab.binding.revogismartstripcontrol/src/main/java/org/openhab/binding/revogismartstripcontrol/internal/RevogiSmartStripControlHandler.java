@@ -152,8 +152,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         for (int i = 0; i < status.getSwitchValue().size(); i++) {
             int plugNumber = i + 1;
             updateState("plug" + plugNumber + "#switch", OnOffType.from(status.getSwitchValue().get(i).toString()));
-            updateState("plug" + plugNumber + "#watt", new DecimalType(status.getWatt().get(i) / 1000f));
-            updateState("plug" + plugNumber + "#amp", new DecimalType(status.getAmp().get(i) / 1000f));
+            updateState("plug" + plugNumber + "#watt", new QuantityType(status.getWatt().get(i), MILLI(WATT)));
+            updateState("plug" + plugNumber + "#amp", new QuantityType(status.getAmp().get(i), MILLI(AMPERE)));
         }
     }
 
