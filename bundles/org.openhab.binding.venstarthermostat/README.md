@@ -59,7 +59,7 @@ After adding the Inbox item, enter the user name and password from the physical 
 ### thermostat.things 
 
 ```
-Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ username="admin", password="secret", host="https://192.168.1.100", refresh=30 ]
+Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ username="admin", password="secret", url="https://192.168.1.100", refresh=30 ]
 ```
 
 ### thermostat.items
