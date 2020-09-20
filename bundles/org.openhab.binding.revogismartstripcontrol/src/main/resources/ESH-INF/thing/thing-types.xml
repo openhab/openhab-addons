@@ -11,7 +11,7 @@
 		<category>PowerOutlet</category>
 
 		<channel-groups>
-			<channel-group id="overallPlug" typeId="overallPlugActor" />
+			<channel-group id="overallPlug" typeId="overallPlugActor"/>
 			<channel-group id="plug1" typeId="plugActor">
 				<label>Plug 1</label>
 			</channel-group>
@@ -56,9 +56,9 @@
 		<label>Single Plug Actor</label>
 		<description>Switch a single plug and retrieve stats for it</description>
 		<channels>
-			<channel id="switch" typeId="single-plug" />
-			<channel id="watt" typeId="watts" />
-			<channel id="amp" typeId="amps" />
+			<channel id="switch" typeId="single-plug"/>
+			<channel id="watt" typeId="watts"/>
+			<channel id="amp" typeId="amps"/>
 		</channels>
 	</channel-group-type>
 
@@ -66,7 +66,7 @@
 		<label>Overall Plug Actor</label>
 		<description>Switch all plugs</description>
 		<channels>
-			<channel id="switch" typeId="single-plug" />
+			<channel id="switch" typeId="single-plug"/>
 		</channels>
 	</channel-group-type>
 
@@ -79,13 +79,13 @@
 		<item-type>Number:Power</item-type>
 		<label>Watt</label>
 		<description>Contains the current watt value for the given plug</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="amps" advanced="true">
 		<item-type>Number:ElectricCurrent</item-type>
 		<label>Amp</label>
 		<description>Contains the current Amp value for the given plug</description>
-		<state readOnly="true" pattern="%.1f %unit%" />
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

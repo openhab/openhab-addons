@@ -39,8 +39,7 @@ public class Status {
         amp = null;
     }
 
-    public Status(boolean online, int responseCode, List<Integer> switchValue, List<Integer> watt,
-            List<Integer> amp) {
+    public Status(boolean online, int responseCode, List<Integer> switchValue, List<Integer> watt, List<Integer> amp) {
         this.online = online;
         this.responseCode = responseCode;
         this.switchValue = switchValue;

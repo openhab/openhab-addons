@@ -74,5 +74,4 @@ public class UdpSenderServiceTest {
         assertThat(list.get(0).getAnswer(), is("valid answer"));
         verify(datagramSocketWrapper, times(1 + 2 * numberOfInterfaces)).receiveAnswer(any());
     }
-
 }
