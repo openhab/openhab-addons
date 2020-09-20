@@ -1,7 +1,7 @@
 # KVV Binding
 
 Adds support for the public API of Karlsruher Verkehrsverbund (public transport system in Karlsruhe, Germany).
-Enables the user to show the latest departure times for specific street car stops in openHAB.
+It enables the user to show the latest departure times for specific street car stops in openHAB.
 
 ## Supported Things
 
