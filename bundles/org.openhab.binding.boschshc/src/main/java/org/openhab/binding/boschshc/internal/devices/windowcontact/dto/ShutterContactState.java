@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.inwallswitch;
+package org.openhab.binding.boschshc.internal.devices.windowcontact.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
- * PowerMeterState
+ * ShutterContactState
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class PowerMeterState {
+public class ShutterContactState extends BoschSHCServiceState {
 
-    @SerializedName("@type")
-    String type;
+    public ShutterContactState(String type) {
+        super("shutterContactState");
+    }
 
-    double energyConsumption;
-    double powerConsumption;
+    public String value;
 }

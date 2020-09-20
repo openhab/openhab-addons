@@ -10,9 +10,9 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.motiondetector;
+package org.openhab.binding.boschshc.internal.devices.motiondetector.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * {
@@ -33,10 +33,11 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class LatestMotionState {
+public class LatestMotionState extends BoschSHCServiceState {
 
-    @SerializedName("@type")
-    String type;
+    public LatestMotionState() {
+        super("latestMotionState");
+    }
 
-    String latestMotionDetected;
+    public String latestMotionDetected;
 }

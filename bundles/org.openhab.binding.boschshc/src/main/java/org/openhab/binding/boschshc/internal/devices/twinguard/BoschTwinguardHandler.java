@@ -14,7 +14,6 @@ package org.openhab.binding.boschshc.internal.devices.twinguard;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.StringType;
@@ -26,6 +25,7 @@ import org.eclipse.smarthome.core.thing.ThingStatusDetail;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLevelState;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -50,9 +50,8 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
             logger.debug("Handle command for: {} - {}", channelUID.getThingUID(), command);
 
             if (command instanceof RefreshType && CHANNEL_TEMPERATURE.equals(channelUID.getId())) {
-
                 // Only refresh the state for CHANNEL_TEMPERATURE, the rest will be filled in too.
-                TwinguardState state = this.getState("AirQualityLevel", TwinguardState.class);
+                AirQualityLevelState state = this.getState("AirQualityLevel", AirQualityLevelState.class);
                 if (state != null) {
                     updateAirQualityState(state);
                 }
@@ -62,8 +61,7 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
         }
     }
 
-    void updateAirQualityState(TwinguardState state) {
-
+    void updateAirQualityState(AirQualityLevelState state) {
         updateState(CHANNEL_TEMPERATURE, new DecimalType(state.temperature));
         updateState(CHANNEL_TEMPERATURE_RATING, new StringType(state.temperatureRating));
         updateState(CHANNEL_HUMIDITY, new DecimalType(state.humidity));
@@ -75,11 +73,11 @@ public class BoschTwinguardHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void processUpdate(String id, @NonNull JsonElement state) {
+    public void processUpdate(String id, JsonElement state) {
         logger.debug("Twinguard: received update: {} {}", id, state);
 
         try {
-            TwinguardState parsed = gson.fromJson(state, TwinguardState.class);
+            AirQualityLevelState parsed = gson.fromJson(state, AirQualityLevelState.class);
 
             logger.debug("Parsed switch state of {}: {}", this.getBoschID(), parsed);
             updateAirQualityState(parsed);
