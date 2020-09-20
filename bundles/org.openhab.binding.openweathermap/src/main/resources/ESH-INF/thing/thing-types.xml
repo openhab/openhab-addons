@@ -120,7 +120,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="weather-api"/>
 		</supported-bridge-type-refs>
-		<label>Onecall API Weather and Forecast</label>
+		<label>One Call API Weather and Forecast</label>
 		<description>Provides current weather and forecast data from the OpenWeatherMap One Call API.</description>
 
 		<channel-groups>
@@ -186,7 +186,7 @@
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="weather-api"/>
 		</supported-bridge-type-refs>
-		<label>Onecall API Historical data</label>
+		<label>One Call API Historical data</label>
 		<description>Provides historical weather data from the OpenWeatherMap One Call API.</description>
 
 		<channel-groups>

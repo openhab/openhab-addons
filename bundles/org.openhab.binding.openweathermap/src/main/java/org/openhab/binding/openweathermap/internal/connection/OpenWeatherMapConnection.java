@@ -19,6 +19,8 @@ import static org.eclipse.jetty.http.HttpStatus.*;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -85,7 +87,7 @@ public class OpenWeatherMapConnection {
     private static final String UVINDEX_FORECAST_URL = "https://api.openweathermap.org/data/2.5/uvi/forecast";
     // Weather icons (see https://openweathermap.org/weather-conditions)
     private static final String ICON_URL = "https://openweathermap.org/img/w/%s.png";
-    // Onecall API (see https://openweathermap.org/api/one-call-api )
+    // One Call API (see https://openweathermap.org/api/one-call-api )
     private static final String ONECALL_URL = "https://api.openweathermap.org/data/2.5/onecall";
     private static final String ONECALL_HISTORY_URL = "https://api.openweathermap.org/data/2.5/onecall/timemachine";
 
@@ -293,7 +295,8 @@ public class OpenWeatherMapConnection {
             throws JsonSyntaxException, OpenWeatherMapCommunicationException, OpenWeatherMapConfigurationException {
         Map<String, String> params = getRequestParams(handler.getOpenWeatherMapAPIConfig(), location);
         // the API requests the history as timestamp in Unix time format.
-        params.put(PARAM_HISTORY_DATE, Long.toString(new Date().getTime() / 1000 - days * 60 * 60 * 24));
+        params.put(PARAM_HISTORY_DATE,
+                Long.toString(ZonedDateTime.now(ZoneId.of("UTC")).minusDays(days).toEpochSecond()));
         return gson.fromJson(getResponseFromCache(buildURL(ONECALL_HISTORY_URL, params)),
                 OpenWeatherMapOneCallHistAPIData.class);
     }

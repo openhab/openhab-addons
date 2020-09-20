@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.i18n.TimeZoneProvider;
 import org.eclipse.smarthome.core.library.types.QuantityType;
+import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
 import org.eclipse.smarthome.core.thing.*;
 import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
 import org.eclipse.smarthome.core.types.State;
@@ -447,7 +448,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                             .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
                 case CHANNEL_PRECIP_PROBABILITY:
-                    state = getDecimalTypeState(forecastData.getPop());
+                    state = getQuantityTypeState(forecastData.getPop()*100.0, PERCENT);
                     break;
                 case CHANNEL_RAIN:
                     Rain rain = forecastData.getRain();
@@ -614,7 +615,7 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
                             .toUnit(KILO(METRE));
                     state = (tempstate == null ? state : tempstate);
                 case CHANNEL_PRECIP_PROBABILITY:
-                    state = getDecimalTypeState(forecastData.getPop());
+                    state = getQuantityTypeState(forecastData.getPop()*100.0, PERCENT);
                     break;
                 case CHANNEL_RAIN:
                     state = getQuantityTypeState(forecastData.getRain(), MILLI(METRE));

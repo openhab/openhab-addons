@@ -36,9 +36,9 @@ public class OpenWeatherMapBindingConstants {
     public static final ThingTypeUID THING_TYPE_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID,
             "weather-and-forecast");
     public static final ThingTypeUID THING_TYPE_UVINDEX = new ThingTypeUID(BINDING_ID, "uvindex");
-    // Onecall API forecast
+    // One Call API forecast
     public static final ThingTypeUID THING_TYPE_ONECALL_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID, "onecall");
-    // Onecall API historical data
+    // One Call API historical data
     public static final ThingTypeUID THING_TYPE_ONECALL_HISTORY = new ThingTypeUID(BINDING_ID, "onecall-history");
 
     // List of all properties

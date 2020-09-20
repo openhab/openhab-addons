@@ -383,7 +383,7 @@
 
 	<channel-type id="morning-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Moring Temperature</label>
+		<label>Morning Temperature</label>
 		<description>Forecasted outdoor temperature for the morning.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -589,8 +589,8 @@
 	<channel-type id="precip-probability">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Probability</label>
-		<description>Forecasted Precipitation Probability.</description>
-		<state readOnly="true" pattern="%.1f"/>
+		<description>Forecasted precipitation probability.</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

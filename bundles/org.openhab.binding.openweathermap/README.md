@@ -33,13 +33,13 @@ The third thing `uvindex` supports the [current UV Index](https://openweathermap
 It requires coordinates of the location of your interest.
 You can add as much `uvindex` things for different locations to your setup as you like to observe.
 
-### Onecall API Weather and Forecast 
+### One Call API Weather and Forecast 
 
 The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-api#how) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
 You can add as many `onecall` things for different locations to your setup as you like to observe.
 
-### Onecall API History Data
+### One Call API History Data
 
 The thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-api#history) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
@@ -80,7 +80,7 @@ Once the parameters `forecastHours` or `forecastDays` will be changed, the avail
 
 Once the parameter `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
-### Onecall API Weather and Forecast
+### One Call API Weather and Forecast
 
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
@@ -89,7 +89,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | forecastHours  | Number of hours for hourly forecast. Optional, the default value is 24 (min="0", max="48").                                    |
 | forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="8").            |
     
-### Onecall API History Data
+### One Call API History Data
 
 | Parameter      | Description                                                                                                                    |
 |----------------|--------------------------------------------------------------------------------------------------------------------------------|
@@ -106,7 +106,7 @@ Once the parameter `forecastDays` will be changed, the available channel groups 
 | station          | name       | String    | Name of the weather station or the city.     |
 | station          | location   | Location  | Location of the weather station or the city. |
 
-This channel is not supported in the One Call API
+These channels are not supported in the One Call API
 
 ### Current Weather
 
@@ -142,7 +142,7 @@ The "3h" value will be divided by three to always have an estimated value for on
 
 ### One Call API Minutely Forecast
 
-Where available, the one call API provides a minutely precipitation forecast for the next 60 minutes.
+Where available, the One Call API provides a minutely precipitation forecast for the next 60 minutes.
 
 | Channel Group ID                                       | Channel ID           | Item Type            | Description                                                                |
 |--------------------------------------------------------|----------------------|----------------------|----------------------------------------------------------------------------|
