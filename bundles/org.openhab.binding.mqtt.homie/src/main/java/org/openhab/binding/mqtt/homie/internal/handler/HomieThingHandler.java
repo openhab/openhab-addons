@@ -128,7 +128,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
             return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
         }).thenRun(() -> {
-            logger.debug("Homie device {} fully attached", device.attributes.name);
+            logger.debug("Homie device {} fully attached (start)", device.attributes.name);
         });
     }
 
@@ -226,7 +226,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         final MqttBrokerConnection connection = this.connection;
         if (connection != null) {
             device.startChannels(connection, scheduler, attributeReceiveTimeout, this).thenRun(() -> {
-                logger.debug("Homie device {} fully attached", device.attributes.name);
+                logger.debug("Homie device {} fully attached (accept)", device.attributes.name);
             });
         }
     }
