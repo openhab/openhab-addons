@@ -102,7 +102,6 @@ public class UnifiedRemoteConnection implements Closeable {
         JsonObject runInnerPayload = new JsonObject();
         JsonObject extrasInnerPayload = new JsonObject();
         if (values != null) {
-            JsonObject valuesInnerPayload = new JsonObject();
             extrasInnerPayload.add("Values", values);
             runInnerPayload.add("Extras", extrasInnerPayload);
         }
@@ -140,7 +139,7 @@ public class UnifiedRemoteConnection implements Closeable {
 
     @Override
     public void close() {
-        if (http != null && http.isStarted()) {
+        if (http.isStarted()) {
             try {
                 http.stop();
             } catch (Exception e) {

@@ -39,5 +39,5 @@ public class UnifiedRemoteBindingConstants {
     public static final String PARAMETER_HOSTNAME = "host";
     public static final String PARAMETER_TCP_PORT = "udpPort";
     public static final String PARAMETER_UDP_PORT = "tcpPort";
-    public static final String PARAMETER_MAC = "macaddress";
+    public static final String PARAMETER_MAC = "macAddress";
 }

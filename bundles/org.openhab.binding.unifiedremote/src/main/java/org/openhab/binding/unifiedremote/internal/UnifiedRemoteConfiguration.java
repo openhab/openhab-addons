@@ -12,16 +12,19 @@
  */
 package org.openhab.binding.unifiedremote.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link UnifiedRemoteConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Miguel Alvarez - Initial contribution
  */
+@NonNullByDefault
 public class UnifiedRemoteConfiguration {
 
-    public String host;
+    public String host = "";
     public int tcpPort;
     public int udpPort;
-    public String name;
-    public String macaddress;
+    public String name = "";
+    public String macAddress = "";
 }

@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.unifiedremote.internal;
 
-import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingConstants.*;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.smarthome.core.thing.Thing;

@@ -16,12 +16,14 @@ import static org.openhab.binding.unifiedremote.internal.UnifiedRemoteBindingCon
 
 import java.io.IOException;
 import java.net.*;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.config.discovery.AbstractDiscoveryService;
 import org.eclipse.smarthome.config.discovery.DiscoveryResultBuilder;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
@@ -36,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Miguel Alvarez - Initial contribution
  */
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.unifiedremote")
+@NonNullByDefault
 public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
 
     private static final Logger logger = LoggerFactory.getLogger(UnifiedRemoteDiscoveryService.class);
@@ -69,6 +72,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
         return new ThingUID(THING_TYPE_UNIFIED_SERVER, mac);
     }
 
+    @NonNullByDefault
     public class UnifiedRemoteUdpDiscovery {
         /**
          * Port used for broadcast and listening.
@@ -93,6 +97,7 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
          */
         private static final int TIMEOUT = 3000; // milliseonds
 
+        @NonNullByDefault
         public class ServerInfo {
             String name;
             int tcpPort;
@@ -125,27 +130,21 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
             return socket;
         }
 
-        private ServerInfo tryParseServerDiscovery(DatagramPacket receivePacket) {
+        private ServerInfo tryParseServerDiscovery(DatagramPacket receivePacket) throws Exception {
             String host = receivePacket.getAddress().getHostAddress();
-            try {
-                String reply = new String(receivePacket.getData())
-                        .replaceAll("[\\p{C}]", NON_PRINTABLE_CHARTS_REPLACEMENT)
-                        .replaceAll("[^\\x00-\\x7F]", NON_PRINTABLE_CHARTS_REPLACEMENT);
-                if (!reply.startsWith(DISCOVERY_RESPONSE_PREFIX))
-                    return null;
-                String[] parts = Arrays
-                        .stream(reply.replace(DISCOVERY_RESPONSE_PREFIX, "").split(NON_PRINTABLE_CHARTS_REPLACEMENT))
-                        .filter((String e) -> e.length() != 0).toArray(String[]::new);
-                String name = parts[0];
-                int tcpPort = Integer.parseInt(parts[1]);
-                int udpPort = Integer.parseInt(parts[3]);
-                String macAddress = parts[2];
-                String publicIp = parts[4];
-                return new ServerInfo(host, tcpPort, udpPort, name, macAddress, publicIp);
-            } catch (Exception ex) {
-                logger.error("Exception parsing server discovery response from {}: {}", host, ex.getMessage());
-                return null;
-            }
+            String reply = new String(receivePacket.getData()).replaceAll("[\\p{C}]", NON_PRINTABLE_CHARTS_REPLACEMENT)
+                    .replaceAll("[^\\x00-\\x7F]", NON_PRINTABLE_CHARTS_REPLACEMENT);
+            if (!reply.startsWith(DISCOVERY_RESPONSE_PREFIX))
+                throw new ParseException("Bad Discovery response prefix", 0);
+            String[] parts = Arrays
+                    .stream(reply.replace(DISCOVERY_RESPONSE_PREFIX, "").split(NON_PRINTABLE_CHARTS_REPLACEMENT))
+                    .filter((String e) -> e.length() != 0).toArray(String[]::new);
+            String name = parts[0];
+            int tcpPort = Integer.parseInt(parts[1]);
+            int udpPort = Integer.parseInt(parts[3]);
+            String macAddress = parts[2];
+            String publicIp = parts[4];
+            return new ServerInfo(host, tcpPort, udpPort, name, macAddress, publicIp);
         }
 
         /**
@@ -168,32 +167,33 @@ public class UnifiedRemoteDiscoveryService extends AbstractDiscoveryService {
                 return;
             }
             byte[] packetData = DISCOVERY_REQUEST.getBytes();
-            InetAddress broadcastAddress = null;
             try {
-                broadcastAddress = InetAddress.getByName("255.255.255.255");
-            } catch (UnknownHostException e) {
-                /* This should never happen! */ }
-            int servicePort = DISCOVERY_PORT;
-            DatagramPacket packet = new DatagramPacket(packetData, packetData.length, broadcastAddress, servicePort);
-            try {
+                InetAddress broadcastAddress = InetAddress.getByName("255.255.255.255");
+                int servicePort = DISCOVERY_PORT;
+                DatagramPacket packet = new DatagramPacket(packetData, packetData.length, broadcastAddress,
+                        servicePort);
                 socket.send(packet);
                 logger.debug("Sent packet to {}:{}", broadcastAddress.getHostAddress(), servicePort);
                 for (int i = 0; i < 20; i++) {
                     socket.receive(receivePacket);
                     String host = receivePacket.getAddress().getHostAddress();
                     logger.debug("Received reply from {}", host);
-                    ServerInfo serverInfo = tryParseServerDiscovery(receivePacket);
-                    if (serverInfo != null)
+                    try {
+                        ServerInfo serverInfo = tryParseServerDiscovery(receivePacket);
                         listener.accept(serverInfo);
+                    } catch (Exception ex) {
+                        logger.error("Exception parsing server discovery response from {}: {}", host, ex.getMessage());
+                    }
                 }
+            } catch (UnknownHostException uhe) {
+                logger.debug("UnknownHostException during socket operation: {}", uhe.getMessage());
             } catch (SocketTimeoutException ste) {
                 logger.debug("SocketTimeoutException during socket operation: {}", ste.getMessage());
             } catch (IOException ioe) {
                 logger.error("IOException during socket operation: {}", ioe.getMessage());
             }
             // should close the socket before returning
-            if (socket != null)
-                socket.close();
+            socket.close();
         }
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.unifiedremote.internal;
 
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +68,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
         String stringCommand = command.toFullString();
         logger.debug("handle command: {}", stringCommand);
         JsonArray values = null;
-        if (stringCommand != null && stringCommand.length() > 0 && !stringCommand.trim().equalsIgnoreCase("NULL")) {
+        if (stringCommand.length() > 0 && !stringCommand.trim().equalsIgnoreCase("NULL")) {
             values = parseCommandValues(stringCommand);
         }
         try {
@@ -104,14 +105,17 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
         initConnectionChecker();
     }
 
-    private UnifiedRemoteConnection getNewConnection() {
+    private UnifiedRemoteConnection getNewConnection() throws Exception {
         config = getConfigAs(UnifiedRemoteConfiguration.class);
+        if (config == null) {
+            throw new ParseException("Unable to parse thing config", 0);
+        }
         return new UnifiedRemoteConnection(config.host);
     }
 
     private void initConnectionChecker() {
         stopConnectionChecker();
-        connectionCheckerSchedule = scheduler.scheduleAtFixedRate(() -> {
+        connectionCheckerSchedule = scheduler.scheduleWithFixedDelay(() -> {
             try {
                 if (this.connection == null || thing.getStatus() == ThingStatus.OFFLINE) {
                     if (this.connection != null) {
@@ -124,6 +128,7 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                     } else if (thing.getStatus() != ThingStatus.OFFLINE) {
                         updateStatus(ThingStatus.OFFLINE);
+                        connection.close();
                     }
                 } else if (thing.getStatus() == ThingStatus.ONLINE) {
                     if (isErrorResponse(connection.keepAlive())) {
@@ -132,7 +137,8 @@ public class UnifiedRemoteHandler extends BaseThingHandler {
 
                 }
             } catch (Exception e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Keep alive failed");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Unable to connect: " + e.getMessage());
             }
         }, 0, 30, TimeUnit.SECONDS);
     }
