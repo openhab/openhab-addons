@@ -381,8 +381,10 @@ public class IpCameraHandler extends BaseThingHandler {
                             break;
                     }
                     ChannelTracking channelTracking = channelTrackingMap.get(urlToKeepOpen);
-                    if (channelTracking.getChannel() == ctx.channel()) {
-                        return; // don't auto close this as it is for the alarms.
+                    if (channelTracking != null) {
+                        if (channelTracking.getChannel() == ctx.channel()) {
+                            return; // don't auto close this as it is for the alarms.
+                        }
                     }
                     ctx.close();
                 }
@@ -413,7 +415,7 @@ public class IpCameraHandler extends BaseThingHandler {
             return false;
         } else if (!basicAuth.isEmpty()) {
             // due to camera may have been sent multiple requests before the auth was set, this may trigger falsely.
-            logger.warn("Camera is reporting your cameraConfig.getUser() and/or cameraConfig.getPassword() is wrong.");
+            logger.warn("Camera is reporting your username and/or password is wrong.");
             return false;
         }
         if (!cameraConfig.getUser().isEmpty() && !cameraConfig.getPassword().isEmpty()) {
@@ -429,8 +431,7 @@ public class IpCameraHandler extends BaseThingHandler {
             }
             return true;
         } else {
-            cameraConfigError(
-                    "Camera is asking for Basic Auth when you have not provided a cameraConfig.getUser() and/or cameraConfig.getPassword() !");
+            cameraConfigError("Camera is asking for Basic Auth when you have not provided a username and/or password.");
         }
         return false;
     }
@@ -687,8 +688,7 @@ public class IpCameraHandler extends BaseThingHandler {
                 updateState(CHANNEL_IMAGE_URL,
                         new StringType("http://" + hostIp + ":" + cameraConfig.getServerPort() + "/ipcamera.jpg"));
             } catch (Exception e) {
-                cameraConfigError(
-                        "Exception when starting server. Try changing the cameraConfig.getServerPort() to another number.");
+                cameraConfigError("Exception when starting server. Try changing the Server Port to another number.");
             }
         }
     }
@@ -776,7 +776,6 @@ public class IpCameraHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     void closeChannel(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
@@ -812,7 +811,9 @@ public class IpCameraHandler extends BaseThingHandler {
 
     public void storeHttpReply(String url, String content) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
-        channelTracking.setReply(content);
+        if (channelTracking != null) {
+            channelTracking.setReply(content);
+        }
     }
 
     // sends direct to ctx so can be either snapshots.mjpeg or normal mjpeg stream
@@ -1468,8 +1469,10 @@ public class IpCameraHandler extends BaseThingHandler {
 
     boolean streamIsStopped(String url) {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
-        if (channelTracking.getChannel().isOpen()) {
-            return false;// stream is running.
+        if (channelTracking != null) {
+            if (channelTracking.getChannel().isOpen()) {
+                return false;// stream is running.
+            }
         }
         return true; // Stream stopped or never started.
     }
@@ -1596,10 +1599,9 @@ public class IpCameraHandler extends BaseThingHandler {
 
         if (cameraConfig.getServerPort() < 1) {
             logger.warn(
-                    "The cameraConfig.getServerPort() is not set to a valid number which disables a lot of binding features. See readme for more info.");
+                    "The Server Port is not set to a valid number which disables a lot of binding features. See readme for more info.");
         } else if (cameraConfig.getServerPort() < 1025) {
-            logger.warn(
-                    "The cameraConfig.getServerPort() is <= 1024 and may cause permission errors under Linux, try a higher number.");
+            logger.warn("The Server Port is <= 1024 and may cause permission errors under Linux, try a higher number.");
         }
 
         // Known cameras will connect quicker if we skip ONVIF questions.
