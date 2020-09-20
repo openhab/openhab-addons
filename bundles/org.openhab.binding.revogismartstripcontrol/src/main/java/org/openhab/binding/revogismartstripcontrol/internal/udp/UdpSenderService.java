@@ -111,7 +111,7 @@ public class UdpSenderService {
                 try {
                     TimeUnit.MILLISECONDS.sleep(timeoutCounter * TIMEOUT_BASE_VALUE);
                 } catch (InterruptedException ex) {
-                    logger.warn("Interrupted sleep");
+                    logger.debug("Interrupted sleep");
                     Thread.currentThread().interrupt();
                 }
                 continue;
