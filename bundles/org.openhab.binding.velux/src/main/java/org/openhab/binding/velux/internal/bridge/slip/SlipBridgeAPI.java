@@ -83,25 +83,25 @@ import org.slf4j.LoggerFactory;
 class SlipBridgeAPI implements BridgeAPI {
     private final Logger logger = LoggerFactory.getLogger(SlipBridgeAPI.class);
 
-    private final GetDeviceStatus GETDEVICESTATUS = new SCgetDeviceStatus();
-    private final GetFirmware GETFIRMWARE = new SCgetFirmware();
-    private final GetHouseStatus GETHOUSESTATUS = new SCgetHouseStatus();
-    private final GetLANConfig GETLANCONFIG = new SCgetLANConfig();
-    private final GetProduct GETPRODUCT = new SCgetProduct();
-    private final GetProductLimitation GETPRODUCTLIMITATION = new SCgetLimitation();
-    private final GetProducts GETPRODUCTS = new SCgetProducts();
-    private final GetScenes GETSCENES = new SCgetScenes();
-    private final GetWLANConfig GETWLANCONFIG = new SCgetWLANConfig();
-    private final Login LOGIN = new SClogin();
-    private final Logout LOGOUT = new SClogout();
-    private final RunProductCommand RUNPRODUCTCOMMAND = new SCrunProductCommand();
-    private final RunProductDiscovery RUNPRODUCTDISCOVERY = new SCrunProductDiscovery();
-    private final RunProductIdentification RUNPRODUCTIDENTIFICATION = new SCrunProductIdentification();
-    private final RunProductSearch RUNPRODUCTSEARCH = new SCrunProductSearch();
-    private final RunScene RUNSCENE = new SCrunScene();
-    private final SetHouseStatusMonitor SETHOUSESTATUSMONITOR = new SCsetHouseStatusMonitor();
-    private final SetProductLimitation SETPRODUCTLIMITATION = new SCsetLimitation();
-    private final SetSceneVelocity SETSCENEVELOCITY = new SCsetSceneVelocity();
+    private final GetDeviceStatus slipGetDeviceStatus = new SCgetDeviceStatus();
+    private final GetFirmware slipGetFirmware = new SCgetFirmware();
+    private final GetHouseStatus slipGetHouseStatus = new SCgetHouseStatus();
+    private final GetLANConfig slipGetLanConfig = new SCgetLANConfig();
+    private final GetProduct slipGetProduct = new SCgetProduct();
+    private final GetProductLimitation slipGetProductLimitation = new SCgetLimitation();
+    private final GetProducts slipGetProducts = new SCgetProducts();
+    private final GetScenes slipGetScenes = new SCgetScenes();
+    private final GetWLANConfig slipGetWLanConfig = new SCgetWLANConfig();
+    private final Login slipLogin = new SClogin();
+    private final Logout slipLogout = new SClogout();
+    private final RunProductCommand slipRunProductCommand = new SCrunProductCommand();
+    private final RunProductDiscovery slipRunProductDiscovery = new SCrunProductDiscovery();
+    private final RunProductIdentification slipRunProductIdentification = new SCrunProductIdentification();
+    private final RunProductSearch slipRunProductSearch = new SCrunProductSearch();
+    private final RunScene slipRunScene = new SCrunScene();
+    private final SetHouseStatusMonitor slipSetHouseMonitor = new SCsetHouseStatusMonitor();
+    private final SetProductLimitation slipSetProductLimitation = new SCsetLimitation();
+    private final SetSceneVelocity slipSetSceneVelocity = new SCsetSceneVelocity();
 
     /**
      * Constructor.
@@ -118,96 +118,96 @@ class SlipBridgeAPI implements BridgeAPI {
 
     @Override
     public GetDeviceStatus getDeviceStatus() {
-        return GETDEVICESTATUS;
+        return slipGetDeviceStatus;
     }
 
     @Override
     public GetFirmware getFirmware() {
-        return GETFIRMWARE;
+        return slipGetFirmware;
     }
 
     @Override
     public @Nullable GetHouseStatus getHouseStatus() {
-        return GETHOUSESTATUS;
+        return slipGetHouseStatus;
     }
 
     @Override
     public GetLANConfig getLANConfig() {
-        return GETLANCONFIG;
+        return slipGetLanConfig;
     }
 
     @Override
     public @Nullable GetProduct getProduct() {
-        return GETPRODUCT;
+        return slipGetProduct;
     }
 
     @Override
     public @Nullable GetProductLimitation getProductLimitation() {
-        return GETPRODUCTLIMITATION;
+        return slipGetProductLimitation;
     }
 
     @Override
     public @Nullable SetProductLimitation setProductLimitation() {
-        return SETPRODUCTLIMITATION;
+        return slipSetProductLimitation;
     }
 
     @Override
     public GetProducts getProducts() {
-        return GETPRODUCTS;
+        return slipGetProducts;
     }
 
     @Override
     public GetScenes getScenes() {
-        return GETSCENES;
+        return slipGetScenes;
     }
 
     @Override
     public GetWLANConfig getWLANConfig() {
-        return GETWLANCONFIG;
+        return slipGetWLanConfig;
     }
 
     @Override
     public Login login() {
-        return LOGIN;
+        return slipLogin;
     }
 
     @Override
     public Logout logout() {
-        return LOGOUT;
+        return slipLogout;
     }
 
     @Override
     public @Nullable RunProductCommand runProductCommand() {
-        return RUNPRODUCTCOMMAND;
+        return slipRunProductCommand;
     }
 
     @Override
     public RunProductDiscovery runProductDiscovery() {
-        return RUNPRODUCTDISCOVERY;
+        return slipRunProductDiscovery;
     }
 
     @Override
     public RunProductIdentification runProductIdentification() {
-        return RUNPRODUCTIDENTIFICATION;
+        return slipRunProductIdentification;
     }
 
     @Override
     public RunProductSearch runProductSearch() {
-        return RUNPRODUCTSEARCH;
+        return slipRunProductSearch;
     }
 
     @Override
     public RunScene runScene() {
-        return RUNSCENE;
+        return slipRunScene;
     }
 
     @Override
     public @Nullable SetHouseStatusMonitor setHouseStatusMonitor() {
-        return SETHOUSESTATUSMONITOR;
+        return slipSetHouseMonitor;
     }
 
     @Override
     public SetSceneVelocity setSceneVelocity() {
-        return SETSCENEVELOCITY;
+        return slipSetSceneVelocity;
     }
 }
