@@ -1,6 +1,6 @@
 # UnifiedRemote Binding
 
-This binding integrates the [Unified Remote Server](https://www.samsung.com).
+This binding integrates the [Unified Remote Server](https://www.unifiedremote.com).
 
 <b>Known Limitations: It needs the web interface to be enabled on the server settings to work.</b>
 
@@ -27,7 +27,7 @@ Unified Remote Server support the following channels:
 | Channel Type ID  | Item Type | Description                                                                                             |
 |------------------|-----------|---------------------------------------------------------------------------------------------------------|
 | relmtech_basic__input-left-channel     | String    | Mouse Left Click       |
-| relmtech_basic__input-right-channel    | String    | Mouse Left Click       |
+| relmtech_basic__input-right-channel    | String    | Mouse Right Click       |
 | relmtech_basic__input-delta-channel    | String    | Mouse Move (string format 0,x,y) (example 0,10,10) |
 | unified_navigation-toggle-channel      | String    | Use Navigation Keys (SPACE, RETURN, UP...) |
 | unified_power-lock-channel             | String    | Lock Unified Server Host |
