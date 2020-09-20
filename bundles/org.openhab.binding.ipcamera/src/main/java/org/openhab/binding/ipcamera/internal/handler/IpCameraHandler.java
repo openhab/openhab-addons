@@ -1471,7 +1471,7 @@ public class IpCameraHandler extends BaseThingHandler {
         ChannelTracking channelTracking = channelTrackingMap.get(url);
         if (channelTracking != null) {
             if (channelTracking.getChannel().isOpen()) {
-                return false;// stream is running.
+                return false; // stream is running.
             }
         }
         return true; // Stream stopped or never started.
