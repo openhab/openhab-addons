@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal;
 
+import static org.eclipse.smarthome.core.library.unit.MetricPrefix.MILLI;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.AMPERE;
+import static org.eclipse.smarthome.core.library.unit.SmartHomeUnits.WATT;
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.ALL_PLUGS;
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_1_SWITCH;
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_2_SWITCH;
@@ -25,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DecimalType;
 import org.eclipse.smarthome.core.library.types.OnOffType;
+import org.eclipse.smarthome.core.library.types.QuantityType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
 import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.thing.ThingStatus;
