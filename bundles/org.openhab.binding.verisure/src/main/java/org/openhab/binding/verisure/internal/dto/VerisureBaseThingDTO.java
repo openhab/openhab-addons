@@ -244,7 +244,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
 
         private ArmState armState = new ArmState();
         private Broadband broadband = new Broadband();
-        private EventLog eventLog = new EventLog();
+        private @Nullable EventLog eventLog = new EventLog();
         private List<Climate> climates = new ArrayList<>();
         private List<DoorWindow> doorWindows = new ArrayList<>();
         private List<CommunicationState> communicationState = new ArrayList<>();
@@ -280,7 +280,7 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             this.doorWindows = doorWindows;
         }
 
-        public EventLog getEventLog() {
+        public @Nullable EventLog getEventLog() {
             return eventLog;
         }
 
@@ -334,7 +334,8 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             result = prime * result + communicationState.hashCode();
             result = prime * result + doorWindows.hashCode();
             result = prime * result + doorlocks.hashCode();
-            result = prime * result + eventLog.hashCode();
+            EventLog localEventLog = eventLog;
+            result = prime * result + ((localEventLog == null) ? 0 : localEventLog.hashCode());
             result = prime * result + mice.hashCode();
             result = prime * result + smartplugs.hashCode();
             String localTypeName = typename;
@@ -373,7 +374,12 @@ public abstract class VerisureBaseThingDTO implements VerisureThingDTO {
             if (!doorlocks.equals(other.doorlocks)) {
                 return false;
             }
-            if (!eventLog.equals(other.eventLog)) {
+            EventLog localEventLog = eventLog;
+            if (localEventLog == null) {
+                if (other.eventLog != null) {
+                    return false;
+                }
+            } else if (!localEventLog.equals(other.eventLog)) {
                 return false;
             }
             if (!mice.equals(other.mice)) {

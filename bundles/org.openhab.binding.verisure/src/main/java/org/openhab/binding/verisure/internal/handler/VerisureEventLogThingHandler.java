@@ -64,8 +64,13 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
 
     @Override
     public synchronized void update(VerisureEventLogDTO thing) {
-        updateEventLogState(thing);
-        updateStatus(ThingStatus.ONLINE);
+        if (thing.getData().getInstallation().getEventLog() != null) {
+            updateEventLogState(thing);
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            logger.warn("EventLog is null!");
+            updateStatus(ThingStatus.OFFLINE);
+        }
     }
 
     @Override
@@ -83,21 +88,20 @@ public class VerisureEventLogThingHandler extends VerisureThingHandler<VerisureE
 
     private void updateEventLogState(VerisureEventLogDTO eventLogJSON) {
         EventLog eventLog = eventLogJSON.getData().getInstallation().getEventLog();
-        if (eventLog.getPagedList().size() > 0) {
+        if (eventLog != null && eventLog.getPagedList().size() > 0) {
             getThing().getChannels().stream().map(Channel::getUID).filter(channelUID -> isLinked(channelUID))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), eventLogJSON, eventLog);
                         updateState(channelUID, state);
                     });
             updateInstallationChannels(eventLogJSON);
-            String eventTime = eventLogJSON.getData().getInstallation().getEventLog().getPagedList().get(0)
-                    .getEventTime();
+            String eventTime = eventLog.getPagedList().get(0).getEventTime();
             if (eventTime != null) {
                 updateTimeStamp(eventTime, CHANNEL_LAST_EVENT_TIME);
                 lastEventTime = ZonedDateTime.parse(eventTime).toEpochSecond();
             }
         } else {
-            logger.debug("Empty event log.");
+            logger.debug("Empty or null event log: {}", eventLog);
         }
     }
 
