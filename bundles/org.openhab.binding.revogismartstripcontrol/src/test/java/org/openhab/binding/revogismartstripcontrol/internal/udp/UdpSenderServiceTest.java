@@ -24,15 +24,11 @@ import static org.mockito.Mockito.verify;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
+import org.eclipse.smarthome.core.net.NetUtil;
 import org.junit.Test;
 
 /**
@@ -45,20 +41,7 @@ public class UdpSenderServiceTest {
 
     private final UdpSenderService udpSenderService = new UdpSenderService(datagramSocketWrapper);
 
-    private int numberOfInterfaces = 0;
-
-    @Before
-    public void setUp() throws SocketException {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = networkInterfaces.nextElement();
-            if (networkInterface.isUp()) {
-                numberOfInterfaces += (int) networkInterface.getInterfaceAddresses().stream()
-                        .filter(interfaceAddress -> interfaceAddress.getBroadcast() != null)
-                        .map(InterfaceAddress::getBroadcast).count();
-            }
-        }
-    }
+    private final int numberOfInterfaces = NetUtil.getAllBroadcastAddresses().size();
 
     @Test
     public void testTimeout() throws IOException {

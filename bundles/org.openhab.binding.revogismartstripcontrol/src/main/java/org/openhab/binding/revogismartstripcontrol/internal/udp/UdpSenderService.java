@@ -12,15 +12,11 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.InterfaceAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -28,11 +24,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static java.util.stream.Collectors.toList;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.smarthome.core.net.NetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link UdpSenderService} is responsible for sending and receiving udp packets
@@ -61,13 +59,8 @@ public class UdpSenderService {
     }
 
     public List<UdpResponse> broadcastUpdDatagram(String content) {
-        List<InetAddress> broadcastAddresses = new ArrayList<>();
-        try {
-            broadcastAddresses = getBroadcastAddresses();
-        } catch (SocketException e) {
-            logger.warn("Could not find broadcast addresse, got socket error {}", e.getMessage(), e);
-        }
-        return broadcastAddresses.stream().map(address -> sendMessage(content, address)).flatMap(Collection::stream)
+        List<String> allBroadcastAddresses = NetUtil.getAllBroadcastAddresses();
+        return allBroadcastAddresses.stream().map(address -> sendMessage(content, address)).flatMap(Collection::stream)
                 .collect(toList());
     }
 
@@ -126,26 +119,4 @@ public class UdpSenderService {
         return list;
     }
 
-    private List<InetAddress> getBroadcastAddresses() throws SocketException {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        List<InetAddress> broadcastAdresses = new ArrayList<>();
-        while (networkInterfaces.hasMoreElements()) {
-            broadcastAdresses.addAll(findInterfaceBroadcastAddresses(networkInterfaces));
-        }
-        return broadcastAdresses;
-    }
-
-    private List<InetAddress> findInterfaceBroadcastAddresses(final Enumeration<NetworkInterface> networkInterfaces)
-            throws SocketException {
-        NetworkInterface anInterface = networkInterfaces.nextElement();
-        if (anInterface.isUp()) {
-            List<InetAddress> addresses = anInterface.getInterfaceAddresses().stream()
-                    .filter(address -> address.getBroadcast() != null).map(InterfaceAddress::getBroadcast)
-                    .collect(toList());
-            if (!addresses.isEmpty()) {
-                return addresses;
-            }
-        }
-        return Collections.emptyList();
-    }
 }
