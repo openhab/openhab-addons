@@ -6,7 +6,7 @@
 
 	<!-- SmartStrip Thing Type -->
 	<thing-type id="smartstrip">
-		<label>RevogiSmartStrip Binding Thing</label>
+		<label>SmartStrip</label>
 		<description>A Binding to control Revogi Smartstrip</description>
 		<category>PowerOutlet</category>
 
