@@ -20,6 +20,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
@@ -32,8 +34,8 @@ import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService
 @NonNullByDefault
 public class RevogiDiscoveryServiceTest {
 
-    private UdpSenderService udpSenderService = mock(UdpSenderService.class);
-    private RevogiDiscoveryService revogiDiscoveryService = new RevogiDiscoveryService(udpSenderService);
+    private final UdpSenderService udpSenderService = mock(UdpSenderService.class);
+    private final RevogiDiscoveryService revogiDiscoveryService = new RevogiDiscoveryService(udpSenderService);
 
     @Test
     public void discoverSmartStripSuccesfully() {
@@ -42,27 +44,31 @@ public class RevogiDiscoveryServiceTest {
         List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse(
                 "{\"response\":0,\"data\":{\"sn\":\"1234\",\"regid\":\"reg\",\"sak\":\"sak\",\"name\":\"Strip\",\"mac\":\"mac\",\"ver\":\"5.11\"}}",
                 "127.0.0.1"));
-        when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
+        when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;"))
+                .thenReturn(CompletableFuture.completedFuture(discoveryString));
 
         // when
-        List<DiscoveryRawResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
+        CompletableFuture<List<DiscoveryRawResponse>> discoverSmartStripsFutures = revogiDiscoveryService.discoverSmartStrips();
 
         // then
+        List<DiscoveryRawResponse> discoverSmartStrips = discoverSmartStripsFutures.getNow(Collections.emptyList());
         assertThat(discoverSmartStrips.size(), equalTo(1));
         assertThat(discoverSmartStrips.get(0).getData(), equalTo(discoveryResponse));
         assertThat(discoverSmartStrips.get(0).getIpAddress(), equalTo("127.0.0.1"));
     }
 
     @Test
-    public void invalidUdpResponse() {
+    public void invalidUdpResponse() throws ExecutionException, InterruptedException {
         // given
         List<UdpResponse> discoveryString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
-        when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;")).thenReturn(discoveryString);
+        when(udpSenderService.broadcastUpdDatagram("00sw=all,,,;"))
+                .thenReturn(CompletableFuture.completedFuture(discoveryString));
 
         // when
-        List<DiscoveryRawResponse> discoverSmartStrips = revogiDiscoveryService.discoverSmartStrips();
+        CompletableFuture<List<DiscoveryRawResponse>> futureList = revogiDiscoveryService.discoverSmartStrips();
 
         // then
+        List<DiscoveryRawResponse> discoverSmartStrips = futureList.get();
         assertThat(discoverSmartStrips.isEmpty(), is(true));
     }
 }

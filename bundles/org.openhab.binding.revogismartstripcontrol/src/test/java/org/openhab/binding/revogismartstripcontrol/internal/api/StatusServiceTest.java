@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
@@ -31,8 +32,8 @@ import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService
 @NonNullByDefault
 public class StatusServiceTest {
 
-    private UdpSenderService udpSenderService = mock(UdpSenderService.class);
-    private StatusService statusService = new StatusService(udpSenderService);
+    private final UdpSenderService udpSenderService = mock(UdpSenderService.class);
+    private final StatusService statusService = new StatusService(udpSenderService);
 
     @Test
     public void getStatusSuccessfully() {
@@ -42,25 +43,28 @@ public class StatusServiceTest {
         List<UdpResponse> statusString = Collections.singletonList(new UdpResponse(
                 "V3{\"response\":90,\"code\":200,\"data\":{\"switch\":[0,0,0,0,0,0],\"watt\":[0,0,0,0,0,0],\"amp\":[0,0,0,0,0,0]}}",
                 "127.0.0.1"));
-        when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1")).thenReturn(statusString);
+        when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1"))
+                .thenReturn(CompletableFuture.completedFuture(statusString));
 
         // when
-        Status statusResponse = statusService.queryStatus("serial", "127.0.0.1");
+        CompletableFuture<Status> statusResponse = statusService.queryStatus("serial", "127.0.0.1");
 
         // then
-        assertEquals(status, statusResponse);
+        assertEquals(status, statusResponse.getNow(new Status()));
     }
 
     @Test
     public void invalidUdpResponse() {
         // given
         List<UdpResponse> statusString = Collections.singletonList(new UdpResponse("something invalid", "12345"));
-        when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1")).thenReturn(statusString);
+        when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 90}", "127.0.0.1"))
+                .thenReturn(CompletableFuture.completedFuture(statusString));
 
         // when
-        Status status = statusService.queryStatus("serial", "127.0.0.1");
+        CompletableFuture<Status> futureStatus = statusService.queryStatus("serial", "127.0.0.1");
 
         // then
+        Status status = futureStatus.getNow(new Status());
         assertEquals(503, status.getResponseCode());
     }
 }

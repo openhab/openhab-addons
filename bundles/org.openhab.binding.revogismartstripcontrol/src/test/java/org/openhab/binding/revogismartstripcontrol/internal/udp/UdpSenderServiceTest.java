@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.revogismartstripcontrol.internal.udp;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,7 +26,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.net.NetUtil;
@@ -44,20 +48,20 @@ public class UdpSenderServiceTest {
     private final int numberOfInterfaces = NetUtil.getAllBroadcastAddresses().size();
 
     @Test
-    public void testTimeout() throws IOException {
+    public void testTimeout() throws IOException, ExecutionException, InterruptedException {
         // given
         doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
 
         // when
-        List<UdpResponse> list = udpSenderService.broadcastUpdDatagram("send something");
+        CompletableFuture<List<UdpResponse>> list = udpSenderService.broadcastUpdDatagram("send something");
 
         // then
-        assertThat(list.isEmpty(), is(true));
+        assertThat(list.get(), equalTo(Collections.emptyList()));
         verify(datagramSocketWrapper, times(numberOfInterfaces * 2)).receiveAnswer(any());
     }
 
     @Test
-    public void testOneAnswer() throws IOException {
+    public void testOneAnswer() throws IOException, ExecutionException, InterruptedException {
         // given
         byte[] receivedBuf = "valid answer".getBytes();
         doAnswer(invocation -> {
@@ -68,10 +72,11 @@ public class UdpSenderServiceTest {
         }).doThrow(new SocketTimeoutException()).when(datagramSocketWrapper).receiveAnswer(any());
 
         // when
-        List<UdpResponse> list = udpSenderService.broadcastUpdDatagram("send something");
+        CompletableFuture<List<UdpResponse>> future = udpSenderService.broadcastUpdDatagram("send something");
 
         // then
-        assertThat(list.get(0).getAnswer(), is("valid answer"));
+        List<UdpResponse> udpResponses = future.get();
+        assertThat(udpResponses.get(0).getAnswer(), is("valid answer"));
         verify(datagramSocketWrapper, times(1 + 2 * numberOfInterfaces)).receiveAnswer(any());
     }
 }

@@ -13,8 +13,10 @@
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -43,7 +45,7 @@ public class SwitchService {
         this.udpSenderService = udpSenderService;
     }
 
-    public SwitchResponse switchPort(String serialNumber, String ipAddress, int port, int state) {
+    public CompletableFuture<SwitchResponse> switchPort(String serialNumber, String ipAddress, int port, int state) {
         if (state < 0 || state > 1) {
             logger.warn("state value is not valid: {}", state);
             throw new IllegalArgumentException("state has to be 0 or 1");
@@ -53,7 +55,7 @@ public class SwitchService {
             throw new IllegalArgumentException("Given port doesn't exist");
         }
 
-        List<UdpResponse> responses;
+        CompletableFuture<List<UdpResponse>> responses;
         if (ipAddress.trim().isEmpty()) {
             responses = udpSenderService
                     .broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber, port, state));
@@ -62,10 +64,14 @@ public class SwitchService {
                     ipAddress);
         }
 
-        responses.forEach(response -> {
-            logger.info("Reveived {}", response.getAnswer());
-        });
-        return responses.stream().filter(response -> !response.getAnswer().isEmpty())
+        return responses.thenApply(this::getSwitchResponse);
+    }
+
+    @NotNull
+    private SwitchResponse getSwitchResponse(final List<UdpResponse> singleResponse) {
+        singleResponse.forEach(response -> logger.info("Reveived {}", response.getAnswer()));
+        return singleResponse.stream()
+                .filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
                 .findFirst().orElse(new SwitchResponse(0, 503));

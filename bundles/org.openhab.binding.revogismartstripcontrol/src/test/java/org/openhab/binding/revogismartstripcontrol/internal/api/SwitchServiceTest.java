@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
@@ -40,13 +41,13 @@ public class SwitchServiceTest {
         List<UdpResponse> response = Collections
                 .singletonList(new UdpResponse("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}", "127.0.0.1"))
-                .thenReturn(response);
+                .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
-        SwitchResponse switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
+        CompletableFuture<SwitchResponse> switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
 
         // then
-        assertThat(switchResponse, equalTo(new SwitchResponse(20, 200)));
+        assertThat(switchResponse.getNow(new SwitchResponse(0, 0)), equalTo(new SwitchResponse(20, 200)));
     }
 
     @Test
@@ -55,13 +56,13 @@ public class SwitchServiceTest {
         List<UdpResponse> response = Collections
                 .singletonList(new UdpResponse("V3{\"response\":20,\"code\":200}", "127.0.0.1"));
         when(udpSenderService.broadcastUpdDatagram("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}"))
-                .thenReturn(response);
+                .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
-        SwitchResponse switchResponse = switchService.switchPort("serial", "", 1, 1);
+        CompletableFuture<SwitchResponse> switchResponse = switchService.switchPort("serial", "", 1, 1);
 
         // then
-        assertThat(switchResponse, equalTo(new SwitchResponse(20, 200)));
+        assertThat(switchResponse.getNow(new SwitchResponse(0, 0)), equalTo(new SwitchResponse(20, 200)));
     }
 
     @Test
@@ -69,13 +70,13 @@ public class SwitchServiceTest {
         // given
         List<UdpResponse> response = Collections.singletonList(new UdpResponse("something invalid", "12345"));
         when(udpSenderService.sendMessage("V3{\"sn\":\"serial\", \"cmd\": 20, \"port\": 1, \"state\": 1}", "127.0.0.1"))
-                .thenReturn(response);
+                .thenReturn(CompletableFuture.completedFuture(response));
 
         // when
-        SwitchResponse switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
+        CompletableFuture<SwitchResponse> switchResponse = switchService.switchPort("serial", "127.0.0.1", 1, 1);
 
         // then
-        assertThat(switchResponse, equalTo(new SwitchResponse(0, 503)));
+        assertThat(switchResponse.getNow(new SwitchResponse(0, 0)), equalTo(new SwitchResponse(0, 503)));
     }
 
     @Test(expected = IllegalArgumentException.class)

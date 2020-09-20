@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -65,8 +66,12 @@ public class RevogiSmartStripDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startScan() {
-        List<DiscoveryRawResponse> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
-        discoveryResponses.forEach(response -> {
+        CompletableFuture<List<DiscoveryRawResponse>> discoveryResponses = revogiDiscoveryService.discoverSmartStrips();
+        discoveryResponses.thenAccept(this::applyDiscoveryResults);
+    }
+
+    private void applyDiscoveryResults(final List<DiscoveryRawResponse> discoveryRawResponses) {
+        discoveryRawResponses.forEach(response -> {
             ThingUID thingUID = getThingUID(response.getData());
             if (thingUID != null) {
                 Map<String, Object> properties = new HashMap<>();

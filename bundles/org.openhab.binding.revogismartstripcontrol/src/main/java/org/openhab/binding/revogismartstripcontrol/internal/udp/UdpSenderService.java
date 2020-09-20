@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,18 +60,36 @@ public class UdpSenderService {
         this.datagramSocketWrapper = datagramSocketWrapper;
     }
 
-    public List<UdpResponse> broadcastUpdDatagram(String content) {
+    public CompletableFuture<List<UdpResponse>> broadcastUpdDatagram(String content) {
         List<String> allBroadcastAddresses = NetUtil.getAllBroadcastAddresses();
-        return allBroadcastAddresses.stream().map(address -> sendMessage(content, address)).flatMap(Collection::stream)
-                .collect(toList());
+        CompletableFuture<List<UdpResponse>> future = new CompletableFuture<>();
+        Executors.newCachedThreadPool().submit(() ->
+            future.complete(allBroadcastAddresses.stream()
+                    .map(address -> {
+                        try {
+                            return sendMessage(content, InetAddress.getByName(address));
+                        } catch (UnknownHostException e) {
+                            logger.warn("Could not find host with IP {}", address);
+                            return new ArrayList<UdpResponse>();
+                        }
+                    })
+                    .flatMap(Collection::stream)
+                    .distinct()
+                    .collect(toList()))
+        );
+        return future;
     }
 
-    public List<UdpResponse> sendMessage(String content, String ipAddress) {
+    public CompletableFuture<List<UdpResponse>> sendMessage(String content, String ipAddress) {
         try {
-            return sendMessage(content, InetAddress.getByName(ipAddress));
+            CompletableFuture<List<UdpResponse>> future = new CompletableFuture<>();
+            InetAddress inetAddress = InetAddress.getByName(ipAddress);
+            Executors.newCachedThreadPool().submit(() ->
+                    future.complete(sendMessage(content, inetAddress)));
+            return future;
         } catch (UnknownHostException e) {
             logger.warn("Could not find host with IP {}", ipAddress);
-            return Collections.emptyList();
+            return CompletableFuture.completedFuture(Collections.emptyList());
         }
     }
 
@@ -77,11 +97,11 @@ public class UdpSenderService {
         logger.debug("Using address {}", inetAddress);
         byte[] buf = content.getBytes(Charset.defaultCharset());
         DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress, REVOGI_PORT);
-        List<UdpResponse> responses = new ArrayList<>();
+        List<UdpResponse> responses = Collections.emptyList();
         try {
             datagramSocketWrapper.initSocket();
             datagramSocketWrapper.sendPacket(packet);
-            responses = receiveResponses();
+            responses = getUdpResponses();
         } catch (IOException e) {
             logger.warn("Error sending message or reading anwser {}", e.getMessage(), e);
         } finally {
@@ -90,15 +110,15 @@ public class UdpSenderService {
         return responses;
     }
 
-    private List<UdpResponse> receiveResponses() throws IOException {
-        List<UdpResponse> list = new ArrayList<>();
+    private List<UdpResponse> getUdpResponses() {
         int timeoutCounter = 0;
+        List<UdpResponse> list = new ArrayList<>();
         while (timeoutCounter < MAX_TIMEOUT_COUNT) {
             byte[] receivedBuf = new byte[512];
             DatagramPacket answer = new DatagramPacket(receivedBuf, receivedBuf.length);
             try {
                 datagramSocketWrapper.receiveAnswer(answer);
-            } catch (SocketTimeoutException|SocketException e) {
+            } catch (SocketTimeoutException | SocketException e) {
                 timeoutCounter++;
                 logger.info("Socket receive time no. {}", timeoutCounter);
                 try {
@@ -108,6 +128,8 @@ public class UdpSenderService {
                     Thread.currentThread().interrupt();
                 }
                 continue;
+            } catch (IOException e) {
+                logger.warn("Error sending message or reading anwser {}", e.getMessage(), e);
             }
 
             if (answer.getAddress() != null && answer.getLength() > 0) {
@@ -115,8 +137,6 @@ public class UdpSenderService {
                         answer.getAddress().getHostAddress()));
             }
         }
-
         return list;
     }
-
 }

@@ -13,8 +13,10 @@
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jetbrains.annotations.NotNull;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpResponse;
 import org.openhab.binding.revogismartstripcontrol.internal.udp.UdpSenderService;
 import org.slf4j.Logger;
@@ -43,20 +45,24 @@ public class StatusService {
         this.udpSenderService = udpSenderService;
     }
 
-    public Status queryStatus(String serialNumber, String ipAddress) {
-        List<UdpResponse> responses;
+    public CompletableFuture<Status> queryStatus(String serialNumber, String ipAddress) {
+        CompletableFuture<List<UdpResponse>> responses;
         if (ipAddress.trim().isEmpty()) {
             responses = udpSenderService.broadcastUpdDatagram(String.format(UDP_DISCOVERY_QUERY, serialNumber));
         } else {
             responses = udpSenderService.sendMessage(String.format(UDP_DISCOVERY_QUERY, serialNumber), ipAddress);
         }
-        responses.forEach(response -> logger.info("Received: {}", response.getAnswer()));
-        return responses.stream()
+        return responses.thenApply(this::getStatus);
+    }
+
+    @NotNull
+    private Status getStatus(final List<UdpResponse> singleResponse) {
+        singleResponse.forEach(response -> logger.info("Received: {}", response.getAnswer()));
+        return singleResponse.stream()
                 .filter(response -> !response.getAnswer().isEmpty() && response.getAnswer().contains(VERSION_STRING))
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(statusRaw -> statusRaw.getCode() == 200 && statusRaw.getResponse() == 90)
-                .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(),
-                        statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
+                .map(statusRaw -> new Status(true, statusRaw.getCode(), statusRaw.getData().getSwitchValue(), statusRaw.getData().getWatt(), statusRaw.getData().getAmp()))
                 .findFirst().orElse(new Status(false, 503, null, null, null));
     }
 

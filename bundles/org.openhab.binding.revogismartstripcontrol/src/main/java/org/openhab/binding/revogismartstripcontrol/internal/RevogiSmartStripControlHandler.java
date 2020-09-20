@@ -23,6 +23,7 @@ import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartSt
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_5_SWITCH;
 import static org.openhab.binding.revogismartstripcontrol.internal.RevogiSmartStripControlBindingConstants.PLUG_6_SWITCH;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -88,6 +89,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
             case ALL_PLUGS:
                 switchPlug(command, 0);
                 break;
+            default:
+                logger.info("Sometring went wrong, we've got a message for {}", channelUID.getId());
         }
     }
 
@@ -140,7 +143,11 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
             logger.warn("No config available, config object was null");
             return;
         }
-        Status status = statusService.queryStatus(config.getSerialNumber(), config.getIpAddress());
+        CompletableFuture<Status> futureStatus = statusService.queryStatus(config.getSerialNumber(), config.getIpAddress());
+        futureStatus.thenAccept(this::updatePlugStatus);
+    }
+
+    private void updatePlugStatus(Status status) {
         if (status.isOnline()) {
             updateStatus(ThingStatus.ONLINE);
             handleAllPlugsInformation(status);
@@ -155,8 +162,8 @@ public class RevogiSmartStripControlHandler extends BaseThingHandler {
         for (int i = 0; i < status.getSwitchValue().size(); i++) {
             int plugNumber = i + 1;
             updateState("plug" + plugNumber + "#switch", OnOffType.from(status.getSwitchValue().get(i).toString()));
-            updateState("plug" + plugNumber + "#watt", new QuantityType(status.getWatt().get(i), MILLI(WATT)));
-            updateState("plug" + plugNumber + "#amp", new QuantityType(status.getAmp().get(i), MILLI(AMPERE)));
+            updateState("plug" + plugNumber + "#watt", new QuantityType<>(status.getWatt().get(i), MILLI(WATT)));
+            updateState("plug" + plugNumber + "#amp", new QuantityType<>(status.getAmp().get(i), MILLI(AMPERE)));
         }
     }
 

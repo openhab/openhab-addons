@@ -13,6 +13,7 @@
 package org.openhab.binding.revogismartstripcontrol.internal.api;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,11 +43,16 @@ public class RevogiDiscoveryService {
         this.udpSenderService = udpSenderService;
     }
 
-    public List<DiscoveryRawResponse> discoverSmartStrips() {
-        List<UdpResponse> responses = udpSenderService.broadcastUpdDatagram(UDP_DISCOVERY_QUERY);
-        responses.forEach(response -> logger.info("Received: {}", response));
-        return responses.stream().filter(response -> !response.getAnswer().isEmpty()).map(this::deserializeString)
-                .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0).collect(Collectors.toList());
+    public CompletableFuture<List<DiscoveryRawResponse>> discoverSmartStrips() {
+        CompletableFuture<List<UdpResponse>> responses = udpSenderService.broadcastUpdDatagram(UDP_DISCOVERY_QUERY);
+        return responses.thenApply(futureList -> {
+                    futureList.forEach(response -> logger.info("Received: {}", response));
+                    return futureList
+                            .stream()
+                            .filter(response -> !response.getAnswer().isEmpty())
+                            .map(this::deserializeString)
+                            .filter(discoveryRawResponse -> discoveryRawResponse.getResponse() == 0).collect(Collectors.toList());
+                });
     }
 
     private DiscoveryRawResponse deserializeString(UdpResponse response) {
