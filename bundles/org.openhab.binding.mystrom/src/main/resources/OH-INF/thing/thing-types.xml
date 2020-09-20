@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mystrom"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mystromplug">
+		<label>myStrom Smart Plug</label>
+		<description>Controls the myStrom smart plug</description>
+
+		<channels>
+			<channel id="switch" typeId="system.power"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="temperature" typeId="temperature-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<label>Hostname</label>
+				<description>The host name or IP address of the myStrom plug.</description>
+				<context>network-address</context>
+				<default>localhost</default>
+			</parameter>
+			<parameter name="refresh" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Power Consumption</label>
+		<description>The current power delivered by the plug</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The current temperature at the plug</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

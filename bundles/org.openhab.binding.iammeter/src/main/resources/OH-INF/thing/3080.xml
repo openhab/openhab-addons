@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="iammeter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="powermeter">
+		<label>Iammeter Power Meter 3162/3080</label>
+		<description>Single phase PowerMeter for Iammeter Binding</description>
+		<channels>
+			<channel id="voltage" typeId="voltage"/>
+			<channel id="current" typeId="current"/>
+			<channel id="power" typeId="power"/>
+			<channel id="importenergy" typeId="importenergy"/>
+			<channel id="exportgrid" typeId="exportgrid"/>
+		</channels>
+		<config-description-ref uri="thing-type:iammeter:powermeter"/>
+	</thing-type>
+
+	<channel-type id="voltage">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage</label>
+		<description>voltage for phase A</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="current">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current</label>
+		<description>current for phase A</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Power</label>
+		<description>power for phase A</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="importenergy">
+		<item-type>Number:Energy</item-type>
+		<label>ImportEnergy</label>
+		<description>importenergy for phase A</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="exportgrid">
+		<item-type>Number:Energy</item-type>
+		<label>Exportgrid</label>
+		<description>exportgrid for phase A</description>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
+	</channel-type>
+
+</thing:thing-descriptions>

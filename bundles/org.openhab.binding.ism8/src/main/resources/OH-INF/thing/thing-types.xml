@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ism8"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device" extensible="switch, switch-readonly, number, number-readonly">
+		<label>ISM8 Device</label>
+		<description>ISM8 Interface</description>
+
+		<config-description>
+			<parameter name="portNumber" type="integer" required="true" min="1" max="65535">
+				<description>Port number of the object server</description>
+				<label>Port</label>
+				<default>12004</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="switch">
+		<item-type>Switch</item-type>
+		<label>Digital DataPoint</label>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Switch / 1.001)</description>
+				<options>
+					<option value="1.001">DPT_Switch</option>
+					<option value="1.002">DPT_Bool</option>
+					<option value="1.003">DPT_Enable</option>
+					<option value="1.009">DPT_OpenClose</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="switch-readonly">
+		<item-type>Switch</item-type>
+		<label>Digital Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Switch / 1.001)</description>
+				<options>
+					<option value="1.001">DPT_Switch</option>
+					<option value="1.002">DPT_Bool</option>
+					<option value="1.003">DPT_Enable</option>
+					<option value="1.009">DPT_OpenClose</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="number-readonly">
+		<item-type>number</item-type>
+		<label>Value Readonly DataPoint</label>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
+				<options>
+					<option value="5.001">DPT_Scaling</option>
+					<option value="9.001">DPT_Value_Temp</option>
+					<option value="9.002">DPT_Value_Tempd</option>
+					<option value="9.006">DPT_Value_Pres</option>
+					<option value="13.002">DPT_FlowRate</option>
+					<option value="20.102">DPT_HVACMode</option>
+					<option value="20.103">DPT_DHWMode</option>
+					<option value="20.105">DPT_HVACContrMode</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>number</item-type>
+		<label>Value DataPoint</label>
+		<config-description>
+			<parameter name="id" type="integer" required="true">
+				<label>DP ID</label>
+				<description>Put the number of the DataPoint ID to be mapped from the heating sytem.</description>
+			</parameter>
+			<parameter name="type" type="text" required="true">
+				<label>Type</label>
+				<description>Put the KNX-type of the DataPoint (e.g. DPT_Value_Temp / 9.001)</description>
+				<options>
+					<option value="9.001">DPT_Value_Temp</option>
+					<option value="20.102">DPT_HVACMode</option>
+					<option value="20.103">DPT_DHWMode</option>
+					<option value="20.105">DPT_HVACContrMode</option>
+				</options>
+			</parameter>
+		</config-description>
+	</channel-type>
+</thing:thing-descriptions>

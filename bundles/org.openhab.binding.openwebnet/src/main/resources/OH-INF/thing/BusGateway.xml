@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- OpenWebNet BUS gateway -->
+	<bridge-type id="bus_gateway">
+		<label>BUS Gateway</label>
+		<description>This thing allows to connect to a IP BUS/SCS gateway that supports the OpenWebNet protocol (models: F454,
+			MyHOMEServer1, F455, MH200N, F453, etc.)</description>
+
+		<properties>
+			<property name="vendor">BTicino</property>
+			<property name="model">Unknown</property>
+			<property name="firmwareVersion">Unknown</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
+				<label>Host</label>
+				<description>OpenWebNet gateway IP address / hostname (example: 192.168.1.35)</description>
+			</parameter>
+
+			<parameter name="port" type="integer" min="1" max="65535">
+				<label>Port</label>
+				<description>OpenWebNet gateway port (default: 20000)</description>
+				<default>20000</default>
+			</parameter>
+
+			<parameter name="passwd" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<description>OpenWebNet gateway password (default: 12345)</description>
+				<default>12345</default>
+			</parameter>
+
+			<parameter name="discoveryByActivation" type="boolean">
+				<label>Discovery By Activation</label>
+				<description>Discover BUS devices when they are activated (also when a device scan is not active) (default: false)</description>
+				<default>false</default>
+			</parameter>
+
+		</config-description>
+
+	</bridge-type>
+
+</thing:thing-descriptions>

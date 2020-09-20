@@ -1,0 +1,10 @@
+     {  "acState": {
+            "on": true,
+            "fanLevel": "medium_high",
+            "temperatureUnit": "C",
+            "targetTemperature": 21,
+            "mode": "heat",
+            "swing": "rangeFull"
+        }
+     }
+     

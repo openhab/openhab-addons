@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- PV voltage Channel Type -->
+	<channel-type id="Upv0">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PV Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV current Channel Type -->
+	<channel-type id="Ipv0">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>PV Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV Power Channel Type -->
+	<channel-type id="Ppv0">
+		<item-type>Number:Power</item-type>
+		<label>PV Power</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Production PV in (kWh) for the current day Channel Type -->
+	<channel-type id="Ed0">
+		<item-type>Number:Energy</item-type>
+		<label>PV Current Day Production</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV operating mode Channel Type -->
+	<channel-type id="Mod0">
+		<item-type>String</item-type>
+		<label>PV Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="NIGHT">Night</option>
+				<option value="SECURITY">Security</option>
+				<option value="OFF">OFF</option>
+				<option value="CHARGE">Charge</option>
+				<option value="CHARGEV">Charge V</option>
+				<option value="CHARGEI">Charge I</option>
+				<option value="CHARGEP">Charge P</option>
+				<option value="CHARGEIPV">Charge Ipv</option>
+				<option value="CHARGET">Charge T</option>
+				<option value="UNKNOWN">---</option>
+				<option value="CHIBSP">Ch. Ibsp</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- PV1 voltage Channel Type -->
+	<channel-type id="Upv1">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PV1 Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV1 current Channel Type -->
+	<channel-type id="Ipv1">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>PV1 Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV1 Power Channel Type -->
+	<channel-type id="Ppv1">
+		<item-type>Number:Power</item-type>
+		<label>PV1 Power</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Production PV1 in (kWh) for the current day Channel Type -->
+	<channel-type id="Ed1">
+		<item-type>Number:Energy</item-type>
+		<label>PV1 Current Day Production</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV1 operating mode Channel Type -->
+	<channel-type id="Mod1">
+		<item-type>String</item-type>
+		<label>PV1 Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="NIGHT">Night</option>
+				<option value="SECURITY">Security</option>
+				<option value="OFF">OFF</option>
+				<option value="CHARGE">Charge</option>
+				<option value="CHARGEV">Charge V</option>
+				<option value="CHARGEI">Charge I</option>
+				<option value="CHARGEP">Charge P</option>
+				<option value="CHARGEIPV">Charge Ipv</option>
+				<option value="CHARGET">Charge T</option>
+				<option value="UNKNOWN">---</option>
+				<option value="CHIBSP">Ch. Ibsp</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- PV2 voltage Channel Type -->
+	<channel-type id="Upv2">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>PV2 Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV2 current Channel Type -->
+	<channel-type id="Ipv2">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>PV2 Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV2 Power Channel Type -->
+	<channel-type id="Ppv2">
+		<item-type>Number:Power</item-type>
+		<label>PV2 Power</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Production PV2 in (kWh) for the current day Channel Type -->
+	<channel-type id="Ed2">
+		<item-type>Number:Energy</item-type>
+		<label>PV2 Current Day Production</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- PV operating mode Channel Type -->
+	<channel-type id="Mod2">
+		<item-type>String</item-type>
+		<label>PV2 Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="NIGHT">Night</option>
+				<option value="SECURITY">Security</option>
+				<option value="OFF">OFF</option>
+				<option value="CHARGE">Charge</option>
+				<option value="CHARGEV">Charge V</option>
+				<option value="CHARGEI">Charge I</option>
+				<option value="CHARGEP">Charge P</option>
+				<option value="CHARGEIPV">Charge Ipv</option>
+				<option value="CHARGET">Charge T</option>
+				<option value="UNKNOWN">---</option>
+				<option value="CHIBSP">Ch. Ibsp</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- State of the VarioString Channel Type -->
+	<channel-type id="VSstate">
+		<item-type>Switch</item-type>
+		<label>State of the VarioString</label>
+		<state readOnly="true"></state>
+	</channel-type>
+</thing:thing-descriptions>

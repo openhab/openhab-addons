@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- Input voltage Channel Type -->
+	<channel-type id="Uin">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Input Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Input current Channel Type -->
+	<channel-type id="Iin">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Input Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Input active power Channel Type -->
+	<channel-type id="Pina">
+		<item-type>Number:Power</item-type>
+		<label>Input Active Power</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Input frequency Channel Type -->
+	<channel-type id="Fin">
+		<item-type>Number:Frequency</item-type>
+		<label>Input Frequency</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Output voltage Channel Type -->
+	<channel-type id="Uout">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Output Voltage</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Output current Channel Type -->
+	<channel-type id="Iout">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Output Current</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Output active power Channel Type -->
+	<channel-type id="Pouta">
+		<item-type>Number:Power</item-type>
+		<label>Output Active Power</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Output frequency Channel Type -->
+	<channel-type id="Fout">
+		<item-type>Number:Frequency</item-type>
+		<label>Output Frequency</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<!-- Operating state Channel Type -->
+	<channel-type id="Mode">
+		<item-type>String</item-type>
+		<label>Operating State</label>
+		<state readOnly="true">
+			<options>
+				<option value="INVALID">Invalid value</option>
+				<option value="INVERTER">Inverter</option>
+				<option value="CHARGER">Charger</option>
+				<option value="BOOST">Boost</option>
+				<option value="INJECTION">Injection</option>
+			</options>
+		</state>
+	</channel-type>
+	<!-- State of the inverter Channel Type -->
+	<channel-type id="XTstate">
+		<item-type>String</item-type>
+		<label>State of the Inverter</label>
+		<state readOnly="true">
+			<options>
+				<option value="OFF">OFF</option>
+				<option value="ON">ON</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

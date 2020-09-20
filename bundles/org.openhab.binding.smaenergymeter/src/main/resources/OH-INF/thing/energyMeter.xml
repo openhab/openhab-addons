@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smaenergymeter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="energymeter">
+		<label>SMA Energy Meter</label>
+
+		<channels>
+			<channel id="powerIn" typeId="powerInType"/>
+			<channel id="powerOut" typeId="powerOutType"/>
+			<channel id="energyIn" typeId="energyInType"/>
+			<channel id="energyOut" typeId="energyOutType"/>
+			<channel id="powerInL1" typeId="powerInTypeL1"/>
+			<channel id="powerOutL1" typeId="powerOutTypeL1"/>
+			<channel id="energyInL1" typeId="energyInTypeL1"/>
+			<channel id="energyOutL1" typeId="energyOutTypeL1"/>
+			<channel id="powerInL2" typeId="powerInTypeL2"/>
+			<channel id="powerOutL2" typeId="powerOutTypeL2"/>
+			<channel id="energyInL2" typeId="energyInTypeL2"/>
+			<channel id="energyOutL2" typeId="energyOutTypeL2"/>
+			<channel id="powerInL3" typeId="powerInTypeL3"/>
+			<channel id="powerOutL3" typeId="powerOutTypeL3"/>
+			<channel id="energyInL3" typeId="energyInTypeL3"/>
+			<channel id="energyOutL3" typeId="energyOutTypeL3"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Vendor</property>
+			<property name="serialNumber">Serial Number</property>
+		</properties>
+
+		<config-description>
+			<parameter name="mcastGroup" type="text" required="true">
+				<label>Multicast Group</label>
+				<description>IP address of the multicast group</description>
+				<default>239.12.255.254</default>
+			</parameter>
+			<parameter name="port" type="integer" required="false" min="1024" max="49151">
+				<label>Port</label>
+				<description>Port of the multicast group</description>
+				<default>9522</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="pollingPeriod" type="integer" required="false">
+				<label>Polling Period</label>
+				<description>Polling period for refreshing the data in s</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="powerInType">
+		<item-type>Number</item-type>
+		<label>Purchased Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerOutType">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Power</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyInType">
+		<item-type>Number</item-type>
+		<label>Purchased Energy</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyOutType">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Energy</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerInTypeL1">
+		<item-type>Number</item-type>
+		<label>Purchased Power L1</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerOutTypeL1">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Power L1</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyInTypeL1">
+		<item-type>Number</item-type>
+		<label>Purchased Energy L1</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyOutTypeL1">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Energy L1</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerInTypeL2">
+		<item-type>Number</item-type>
+		<label>Purchased Power L2</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerOutTypeL2">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Power L2</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyInTypeL2">
+		<item-type>Number</item-type>
+		<label>Purchased Energy L2</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyOutTypeL2">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Energy L2</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerInTypeL3">
+		<item-type>Number</item-type>
+		<label>Purchased Power L3</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="powerOutTypeL3">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Power L3</label>
+		<category>Energy</category>
+		<state pattern="%.2f W" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyInTypeL3">
+		<item-type>Number</item-type>
+		<label>Purchased Energy L3</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energyOutTypeL3">
+		<item-type>Number</item-type>
+		<label>Grid Feed-in Energy L3</label>
+		<category>Energy</category>
+		<state pattern="%.2f kWh" readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

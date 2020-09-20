@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="helios-easycontrols">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+		</supported-bridge-type-refs>
+
+		<label>Helios Ventilation</label>
+		<description>Supports controlling a Helios Heat-Recovery Ventilation Device with easyControls using the Modbus Gateway
+			TCP</description>
+		<category>HVAC</category>
+
+		<channel-groups>
+			<channel-group id="general" typeId="general"/>
+			<channel-group id="operation" typeId="operation"/>
+			<channel-group id="unitConfig" typeId="unitConfig"/>
+			<channel-group id="profiles" typeId="profiles"/>
+			<channel-group id="humidityControl" typeId="humidityControl"/>
+			<channel-group id="co2Control" typeId="co2Control"/>
+			<channel-group id="vocControl" typeId="vocControl"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" unit="ms" min="30000">
+				<label>Refresh Interval</label>
+				<description>Refresh interval</description>
+				<default>60000</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- Channel Group Types -->
+
+	<channel-group-type id="general">
+		<label>General</label>
+		<description>General Parameters / Status Information</description>
+		<channels>
+			<!-- General Status Infos -->
+			<channel id="preHeaterStatus" typeId="onOff">
+				<label>Pre-Heater Status</label>
+				<description>Pre-Heater Status</description>
+			</channel>
+			<channel id="bypassStatus" typeId="bypassStatus"/>
+			<!-- Temperatures -->
+			<channel id="nhzDuctSensor" typeId="temperature">
+				<label>After Heater Duct Temperature</label>
+			</channel>
+			<channel id="nhzReturnSensor" typeId="temperature">
+				<label>After Heater Return Temperature</label>
+			</channel>
+			<channel id="vhzDuctSensor" typeId="temperature">
+				<label>Pre-Heater Duct Temperature</label>
+			</channel>
+			<channel id="temperatureOutsideAir" typeId="temperature">
+				<label>Outside Air Temperature</label>
+			</channel>
+			<channel id="temperatureSupplyAir" typeId="temperature">
+				<label>Supply Air Temperature</label>
+			</channel>
+			<channel id="temperatureOutgoingAir" typeId="temperature">
+				<label>Outgoing Air Temperature</label>
+			</channel>
+			<channel id="temperatureExtractAir" typeId="temperature">
+				<label>Extract Air Temperature</label>
+			</channel>
+			<!-- RPM -->
+			<channel id="supplyAirRpm" typeId="rpm">
+				<label>Supply Air Fan RPM</label>
+			</channel>
+			<channel id="extractAirRpm" typeId="rpm">
+				<label>Extract Air Fan RPM</label>
+			</channel>
+			<!-- Filter Change -->
+			<channel id="filterChangeRemainingTime" typeId="filterChangeRemainingTime"/>
+			<!-- Operating Hours -->
+			<channel id="operatingHoursSupplyAirVent" typeId="operatingHours">
+				<label>Operating Hours Supply Air Fan</label>
+			</channel>
+			<channel id="operatingHoursExtractAirVent" typeId="operatingHours">
+				<label>Operating Hours Extract Air Fan</label>
+			</channel>
+			<channel id="operatingHoursVhz" typeId="operatingHours">
+				<label>Operating Hours Pre-Heater</label>
+			</channel>
+			<channel id="operatingHoursNhz" typeId="operatingHours">
+				<label>Operating Hours After Heater</label>
+			</channel>
+			<!-- Power -->
+			<channel id="outputPowerVhz" typeId="outputPower">
+				<label>Output Power Pre-Heater</label>
+			</channel>
+			<channel id="outputPowerNhz" typeId="outputPower">
+				<label>Output Power After Heater</label>
+			</channel>
+			<!-- Infos / Warnings / Errors -->
+			<channel id="errors" typeId="errors"/>
+			<channel id="warnings" typeId="warnings"/>
+			<channel id="infos" typeId="infos"/>
+			<channel id="noOfErrors" typeId="noOfErrors"/>
+			<channel id="noOfWarnings" typeId="noOfWarnings"/>
+			<channel id="noOfInfos" typeId="noOfInfos"/>
+			<channel id="errorsMsg" typeId="message"/>
+			<channel id="warningsMsg" typeId="message"/>
+			<channel id="infosMsg" typeId="message"/>
+			<channel id="statusFlags" typeId="message"/>
+			<!-- System Settings -->
+			<channel id="sysdate" typeId="sysdate"/>
+			<channel id="summerWinter" typeId="summerWinter"/>
+			<!-- Software / Firmware -->
+			<channel id="autoSwUpdate" typeId="enableDisable">
+				<label>Automatic SW Updates</label>
+				<description>Indicates if automatic software updates are enabled</description>
+			</channel>
+			<channel id="accessHeliosPortal" typeId="enableDisable">
+				<label>Access Helios Portal</label>
+				<description>Indicates if access to Helios portal is enabled</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="operation">
+		<label>Operation</label>
+		<description>Control of operating mode</description>
+		<channels>
+			<!-- Party Mode -->
+			<channel id="partyModeDuration" typeId="duration">
+				<label>Party Mode Duration</label>
+				<description>Party mode duration (in minutes)</description>
+			</channel>
+			<channel id="partyModeFanStage" typeId="fanStage">
+				<label>Party Mode Fan Stage</label>
+				<description>Party mode fan stage</description>
+			</channel>
+			<channel id="partyModeRemainingTime" typeId="remainingTime">
+				<label>Party Mode Remaining Time</label>
+				<description>Party mode remaining time</description>
+			</channel>
+			<channel id="partyModeStatus" typeId="onOff">
+				<label>Party Mode Status</label>
+				<description>Party mode status</description>
+			</channel>
+			<!-- Standby Mode -->
+			<channel id="standbyModeDuration" typeId="duration">
+				<label>Standby Mode Duration</label>
+				<description>Standby mode duration (in minutes)</description>
+			</channel>
+			<channel id="standbyModeFanStage" typeId="fanStage">
+				<label>Standby Mode Fan Stage</label>
+				<description>Standby mode fan stage</description>
+			</channel>
+			<channel id="standbyModeRemainingTime" typeId="remainingTime">
+				<label>Standby Mode Remaining Time</label>
+				<description>Standby mode remaining time</description>
+			</channel>
+			<channel id="standbyModeStatus" typeId="onOff">
+				<label>Standby Mode Status</label>
+				<description>Standby mode status</description>
+			</channel>
+			<!-- Holiday Programme -->
+			<channel id="holidayProgramme" typeId="holidayProgramme"/>
+			<channel id="holidayProgrammeFanStage" typeId="fanStage"/>
+			<channel id="holidayProgrammeStart" typeId="date">
+				<label>Holiday Programme Start</label>
+				<description>Holiday programme start</description>
+			</channel>
+			<channel id="holidayProgrammeEnd" typeId="date">
+				<label>Holiday Programme End</label>
+				<description>Holiday programme end</description>
+			</channel>
+			<channel id="holidayProgrammeInterval" typeId="holidayProgrammeInterval"/>
+			<channel id="holidayProgrammeActivationTime" typeId="holidayProgrammeActivationTime"/>
+			<!-- Operating Mode / Fan Stage -->
+			<channel id="operatingMode" typeId="operatingMode"/>
+			<channel id="fanStage" typeId="fanStage"/>
+			<channel id="percentageFanStage" typeId="percentage">
+				<label>Percentage Fan Stage</label>
+				<description>Fan stage in percent</description>
+			</channel>
+			<channel id="extractAirFanStage" typeId="fanStage"/>
+			<channel id="supplyAirFanStage" typeId="fanStage"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="unitConfig">
+		<label>Unit Config</label>
+		<description>Configuration parameters of the ventilation unit</description>
+		<channels>
+			<!-- Fan Stage Configuration -->
+			<channel id="minFanStage" typeId="minFanStage"/>
+			<!-- Bypass Configuration -->
+			<channel id="bypassRoomTemperature" typeId="bypassRoomTemperature"/>
+			<channel id="bypassMinOutsideTemperature" typeId="bypassMinOutsideTemperature"/>
+			<channel id="bypassFrom" typeId="bypass"/>
+			<channel id="bypassTo" typeId="bypass"/>
+			<!-- Comfort Temperature -->
+			<channel id="comfortTemp" typeId="comfortTemp"/>
+			<!-- Error Output Function -->
+			<channel id="errorOutputFunction" typeId="errorOutputFunction"/>
+			<!-- Filter Change -->
+			<channel id="filterChange" typeId="filterChange"/>
+			<channel id="filterChangeInterval" typeId="filterChangeInterval"/>
+			<!-- System Components and Extensions -->
+			<channel id="runOnTimeVhzNhz" typeId="runOnTimeVhzNhz"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="profiles">
+		<label>Profiles</label>
+		<description>Profiles for Device Operation</description>
+		<channels>
+			<channel id="weekProfileNhz" typeId="weekProfileNhz"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="humidityControl">
+		<label>Humidity Control</label>
+		<description>Config of Sensors for Humidity and/or Temperature Control</description>
+		<channels>
+			<channel id="humidityControlSetValue" typeId="humidityControlSetValue"/>
+			<channel id="humidityControlSteps" typeId="humidityControlSteps"/>
+			<channel id="humidityStopTime" typeId="humidityStopTime"/>
+			<!-- External Humidity Sensors -->
+			<channel id="externalSensorKwlFtfHumidity1" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity2" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity3" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity4" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity5" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity6" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity7" typeId="sensorValue"/>
+			<channel id="externalSensorKwlFtfHumidity8" typeId="sensorValue"/>
+			<!-- External Temperature Sensors -->
+			<channel id="externalSensorKwlFtfTemperature1" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature2" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature3" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature4" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature5" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature6" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature7" typeId="temperature"/>
+			<channel id="externalSensorKwlFtfTemperature8" typeId="temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="co2Control">
+		<label>CO2 Control</label>
+		<description>Config of Sensors for CO2 Control</description>
+		<channels>
+			<channel id="co2ControlSetValue" typeId="ppmControlSetValue">
+				<label>CO2 Control Status</label>
+				<description>CO2 control status</description>
+			</channel>
+			<channel id="co2ControlSteps" typeId="ppmControlSteps">
+				<label>CO2 Control Steps</label>
+				<description>CO2 control steps (in ppm)</description>
+			</channel>
+			<!-- External CO2 Sensors -->
+			<channel id="externalSensorKwlCo21" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo22" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo23" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo24" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo25" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo26" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo27" typeId="sensorValue"/>
+			<channel id="externalSensorKwlCo28" typeId="sensorValue"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="vocControl">
+		<label>VOC Control</label>
+		<description>Config of Sensors for VOC Control</description>
+		<channels>
+			<channel id="vocControlSetValue" typeId="ppmControlSetValue">
+				<label>VOC Control Status</label>
+				<description>VOC control status</description>
+			</channel>
+			<channel id="vocControlSteps" typeId="ppmControlSteps">
+				<label>CO2 Control Steps</label>
+				<description>CO2 control steps (in ppm)</description>
+			</channel>
+			<!-- External CO2 Sensors -->
+			<channel id="externalSensorKwlVoc1" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc2" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc3" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc4" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc5" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc6" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc7" typeId="sensorValue"/>
+			<channel id="externalSensorKwlVoc8" typeId="sensorValue"/>
+		</channels>
+	</channel-group-type>
+
+
+	<!-- Channel Types -->
+
+	<channel-type id="sysdate" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>System Date and Time</label>
+		<description>The KWL's system date and time</description>
+		<category>Time</category>
+	</channel-type>
+
+	<channel-type id="summerWinter" advanced="true">
+		<item-type>Number</item-type>
+		<label>Summertime / Wintertime</label>
+		<description>Indicates if summertime or wintertime is active</description>
+		<category>Time</category>
+		<state>
+			<options>
+				<option value="0">Wintertime</option>
+				<option value="1">Summertime</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="enableDisable">
+		<item-type>Switch</item-type>
+		<label>Enable/Disable</label>
+		<description>Used for functionality that can be enabled or disabled</description>
+	</channel-type>
+
+	<channel-type id="minFanStage" advanced="true">
+		<item-type>Number</item-type>
+		<label>Minimum Fan Stage</label>
+		<description>Minimum fan stage (0 or 1)</description>
+		<category>HVAC</category>
+		<state min="0" max="1" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="onOff">
+		<item-type>Switch</item-type>
+		<label>On/Off</label>
+		<description>Used for configurations that can be on or off</description>
+	</channel-type>
+
+	<channel-type id="humidityControlSetValue" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity Control Set Value</label>
+		<description>Humidity control set value (in percent)</description>
+		<category>Humidity</category>
+		<state min="20" max="80" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="humidityControlSteps" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity Control Steps</label>
+		<description>Humidity control steps (in percent)</description>
+		<category>Humidity</category>
+		<state min="5" max="20" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="humidityStopTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Humidity Stop Time</label>
+		<description>Humidity stop time in hours (0-24)</description>
+		<category>Humidity</category>
+		<state min="0" max="24" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="ppmControlSetValue" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Control Set Value</label>
+		<description>Control set value (in ppm)</description>
+		<category>Gas</category>
+		<state min="300" max="2000" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="ppmControlSteps" advanced="true">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Control Steps</label>
+		<description>Control steps (in ppm)</description>
+		<category>Gas</category>
+		<state min="50" max="400" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="comfortTemp" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Comfort Temperature</label>
+		<description>Comfort temperature</description>
+		<category>Temperature</category>
+		<state min="10" max="25" step="0.1" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="duration" advanced="false">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<description>Duration for operating mode (in minutes)</description>
+		<state min="5" max="180" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fanStage" advanced="false">
+		<item-type>Number</item-type>
+		<label>Fan Stage</label>
+		<description>Fan stage</description>
+		<category>HVAC</category>
+		<state min="0" max="4" step="1" pattern="%d" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="remainingTime" advanced="false">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Time</label>
+		<description>Remaining time for operating mode (in minutes)</description>
+		<state min="0" max="180" step="1" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="operatingMode" advanced="false">
+		<item-type>Number</item-type>
+		<label>Operating Mode</label>
+		<description>Operating mode (automatic/manual)</description>
+		<state>
+			<options>
+				<option value="0">Automatic</option>
+				<option value="1">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="percentage" advanced="false">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Percentage</label>
+		<description>Percentage</description>
+		<state min="0" max="100" step="1" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="temperature" advanced="false">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Temperature in °C</description>
+		<category>Temperature</category>
+		<state min="-27" max="9998.9" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensorValue" advanced="false">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Sensor Value</label>
+		<description>Measurement of a sensor</description>
+		<state min="0" max="9998.9" step="0.1" pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="weekProfileNhz" advanced="true">
+		<item-type>Number</item-type>
+		<label>Week Profile Afterheater</label>
+		<description>Week profile afterheater</description>
+		<state>
+			<options>
+				<option value="0">Standard 1</option>
+				<option value="1">Standard 2</option>
+				<option value="2">Fixed value</option>
+				<option value="3">Individual 1</option>
+				<option value="4">Individual 2</option>
+				<option value="5">NA</option>
+				<option value="6">Off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="rpm" advanced="false">
+		<item-type>Number</item-type>
+		<label>RPM</label>
+		<description>RPM</description>
+		<state min="0" max="9999" step="1" pattern="%d rpm" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="holidayProgramme" advanced="false">
+		<item-type>Number</item-type>
+		<label>Holiday Programme</label>
+		<description>Holiday programme</description>
+		<category>Vacation</category>
+		<state>
+			<options>
+				<option value="0">Off</option>
+				<option value="1">Interval</option>
+				<option value="2">Constant</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="date" advanced="false">
+		<item-type>DateTime</item-type>
+		<label>Date</label>
+		<description>Date</description>
+	</channel-type>
+
+	<channel-type id="holidayProgrammeInterval" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Holiday Programme Interval</label>
+		<description>Holiday programme interval in hours</description>
+		<category>Vacation</category>
+		<state min="1" max="24" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="holidayProgrammeActivationTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Holiday Programme Activation Time</label>
+		<description>Holiday programme activation time in minutes</description>
+		<category>Vacation</category>
+		<state min="5" max="300" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="runOnTimeVhzNhz" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Stopping Time Preheater/Afterheater</label>
+		<description>Stopping time preheater/afterheater in seconds</description>
+		<category>Heating</category>
+		<state min="60" max="120" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="errorOutputFunction" advanced="true">
+		<item-type>Number</item-type>
+		<label>Error Output Function</label>
+		<description>Error output function (collective error or just error)</description>
+		<state>
+			<options>
+				<option value="1">Collective error</option>
+				<option value="2">Only error</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filterChange" advanced="false">
+		<item-type>Number</item-type>
+		<label>Filter Change</label>
+		<description>Filter change</description>
+		<state>
+			<options>
+				<option value="0">No</option>
+				<option value="1">Yes</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filterChangeInterval" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Filter Change Interval</label>
+		<description>Filter change interval in months</description>
+		<state min="1" max="12" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filterChangeRemainingTime" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Filter Change Remaining Time</label>
+		<description>Filter change remaining time in minutes</description>
+		<state min="1" max="550000" step="1" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bypassRoomTemperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bypass Room Temperature</label>
+		<description>Bypass room temperature</description>
+		<category>Temperature</category>
+		<state min="10" max="40" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="bypassMinOutsideTemperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bypass Minimum Outside Temperature</label>
+		<description>Bypass minimum outside temperature</description>
+		<category>Temperature</category>
+		<state min="5" max="20" step="1" pattern="%d %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="offsetExtractAir" advanced="true">
+		<item-type>Number</item-type>
+		<label>Offset Extract Air</label>
+		<description>Offset extract air</description>
+		<category>HVAC</category>
+		<state pattern="%.1f" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="operatingHours" advanced="false">
+		<item-type>Number</item-type>
+		<label>Operating Hours</label>
+		<description>Operating hours (in minutes)</description>
+		<category>Time</category>
+		<state min="0" max="100000000" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outputPower" advanced="false">
+		<item-type>Number</item-type>
+		<label>Output Power</label>
+		<description>Output power of preheater/afterheater (in percent)</description>
+		<category>Energy</category>
+		<state min="0" max="100000000" step="1" pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errors" advanced="false">
+		<item-type>Number</item-type>
+		<label>Errors</label>
+		<description>Errors as integer value</description>
+		<state min="0" max="4294967295" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="warnings" advanced="false">
+		<item-type>Number</item-type>
+		<label>Warnings</label>
+		<description>Warnings as integer value</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="infos" advanced="false">
+		<item-type>Number</item-type>
+		<label>Infos</label>
+		<description>Infos as integer value</description>
+		<state min="0" max="255" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="noOfErrors" advanced="false">
+		<item-type>Number</item-type>
+		<label>Number of Errors</label>
+		<description>Number of bit-coded errors</description>
+		<state min="0" max="32" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="noOfWarnings" advanced="false">
+		<item-type>Number</item-type>
+		<label>Number of Warnings</label>
+		<description>Number of bit-coded warnings</description>
+		<state min="0" max="8" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="noOfInfos" advanced="false">
+		<item-type>Number</item-type>
+		<label>Number of Infos</label>
+		<description>Number of bit-coded infos</description>
+		<state min="0" max="8" step="1" pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="message" advanced="false">
+		<item-type>String</item-type>
+		<label>Errors / Warnings / Infos</label>
+		<description>Errors / warnings / infos as string</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sensorConfig" advanced="false">
+		<item-type>Switch</item-type>
+		<label>Sensor Configuration</label>
+		<description>Sensor configuration (installed or not)</description>
+	</channel-type>
+
+	<channel-type id="bypassStatus" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bypass Status</label>
+		<description>Status of the bypass</description>
+	</channel-type>
+
+	<channel-type id="bypass" advanced="true">
+		<item-type>DateTime</item-type>
+		<label>Bypass Active from/to (Day and Month)</label>
+		<description>Bypass will be active/deactivated from that day and month on</description>
+		<category>Time</category>
+	</channel-type>
+
+</thing:thing-descriptions>

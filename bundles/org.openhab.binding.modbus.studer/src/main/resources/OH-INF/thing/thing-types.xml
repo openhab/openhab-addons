@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<!-- BSP Thing Type -->
+	<thing-type id="bsp">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+		<label>BSP Studer</label>
+		<description>Thing for Studer BSP Device</description>
+		<channels>
+			<channel id="batteryVoltage" typeId="Ubat"/>
+			<channel id="batteryCurrent" typeId="Ibat"/>
+			<channel id="power" typeId="Pbat"/>
+			<channel id="stateOfCharge" typeId="SOC"/>
+			<channel id="batteryTemperature" typeId="Tbat"/>
+		</channels>
+		<config-description>
+			<parameter name="slaveAddress" type="integer" min="60" max="61">
+				<label>Slave Address</label>
+				<description>Slave address of BSP device</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>Poll interval</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- Xtender Thing Type -->
+	<thing-type id="xtender">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+		<label>Xtender Studer</label>
+		<description>Thing for Studer Xtender Device</description>
+		<channels>
+			<channel id="inputVoltage" typeId="Uin"/>
+			<channel id="inputCurrent" typeId="Iin"/>
+			<channel id="inputActivePower" typeId="Pina"/>
+			<channel id="inputFrequency" typeId="Fin"/>
+			<channel id="outputVoltage" typeId="Uout"/>
+			<channel id="outputCurrent" typeId="Iout"/>
+			<channel id="outputActivePower" typeId="Pouta"/>
+			<channel id="outputFrequency" typeId="Fout"/>
+			<channel id="operatingState" typeId="Mode"/>
+			<channel id="stateInverter" typeId="XTstate"/>
+		</channels>
+		<config-description>
+			<parameter name="slaveAddress" type="integer" min="10" max="19">
+				<label>Slave Address</label>
+				<description>Slave address of Xtender device</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>Poll interval</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- VarioTrack Thing Type -->
+	<thing-type id="variotrack">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+		<label>VarioTrack Studer</label>
+		<description>Thing for Studer VarioTrack Device</description>
+		<channels>
+			<channel id="batteryVoltage" typeId="Ubat"/>
+			<channel id="batteryCurrent" typeId="Ibat"/>
+			<channel id="modelVarioTrack" typeId="Type"/>
+			<channel id="voltagePVGenerator" typeId="Upv"/>
+			<channel id="powerPVGenerator" typeId="Psol"/>
+			<channel id="productionCurrentDay" typeId="Ed"/>
+			<channel id="operatingMode" typeId="Mode"/>
+			<channel id="stateVarioTrack" typeId="VTstate"/>
+		</channels>
+		<config-description>
+			<parameter name="slaveAddress" type="integer" min="20" max="35">
+				<label>Slave Address</label>
+				<description>Slave address of VarioTrack device</description>
+				<default>20</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>Poll interval</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+	<!-- VarioString Thing Type -->
+	<thing-type id="variostring">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+		<label>VarioString Studer</label>
+		<description>Thing for Studer VarioString Device</description>
+		<channels>
+			<channel id="batteryVoltage" typeId="Ubat"/>
+			<channel id="batteryCurrent" typeId="Ibat"/>
+			<channel id="PVVoltage" typeId="Upv0"/>
+			<channel id="PVCurrent" typeId="Ipv0"/>
+			<channel id="PVPower" typeId="Ppv0"/>
+			<channel id="ProductionPVCurrentDay" typeId="Ed0"/>
+			<channel id="PVMode" typeId="Mod0"/>
+			<channel id="PV1Voltage" typeId="Upv1"/>
+			<channel id="PV1Current" typeId="Ipv1"/>
+			<channel id="PV1Power" typeId="Ppv1"/>
+			<channel id="ProductionPV1CurrentDay" typeId="Ed1"/>
+			<channel id="PV1Mode" typeId="Mod1"/>
+			<channel id="PV2Voltage" typeId="Upv2"/>
+			<channel id="PV2Current" typeId="Ipv2"/>
+			<channel id="PV2Power" typeId="Ppv2"/>
+			<channel id="ProductionPV2CurrentDay" typeId="Ed2"/>
+			<channel id="PV2Mode" typeId="Mod2"/>
+			<channel id="stateVarioString" typeId="VSstate"/>
+		</channels>
+		<config-description>
+			<parameter name="slaveAddress" type="integer" min="40" max="55">
+				<label>Slave Address</label>
+				<description>Slave address of VarioString device</description>
+				<default>40</default>
+			</parameter>
+			<parameter name="refresh" type="integer" min="1" unit="s">
+				<label>Refresh Interval</label>
+				<description>Poll interval</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

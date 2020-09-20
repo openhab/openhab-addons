@@ -1,0 +1,60 @@
+{
+	"deviceMapping": {
+		"id": [
+			"chuangmi.plug.v3fw"
+		],
+		"channels": [
+			{
+				"property": "power",
+				"friendlyName": "Power",
+				"channel": "power",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": [
+					{
+						"command": "set_power",
+						"parameterType": "ONOFF"
+					}
+				]
+			},
+			{
+				"property": "usb_on",
+				"friendlyName": "USB",
+				"channel": "usb",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_usb_*",
+						"parameterType": "ONOFFPARA"
+					}
+				]
+			},
+			{
+				"property": "temperature",
+				"friendlyName": "Temperature",
+				"channel": "temperature",
+				"type": "Number",
+				"refresh": true,
+				"ChannelGroup": "",
+				"actions": []
+			},
+			{
+				"property": "wifi_led",
+				"friendlyName": "Wifi LED",
+				"channel": "led",
+				"type": "Switch",
+				"refresh": true,
+				"ChannelGroup": "actions",
+				"actions": [
+					{
+						"command": "set_wifi_led",
+						"parameterType": "ONOFF"
+					}
+				]
+			}
+		]
+	}
+}

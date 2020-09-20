@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Velux Binding -->
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+	https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<!-- -->
+	<!-- Velux Bridge KLF200 -->
+	<!-- -->
+	<config-description uri="bridge-type:velux:bridge">
+		<parameter name="ipAddress" type="text">
+			<label>@text/config.velux.bridge.ipAddress.label</label>
+			<description>@text/config.velux.bridge.ipAddress.description</description>
+			<context>network-address</context>
+			<required>true</required>
+		</parameter>
+		<parameter name="protocol" type="text">
+			<label>@text/config.velux.bridge.protocol.label</label>
+			<description>@text/config.velux.bridge.protocol.description</description>
+			<default>slip</default>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="slip">slip</option>
+				<option value="http">http</option>
+				<option value="https">https</option>
+			</options>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="tcpPort" type="integer" required="false" min="1" max="65335">
+			<label>@text/config.velux.bridge.tcpPort.label</label>
+			<description>@text/config.velux.bridge.tcpPort.description</description>
+			<default>51200</default>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="password" type="text">
+			<label>@text/config.velux.bridge.password.label</label>
+			<description>@text/config.velux.bridge.password.description</description>
+			<required>true</required>
+			<context>password</context>
+			<!-- Velux Bridge factory default -->
+			<default>velux123</default>
+		</parameter>
+		<parameter name="timeoutMsecs" type="integer" min="1" step="1" max="60000">
+			<label>@text/config.velux.bridge.timeoutMsecs.label</label>
+			<description>@text/config.velux.bridge.timeoutMsecs.description</description>
+			<required>false</required>
+			<default>500</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="retries" type="integer" min="0" step="1" max="10">
+			<label>@text/config.velux.bridge.retries.label</label>
+			<description>@text/config.velux.bridge.retries.description</description>
+			<required>false</required>
+			<default>5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="refreshMsecs" type="integer" min="1" step="1" max="60000">
+			<label>@text/config.velux.bridge.refreshMsecs.label</label>
+			<description>@text/config.velux.bridge.refreshMsecs.description</description>
+			<required>false</required>
+			<default>10000</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="isBulkRetrievalEnabled" type="boolean">
+			<label>@text/config.velux.bridge.isBulkRetrievalEnabled.label</label>
+			<description>@text/config.velux.bridge.isBulkRetrievalEnabled.description</description>
+			<required>false</required>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="isSequentialEnforced" type="boolean">
+			<label>@text/config.velux.bridge.isSequentialEnforced.label</label>
+			<description>@text/config.velux.bridge.isSequentialEnforced.description</description>
+			<required>false</required>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="isProtocolTraceEnabled" type="boolean">
+			<label>@text/config.velux.bridge.isProtocolTraceEnabled.label</label>
+			<description>@text/config.velux.bridge.isProtocolTraceEnabled.description</description>
+			<required>false</required>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+	<!-- -->
+	<!-- Velux Devices (Rollershutters, Windows, and other Actuators) and Settings (Scenes) -->
+	<!-- -->
+	<config-description uri="thing-type:velux:scene">
+		<parameter name="sceneName" type="text">
+			<label>@text/config.velux.thing.scene.sceneName.label</label>
+			<description>@text/config.velux.thing.scene.sceneName.description</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="velocity" type="text">
+			<label>@text/config.velux.thing.scene.velocity.label</label>
+			<description>@text/config.velux.thing.scene.velocity.description</description>
+			<default>default</default>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="default">default</option>
+				<option value="silent">silent</option>
+				<option value="fast">fast</option>
+			</options>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velux:actuator">
+		<parameter name="serial" type="text" pattern="([0-9A-Fa-f]{2}[:]){7}([0-9A-Fa-f]{2})">
+			<label>@text/config.velux.thing.actuator.serial.label</label>
+			<description>@text/config.velux.thing.actuator.serial.description</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="name" type="text">
+			<label>@text/config.velux.thing.actuator.name.label</label>
+			<description>@text/config.velux.thing.actuator.name.description</description>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="inverted" type="boolean">
+			<label>@text/config.velux.thing.actuator.inverted.label</label>
+			<description>@text/config.velux.thing.actuator.inverted.description</description>
+			<required>true</required>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velux:rollershutter">
+		<parameter name="serial" type="text" pattern="([0-9A-Fa-f]{2}[:]){7}([0-9A-Fa-f]{2})">
+			<label>@text/config.velux.thing.rollershutter.serial.label</label>
+			<description>@text/config.velux.thing.rollershutter.serial.description</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="name" type="text">
+			<label>@text/config.velux.thing.rollershutter.name.label</label>
+			<description>@text/config.velux.thing.rollershutter.name.description</description>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="inverted" type="boolean">
+			<label>@text/config.velux.thing.rollershutter.inverted.label</label>
+			<description>@text/config.velux.thing.rollershutter.inverted.description</description>
+			<required>true</required>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velux:window">
+		<parameter name="serial" type="text" pattern="([0-9A-Fa-f]{2}[:]){7}([0-9A-Fa-f]{2})">
+			<label>@text/config.velux.thing.window.serial.label</label>
+			<description>@text/config.velux.thing.window.serial.description</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="name" type="text">
+			<label>@text/config.velux.thing.window.name.label</label>
+			<description>@text/config.velux.thing.window.name.description</description>
+			<required>false</required>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="inverted" type="boolean">
+			<label>@text/config.velux.thing.window.inverted.label</label>
+			<description>@text/config.velux.thing.window.inverted.description</description>
+			<required>true</required>
+			<default>false</default>
+			<advanced>false</advanced>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:velux:vshutter">
+		<parameter name="sceneLevels" type="text">
+			<label>@text/config.velux.thing.vshutter.sceneLevels.label</label>
+			<description>@text/config.velux.thing.vshutter.sceneLevels.description</description>
+			<required>true</required>
+			<advanced>false</advanced>
+		</parameter>
+		<parameter name="currentLevel" type="integer" min="0" step="1" max="100">
+			<label>@text/config.velux.thing.vshutter.currentLevel.label</label>
+			<description>@text/config.velux.thing.vshutter.currentLevel.description</description>
+			<required>true</required>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

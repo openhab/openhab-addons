@@ -1,0 +1,23 @@
+{
+  "registrationDate": "2017-02-17T02:14:10Z",
+  "sleeperRightId": "-1111111111111111111",
+  "base": "MODULAR",
+  "returnRequestStatus": 0,
+  "size": "QUEEN",
+  "name": "Bed",
+  "serial": "",
+  "isKidsBed": false,
+  "dualSleep": true,
+  "bedId": "-9999999999999999999",
+  "status": 1,
+  "sleeperLeftId": "-2222222222222222222",
+  "version": "",
+  "accountId": "-8888888888888888888",
+  "timezone": "US/Pacific",
+  "model": "P5",
+  "purchaseDate": "2017-02-02T00:00:01Z",
+  "macAddress": "AABBCCDDEEFF",
+  "sku": "QP5",
+  "zipcode": "90210",
+  "reference": "55555555555-5"
+}

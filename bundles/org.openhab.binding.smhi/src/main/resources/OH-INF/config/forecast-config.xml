@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:smhi:forecast">
+		<parameter name="latitude" type="decimal" required="true">
+			<label>Latitude</label>
+			<description>Latitude for the forecast</description>
+		</parameter>
+		<parameter name="longitude" type="decimal" required="true">
+			<label>Longitude</label>
+			<description>Longitude for the forecast</description>
+		</parameter>
+		<parameter name="hourlyForecasts" type="integer" multiple="true">
+			<label>Hourly Forecasts</label>
+			<description>The hourly forecasts to display</description>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="0">00: Current hour</option>
+				<option value="1">01: Next hour</option>
+				<option value="2">02: 2 hours from now</option>
+				<option value="3">03: 3 hours from now</option>
+				<option value="4">04: 4 hours from now</option>
+				<option value="5">05: 5 hours from now</option>
+				<option value="6">06: 6 hours from now</option>
+				<option value="7">07: 7 hours from now</option>
+				<option value="8">08: 8 hours from now</option>
+				<option value="9">09: 9 hours from now</option>
+				<option value="10">10: 10 hours from now</option>
+				<option value="11">11: 11 hours from now</option>
+				<option value="12">12: 12 hours from now</option>
+				<option value="13">13: 13 hours from now</option>
+				<option value="14">14: 14 hours from now</option>
+				<option value="15">15: 15 hours from now</option>
+				<option value="16">16: 16 hours from now</option>
+				<option value="17">17: 17 hours from now</option>
+				<option value="18">18: 18 hours from now</option>
+				<option value="19">19: 19 hours from now</option>
+				<option value="20">20: 20 hours from now</option>
+				<option value="21">21: 21 hours from now</option>
+				<option value="22">22: 22 hours from now</option>
+				<option value="23">23: 23 hours from now</option>
+				<option value="24">24: 24 hours from now</option>
+			</options>
+		</parameter>
+		<parameter name="dailyForecasts" type="integer" multiple="true">
+			<label>Daily Forecasts</label>
+			<description>The daily forecasts to display</description>
+			<limitToOptions>true</limitToOptions>
+			<options>
+				<option value="0">00: Today</option>
+				<option value="1">01: Tomorrow</option>
+				<option value="2">02: 2 days from now</option>
+				<option value="3">03: 3 days from now</option>
+				<option value="4">04: 4 days from now</option>
+				<option value="5">05: 5 days from now</option>
+				<option value="6">06: 6 days from now</option>
+				<option value="7">07: 7 days from now</option>
+				<option value="8">08: 8 days from now</option>
+				<option value="9">09: 9 days from now</option>
+			</options>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
