@@ -293,8 +293,13 @@ public class HikvisionHandler extends ChannelDuplexHandler {
 
     public void hikChangeSetting(String httpGetPutURL, String removeElement, String replaceRemovedElementWith) {
         ChannelTracking localTracker = ipCameraHandler.channelTrackingMap.get(httpGetPutURL);
+        if (localTracker == null) {
+            ipCameraHandler.sendHttpGET(httpGetPutURL);
+            logger.debug(
+                    "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
+            return;
+        }
         String body = localTracker.getReply();
-
         if (body.isEmpty()) {
             logger.debug(
                     "Did not have a reply stored before hikChangeSetting was run, try again shortly as a reply has just been requested.");
