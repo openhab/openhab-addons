@@ -22,6 +22,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.windowcontact.dto.ShutterContactState;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;

@@ -25,6 +25,7 @@ import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.inwallswitch.dto.PowerMeterState;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;

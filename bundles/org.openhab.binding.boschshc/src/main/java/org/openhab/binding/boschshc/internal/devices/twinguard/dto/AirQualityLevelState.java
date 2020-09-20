@@ -10,16 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.devices.twinguard;
+package org.openhab.binding.boschshc.internal.devices.twinguard.dto;
 
-import com.google.gson.annotations.SerializedName;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Represents the state of a device as reported from the Smart Home Controller
  *
  * @author Stefan Kästle - Initial contribution
  */
-public class TwinguardState {
+public class AirQualityLevelState extends BoschSHCServiceState {
+
+    public AirQualityLevelState() {
+        super("airQualityLevelState");
+    }
 
     /*
      * {"maxTemperature":25,"minTemperature":20,"custom":false,"name":"HALLWAY","maxHumidity":60,"minHumidity":40,
@@ -40,21 +44,18 @@ public class TwinguardState {
      * "purityRating":"GOOD","temperature":23.77,"description":"LITTLE_DRY","humidity":32.69,"combinedRating":"MEDIUM"}
      */
 
-    String temperatureRating;
-    String humidityRating;
+    public String temperatureRating;
+    public String humidityRating;
 
-    int purity;
+    public int purity;
 
-    ComfortZone comfortZone;
+    public ComfortZone comfortZone;
 
-    @SerializedName("@type")
-    String type;
+    public String purityRating;
 
-    String purityRating;
+    public double temperature;
+    public String description;
 
-    double temperature;
-    String description;
-
-    double humidity;
-    String combinedRating;
+    public double humidity;
+    public String combinedRating;
 }

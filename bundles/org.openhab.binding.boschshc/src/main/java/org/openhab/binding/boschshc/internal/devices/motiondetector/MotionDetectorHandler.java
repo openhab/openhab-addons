@@ -14,7 +14,6 @@ package org.openhab.binding.boschshc.internal.devices.motiondetector;
 
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_LATEST_MOTION;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.smarthome.core.library.types.DateTimeType;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -22,6 +21,7 @@ import org.eclipse.smarthome.core.thing.Thing;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.motiondetector.dto.LatestMotionState;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
@@ -58,7 +58,7 @@ public class MotionDetectorHandler extends BoschSHCHandler {
     }
 
     @Override
-    public void processUpdate(String id, @NonNull JsonElement state) {
+    public void processUpdate(String id, JsonElement state) {
         logger.debug("Motion detector: received update: {} {}", id, state);
 
         try {

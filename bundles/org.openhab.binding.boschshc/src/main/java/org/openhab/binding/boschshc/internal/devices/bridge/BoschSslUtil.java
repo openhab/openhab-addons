@@ -139,7 +139,6 @@ public class BoschSslUtil {
 
     private KeyStore createKeyStore(String keystore, String keystorePassword)
             throws IOException, OperatorCreationException, GeneralSecurityException {
-
         // create a new keystore
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(null, null);
