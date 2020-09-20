@@ -131,6 +131,13 @@
 		<item-type>String</item-type>
 		<label>Temperature Rating</label>
 		<description>Rating of the currently measured temperature.</description>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good Temperature</option>
+				<option value="MEDIUM">Medium Temperature</option>
+				<option value="BAD">Bad Temperature</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="humidity">
@@ -141,8 +148,15 @@
 
 	<channel-type id="humidity-rating">
 		<item-type>String</item-type>
-		<label>Rating of current humidity</label>
-		<description>Current measured humidity.</description>
+		<label>Humidity Rating</label>
+		<description>Rating of current measured humidity.</description>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good Humidity</option>
+				<option value="MEDIUM">Medium Humidity</option>
+				<option value="BAD">Bad Humidity</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="energy-consumption">
@@ -179,6 +193,13 @@
 		<item-type>String</item-type>
 		<label>Combined Rating</label>
 		<description>Combined rating of the air quality.</description>
+		<state readOnly="true">
+			<options>
+				<option value="GOOD">Good Quality</option>
+				<option value="MEDIUM">Medium Quality</option>
+				<option value="BAD">Bad Quality</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="contact">
