@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teleinfo"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cbemm_ejp_electricitymeter" listed="false">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serialcontroller"/>
+		</supported-bridge-type-refs>
+
+		<label>CBEMM EJP</label>
+		<description>Single-phase Electricity meter with EJP option - CBEMM (aka "Compteur Bleu Electronique Monophasé
+			Multitarif")</description>
+
+		<channels>
+			<channel id="isousc" typeId="isouscType"/>
+			<channel id="ptec" typeId="ptecType"/>
+			<channel id="imax" typeId="imaxType"/>
+			<channel id="adps" typeId="adpsType"/>
+			<channel id="iinst" typeId="iinstType"/>
+			<channel id="pejp" typeId="pejpType"/>
+			<channel id="ejphpm" typeId="ejphpmType"/>
+			<channel id="ejphn" typeId="ejphnType"/>
+			<channel id="lastUpdate" typeId="lastUpdateType"/>
+		</channels>
+
+		<config-description-ref uri="binding:teleinfo:adco"/>
+
+	</thing-type>
+
+</thing:thing-descriptions>

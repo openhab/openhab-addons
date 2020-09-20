@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tacmi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="cmi" extensible="coe-digital-in,coe-digital-out,coe-analog-in,coe-analog-out">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="coe-bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>TA C.M.I. CoE Connection</label>
+		<description>CoE Communication to the "Technische Alternative C.M.I. Control and Monitoring Interface"</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>C.M.I. IP Address</label>
+				<description>Host name of IP address of the CMI</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="node" type="integer" min="1" max="62" required="true">
+				<label>Node</label>
+				<description>The CoE / CAN Node number openHAB should represent</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<!-- CoE digital Channel Type -->
+	<channel-type id="coe-digital-in">
+		<item-type>Switch</item-type>
+		<label>Digital Input (C.M.I. -> OH)</label>
+		<description>A digital channel sent from C.M.I. to openHAB</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="output" type="integer" min="1" max="32" required="true">
+				<label>Output</label>
+				<description>C.M.I. Network Output</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="coe-digital-out">
+		<item-type>Switch</item-type>
+		<label>Digital Output (OH -> C.M.I.)</label>
+		<description>A digital channel sent from OpenHAB to C.M.I.</description>
+		<config-description>
+			<parameter name="output" type="integer" min="1" max="32" required="true">
+				<label>Output</label>
+				<description>Network Output</description>
+			</parameter>
+			<parameter name="initialValue" type="boolean" required="false">
+				<label>Initial Value</label>
+				<description>Initial value to set after startup (optional, defaults to uninitialized)</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<!-- COA analog Channel Type -->
+	<channel-type id="coe-analog-in">
+		<item-type>Number</item-type>
+		<label>Analog Input Channel (C.M.I. -> OH)</label>
+		<description>A Analog Channel received from the C.M.I.</description>
+		<state readOnly="true"/>
+		<config-description>
+			<parameter name="output" type="integer" min="1" max="32" required="true">
+				<label>Output</label>
+				<description>C.M.I. Network Output</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+	<channel-type id="coe-analog-out">
+		<item-type>Number</item-type>
+		<label>Analog Output Channel (OH -> C.M.I.)</label>
+		<description>A Analog Channel sent to the C.M.I.</description>
+		<config-description>
+			<parameter name="output" type="integer" min="1" max="32" required="true">
+				<label>Output</label>
+				<description>Network Output</description>
+			</parameter>
+			<parameter name="type" type="integer" min="0" max="21" required="true">
+				<label>Measurement Type</label>
+				<description>Measurement type for this channel</description>
+				<options>
+					<option value="0">None</option>
+					<option value="1">Temperature</option>
+					<option value="2">Unknown 2</option>
+					<option value="3">Unknown 3</option>
+					<option value="4">Seconds</option>
+					<option value="5">Unknown 5</option>
+					<option value="6">Unknown 6</option>
+					<option value="7">Unknown 7</option>
+					<option value="8">Unknown 8</option>
+					<option value="9">Unknown 9</option>
+					<option value="10">kW (Kilowatt) </option>
+					<option value="11">kWh (Kilowatt hours)</option>
+					<option value="12">MWh (Megawatt hours)</option>
+					<option value="13">Unknown 13</option>
+					<option value="14">Unknown 14</option>
+					<option value="15">Unknown 15</option>
+					<option value="16">Unknown 16</option>
+					<option value="17">Unknown 17</option>
+					<option value="18">Unknown 18</option>
+					<option value="19">Unknown 19</option>
+					<option value="20">Unknown 20</option>
+					<option value="21">Unknown 21</option>
+				</options>
+			</parameter>
+			<parameter name="initialValue" type="decimal" required="false">
+				<label>Initial Value</label>
+				<description>Initial value to set after startup (optional, defaults to uninitialized)</description>
+			</parameter>
+		</config-description>
+	</channel-type>
+
+	<thing-type id="cmiSchema" extensible="schema-switch-ro,schema-switch-rw,schema-numeric-ro,schema-state-ro">
+		<label>TA C.M.I. Schema API Connection</label>
+		<description>Communication to a special "API" schema page on a "Technische Alternative C.M.I. Control and Monitoring
+			Interface"</description>
+
+		<config-description>
+			<parameter name="host" type="text" required="true">
+				<label>C.M.I. IP Address</label>
+				<description>Host name or IP address of the C.M.I.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+				<description>Username for authentication on the C.M.I.</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for authentication on the C.M.I.</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="schemaId" type="integer" min="0" max="256" required="true">
+				<label>API Schema Id</label>
+				<description>ID of the schema API page</description>
+			</parameter>
+			<parameter name="pollInterval" type="integer" min="1" max="900" required="true">
+				<label>Poll Interval</label>
+				<description>Poll interval (in seconds) how often to poll the API Page</description>
+				<default>10</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- some default schema channel types -->
+	<channel-type id="schema-switch-ro">
+		<item-type>Switch</item-type>
+		<label>Switch State (Read-Only)</label>
+		<description>An On/Off state read from C.M.I.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schema-switch-rw">
+		<item-type>Switch</item-type>
+		<label>Switch State (Changeable)</label>
+		<description>A modifiable On/Off state read from C.M.I.</description>
+	</channel-type>
+	<channel-type id="schema-numeric-ro">
+		<item-type>Number</item-type>
+		<label>Value</label>
+		<description>A numeric value read from C.M.I.</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="schema-state-ro">
+		<item-type>String</item-type>
+		<label>Value</label>
+		<description>A state value read from C.M.I.</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

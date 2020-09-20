@@ -1,0 +1,15 @@
+{
+  "actions": {
+    "radio.next": {},
+    "radio.play": {},
+    "radio.prev": {},
+    "radio.stop": {}
+  },
+  "package": "com.lametric.radio",
+  "vendor": "LaMetric",
+  "version": "1.0.10",
+  "version_code": "22",
+  "widgets": {
+    "589ed1b3fcdaa5180bf4848e55ba8061": {}
+  }
+}

@@ -1,0 +1,1185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="comfoair"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="comfoair">
+		<label>Generic ComfoAir Ventilation System</label>
+		<description>Provides a generic access to a ComfoAir compatible ventilation system</description>
+
+		<channel-groups>
+			<channel-group id="bindingControl" typeId="bindingControl"/>
+			<channel-group id="ventilation" typeId="ventilation"/>
+			<channel-group id="temperatures" typeId="temperatures"/>
+			<channel-group id="times" typeId="times"/>
+			<channel-group id="bypass" typeId="bypass"/>
+			<channel-group id="preheater" typeId="preheater"/>
+			<channel-group id="ewt" typeId="ewt"/>
+			<channel-group id="heater" typeId="heater"/>
+			<channel-group id="cookerhood" typeId="cookerhood"/>
+			<channel-group id="enthalpy" typeId="enthalpy"/>
+			<channel-group id="menuP1" typeId="menuP1"/>
+			<channel-group id="menuP2" typeId="menuP2"/>
+			<channel-group id="menuP9" typeId="menuP9"/>
+			<channel-group id="inputs" typeId="inputs"/>
+			<channel-group id="analog1" typeId="analog">
+				<label>Analog Inputs 1</label>
+			</channel-group>
+			<channel-group id="analog2" typeId="analog">
+				<label>Analog Inputs 2</label>
+			</channel-group>
+			<channel-group id="analog3" typeId="analog">
+				<label>Analog Inputs 3</label>
+			</channel-group>
+			<channel-group id="analog4" typeId="analog">
+				<label>Analog Inputs 4</label>
+			</channel-group>
+			<channel-group id="analogRF" typeId="analogRF"/>
+			<channel-group id="errors" typeId="errors"/>
+			<channel-group id="resets" typeId="resets"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="true">
+				<label>Serial Port</label>
+				<context>serial-port</context>
+				<description>Serial port that the ComfoAir is connected to</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" max="65535" min="10" unit="s" required="false">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-group-type id="bindingControl">
+		<label>Binding Control</label>
+		<channels>
+			<channel id="activate" typeId="activate"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ventilation">
+		<label>Ventilation Values</label>
+		<channels>
+			<channel id="fanLevel" typeId="fan_evel"/>
+			<channel id="fanOut0" typeId="fan_out_0"/>
+			<channel id="fanOut1" typeId="fan_out_1"/>
+			<channel id="fanOut2" typeId="fan_out_2"/>
+			<channel id="fanOut3" typeId="fan_out_3"/>
+			<channel id="fanIn0" typeId="fan_in_0"/>
+			<channel id="fanIn1" typeId="fan_in_1"/>
+			<channel id="fanIn2" typeId="fan_in_2"/>
+			<channel id="fanIn3" typeId="fan_in_3"/>
+			<channel id="fanInPercent" typeId="fan_in_percent"/>
+			<channel id="fanOutPercent" typeId="fan_out_percent"/>
+			<channel id="fanInRPM" typeId="fan_in_RPM"/>
+			<channel id="fanOutRPM" typeId="fan_out_RPM"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="temperatures">
+		<label>Temperature Values</label>
+		<channels>
+			<channel id="targetTemperature" typeId="target_temperature"/>
+			<channel id="outdoorTemperatureIn" typeId="outdoor_temperature_in"/>
+			<channel id="outdoorTemperatureOut" typeId="outdoor_temperature_out"/>
+			<channel id="indoorTemperatureIn" typeId="indoor_temperature_in"/>
+			<channel id="indoorTemperatureOut" typeId="indoor_temperature_out"/>
+			<channel id="isT1Sensor" typeId="is_T1_sensor"/>
+			<channel id="isT2Sensor" typeId="is_T2_sensor"/>
+			<channel id="isT3Sensor" typeId="is_T3_sensor"/>
+			<channel id="isT4Sensor" typeId="is_T4_sensor"/>
+			<channel id="isEWTSensor" typeId="is_EWT_sensor"/>
+			<channel id="isHeaterSensor" typeId="is_heater_sensor"/>
+			<channel id="isCookerhoodSensor" typeId="is_cookerhood_sensor"/>
+			<channel id="ewtTemperature" typeId="ewt_temperature"/>
+			<channel id="heaterTemperature" typeId="heater_temperature"/>
+			<channel id="cookerhoodTemperature" typeId="cookerhood_temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="times">
+		<label>Uptimes</label>
+		<channels>
+			<channel id="level0Time" typeId="level0_time"/>
+			<channel id="level1Time" typeId="level1_time"/>
+			<channel id="level2Time" typeId="level2_time"/>
+			<channel id="level3Time" typeId="level3_time"/>
+			<channel id="freezeTime" typeId="freeze_time"/>
+			<channel id="preheaterTime" typeId="preheater_time"/>
+			<channel id="bypassTime" typeId="bypass_time"/>
+			<channel id="filterHours" typeId="filter_hours"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="bypass">
+		<label>Bypass Values</label>
+		<channels>
+			<channel id="bypassFactor" typeId="bypass_factor"/>
+			<channel id="bypassLevel" typeId="bypass_level"/>
+			<channel id="bypassCorrection" typeId="bypass_correction"/>
+			<channel id="bypassSummer" typeId="bypass_summer"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="preheater">
+		<label>Preheater Values</label>
+		<channels>
+			<channel id="preheaterValve" typeId="preheater_valve"/>
+			<channel id="preheaterFrostProtect" typeId="preheater_frost_protect"/>
+			<channel id="preheaterHeating" typeId="preheater_heating"/>
+			<channel id="preheaterFrostTime" typeId="preheater_frost_time"/>
+			<channel id="preheaterSafety" typeId="preheater_safety"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ewt">
+		<label>EWT Values</label>
+		<channels>
+			<channel id="ewtTemperatureLow" typeId="ewt_temperature_low"/>
+			<channel id="ewtTemperatureHigh" typeId="ewt_temperature_high"/>
+			<channel id="ewtSpeed" typeId="ewt_speed"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="heater">
+		<label>Heater Values</label>
+		<channels>
+			<channel id="heaterPower" typeId="heater_power"/>
+			<channel id="heaterPowerI" typeId="heater_power_I"/>
+			<channel id="heaterTargetTemperature" typeId="heater_target_temperature"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="cookerhood">
+		<label>Cookerhood Values</label>
+		<channels>
+			<channel id="cookerhoodSpeed" typeId="cookerhood_speed"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="enthalpy">
+		<label>Enthalpy Values</label>
+		<channels>
+			<channel id="enthalpyTemperature" typeId="enthalpy_temperature"/>
+			<channel id="enthalpyHumidity" typeId="enthalpy_humidity"/>
+			<channel id="enthalpyLevel" typeId="enthalpy_level"/>
+			<channel id="enthalpyTime" typeId="enthalpy_time"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="menuP1">
+		<label>Menu P1: Control States</label>
+		<channels>
+			<channel id="menu20Mode" typeId="menu20_mode"/>
+			<channel id="menu21Mode" typeId="menu21_mode"/>
+			<channel id="menu22Mode" typeId="menu22_mode"/>
+			<channel id="menu23Mode" typeId="menu23_mode"/>
+			<channel id="menu24Mode" typeId="menu24_mode"/>
+			<channel id="menu25Mode" typeId="menu25_mode"/>
+			<channel id="menu26Mode" typeId="menu26_mode"/>
+			<channel id="menu27Mode" typeId="menu27_mode"/>
+			<channel id="menu28Mode" typeId="menu28_mode"/>
+			<channel id="menu29Mode" typeId="menu29_mode"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="menuP2">
+		<label>Menu P2: Delay Settings</label>
+		<channels>
+			<channel id="bathroomStartDelay" typeId="bathroom_start_delay"/>
+			<channel id="bathroomEndDelay" typeId="bathroom_end_delay"/>
+			<channel id="L1EndDelay" typeId="L1_end_delay"/>
+			<channel id="pulseVentilation" typeId="pulse_ventilation"/>
+			<channel id="filterWeeks" typeId="filter_weeks"/>
+			<channel id="RFShortDelay" typeId="RF_short_delay"/>
+			<channel id="RFLongDelay" typeId="RF_long_delay"/>
+			<channel id="cookerhoodDelay" typeId="cookerhood_delay"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="menuP9">
+		<label>Menu P9: Option Control States</label>
+		<channels>
+			<channel id="chimneyState" typeId="chimney_state"/>
+			<channel id="bypassState" typeId="bypass_state"/>
+			<channel id="ewtState" typeId="ewt_state"/>
+			<channel id="heaterState" typeId="heater_state"/>
+			<channel id="vControlState" typeId="v_control_state"/>
+			<channel id="frostState" typeId="frost_state"/>
+			<channel id="cookerhoodState" typeId="cookerhood_state"/>
+			<channel id="enthalpyState" typeId="enthalpy_state"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="inputs">
+		<label>Inputs</label>
+		<channels>
+			<channel id="isL1Switch" typeId="is_L1_switch"/>
+			<channel id="isL2Switch" typeId="is_L2_switch"/>
+			<channel id="isBathroomSwitch" typeId="is_bathroom_switch"/>
+			<channel id="isCookerhoodSwitch" typeId="is_cookerhood_switch"/>
+			<channel id="isExternalFilter" typeId="is_external_filter"/>
+			<channel id="isWTW" typeId="is_wtw"/>
+			<channel id="isBathroom2Switch" typeId="is_bathroom2_switch"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="analog">
+		<label>Analog Inputs</label>
+		<channels>
+			<channel id="isAnalog" typeId="is_analog"/>
+			<channel id="analogMode" typeId="analog_mode"/>
+			<channel id="analogNegative" typeId="analog_negative"/>
+			<channel id="analogVolt" typeId="analog_volt"/>
+			<channel id="analogMin" typeId="analog_min"/>
+			<channel id="analogMax" typeId="analog_max"/>
+			<channel id="analogValue" typeId="analog_value"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="analogRF">
+		<label>RF Input</label>
+		<channels>
+			<channel id="isRF" typeId="is_RF"/>
+			<channel id="RFMode" typeId="RF_mode"/>
+			<channel id="RFNegative" typeId="RF_negative"/>
+			<channel id="RFMin" typeId="RF_min"/>
+			<channel id="RFMax" typeId="RF_max"/>
+			<channel id="RFValue" typeId="RF_value"/>
+			<channel id="analogPriority" typeId="analog_priority"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="errors">
+		<label>Error States</label>
+		<channels>
+			<channel id="filterError" typeId="filter_error"/>
+			<channel id="errorsCurrent" typeId="errors_current"/>
+			<channel id="errorsLast" typeId="errors_last"/>
+			<channel id="errorsPrelast" typeId="errors_prelast"/>
+			<channel id="errorsPrePrelast" typeId="errors_pre_prelast"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="resets">
+		<label>Reset</label>
+		<channels>
+			<channel id="filterReset" typeId="filter_reset"/>
+			<channel id="errorReset" typeId="error_reset"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="activate">
+		<item-type>Switch</item-type>
+		<label>Activate Binding Control</label>
+		<description>Activate (control through openHAB) or deactivate (return control to CCEase) binding control</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_evel">
+		<item-type>Number</item-type>
+		<label>Fan Level</label>
+		<description>Fan level</description>
+		<category>Number</category>
+		<state readOnly="false">
+			<options>
+				<option value="1">Away</option>
+				<option value="2">Level 1</option>
+				<option value="3">Level 2</option>
+				<option value="4">Level 3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="target_temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Target Temperature</label>
+		<description>Target (comfort) temperature</description>
+		<category>Temperature</category>
+		<state min="12" max="28" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filter_error">
+		<item-type>Switch</item-type>
+		<label>Filter Error</label>
+		<description>Filter full</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="filter_reset">
+		<item-type>Number</item-type>
+		<label>Filter Reset</label>
+		<description>Reset filter uptime</description>
+		<category>Switch</category>
+		<command>
+			<options>
+				<option value="1">Reset</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="error_reset">
+		<item-type>Number</item-type>
+		<label>Error Reset</label>
+		<description>Reset errors</description>
+		<category>Switch</category>
+		<command>
+			<options>
+				<option value="1">Reset</option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="fan_out_0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Out Level 0 (away)</label>
+		<description>Fan level 0 performance (%) of outgoing fan</description>
+		<category>Number</category>
+		<state min="0" max="97" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_out_1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Out Level 1</label>
+		<description>Fan level 1 performance (%) of outgoing fan</description>
+		<category>Number</category>
+		<state min="16" max="98" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_out_2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Out Level 2</label>
+		<description>Fan level 2 performance (%) of outgoing fan</description>
+		<category>Number</category>
+		<state min="17" max="99" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_out_3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Out Level 3</label>
+		<description>Fan level 3 performance (%) of outgoing fan</description>
+		<category>Number</category>
+		<state min="18" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_in_0" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan In Level 0 (away)</label>
+		<description>Fan level 0 performance (%) of incoming fan</description>
+		<category>Number</category>
+		<state min="0" max="97" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_in_1" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan In Level 1</label>
+		<description>Fan level 1 performance (%) of incoming fan</description>
+		<category>Number</category>
+		<state min="16" max="98" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_in_2" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan In Level 2</label>
+		<description>Fan level 2 performance (%) of incoming fan</description>
+		<category>Number</category>
+		<state min="17" max="99" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_in_3" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan In Level 3</label>
+		<description>Fan level 3 performance (%) of incoming fan</description>
+		<category>Number</category>
+		<state min="18" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="fan_in_percent">
+		<item-type>Number</item-type>
+		<label>Fan In (%)</label>
+		<description>Current relative speed (%) of incoming fan</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fan_out_percent">
+		<item-type>Number</item-type>
+		<label>Fan Out (%)</label>
+		<description>Current relative speed (%) of outgoing fan</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fan_in_RPM" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan In (rpm)</label>
+		<description>Current absolute speed (rpm) of incoming fan</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fan_out_RPM" advanced="true">
+		<item-type>Number</item-type>
+		<label>Fan Out (rpm)</label>
+		<description>Current absolute speed (rpm) of outgoing fan</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="outdoor_temperature_in">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature Incoming</label>
+		<description>Intake air temperature (outside)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="outdoor_temperature_out">
+		<item-type>Number:Temperature</item-type>
+		<label>Outdoor Temperature Outgoing</label>
+		<description>Outlet air temperature (outside)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="indoor_temperature_in">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature Incoming</label>
+		<description>Inlet air temperature (inside)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="indoor_temperature_out">
+		<item-type>Number:Temperature</item-type>
+		<label>Indoor Temperature Outgoing</label>
+		<description>Uptake air temperature (inside)</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="is_T1_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensor T1 Available</label>
+		<description>Availability of temperature sensor T1 (outdoor in)</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_T2_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensor T2 Available</label>
+		<description>Availability of temperature sensor T2 (indoor in)</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_T3_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensor T3 Available</label>
+		<description>Availability of temperature sensor T3 (indoor out)</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_T4_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Sensor T4 Available</label>
+		<description>Availability of temperature sensor T4 (outdoor out)</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_EWT_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>EWT Sensor Available</label>
+		<description>Availability of EWT temperature sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_heater_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heater Sensor Available</label>
+		<description>Availability of heater temperature sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_cookerhood_sensor" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Cookerhood Sensor Available</label>
+		<description>Availability of cookerhood temperature sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="chimney_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Chimney Control State</label>
+		<description>State of the chimney control</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bypass_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bypass State</label>
+		<description>State of the bypass (ON = open / OFF = closed)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ewt_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>EWT State</label>
+		<description>State of the EWT valve (ON = open / OFF = closed)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heater State</label>
+		<description>State of the heater</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="v_control_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>0-10V Control State</label>
+		<description>State of the 0-10V control</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="frost_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Antifrost State</label>
+		<description>State of the antifrost control</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cookerhood_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Cookerhood State</label>
+		<description>State of the cookerhood control</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enthalpy_state" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enthalpy State</label>
+		<description>State of the enthalpy module</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ewt_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>EWT Temperature</label>
+		<description>Temperature of geothermal heat exchanger sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heater_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heater Temperature</label>
+		<description>Temperature of heater sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookerhood_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Cookerhood Temperature</label>
+		<description>Temperature of cookerhood sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="level0_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Level 0 Duration</label>
+		<description>Uptime at level 0 (away)</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="level1_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Level 1 Duration</label>
+		<description>Uptime at level 1</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="level2_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Level 2 Duration</label>
+		<description>Uptime at level 2</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="level3_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Level 3 Duration</label>
+		<description>Uptime at level 3</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="freeze_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Antifrost Duration</label>
+		<description>Uptime of antifrost</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="preheater_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Preheater Duration</label>
+		<description>Uptime of preheater</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="bypass_time" advanced="true">
+		<item-type>Number:Time</item-type>
+		<label>Bypass Duration</label>
+		<description>Hours of bypass open</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="filter_hours">
+		<item-type>Number:Time</item-type>
+		<label>Filter Duration</label>
+		<description>Uptime of the filter</description>
+		<category>Time</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="bypass_factor" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bypass Factor</label>
+		<description>Bypass factor value</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bypass_level" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bypass Level</label>
+		<description>Bypass level state</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bypass_correction" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bypass Correction</label>
+		<description>Bypass correction state</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="bypass_summer" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bypass Summer Mode</label>
+		<description>Bypass summer mode</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="preheater_valve" advanced="true">
+		<item-type>Number</item-type>
+		<label>Preheater Valve</label>
+		<description>State of the preheater valve</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="preheater_frost_protect" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Frost Protection</label>
+		<description>State of the frost protection</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="preheater_heating" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Preheater</label>
+		<description>State of the preheater</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="preheater_frost_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Preheater Frost Time</label>
+		<description>Frost minutes</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="preheater_safety" advanced="true">
+		<item-type>Number</item-type>
+		<label>Preheater Frost Safety</label>
+		<description>Frost safety setting</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="ewt_temperature_low" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>EWT Temperature (low)</label>
+		<description>Lower temperature of the geothermal heat exchanger</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ewt_temperature_high" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>EWT Temperature (high)</label>
+		<description>Upper temperature of the geothermal heat exchanger</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="ewt_speed" advanced="true">
+		<item-type>Number</item-type>
+		<label>EWT Speed Up (%)</label>
+		<description>Speed up of the geothermal heat exchanger</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater_power" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heater Power</label>
+		<description>Heater power value</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater_power_I" advanced="true">
+		<item-type>Number</item-type>
+		<label>Heater Power I-Parameter</label>
+		<description>Heater power I-parameter value</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="heater_target_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Heater Target Temperature</label>
+		<description>Target temperature of the heater</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cookerhood_speed" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cookerhood Speed Up (%)</label>
+		<description>Speed up of the cookerhood</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enthalpy_temperature" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Enthalpy Sensor Temperature</label>
+		<description>Temperature of the enthalpy sensor</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="enthalpy_humidity" advanced="true">
+		<item-type>Number</item-type>
+		<label>Enthalpy Sensor Humidity</label>
+		<description>Humidity of the enthalpy sensor</description>
+		<category>Humidity</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enthalpy_level" advanced="true">
+		<item-type>Number</item-type>
+		<label>Enthalpy Sensor Level</label>
+		<description>Level of the enthalpy sensor</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="enthalpy_time" advanced="true">
+		<item-type>Number</item-type>
+		<label>Enthalpy Sensor Timer</label>
+		<description>Timer state of the enthalpy sensor</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_L1_switch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>L1 Switch</label>
+		<description>Availability of L1 step switch</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_L2_switch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>L2 Switch</label>
+		<description>Availability of L2 step switch</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_bathroom_switch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bathroom Switch</label>
+		<description>Availability of bathroom switch</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_cookerhood_switch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Cookerhood Switch</label>
+		<description>Availability of cookerhood switch</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_external_filter" advanced="true">
+		<item-type>Switch</item-type>
+		<label>External Filter</label>
+		<description>Availability of external filter</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_wtw" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Heat Recovery</label>
+		<description>Availability of heat recovery (WTW)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="is_bathroom2_switch" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Bathroom Switch 2</label>
+		<description>Availability of bathroom switch 2 (luxe)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu20_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 20 Mode (P10)</label>
+		<description>State of menu 20 mode (P10)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu21_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 21 Mode (P11)</label>
+		<description>State of menu 21 mode (P11)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu22_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 22 Mode (P12)</label>
+		<description>State of menu 22 mode (P12)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu23_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 23 Mode (P13)</label>
+		<description>State of menu 23 mode (P13)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu24_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 24 Mode (P14)</label>
+		<description>State of menu 24 mode (P14)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu25_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 25 Mode (P15)</label>
+		<description>State of menu 25 mode (P15)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu26_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 26 Mode (P16)</label>
+		<description>State of menu 26 mode (P16)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu27_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 27 Mode (P17)</label>
+		<description>State of menu 27 mode (P17)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu28_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 28 Mode (P18)</label>
+		<description>State of menu 28 mode (P18)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="menu29_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Menu 29 Mode (P19)</label>
+		<description>State of menu 29 mode (P19)</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="cookerhood_delay" advanced="true">
+		<item-type>Number</item-type>
+		<label>Cookerhood Delay (P20)</label>
+		<description>End delay for cooker hood control (min)</description>
+		<category>Time</category>
+		<state min="0" max="180" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="bathroom_start_delay" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bathroom Switch Start Delay (P21)</label>
+		<description>Start delay for bathroom switch (min)</description>
+		<category>Time</category>
+		<state min="0" max="120" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="bathroom_end_delay" advanced="true">
+		<item-type>Number</item-type>
+		<label>Bathroom Switch End Delay (P22)</label>
+		<description>End delay for bathroom switch (min)</description>
+		<category>Time</category>
+		<state min="0" max="120" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="L1_end_delay" advanced="true">
+		<item-type>Number</item-type>
+		<label>L1 Switch End Delay (P23)</label>
+		<description>End delay for L1 switch (min)</description>
+		<category>Time</category>
+		<state min="0" max="120" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="filter_weeks" advanced="true">
+		<item-type>Number</item-type>
+		<label>Filter Period (P24)</label>
+		<description>Usage period until filter pollution message (weeks)</description>
+		<category>Time</category>
+		<state min="10" max="26" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_short_delay" advanced="true">
+		<item-type>Number</item-type>
+		<label>RF Short Delay (P25)</label>
+		<description>End delay (RF short actuation) for ventilation level 3 (min)</description>
+		<category>Time</category>
+		<state min="1" max="20" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_long_delay" advanced="true">
+		<item-type>Number</item-type>
+		<label>RF Long Delay (P26)</label>
+		<description>End delay (RF long actuation) for ventilation level 3 (min)</description>
+		<category>Time</category>
+		<state min="1" max="120" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pulse_ventilation" advanced="true">
+		<item-type>Number</item-type>
+		<label>Pulse Ventilation Period (P27)</label>
+		<description>Period for pulse ventilation (min)</description>
+		<category>Time</category>
+		<state min="0" max="120" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="is_analog" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Analog Input Availability</label>
+		<description>Availability of analog input</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="is_RF" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RF Input Availability</label>
+		<description>Availability of RF input</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="analog_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Analog Input State</label>
+		<description>State of analog input</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_mode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RF Input State</label>
+		<description>State of RF input</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="analog_negative" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Analog Input Postive/Negative</label>
+		<description>Postive/Negative state of analog input</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_negative" advanced="true">
+		<item-type>Switch</item-type>
+		<label>RF Input Postive/Negative</label>
+		<description>Postive/Negative state of RF input</description>
+		<category>Switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="analog_volt" advanced="true">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Analog Input Voltage Level</label>
+		<description>Voltage level of analog input</description>
+		<category>Number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="analog_min" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Input Min</label>
+		<description>Minimum setting for analog input</description>
+		<category>Number</category>
+		<state min="0" max="99" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="analog_max" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Input Max</label>
+		<description>Maximum setting for analog input</description>
+		<category>Number</category>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="analog_value" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Input Target</label>
+		<description>Target setting for analog input</description>
+		<category>Number</category>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_min" advanced="true">
+		<item-type>Number</item-type>
+		<label>RF Input Min</label>
+		<description>Minimum setting for RF input</description>
+		<category>Number</category>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_max" advanced="true">
+		<item-type>Number</item-type>
+		<label>RF Input Max</label>
+		<description>Maximum setting for RF input</description>
+		<category>Number</category>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="RF_value" advanced="true">
+		<item-type>Number</item-type>
+		<label>RF Input Target</label>
+		<description>Target setting for RF input</description>
+		<category>Number</category>
+		<state min="0" max="100" step="1" readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="analog_priority" advanced="true">
+		<item-type>Number</item-type>
+		<label>Analog Priority</label>
+		<description>Priority of control</description>
+		<category>Number</category>
+		<state readOnly="false">
+			<options>
+				<option value="0">Analog inputs</option>
+				<option value="1">Schedule</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="errors_current">
+		<item-type>String</item-type>
+		<label>Error Current</label>
+		<description>Current errors</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errors_last" advanced="true">
+		<item-type>String</item-type>
+		<label>Errors Last</label>
+		<description>Last errors</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errors_prelast" advanced="true">
+		<item-type>String</item-type>
+		<label>Errors Prelast</label>
+		<description>Prelast errors</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="errors_pre_prelast" advanced="true">
+		<item-type>String</item-type>
+		<label>Errors Pre-Prelast</label>
+		<description>Pre-Prelast errors</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

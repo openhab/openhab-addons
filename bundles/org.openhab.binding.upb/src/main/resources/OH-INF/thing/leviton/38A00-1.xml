@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="upb" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="leviton-38a00-1">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="serial-pim"/>
+		</supported-bridge-type-refs>
+		<label>Leviton UPB 6-Button Scene Switch</label>
+		<description>A wall-mounted panel with six pushbuttons labeled ON, A, B, C, D, and OFF.</description>
+		<category>WallSwitch</category>
+
+		<channels>
+			<channel id="btnOn" typeId="scene-selection">
+				<label>ON Button</label>
+			</channel>
+			<channel id="btnOff" typeId="scene-selection">
+				<label>OFF Button</label>
+			</channel>
+			<channel id="btnA" typeId="scene-selection">
+				<label>Scene A</label>
+			</channel>
+			<channel id="btnB" typeId="scene-selection">
+				<label>Scene B</label>
+			</channel>
+			<channel id="btnC" typeId="scene-selection">
+				<label>Scene C</label>
+			</channel>
+			<channel id="btnD" typeId="scene-selection">
+				<label>Scene D</label>
+			</channel>
+		</channels>
+
+		<config-description-ref uri="upb:device:address"/>
+	</thing-type>
+</thing:thing-descriptions>

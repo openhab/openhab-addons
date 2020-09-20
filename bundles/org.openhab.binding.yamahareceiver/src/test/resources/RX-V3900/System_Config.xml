@@ -1,0 +1,12 @@
+<YAMAHA_AV rsp="GET" RC="0">
+    <System>
+        <Config>
+            <Model_Name>RX-V3900</Model_Name>
+            <System_ID>0CE4E483</System_ID>
+            <Version>
+                <Main> Y.0125.0205</Main>
+                <Sub>V119</Sub>
+            </Version>
+        </Config>
+    </System>
+</YAMAHA_AV>

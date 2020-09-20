@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="heatpump">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="tcp"/>
+			<bridge-type-ref id="serial"/>
+		</supported-bridge-type-refs>
+		<label>Stiebel Eltron ISG</label>
+		<description>Stiebel Eltron ISG connected through modbus</description>
+
+		<channel-groups>
+			<channel-group id="systemState" typeId="system-state"/>
+			<channel-group id="systemParameter" typeId="system-parameter"/>
+			<channel-group id="systemInformation" typeId="system-information"/>
+			<channel-group id="energyInformation" typeId="energy-information"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:stiebeleltron:modbusconfig"/>
+
+	</thing-type>
+
+
+</thing:thing-descriptions>

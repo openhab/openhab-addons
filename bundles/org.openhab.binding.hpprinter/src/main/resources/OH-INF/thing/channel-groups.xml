@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="hpprinter"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Channel Groups -->
+
+	<channel-group-type id="ink">
+		<label>Ink/Toner Levels</label>
+		<description>Ink/Toner amounts for each cartridge.</description>
+	</channel-group-type>
+
+	<channel-group-type id="usageInfo">
+		<label>Printer</label>
+		<description>Print Engine Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="printerStatus">
+		<label>Status</label>
+		<description>Printer Statuses</description>
+	</channel-group-type>
+
+	<channel-group-type id="scanner">
+		<label>Scanner</label>
+		<description>Scanner Engine Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="scan">
+		<label>Scan</label>
+		<description>Scan Application Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="copy">
+		<label>Copy</label>
+		<description>Copy Application Usage Information</description>
+	</channel-group-type>
+
+	<channel-group-type id="app">
+		<label>Application</label>
+		<description>Application Usage by Device or Operating System</description>
+	</channel-group-type>
+
+	<channel-group-type id="other">
+		<label>Other</label>
+		<description>Other Usage or Details</description>
+	</channel-group-type>
+
+</thing:thing-descriptions>

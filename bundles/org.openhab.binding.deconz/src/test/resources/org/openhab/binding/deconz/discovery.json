@@ -1,0 +1,1911 @@
+{
+  "config": {
+    "UTC": "2020-05-14T18:12:08",
+    "apiversion": "1.16.0",
+    "backup": {
+      "errorcode": 0,
+      "status": "idle"
+    },
+    "bridgeid": "FFFFFFFFFFFFFFFF",
+    "datastoreversion": "60",
+    "devicename": "RaspBee",
+    "dhcp": true,
+    "factorynew": false,
+    "fwversion": "0x26330500",
+    "gateway": "192.168.0.1",
+    "internetservices": {
+      "remoteaccess": "disconnected"
+    },
+    "ipaddress": "192.168.0.2",
+    "linkbutton": false,
+    "localtime": "2020-05-14T20:12:08",
+    "mac": "b8:27:ee:99:ff:ff",
+    "modelid": "deCONZ",
+    "name": "Phoscon",
+    "netmask": "255.255.255.0",
+    "networkopenduration": 180,
+    "ntp": "synced",
+    "panid": 62765,
+    "portalconnection": "disconnected",
+    "portalservices": false,
+    "portalstate": {
+      "communication": "disconnected",
+      "incoming": false,
+      "outgoing": false,
+      "signedon": false
+    },
+    "proxyaddress": "none",
+    "proxyport": 0,
+    "replacesbridgeid": null,
+    "rfconnected": true,
+    "starterkitid": "",
+    "swupdate": {
+      "checkforupdate": false,
+      "devicetypes": {
+        "bridge": false,
+        "lights": [],
+        "sensors": []
+      },
+      "notify": false,
+      "text": "",
+      "updatestate": 0,
+      "url": ""
+    },
+    "swupdate2": {
+      "autoinstall": {
+        "on": false,
+        "updatetime": ""
+      },
+      "bridge": {
+        "lastinstall": "2019-12-12T11:40:44",
+        "state": "allreadytoinstall"
+      },
+      "checkforupdate": false,
+      "install": false,
+      "lastchange": "",
+      "lastinstall": "",
+      "state": "allreadytoinstall"
+    },
+    "swversion": "2.5.72",
+    "timeformat": "24h",
+    "timezone": "Europe/Berlin",
+    "uuid": "56000a00-11e1-4b11-aaa8-22229e6d1111",
+    "websocketnotifyall": true,
+    "websocketport": 443,
+    "whitelist": {},
+    "zigbeechannel": 15
+  },
+  "groups": {
+    "10": {
+      "action": {
+        "bri": 127,
+        "colormode": "hs",
+        "ct": 0,
+        "effect": "none",
+        "hue": 0,
+        "on": false,
+        "sat": 127,
+        "scene": null,
+        "xy": [
+          0,
+          0
+        ]
+      },
+      "devicemembership": [],
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "id": "10",
+      "lights": [
+        "6"
+      ],
+      "name": "SZR",
+      "scenes": [],
+      "state": {
+        "all_on": false,
+        "any_on": false
+      },
+      "type": "LightGroup"
+    },
+    "3": {
+      "action": {
+        "bri": 127,
+        "colormode": "hs",
+        "ct": 0,
+        "effect": "none",
+        "hue": 0,
+        "on": true,
+        "sat": 127,
+        "scene": null,
+        "xy": [
+          0,
+          0
+        ]
+      },
+      "devicemembership": [],
+      "etag": "1a8cc2ec9874ea4bc2fd370ada3bea97",
+      "id": "3",
+      "lights": [
+        "4"
+      ],
+      "name": "Laura",
+      "scenes": [],
+      "state": {
+        "all_on": true,
+        "any_on": true
+      },
+      "type": "LightGroup"
+    },
+    "5": {
+      "action": {
+        "bri": 127,
+        "colormode": "hs",
+        "ct": 0,
+        "effect": "none",
+        "hue": 0,
+        "on": false,
+        "sat": 127,
+        "scene": null,
+        "xy": [
+          0,
+          0
+        ]
+      },
+      "devicemembership": [],
+      "etag": "e5cbfa7fc80de32dac6a3196e2616850",
+      "id": "5",
+      "lights": [
+        "1",
+        "5"
+      ],
+      "name": "Schlafzimmer",
+      "scenes": [],
+      "state": {
+        "all_on": false,
+        "any_on": false
+      },
+      "type": "LightGroup"
+    },
+    "8": {
+      "action": {
+        "bri": 127,
+        "colormode": "hs",
+        "ct": 0,
+        "effect": "none",
+        "hue": 0,
+        "on": false,
+        "sat": 127,
+        "scene": null,
+        "xy": [
+          0,
+          0
+        ]
+      },
+      "devicemembership": [
+        "2"
+      ],
+      "etag": "9c5c19edbbb64bd7f6e384d31238201d",
+      "id": "8",
+      "lights": [],
+      "name": "TRÅDFR Laura",
+      "scenes": [],
+      "state": {
+        "all_on": false,
+        "any_on": false
+      },
+      "type": "LightGroup",
+      "uniqueid": "90:fd:9f:ff:fe:17:75:a3"
+    },
+    "9": {
+      "action": {
+        "bri": 127,
+        "colormode": "hs",
+        "ct": 0,
+        "effect": "none",
+        "hue": 0,
+        "on": false,
+        "sat": 127,
+        "scene": null,
+        "xy": [
+          0,
+          0
+        ]
+      },
+      "devicemembership": [
+        "11"
+      ],
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "id": "9",
+      "lights": [],
+      "name": "TRADFRI open/close remote ",
+      "scenes": [],
+      "state": {
+        "all_on": false,
+        "any_on": false
+      },
+      "type": "LightGroup",
+      "uniqueid": "68:0a:e2:ff:fe:3c:f3:71"
+    }
+  },
+  "lights": {
+    "1": {
+      "ctmax": 454,
+      "ctmin": 250,
+      "etag": "e5cbfa7fc80de32dac6a3196e2616850",
+      "hascolor": true,
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "TRADFRI bulb E14 WS opal 600lm",
+      "name": "Bettlampe Jan",
+      "state": {
+        "alert": "none",
+        "bri": 2,
+        "colormode": "ct",
+        "ct": 300,
+        "on": false,
+        "reachable": true
+      },
+      "swversion": "2.0.022",
+      "type": "Color temperature light",
+      "uniqueid": "00:0d:6f:ff:fe:90:4d:7c-01"
+    },
+    "2": {
+      "ctmax": 454,
+      "ctmin": 250,
+      "etag": "faa9e402abf2c99a4df5d06fe60a98cd",
+      "hascolor": true,
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "TRADFRI bulb E27 WS opal 980lm",
+      "name": "Rote Kugel",
+      "state": {
+        "alert": "none",
+        "bri": 254,
+        "colormode": "ct",
+        "ct": 370,
+        "on": false,
+        "reachable": true
+      },
+      "swversion": "1.2.217",
+      "type": "Color temperature light",
+      "uniqueid": "00:0b:57:ff:fe:eb:66:fd-01"
+    },
+    "3": {
+      "ctmax": 454,
+      "ctmin": 250,
+      "etag": "0ad7e6cb82a8c984adfd268a4b19632f",
+      "hascolor": true,
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "FLOALT panel WS 30x90",
+      "name": "Panel Esszimmer",
+      "state": {
+        "alert": "none",
+        "bri": 88,
+        "colormode": "ct",
+        "ct": 454,
+        "on": false,
+        "reachable": true
+      },
+      "swversion": "1.2.217",
+      "type": "Color temperature light",
+      "uniqueid": "00:0b:57:ff:fe:eb:2f:84-01"
+    },
+    "4": {
+      "etag": "1468e5a951bd2ede3669d7e9e252dd8a",
+      "hascolor": false,
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "TRADFRI bulb E27 W opal 1000lm",
+      "name": "Bettlampe Laura",
+      "state": {
+        "alert": "none",
+        "bri": 66,
+        "on": true,
+        "reachable": true
+      },
+      "swversion": "1.2.214",
+      "type": "Dimmable light",
+      "uniqueid": "00:0b:57:ff:fe:c5:34:c4-01"
+    },
+    "5": {
+      "ctmax": 454,
+      "ctmin": 250,
+      "etag": "e5cbfa7fc80de32dac6a3196e2616850",
+      "hascolor": true,
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "TRADFRI bulb E14 WS opal 600lm",
+      "name": "Bettlampe Essa",
+      "state": {
+        "alert": "none",
+        "bri": 2,
+        "colormode": "ct",
+        "ct": 454,
+        "on": false,
+        "reachable": true
+      },
+      "swversion": "2.0.022",
+      "type": "Color temperature light",
+      "uniqueid": "08:6b:d7:ff:fe:25:45:ed-01"
+    },
+    "6": {
+      "etag": "d6daf0687c1e28e9f2c58090838db36b",
+      "hascolor": false,
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "FYRTUR block-out roller blind",
+      "name": "Window covering device 6",
+      "state": {
+        "alert": "none",
+        "bri": 255,
+        "on": true,
+        "reachable": true
+      },
+      "swversion": "2.2.009",
+      "type": "Window covering device",
+      "uniqueid": "68:0a:e2:ff:fe:6e:95:af-01"
+    }
+  },
+  "resourcelinks": {
+    "1": {
+      "classid": 3003,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/3",
+        "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000",
+        "/rules/2",
+        "/rules/1"
+      ],
+      "name": "opt_toggleOnOff",
+      "owner": "6F46605522",
+      "recycle": false,
+      "type": "Link"
+    },
+    "10": {
+      "classid": 3010,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/25",
+        "/rules/27",
+        "/rules/26"
+      ],
+      "name": "opt_pushDimUp",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "11": {
+      "classid": 3020,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/29",
+        "/rules/28"
+      ],
+      "name": "opt_dimTempUp",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "12": {
+      "classid": 3010,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/31",
+        "/rules/30",
+        "/rules/32"
+      ],
+      "name": "opt_pushDimUp",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "13": {
+      "classid": 3020,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/33",
+        "/rules/34"
+      ],
+      "name": "opt_dimTempUp",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "14": {
+      "classid": 3021,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/36",
+        "/rules/35"
+      ],
+      "name": "opt_dimTempDown",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "15": {
+      "classid": 3020,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/38",
+        "/rules/37"
+      ],
+      "name": "opt_dimTempUp",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "16": {
+      "classid": 3010,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/40",
+        "/rules/41",
+        "/rules/39"
+      ],
+      "name": "opt_pushDimUp",
+      "owner": "2AA531B91E",
+      "recycle": false,
+      "type": "Link"
+    },
+    "2": {
+      "classid": 3010,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/3",
+        "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000",
+        "/rules/5",
+        "/rules/3",
+        "/rules/4"
+      ],
+      "name": "opt_pushDimUp",
+      "owner": "6F46605522",
+      "recycle": false,
+      "type": "Link"
+    },
+    "3": {
+      "classid": 3011,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/3",
+        "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000",
+        "/rules/7",
+        "/rules/8",
+        "/rules/6"
+      ],
+      "name": "opt_pushDimDown",
+      "owner": "6F46605522",
+      "recycle": false,
+      "type": "Link"
+    },
+    "4": {
+      "classid": 3010,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/11",
+        "/rules/10",
+        "/rules/9"
+      ],
+      "name": "opt_pushDimUp",
+      "owner": "8226F8B048",
+      "recycle": false,
+      "type": "Link"
+    },
+    "6": {
+      "classid": 3010,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/16",
+        "/rules/15",
+        "/rules/17"
+      ],
+      "name": "opt_pushDimUp",
+      "owner": "40113DF6D7",
+      "recycle": false,
+      "type": "Link"
+    },
+    "7": {
+      "classid": 3011,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/19",
+        "/rules/20",
+        "/rules/18"
+      ],
+      "name": "opt_pushDimDown",
+      "owner": "40113DF6D7",
+      "recycle": false,
+      "type": "Link"
+    },
+    "8": {
+      "classid": 3021,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/22",
+        "/rules/21"
+      ],
+      "name": "opt_dimTempDown",
+      "owner": "40113DF6D7",
+      "recycle": false,
+      "type": "Link"
+    },
+    "9": {
+      "classid": 3021,
+      "description": "Resourcelink for switch rule",
+      "links": [
+        "/groups/1",
+        "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000",
+        "/rules/24",
+        "/rules/23"
+      ],
+      "name": "opt_dimTempDown",
+      "owner": "40113DF6D7",
+      "recycle": false,
+      "type": "Link"
+    }
+  },
+  "rules": {
+    "1": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "1002"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        },
+        {
+          "address": "/groups/3/state/any_on",
+          "operator": "eq",
+          "value": "false"
+        }
+      ],
+      "created": "2019-11-22T21:18:16",
+      "etag": "9c5c19edbbb64bd7f6e384d31238201d",
+      "lasttriggered": "2020-05-13T20:59:48",
+      "name": "Rule TOOGLE_ON",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 1
+    },
+    "10": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2001"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:35:48",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_START",
+      "owner": "8226F8B048",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "11": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:35:48",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_STOP",
+      "owner": "8226F8B048",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "15": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2002"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:06:50",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_ON",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "16": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2001"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:06:50",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_START",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "17": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:06:50",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_STOP",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "18": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "on": false
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "3002"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:06:59",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMDOWN_OFF",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "19": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": -254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "3001"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:06:59",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMDOWN_START",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "2": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "on": false
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "1002"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        },
+        {
+          "address": "/groups/3/state/any_on",
+          "operator": "eq",
+          "value": "true"
+        }
+      ],
+      "created": "2019-11-22T21:18:16",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule TOOGLE_OFF",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "20": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "3003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:06:59",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMDOWN_STOP",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "21": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": -400,
+            "transitiontime": 60
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "4003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:07:10",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTDOWN_START",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "22": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:07:10",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTDOWN_STOP",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "23": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": -400,
+            "transitiontime": 60
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "4003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:07:24",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTDOWN_START",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "24": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:07:25",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTDOWN_STOP",
+      "owner": "40113DF6D7",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "25": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2002"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:15:21",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_ON",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "26": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2001"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:15:21",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "27": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:15:21",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "28": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 400,
+            "transitiontime": 60
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "5003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:16:10",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTUP_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "29": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:16:10",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTUP_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "3": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2002"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-22T21:18:43",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_ON",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "30": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "5002"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:16:47",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_ON",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "31": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "5001"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:16:47",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "32": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "5003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:16:47",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "33": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 400,
+            "transitiontime": 60
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "5003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:17:06",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTUP_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "34": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:17:06",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTUP_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "35": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": -400,
+            "transitiontime": 60
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "4003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:17:19",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTDOWN_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "36": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:17:19",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTDOWN_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "37": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 400,
+            "transitiontime": 60
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "5003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:17:38",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTUP_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "38": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "ct_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:17:38",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule DIMCTUP_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "39": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2002"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:18:30",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_ON",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "4": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "bri_inc": 254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2001"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-22T21:18:43",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_START",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "40": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2001"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:18:30",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_START",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "41": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2003"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:18:30",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_STOP",
+      "owner": "2AA531B91E",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "5": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2003"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-22T21:18:43",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_STOP",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "6": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "on": false
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "3002"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-22T21:18:54",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMDOWN_OFF",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "7": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "bri_inc": -254,
+            "transitiontime": 30
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "3001"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-22T21:18:54",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMDOWN_START",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "8": {
+      "actions": [
+        {
+          "address": "/groups/3/action",
+          "body": {
+            "bri_inc": 0
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "3003"
+        },
+        {
+          "address": "/sensors/90:fd:9f:ff:fe:17:75:a3-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-22T21:18:54",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMDOWN_STOP",
+      "owner": "6F46605522",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    },
+    "9": {
+      "actions": [
+        {
+          "address": "/groups/1/action",
+          "body": {
+            "on": true
+          },
+          "method": "PUT"
+        }
+      ],
+      "conditions": [
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/buttonevent",
+          "operator": "eq",
+          "value": "2002"
+        },
+        {
+          "address": "/sensors/00:0b:57:ff:fe:c7:fd:92-01-1000/state/lastupdated",
+          "operator": "dx"
+        }
+      ],
+      "created": "2019-11-24T15:35:48",
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "lasttriggered": "none",
+      "name": "Rule PUSHDIMUP_ON",
+      "owner": "8226F8B048",
+      "periodic": 0,
+      "status": "enabled",
+      "timestriggered": 0
+    }
+  },
+  "scenes": {},
+  "schedules": {},
+  "sensors": {
+    "1": {
+      "config": {
+        "configured": true,
+        "on": true,
+        "sunriseoffset": 30,
+        "sunsetoffset": -30
+      },
+      "etag": "a2d175ae32b79a8eafeb3ab3be5d0d4d",
+      "manufacturername": "Philips",
+      "modelid": "PHDL00",
+      "name": "Daylight",
+      "state": {
+        "dark": false,
+        "daylight": true,
+        "lastupdated": "2020-05-14T11:28:37",
+        "status": 170,
+        "sunrise": "2020-05-14T03:40:04",
+        "sunset": "2020-05-14T19:17:05"
+      },
+      "swversion": "1.0",
+      "type": "Daylight",
+      "uniqueid": "00:21:2e:ff:ff:04:0e:d9-01"
+    },
+    "10": {
+      "config": {
+        "battery": 100,
+        "on": true,
+        "reachable": true,
+        "temperature": 2700
+      },
+      "ep": 1,
+      "etag": "c2b173dd642a6bc6592156b7f5a6ec46",
+      "manufacturername": "LUMI",
+      "modelid": "lumi.sensor_magnet.aq2",
+      "name": "Fenster- / Türkontaktsensor EZ",
+      "state": {
+        "lastupdated": "2020-05-14T17:30:57",
+        "open": false
+      },
+      "swversion": "20161128",
+      "type": "ZHAOpenClose",
+      "uniqueid": "00:15:8d:00:04:24:a8:c4-01-0006"
+    },
+    "11": {
+      "config": {
+        "alert": "none",
+        "battery": 87,
+        "group": "9",
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "026ba6cdc1265a44bd022d6cba95d02c",
+      "manufacturername": "IKEA of Sweden",
+      "mode": 1,
+      "modelid": "TRADFRI open/close remote",
+      "name": "TRADFRI open/close remote ",
+      "state": {
+        "buttonevent": 2002,
+        "lastupdated": "2020-05-08T17:34:33"
+      },
+      "swversion": "2.2.010",
+      "type": "ZHASwitch",
+      "uniqueid": "68:0a:e2:ff:fe:3c:f3:71-01-1000"
+    },
+    "12": {
+      "config": {
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "5b86edc61f252b525a96363442efa3d6",
+      "manufacturername": "IKEA of Sweden",
+      "modelid": "FYRTUR block-out roller blind",
+      "name": "TRÅDFRI Rolladen",
+      "state": {
+        "battery": 90,
+        "lastupdated": "2020-05-13T14:33:11"
+      },
+      "swversion": "2.2.009",
+      "type": "ZHABattery",
+      "uniqueid": "68:0a:e2:ff:fe:6e:95:af-01-0001"
+    },
+    "13": {
+      "config": {
+        "alert": "none",
+        "battery": 74,
+        "group": null,
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "f3e5e10bc10acfd70a522ef983bec54f",
+      "manufacturername": "IKEA of Sweden",
+      "mode": 3,
+      "modelid": "TRADFRI remote control",
+      "name": "Fernbedienung SZ",
+      "state": {
+        "buttonevent": 1002,
+        "lastupdated": "2020-05-13T19:33:46"
+      },
+      "type": "ZHASwitch",
+      "uniqueid": "00:0b:57:ff:fe:c7:fd:92-01-1000"
+    },
+    "2": {
+      "config": {
+        "alert": "none",
+        "battery": 16,
+        "group": "8",
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "17809e98a8bbf96768f1014849b7b6c3",
+      "manufacturername": "IKEA of Sweden",
+      "mode": 3,
+      "modelid": "TRADFRI remote control",
+      "name": "TRÅDFR Laura",
+      "state": {
+        "buttonevent": 1002,
+        "lastupdated": "2020-05-13T20:59:48"
+      },
+      "swversion": "2.3.014",
+      "type": "ZHASwitch",
+      "uniqueid": "90:fd:9f:ff:fe:17:75:a3-01-1000"
+    },
+    "7": {
+      "config": {
+        "battery": 100,
+        "offset": 0,
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "c0433ac072d33dbe8691e4f85bc17433",
+      "manufacturername": "LUMI",
+      "modelid": "lumi.weather",
+      "name": "Multisensor WEZ",
+      "state": {
+        "lastupdated": "2020-05-14T18:10:23",
+        "temperature": 2312
+      },
+      "swversion": "20161129",
+      "type": "ZHATemperature",
+      "uniqueid": "00:15:8d:00:04:4b:ff:f6-01-0402"
+    },
+    "8": {
+      "config": {
+        "battery": 100,
+        "offset": 0,
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "c0433ac072d33dbe8691e4f85bc17433",
+      "manufacturername": "LUMI",
+      "modelid": "lumi.weather",
+      "name": "Multisensor WEZ",
+      "state": {
+        "humidity": 3130,
+        "lastupdated": "2020-05-14T18:10:23"
+      },
+      "swversion": "20161129",
+      "type": "ZHAHumidity",
+      "uniqueid": "00:15:8d:00:04:4b:ff:f6-01-0405"
+    },
+    "9": {
+      "config": {
+        "battery": 100,
+        "on": true,
+        "reachable": true
+      },
+      "ep": 1,
+      "etag": "c0433ac072d33dbe8691e4f85bc17433",
+      "manufacturername": "LUMI",
+      "modelid": "lumi.weather",
+      "name": "Multisensor WEZ",
+      "state": {
+        "lastupdated": "2020-05-14T18:10:23",
+        "pressure": 1011
+      },
+      "swversion": "20161129",
+      "type": "ZHAPressure",
+      "uniqueid": "00:15:8d:00:04:4b:ff:f6-01-0403"
+    }
+  }
+}

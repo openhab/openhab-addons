@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mpd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Mpd Thing Type -->
+	<thing-type id="mpd">
+		<label>Music Player Daemon</label>
+		<description>Music Player Daemon Binding</description>
+		<channels>
+			<channel id="control" typeId="system.media-control"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="currentalbum" typeId="currentalbum"/>
+			<channel id="currentartist" typeId="system.media-artist"/>
+			<channel id="currentname" typeId="currentname"/>
+			<channel id="currentsong" typeId="currentsong"/>
+			<channel id="currentsongid" typeId="currentsongid"/>
+			<channel id="currenttitle" typeId="system.media-title"/>
+			<channel id="currenttrack" typeId="currenttrack"/>
+			<channel id="stop" typeId="stop"/>
+		</channels>
+
+		<representation-property>uniqueId</representation-property>
+
+		<config-description>
+			<parameter name="ipAddress" type="text" required="true">
+				<label>Network Address</label>
+				<description>The IP or host name of the Music Player Daemon.</description>
+				<context>network-address</context>
+			</parameter>
+			<parameter name="port" type="integer" required="true" min="1" max="65335">
+				<label>Port</label>
+				<description>Port for the Music Player Daemon</description>
+				<default>6600</default>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<label>Password</label>
+				<description>Password to access the Music Player Daemon.</description>
+				<advanced>true</advanced>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="currentalbum">
+		<item-type>String</item-type>
+		<label>Current Album</label>
+		<description>Name of the album currently playing.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentname">
+		<item-type>String</item-type>
+		<label>Current Name</label>
+		<description>Name for current song. This is not the song title. The exact meaning of this tag is not well-defined. It
+			is often used by badly configured internet radio stations with broken tags to squeeze both the artist name and the
+			song title in one tag.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currenttrack" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Track</label>
+		<description>The current track number.</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentsong" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Song</label>
+		<description>The current song number.</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="currentsongid" advanced="true">
+		<item-type>Number</item-type>
+		<label>Current Song Id</label>
+		<description>The current song id.</description>
+		<state pattern="%d" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="stop" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Stop</label>
+		<description>Stop the Music Player Daemon. ON if the player is stopped.</description>
+	</channel-type>
+
+</thing:thing-descriptions>
