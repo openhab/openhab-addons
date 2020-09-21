@@ -20,6 +20,8 @@ import java.util.List;
 
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -29,6 +31,8 @@ import com.google.gson.annotations.SerializedName;
  * @author Bernd Weymann - Initial contribution
  */
 public class VehicleStatus {
+    private static final Logger logger = LoggerFactory.getLogger(VehicleStatus.class);
+
     public int mileage;// ": 17273,
     public float remainingFuel;// ": 4,
     public float remainingRangeElectric;// ": 148,
@@ -80,7 +84,7 @@ public class VehicleStatus {
      * @param imperial
      * @return
      */
-    public CBSMessage getNextService(boolean imperial) {
+    public CBSMessage getNextService() {
         CBSMessage cbs = new CBSMessage();
         if (cbsData == null) {
             return cbs;
@@ -121,6 +125,58 @@ public class VehicleStatus {
         return cbs;
     }
 
+    public String getNextServiceDate() {
+        if (cbsData == null) {
+            return Constants.NULL_DATE;
+        }
+        if (cbsData.isEmpty()) {
+            return Constants.NULL_DATE;
+        } else {
+            LocalDateTime farFuture = LocalDateTime.now().plusYears(100);
+            LocalDateTime serviceDate = farFuture;
+            for (int i = 0; i < cbsData.size(); i++) {
+                CBSMessage entry = cbsData.get(i);
+                if (entry.cbsDueDate != null) {
+                    LocalDateTime d = LocalDateTime.parse(entry.cbsDueDate + Constants.UTC_APPENDIX);
+                    // LocalDate d = LocalDate.parse(entry.cbsDueDate + APPENDIX_DAY,
+                    // Converter.SERVICE_DATE_INPUT_PATTERN);
+                    if (d.isBefore(serviceDate)) {
+                        serviceDate = d;
+                    }
+                }
+            }
+            if (serviceDate.equals(farFuture)) {
+                return Constants.NULL_DATE;
+            } else {
+                return serviceDate.format(Converter.DATE_INPUT_PATTERN);
+            }
+        }
+    }
+
+    public int getNextServiceMileage() {
+        if (cbsData == null) {
+            return -1;
+        }
+        if (cbsData.isEmpty()) {
+            return -1;
+        } else {
+            int serviceMileage = Integer.MAX_VALUE;
+            for (int i = 0; i < cbsData.size(); i++) {
+                CBSMessage entry = cbsData.get(i);
+                if (entry.cbsRemainingMileage != 0) {
+                    if (entry.cbsRemainingMileage < serviceMileage) {
+                        serviceMileage = entry.cbsRemainingMileage;
+                    }
+                }
+            }
+            if (serviceMileage != Integer.MAX_VALUE) {
+                return serviceMileage;
+            } else {
+                return -1;
+            }
+        }
+    }
+
     public String getCheckControl() {
         if (checkControlMessages == null) {
             return Converter.toTitleCase(UNKNOWN);
@@ -150,34 +206,37 @@ public class VehicleStatus {
      * @return Closed if all "Closed", "Open" otherwise
      */
     public static String checkClosed(Object dto) {
-        boolean validObjectFound = false;
+        String overallState = Constants.UNKNOWN;
         for (Field field : dto.getClass().getDeclaredFields()) {
             try {
                 Object d = field.get(dto);
                 if (d != null) {
                     String state = d.toString();
                     // skip invalid entries - they don't apply to this Vehicle
-                    if (!state.equals(INVALID)) {
-                        if (!state.equals(CLOSED)) {
-                            // report the first field - remove DOOR / WINDOW Strings because they are reported to the
-                            // corresponding Channel
-                            String id = field.getName().toLowerCase().replace("door", Constants.EMPTY).replace("window",
-                                    Constants.EMPTY);
-                            return Converter.toTitleCase(new StringBuffer(id).append(" ").append(state).toString());
-                        } else {
+                    if (!state.equalsIgnoreCase(INVALID)) {
+                        if (state.equalsIgnoreCase(OPEN)) {
+                            overallState = OPEN;
+                            // stop searching for more open items - overall Doors / Windows are OPEN
+                            break;
+                        } else if (state.equalsIgnoreCase(INTERMEDIATE)) {
+                            if (!overallState.equalsIgnoreCase(OPEN)) {
+                                overallState = INTERMEDIATE;
+                                // continue searching - maybe another Door / Window is OPEN
+                            }
+                        } else if (state.equalsIgnoreCase(CLOSED)) {
                             // at least one valid object needs to be found in order to reply "CLOSED"
-                            validObjectFound = true;
+                            if (overallState.equalsIgnoreCase(UNKNOWN)) {
+                                overallState = CLOSED;
+                            }
+                        } else {
+                            logger.debug("Unknown Status {} for Field {}", state, field);
                         }
                     }
                 }
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                return Converter.toTitleCase(UNKNOWN);
+                return UNKNOWN;
             }
         }
-        if (validObjectFound) {
-            return Converter.toTitleCase(CLOSED);
-        } else {
-            return Converter.toTitleCase(UNKNOWN);
-        }
+        return overallState;
     }
 }

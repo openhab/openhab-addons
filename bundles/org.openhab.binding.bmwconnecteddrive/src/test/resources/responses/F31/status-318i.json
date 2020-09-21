@@ -53,13 +53,6 @@
 				"cbsDueDate": "2022-07",
 				"cbsDescription": "Next visual inspection due when the stated distance has been covered or by the stated date.",
 				"cbsRemainingMileage": 29000
-			},
-			{
-				"cbsType": "BRAKE_FLUID",
-				"cbsState": "OK",
-				"cbsDueDate": "2022-01",
-				"cbsDescription": "Next change due at the latest by the stated date.",
-				"cbsRemainingMileage": 0
 			}
 		]
 	}

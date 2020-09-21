@@ -5,11 +5,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="doors-channel">
 		<item-type>String</item-type>
-		<label>Door Status</label>
+		<label>Overall Door Status</label>
 	</channel-type>
 	<channel-type id="windows-channel">
 		<item-type>String</item-type>
-		<label>Window Status</label>
+		<label>Overall Window Status</label>
 	</channel-type>
 	<channel-type id="lock-channel">
 		<item-type>String</item-type>

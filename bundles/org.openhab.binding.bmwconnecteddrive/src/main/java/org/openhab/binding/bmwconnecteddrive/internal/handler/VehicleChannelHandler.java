@@ -35,11 +35,31 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID doors;
     protected ChannelUID windows;
     protected ChannelUID lock;
-    protected ChannelUID serviceDate;
-    protected ChannelUID serviceMilage;
-    protected ChannelUID serviceDescription;
+    protected ChannelUID serviceNextDate;
+    protected ChannelUID serviceNextMileage;
     protected ChannelUID checkControl;
     protected ChannelUID lastUpdate;
+
+    protected ChannelUID serviceDate;
+    protected ChannelUID serviceMileage;
+    protected ChannelUID serviceName;
+    protected ChannelUID serviceCount;
+    protected ChannelUID serviceIndex;
+    protected ChannelUID serviceNext;
+
+    protected ChannelUID doorDriverFront;
+    protected ChannelUID doorDriverRear;
+    protected ChannelUID doorPassengerFront;
+    protected ChannelUID doorPassengerRear;
+    protected ChannelUID doorHood;
+    protected ChannelUID doorTrunk;
+
+    protected ChannelUID windowDriverFront;
+    protected ChannelUID windowDriverRear;
+    protected ChannelUID windowPassengerFront;
+    protected ChannelUID windowPassengerRear;
+    protected ChannelUID windowRear;
+    protected ChannelUID windowSunroof;
 
     // Range channels
     protected ChannelUID mileage;
@@ -54,14 +74,18 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     // Lifetime Efficiency Channels
     protected ChannelUID lifeTimeAverageConsumption;
+    protected ChannelUID lifetimeAvgCombinedConsumption;
     protected ChannelUID lifeTimeAverageRecuperation;
     protected ChannelUID lifeTimeCumulatedDrivenDistance;
     protected ChannelUID lifeTimeSingleLongestDistance;
 
     // Last Trip Channels
+    protected ChannelUID tripDateTime;
+    protected ChannelUID tripDuration;
     protected ChannelUID tripDistance;
     protected ChannelUID tripDistanceSinceCharging;
     protected ChannelUID tripAvgConsumption;
+    protected ChannelUID tripAvgCombinedConsumption;
     protected ChannelUID tripAvgRecuperation;
 
     // Location Channels
@@ -129,12 +153,32 @@ public class VehicleChannelHandler extends BaseThingHandler {
         doors = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, DOORS);
         windows = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, WINDOWS);
         lock = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LOCK);
-        serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_DATE);
-        serviceMilage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_MILEAGE);
-        serviceDescription = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_NAME);
+        serviceNextDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_DATE);
+        serviceNextMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, SERVICE_MILEAGE);
         checkControl = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHECK_CONTROL);
         chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGE_STATUS);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
+
+        serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_DATE);
+        serviceMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_MILEAGE);
+        serviceName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_NAME);
+        serviceCount = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_TOTAL_COUNT);
+        serviceIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_INDEX);
+        serviceNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_NEXT);
+
+        doorDriverFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT);
+        doorDriverRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR);
+        doorPassengerFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_PASSENGER_FRONT);
+        doorPassengerRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_PASSENGER_REAR);
+        doorHood = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, HOOD);
+        doorTrunk = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, TRUNK);
+
+        windowDriverFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_FORNT);
+        windowDriverRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, WINDOW_DOOR_DRIVER_REAR);
+        windowPassengerFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_FRONT);
+        windowPassengerRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, WINDOW_DOOR_PASSENGER_REAR);
+        windowRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, WINDOW_REAR);
+        windowSunroof = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, SUNROOF);
 
         // range Channels
         mileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, MILEAGE);
@@ -148,13 +192,18 @@ public class VehicleChannelHandler extends BaseThingHandler {
         rangeRadiusHybrid = new ChannelUID(thing.getUID(), CHANNEL_GROUP_RANGE, RANGE_RADIUS_HYBRID);
 
         // Last Trip Channels
+        tripDateTime = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, TRIP_DATE_TIME);
+        tripDuration = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, TRIP_DURATION);
         tripDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, DISTANCE);
         tripDistanceSinceCharging = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, DISTANCE_SINCE_CHARGING);
         tripAvgConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, AVG_CONSUMPTION);
+        tripAvgCombinedConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, AVG_COMBINED_CONSUMPTION);
         tripAvgRecuperation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LAST_TRIP, AVG_RECUPERATION);
 
         // Lifetime Channels
         lifeTimeAverageConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, AVG_CONSUMPTION);
+        lifetimeAvgCombinedConsumption = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME,
+                AVG_COMBINED_CONSUMPTION);
         lifeTimeAverageRecuperation = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME, AVG_RECUPERATION);
         lifeTimeCumulatedDrivenDistance = new ChannelUID(thing.getUID(), CHANNEL_GROUP_LIFETIME,
                 CUMULATED_DRIVEN_DISTANCE);

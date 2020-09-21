@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="bmwconnecteddrive"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="service-count-channel">
+		<item-type>Number</item-type>
+		<label>Number of Scheduled Services</label>
+	</channel-type>
+	<channel-type id="service-index-channel">
+		<item-type>Number</item-type>
+		<label>Current Selected Service Index</label>
+	</channel-type>
+	<channel-type id="service-date-channel">
+		<item-type>DateTime</item-type>
+		<label>Selected Service Date and Time </label>
+	</channel-type>
+	<channel-type id="service-mileage-channel">
+		<item-type>Number:Length</item-type>
+		<label>Mileage till Selected Service</label>
+	</channel-type>
+	<channel-type id="service-name-channel">
+		<item-type>String</item-type>
+		<label>Name of Selected Service</label>
+	</channel-type>
+	<channel-type id="service-next-channel">
+		<item-type>Switch</item-type>
+		<label>Select next Service</label>
+	</channel-type>
+</thing:thing-descriptions>
