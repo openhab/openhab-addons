@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.zm.internal.handler;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zm.internal.dto.AuthResponseDTO;
@@ -58,7 +62,14 @@ public class ZmAuth {
             logger.debug("ZmAuth: Authorization is enabled");
             usingAuthorization = true;
             isAuthorized = false;
-            authContent = String.format("user=%s&pass=%s&stateful=1", user, pass);
+            try {
+                authContent = String.format("user=%s&pass=%s&stateful=1",
+                        URLEncoder.encode(user, StandardCharsets.UTF_8.name()),
+                        URLEncoder.encode(pass, StandardCharsets.UTF_8.name()));
+            } catch (UnsupportedEncodingException e) {
+                logger.warn("ZmAuth: Unable to encode user name and password");
+                authContent = "";
+            }
         }
     }
 

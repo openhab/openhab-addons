@@ -29,9 +29,14 @@ public class ZmBridgeConfig {
     public String host = "";
 
     /**
+     * Use http or https
+     */
+    public Boolean useSSL = Boolean.FALSE;
+
+    /**
      * Port number
      */
-    public @Nullable String portNumber;
+    public @Nullable Integer portNumber;
 
     /**
      * Use default URL path

@@ -45,6 +45,7 @@ The following configuration parameters are available on the Server thing:
 | Parameter | Parameter ID | Required/Optional | Description |
 |-----------|--------------|-------------------|-------------|
 | Host                           | host                        | Required  | Host name or IP address of the Zoneminder server. |
+| Use secure connection          | useSSL                      | Required  | Use http or https for connection to Zoneminder. Default is http. |
 | Port Number                    | portNumber                  | Optional  | Port number if not on Zoneminder default port 80. |
 | Use Default Url Path           | useDefaultUrlPath           | Required  | If ON, use Zoneminder default of /zm; if OFF, use value from urlPath parameter. |
 | Url Path                       | urlPath                     | Optional  | Use this parameter when not using the Zoneminder default path of /zm. |

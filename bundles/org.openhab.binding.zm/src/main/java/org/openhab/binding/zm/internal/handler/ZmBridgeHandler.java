@@ -111,6 +111,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     private List<Monitor> savedMonitors = new ArrayList<>();
 
     private String host = "";
+    private boolean useSSL;
     private @Nullable String portNumber;
     private @NonNullByDefault({}) Boolean useDefaultUrlPath;
     private @Nullable String urlPath;
@@ -140,7 +141,6 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         ZmBridgeConfig config = getConfigAs(ZmBridgeConfig.class);
-        host = config.host;
 
         Integer value;
         value = config.refreshInterval;
@@ -154,13 +154,15 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
 
         defaultImageRefreshInterval = config.defaultImageRefreshInterval;
 
-        Boolean booleanValue = config.discoveryEnabled;
-        discoveryEnabled = booleanValue == null ? false : booleanValue.booleanValue();
+        discoveryEnabled = config.discoveryEnabled == null ? false : config.discoveryEnabled.booleanValue();
+
+        host = config.host;
+        useSSL = config.useSSL.booleanValue();
+        portNumber = config.portNumber != null ? Integer.toString(config.portNumber) : null;
 
         // Allows the use of a customized path and/or port number
         useDefaultUrlPath = config.useDefaultUrlPath;
         urlPath = config.urlPath;
-        portNumber = config.portNumber;
 
         // If user and password are configured, then use Zoneminder authentication
         if (config.user != null && config.pass != null) {
@@ -281,8 +283,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         setAlarm(buildUrl(String.format("/api/monitors/alarm/id:%s/command:off.json", id)));
     }
 
-    public @Nullable RawType getImage(String id, @Nullable Integer imageRefreshInterval) {
-        Integer localRefreshInterval = imageRefreshInterval;
+    public @Nullable RawType getImage(String id, @Nullable Integer imageRefreshIntervalSeconds) {
+        Integer localRefreshInterval = imageRefreshIntervalSeconds;
         if (localRefreshInterval == null || localRefreshInterval.intValue() < 1 || !zmAuth.isAuthorized()) {
             return null;
         }
@@ -430,7 +432,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                     System.currentTimeMillis() - startTime);
             return response;
         } catch (IOException e) {
-            logger.debug("Bridge: IOException on url '{}': {}", url, e.getMessage(), e);
+            logger.debug("Bridge: IOException on GET request, url='{}': {}", url, e.getMessage());
         }
         return null;
     }
@@ -447,7 +449,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                     System.currentTimeMillis() - startTime);
             return response;
         } catch (IOException e) {
-            logger.debug("Bridge: IOException: {}", e.getMessage(), e);
+            logger.debug("Bridge: IOException on POST request, url='{}': {}", url, e.getMessage());
         }
         return null;
     }
@@ -488,7 +490,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
 
     private StringBuilder buildBaseUrl(String path) {
         StringBuilder sb = new StringBuilder();
-        sb.append("http://");
+        sb.append(useSSL ? "https://" : "http://");
         sb.append(host);
         if (portNumber != null) {
             sb.append(":").append(portNumber);
@@ -531,23 +533,18 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         logger.debug("Bridge: Zoneminder software version check OK");
                         return true;
                     } else {
-                        logger.warn("Bridge: Requires version >= 1.34.0. This Zoneminder is version {}",
-                                softwareVersion);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Requires version >= 1.34.0");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+                                .format("Current Zoneminder version: %s. Requires version >= 1.34.0", softwareVersion));
                     }
                 } catch (NumberFormatException e) {
-                    logger.warn("Bridge: Badly formatted version number {}", softwareVersion);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Badly formatted version number");
+                            String.format("Badly formatted version number: %s", softwareVersion));
                 }
             } else {
-                logger.warn("Bridge: Can't parse software version {}", softwareVersion);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "Can't parse software version");
+                        String.format("Can't parse software version: %s", softwareVersion));
             }
         } else {
-            logger.warn("Bridge: Unable to determine Zoneminder software version");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Software version is null");
         }
         return false;
@@ -564,21 +561,18 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         logger.debug("Bridge: Zoneminder API version check OK");
                         return true;
                     } else {
-                        logger.warn("Bridge: Requires API version >= 2.0. This Zoneminder is version {}", apiVersion);
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                                "Requires API version >= 2.0");
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, String
+                                .format("Requires API version >= 2.0. This Zoneminder is API version {}", apiVersion));
                     }
                 } catch (NumberFormatException e) {
-                    logger.warn("Bridge: Badly formatted version number {}", apiVersion);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Badly formatted API version number");
+                            String.format("Badly formatted API version: %s", apiVersion));
                 }
             } else {
-                logger.warn("Bridge: Can't parse software version {}", apiVersion);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Can't parse API version");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        String.format("Can't parse API version: %s", apiVersion));
             }
         } else {
-            logger.warn("Bridge: Unable to determine Zoneminder API version");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API version is null");
         }
         return false;
@@ -590,12 +584,8 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
      * - runs the monitor discovery every discoveryInterval seconds
      */
     private void refresh() {
-        try {
-            refreshMonitors();
-            discoverMonitors();
-        } catch (RuntimeException e) {
-            logger.info("Bridge: Unexpected exception during refresh", e);
-        }
+        refreshMonitors();
+        discoverMonitors();
     }
 
     @SuppressWarnings("null")

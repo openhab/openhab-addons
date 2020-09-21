@@ -17,6 +17,8 @@ import static org.openhab.binding.zm.internal.ZmBindingConstants.*;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -39,6 +41,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerService;
 import org.eclipse.smarthome.core.types.Command;
 import org.eclipse.smarthome.core.types.RefreshType;
+import org.eclipse.smarthome.core.types.State;
 import org.eclipse.smarthome.core.types.UnDefType;
 import org.openhab.binding.zm.action.ZmActions;
 import org.openhab.binding.zm.internal.config.ZmMonitorConfig;
@@ -61,11 +64,13 @@ public class ZmMonitorHandler extends BaseThingHandler {
     private @Nullable ZmBridgeHandler bridgeHandler;
 
     private @NonNullByDefault({}) String monitorId;
-    private @Nullable Integer imageRefreshInterval;
+    private @Nullable Integer imageRefreshIntervalSeconds;
     private Integer alarmDuration = DEFAULT_ALARM_DURATION_SECONDS;
 
     private @Nullable ScheduledFuture<?> imageRefreshJob;
     private @Nullable ScheduledFuture<?> alarmOffJob;
+
+    private final Map<String, State> monitorStatusCache = Collections.synchronizedMap(new HashMap<>());
 
     public ZmMonitorHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -76,10 +81,11 @@ public class ZmMonitorHandler extends BaseThingHandler {
     public void initialize() {
         ZmMonitorConfig config = getConfigAs(ZmMonitorConfig.class);
         monitorId = config.monitorId;
-        imageRefreshInterval = config.imageRefreshInterval;
+        imageRefreshIntervalSeconds = config.imageRefreshInterval;
         Integer value = config.alarmDuration;
         alarmDuration = value != null ? value : DEFAULT_ALARM_DURATION_SECONDS;
         bridgeHandler = (ZmBridgeHandler) getBridge().getHandler();
+        monitorStatusCache.clear();
         updateStatus(ThingStatus.ONLINE);
         startImageRefreshJob();
     }
@@ -94,7 +100,10 @@ public class ZmMonitorHandler extends BaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            // No need to handle as status will be updated at the next refresh interval
+            State state = monitorStatusCache.get(channelUID.getId());
+            if (state != null) {
+                updateState(channelUID, state);
+            }
             return;
         }
         logger.debug("Monitor {}: Received command '{}' for channel '{}'", monitorId, command, channelUID.getId());
@@ -173,21 +182,21 @@ public class ZmMonitorHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     public void updateStatus(Monitor m) {
         logger.debug("Monitor {}: Updating: {}", m.getId(), m.toString());
-        updateState(CHANNEL_ID, new StringType(m.getId()));
-        updateState(CHANNEL_NAME, new StringType(m.getName()));
-        updateState(CHANNEL_FUNCTION, new StringType(m.getFunction()));
-        updateState(CHANNEL_ENABLE, m.isEnabled() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_HOUR_EVENTS, new DecimalType(m.getHourEvents()));
-        updateState(CHANNEL_DAY_EVENTS, new DecimalType(m.getDayEvents()));
-        updateState(CHANNEL_WEEK_EVENTS, new DecimalType(m.getWeekEvents()));
-        updateState(CHANNEL_MONTH_EVENTS, new DecimalType(m.getMonthEvents()));
-        updateState(CHANNEL_TOTAL_EVENTS, new DecimalType(m.getTotalEvents()));
-        updateState(CHANNEL_IMAGE_URL, new StringType(m.getImageUrl()));
-        updateState(CHANNEL_VIDEO_URL, new StringType(m.getVideoUrl()));
-        updateState(CHANNEL_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
-        updateState(CHANNEL_STATE, new StringType(m.getState().toString()));
+        updateChannelState(CHANNEL_ID, new StringType(m.getId()));
+        updateChannelState(CHANNEL_NAME, new StringType(m.getName()));
+        updateChannelState(CHANNEL_FUNCTION, new StringType(m.getFunction()));
+        updateChannelState(CHANNEL_ENABLE, m.isEnabled() ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_HOUR_EVENTS, new DecimalType(m.getHourEvents()));
+        updateChannelState(CHANNEL_DAY_EVENTS, new DecimalType(m.getDayEvents()));
+        updateChannelState(CHANNEL_WEEK_EVENTS, new DecimalType(m.getWeekEvents()));
+        updateChannelState(CHANNEL_MONTH_EVENTS, new DecimalType(m.getMonthEvents()));
+        updateChannelState(CHANNEL_TOTAL_EVENTS, new DecimalType(m.getTotalEvents()));
+        updateChannelState(CHANNEL_IMAGE_URL, new StringType(m.getImageUrl()));
+        updateChannelState(CHANNEL_VIDEO_URL, new StringType(m.getVideoUrl()));
+        updateChannelState(CHANNEL_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
+        updateChannelState(CHANNEL_STATE, new StringType(m.getState().toString()));
         if (!m.isAlarm()) {
-            updateState(CHANNEL_TRIGGER_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
+            updateChannelState(CHANNEL_TRIGGER_ALARM, m.isAlarm() ? OnOffType.ON : OnOffType.OFF);
         }
         Event event = m.getLastEvent();
         if (event == null) {
@@ -196,30 +205,30 @@ public class ZmMonitorHandler extends BaseThingHandler {
             // If end is null, assume event hasn't completed yet
             logger.trace("Monitor {}: Id:{}, Frames:{}, AlarmFrames:{}, Length:{}", m.getId(), event.getId(),
                     event.getFrames(), event.getAlarmFrames(), event.getLength());
-            updateState(CHANNEL_EVENT_ID, new StringType(event.getId()));
-            updateState(CHANNEL_EVENT_NAME, new StringType(event.getName()));
-            updateState(CHANNEL_EVENT_CAUSE, new StringType(event.getCause()));
-            updateState(CHANNEL_EVENT_NOTES, new StringType(event.getNotes()));
-            updateState(CHANNEL_EVENT_START, new DateTimeType(
+            updateChannelState(CHANNEL_EVENT_ID, new StringType(event.getId()));
+            updateChannelState(CHANNEL_EVENT_NAME, new StringType(event.getName()));
+            updateChannelState(CHANNEL_EVENT_CAUSE, new StringType(event.getCause()));
+            updateChannelState(CHANNEL_EVENT_NOTES, new StringType(event.getNotes()));
+            updateChannelState(CHANNEL_EVENT_START, new DateTimeType(
                     ZonedDateTime.ofInstant(event.getStart().toInstant(), timeZoneProvider.getTimeZone())));
-            updateState(CHANNEL_EVENT_END, new DateTimeType(
+            updateChannelState(CHANNEL_EVENT_END, new DateTimeType(
                     ZonedDateTime.ofInstant(event.getEnd().toInstant(), timeZoneProvider.getTimeZone())));
-            updateState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
-            updateState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
-            updateState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), SmartHomeUnits.SECOND));
+            updateChannelState(CHANNEL_EVENT_FRAMES, new DecimalType(event.getFrames()));
+            updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, new DecimalType(event.getAlarmFrames()));
+            updateChannelState(CHANNEL_EVENT_LENGTH, new QuantityType<Time>(event.getLength(), SmartHomeUnits.SECOND));
         }
     }
 
     private void clearEventChannels() {
-        updateState(CHANNEL_EVENT_ID, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_NAME, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_CAUSE, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_NOTES, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_START, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_END, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_FRAMES, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_ALARM_FRAMES, UnDefType.NULL);
-        updateState(CHANNEL_EVENT_LENGTH, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_ID, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_NAME, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_CAUSE, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_NOTES, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_START, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_END, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_FRAMES, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_ALARM_FRAMES, UnDefType.NULL);
+        updateChannelState(CHANNEL_EVENT_LENGTH, UnDefType.NULL);
     }
 
     private void refreshImage() {
@@ -231,20 +240,21 @@ public class ZmMonitorHandler extends BaseThingHandler {
     }
 
     private void getImage() {
-        try {
-            ZmBridgeHandler localHandler = bridgeHandler;
-            if (localHandler != null) {
-                logger.debug("Monitor {}: Updating image channel", monitorId);
-                RawType image = localHandler.getImage(monitorId, imageRefreshInterval);
-                updateState(CHANNEL_IMAGE, image != null ? image : UnDefType.UNDEF);
-            }
-        } catch (RuntimeException e) {
-            logger.debug("Monitor {}: Refresh image job got exception: {}", monitorId, e.getMessage(), e);
+        ZmBridgeHandler localHandler = bridgeHandler;
+        if (localHandler != null) {
+            logger.debug("Monitor {}: Updating image channel", monitorId);
+            RawType image = localHandler.getImage(monitorId, imageRefreshIntervalSeconds);
+            updateChannelState(CHANNEL_IMAGE, image != null ? image : UnDefType.UNDEF);
         }
     }
 
+    private void updateChannelState(String channelId, State state) {
+        updateState(channelId, state);
+        monitorStatusCache.put(channelId, state);
+    }
+
     private void startImageRefreshJob() {
-        Integer interval = imageRefreshInterval;
+        Integer interval = imageRefreshIntervalSeconds;
         if (interval != null) {
             long delay = getRandomDelay(interval);
             imageRefreshJob = scheduler.scheduleWithFixedDelay(this::refreshImage, delay, interval, TimeUnit.SECONDS);

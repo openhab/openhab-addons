@@ -44,7 +44,12 @@
 			<description>Zoneminder server name or IP address</description>
 			<context>network-address</context>
 		</parameter>
-		<parameter name="portNumber" type="text" required="false" groupName="url-info">
+		<parameter name="useSSL" type="boolean" required="true" groupName="url-info">
+			<label>Use https</label>
+			<description>Enables use of https for connection to Zoneminder</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="portNumber" type="integer" min="1" max="65535" required="false" groupName="url-info">
 			<label>Port Number</label>
 			<description>Port Number</description>
 		</parameter>
