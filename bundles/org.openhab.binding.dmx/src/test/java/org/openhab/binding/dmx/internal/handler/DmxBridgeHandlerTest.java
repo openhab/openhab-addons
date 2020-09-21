@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.dmx.internal.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
@@ -21,10 +22,10 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.dmx.internal.DmxBridgeHandler;
 import org.openhab.binding.dmx.internal.multiverse.BaseDmxChannel;
@@ -93,7 +94,7 @@ public class DmxBridgeHandlerTest extends JavaTest {
     private Bridge bridge;
     private DmxBridgeHandlerImpl bridgeHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         bridgeProperties = new HashMap<>();
         bridge = BridgeBuilder.create(THING_TYPE_TEST_BRIDGE, "testbridge").withLabel("Test Bridge")
@@ -112,7 +113,7 @@ public class DmxBridgeHandlerTest extends JavaTest {
         bridgeHandler.initialize();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         bridgeHandler.dispose();
     }
@@ -122,13 +123,13 @@ public class DmxBridgeHandlerTest extends JavaTest {
         waitForAssert(() -> assertEquals(ThingStatus.ONLINE, bridge.getStatusInfo().getStatus()));
     }
 
-    @Ignore("https://github.com/eclipse/smarthome/issues/6015#issuecomment-411313627")
+    @Disabled("https://github.com/eclipse/smarthome/issues/6015#issuecomment-411313627")
     @Test
     public void assertSendDmxDataIsCalled() {
         Mockito.verify(bridgeHandler, after(500).atLeast(9)).sendDmxData();
     }
 
-    @Ignore("https://github.com/eclipse/smarthome/issues/6015")
+    @Disabled("https://github.com/eclipse/smarthome/issues/6015")
     @Test
     public void assertMuteChannelMutesOutput() {
         bridgeHandler.handleCommand(CHANNEL_UID_MUTE, OnOffType.ON);

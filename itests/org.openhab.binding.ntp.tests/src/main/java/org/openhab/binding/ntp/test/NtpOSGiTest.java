@@ -13,7 +13,8 @@
 package org.openhab.binding.ntp.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -26,6 +27,16 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.openhab.binding.ntp.internal.NtpBindingConstants;
+import org.openhab.binding.ntp.internal.handler.NtpHandler;
+import org.openhab.binding.ntp.server.SimpleNTPServer;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventSubscriber;
@@ -39,6 +50,8 @@ import org.openhab.core.library.items.DateTimeItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
@@ -57,18 +70,6 @@ import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.openhab.binding.ntp.internal.NtpBindingConstants;
-import org.openhab.binding.ntp.internal.handler.NtpHandler;
-import org.openhab.binding.ntp.server.SimpleNTPServer;
 
 /**
  * OSGi tests for the {@link NtpHandler}
@@ -122,7 +123,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         }
     }
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpClass() {
         // Initializing a new local server on this port
         timeServer = new SimpleNTPServer(TEST_PORT);
@@ -144,7 +145,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         Locale.setDefault(Locale.US);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         VolatileStorageService volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
@@ -165,7 +166,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         registerService(channelTypeProvider);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (ntpThing != null) {
             Thing removedThing = thingRegistry.forceRemove(ntpThing.getUID());
@@ -177,7 +178,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownClass() {
         // Stopping the local time server
         timeServer.stopServer();
@@ -274,7 +275,7 @@ public class NtpOSGiTest extends JavaOSGiTest {
     }
 
     @Test
-    @Ignore("https://github.com/eclipse/smarthome/issues/5224")
+    @Disabled("https://github.com/eclipse/smarthome/issues/5224")
     public void testDateTimeChannelCalendarDefaultTimeZoneUpdate() {
         Configuration configuration = new Configuration();
         // Initialize with configuration with no time zone property set.

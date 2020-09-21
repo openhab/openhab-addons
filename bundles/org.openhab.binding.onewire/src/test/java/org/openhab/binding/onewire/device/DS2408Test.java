@@ -19,9 +19,8 @@ import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
@@ -36,7 +35,7 @@ import org.openhab.core.library.types.OnOffType;
 @NonNullByDefault
 public class DS2408Test extends DeviceTestParent<DS2408> {
 
-    @Before
+    @BeforeEach
     public void setupMocks() {
         setupMocks(THING_TYPE_BASIC, DS2408.class);
 
@@ -46,14 +45,14 @@ public class DS2408Test extends DeviceTestParent<DS2408> {
     }
 
     @Test
-    public void digitalChannel() {
+    public void digitalChannel() throws OwException {
         for (int i = 0; i < 8; i++) {
             digitalChannelTest(OnOffType.ON, i);
             digitalChannelTest(OnOffType.OFF, i);
         }
     }
 
-    private void digitalChannelTest(OnOffType state, int channelNo) {
+    private void digitalChannelTest(OnOffType state, int channelNo) throws OwException {
         final DS2408 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
@@ -62,18 +61,14 @@ public class DS2408Test extends DeviceTestParent<DS2408> {
             returnValue.flip(0, 8);
         }
 
-        try {
-            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
-            Mockito.when(mockBridgeHandler.readBitSet(eq(testSensorId), any())).thenReturn(returnValue);
+        Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+        Mockito.when(mockBridgeHandler.readBitSet(eq(testSensorId), any())).thenReturn(returnValue);
 
-            testDevice.configureChannels();
-            testDevice.refresh(mockBridgeHandler, true);
+        testDevice.configureChannels();
+        testDevice.refresh(mockBridgeHandler, true);
 
-            inOrder.verify(mockBridgeHandler, times(2)).readBitSet(eq(testSensorId), any());
-            inOrder.verify(mockThingHandler).postUpdate(eq(channelName(channelNo)), eq(state));
-        } catch (OwException e) {
-            Assert.fail("caught unexpected OwException");
-        }
+        inOrder.verify(mockBridgeHandler, times(2)).readBitSet(eq(testSensorId), any());
+        inOrder.verify(mockThingHandler).postUpdate(eq(channelName(channelNo)), eq(state));
     }
 
     private String channelName(int channelNo) {

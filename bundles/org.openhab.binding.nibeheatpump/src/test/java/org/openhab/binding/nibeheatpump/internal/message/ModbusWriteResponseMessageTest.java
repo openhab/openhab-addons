@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.nibeheatpump.internal.message;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.core.util.HexUtils;
 
@@ -26,7 +26,7 @@ import org.openhab.core.util.HexUtils;
  */
 public class ModbusWriteResponseMessageTest {
 
-    @Before
+    @BeforeEach
     public void Before() {
     }
 
@@ -62,17 +62,17 @@ public class ModbusWriteResponseMessageTest {
         assertEquals(false, m.isSuccessfull());
     }
 
-    @Test(expected = NibeHeatPumpException.class)
-    public void badCrcTest() throws NibeHeatPumpException {
+    @Test
+    public void badCrcTest() {
         final String strMessage = "5C00206C01004A";
         final byte[] msg = HexUtils.hexToBytes(strMessage);
-        new ModbusWriteResponseMessage(msg);
+        assertThrows(NibeHeatPumpException.class, () -> new ModbusWriteResponseMessage(msg));
     }
 
-    @Test(expected = NibeHeatPumpException.class)
-    public void notWriteResponseMessageTest() throws NibeHeatPumpException {
+    @Test
+    public void notWriteResponseMessageTest() {
         final String strMessage = "5C00206B060102030405064A";
         final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
-        new ModbusWriteResponseMessage(byteMessage);
+        assertThrows(NibeHeatPumpException.class, () -> new ModbusWriteResponseMessage(byteMessage));
     }
 }

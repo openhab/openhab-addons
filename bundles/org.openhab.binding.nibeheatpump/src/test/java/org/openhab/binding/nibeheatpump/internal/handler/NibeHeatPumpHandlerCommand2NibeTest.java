@@ -12,19 +12,19 @@
  */
 package org.openhab.binding.nibeheatpump.internal.handler;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.nibeheatpump.internal.models.PumpModel;
 import org.openhab.binding.nibeheatpump.internal.models.VariableInformation;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -38,7 +38,7 @@ import org.openhab.core.types.Command;
  *
  * @author Jevgeni Kiski - Initial contribution
  */
-@RunWith(Parameterized.class)
+@ExtendWith(MockitoExtension.class)
 public class NibeHeatPumpHandlerCommand2NibeTest {
     private NibeHeatPumpHandler product; // the class under test
     private Method m;
@@ -46,13 +46,8 @@ public class NibeHeatPumpHandlerCommand2NibeTest {
     private Class<?>[] parameterTypes;
     private Object[] parameters;
 
-    private int fCoilAddress;
-    private Command fCommand;
-    private int fExpected;
-
     private @Mock SerialPortManager serialPortManager;
 
-    @Parameterized.Parameters(name = "{index}: f({0}, {1})={2}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] { { 47028, new DecimalType("-1"), (byte) 0xFF },
                 { 48132, new DecimalType("0"), 0 }, { 48132, new StringType("0"), 0 },
@@ -63,16 +58,8 @@ public class NibeHeatPumpHandlerCommand2NibeTest {
                 { 47371, OnOffType.from(true), 0x1 }, { 47371, OnOffType.from(false), 0x0 }, });
     }
 
-    public NibeHeatPumpHandlerCommand2NibeTest(final int coilAddress, final Command command, final int expected) {
-        this.fCoilAddress = coilAddress;
-        this.fCommand = command;
-        this.fExpected = expected;
-    }
-
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        initMocks(this);
-
         product = new NibeHeatPumpHandler(null, PumpModel.F1X55, serialPortManager);
         parameterTypes = new Class[2];
         parameterTypes[0] = VariableInformation.class;
@@ -82,13 +69,15 @@ public class NibeHeatPumpHandlerCommand2NibeTest {
         parameters = new Object[2];
     }
 
-    @Test
-    public void convertNibeValueToStateTest() throws InvocationTargetException, IllegalAccessException {
-        VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X55, fCoilAddress);
+    @ParameterizedTest
+    @MethodSource("data")
+    public void convertNibeValueToStateTest(final int coilAddress, final Command command, final int expected)
+            throws InvocationTargetException, IllegalAccessException {
+        VariableInformation varInfo = VariableInformation.getVariableInfo(PumpModel.F1X55, coilAddress);
         parameters[0] = varInfo;
-        parameters[1] = fCommand;
+        parameters[1] = command;
         int value = (int) m.invoke(product, parameters);
 
-        assertEquals(fExpected, value);
+        assertEquals(expected, value);
     }
 }

@@ -15,8 +15,8 @@ package org.openhab.binding.loxone.internal.controls;
 import java.util.Collections;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -35,7 +35,7 @@ public class LxControlJalousieTest extends LxControlTest {
     private static final String SHADE_CHANNEL = " / Shade";
     private static final String AUTO_SHADE_CHANNEL = " / Auto Shade";
 
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("0e367c09-0161-e2c1-ffff403fb0c34b9e", "0e368d32-014f-4604-ffff403fb0c34b9e",
                 "0b734138-033e-02d8-ffff403fb0c34b9e", "Window Blinds");

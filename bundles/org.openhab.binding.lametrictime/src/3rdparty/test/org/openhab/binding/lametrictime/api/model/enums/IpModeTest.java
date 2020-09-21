@@ -15,31 +15,25 @@
  */
 package org.openhab.binding.lametrictime.api.model.enums;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class IpModeTest
-{
+public class IpModeTest {
     @Test
-    public void testConversion()
-    {
-        for (IpMode value : IpMode.values())
-        {
+    public void testConversion() {
+        for (IpMode value : IpMode.values()) {
             assertEquals(value, IpMode.toEnum(value.toRaw()));
         }
     }
 
     @Test
-    public void testInvalidRawValue()
-    {
+    public void testInvalidRawValue() {
         assertNull(IpMode.toEnum("invalid raw value"));
     }
 
     @Test
-    public void testNullRawValue()
-    {
+    public void testNullRawValue() {
         assertNull(IpMode.toEnum(null));
     }
 }

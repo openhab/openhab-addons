@@ -13,7 +13,8 @@
 package org.openhab.io.hueemulation.internal.automation;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -22,6 +23,11 @@ import java.util.Random;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.core.automation.Condition;
+import org.openhab.core.automation.util.ConditionBuilder;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.library.items.ContactItem;
@@ -30,11 +36,6 @@ import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.openhab.core.automation.Condition;
-import org.openhab.core.automation.util.ConditionBuilder;
 import org.openhab.io.hueemulation.internal.DeviceType;
 import org.openhab.io.hueemulation.internal.RuleUtils;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
@@ -64,7 +65,7 @@ public class RuleConditionHandlerTests {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ds = new HueDataStore();
 
@@ -76,12 +77,12 @@ public class RuleConditionHandlerTests {
                 new HueGroupEntry("name", new GroupItem("white", new NumberItem("number")), DeviceType.SwitchType));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         RuleUtils.random = new Random();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void itemNotExisting() {
         Configuration configuration = new Configuration();
         configuration.put("address", "/groups/9/action");
@@ -89,7 +90,7 @@ public class RuleConditionHandlerTests {
         configuration.put("value", "");
         Condition c = ConditionBuilder.create().withId("a").withTypeUID(HueRuleConditionHandler.MODULE_TYPE_ID)
                 .withConfiguration(configuration).build();
-        new HueRuleConditionHandler(c, ds);
+        assertThrows(IllegalStateException.class, () -> new HueRuleConditionHandler(c, ds));
     }
 
     @Test

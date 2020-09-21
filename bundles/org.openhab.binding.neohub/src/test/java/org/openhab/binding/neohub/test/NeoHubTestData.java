@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.neohub.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
 import java.io.BufferedReader;
@@ -27,7 +22,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 import org.openhab.binding.neohub.internal.NeoHubGetEngineersData;

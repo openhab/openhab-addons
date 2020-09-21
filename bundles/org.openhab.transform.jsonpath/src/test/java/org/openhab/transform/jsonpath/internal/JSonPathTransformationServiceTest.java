@@ -12,11 +12,10 @@
  */
 package org.openhab.transform.jsonpath.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;
 
 /**
@@ -26,7 +25,7 @@ public class JSonPathTransformationServiceTest {
 
     private JSonPathTransformationService processor;
 
-    @Before
+    @BeforeEach
     public void init() {
         processor = new JSonPathTransformationService();
     }
@@ -38,7 +37,7 @@ public class JSonPathTransformationServiceTest {
         String transformedResponse = processor.transform("$.store.book[0].author", json);
 
         // Asserts
-        Assert.assertEquals("Nigel Rees", transformedResponse);
+        assertEquals("Nigel Rees", transformedResponse);
     }
 
     private static final String jsonArray = "[" + //
@@ -58,19 +57,19 @@ public class JSonPathTransformationServiceTest {
         assertEquals("2", transformedResponse);
     }
 
-    @Test(expected = TransformationException.class)
-    public void testInvalidPathThrowsException() throws TransformationException {
-        processor.transform("$$", jsonArray);
+    @Test
+    public void testInvalidPathThrowsException() {
+        assertThrows(TransformationException.class, () -> processor.transform("$$", jsonArray));
     }
 
-    @Test(expected = TransformationException.class)
-    public void testPathMismatchReturnNull() throws TransformationException {
-        processor.transform("$[5].id", jsonArray);
+    @Test
+    public void testPathMismatchReturnNull() {
+        assertThrows(TransformationException.class, () -> processor.transform("$[5].id", jsonArray));
     }
 
-    @Test(expected = TransformationException.class)
+    @Test
     public void testInvalidJsonReturnNull() throws TransformationException {
-        processor.transform("$", "{id:");
+        assertThrows(TransformationException.class, () -> processor.transform("$", "{id:"));
     }
 
     @Test

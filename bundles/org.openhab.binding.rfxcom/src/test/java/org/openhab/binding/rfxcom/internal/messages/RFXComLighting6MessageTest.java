@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -32,17 +32,17 @@ public class RFXComLighting6MessageTest {
         String hexMessage = "0B150005D950450101011D80";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComLighting6Message msg = (RFXComLighting6Message) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", RFXComLighting6Message.SubType.BLYSS, msg.subType);
-        assertEquals("Seq Number", 5, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", "55632.E.1", msg.getDeviceId());
-        assertEquals("Command", RFXComLighting6Message.Commands.OFF, msg.command);
-        assertEquals("Signal Level", (byte) 8, msg.signalLevel);
+        assertEquals(RFXComLighting6Message.SubType.BLYSS, msg.subType, "SubType");
+        assertEquals(5, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals("55632.E.1", msg.getDeviceId(), "Sensor Id");
+        assertEquals(RFXComLighting6Message.Commands.OFF, msg.command, "Command");
+        assertEquals((byte) 8, msg.signalLevel, "Signal Level");
 
         byte[] decoded = msg.decodeMessage();
 
         // the openhab plugin is not (yet) using the cmndseqnbr & seqnbr2
         String acceptedHexMessage = "0B150005D950450101000080";
 
-        assertEquals("Message converted back", acceptedHexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(acceptedHexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

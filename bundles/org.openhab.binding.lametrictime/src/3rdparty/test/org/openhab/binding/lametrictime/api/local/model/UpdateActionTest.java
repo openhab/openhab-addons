@@ -15,45 +15,40 @@
  */
 package org.openhab.binding.lametrictime.api.local.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileReader;
 import java.util.TreeMap;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.lametrictime.api.common.impl.GsonGenerator;
 import org.openhab.binding.lametrictime.api.test.AbstractTest;
 
 import com.google.gson.Gson;
 
-public class UpdateActionTest extends AbstractTest
-{
+public class UpdateActionTest extends AbstractTest {
     private static Gson gson;
 
-    @BeforeClass
-    public static void setUpBeforeClass()
-    {
+    @BeforeAll
+    public static void setUpBeforeClass() {
         gson = GsonGenerator.create(true);
     }
 
     @Test
     @SuppressWarnings("serial")
-    public void testSerialize() throws Exception
-    {
+    public void testSerialize() throws Exception {
         UpdateAction action = new UpdateAction().withId("countdown.configure")
-                                                // @formatter:off
+        // @formatter:off
                                                 .withParameters(new TreeMap<String, Parameter>(){{put("duration", new IntegerParameter().withValue(30));}});
                                                 // @formatter:on
         assertEquals(readJson("update-action.json"), gson.toJson(action));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
-    public void testDeserialize() throws Exception
-    {
-        try (FileReader reader = new FileReader(getTestDataFile("update-action.json")))
-        {
-            gson.fromJson(reader, UpdateAction.class);
+    @Test
+    public void testDeserialize() throws Exception {
+        try (FileReader reader = new FileReader(getTestDataFile("update-action.json"))) {
+            assertThrows(UnsupportedOperationException.class, () -> gson.fromJson(reader, UpdateAction.class));
         }
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingType.HS300;
 
@@ -23,8 +23,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.binding.tplinksmarthome.internal.model.SetRelayState;
@@ -56,7 +56,7 @@ public class PowerStripDeviceTest extends DeviceTestBase<PowerStripDevice> {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         super.setUp();
         final AtomicInteger inputCounter = new AtomicInteger(0);
@@ -73,22 +73,23 @@ public class PowerStripDeviceTest extends DeviceTestBase<PowerStripDevice> {
                 .toJson(ModelTestUtil.GSON.fromJson(s, SetRelayState.class));
         assertInput(normalize, normalize, "hs300_set_relay_state");
         setSocketReturnAssert("hs300_set_relay_state_response");
-        assertTrue("Outlet channel 2 should be handled", device.handleCommand(CHANNEL_OUTLET_2, OnOffType.ON));
+        assertTrue(device.handleCommand(CHANNEL_OUTLET_2, OnOffType.ON), "Outlet channel 2 should be handled");
     }
 
     @Test
     public void testUpdateChannelOutlet1() {
-        assertSame("Outlet 1 should be on", OnOffType.ON, device.updateChannel(CHANNEL_OUTLET_1, deviceState));
+        assertSame(OnOffType.ON, device.updateChannel(CHANNEL_OUTLET_1, deviceState), "Outlet 1 should be on");
     }
 
     @Test
     public void testUpdateChannelOutlet2() {
-        assertSame("Outlet 2 should be off", OnOffType.OFF, device.updateChannel(CHANNEL_OUTLET_2, deviceState));
+        assertSame(OnOffType.OFF, device.updateChannel(CHANNEL_OUTLET_2, deviceState), "Outlet 2 should be off");
     }
 
     @Test
     public void testUpdateChannelEnergyCurrent() {
-        assertEquals("Energy current should have valid state value", 1,
-                ((QuantityType<?>) device.updateChannel(CHANNEL_ENERGY_CURRENT_OUTLET_2, deviceState)).intValue());
+        assertEquals(1,
+                ((QuantityType<?>) device.updateChannel(CHANNEL_ENERGY_CURRENT_OUTLET_2, deviceState)).intValue(),
+                "Energy current should have valid state value");
     }
 }

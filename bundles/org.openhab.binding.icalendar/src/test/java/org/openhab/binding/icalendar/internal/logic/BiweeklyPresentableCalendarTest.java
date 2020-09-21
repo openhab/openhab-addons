@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.icalendar.internal.logic;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -45,7 +45,7 @@ public class BiweeklyPresentableCalendarTest {
     private AbstractPresentableCalendar calendar2;
     private AbstractPresentableCalendar calendar3;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException, CalendarException {
         calendar = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test.ics"));
         calendar2 = new BiweeklyPresentableCalendar(new FileInputStream("src/test/resources/test2.ics"));

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.luftdateninfo.internal.util;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

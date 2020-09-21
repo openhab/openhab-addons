@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.snmp.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.snmp.internal.SnmpBindingConstants.THING_TYPE_TARGET;

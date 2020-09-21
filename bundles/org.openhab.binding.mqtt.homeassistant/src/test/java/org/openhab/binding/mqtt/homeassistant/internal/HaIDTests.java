@@ -13,13 +13,13 @@
 package org.openhab.binding.mqtt.homeassistant.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItem;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsIterableContaining.hasItem;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 
 /**

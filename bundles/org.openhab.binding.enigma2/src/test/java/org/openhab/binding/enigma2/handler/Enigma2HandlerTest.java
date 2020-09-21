@@ -13,8 +13,8 @@
 package org.openhab.binding.enigma2.handler;
 
 import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
@@ -23,15 +23,20 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.enigma2.actions.Enigma2Actions;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2Client;
 import org.openhab.binding.enigma2.internal.Enigma2Configuration;
 import org.openhab.binding.enigma2.internal.Enigma2RemoteKey;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.NextPreviousType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
@@ -58,7 +63,7 @@ public class Enigma2HandlerTest {
     @Nullable
     private ThingHandlerCallback callback;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         enigma2Client = mock(Enigma2Client.class);
         thing = mock(Thing.class);

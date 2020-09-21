@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.projectfile.IhcEnumValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSEnumValue;

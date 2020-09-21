@@ -12,33 +12,34 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import static org.openhab.binding.hue.internal.config.HueBridgeConfig.HTTP;
+import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.core.status.ConfigStatusMessage;
-import org.openhab.core.common.ThreadPoolManager;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.AbstractHueOSGiTestParent;
 import org.openhab.binding.hue.internal.HueBridge;
 import org.openhab.binding.hue.internal.HueConfigStatusMessage;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.LinkButtonException;
 import org.openhab.binding.hue.internal.exceptions.UnauthorizedException;
+import org.openhab.core.common.ThreadPoolManager;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.core.status.ConfigStatusMessage;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link HueBridgeHandler}.
@@ -57,7 +58,7 @@ public class HueBridgeHandlerOSGiTest extends AbstractHueOSGiTestParent {
 
     private ScheduledExecutorService scheduler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         registerVolatileStorageService();
         thingRegistry = getService(ThingRegistry.class, ThingRegistry.class);

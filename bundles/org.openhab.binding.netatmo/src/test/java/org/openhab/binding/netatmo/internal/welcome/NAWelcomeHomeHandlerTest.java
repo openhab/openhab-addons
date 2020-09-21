@@ -12,28 +12,33 @@
  */
 package org.openhab.binding.netatmo.internal.welcome;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.binding.netatmo.internal.NetatmoBindingConstants;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.UnDefType;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.netatmo.internal.NetatmoBindingConstants;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent;
 
 import io.swagger.client.model.NAWelcomeEvent;
 import io.swagger.client.model.NAWelcomeHome;
@@ -43,18 +48,18 @@ import io.swagger.client.model.NAWelcomeSubEvent;
 /**
  * @author Sven Strohschein - Initial contribution
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class NAWelcomeHomeHandlerTest {
 
     private static final String DUMMY_HOME_ID = "1";
 
-    @Mock
-    private TimeZoneProvider timeZoneProviderMock;
     private NAWelcomeHomeHandlerAccessible handler;
-    @Mock
-    private NetatmoBridgeHandler bridgeHandlerMock;
 
-    @Before
+    private @Mock NetatmoBridgeHandler bridgeHandlerMock;
+    private @Mock TimeZoneProvider timeZoneProviderMock;
+
+    @BeforeEach
     public void before() {
         Thing welcomeHomeThing = new ThingImpl(new ThingTypeUID("netatmo", "NAWelcomeHome"), "1");
         handler = new NAWelcomeHomeHandlerAccessible(welcomeHomeThing);
@@ -283,10 +288,9 @@ public class NAWelcomeHomeHandlerTest {
 
     @Test
     public void testMatchDetectedObjectEnums() {
-        assertArrayEquals(
-                "The detected object enums aren't equal anymore, that could lead to a bug! Please check the usages!",
-                Arrays.stream(NAWelcomeEvent.CategoryEnum.values()).map(Enum::name).toArray(),
-                Arrays.stream(NAWelcomeSubEvent.TypeEnum.values()).map(Enum::name).toArray());
+        assertArrayEquals(Arrays.stream(NAWelcomeEvent.CategoryEnum.values()).map(Enum::name).toArray(),
+                Arrays.stream(NAWelcomeSubEvent.TypeEnum.values()).map(Enum::name).toArray(),
+                "The detected object enums aren't equal anymore, that could lead to a bug! Please check the usages!");
     }
 
     private NAWelcomeHome initHome() {

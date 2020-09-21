@@ -33,7 +33,7 @@ import org.openhab.core.types.State;
  * against actual dynamo db database.
  *
  *
- * Inheritor of this base class needs to store two states of one item in a static method annotated with @BeforeClass.
+ * Inheritor of this base class needs to store two states of one item in a static method annotated with @BeforeAll.
  * This
  * static
  * class should update the private static fields

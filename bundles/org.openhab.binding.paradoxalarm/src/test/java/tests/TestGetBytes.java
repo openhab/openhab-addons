@@ -12,10 +12,11 @@
  */
 package tests;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.EpromRequestPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
@@ -57,7 +58,7 @@ public class TestGetBytes {
         ParadoxUtil.printByteArray("Expected =", EXPECTED1);
         ParadoxUtil.printByteArray("Packet   =", packetBytes);
 
-        Assert.assertTrue(Arrays.equals(packetBytes, EXPECTED1));
+        assertTrue(Arrays.equals(packetBytes, EXPECTED1));
     }
 
     private static final byte[] EXPECTED_COMMAND_PAYLOAD = { 0x40, 0x0F, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
@@ -71,7 +72,7 @@ public class TestGetBytes {
         ParadoxUtil.printByteArray("Expected =", EXPECTED_COMMAND_PAYLOAD);
         ParadoxUtil.printByteArray("Result   =", packetBytes);
 
-        Assert.assertTrue(Arrays.equals(packetBytes, EXPECTED_COMMAND_PAYLOAD));
+        assertTrue(Arrays.equals(packetBytes, EXPECTED_COMMAND_PAYLOAD));
     }
 
     private static final byte[] EXPECTED_MEMORY_PAYLOAD = { (byte) 0xAA, 0x0A, 0x00, 0x03, 0x08, (byte) 0xF0, 0x00,

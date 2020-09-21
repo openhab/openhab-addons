@@ -13,21 +13,19 @@
 package org.openhab.binding.modbus.internal;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Sami Salonen - Initial contribution
  */
-@RunWith(MockitoJUnitRunner.class)
 public class AtomicStampedKeyValueTest {
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testInitWithNullValue() {
-        new AtomicStampedValue<>(0, null);
+        assertThrows(NullPointerException.class, () -> new AtomicStampedValue<>(0, null));
     }
 
     @Test

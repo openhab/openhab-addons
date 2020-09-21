@@ -15,47 +15,36 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileReader;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.sleepiq.api.impl.GsonGenerator;
-import org.openhab.binding.sleepiq.api.model.BedSideStatus;
-import org.openhab.binding.sleepiq.api.model.BedStatus;
 import org.openhab.binding.sleepiq.api.test.AbstractTest;
 
 import com.google.gson.Gson;
 
-public class BedStatusTest extends AbstractTest
-{
+public class BedStatusTest extends AbstractTest {
     private static Gson gson;
 
-    @BeforeClass
-    public static void setUpBeforeClass()
-    {
+    @BeforeAll
+    public static void setUpBeforeClass() {
         gson = GsonGenerator.create(true);
     }
 
     @Test
-    public void testSerializeAllFields() throws Exception
-    {
+    public void testSerializeAllFields() throws Exception {
         BedStatus bedStatus = new BedStatus().withBedId("-9999999999999999999")
-                                             .withLeftSide(new BedSideStatus().withInBed(true))
-                                             .withRightSide(new BedSideStatus().withInBed(false))
-                                             .withStatus(1L);
+                .withLeftSide(new BedSideStatus().withInBed(true)).withRightSide(new BedSideStatus().withInBed(false))
+                .withStatus(1L);
         assertEquals(readJson("bed-status.json"), gson.toJson(bedStatus));
     }
 
     @Test
-    public void testDeserializeAllFields() throws Exception
-    {
-        try (FileReader reader = new FileReader(getTestDataFile("bed-status.json")))
-        {
+    public void testDeserializeAllFields() throws Exception {
+        try (FileReader reader = new FileReader(getTestDataFile("bed-status.json"))) {
             BedStatus bedStatus = gson.fromJson(reader, BedStatus.class);
             assertEquals("-9999999999999999999", bedStatus.getBedId());
             assertEquals(Long.valueOf(1L), bedStatus.getStatus());

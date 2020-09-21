@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType.START_RECEIVER;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType._433_92MHZ_TRANSCEIVER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.SubType;
@@ -36,9 +36,9 @@ public class RFXComInterfaceMessageTest {
             throws RFXComException {
         RFXComInterfaceMessage msg = (RFXComInterfaceMessage) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
-        assertEquals("SubType", subType, msg.subType);
-        assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Command", command, msg.command);
+        assertEquals(subType, msg.subType, "SubType");
+        assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals(command, msg.command, "Command");
 
         return msg;
     }
@@ -48,7 +48,7 @@ public class RFXComInterfaceMessageTest {
         RFXComInterfaceMessage msg = testMessage("1401070307436F7079726967687420524658434F4D", START_RECEIVER, 3,
                 Commands.START_RECEIVER);
 
-        assertEquals("text", "Copyright RFXCOM", msg.text);
+        assertEquals("Copyright RFXCOM", msg.text, "text");
     }
 
     @Test
@@ -60,9 +60,9 @@ public class RFXComInterfaceMessageTest {
     public void testStatusMessage() throws RFXComException {
         RFXComInterfaceMessage msg = testMessage("1401000102530C0800270001031C04524658434F4D", RESPONSE, 1, GET_STATUS);
 
-        assertEquals("Command", _433_92MHZ_TRANSCEIVER, msg.transceiverType);
+        assertEquals(_433_92MHZ_TRANSCEIVER, msg.transceiverType, "Command");
 
         // TODO this is not correct, improvements for this have been made in the OH1 repo
-        assertEquals("firmwareVersion", 12, msg.firmwareVersion);
+        assertEquals(12, msg.firmwareVersion, "firmwareVersion");
     }
 }

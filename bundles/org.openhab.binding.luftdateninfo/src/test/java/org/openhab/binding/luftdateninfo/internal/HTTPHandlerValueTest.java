@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
@@ -57,9 +57,9 @@ public class HTTPHandlerValueTest {
 
     private void testSensorValue(SensorDataValue s) {
         if (s.getValueType().equals(HTTPHandler.TEMPERATURE)) {
-            assertEquals("Temperature resource 1", "22.70", s.getValue());
+            assertEquals("22.70", s.getValue(), "Temperature resource 1");
         } else if (s.getValueType().equals(HTTPHandler.HUMIDITY)) {
-            assertEquals("Humidity resource 1", "61.00", s.getValue());
+            assertEquals("61.00", s.getValue(), "Humidity resource 1");
         } else {
             assertTrue(false);
         }

@@ -14,8 +14,9 @@ package org.openhab.binding.homematic.internal.converter;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.DecimalTypeConverter;
 import org.openhab.binding.homematic.internal.converter.type.QuantityTypeConverter;
@@ -99,15 +100,15 @@ public class ConvertToBindingTest extends BaseConverterTest {
         assertThat(convertedValue, is(42));
     }
 
-    @Test(expected = ConverterException.class)
-    public void testQuantityTypeConverterFailsToConvertDecimalType() throws ConverterException {
+    @Test
+    public void testQuantityTypeConverterFailsToConvertDecimalType() {
         QuantityTypeConverter converter = new QuantityTypeConverter();
-        converter.convertToBinding(new DecimalType(99.9), floatDp);
+        assertThrows(ConverterException.class, () -> converter.convertToBinding(new DecimalType(99.9), floatDp));
     }
 
-    @Test(expected = ConverterException.class)
-    public void testDecimalTypeConverterFailsToConvertQuantityType() throws ConverterException {
+    @Test
+    public void testDecimalTypeConverterFailsToConvertQuantityType() {
         DecimalTypeConverter converter = new DecimalTypeConverter();
-        converter.convertToBinding(new QuantityType<>("99.9 %"), floatDp);
+        assertThrows(ConverterException.class, () -> converter.convertToBinding(new QuantityType<>("99.9 %"), floatDp));
     }
 }

@@ -21,7 +21,6 @@
 package org.openhab.binding.sleepiq.api.impl.typeadapters;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Type adapter for jsr310 {@link ZonedDateTime} class.
@@ -30,7 +29,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class ZonedDateTimeTypeAdapter extends DateTimeTypeAdapter<ZonedDateTime> {
 
-  public ZonedDateTimeTypeAdapter() {
-    super(ZonedDateTime::parse);
-  }
+    public ZonedDateTimeTypeAdapter() {
+        super(ZonedDateTime::parse);
+    }
 }

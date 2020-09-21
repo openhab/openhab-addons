@@ -13,18 +13,15 @@
 package org.openhab.binding.wemo.internal.discovery.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ManufacturerDetails;
@@ -37,6 +34,10 @@ import org.jupnp.model.types.UDN;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.discovery.WemoDiscoveryParticipant;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link WemoDiscoveryParticipant}.

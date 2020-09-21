@@ -13,8 +13,8 @@
 package org.openhab.binding.mqtt.homeassistant.internal;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
-import static org.junit.Assert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.homeassistant.internal.BaseChannelConfiguration.Connection;
 
 import com.google.gson.Gson;

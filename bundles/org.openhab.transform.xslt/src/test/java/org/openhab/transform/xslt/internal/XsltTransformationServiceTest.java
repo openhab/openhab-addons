@@ -12,10 +12,10 @@
  */
 package org.openhab.transform.xslt.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;
 
 /**
@@ -25,7 +25,7 @@ public class XsltTransformationServiceTest extends AbstractTransformationService
 
     private XsltTransformationService processor;
 
-    @Before
+    @BeforeEach
     public void init() {
         processor = new XsltTransformationService();
     }

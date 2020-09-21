@@ -13,10 +13,9 @@
 package org.openhab.binding.dwdunwetter;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.InputStream;
 import java.util.List;
@@ -26,10 +25,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.hamcrest.CoreMatchers;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.dwdunwetter.internal.DwdUnwetterBindingConstants;
 import org.openhab.binding.dwdunwetter.internal.handler.DwdUnwetterHandler;
 import org.openhab.core.config.core.Configuration;
@@ -51,19 +54,17 @@ import org.w3c.dom.NodeList;
  *
  * @author Martin Koehler - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class DwdUnwetterHandlerTest extends JavaTest {
 
     private ThingHandler handler;
 
-    @Mock
-    private ThingHandlerCallback callback;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Thing thing;
 
-    @Mock
-    private Thing thing;
-
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
         handler = new DwdUnwetterHandler(thing);
         handler.setCallback(callback);
         // mock getConfiguration to prevent NPEs

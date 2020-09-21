@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler;
 import org.openhab.binding.luftdateninfo.internal.util.FileReader;
@@ -37,7 +37,7 @@ public class HTTPHandlerEvalTest {
     private @Nullable List<SensorDataValue> noise;
     private HTTPHandler http = new HTTPHandler();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         String conditionsStr = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         assertNotNull(conditionsStr);

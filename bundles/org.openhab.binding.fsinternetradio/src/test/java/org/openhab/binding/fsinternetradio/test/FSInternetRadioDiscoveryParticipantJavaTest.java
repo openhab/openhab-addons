@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.fsinternetradio.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.meta.DeviceDetails;
 import org.jupnp.model.meta.ManufacturerDetails;
@@ -80,7 +80,7 @@ public class FSInternetRadioDiscoveryParticipantJavaTest {
     String DEFAULT_RADIO_THING_UID = String.format("%s:%s:%s", RADIO_BINDING_ID, RADIO_THING_TYPE_ID,
             DEFAULT_RADIO_SERIAL_NUMBER);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         discoveryParticipant = new FSInternetRadioDiscoveryParticipant();
     }

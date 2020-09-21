@@ -13,7 +13,7 @@
 package org.openhab.binding.avmfritz.internal.discovery;
 
 import static org.openhab.core.thing.Thing.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.io.StringReader;
@@ -31,9 +31,9 @@ import org.openhab.core.config.discovery.DiscoveryResultFlag;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceListModel;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzThingHandlerOSGiTest;
@@ -71,7 +71,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
     };
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
         discovery = new AVMFritzDiscoveryService();
@@ -79,7 +79,7 @@ public class AVMFritzDiscoveryServiceOSGiTest extends AVMFritzThingHandlerOSGiTe
         discovery.addDiscoveryListener(listener);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         discoveryResult = null;
     }

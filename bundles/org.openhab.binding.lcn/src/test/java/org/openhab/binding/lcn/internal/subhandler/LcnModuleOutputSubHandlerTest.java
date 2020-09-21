@@ -17,8 +17,8 @@ import static org.mockito.Mockito.verify;
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.lcn.internal.common.DimmerOutputCommand;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
@@ -36,7 +36,7 @@ public class LcnModuleOutputSubHandlerTest extends AbstractTestLcnModuleSubHandl
     private @NonNullByDefault({}) LcnModuleOutputSubHandler l;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 

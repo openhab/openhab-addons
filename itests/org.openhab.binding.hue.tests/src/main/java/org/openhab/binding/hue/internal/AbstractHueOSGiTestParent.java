@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hue.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;

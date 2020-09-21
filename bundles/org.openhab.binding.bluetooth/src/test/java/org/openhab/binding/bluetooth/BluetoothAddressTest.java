@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.bluetooth;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link BluetoothAddress}.
@@ -21,14 +23,14 @@ import org.junit.Test;
  */
 public class BluetoothAddressTest {
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorWithNullParam() {
-        new BluetoothAddress(null);
+        assertThrows(IllegalArgumentException.class, () -> new BluetoothAddress(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorWithoutColons() {
-        new BluetoothAddress("123456789ABC");
+        assertThrows(IllegalArgumentException.class, () -> new BluetoothAddress("123456789ABC"));
     }
 
     @Test

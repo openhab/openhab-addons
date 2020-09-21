@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -31,20 +31,20 @@ public class RFXComCurrentEnergyMessageTest {
             int batteryLevel) throws RFXComException {
         final RFXComCurrentEnergyMessage msg = (RFXComCurrentEnergyMessage) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
-        assertEquals("SubType", subType, msg.subType);
-        assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Count", count, msg.count);
-        assertEquals("Channel 1", channel1, msg.channel1Amps, 0.01);
-        assertEquals("Channel 2", channel2, msg.channel2Amps, 0.01);
-        assertEquals("Channel 3", channel3, msg.channel3Amps, 0.01);
-        assertEquals("Total usage", totalUsage, msg.totalUsage, 0.05);
-        assertEquals("Signal Level", signalLevel, msg.signalLevel);
-        assertEquals("Battery Level", batteryLevel, msg.batteryLevel);
+        assertEquals(subType, msg.subType, "SubType");
+        assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
+        assertEquals(count, msg.count, "Count");
+        assertEquals(channel1, msg.channel1Amps, 0.01, "Channel 1");
+        assertEquals(channel2, msg.channel2Amps, 0.01, "Channel 2");
+        assertEquals(channel3, msg.channel3Amps, 0.01, "Channel 3");
+        assertEquals(totalUsage, msg.totalUsage, 0.05, "Total usage");
+        assertEquals(signalLevel, msg.signalLevel, "Signal Level");
+        assertEquals(batteryLevel, msg.batteryLevel, "Battery Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 
     @Test

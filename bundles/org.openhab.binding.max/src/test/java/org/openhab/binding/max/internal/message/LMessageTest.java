@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
 import org.openhab.binding.max.internal.device.DeviceInformation;
@@ -46,7 +46,7 @@ public class LMessageTest {
     private final LMessage message = new LMessage(RAWDATA);
     private final List<DeviceConfiguration> configurations = new ArrayList<>();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         createTestDevices();
     }
@@ -90,10 +90,10 @@ public class LMessageTest {
     @Test
     public void allDevicesCreatedFromMessage() {
         Collection<? extends Device> devices = message.getDevices(configurations);
-        assertEquals("Incorrect number of devices created", testDevices.size(), devices.size());
+        assertEquals(testDevices.size(), devices.size(), "Incorrect number of devices created");
         for (Device device : devices) {
-            assertTrue("Unexpected device created: " + device.getRFAddress(),
-                    testDevices.containsKey(device.getRFAddress()));
+            assertTrue(testDevices.containsKey(device.getRFAddress()),
+                    "Unexpected device created: " + device.getRFAddress());
         }
     }
 
@@ -101,7 +101,7 @@ public class LMessageTest {
     public void isCorrectErrorState() {
         for (Device device : message.getDevices(configurations)) {
             Device testDevice = testDevices.get(device.getRFAddress());
-            assertEquals("Error set incorrectly in Device", testDevice.isError(), device.isError());
+            assertEquals(testDevice.isError(), device.isError(), "Error set incorrectly in Device");
         }
     }
 }

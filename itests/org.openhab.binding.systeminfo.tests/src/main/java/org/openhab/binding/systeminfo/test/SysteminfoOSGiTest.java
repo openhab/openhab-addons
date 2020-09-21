@@ -15,7 +15,8 @@ package org.openhab.binding.systeminfo.test;
 import static java.lang.Thread.sleep;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
@@ -23,6 +24,16 @@ import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
+import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
+import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
+import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
+import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
+import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -35,6 +46,8 @@ import org.openhab.core.library.items.NumberItem;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
@@ -55,18 +68,6 @@ import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants;
-import org.openhab.binding.systeminfo.internal.SysteminfoHandlerFactory;
-import org.openhab.binding.systeminfo.internal.discovery.SysteminfoDiscoveryService;
-import org.openhab.binding.systeminfo.internal.handler.SysteminfoHandler;
-import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
-import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
 
 /**
  * OSGi tests for the {@link SysteminfoHandler}
@@ -105,7 +106,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
     private ItemRegistry itemRegistry;
     private SysteminfoHandlerFactory systeminfoHandlerFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         VolatileStorageService volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
@@ -138,7 +139,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         assertThat(itemRegistry, is(notNullValue()));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (systemInfoThing != null) {
             // Remove the systeminfo thing. The handler will be also disposed automatically
@@ -658,7 +659,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
                 mockedDriveSerialNumber);
     }
 
-    @Ignore
+    @Disabled
     // There is a bug opened for this issue - https://github.com/dblock/oshi/issues/185
     @Test
     public void assertChannelSensorsCpuTempIsUpdated() {
@@ -927,7 +928,7 @@ public class SysteminfoOSGiTest extends JavaOSGiTest {
         waitForAssert(() -> {
             List<DiscoveryResult> results = inbox.stream().filter(InboxPredicates.forThingUID(computerUID))
                     .collect(toList());
-            assertFalse("No Thing with UID " + computerUID.getAsString() + " in inbox", results.isEmpty());
+            assertFalse(results.isEmpty(), "No Thing with UID " + computerUID.getAsString() + " in inbox");
         });
 
         inbox.approve(computerUID, SysteminfoDiscoveryService.DEFAULT_THING_LABEL);

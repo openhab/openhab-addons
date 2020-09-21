@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.MeasurementDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.ModeCapabilityDTO;

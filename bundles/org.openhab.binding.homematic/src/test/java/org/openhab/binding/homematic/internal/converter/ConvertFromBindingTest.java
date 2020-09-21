@@ -13,9 +13,9 @@
 package org.openhab.binding.homematic.internal.converter;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.converter.type.AbstractTypeConverter;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;

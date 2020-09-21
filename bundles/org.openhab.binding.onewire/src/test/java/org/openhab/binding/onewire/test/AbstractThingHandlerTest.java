@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.onewire.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_OWSERVER;
 
@@ -23,11 +24,14 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.After;
-import org.junit.Assert;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.onewire.internal.OwDynamicStateDescriptionProvider;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
@@ -48,6 +52,8 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public abstract class AbstractThingHandlerTest extends JavaTest {
 
@@ -56,25 +62,11 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
     protected Map<String, Object> thingConfiguration = new HashMap<>();
     protected Map<String, Object> channelProperties = new HashMap<>();
 
-    @Mock
-    @NonNullByDefault({})
-    protected ThingHandlerCallback thingHandlerCallback;
-
-    @Mock
-    @NonNullByDefault({})
-    protected OwDynamicStateDescriptionProvider stateProvider;
-
-    @Mock
-    @NonNullByDefault({})
-    protected ThingHandlerCallback bridgeHandlerCallback;
-
-    @Mock
-    @NonNullByDefault({})
-    protected OwserverBridgeHandler bridgeHandler;
-
-    @Mock
-    @NonNullByDefault({})
-    protected OwserverBridgeHandler secondBridgeHandler;
+    protected @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
+    protected @Mock @NonNullByDefault({}) OwDynamicStateDescriptionProvider stateProvider;
+    protected @Mock @NonNullByDefault({}) ThingHandlerCallback bridgeHandlerCallback;
+    protected @Mock @NonNullByDefault({}) OwserverBridgeHandler bridgeHandler;
+    protected @Mock @NonNullByDefault({}) OwserverBridgeHandler secondBridgeHandler;
 
     protected List<Channel> channels = new ArrayList<>();
 
@@ -84,7 +76,7 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
 
     protected @Nullable InOrder inOrder;
 
-    @After
+    @AfterEach
     public void tearDown() {
         final ThingHandler thingHandler = this.thingHandler;
         if (thingHandler != null) {
@@ -95,7 +87,7 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
     protected void initializeHandlerMocks() {
         final ThingHandler thingHandler = this.thingHandler;
         if (thingHandler == null) {
-            Assert.fail("thingHandler is null");
+            fail("thingHandler is null");
             return;
         }
 
@@ -131,7 +123,7 @@ public abstract class AbstractThingHandlerTest extends JavaTest {
         Mockito.doAnswer(answer -> {
             final OwBaseThingHandler thingHandler = this.thingHandler;
             if (thingHandler == null) {
-                Assert.fail("thingHandler is null");
+                fail("thingHandler is null");
                 return null;
             }
 

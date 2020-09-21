@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.luftdateninfo.internal.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.utils.DateTimeUtils;
 
 /**
@@ -34,12 +34,12 @@ public class DateTimeTest {
         String jsonDateString = "2020-08-14 14:53:21";
         try {
             LocalDateTime dt = LocalDateTime.from(DateTimeUtils.DTF.parse(jsonDateString));
-            assertEquals("Day ", 14, dt.getDayOfMonth());
-            assertEquals("Month ", 8, dt.getMonthValue());
-            assertEquals("Year ", 2020, dt.getYear());
+            assertEquals(14, dt.getDayOfMonth(), "Day");
+            assertEquals(8, dt.getMonthValue(), "Month");
+            assertEquals(2020, dt.getYear(), "Year");
 
             String s = dt.format(DateTimeUtils.DTF);
-            assertEquals("String ", jsonDateString, s);
+            assertEquals(jsonDateString, s, "String");
         } catch (DateTimeParseException e) {
             assertFalse(true);
         }

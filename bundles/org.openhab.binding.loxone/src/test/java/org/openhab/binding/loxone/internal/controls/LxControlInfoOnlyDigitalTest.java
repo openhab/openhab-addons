@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
 
@@ -24,7 +24,7 @@ import org.openhab.core.types.UnDefType;
  *
  */
 public class LxControlInfoOnlyDigitalTest extends LxControlTest {
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("101b50f7-0306-98fb-ffff403fb0c34b9e", "0e368d32-014f-4604-ffff403fb0c34b9e",
                 "101b563d-0302-78bd-ffff403fb0c34b9e", "Info Only Digital");

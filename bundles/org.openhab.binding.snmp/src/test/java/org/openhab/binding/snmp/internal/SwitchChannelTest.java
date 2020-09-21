@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.snmp.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
 import org.snmp4j.PDU;

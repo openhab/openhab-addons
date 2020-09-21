@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.max.internal.device.DeviceType;
 
 /**

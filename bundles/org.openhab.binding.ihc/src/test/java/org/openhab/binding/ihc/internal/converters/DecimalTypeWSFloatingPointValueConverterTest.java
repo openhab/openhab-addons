@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSFloatingPointValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
@@ -42,16 +42,18 @@ public class DecimalTypeWSFloatingPointValueConverterTest {
         assertEquals(new DecimalType(2.54), type);
     }
 
-    @Test(expected = ConversionException.class)
-    public void testMinExceed() throws ConversionException {
+    @Test
+    public void testMinExceed() {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false, null));
+        assertThrows(ConversionException.class,
+                () -> convertFromOHType(val, new DecimalType(-101.5), new ConverterAdditionalInfo(null, false, null)));
     }
 
-    @Test(expected = ConversionException.class)
-    public void testMaxExceed() throws ConversionException {
+    @Test
+    public void testMaxExceed() {
         WSFloatingPointValue val = new WSFloatingPointValue(12345, 0, -100, 100);
-        val = convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false, null));
+        assertThrows(ConversionException.class,
+                () -> convertFromOHType(val, new DecimalType(101.5), new ConverterAdditionalInfo(null, false, null)));
     }
 
     private WSFloatingPointValue convertFromOHType(WSFloatingPointValue IHCvalue, Type OHval,

@@ -15,32 +15,25 @@
  */
 package org.openhab.binding.lametrictime.api.model.enums;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
-import org.openhab.binding.lametrictime.api.model.enums.IconType;
+import org.junit.jupiter.api.Test;
 
-public class IconTypeTest
-{
+public class IconTypeTest {
     @Test
-    public void testConversion()
-    {
-        for (IconType value : IconType.values())
-        {
+    public void testConversion() {
+        for (IconType value : IconType.values()) {
             assertEquals(value, IconType.toEnum(value.toRaw()));
         }
     }
 
     @Test
-    public void testInvalidRawValue()
-    {
+    public void testInvalidRawValue() {
         assertNull(IconType.toEnum("invalid raw value"));
     }
 
     @Test
-    public void testNullRawValue()
-    {
+    public void testNullRawValue() {
         assertNull(IconType.toEnum(null));
     }
 }

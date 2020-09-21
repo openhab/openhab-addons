@@ -13,7 +13,8 @@
 package org.openhab.binding.wemo.internal.handler.test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -22,6 +23,16 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.jupnp.model.ValidationException;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
+import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTestParent;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -32,16 +43,6 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.jupnp.model.ValidationException;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.handler.WemoLightHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
-import org.openhab.binding.wemo.internal.test.GenericWemoLightOSGiTestParent;
 
 /**
  * Tests for {@link WemoLightHandler}.
@@ -54,12 +55,12 @@ public class WemoLightHandlerOSGiTest extends GenericWemoLightOSGiTestParent {
     private static final String GET_ACTION = "GetDeviceStatus";
     private static final String SET_ACTION = "SetDeviceStatus";
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         setUpServices();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         removeThing();
     }

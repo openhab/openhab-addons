@@ -13,9 +13,10 @@
 package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -32,6 +33,15 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.core.events.EventSubscriber;
@@ -41,6 +51,7 @@ import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.ManagedItemProvider;
 import org.openhab.core.items.events.ItemStateEvent;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
@@ -52,12 +63,6 @@ import org.openhab.core.thing.link.ItemChannelLinkProvider;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.State;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.junit.After;
-import org.junit.Before;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.openhab.binding.modbus.internal.ModbusHandlerFactory;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusManager;
 import org.slf4j.Logger;
@@ -66,6 +71,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Sami Salonen - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
@@ -99,8 +106,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
 
     private final Logger logger = LoggerFactory.getLogger(AbstractModbusOSGiTest.class);
 
-    @Mock
-    protected @NonNullByDefault({}) ModbusManager mockedModbusManager;
+    protected @Mock @NonNullByDefault({}) ModbusManager mockedModbusManager;
     protected @NonNullByDefault({}) ManagedThingProvider thingProvider;
     protected @NonNullByDefault({}) ManagedItemProvider itemProvider;
     protected @NonNullByDefault({}) ManagedItemChannelLinkProvider itemChannelLinkProvider;
@@ -113,8 +119,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     private Set<ItemChannelLink> addedLinks = new HashSet<>();
     private StateSubscriber stateSubscriber = new StateSubscriber();
 
-    @Mock
-    protected @NonNullByDefault({}) ModbusCommunicationInterface comms;
+    protected @Mock @NonNullByDefault({}) ModbusCommunicationInterface comms;
 
     public AbstractModbusOSGiTest() {
         super();
@@ -123,7 +128,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
     /**
      * Before each test, configure mocked services
      */
-    @Before
+    @BeforeEach
     public void setUpAbstractModbusOSGiTest() {
         logger.debug("setUpAbstractModbusOSGiTest BEGIN");
         registerVolatileStorageService();
@@ -150,7 +155,7 @@ public abstract class AbstractModbusOSGiTest extends JavaOSGiTest {
         logger.debug("setUpAbstractModbusOSGiTest END");
     }
 
-    @After
+    @AfterEach
     public void tearDownAbstractModbusOSGiTest() {
         logger.debug("tearDownAbstractModbusOSGiTest BEGIN");
         swapModbusManagerToReal();

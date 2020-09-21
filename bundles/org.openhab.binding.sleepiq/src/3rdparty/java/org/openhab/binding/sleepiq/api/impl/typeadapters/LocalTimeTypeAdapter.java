@@ -21,7 +21,6 @@
 package org.openhab.binding.sleepiq.api.impl.typeadapters;
 
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Type adapter for jsr310 {@link LocalTime} class.
@@ -30,7 +29,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class LocalTimeTypeAdapter extends TemporalTypeAdapter<LocalTime> {
 
-  public LocalTimeTypeAdapter() {
-    super(LocalTime::parse);
-  }
+    public LocalTimeTypeAdapter() {
+        super(LocalTime::parse);
+    }
 }

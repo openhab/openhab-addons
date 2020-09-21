@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.ForecastStatus.RAIN;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.HumidityStatus.DRY;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureHumidityBarometricMessage.SubType.THB2;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -36,19 +36,19 @@ public class RFXComTemperatureHumidityBarometricMessageTest {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComTemperatureHumidityBarometricMessage msg = (RFXComTemperatureHumidityBarometricMessage) RFXComMessageFactory
                 .createMessage(message);
-        assertEquals("SubType", THB2, msg.subType);
-        assertEquals("Seq Number", 14, msg.seqNbr);
-        assertEquals("Sensor Id", "59648", msg.getDeviceId());
-        assertEquals("Temperature", 20.1, msg.temperature, 0.01);
-        assertEquals("Humidity", 39, msg.humidity);
-        assertEquals("Humidity status", DRY, msg.humidityStatus);
-        assertEquals("Barometer", 999.0, msg.pressure, 0.001);
-        assertEquals("Forecast", RAIN, msg.forecastStatus);
-        assertEquals("Signal Level", 3, msg.signalLevel);
-        assertEquals("Battery Level", 9, msg.batteryLevel);
+        assertEquals(THB2, msg.subType, "SubType");
+        assertEquals(14, msg.seqNbr, "Seq Number");
+        assertEquals("59648", msg.getDeviceId(), "Sensor Id");
+        assertEquals(20.1, msg.temperature, 0.01, "Temperature");
+        assertEquals(39, msg.humidity, "Humidity");
+        assertEquals(DRY, msg.humidityStatus, "Humidity status");
+        assertEquals(999.0, msg.pressure, 0.001, "Barometer");
+        assertEquals(RAIN, msg.forecastStatus, "Forecast");
+        assertEquals(3, msg.signalLevel, "Signal Level");
+        assertEquals(9, msg.batteryLevel, "Battery Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

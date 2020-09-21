@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.UnDefType;
 
@@ -24,7 +24,7 @@ import org.openhab.core.types.UnDefType;
  *
  */
 public class LxControlInfoOnlyAnalogTest extends LxControlTest {
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("0fec5dc3-003e-8800-ffff403fb0c34b9e", "0fe3a451-0283-2afa-ffff403fb0c34b9e",
                 "0fe665f4-0161-4773-ffff403fb0c34b9e", "Info Only Analog");

@@ -17,9 +17,8 @@ import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.openhab.binding.onewire.internal.OwException;
@@ -36,7 +35,7 @@ import org.openhab.core.library.types.QuantityType;
  */
 @NonNullByDefault
 public class DS1923Test extends DeviceTestParent<DS1923> {
-    @Before
+    @BeforeEach
     public void setupMocks() {
         setupMocks(THING_TYPE_MS_TX, DS1923.class);
 
@@ -47,52 +46,44 @@ public class DS1923Test extends DeviceTestParent<DS1923> {
     }
 
     @Test
-    public void temperatureChannel() {
+    public void temperatureChannel() throws OwException {
         final DS1923 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
-        try {
-            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
-            Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(10.0));
+        Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+        Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(10.0));
 
-            testDevice.enableChannel(CHANNEL_TEMPERATURE);
-            testDevice.configureChannels();
-            testDevice.refresh(mockBridgeHandler, true);
+        testDevice.enableChannel(CHANNEL_TEMPERATURE);
+        testDevice.configureChannels();
+        testDevice.refresh(mockBridgeHandler, true);
 
-            inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
-            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_TEMPERATURE), eq(new QuantityType<>("10.0 °C")));
+        inOrder.verify(mockBridgeHandler).readDecimalType(eq(testSensorId), any());
+        inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_TEMPERATURE), eq(new QuantityType<>("10.0 °C")));
 
-            inOrder.verifyNoMoreInteractions();
-        } catch (OwException e) {
-            Assert.fail("caught unexpected OwException");
-        }
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void humidityChannel() {
+    public void humidityChannel() throws OwException {
         final DS1923 testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
 
-        try {
-            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
-            Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(10.0));
+        Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(OnOffType.ON);
+        Mockito.when(mockBridgeHandler.readDecimalType(eq(testSensorId), any())).thenReturn(new DecimalType(10.0));
 
-            testDevice.enableChannel(CHANNEL_HUMIDITY);
-            testDevice.enableChannel(CHANNEL_ABSOLUTE_HUMIDITY);
-            testDevice.enableChannel(CHANNEL_DEWPOINT);
-            testDevice.configureChannels();
-            testDevice.refresh(mockBridgeHandler, true);
+        testDevice.enableChannel(CHANNEL_HUMIDITY);
+        testDevice.enableChannel(CHANNEL_ABSOLUTE_HUMIDITY);
+        testDevice.enableChannel(CHANNEL_DEWPOINT);
+        testDevice.configureChannels();
+        testDevice.refresh(mockBridgeHandler, true);
 
-            inOrder.verify(mockBridgeHandler, times(2)).readDecimalType(eq(testSensorId), any());
-            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_HUMIDITY), eq(new QuantityType<>("10.0 %")));
-            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_ABSOLUTE_HUMIDITY),
-                    eq(new QuantityType<>("0.9381970824113001000 g/m³")));
-            inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DEWPOINT),
-                    eq(new QuantityType<>("-20.31395053870025 °C")));
+        inOrder.verify(mockBridgeHandler, times(2)).readDecimalType(eq(testSensorId), any());
+        inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_HUMIDITY), eq(new QuantityType<>("10.0 %")));
+        inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_ABSOLUTE_HUMIDITY),
+                eq(new QuantityType<>("0.9381970824113001000 g/m³")));
+        inOrder.verify(mockThingHandler).postUpdate(eq(CHANNEL_DEWPOINT),
+                eq(new QuantityType<>("-20.31395053870025 °C")));
 
-            inOrder.verifyNoMoreInteractions();
-        } catch (OwException e) {
-            Assert.fail("caught unexpected OwException");
-        }
+        inOrder.verifyNoMoreInteractions();
     }
 }

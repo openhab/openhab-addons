@@ -13,7 +13,7 @@
 package org.openhab.binding.wemo.internal.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -24,25 +24,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Locale;
 
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.CoreItemFactory;
-import org.openhab.core.thing.Channel;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ManagedThingProvider;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingRegistry;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.thing.type.ChannelKind;
-import org.openhab.core.thing.type.ChannelTypeBuilder;
-import org.openhab.core.thing.type.ChannelTypeProvider;
-import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.io.transport.upnp.UpnpIOService;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
 import org.jupnp.UpnpService;
 import org.jupnp.mock.MockUpnpService;
 import org.jupnp.model.ValidationException;
@@ -59,6 +40,25 @@ import org.jupnp.model.types.UDN;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
 import org.openhab.binding.wemo.internal.http.WemoHttpCall;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.io.transport.upnp.UpnpIOService;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ManagedThingProvider;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * Generic test class for all Wemo related tests that contains methods and constants used across the different test

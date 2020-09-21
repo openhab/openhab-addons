@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING4;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting4Message.Commands.*;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfiguration;
 import org.openhab.binding.rfxcom.internal.config.RFXComDeviceConfigurationBuilder;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
@@ -49,7 +49,7 @@ public class RFXComLighting4MessageTest {
         byte[] binaryMessage = message.decodeMessage();
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory.createMessage(binaryMessage);
 
-        assertEquals("Sensor Id", "90000", msg.getDeviceId());
+        assertEquals("90000", msg.getDeviceId(), "Sensor Id");
     }
 
     private void testMessage(String hexMsg, RFXComLighting4Message.SubType subType, String deviceId,
@@ -63,16 +63,16 @@ public class RFXComLighting4MessageTest {
             int onCommand) throws RFXComException {
         RFXComLighting4Message msg = (RFXComLighting4Message) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
-        assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Command", commandByte, RFXComTestHelper.getActualIntValue(msg, CHANNEL_COMMAND_ID));
+        assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
+        assertEquals(commandByte, RFXComTestHelper.getActualIntValue(msg, CHANNEL_COMMAND_ID), "Command");
         if (seqNbr != null) {
-            assertEquals("Seq Number", seqNbr.shortValue(), (short) (msg.seqNbr & 0xFF));
+            assertEquals(seqNbr.shortValue(), (short) (msg.seqNbr & 0xFF), "Seq Number");
         }
-        assertEquals("Signal Level", signalLevel, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL));
+        assertEquals(signalLevel, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL), "Signal Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Message converted back");
 
         RFXComTestHelper.checkDiscoveryResult(msg, deviceId, pulse, subType.toString(), offCommand, onCommand);
     }

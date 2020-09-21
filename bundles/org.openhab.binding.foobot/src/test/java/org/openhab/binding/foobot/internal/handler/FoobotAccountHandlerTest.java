@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.foobot.internal.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
 import org.openhab.binding.foobot.internal.FoobotApiException;
@@ -50,7 +50,7 @@ public class FoobotAccountHandlerTest {
     public void testSensorDataToState() throws IOException, FoobotApiException {
         final List<FoobotDevice> deviceList = handler.getDeviceList();
 
-        assertFalse("Device list should not return empty", deviceList.isEmpty());
-        assertEquals("1234567890ABCDEF", deviceList.get(0).getUuid());
+        assertFalse(deviceList.isEmpty(), "Device list should not return empty");
+        assertEquals(deviceList.get(0).getUuid(), "1234567890ABCDEF");
     }
 }

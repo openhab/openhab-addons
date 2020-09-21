@@ -13,10 +13,10 @@
 package org.openhab.binding.draytonwiser.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -28,17 +28,18 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpContentResponse;
 import org.eclipse.jetty.client.HttpResponse;
 import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.server.Response;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.draytonwiser.internal.DraytonWiserBindingConstants;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApi;
 import org.openhab.binding.draytonwiser.internal.api.DraytonWiserApiException;
@@ -55,35 +56,22 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(Parameterized.class)
+@ExtendWith(MockitoExtension.class)
 public class DraytonWiserDiscoveryServiceTest {
 
-    @Mock
-    private HeatHubHandler bridgeHandler;
-    @Mock
-    private Bridge bridge;
-    @Mock
-    private HttpClient httpClient;
-    @Mock
-    private Request request;
+    private @Mock HeatHubHandler bridgeHandler;
+    private @Mock Bridge bridge;
+    private @Mock HttpClient httpClient;
+    private @Mock Request request;
 
     private DraytonWiserApi api;
-    private final String jsonFile;
-    private final int expectedResults;
 
-    public DraytonWiserDiscoveryServiceTest(final String jsonFile, final int expectedResults) {
-        this.jsonFile = jsonFile;
-        this.expectedResults = expectedResults;
-    }
-
-    @Parameters(name = "{0}")
     public static List<Object[]> data() {
         return Arrays.asList(new Object[] { "../test1.json", 11 }, new Object[] { "../test2.json", 22 });
     }
 
-    @Before
+    @BeforeEach
     public void before() {
-        initMocks(this);
         api = new DraytonWiserApi(httpClient);
         api.setConfiguration(new HeatHubConfiguration());
 
@@ -96,12 +84,13 @@ public class DraytonWiserDiscoveryServiceTest {
         doReturn(new ThingUID(DraytonWiserBindingConstants.THING_TYPE_BRIDGE, "1")).when(bridge).getUID();
     }
 
-    @Test
-    public void testDiscovery() throws IOException, URISyntaxException, InterruptedException, TimeoutException,
-            ExecutionException, DraytonWiserApiException {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testDiscovery(final String jsonFile, final int expectedResults) throws IOException, URISyntaxException,
+            InterruptedException, TimeoutException, ExecutionException, DraytonWiserApiException {
         final byte[] content = Files.readAllBytes(Paths.get(getClass().getResource(jsonFile).toURI()));
         final HttpResponse response = new HttpResponse(null, null);
-        response.status(Response.SC_OK);
+        response.status(HttpServletResponse.SC_OK);
         doReturn(new HttpContentResponse(response, content, null, null)).when(request).send();
         final List<DiscoveryResult> discoveryResults = new ArrayList<>();
         final DraytonWiserDiscoveryService service = new DraytonWiserDiscoveryService() {

@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.GetSysinfo;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 
@@ -65,8 +65,8 @@ public class PropertiesCollectorTest {
         final Map<String, Object> props = PropertiesCollector.collectProperties(thingType, "localhost",
                 ModelTestUtil.jsonFromFile(responseFile, GetSysinfo.class).getSysinfo());
 
-        assertEquals("Number of properties not as expected for properties: " + props, expectedSize, props.size());
+        assertEquals(expectedSize, props.size(), "Number of properties not as expected for properties: " + props);
         props.entrySet().stream().forEach(
-                entry -> assertNotNull("Property '" + entry.getKey() + "' should not be null", entry.getValue()));
+                entry -> assertNotNull(entry.getValue(), "Property '" + entry.getKey() + "' should not be null"));
     }
 }

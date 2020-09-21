@@ -13,11 +13,12 @@
 package org.openhab.binding.mqtt.generic.values;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -45,10 +46,10 @@ public class ValueTests {
         return TypeParser.parseCommand(v.getSupportedCommandTypes(), str);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalTextStateUpdate() {
         TextValue v = new TextValue("one,two".split(","));
-        v.update(p(v, "three"));
+        assertThrows(IllegalArgumentException.class, () -> v.update(p(v, "three")));
     }
 
     public void textStateUpdate() {
@@ -71,34 +72,34 @@ public class ValueTests {
         assertThat(((HSBType) v.getChannelState()).getBrightness().intValue(), is(1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalColorUpdate() {
         ColorValue v = new ColorValue(ColorMode.RGB, null, null, 10);
-        v.update(p(v, "255,255,abc"));
+        assertThrows(IllegalArgumentException.class, () -> v.update(p(v, "255,255,abc")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalNumberCommand() {
         NumberValue v = new NumberValue(null, null, null, null);
-        v.update(OnOffType.OFF);
+        assertThrows(IllegalArgumentException.class, () -> v.update(OnOffType.OFF));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void illegalPercentCommand() {
         PercentageValue v = new PercentageValue(null, null, null, null, null);
-        v.update(new StringType("demo"));
+        assertThrows(IllegalStateException.class, () -> v.update(new StringType("demo")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalOnOffCommand() {
         OnOffValue v = new OnOffValue(null, null);
-        v.update(new DecimalType(101.0));
+        assertThrows(IllegalArgumentException.class, () -> v.update(new DecimalType(101.0)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void illegalPercentUpdate() {
         PercentageValue v = new PercentageValue(null, null, null, null, null);
-        v.update(new DecimalType(101.0));
+        assertThrows(IllegalArgumentException.class, () -> v.update(new DecimalType(101.0)));
     }
 
     @Test
@@ -309,10 +310,10 @@ public class ValueTests {
         assertEquals(((PercentType) v.getChannelState()).floatValue(), 100.0f, 0.01f);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void percentCalcInvalid() {
         PercentageValue v = new PercentageValue(new BigDecimal(10.0), new BigDecimal(110.0), new BigDecimal(1.0), null,
                 null);
-        v.update(new DecimalType(9.0));
+        assertThrows(IllegalArgumentException.class, () -> v.update(new DecimalType(9.0)));
     }
 }

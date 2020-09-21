@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.heos.internal.json.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommand.*;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommandGroup.SYSTEM;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests to validate the functioning of the HeosCommandTuple

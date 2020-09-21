@@ -13,16 +13,15 @@
 package org.openhab.binding.yamahareceiver.internal;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.openhab.binding.yamahareceiver.internal.config.YamahaBridgeConfig;
@@ -48,32 +47,17 @@ public class YamahaReceiverHandlerTest extends AbstractXMLProtocolTest {
 
     private YamahaBridgeHandler subject;
 
-    @Mock
-    private YamahaBridgeConfig bridgeConfig;
-
-    @Mock
-    private Configuration configuration;
-
-    @Mock
-    private ProtocolFactory protocolFactory;
-
-    @Mock
-    private DeviceInformation deviceInformation;
-
-    @Mock
-    private SystemControl systemControl;
-
-    @Mock
-    private ThingHandlerCallback callback;
-
-    @Mock
-    private Bridge bridge;
+    private @Mock YamahaBridgeConfig bridgeConfig;
+    private @Mock Configuration configuration;
+    private @Mock ProtocolFactory protocolFactory;
+    private @Mock DeviceInformation deviceInformation;
+    private @Mock SystemControl systemControl;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Bridge bridge;
 
     @Override
     protected void onSetUp() throws Exception {
         super.onSetUp();
-
-        initMocks(this);
 
         ctx.prepareForModel(TestModels.RX_S601D);
         ctx.respondWith("<Main_Zone><Input><Input_Sel_Item>GetParam</Input_Sel_Item></Input></Main_Zone>",

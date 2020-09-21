@@ -13,8 +13,8 @@
 package org.openhab.binding.dmx.internal.handler;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 import org.openhab.binding.dmx.test.TestBridgeHandler;
 import org.openhab.core.config.core.Configuration;
@@ -61,7 +61,7 @@ public class ChaserThingHandlerTest extends AbstractDmxThingTestParent {
     private TestBridgeHandler dmxBridgeHandler;
     private ChaserThingHandler chaserThingHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setup();
 

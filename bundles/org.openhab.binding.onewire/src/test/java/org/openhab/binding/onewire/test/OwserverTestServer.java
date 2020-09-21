@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.onewire.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.OwPageBuffer;
 import org.openhab.binding.onewire.internal.owserver.OwserverPacket;
@@ -78,7 +79,7 @@ public class OwserverTestServer {
                 } catch (IOException e) {
                     logger.error("I/O Error: {}", e.getMessage());
                 } catch (OwException e) {
-                    Assert.fail("caught unexpected OwException");
+                    fail("caught unexpected OwException");
                 }
             }
         }.start();

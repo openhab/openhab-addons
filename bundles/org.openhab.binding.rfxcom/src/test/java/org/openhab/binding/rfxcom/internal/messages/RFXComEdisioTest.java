@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.EDISIO;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 
 /**
@@ -25,8 +26,8 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplemente
  */
 @NonNullByDefault
 public class RFXComEdisioTest {
-    @Test(expected = RFXComMessageNotImplementedException.class)
-    public void checkNotImplemented() throws Exception {
-        RFXComMessageFactory.createMessage(EDISIO);
+    @Test
+    public void checkNotImplemented() {
+        assertThrows(RFXComMessageNotImplementedException.class, () -> RFXComMessageFactory.createMessage(EDISIO));
     }
 }

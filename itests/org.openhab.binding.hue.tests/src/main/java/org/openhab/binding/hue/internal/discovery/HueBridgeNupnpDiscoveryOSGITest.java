@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.hue.internal.discovery;
 
-import static org.openhab.core.config.discovery.inbox.InboxPredicates.forThingTypeUID;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.hue.internal.HueBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.core.config.discovery.inbox.InboxPredicates.forThingTypeUID;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -24,16 +25,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.inbox.Inbox;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.Before;
-import org.junit.Test;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  *
@@ -139,7 +140,7 @@ public class HueBridgeNupnpDiscoveryOSGITest extends JavaOSGiTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         registerService(volatileStorageService);
 

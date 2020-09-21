@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
 
@@ -36,23 +36,23 @@ public class RangeExtenderDeviceTest extends DeviceTestBase<RangeExtenderDevice>
 
     @Test
     public void testHandleCommandSwitch() throws IOException {
-        assertFalse("Switch channel not yet supported so should not be handled",
-                device.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON));
+        assertFalse(device.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON),
+                "Switch channel not yet supported so should not be handled");
     }
 
     @Test
     public void testUpdateChannelSwitch() {
-        assertSame("Switch should be on", OnOffType.ON, device.updateChannel(CHANNEL_UID_SWITCH, deviceState));
+        assertSame(OnOffType.ON, device.updateChannel(CHANNEL_UID_SWITCH, deviceState), "Switch should be on");
     }
 
     @Test
     public void testUpdateChannelLed() {
-        assertSame("Led should be on", OnOffType.ON, device.updateChannel(CHANNEL_UID_LED, deviceState));
+        assertSame(OnOffType.ON, device.updateChannel(CHANNEL_UID_LED, deviceState), "Led should be on");
     }
 
     @Test
     public void testUpdateChannelOther() {
-        assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF,
-                device.updateChannel(CHANNEL_UID_OTHER, deviceState));
+        assertSame(UnDefType.UNDEF, device.updateChannel(CHANNEL_UID_OTHER, deviceState),
+                "Unknown channel should return UNDEF");
     }
 }

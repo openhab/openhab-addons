@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 import static org.openhab.binding.yamahareceiver.internal.protocol.xml.XMLConstants.Commands.ZONE_INPUT_QUERY;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit test for {@link InputConverterXML}.
