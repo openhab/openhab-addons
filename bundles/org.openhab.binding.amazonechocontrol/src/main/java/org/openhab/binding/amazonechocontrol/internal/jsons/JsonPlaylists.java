@@ -31,6 +31,5 @@ public class JsonPlaylists {
         public @Nullable String playlistId;
         public @Nullable String title;
         public int trackCount;
-        public int version;
     }
 }
