@@ -48,10 +48,10 @@ public class InfoTest {
         assertTrue(infoOpt.isPresent());
         InfoBlock b = (InfoBlock) infoOpt.get();
         assertNotNull(b);
-        assertEquals("MagicByte", "E3DC", b.modbusId.toString());
-        assertEquals("Model", "S10 E AIO", b.modelName.toString());
-        assertEquals("Firmware", "S10_2020_04", b.firmware.toString());
-        assertEquals("Manufacturer", "E3/DC GmbH", b.manufacturer.toString());
+        assertEquals("E3DC", b.modbusId.toString(), "MagicByte");
+        assertEquals("S10 E AIO", b.modelName.toString(), "Model");
+        assertEquals("S10_2020_04", b.firmware.toString(), "Firmware");
+        assertEquals("E3/DC GmbH", b.manufacturer.toString(), "Manufacturer");
     }
 
     @Test

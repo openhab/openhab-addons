@@ -217,10 +217,10 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetValueForNumberValueChannel() {
-        assertNull("1", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.ON));
-        assertNull("0", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.OFF));
-        assertEquals("42", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(42)));
-        assertEquals("22.5", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(22.5)));
+        assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.ON), "1");
+        assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.OFF), "0");
+        assertEquals(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(42)), "42");
+        assertEquals(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(22.5)), "22.5");
         assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE,
                 new StringType("Not a number value")));
         assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new StringType("")));

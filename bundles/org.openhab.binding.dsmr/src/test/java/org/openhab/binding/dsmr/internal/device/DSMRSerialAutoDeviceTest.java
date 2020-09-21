@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -47,6 +48,7 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@Disabled("Needs to be updated for OH3")
 public class DSMRSerialAutoDeviceTest {
 
     private static final String DUMMY_PORTNAME = "/dev/dummy-serial";
