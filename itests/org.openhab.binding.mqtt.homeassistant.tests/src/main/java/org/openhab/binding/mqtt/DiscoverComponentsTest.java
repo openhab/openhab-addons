@@ -96,6 +96,5 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         discoveryIds.addAll(HaID.fromConfig(config));
 
         discover.startDiscovery(connection, 50, discoveryIds, discovered).get(100, TimeUnit.MILLISECONDS);
-
     }
 }

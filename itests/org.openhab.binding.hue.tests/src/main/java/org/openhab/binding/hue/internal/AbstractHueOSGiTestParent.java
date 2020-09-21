@@ -14,9 +14,9 @@ package org.openhab.binding.hue.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.test.java.JavaOSGiTest;
 
 /**
  * @author Markus Rathgeb - migrated to plain Java test
