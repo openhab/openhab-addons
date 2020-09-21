@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.tradfri.internal.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link TradfriVersion}.
@@ -34,9 +34,9 @@ public class TradfriVersionTest {
     private static final String VERSION_STRING = "1.2.42";
     private static final TradfriVersion VERSION = new TradfriVersion(VERSION_STRING);
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalArgumentException() throws IllegalArgumentException {
-        new TradfriVersion("FAILURE");
+        assertThrows(IllegalArgumentException.class, () -> new TradfriVersion("FAILURE"));
     }
 
     @Test

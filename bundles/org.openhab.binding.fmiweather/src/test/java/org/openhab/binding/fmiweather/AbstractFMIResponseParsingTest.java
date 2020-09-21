@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.fmiweather;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.openhab.binding.fmiweather.internal.client.Client;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
@@ -47,7 +47,7 @@ public class AbstractFMIResponseParsingTest {
     @NonNullByDefault({})
     protected Client client;
 
-    @Before
+    @BeforeEach
     public void setUpClient() {
         client = new Client();
     }

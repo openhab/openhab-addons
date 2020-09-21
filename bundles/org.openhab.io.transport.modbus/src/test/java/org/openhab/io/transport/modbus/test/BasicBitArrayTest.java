@@ -13,9 +13,10 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.io.transport.modbus.BitArray;
 
 /**
@@ -60,27 +61,27 @@ public class BasicBitArrayTest {
         assertThat(data1.getBit(2), is(equalTo(false)));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testOutOfBounds() {
         BitArray data1 = new BitArray(true, false, true);
-        data1.getBit(3);
+        assertThrows(IndexOutOfBoundsException.class, () -> data1.getBit(3));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testOutOfBounds2() {
         BitArray data1 = new BitArray(true, false, true);
-        data1.getBit(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> data1.getBit(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testOutOfBounds3() {
         BitArray data1 = new BitArray(3);
-        data1.getBit(3);
+        assertThrows(IndexOutOfBoundsException.class, () -> data1.getBit(3));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void testOutOfBounds4() {
         BitArray data1 = new BitArray(3);
-        data1.getBit(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> data1.getBit(-1));
     }
 }

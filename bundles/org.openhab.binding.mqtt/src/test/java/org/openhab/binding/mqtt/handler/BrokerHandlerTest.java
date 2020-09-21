@@ -13,20 +13,23 @@
 package org.openhab.binding.mqtt.handler;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -44,26 +47,22 @@ import org.osgi.service.cm.ConfigurationException;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class BrokerHandlerTest {
     private ScheduledExecutorService scheduler;
 
-    @Mock
-    private ThingHandlerCallback callback;
-
-    @Mock
-    private Bridge thing;
-
-    @Mock
-    private MqttService service;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Bridge thing;
+    private @Mock MqttService service;
 
     private MqttBrokerConnectionEx connection;
 
     private BrokerHandler handler;
 
-    @Before
+    @BeforeEach
     public void setUp() throws ConfigurationException, MqttException {
         scheduler = new ScheduledThreadPoolExecutor(1);
-        MockitoAnnotations.initMocks(this);
         when(thing.getUID()).thenReturn(MqttThingID.getThingUID("10.10.0.10", 80));
         connection = spy(new MqttBrokerConnectionEx("10.10.0.10", 80, false, "BrokerHandlerTest"));
         connection.setTimeoutExecutor(scheduler, 10);
@@ -76,17 +75,17 @@ public class BrokerHandlerTest {
         handler.setCallback(callback);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         scheduler.shutdownNow();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void handlerInitWithoutUrl()
             throws InterruptedException, IllegalArgumentException, MqttException, ConfigurationException {
         // Assume it is a real handler and not a mock as defined above
         handler = new BrokerHandler(thing);
-        assertThat(initializeHandlerWaitForTimeout(), is(true));
+        assertThrows(IllegalArgumentException.class, () -> initializeHandlerWaitForTimeout());
     }
 
     @Test
@@ -106,7 +105,7 @@ public class BrokerHandlerTest {
 
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback, atLeast(3)).statusUpdated(eq(thing), statusInfoCaptor.capture());
-        Assert.assertThat(statusInfoCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
+        assertThat(statusInfoCaptor.getValue().getStatus(), is(ThingStatus.ONLINE));
     }
 
     /**

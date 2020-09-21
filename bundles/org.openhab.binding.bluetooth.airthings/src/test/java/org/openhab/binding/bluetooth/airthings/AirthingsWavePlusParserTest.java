@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.bluetooth.airthings;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsParserException;
 import org.openhab.binding.bluetooth.airthings.internal.AirthingsWavePlusDataParser;
 
@@ -27,22 +27,22 @@ import org.openhab.binding.bluetooth.airthings.internal.AirthingsWavePlusDataPar
 @NonNullByDefault
 public class AirthingsWavePlusParserTest {
 
-    @Test(expected = AirthingsParserException.class)
-    public void testWrongVersion() throws AirthingsParserException {
+    @Test
+    public void testWrongVersion() {
         int[] data = { 5, 55, 51, 0, 122, 0, 61, 0, 119, 9, 11, 194, 169, 2, 46, 0, 0, 0, 4, 20 };
-        new AirthingsWavePlusDataParser(data);
+        assertThrows(AirthingsParserException.class, () -> new AirthingsWavePlusDataParser(data));
     }
 
-    @Test(expected = AirthingsParserException.class)
-    public void testEmptyData() throws AirthingsParserException {
+    @Test
+    public void testEmptyData() {
         int[] data = {};
-        new AirthingsWavePlusDataParser(data);
+        assertThrows(AirthingsParserException.class, () -> new AirthingsWavePlusDataParser(data));
     }
 
-    @Test(expected = AirthingsParserException.class)
+    @Test
     public void testWrongDataLen() throws AirthingsParserException {
         int[] data = { 1, 55, 51, 0, 122, 0, 61, 0, 119, 9, 11, 194, 169, 2, 46, 0, 0 };
-        new AirthingsWavePlusDataParser(data);
+        assertThrows(AirthingsParserException.class, () -> new AirthingsWavePlusDataParser(data));
     }
 
     @Test

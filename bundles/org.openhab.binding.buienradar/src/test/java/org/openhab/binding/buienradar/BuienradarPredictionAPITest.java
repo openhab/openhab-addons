@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.buienradar;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.buienradar.internal.buienradarapi.BuienradarParseException;
 import org.openhab.binding.buienradar.internal.buienradarapi.BuienradarPredictionAPI;
 import org.openhab.binding.buienradar.internal.buienradarapi.Prediction;

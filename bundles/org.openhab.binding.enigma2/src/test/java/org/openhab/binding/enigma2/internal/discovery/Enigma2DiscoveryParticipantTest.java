@@ -13,10 +13,9 @@
 package org.openhab.binding.enigma2.internal.discovery;
 
 import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -25,8 +24,8 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 import org.openhab.binding.enigma2.internal.Enigma2HttpClient;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -47,7 +46,7 @@ public class Enigma2DiscoveryParticipantTest {
     @Nullable
     private Enigma2DiscoveryParticipant enigma2DiscoveryParticipant;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         enigma2HttpClient = mock(Enigma2HttpClient.class);
         serviceInfo = mock(ServiceInfo.class);

@@ -12,12 +12,11 @@
  */
 package tests;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.crypto.EncryptionHandler;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.HeaderCommand;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.ParadoxIPPacket;
@@ -70,6 +69,6 @@ public class TestEncryptionHandler {
         ParadoxUtil.printByteArray("Expected=", ENCRYPTED_EXPECTED2);
         ParadoxUtil.printByteArray("Packet=  ", packetBytes);
 
-        Assert.assertTrue(Arrays.equals(packetBytes, ENCRYPTED_EXPECTED2));
+        assertTrue(Arrays.equals(packetBytes, ENCRYPTED_EXPECTED2));
     }
 }

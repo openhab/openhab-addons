@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link HeatingModel} methods.

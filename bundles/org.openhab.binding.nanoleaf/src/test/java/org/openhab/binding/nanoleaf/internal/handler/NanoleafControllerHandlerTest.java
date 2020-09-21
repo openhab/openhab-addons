@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.nanoleaf.internal.handler;
 
-import static java.nio.file.Files.*;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.nanoleaf.internal.model.ControllerInfo;
 import org.openhab.binding.nanoleaf.internal.model.State;
 import org.openhab.core.library.types.OnOffType;
@@ -38,7 +37,7 @@ public class NanoleafControllerHandlerTest {
 
     private String controllerInfoJSON = "";
 
-    @Before
+    @BeforeEach
     public void setup() {
     }
 

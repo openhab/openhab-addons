@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 import org.openhab.binding.sensibo.internal.dto.settimer.SetTimerRequest;
 

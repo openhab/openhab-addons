@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.net.SocketTimeoutException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSLoginResult;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -37,7 +37,7 @@ public class IhcAuthenticationServiceTest {
     private final String url = "https://1.1.1.1/ws/AuthenticationService";
     private final int timeout = 100;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcAuthenticationService = spy(new IhcAuthenticationService(host, timeout, new IhcConnectionPool()));
 

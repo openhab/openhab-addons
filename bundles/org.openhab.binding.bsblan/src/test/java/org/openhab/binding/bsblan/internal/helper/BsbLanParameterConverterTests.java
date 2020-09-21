@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.bsblan.internal.helper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -219,10 +217,10 @@ public class BsbLanParameterConverterTests {
 
     @Test
     public void testGetValueForNumberValueChannel() {
-        assertNull("1", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.ON));
-        assertNull("0", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.OFF));
-        assertEquals("42", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(42)));
-        assertEquals("22.5", BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(22.5)));
+        assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.ON), "1");
+        assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, OnOffType.OFF), "0");
+        assertEquals(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(42)), "42");
+        assertEquals(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new DecimalType(22.5)), "22.5");
         assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE,
                 new StringType("Not a number value")));
         assertNull(BsbLanParameterConverter.getValue(PARAMETER_CHANNEL_NUMBER_VALUE, new StringType("")));

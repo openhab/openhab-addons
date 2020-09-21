@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTemperatureRainMessage.SubType.WS1200;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -32,15 +32,15 @@ public class RFXComTemperatureRainMessageTest {
         String hexMessage = "0A4F01CCF001004F03B759";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComTemperatureRainMessage msg = (RFXComTemperatureRainMessage) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", WS1200, msg.subType);
-        assertEquals("Seq Number", 204, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", "61441", msg.getDeviceId());
-        assertEquals("Temperature", 7.9, msg.temperature, 0.001);
-        assertEquals("Rain total", 95.1, msg.rainTotal, 0.001);
-        assertEquals("Signal Level", (byte) 5, msg.signalLevel);
+        assertEquals(WS1200, msg.subType, "SubType");
+        assertEquals(204, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals("61441", msg.getDeviceId(), "Sensor Id");
+        assertEquals(7.9, msg.temperature, 0.001, "Temperature");
+        assertEquals(95.1, msg.rainTotal, 0.001, "Rain total");
+        assertEquals((byte) 5, msg.signalLevel, "Signal Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

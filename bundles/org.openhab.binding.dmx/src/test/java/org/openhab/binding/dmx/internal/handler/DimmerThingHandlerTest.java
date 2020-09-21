@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.dmx.internal.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -51,7 +52,7 @@ public class DimmerThingHandlerTest extends AbstractDmxThingTestParent {
     private final ThingUID THING_UID_DIMMER = new ThingUID(THING_TYPE_DIMMER, "testdimmer");
     private final ChannelUID CHANNEL_UID_BRIGHTNESS = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setup();
 

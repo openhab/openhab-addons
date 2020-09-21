@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComLighting1Message.Commands;
@@ -38,17 +38,17 @@ public class RFXComLighting1MessageTest {
             byte signalLevel, Commands command, String commandString) throws RFXComException {
         final RFXComLighting1Message msg = (RFXComLighting1Message) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
-        assertEquals("SubType", subType, msg.subType);
-        assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Signal Level", signalLevel, msg.signalLevel);
-        assertEquals("Command", command, msg.command);
-        assertEquals("Command String", commandString,
-                msg.convertToState(CHANNEL_COMMAND_STRING, deviceState).toString());
+        assertEquals(subType, msg.subType, "SubType");
+        assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
+        assertEquals(signalLevel, msg.signalLevel, "Signal Level");
+        assertEquals(command, msg.command, "Command");
+        assertEquals(commandString, msg.convertToState(CHANNEL_COMMAND_STRING, deviceState).toString(),
+                "Command String");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 
     @Test

@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.modbus.e3dc.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
@@ -31,7 +31,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 public class InfoTest {
     private Parser mc;
 
-    @Before
+    @BeforeEach
     public void setup() {
         byte[] infoBlock = new byte[] { -29, -36, 1, 2, 0, -120, 69, 51, 47, 68, 67, 32, 71, 109, 98, 72, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 49, 48, 32, 69, 32, 65, 73, 79, 0, 0, 0, 0, 0, 0,
@@ -48,10 +48,10 @@ public class InfoTest {
         assertTrue(infoOpt.isPresent());
         InfoBlock b = (InfoBlock) infoOpt.get();
         assertNotNull(b);
-        assertEquals("MagicByte", "E3DC", b.modbusId.toString());
-        assertEquals("Model", "S10 E AIO", b.modelName.toString());
-        assertEquals("Firmware", "S10_2020_04", b.firmware.toString());
-        assertEquals("Manufacturer", "E3/DC GmbH", b.manufacturer.toString());
+        assertEquals("E3DC", b.modbusId.toString(), "MagicByte");
+        assertEquals("S10 E AIO", b.modelName.toString(), "Model");
+        assertEquals("S10_2020_04", b.firmware.toString(), "Firmware");
+        assertEquals("E3/DC GmbH", b.manufacturer.toString(), "Manufacturer");
     }
 
     @Test

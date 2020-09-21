@@ -13,10 +13,17 @@
 package org.openhab.binding.max.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.max.internal.MaxBindingConstants.*;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.max.internal.MaxBindingConstants;
+import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
@@ -24,13 +31,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.openhab.binding.max.internal.MaxBindingConstants;
-import org.openhab.binding.max.internal.handler.MaxCubeBridgeHandler;
 
 /**
  * Tests for {@link MaxCubeBridgeHandler}.
@@ -47,7 +47,7 @@ public class MaxCubeBridgeHandlerOSGiTest extends JavaOSGiTest {
 
     private Bridge maxBridge;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         registerService(volatileStorageService);
 
@@ -55,7 +55,7 @@ public class MaxCubeBridgeHandlerOSGiTest extends JavaOSGiTest {
         assertThat(thingRegistry, is(notNullValue()));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (maxBridge != null) {
             thingRegistry.remove(maxBridge.getUID());

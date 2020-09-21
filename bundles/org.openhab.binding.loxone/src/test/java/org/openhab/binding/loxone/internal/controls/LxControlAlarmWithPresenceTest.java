@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 
 /**
@@ -26,7 +26,7 @@ public class LxControlAlarmWithPresenceTest extends LxControlAlarmNoPresenceTest
     private static final String MOTION_SENSORS_CHANNEL = " / Motion Sensors";
 
     @Override
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("133d5db0-0333-5865-ffff403fb0c34b9e", "0b734138-037d-034e-ffff403fb0c34b9e",
                 "0fe650c2-0004-d446-ffff504f9410790f", "Burglar Alarm With Presence");

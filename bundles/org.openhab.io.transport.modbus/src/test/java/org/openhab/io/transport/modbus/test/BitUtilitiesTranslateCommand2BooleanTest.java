@@ -13,11 +13,11 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 
 /**
@@ -26,7 +26,7 @@ public class LxControlUpDownDigitalTest extends LxControlTest {
     String upChannel;
     String downChannel;
 
-    @Before
+    @BeforeEach
     public void setup() {
         upChannel = " / Up";
         downChannel = " / Down";

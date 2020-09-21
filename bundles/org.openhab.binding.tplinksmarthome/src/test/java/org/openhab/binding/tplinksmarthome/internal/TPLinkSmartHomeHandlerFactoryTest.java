@@ -12,20 +12,18 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.tplinksmarthome.internal.device.BulbDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.DimmerDevice;
 import org.openhab.binding.tplinksmarthome.internal.device.EnergySwitchDevice;
@@ -41,7 +39,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(value = Parameterized.class)
+@ExtendWith(MockitoExtension.class)
 public class TPLinkSmartHomeHandlerFactoryTest {
 
     private static final String SMART_HOME_DEVICE_FIELD = "smartHomeDevice";
@@ -67,42 +65,28 @@ public class TPLinkSmartHomeHandlerFactoryTest {
     });
     // @formatter:on
 
-    @Mock
-    Thing thing;
+    private @Mock Thing thing;
 
-    private final String name;
-    private final Class<?> clazz;
-
-    public TPLinkSmartHomeHandlerFactoryTest(String name, Class<?> clazz) {
-        this.name = name;
-        this.clazz = clazz;
-    }
-
-    @Parameters(name = "{0} - {1}")
     public static List<Object[]> data() {
         return TESTS;
     }
 
-    @Before
-    public void setUp() {
-        initMocks(this);
-    }
-
-    @Test
-    public void testCorrectClass()
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testCorrectClass(String name, Class<?> clazz)
             throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         when(thing.getThingTypeUID()).thenReturn(new ThingTypeUID(TPLinkSmartHomeBindingConstants.BINDING_ID, name));
         SmartHomeHandler handler = (SmartHomeHandler) factory.createHandler(thing);
 
         if (clazz == null) {
-            assertNull(name + " should not return any handler but null", handler);
+            assertNull(handler, name + " should not return any handler but null");
         } else {
-            assertNotNull(name + " should no return null handler", handler);
+            assertNotNull(handler, name + " should no return null handler");
             Field smartHomeDeviceField = SmartHomeHandler.class.getDeclaredField(SMART_HOME_DEVICE_FIELD);
 
             smartHomeDeviceField.setAccessible(true);
-            assertSame(name + " should return expected device class", clazz,
-                    smartHomeDeviceField.get(handler).getClass());
+            assertSame(clazz, smartHomeDeviceField.get(handler).getClass(),
+                    name + " should return expected device class");
         }
     }
 }

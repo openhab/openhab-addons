@@ -29,19 +29,22 @@ import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
-import org.openhab.core.events.EventPublisher;
-import org.openhab.core.items.MetadataRegistry;
-import org.openhab.core.net.NetworkAddressService;
-import org.openhab.core.storage.Storage;
-import org.openhab.core.storage.StorageService;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.logging.LoggingFeature.Verbosity;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.core.events.EventPublisher;
+import org.openhab.core.items.MetadataRegistry;
+import org.openhab.core.net.NetworkAddressService;
+import org.openhab.core.storage.Storage;
+import org.openhab.core.storage.StorageService;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.rest.mocks.ConfigStoreWithoutMetadata;
 import org.openhab.io.hueemulation.internal.rest.mocks.DummyMetadataRegistry;
@@ -58,12 +61,13 @@ import org.osgi.service.cm.ConfigurationAdmin;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class CommonSetup {
 
     public UserManagement userManagement;
 
-    @Mock
-    public EventPublisher eventPublisher;
+    public @Mock EventPublisher eventPublisher;
 
     public ConfigStore cs;
 
@@ -102,7 +106,6 @@ public class CommonSetup {
     public String basePath;
 
     public CommonSetup(boolean withMetadata) throws IOException {
-        MockitoAnnotations.initMocks(this);
         when(configAdmin.getConfiguration(anyString())).thenReturn(configAdminConfig);
         when(configAdmin.getConfiguration(anyString(), any())).thenReturn(configAdminConfig);
         Dictionary<String, Object> mockProperties = new Hashtable<>();

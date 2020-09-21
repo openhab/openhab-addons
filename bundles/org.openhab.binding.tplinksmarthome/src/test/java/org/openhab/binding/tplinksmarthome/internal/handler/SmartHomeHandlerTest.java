@@ -12,22 +12,25 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.CHANNEL_UID_SWITCH;
 import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeBindingConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants;
 import org.openhab.binding.tplinksmarthome.internal.Commands;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
@@ -52,27 +55,23 @@ import org.openhab.core.types.State;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public class SmartHomeHandlerTest {
 
     private @NonNullByDefault({}) SmartHomeHandler handler;
 
-    @Mock
-    private @NonNullByDefault({}) Connection connection;
-    @Mock
-    private @NonNullByDefault({}) ThingHandlerCallback callback;
-    @Mock
-    private @NonNullByDefault({}) Thing thing;
-    @Mock
-    private @NonNullByDefault({}) SmartHomeDevice smartHomeDevice;
-    @Mock
-    private @NonNullByDefault({}) TPLinkSmartHomeDiscoveryService discoveryService;
+    private @Mock @NonNullByDefault({}) Connection connection;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback callback;
+    private @Mock @NonNullByDefault({}) Thing thing;
+    private @Mock @NonNullByDefault({}) SmartHomeDevice smartHomeDevice;
+    private @Mock @NonNullByDefault({}) TPLinkSmartHomeDiscoveryService discoveryService;
 
     private final Configuration configuration = new Configuration();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
-        initMocks(this);
         configuration.put(CONFIG_IP, "localhost");
         configuration.put(CONFIG_REFRESH, 1);
         when(thing.getConfiguration()).thenReturn(configuration);
@@ -90,7 +89,7 @@ public class SmartHomeHandlerTest {
         handler.setCallback(callback);
     }
 
-    @After
+    @AfterEach
     public void after() {
         handler.dispose();
     }
@@ -102,7 +101,7 @@ public class SmartHomeHandlerTest {
 
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
         ThingStatusInfo thingStatusInfo = statusInfoCaptor.getValue();
-        assertEquals("Device should be unknown", ThingStatus.UNKNOWN, thingStatusInfo.getStatus());
+        assertEquals(ThingStatus.UNKNOWN, thingStatusInfo.getStatus(), "Device should be unknown");
     }
 
     @Test
@@ -125,8 +124,8 @@ public class SmartHomeHandlerTest {
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());
-        assertEquals("State of RSSI channel should be set", new QuantityType<>(expectedRssi + " dBm"),
-                stateCaptor.getValue());
+        assertEquals(new QuantityType<>(expectedRssi + " dBm"), stateCaptor.getValue(),
+                "State of RSSI channel should be set");
     }
 
     @Test
@@ -137,7 +136,7 @@ public class SmartHomeHandlerTest {
         handler.handleCommand(channelUID, RefreshType.REFRESH);
         ArgumentCaptor<State> stateCaptor = ArgumentCaptor.forClass(State.class);
         verify(callback).stateUpdated(eq(channelUID), stateCaptor.capture());
-        assertSame("State of channel switch should be set", OnOffType.ON, stateCaptor.getValue());
+        assertSame(OnOffType.ON, stateCaptor.getValue(), "State of channel switch should be set");
     }
 
     @Test

@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.dmx.internal.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
@@ -21,9 +22,9 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.core.thing.Bridge;
@@ -52,7 +53,7 @@ public class SacnBridgeHandlerTest extends JavaTest {
     private Bridge bridge;
     private SacnBridgeHandler bridgeHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         bridgeProperties = new HashMap<>();
         bridgeProperties.put(CONFIG_ADDRESS, TEST_ADDRESS);
@@ -79,7 +80,7 @@ public class SacnBridgeHandlerTest extends JavaTest {
         bridgeHandler.initialize();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         bridgeHandler.dispose();
     }

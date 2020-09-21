@@ -18,7 +18,7 @@ import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubT
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;

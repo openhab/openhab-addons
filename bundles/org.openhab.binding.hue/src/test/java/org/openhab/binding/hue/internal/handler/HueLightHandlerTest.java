@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.hue.internal.FullConfig;
 import org.openhab.binding.hue.internal.FullLight;
@@ -65,7 +65,7 @@ public class HueLightHandlerTest {
 
     private Gson gson;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         gson = new Gson();
     }

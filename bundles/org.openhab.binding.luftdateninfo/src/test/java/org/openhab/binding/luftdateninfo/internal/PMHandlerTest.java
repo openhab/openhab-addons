@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.handler.BaseSensorHandler.ConfigStatus;
 import org.openhab.binding.luftdateninfo.internal.handler.BaseSensorHandler.LifecycleStatus;
 import org.openhab.binding.luftdateninfo.internal.handler.BaseSensorHandler.UpdateStatus;
@@ -64,7 +64,7 @@ public class PMHandlerTest {
          * Test if config status is 0 = CONFIG_OK for valid configuration. Take real int for comparison instead of
          * BaseHandler constants - in case of change test needs to be adapted
          */
-        assertEquals("Handler Configuration status", ConfigStatus.OK, pmHandler.getConfigStatus());
+        assertEquals(ConfigStatus.OK, pmHandler.getConfigStatus(), "Handler Configuration status");
     }
 
     @Test
@@ -93,7 +93,7 @@ public class PMHandlerTest {
          * Test if config status is 3 = CONFIG_SENSOR_NUMBER for invalid configuration with non-number sensorid. Take
          * real int for comparison instead of BaseHandler constants - in case of change test needs to be adapted
          */
-        assertEquals("Handler Configuration status", ConfigStatus.SENSOR_ID_NEGATIVE, pmHandler.getConfigStatus());
+        assertEquals(ConfigStatus.SENSOR_ID_NEGATIVE, pmHandler.getConfigStatus(), "Handler Configuration status");
     }
 
     @Test
@@ -110,11 +110,11 @@ public class PMHandlerTest {
         String pmJson = FileReader.readFileInString("src/test/resources/pm-result.json");
         if (pmJson != null) {
             UpdateStatus result = pmHandler.updateChannels(pmJson);
-            assertEquals("Valid update", UpdateStatus.OK, result);
-            assertEquals("PM25", QuantityType.valueOf(2.9, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE),
-                    pmHandler.getPM25Cache());
-            assertEquals("PM100", QuantityType.valueOf(5.2, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE),
-                    pmHandler.getPM100Cache());
+            assertEquals(UpdateStatus.OK, result, "Valid update");
+            assertEquals(QuantityType.valueOf(2.9, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM25Cache(),
+                    "PM25");
+            assertEquals(QuantityType.valueOf(5.2, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM100Cache(),
+                    "PM100");
         } else {
             assertTrue(false);
         }
@@ -133,11 +133,11 @@ public class PMHandlerTest {
         String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
         if (pmJson != null) {
             UpdateStatus result = pmHandler.updateChannels(pmJson);
-            assertEquals("Valid update", UpdateStatus.VALUE_ERROR, result);
-            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE),
-                    pmHandler.getPM25Cache());
-            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE),
-                    pmHandler.getPM100Cache());
+            assertEquals(UpdateStatus.VALUE_ERROR, result, "Valid update");
+            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM25Cache(),
+                    "Values undefined");
+            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.MICROGRAM_PER_CUBICMETRE), pmHandler.getPM100Cache(),
+                    "Values undefined");
         } else {
             assertTrue(false);
         }
@@ -154,7 +154,7 @@ public class PMHandlerTest {
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
         UpdateStatus result = pmHandler.updateChannels("[]");
-        assertEquals("Valid update", UpdateStatus.VALUE_EMPTY, result);
+        assertEquals(UpdateStatus.VALUE_EMPTY, result, "Valid update");
     }
 
     @Test
@@ -168,6 +168,6 @@ public class PMHandlerTest {
 
         PMHandlerExtension pmHandler = new PMHandlerExtension(t);
         UpdateStatus result = pmHandler.updateChannels(null);
-        assertEquals("Valid update", UpdateStatus.CONNECTION_ERROR, result);
+        assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
     }
 }

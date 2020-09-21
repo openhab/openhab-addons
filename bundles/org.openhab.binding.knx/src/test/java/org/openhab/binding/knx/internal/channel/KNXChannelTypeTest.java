@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.knx.internal.channel;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -30,7 +30,7 @@ public class KNXChannelTypeTest {
 
     private KNXChannelType ct;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ct = new MyKNXChannelType("");
     }

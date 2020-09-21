@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.sensibo.internal.handler;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.Assert.assertEquals;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -25,44 +22,49 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.sensibo.internal.config.SensiboAccountConfiguration;
 import org.openhab.binding.sensibo.internal.model.SensiboSky;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
  * @author Arne Seime - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 public class SensiboAccountHandlerTest {
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options().dynamicPort());
-
-    @Mock
-    private Bridge sensiboAccountMock;
+    private WireMockServer wireMockServer;
 
     private HttpClient httpClient;
-    @Mock
-    private Configuration configuration;
 
-    @Before
+    private @Mock Configuration configuration;
+    private @Mock Bridge sensiboAccountMock;
+
+    @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+        wireMockServer.start();
+
+        int port = wireMockServer.port();
+        WireMock.configureFor("localhost", port);
+
         httpClient = new HttpClient();
         httpClient.start();
-        SensiboAccountHandler.API_ENDPOINT = "http://localhost:" + wireMockRule.port() + "/api"; // https://home.sensibo.com/api/v2
+
+        SensiboAccountHandler.API_ENDPOINT = "http://localhost:" + port + "/api"; // https://home.sensibo.com/api/v2
     }
 
-    @After
+    @AfterEach
     public void shutdown() throws Exception {
         httpClient.stop();
     }

@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.heos.internal.json;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.heos.internal.json.dto.HeosCommand;
 import org.openhab.binding.heos.internal.json.dto.HeosCommandGroup;
 import org.openhab.binding.heos.internal.json.dto.HeosErrorCode;

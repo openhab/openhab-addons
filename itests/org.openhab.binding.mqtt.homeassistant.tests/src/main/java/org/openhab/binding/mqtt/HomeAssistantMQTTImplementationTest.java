@@ -13,12 +13,12 @@
 package org.openhab.binding.mqtt;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,18 +32,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.State;
-import org.openhab.core.types.UnDefType;
-import org.openhab.core.util.UIDUtils;
-import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
-import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -55,6 +46,15 @@ import org.openhab.binding.mqtt.homeassistant.internal.ComponentSwitch;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
+import org.openhab.core.io.transport.mqtt.MqttConnectionState;
+import org.openhab.core.io.transport.mqtt.MqttService;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.UIDUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -72,14 +72,11 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
     private int registeredTopics = 100;
     private Throwable failure = null;
 
-    @Mock
-    ChannelStateUpdateListener channelStateUpdateListener;
+    private AutoCloseable mocksCloseable;
 
-    @Mock
-    AvailabilityTracker availabilityTracker;
-
-    @Mock
-    TransformationServiceProvider transformationServiceProvider;
+    private @Mock ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock AvailabilityTracker availabilityTracker;
+    private @Mock TransformationServiceProvider transformationServiceProvider;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
@@ -89,10 +86,10 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
             is(MqttConnectionState.CONNECTED));
     private String testObjectTopic;
 
-    @Before
-    public void setUp() throws InterruptedException, ExecutionException, TimeoutException, IOException {
+    @BeforeEach
+    public void beforeEach() throws Exception {
         registerVolatileStorageService();
-        initMocks(this);
+        mocksCloseable = openMocks(this);
         mqttService = getService(MqttService.class);
 
         // Wait for the EmbeddedBrokerService internal connection to be connected
@@ -124,12 +121,14 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         doReturn(null).when(transformationServiceProvider).getTransformationService(any());
     }
 
-    @After
-    public void tearDown() throws InterruptedException, ExecutionException, TimeoutException {
+    @AfterEach
+    public void afterEach() throws Exception {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
             connection.stop().get(1000, TimeUnit.MILLISECONDS);
         }
+
+        mocksCloseable.close();
     }
 
     @Test
@@ -146,8 +145,8 @@ public class HomeAssistantMQTTImplementationTest extends JavaOSGiTest {
         CountDownLatch c = new CountDownLatch(registeredTopics);
         connection.subscribe("homeassistant/+/+/" + ThingChannelConstants.testHomeAssistantThing.getId() + "/#",
                 (topic, payload) -> c.countDown()).get(1000, TimeUnit.MILLISECONDS);
-        assertTrue("Connection " + connection.getClientId() + " not retrieving all topics",
-                c.await(1000, TimeUnit.MILLISECONDS));
+        assertTrue(c.await(1000, TimeUnit.MILLISECONDS),
+                "Connection " + connection.getClientId() + " not retrieving all topics");
     }
 
     @Test

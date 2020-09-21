@@ -13,7 +13,8 @@
 package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -25,6 +26,15 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.core.automation.Condition;
+import org.openhab.core.automation.Rule;
+import org.openhab.core.automation.RuleRegistry;
+import org.openhab.core.automation.Trigger;
+import org.openhab.core.automation.util.RuleBuilder;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.ColorItem;
@@ -32,15 +42,6 @@ import org.openhab.core.library.items.SwitchItem;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.openhab.core.automation.Condition;
-import org.openhab.core.automation.Rule;
-import org.openhab.core.automation.RuleRegistry;
-import org.openhab.core.automation.Trigger;
-import org.openhab.core.automation.util.RuleBuilder;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.RuleUtils;
 import org.openhab.io.hueemulation.internal.dto.HueRuleEntry;
@@ -75,7 +76,7 @@ public class RulesTests {
         itemRegistry.add(item);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         commonSetup = new CommonSetup(false);
         this.cs = commonSetup.cs;
@@ -104,7 +105,7 @@ public class RulesTests {
         commonSetup.start(new ResourceConfig().registerInstances(subject));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         RuleUtils.random = new Random();
         commonSetup.dispose();

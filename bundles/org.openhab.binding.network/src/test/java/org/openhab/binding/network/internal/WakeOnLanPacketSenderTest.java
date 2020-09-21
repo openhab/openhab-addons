@@ -13,12 +13,15 @@
 package org.openhab.binding.network.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.binding.network.internal.WakeOnLanPacketSender.*;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -26,6 +29,7 @@ import org.openhab.core.util.HexUtils;
  *
  * @author Wouter Born - Initial contribution
  */
+@Timeout(value = 10, unit = TimeUnit.SECONDS)
 public class WakeOnLanPacketSenderTest {
 
     private void assertValidMagicPacket(byte[] macBytes, byte[] packet) {
@@ -75,23 +79,23 @@ public class WakeOnLanPacketSenderTest {
         assertValidMagicPacket(HexUtils.hexToBytes("6f70656e4841"), actualPacket);
     }
 
-    @Test(expected = IllegalStateException.class, timeout = 10000)
+    @Test
     public void sendWithEmptyMacAddressThrowsException() {
-        new WakeOnLanPacketSender("").sendPacket();
+        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("").sendPacket());
     }
 
-    @Test(expected = IllegalStateException.class, timeout = 10000)
+    @Test
     public void sendWithTooShortMacAddressThrowsException() {
-        new WakeOnLanPacketSender("6f:70:65:6e:48").sendPacket();
+        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f:70:65:6e:48").sendPacket());
     }
 
-    @Test(expected = IllegalStateException.class, timeout = 10000)
+    @Test
     public void sendWithTooLongMacAddressThrowsException() {
-        new WakeOnLanPacketSender("6f:70:65:6e:48:41:42").sendPacket();
+        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f:70:65:6e:48:41:42").sendPacket());
     }
 
-    @Test(expected = IllegalStateException.class, timeout = 10000)
+    @Test
     public void sendWithUnsupportedSeparatorInMacAddressThrowsException() {
-        new WakeOnLanPacketSender("6f=70=65=6e=48=41").sendPacket();
+        assertThrows(IllegalStateException.class, () -> new WakeOnLanPacketSender("6f=70=65=6e=48=41").sendPacket());
     }
 }

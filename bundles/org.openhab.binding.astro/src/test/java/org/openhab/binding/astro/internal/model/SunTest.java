@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.astro.internal.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.ZoneId;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.openhab.core.library.types.StringType;
@@ -39,7 +39,7 @@ public class SunTest {
 
     private static ZoneId ZONE = ZoneId.systemDefault();
 
-    @Before
+    @BeforeEach
     public void init() {
         sun = new Sun();
         config = new AstroChannelConfig();
@@ -68,13 +68,14 @@ public class SunTest {
                 PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testGetStateWhenNullPhase() throws Exception {
         sun.setPhase(null);
 
         assertNull(sun.getPhase());
-        assertEquals(UnDefType.UNDEF,
-                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE));
+
+        assertThrows(NullPointerException.class, () -> assertEquals(UnDefType.UNDEF,
+                PropertyUtils.getState(new ChannelUID("astro:sun:home:phase#name"), config, sun, ZONE)));
     }
 
     @Test

@@ -13,16 +13,20 @@
 package org.openhab.binding.mqtt.handler;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.internal.MqttThingID;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -38,24 +42,20 @@ import org.osgi.service.cm.ConfigurationException;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class AbstractBrokerHandlerTest {
     private final String HOST = "tcp://123.1.2.3";
     private final int PORT = 80;
     private SystemBrokerHandler handler;
     int stateChangeCounter = 0;
 
-    @Mock
-    private ThingHandlerCallback callback;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Bridge thing;
+    private @Mock MqttService service;
 
-    @Mock
-    private Bridge thing;
-
-    @Mock
-    private MqttService service;
-
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(MqttThingID.getThingUID(HOST, PORT)).when(thing).getUID();
         doReturn(new Configuration(Collections.singletonMap("brokerid", MqttThingID.getThingUID(HOST, PORT).getId())))
                 .when(thing).getConfiguration();

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -20,8 +20,8 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
 import org.openhab.binding.ihc.internal.ws.http.IhcConnectionPool;
@@ -46,7 +46,7 @@ public class IhcResourceInteractionServiceTest {
     private final String host = "1.1.1.1";
     private final String url = "https://1.1.1.1/ws/ResourceInteractionService";
 
-    @Before
+    @BeforeEach
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcResourceInteractionService = spy(new IhcResourceInteractionService(host, 0, new IhcConnectionPool()));
 

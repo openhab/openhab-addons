@@ -13,8 +13,9 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -35,8 +36,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.io.transport.modbus.BitArray;
 import org.openhab.io.transport.modbus.ModbusCommunicationInterface;
 import org.openhab.io.transport.modbus.ModbusReadFunctionCode;
@@ -132,7 +133,7 @@ public class SmokeTest extends IntegrationTestSupport {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUpSocketSpy() throws IOException {
         socketSpy.sockets.clear();
     }
@@ -164,7 +165,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
             assertThat(okCount.get(), is(equalTo(0)));
             assertThat(errorCount.get(), is(equalTo(1)));
-            assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
+            assertTrue(lastError.get() instanceof ModbusSlaveErrorResponseException, lastError.toString());
         }
     }
 
@@ -201,7 +202,7 @@ public class SmokeTest extends IntegrationTestSupport {
 
             assertThat(okCount.get(), is(equalTo(0)));
             assertThat(errorCount.get(), is(equalTo(1)));
-            assertTrue(lastError.toString(), lastError.get() instanceof ModbusConnectionException);
+            assertTrue(lastError.get() instanceof ModbusConnectionException, lastError.toString());
         }
     }
 
@@ -234,7 +235,7 @@ public class SmokeTest extends IntegrationTestSupport {
             assertTrue(callbackCalled.await(15, TimeUnit.SECONDS));
             assertThat(okCount.get(), is(equalTo(0)));
             assertThat(lastError.toString(), errorCount.get(), is(equalTo(1)));
-            assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveIOException);
+            assertTrue(lastError.get() instanceof ModbusSlaveIOException, lastError.toString());
         }
     }
 
@@ -473,7 +474,7 @@ public class SmokeTest extends IntegrationTestSupport {
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
-            assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
+            assertTrue(lastError.get() instanceof ModbusSlaveErrorResponseException, lastError.toString());
 
             assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(1)));
             ModbusRequest request = modbustRequestCaptor.getAllReturnValues().get(0);
@@ -550,7 +551,7 @@ public class SmokeTest extends IntegrationTestSupport {
             assertTrue(callbackCalled.await(60, TimeUnit.SECONDS));
 
             assertThat(unexpectedCount.get(), is(equalTo(0)));
-            assertTrue(lastError.toString(), lastError.get() instanceof ModbusSlaveErrorResponseException);
+            assertTrue(lastError.get() instanceof ModbusSlaveErrorResponseException, lastError.toString());
 
             assertThat(modbustRequestCaptor.getAllReturnValues().size(), is(equalTo(1)));
             ModbusRequest request = modbustRequestCaptor.getAllReturnValues().get(0);
@@ -705,13 +706,13 @@ public class SmokeTest extends IntegrationTestSupport {
         assertTrue(responses > 1);
 
         // Rest of the (timing-sensitive) assertions are not run in CI
-        assumeFalse("Running in CI! Will not test timing-sensitive details", isRunningInCI());
+        assumeFalse(isRunningInCI(), "Running in CI! Will not test timing-sensitive details");
         float averagePollPeriodMillis = ((float) (pollEndMillis - pollStartMillis)) / (responses - 1);
-        assertTrue(String.format(
-                "Measured avarage poll period %f ms (%d responses in %d ms) is not withing expected limits [%d, %d]",
-                averagePollPeriodMillis, responses, pollEndMillis - pollStartMillis, expectedPollAverageMin,
-                expectedPollAverageMax),
-                averagePollPeriodMillis > expectedPollAverageMin && averagePollPeriodMillis < expectedPollAverageMax);
+        assertTrue(averagePollPeriodMillis > expectedPollAverageMin && averagePollPeriodMillis < expectedPollAverageMax,
+                String.format(
+                        "Measured avarage poll period %f ms (%d responses in %d ms) is not withing expected limits [%d, %d]",
+                        averagePollPeriodMillis, responses, pollEndMillis - pollStartMillis, expectedPollAverageMin,
+                        expectedPollAverageMax));
     }
 
     @Test
@@ -828,10 +829,10 @@ public class SmokeTest extends IntegrationTestSupport {
 
     @Test
     public void testConnectionCloseAfterLastCommunicationInterfaceClosed() throws IllegalArgumentException, Exception {
-        assumeFalse("Running in CI! Will not test timing-sensitive details", isRunningInCI());
+        assumeFalse(isRunningInCI(), "Running in CI! Will not test timing-sensitive details");
         ModbusSlaveEndpoint endpoint = getEndpoint();
-        assumeTrue("Connection closing test supported only with TCP slaves",
-                endpoint instanceof ModbusTCPSlaveEndpoint);
+        assumeTrue(endpoint instanceof ModbusTCPSlaveEndpoint,
+                "Connection closing test supported only with TCP slaves");
 
         // Generate server data
         generateData();
@@ -893,10 +894,10 @@ public class SmokeTest extends IntegrationTestSupport {
 
     @Test
     public void testConnectionCloseAfterOneOffPoll() throws IllegalArgumentException, Exception {
-        assumeFalse("Running in CI! Will not test timing-sensitive details", isRunningInCI());
+        assumeFalse(isRunningInCI(), "Running in CI! Will not test timing-sensitive details");
         ModbusSlaveEndpoint endpoint = getEndpoint();
-        assumeTrue("Connection closing test supported only with TCP slaves",
-                endpoint instanceof ModbusTCPSlaveEndpoint);
+        assumeTrue(endpoint instanceof ModbusTCPSlaveEndpoint,
+                "Connection closing test supported only with TCP slaves");
 
         // Generate server data
         generateData();

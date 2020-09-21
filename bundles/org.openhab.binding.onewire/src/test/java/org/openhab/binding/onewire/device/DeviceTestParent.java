@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.onewire.device;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_PRESENT;
 
 import java.lang.reflect.Constructor;
@@ -21,10 +21,13 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assert;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.AbstractOwDevice;
@@ -33,7 +36,11 @@ import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
@@ -42,27 +49,20 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public abstract class DeviceTestParent<T extends AbstractOwDevice> {
     private @Nullable Class<T> deviceTestClazz;
 
-    @Mock
-    @NonNullByDefault({})
-    protected OwBaseThingHandler mockThingHandler;
-
-    @Mock
-    @NonNullByDefault({})
-    protected OwserverBridgeHandler mockBridgeHandler;
-
-    @Mock
-    @NonNullByDefault({})
-    protected Thing mockThing;
+    protected @Mock @NonNullByDefault({}) OwBaseThingHandler mockThingHandler;
+    protected @Mock @NonNullByDefault({}) OwserverBridgeHandler mockBridgeHandler;
+    protected @Mock @NonNullByDefault({}) Thing mockThing;
 
     protected SensorId testSensorId = new SensorId("00.000000000000");
 
     public void setupMocks(ThingTypeUID thingTypeUID, Class<T> deviceTestClazz) {
         this.deviceTestClazz = deviceTestClazz;
-        initMocks(this);
 
         Mockito.when(mockThingHandler.getThing()).thenReturn(mockThing);
         Mockito.when(mockThing.getUID()).thenReturn(new ThingUID(thingTypeUID, "testsensor"));
@@ -95,7 +95,7 @@ public abstract class DeviceTestParent<T extends AbstractOwDevice> {
         try {
             Constructor<T> constructor = deviceTestClazz.getConstructor(SensorId.class, OwBaseThingHandler.class);
             T testDevice = constructor.newInstance(testSensorId, mockThingHandler);
-            Assert.assertNotNull(testDevice);
+            assertNotNull(testDevice);
             return testDevice;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
                 | InvocationTargetException e) {
@@ -112,7 +112,7 @@ public abstract class DeviceTestParent<T extends AbstractOwDevice> {
             Constructor<T> constructor = deviceTestClazz.getConstructor(SensorId.class, OwSensorType.class,
                     OwBaseThingHandler.class);
             T testDevice = constructor.newInstance(testSensorId, sensorType, mockThingHandler);
-            Assert.assertNotNull(testDevice);
+            assertNotNull(testDevice);
             return testDevice;
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException
                 | InvocationTargetException e) {
@@ -120,16 +120,13 @@ public abstract class DeviceTestParent<T extends AbstractOwDevice> {
         }
     }
 
-    public void presenceTest(OnOffType state) {
+    public void presenceTest(OnOffType state) throws OwException {
         final T testDevice = instantiateDevice();
         final InOrder inOrder = Mockito.inOrder(mockThingHandler, mockBridgeHandler);
-        try {
-            Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(state);
-            testDevice.checkPresence(mockBridgeHandler);
 
-            inOrder.verify(mockThingHandler).updatePresenceStatus(eq(state));
-        } catch (OwException e) {
-            Assert.fail("caught unexpected OwException");
-        }
+        Mockito.when(mockBridgeHandler.checkPresence(testSensorId)).thenReturn(state);
+        testDevice.checkPresence(mockBridgeHandler);
+
+        inOrder.verify(mockThingHandler).updatePresenceStatus(eq(state));
     }
 }

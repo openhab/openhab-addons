@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
 
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants;
 
 /**
@@ -87,15 +87,15 @@ public class DeviceDescriptorXMLTest extends AbstractXMLProtocolTest {
         assertCommands(subject.system, systemCommandsSpec);
 
         assertNotNull(subject.features);
-        assertTrue("Desired features present", subject.features.keySet().containsAll(features));
+        assertTrue(subject.features.keySet().containsAll(features), "Desired features present");
 
         assertNotNull(subject.zones);
-        assertEquals("Number of zones match", zones.size(), subject.zones.size());
+        assertEquals(zones.size(), subject.zones.size(), "Number of zones match");
 
         for (int i = 0; i < zones.size(); i++) {
             YamahaReceiverBindingConstants.Zone zone = zones.get(i);
 
-            assertTrue("Desired zone is present", subject.zones.containsKey(zone));
+            assertTrue(subject.zones.containsKey(zone), "Desired zone is present");
 
             DeviceDescriptorXML.ZoneDescriptor zoneDesc = subject.zones.get(zone);
             CommandsSpec zoneSpec = zonesCommandsSpec[i];
@@ -104,9 +104,9 @@ public class DeviceDescriptorXMLTest extends AbstractXMLProtocolTest {
     }
 
     private void assertCommands(DeviceDescriptorXML.HasCommands descWithCommands, CommandsSpec spec) {
-        assertNotNull("Descriptor commands are present", descWithCommands);
-        assertEquals("Expected number of commands", spec.expectedNumber, descWithCommands.commands.size());
-        assertTrue("Expected commands are present", descWithCommands.commands.containsAll(spec.expected));
+        assertNotNull(descWithCommands, "Descriptor commands are present");
+        assertEquals(spec.expectedNumber, descWithCommands.commands.size(), "Expected number of commands");
+        assertTrue(descWithCommands.commands.containsAll(spec.expected), "Expected commands are present");
     }
 
     private static class CommandsSpec {

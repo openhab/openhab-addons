@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.max.internal.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.max.internal.Utils;
 import org.openhab.binding.max.internal.device.ThermostatModeType;
 

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +65,7 @@ public class EmbeddedBrokerTools {
                 }
             };
             mqttService.addBrokersListener(observer);
-            assertTrue("Wait for embedded connection client failed", semaphore.tryAcquire(700, TimeUnit.MILLISECONDS));
+            assertTrue(semaphore.tryAcquire(700, TimeUnit.MILLISECONDS), "Wait for embedded connection client failed");
         }
         MqttBrokerConnection embeddedConnection = this.embeddedConnection;
         if (embeddedConnection == null) {
@@ -84,8 +84,8 @@ public class EmbeddedBrokerTools {
         if (embeddedConnection.connectionState() == MqttConnectionState.CONNECTED) {
             semaphore.release();
         }
-        assertTrue("Connection " + embeddedConnection.getClientId() + " failed. State: "
-                + embeddedConnection.connectionState(), semaphore.tryAcquire(500, TimeUnit.MILLISECONDS));
+        assertTrue(semaphore.tryAcquire(500, TimeUnit.MILLISECONDS), "Connection " + embeddedConnection.getClientId()
+                + " failed. State: " + embeddedConnection.connectionState());
         return embeddedConnection;
     }
 }

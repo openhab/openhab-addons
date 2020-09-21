@@ -12,8 +12,9 @@
  */
 package org.openhab.io.transport.modbus.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 import org.openhab.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusUDPSlaveEndpoint;
@@ -30,7 +31,7 @@ public class ModbusSlaveEndpointTestCase {
     public void testEqualsSameTcp() {
         ModbusTCPSlaveEndpoint e1 = new ModbusTCPSlaveEndpoint("127.0.0.1", 500);
         ModbusTCPSlaveEndpoint e2 = new ModbusTCPSlaveEndpoint("127.0.0.1", 500);
-        Assert.assertEquals(e1, e2);
+        assertEquals(e1, e2);
     }
 
     @Test
@@ -41,7 +42,7 @@ public class ModbusSlaveEndpointTestCase {
         ModbusSerialSlaveEndpoint e2 = new ModbusSerialSlaveEndpoint("port1", 9600, SerialPort.FLOWCONTROL_NONE,
                 SerialPort.FLOWCONTROL_NONE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE,
                 Modbus.DEFAULT_SERIAL_ENCODING, true, 500);
-        Assert.assertEquals(e1, e2);
+        assertEquals(e1, e2);
     }
 
     /**
@@ -55,8 +56,8 @@ public class ModbusSlaveEndpointTestCase {
         ModbusSerialSlaveEndpoint e2 = new ModbusSerialSlaveEndpoint("port1", 9600, SerialPort.FLOWCONTROL_NONE,
                 SerialPort.FLOWCONTROL_NONE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE,
                 Modbus.DEFAULT_SERIAL_ENCODING, false, 500);
-        Assert.assertEquals(e1, e2);
-        Assert.assertEquals(e1.hashCode(), e2.hashCode());
+        assertEquals(e1, e2);
+        assertEquals(e1.hashCode(), e2.hashCode());
     }
 
     @Test
@@ -67,32 +68,32 @@ public class ModbusSlaveEndpointTestCase {
         ModbusSerialSlaveEndpoint e2 = new ModbusSerialSlaveEndpoint("port2", 9600, SerialPort.FLOWCONTROL_NONE,
                 SerialPort.FLOWCONTROL_NONE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE,
                 Modbus.DEFAULT_SERIAL_ENCODING, true, 500);
-        Assert.assertNotEquals(e1, e2);
-        Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1, e2);
+        assertNotEquals(e1.hashCode(), e2.hashCode());
     }
 
     @Test
     public void testEqualsDifferentTCPPort() {
         ModbusTCPSlaveEndpoint e1 = new ModbusTCPSlaveEndpoint("127.0.0.1", 500);
         ModbusTCPSlaveEndpoint e2 = new ModbusTCPSlaveEndpoint("127.0.0.1", 501);
-        Assert.assertNotEquals(e1, e2);
-        Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1, e2);
+        assertNotEquals(e1.hashCode(), e2.hashCode());
     }
 
     @Test
     public void testEqualsDifferentTCPHost() {
         ModbusTCPSlaveEndpoint e1 = new ModbusTCPSlaveEndpoint("127.0.0.1", 500);
         ModbusTCPSlaveEndpoint e2 = new ModbusTCPSlaveEndpoint("127.0.0.2", 501);
-        Assert.assertNotEquals(e1, e2);
-        Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1, e2);
+        assertNotEquals(e1.hashCode(), e2.hashCode());
     }
 
     @Test
     public void testEqualsDifferentProtocol() {
         ModbusTCPSlaveEndpoint e1 = new ModbusTCPSlaveEndpoint("127.0.0.1", 500);
         ModbusUDPSlaveEndpoint e2 = new ModbusUDPSlaveEndpoint("127.0.0.1", 500);
-        Assert.assertNotEquals(e1, e2);
-        Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1, e2);
+        assertNotEquals(e1.hashCode(), e2.hashCode());
     }
 
     @Test
@@ -101,7 +102,7 @@ public class ModbusSlaveEndpointTestCase {
         ModbusSerialSlaveEndpoint e2 = new ModbusSerialSlaveEndpoint("port2", 9600, SerialPort.FLOWCONTROL_NONE,
                 SerialPort.FLOWCONTROL_NONE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE,
                 Modbus.DEFAULT_SERIAL_ENCODING, true, 500);
-        Assert.assertNotEquals(e1, e2);
-        Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
+        assertNotEquals(e1, e2);
+        assertNotEquals(e1.hashCode(), e2.hashCode());
     }
 }

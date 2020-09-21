@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -42,43 +42,44 @@ public class DimmerDeviceTest extends DeviceTestBase<DimmerDevice> {
     public void testHandleCommandBrightnessOnOff() throws IOException {
         assertInput("dimmer_set_switch_state_on");
         setSocketReturnAssert("dimmer_set_switch_state_on");
-        assertTrue("Brightness channel as OnOffType type should be handled",
-                device.handleCommand(CHANNEL_UID_BRIGHTNESS, OnOffType.ON));
+        assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, OnOffType.ON),
+                "Brightness channel as OnOffType type should be handled");
     }
 
     @Test
     public void testHandleCommandBrightnessZero() throws IOException {
         assertInput("dimmer_set_switch_state_off");
         setSocketReturnAssert("dimmer_set_switch_state_response");
-        assertTrue("Brightness channel with percentage 0 should be handled",
-                device.handleCommand(CHANNEL_UID_BRIGHTNESS, PercentType.ZERO));
+        assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, PercentType.ZERO),
+                "Brightness channel with percentage 0 should be handled");
     }
 
     @Test
     public void testHandleCommandBrightness() throws IOException {
         assertInput("dimmer_set_brightness", "dimmer_set_switch_state_on");
         setSocketReturnAssert("dimmer_set_brightness_response", "dimmer_set_switch_state_on");
-        assertTrue("Brightness channel should be handled",
-                device.handleCommand(CHANNEL_UID_BRIGHTNESS, new PercentType(17)));
+        assertTrue(device.handleCommand(CHANNEL_UID_BRIGHTNESS, new PercentType(17)),
+                "Brightness channel should be handled");
     }
 
     @Test
     public void testUpdateChannelSwitch() throws IOException {
         deviceState = new DeviceState(ModelTestUtil.readJson("hs220_get_sysinfo_response_off"));
 
-        assertSame("Dimmer device should be off", OnOffType.OFF,
-                ((PercentType) device.updateChannel(CHANNEL_UID_BRIGHTNESS, deviceState)).as(OnOffType.class));
+        assertSame(OnOffType.OFF,
+                ((PercentType) device.updateChannel(CHANNEL_UID_BRIGHTNESS, deviceState)).as(OnOffType.class),
+                "Dimmer device should be off");
     }
 
     @Test
     public void testUpdateChannelBrightness() {
-        assertEquals("Dimmer brightness should be set", BRIGHTNESS_VALUE,
-                device.updateChannel(CHANNEL_UID_BRIGHTNESS, deviceState));
+        assertEquals(BRIGHTNESS_VALUE, device.updateChannel(CHANNEL_UID_BRIGHTNESS, deviceState),
+                "Dimmer brightness should be set");
     }
 
     @Test
     public void testUpdateChannelOther() {
-        assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF,
-                device.updateChannel(CHANNEL_UID_OTHER, deviceState));
+        assertSame(UnDefType.UNDEF, device.updateChannel(CHANNEL_UID_OTHER, deviceState),
+                "Unknown channel should return UNDEF");
     }
 }

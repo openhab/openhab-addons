@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;

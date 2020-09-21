@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The goal of this class is to test the model parser to make sure the structures
@@ -29,7 +29,7 @@ public class ModelParserTest {
 
     private ModelParser subject;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         subject = new ModelParser();
     }

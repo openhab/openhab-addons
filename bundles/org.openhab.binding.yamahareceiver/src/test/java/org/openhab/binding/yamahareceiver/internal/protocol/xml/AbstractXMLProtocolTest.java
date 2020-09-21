@@ -12,26 +12,28 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 /**
  * Baseline for tests for the XML protocol implementation.
  *
  * @author Tomasz Maruszak - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public abstract class AbstractXMLProtocolTest {
 
-    @Mock
-    protected XMLConnection con;
+    protected @Mock XMLConnection con;
 
     protected ModelContext ctx;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        initMocks(this);
         ctx = new ModelContext(con);
 
         onSetUp();

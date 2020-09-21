@@ -13,7 +13,8 @@
 package org.openhab.io.mqttembeddedbroker.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 
@@ -33,11 +34,12 @@ import javax.naming.ConfigurationException;
 import org.apache.commons.io.FileUtils;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
@@ -56,16 +58,15 @@ import io.moquette.broker.subscriptions.Topic;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 public class MqttEmbeddedBrokerServiceTest extends JavaTest {
 
     private EmbeddedBrokerService subject;
     private Map<String, Object> config = new HashMap<>();
     private @Mock MqttService service;
 
-    @Before
+    @BeforeEach
     public void setUp() throws ConfigurationException, MqttException, GeneralSecurityException, IOException {
-        MockitoAnnotations.initMocks(this);
-
         config.put("username", "username");
         config.put("password", "password");
         config.put("port", 12345);
@@ -75,7 +76,7 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         subject = new EmbeddedBrokerService(service, config);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         subject.deactivate();
     }

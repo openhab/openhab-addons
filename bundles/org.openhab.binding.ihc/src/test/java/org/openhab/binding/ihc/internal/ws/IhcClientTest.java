@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.ihc.internal.ws;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSFile;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSProjectInfo;
@@ -34,7 +34,7 @@ public class IhcClientTest {
 
     private IhcClient ihcClient;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcClient = spy(new IhcClient("test1", "test2", "test3"));
         WSProjectInfo projectInfo = new WSProjectInfo();

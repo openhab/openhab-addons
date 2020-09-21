@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType;
 
@@ -25,8 +27,9 @@ import org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType
 @NonNullByDefault
 public class RFXComWaterMessageTest {
 
-    @Test(expected = RFXComMessageNotImplementedException.class)
-    public void checkNotImplemented() throws Exception {
-        RFXComMessageFactory.createMessage(PacketType.WATER);
+    @Test
+    public void checkNotImplemented() {
+        assertThrows(RFXComMessageNotImplementedException.class,
+                () -> RFXComMessageFactory.createMessage(PacketType.WATER));
     }
 }

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.ihc.internal.ws.services;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -21,8 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.ihc.internal.ws.ResourceFileUtils;
 import org.openhab.binding.ihc.internal.ws.datatypes.WSRFDevice;
 import org.openhab.binding.ihc.internal.ws.exeptions.IhcExecption;
@@ -42,7 +42,7 @@ public class IhcAirlinkManagementServiceTest {
     private String query;
     private final int timeout = 100;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IhcExecption, SocketTimeoutException {
         ihcAirlinkManagementService = spy(new IhcAirlinkManagementService(host, timeout, new IhcConnectionPool()));
 

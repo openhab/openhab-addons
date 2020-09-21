@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.omnikinverter.internal.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.omnikinverter.internal.OmnikInverterMessage;
 
 /**
@@ -29,7 +29,7 @@ public class OmnikInverterMessageTest {
 
     private OmnikInverterMessage message;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         File file = new File("src/test/resources/omnik.output");
         message = new OmnikInverterMessage(Files.readAllBytes(file.toPath()));

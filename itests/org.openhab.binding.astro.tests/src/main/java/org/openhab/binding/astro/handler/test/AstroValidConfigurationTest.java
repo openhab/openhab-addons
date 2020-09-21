@@ -28,7 +28,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.handler.AstroThingHandler;
 import org.openhab.binding.astro.internal.handler.SunHandler;
 

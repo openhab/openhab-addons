@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.networkupstools.internal;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.CoreItemFactory;
 
 /**
@@ -75,7 +76,7 @@ public class NutNameChannelsTest {
         for (final Entry<NutName, String> entry : readMeNutNames.entrySet()) {
             final Matcher matcher = README_PATTERN.matcher(entry.getValue());
 
-            assertNotNull("Could not find NutName in readme for : " + entry.getValue(), entry.getKey());
+            assertNotNull(entry.getKey(), "Could not find NutName in readme for : " + entry.getValue());
             if (matcher.find()) {
                 list.add(String.format(TEMPLATE_CHANNEL, entry.getKey().getChannelId(),
                         nutNameToChannelType(entry.getKey())));
@@ -145,10 +146,10 @@ public class NutNameChannelsTest {
 
     private NutName lineToNutName(final String line) {
         final Matcher matcher = README_PATTERN.matcher(line);
-        assertTrue("Could not match readme line: " + line, matcher.find());
+        assertTrue(matcher.find(), "Could not match readme line: " + line);
         final String name = matcher.group(1);
         final NutName channelIdToNutName = NutName.channelIdToNutName(name);
-        assertNotNull("Name should not match null: '" + name + "' ->" + line, channelIdToNutName);
+        assertNotNull(channelIdToNutName, "Name should not match null: '" + name + "' ->" + line);
         return channelIdToNutName;
     }
 

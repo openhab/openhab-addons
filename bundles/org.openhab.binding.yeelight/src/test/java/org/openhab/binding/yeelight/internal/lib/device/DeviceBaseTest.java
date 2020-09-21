@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.yeelight.internal.lib.device;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.yeelight.internal.lib.enums.ActiveMode;
 
 /**
@@ -27,7 +27,7 @@ public class DeviceBaseTest {
 
     private DeviceBase deviceBase;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         deviceBase = new DeviceBase("myid") {
         };

@@ -12,13 +12,21 @@
  */
 package org.openhab.binding.netatmo.internal.presence;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.binding.netatmo.internal.NetatmoBindingConstants;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -29,29 +37,22 @@ import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.netatmo.internal.NetatmoBindingConstants;
 
 import io.swagger.client.model.NAWelcomeCamera;
 
 /**
  * @author Sven Strohschein - Initial contribution
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class NAPresenceCameraHandlerTest {
 
     private static final String DUMMY_VPN_URL = "https://dummytestvpnaddress.net/restricted/10.255.89.96/9826069dc689e8327ac3ed2ced4ff089/MTU5MTgzMzYwMDrQ7eHHhG0_OJ4TgmPhGlnK7QQ5pZ,,";
     private static final String DUMMY_LOCAL_URL = "http://192.168.178.76/9826069dc689e8327ac3ed2ced4ff089";
     private static final Optional<String> DUMMY_PING_RESPONSE = createPingResponseContent(DUMMY_LOCAL_URL);
 
-    @Mock
-    private RequestExecutor requestExecutorMock;
-    @Mock
-    private TimeZoneProvider timeZoneProviderMock;
+    private @Mock RequestExecutor requestExecutorMock;
+    private @Mock TimeZoneProvider timeZoneProviderMock;
 
     private Thing presenceCameraThing;
     private NAWelcomeCamera presenceCamera;
@@ -60,7 +61,7 @@ public class NAPresenceCameraHandlerTest {
     private ChannelUID floodlightAutoModeChannelUID;
     private NAPresenceCameraHandlerAccessible handler;
 
-    @Before
+    @BeforeEach
     public void before() {
         presenceCameraThing = new ThingImpl(new ThingTypeUID("netatmo", "NOC"), "1");
         presenceCamera = new NAWelcomeCamera();

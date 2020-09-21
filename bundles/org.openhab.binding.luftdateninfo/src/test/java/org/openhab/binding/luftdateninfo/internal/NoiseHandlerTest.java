@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.handler.BaseSensorHandler.UpdateStatus;
 import org.openhab.binding.luftdateninfo.internal.mock.NoiseHandlerExtension;
 import org.openhab.binding.luftdateninfo.internal.mock.ThingMock;
@@ -46,13 +46,13 @@ public class NoiseHandlerTest {
         String pmJson = FileReader.readFileInString("src/test/resources/noise-result.json");
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
-            assertEquals("Valid update", UpdateStatus.OK, result);
-            assertEquals("Noise EQ", QuantityType.valueOf(51.0, SmartHomeUnits.DECIBEL),
-                    noiseHandler.getNoiseEQCache());
-            assertEquals("Noise Min", QuantityType.valueOf(47.2, SmartHomeUnits.DECIBEL),
-                    noiseHandler.getNoiseMinCache());
-            assertEquals("Noise Max", QuantityType.valueOf(57.0, SmartHomeUnits.DECIBEL),
-                    noiseHandler.getNoiseMaxCache());
+            assertEquals(UpdateStatus.OK, result, "Valid update");
+            assertEquals(QuantityType.valueOf(51.0, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseEQCache(),
+                    "Noise EQ");
+            assertEquals(QuantityType.valueOf(47.2, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMinCache(),
+                    "Noise Min");
+            assertEquals(QuantityType.valueOf(57.0, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMaxCache(),
+                    "Noise Max");
         } else {
             assertTrue(false);
         }
@@ -71,13 +71,13 @@ public class NoiseHandlerTest {
         String pmJson = FileReader.readFileInString("src/test/resources/condition-result-no-pressure.json");
         if (pmJson != null) {
             UpdateStatus result = noiseHandler.updateChannels(pmJson);
-            assertEquals("Valid update", UpdateStatus.VALUE_ERROR, result);
-            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL),
-                    noiseHandler.getNoiseEQCache());
-            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL),
-                    noiseHandler.getNoiseMinCache());
-            assertEquals("Values undefined", QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL),
-                    noiseHandler.getNoiseMaxCache());
+            assertEquals(UpdateStatus.VALUE_ERROR, result, "Valid update");
+            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseEQCache(),
+                    "Values undefined");
+            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMinCache(),
+                    "Values undefined");
+            assertEquals(QuantityType.valueOf(-1, SmartHomeUnits.DECIBEL), noiseHandler.getNoiseMaxCache(),
+                    "Values undefined");
         } else {
             assertTrue(false);
         }
@@ -94,7 +94,7 @@ public class NoiseHandlerTest {
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
         UpdateStatus result = noiseHandler.updateChannels("[]");
-        assertEquals("Valid update", UpdateStatus.VALUE_EMPTY, result);
+        assertEquals(UpdateStatus.VALUE_EMPTY, result, "Valid update");
     }
 
     @Test
@@ -108,6 +108,6 @@ public class NoiseHandlerTest {
 
         NoiseHandlerExtension noiseHandler = new NoiseHandlerExtension(t);
         UpdateStatus result = noiseHandler.updateChannels(null);
-        assertEquals("Valid update", UpdateStatus.CONNECTION_ERROR, result);
+        assertEquals(UpdateStatus.CONNECTION_ERROR, result, "Valid update");
     }
 }

@@ -12,16 +12,13 @@
  */
 package org.openhab.binding.dsmr.internal.device.p1telegram;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
 
@@ -30,11 +27,9 @@ import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramSt
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(value = Parameterized.class)
 public class P1TelegramParserTest {
 
     // @formatter:off
-    @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
             { "ace4000", 59, },
@@ -52,17 +47,13 @@ public class P1TelegramParserTest {
     }
     // @formatter:on
 
-    @Parameter(0)
-    public String telegramName;
-
-    @Parameter(1)
-    public int numberOfCosemObjects;
-
-    @Test
-    public void testParsing() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testParsing(final String telegramName, final int numberOfCosemObjects) {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
-        assertEquals("Should not have any unknown cosem objects", 0, telegram.getUnknownCosemObjects().size());
-        assertEquals("Expected number of objects", numberOfCosemObjects,
-                telegram.getCosemObjects().stream().mapToInt(co -> co.getCosemValues().size()).sum());
+        assertEquals(0, telegram.getUnknownCosemObjects().size(), "Should not have any unknown cosem objects");
+        assertEquals(numberOfCosemObjects,
+                telegram.getCosemObjects().stream().mapToInt(co -> co.getCosemValues().size()).sum(),
+                "Expected number of objects");
     }
 }

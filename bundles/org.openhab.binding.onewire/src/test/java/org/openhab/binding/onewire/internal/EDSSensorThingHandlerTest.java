@@ -12,25 +12,26 @@
  */
 package org.openhab.binding.onewire.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
 import org.openhab.binding.onewire.test.AbstractThingHandlerTest;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.thing.*;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
@@ -50,15 +51,13 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
             CHANNEL_ABSOLUTE_HUMIDITY);
     private static final ChannelUID CHANNEL_UID_DEWPOINT = new ChannelUID(THING_UID, CHANNEL_DEWPOINT);
 
-    @Before
+    @BeforeEach
     public void setup() throws OwException {
-        MockitoAnnotations.initMocks(this);
-
         initializeBridge();
 
         final Bridge bridge = this.bridge;
         if (bridge == null) {
-            Assert.fail("bridge is null");
+            fail("bridge is null");
             return;
         }
 
@@ -75,7 +74,7 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
 
         final Thing thing = this.thing;
         if (thing == null) {
-            Assert.fail("thing is null");
+            fail("thing is null");
             return;
         }
 
@@ -97,7 +96,7 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
     public void testInitializationEndsWithUnknown() {
         final ThingHandler thingHandler = this.thingHandler;
         if (thingHandler == null) {
-            Assert.fail("thingHandler is null");
+            fail("thingHandler is null");
             return;
         }
 
@@ -111,7 +110,7 @@ public class EDSSensorThingHandlerTest extends AbstractThingHandlerTest {
         final OwBaseThingHandler thingHandler = this.thingHandler;
         final InOrder inOrder = this.inOrder;
         if (thingHandler == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
+            fail("prerequisite is null");
             return;
         }
 

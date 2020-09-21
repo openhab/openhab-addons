@@ -12,9 +12,8 @@
  */
 package org.openhab.binding.deconz;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.*;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.io.IOException;
@@ -23,11 +22,12 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.deconz.internal.StateDescriptionProvider;
 import org.openhab.binding.deconz.internal.dto.LightMessage;
 import org.openhab.binding.deconz.internal.handler.LightThingHandler;
@@ -53,20 +53,16 @@ import com.google.gson.GsonBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class LightsTest {
     private @NonNullByDefault({}) Gson gson;
 
-    @Mock
-    private @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
+    private @Mock @NonNullByDefault({}) StateDescriptionProvider stateDescriptionProvider;
 
-    @Mock
-    private @NonNullByDefault({}) StateDescriptionProvider stateDescriptionProvider;
-
-    @Before
+    @BeforeEach
     public void initialize() {
-        initMocks(this);
-
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
         gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
@@ -76,7 +72,7 @@ public class LightsTest {
     @Test
     public void colorTemperatureLightUpdateTest() throws IOException {
         LightMessage lightMessage = DeconzTest.getObjectFromJson("colortemperature.json", LightMessage.class, gson);
-        Assert.assertNotNull(lightMessage);
+        assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
         ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
@@ -122,7 +118,7 @@ public class LightsTest {
     @Test
     public void dimmableLightUpdateTest() throws IOException {
         LightMessage lightMessage = DeconzTest.getObjectFromJson("dimmable.json", LightMessage.class, gson);
-        Assert.assertNotNull(lightMessage);
+        assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
         ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
@@ -139,7 +135,7 @@ public class LightsTest {
     @Test
     public void dimmableLightOverrangeUpdateTest() throws IOException {
         LightMessage lightMessage = DeconzTest.getObjectFromJson("dimmable_overrange.json", LightMessage.class, gson);
-        Assert.assertNotNull(lightMessage);
+        assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
         ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
@@ -156,7 +152,7 @@ public class LightsTest {
     @Test
     public void dimmableLightUnderrangeUpdateTest() throws IOException {
         LightMessage lightMessage = DeconzTest.getObjectFromJson("dimmable_underrange.json", LightMessage.class, gson);
-        Assert.assertNotNull(lightMessage);
+        assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
         ChannelUID channelUID_bri = new ChannelUID(thingUID, CHANNEL_BRIGHTNESS);
@@ -173,7 +169,7 @@ public class LightsTest {
     @Test
     public void windowCoveringUpdateTest() throws IOException {
         LightMessage lightMessage = DeconzTest.getObjectFromJson("windowcovering.json", LightMessage.class, gson);
-        Assert.assertNotNull(lightMessage);
+        assertNotNull(lightMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "light");
         ChannelUID channelUID_pos = new ChannelUID(thingUID, CHANNEL_POSITION);

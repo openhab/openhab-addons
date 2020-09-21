@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link CryptUtil} class.
@@ -30,13 +30,13 @@ public class CryptUtilTest {
 
     /**
      * Test round trip of encrypt and decrypt that should return the same value.
-     * 
+     *
      * @throws IOException exception in case device not reachable
      */
     @Test
     public void testCrypt() throws IOException {
-        assertEquals("Crypting should result in same string", TEST_STRING,
-                CryptUtil.decrypt(CryptUtil.encrypt(TEST_STRING), TEST_STRING.length()));
+        assertEquals(TEST_STRING, CryptUtil.decrypt(CryptUtil.encrypt(TEST_STRING), TEST_STRING.length()),
+                "Crypting should result in same string");
     }
 
     /**
@@ -47,7 +47,7 @@ public class CryptUtilTest {
     @Test
     public void testCryptWithLength() throws IOException {
         try (final ByteArrayInputStream is = new ByteArrayInputStream(CryptUtil.encryptWithLength(TEST_STRING))) {
-            assertEquals("Crypting should result in same string", TEST_STRING, CryptUtil.decryptWithLength(is));
+            assertEquals(TEST_STRING, CryptUtil.decryptWithLength(is), "Crypting should result in same string");
         }
     }
 }

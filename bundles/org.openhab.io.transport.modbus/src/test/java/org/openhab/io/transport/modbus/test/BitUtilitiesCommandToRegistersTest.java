@@ -13,7 +13,8 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -21,12 +22,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -39,21 +36,7 @@ import org.openhab.io.transport.modbus.ModbusRegisterArray;
 /**
  * @author Sami Salonen - Initial contribution
  */
-@RunWith(Parameterized.class)
 public class BitUtilitiesCommandToRegistersTest {
-
-    private final Command command;
-    private final ValueType type;
-    private final Object expectedResult;
-
-    @Rule
-    public final ExpectedException shouldThrow = ExpectedException.none();
-
-    public BitUtilitiesCommandToRegistersTest(Command command, ValueType type, Object expectedResult) {
-        this.command = command;
-        this.type = type;
-        this.expectedResult = expectedResult; // Exception or array of 16bit integers
-    }
 
     private static short[] shorts(int... ints) {
         short[] shorts = new short[ints.length];
@@ -64,7 +47,6 @@ public class BitUtilitiesCommandToRegistersTest {
         return shorts;
     }
 
-    @Parameters
     public static Collection<Object[]> data() {
         return Collections.unmodifiableList(Stream
                 .of(new Object[] { new DecimalType("1.0"), ValueType.BIT, IllegalArgumentException.class },
@@ -325,13 +307,15 @@ public class BitUtilitiesCommandToRegistersTest {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Test
-    public void testCommandToRegisters() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testCommandToRegisters(Command command, ValueType type, Object expectedResult) {
         if (expectedResult instanceof Class && Exception.class.isAssignableFrom((Class) expectedResult)) {
-            shouldThrow.expect((Class) expectedResult);
+            assertThrows((Class) expectedResult, () -> ModbusBitUtilities.commandToRegisters(command, type));
+            return;
         }
 
-        ModbusRegisterArray registers = ModbusBitUtilities.commandToRegisters(this.command, this.type);
+        ModbusRegisterArray registers = ModbusBitUtilities.commandToRegisters(command, type);
         short[] expectedRegisters = (short[]) expectedResult;
 
         assertThat(String.format("register index command=%s, type=%s", command, type), registers.size(),

@@ -13,9 +13,10 @@
 package org.openhab.binding.hue.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.hue.internal.State.ColorMode;
 import org.openhab.binding.hue.internal.handler.LightStateConverter;
 import org.openhab.core.library.types.DecimalType;

@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplementedException;
 
 /**
@@ -23,9 +25,10 @@ import org.openhab.binding.rfxcom.internal.exceptions.RFXComMessageNotImplemente
  */
 @NonNullByDefault
 public class RFXComPowerMessageTest {
-    @Test(expected = RFXComMessageNotImplementedException.class)
-    public void checkNotImplemented() throws Exception {
+    @Test
+    public void checkNotImplemented() {
         // TODO Note that this message is supported in the 1.9 binding
-        RFXComMessageFactory.createMessage(RFXComBaseMessage.PacketType.POWER);
+        assertThrows(RFXComMessageNotImplementedException.class,
+                () -> RFXComMessageFactory.createMessage(RFXComBaseMessage.PacketType.POWER));
     }
 }

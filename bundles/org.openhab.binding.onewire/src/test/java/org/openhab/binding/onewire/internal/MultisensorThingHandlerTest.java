@@ -12,21 +12,17 @@
  */
 package org.openhab.binding.onewire.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.CONFIG_ID;
-import static org.openhab.binding.onewire.internal.OwBindingConstants.THING_TYPE_MS_TX;
+import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
 import org.openhab.binding.onewire.internal.handler.OwBaseThingHandler;
@@ -47,15 +43,13 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
     private static final String TEST_ID = "00.000000000000";
 
-    @Before
+    @BeforeEach
     public void setup() throws OwException {
-        MockitoAnnotations.initMocks(this);
-
         initializeBridge();
 
         final Bridge bridge = this.bridge;
         if (bridge == null) {
-            Assert.fail("bridge is null");
+            fail("bridge is null");
             return;
         }
 
@@ -67,7 +61,7 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
 
         final Thing thing = this.thing;
         if (thing == null) {
-            Assert.fail("thing is null");
+            fail("thing is null");
             return;
         }
 
@@ -95,7 +89,7 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
     public void testInitializationEndsWithUnknown() {
         final ThingHandler thingHandler = this.thingHandler;
         if (thingHandler == null) {
-            Assert.fail("thingHandler is null");
+            fail("thingHandler is null");
             return;
         }
         thingHandler.initialize();
@@ -108,7 +102,7 @@ public class MultisensorThingHandlerTest extends AbstractThingHandlerTest {
         final OwBaseThingHandler thingHandler = this.thingHandler;
         final InOrder inOrder = this.inOrder;
         if (thingHandler == null || inOrder == null) {
-            Assert.fail("prerequisite is null");
+            fail("prerequisite is null");
             return;
         }
         thingHandler.initialize();

@@ -15,32 +15,25 @@
  */
 package org.openhab.binding.lametrictime.api.model.enums;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
-import org.openhab.binding.lametrictime.api.model.enums.Priority;
+import org.junit.jupiter.api.Test;
 
-public class PriorityTest
-{
+public class PriorityTest {
     @Test
-    public void testConversion()
-    {
-        for (Priority value : Priority.values())
-        {
+    public void testConversion() {
+        for (Priority value : Priority.values()) {
             assertEquals(value, Priority.toEnum(value.toRaw()));
         }
     }
 
     @Test
-    public void testInvalidRawValue()
-    {
+    public void testInvalidRawValue() {
         assertNull(Priority.toEnum("invalid raw value"));
     }
 
     @Test
-    public void testNullRawValue()
-    {
+    public void testNullRawValue() {
         assertNull(Priority.toEnum(null));
     }
 }

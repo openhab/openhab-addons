@@ -14,8 +14,8 @@ package org.openhab.binding.loxone.internal.controls;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for (@link LxControlInfoOnlyAnalog} - check tags for temperature category
@@ -24,7 +24,7 @@ import org.junit.Test;
  *
  */
 public class LxControlInfoOnlyAnalogTempTagTest extends LxControlTest {
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("0fec5dc3-003e-8800-ffff555fb0c34b9e", "0fe3a451-0283-2afa-ffff403fb0c34b9e",
                 "0fb99a98-02df-46f1-ffff403fb0c34b9e", "Info Only Analog Temperature");

@@ -13,10 +13,10 @@
 package org.openhab.binding.heos.internal.json;
 
 import static java.lang.Long.valueOf;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.heos.internal.json.dto.HeosCommunicationAttribute;
 import org.openhab.binding.heos.internal.json.dto.HeosEvent;
 import org.openhab.binding.heos.internal.json.dto.HeosEventObject;

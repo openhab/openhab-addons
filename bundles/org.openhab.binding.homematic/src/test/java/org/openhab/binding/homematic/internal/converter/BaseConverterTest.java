@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.homematic.internal.converter;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -34,7 +34,7 @@ public class BaseConverterTest {
     protected final HmDatapoint integerQuantityDp = new HmDatapoint("floatIntegerDp", "", HmValueType.INTEGER, null,
             false, HmParamsetType.VALUES);
 
-    @Before
+    @BeforeEach
     public void setup() {
         HmChannel stubChannel = new HmChannel("stubChannel", 0);
         stubChannel.setDevice(new HmDevice("LEQ123456", HmInterface.RF, "HM-STUB-DEVICE", "", "", ""));

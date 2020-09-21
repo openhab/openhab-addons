@@ -12,18 +12,19 @@
  */
 package org.openhab.binding.deconz;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.deconz.internal.dto.SensorMessage;
 import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
@@ -52,17 +53,15 @@ import com.google.gson.GsonBuilder;
  * @author Jan N. Klug - Initial contribution
  * @author Lukas Agethen - Added Thermostat
  */
+@ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class SensorsTest {
     private @NonNullByDefault({}) Gson gson;
 
-    @Mock
-    private @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
 
-    @Before
+    @BeforeEach
     public void initialize() {
-        initMocks(this);
-
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(LightType.class, new LightTypeDeserializer());
         gsonBuilder.registerTypeAdapter(ThermostatMode.class, new ThermostatModeGsonTypeAdapter());
@@ -72,7 +71,7 @@ public class SensorsTest {
     @Test
     public void carbonmonoxideSensorUpdateTest() throws IOException {
         SensorMessage sensorMessage = DeconzTest.getObjectFromJson("carbonmonoxide.json", SensorMessage.class, gson);
-        Assert.assertNotNull(sensorMessage);
+        assertNotNull(sensorMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "sensor");
         ChannelUID channelUID = new ChannelUID(thingUID, "carbonmonoxide");
@@ -88,7 +87,7 @@ public class SensorsTest {
     @Test
     public void thermostatSensorUpdateTest() throws IOException {
         SensorMessage sensorMessage = DeconzTest.getObjectFromJson("thermostat.json", SensorMessage.class, gson);
-        Assert.assertNotNull(sensorMessage);
+        assertNotNull(sensorMessage);
 
         ThingUID thingUID = new ThingUID("deconz", "sensor");
         ChannelUID channelValveUID = new ChannelUID(thingUID, "valve");
