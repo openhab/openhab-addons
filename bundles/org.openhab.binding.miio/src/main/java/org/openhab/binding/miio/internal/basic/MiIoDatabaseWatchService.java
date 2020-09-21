@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.Utils;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.service.AbstractWatchService;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
@@ -56,7 +56,7 @@ import com.google.gson.JsonSyntaxException;
 @Component(service = MiIoDatabaseWatchService.class)
 @NonNullByDefault
 public class MiIoDatabaseWatchService extends AbstractWatchService {
-    private static final String LOCAL_DATABASE_PATH = ConfigConstants.getConfigFolder() + File.separator + "misc"
+    private static final String LOCAL_DATABASE_PATH = OpenHAB.getConfigFolder() + File.separator + "misc"
             + File.separator + BINDING_ID;
     private static final String DATABASE_FILES = ".json";
     private static final Gson GSON = new GsonBuilder().serializeNulls().create();
@@ -132,7 +132,7 @@ public class MiIoDatabaseWatchService extends AbstractWatchService {
         List<URL> urlEntries = new ArrayList<>();
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         urlEntries.addAll(Collections.list(bundle.findEntries(MiIoBindingConstants.DATABASE_PATH, "*.json", false)));
-        String userDbFolder = ConfigConstants.getConfigFolder() + File.separator + "misc" + File.separator + BINDING_ID;
+        String userDbFolder = OpenHAB.getConfigFolder() + File.separator + "misc" + File.separator + BINDING_ID;
         try {
             File[] userDbFiles = new File(userDbFolder).listFiles((dir, name) -> name.endsWith(".json"));
             if (userDbFiles != null) {

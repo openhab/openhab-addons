@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public abstract class AbstractConnection {
 
     public void setProtocolSnifferEnable(boolean enable) {
         if (enable) {
-            File pathWithoutFilename = new File(ConfigConstants.getUserDataFolder());
+            File pathWithoutFilename = new File(OpenHAB.getUserDataFolder());
             pathWithoutFilename.mkdirs();
             File file = new File(pathWithoutFilename, "yamaha_trace.log");
             if (file.exists()) {

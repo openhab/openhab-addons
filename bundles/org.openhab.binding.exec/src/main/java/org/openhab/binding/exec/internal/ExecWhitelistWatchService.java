@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.service.AbstractWatchService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ExecWhitelistWatchService.class)
 @NonNullByDefault
 public class ExecWhitelistWatchService extends AbstractWatchService {
-    private static final String COMMAND_WHITELIST_PATH = ConfigConstants.getConfigFolder() + File.separator + "misc";
+    private static final String COMMAND_WHITELIST_PATH = OpenHAB.getConfigFolder() + File.separator + "misc";
     private static final String COMMAND_WHITELIST_FILE = "exec.whitelist";
 
     private final Logger logger = LoggerFactory.getLogger(ExecWhitelistWatchService.class);

@@ -29,7 +29,7 @@ import javax.imageio.ImageIO;
 import org.openhab.binding.meteoblue.internal.json.JsonDataDay;
 import org.openhab.binding.meteoblue.internal.json.JsonMetadata;
 import org.openhab.binding.meteoblue.internal.json.JsonUnits;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -457,7 +457,7 @@ public class Forecast {
 
     private Image loadImageIcon(String imageFileName) {
         BufferedImage buf = null;
-        String configDirectory = ConfigConstants.getConfigFolder();
+        String configDirectory = OpenHAB.getConfigFolder();
         File dataFile = new File(new File(configDirectory, "icons/classic/"), imageFileName);
         if (!dataFile.exists()) {
             logger.debug("Image file '{}' does not exist. Unable to create imageIcon.", dataFile.getAbsolutePath());

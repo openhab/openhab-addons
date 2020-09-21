@@ -24,10 +24,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.voice.TTSException;
 import org.openhab.core.voice.TTSService;
@@ -108,7 +108,7 @@ public class PollyTTSService implements TTSService {
             logger.debug("Using configuration {}", config);
 
             // create cache folder
-            File cacheFolder = new File(new File(ConfigConstants.getUserDataFolder(), CACHE_FOLDER_NAME), SERVICE_PID);
+            File cacheFolder = new File(new File(OpenHAB.getUserDataFolder(), CACHE_FOLDER_NAME), SERVICE_PID);
             if (!cacheFolder.exists()) {
                 cacheFolder.mkdirs();
             }

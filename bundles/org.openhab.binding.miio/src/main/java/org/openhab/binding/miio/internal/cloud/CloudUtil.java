@@ -34,7 +34,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.miio.internal.MiIoBindingConstants;
 import org.openhab.binding.miio.internal.MiIoCryptoException;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 
 /**
@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 public class CloudUtil {
 
     private static final Random RANDOM = new Random();
-    private static final String DB_FOLDER_NAME = ConfigConstants.getUserDataFolder() + File.separator
+    private static final String DB_FOLDER_NAME = OpenHAB.getUserDataFolder() + File.separator
             + MiIoBindingConstants.BINDING_ID;
 
     /**
