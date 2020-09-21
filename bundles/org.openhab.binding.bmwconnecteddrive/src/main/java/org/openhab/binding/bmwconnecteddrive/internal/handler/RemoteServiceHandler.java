@@ -22,6 +22,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.HTTPConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ public class RemoteServiceHandler implements StringResponseCallback {
     // after 60 retries the state update will give up
     private static final String SERVICE_TYPE = "serviceType";
     private static final int GIVEUP_COUNTER = 6;
-    private static final int STATE_UPDATE_SEC = 10;
+    private static final int STATE_UPDATE_SEC = HTTPConstants.HTTP_TIMEOUT_SEC + 1; // regular timeout + 1sec
     private int counter = 0;
 
     public enum ExecutionState {

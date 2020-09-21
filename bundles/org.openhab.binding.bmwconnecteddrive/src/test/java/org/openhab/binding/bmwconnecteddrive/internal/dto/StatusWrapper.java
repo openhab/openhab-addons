@@ -409,7 +409,7 @@ public class StatusWrapper {
             case SERVICE_NAME:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(vStatus.cbsData.get(0).getType());
+                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
                 assertEquals("Window", wanted.toString(), st.toString());
                 break;
             default:

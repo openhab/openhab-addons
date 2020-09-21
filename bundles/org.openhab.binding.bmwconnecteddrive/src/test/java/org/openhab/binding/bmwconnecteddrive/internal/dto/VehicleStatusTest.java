@@ -14,8 +14,11 @@ package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.Test;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
@@ -33,7 +36,7 @@ public class VehicleStatusTest {
     private static final Gson GSON = new Gson();
 
     @Test
-    public void testtestBevRexValues() {
+    public void testBevRexValues() {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
         VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
@@ -43,5 +46,17 @@ public class VehicleStatusTest {
 
         assertEquals("DCS Activation", "NA", vStatus.dcsCchActivation);
         assertEquals("DCS Ongoing", false, vStatus.dcsCchOngoing);
+    }
+
+    @Test
+    public void testServices() {
+        String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
+        VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
+        VehicleStatus vStatus = status.vehicleStatus;
+        List<CBSMessage> services = vStatus.cbsData;
+        CBSMessage message = services.get(0);
+        assertEquals("Service Mileage ", 15345, message.cbsRemainingMileage);
+        message = services.get(1);
+        assertEquals("Service Mileage ", -1, message.cbsRemainingMileage);
     }
 }
