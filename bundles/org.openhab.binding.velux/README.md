@@ -87,12 +87,9 @@ In addition there are some optional Configuration Parameters.
 
 Notes:
 
-1. To enable a complete invertion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number.
-For an example, see below at item `Velux DG Window Bathroom`.
+1. To enable a complete invertion of all parameter values (i.e. for Velux windows), use the property `inverted` or add a trailing star to the eight-byte serial number. For an example, see below at item `Velux DG Window Bathroom`.
 
-2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway.
-The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00.
-Therefore the binding implements a fallback to allow an item specification with a actuator `name` instead of actuator serial number whenever such an invalid serial number occurs.For an example, see below at item `Velux OG Somfy Shutter`.
+2. Somfy devices do not provide a valid serial number to the Velux KLF200 gateway. The bridge reports a registration of the serial number 00:00:00:00:00:00:00:00. Therefore the binding implements a fallback to allow an item specification with a actuator `name` instead of actuator serial number whenever such an invalid serial number occurs. For an example, see below at item `Velux OG Somfy Shutter`.
 
 ### Thing Configuration for "scene"
 
