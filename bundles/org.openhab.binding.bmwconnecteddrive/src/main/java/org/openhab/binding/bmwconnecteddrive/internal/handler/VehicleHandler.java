@@ -651,7 +651,10 @@ public class VehicleHandler extends VehicleChannelHandler {
             updateService();
         }
 
-        private void updateService() {
+        /**
+         * needs to be synchronized with onResponse update
+         */
+        private synchronized void updateService() {
             if (services != null) {
                 updateState(serviceCount, new DecimalType(services.size()));
                 if (services.size() > 0) {
@@ -660,7 +663,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                         serviceIndexSelected = 0;
                     }
                     CBSMessage entry = services.get(serviceIndexSelected);
-                    updateState(serviceIndex, new DecimalType(serviceIndexSelected));
                     updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(entry.getDueDate())));
                     if (imperial) {
                         updateState(serviceMileage,
@@ -669,7 +671,9 @@ public class VehicleHandler extends VehicleChannelHandler {
                         updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
                                 MetricPrefix.KILO(SIUnits.METRE)));
                     }
-                    updateState(serviceName, StringType.valueOf(entry.getType()));
+                    updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
+                    // last update index - this is a sync point and you're sure that all data is valid noew
+                    updateState(serviceIndex, new DecimalType(serviceIndexSelected));
                 }
             }
         }
@@ -715,18 +719,19 @@ public class VehicleHandler extends VehicleChannelHandler {
                     updateState(serviceNextDate, DateTimeType.valueOf(Converter.getLocalDateTime(nextServiceDate)));
                 }
                 double nextServiceMileage = vStatus.getNextServiceMileage();
-                if (nextServiceMileage != Double.NaN) {
-                    if (imperial) {
-                        updateState(serviceNextMileage,
-                                QuantityType.valueOf(Converter.round(nextServiceMileage), ImperialUnits.MILE));
-                    } else {
-                        updateState(serviceNextMileage, QuantityType.valueOf(Converter.round(nextServiceMileage),
-                                MetricPrefix.KILO(SIUnits.METRE)));
-                    }
+                if (imperial) {
+                    updateState(serviceNextMileage,
+                            QuantityType.valueOf(Converter.round(nextServiceMileage), ImperialUnits.MILE));
+                } else {
+                    updateState(serviceNextMileage, QuantityType.valueOf(Converter.round(nextServiceMileage),
+                            MetricPrefix.KILO(SIUnits.METRE)));
                 }
 
-                services = vStatus.cbsData;
-                updateService();
+                // synchronize with commands
+                synchronized (this) {
+                    services = vStatus.cbsData;
+                    updateService();
+                }
 
                 // Range values
                 // based on unit of length decide if range shall be reported in km or miles

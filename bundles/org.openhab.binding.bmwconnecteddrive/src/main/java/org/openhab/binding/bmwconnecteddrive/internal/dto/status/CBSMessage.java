@@ -24,7 +24,7 @@ public class CBSMessage {
     public String cbsState;// ": "OK",
     public String cbsDueDate;// ": "2021-11",
     public String cbsDescription;// ": "Next change due at the latest by the stated date."
-    public int cbsRemainingMileage; // 46000
+    public int cbsRemainingMileage = -1; // 46000
 
     public String getDueDate() {
         if (cbsDueDate == null) {

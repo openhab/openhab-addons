@@ -141,7 +141,7 @@ public class ConnectedDriveConstants {
 
     // Services
     public static final String SERVICE_NAME = "service-name";
-    public static final String SERVICE_TOTAL_COUNT = "service-total-count";
+    public static final String SERVICE_TOTAL_COUNT = "service-count";
     public static final String SERVICE_INDEX = "service-index";
     public static final String SERVICE_NEXT = "service-next";
 
