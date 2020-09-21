@@ -13,6 +13,7 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.openhab.io.transport.modbus.endpoint.ModbusSerialSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;

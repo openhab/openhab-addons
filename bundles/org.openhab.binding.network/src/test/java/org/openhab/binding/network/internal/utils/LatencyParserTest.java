@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.network.internal.utils;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 /**

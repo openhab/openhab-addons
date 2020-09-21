@@ -13,6 +13,7 @@
 package org.openhab.transform.jinja.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;

@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.teleinfo.internal.reader.io;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.FileInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;

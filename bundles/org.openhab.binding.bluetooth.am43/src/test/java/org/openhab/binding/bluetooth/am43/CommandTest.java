@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.bluetooth.am43;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.am43.internal.command.ControlCommand;
 import org.openhab.binding.bluetooth.am43.internal.command.GetAllCommand;

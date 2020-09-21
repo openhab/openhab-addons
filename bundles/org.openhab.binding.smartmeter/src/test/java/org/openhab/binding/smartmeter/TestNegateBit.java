@@ -13,6 +13,7 @@
 package org.openhab.binding.smartmeter;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartmeter.internal.MeterValue;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateBitModel;
