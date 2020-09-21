@@ -110,7 +110,7 @@ public class DeviceHistoryHandler {
                 State state = historicItem.getState();
                 if (state instanceof DecimalType) {
                     Number value = ((DecimalType) state).toBigDecimal();
-                    resultItems.add(new HistoryItem(historicItem.getTimestamp(), value));
+                    resultItems.add(new HistoryItem(historicItem.getTimestamp().toInstant().toEpochMilli(), value));
                 }
             }
 
