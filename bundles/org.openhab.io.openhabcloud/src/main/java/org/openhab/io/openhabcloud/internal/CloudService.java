@@ -72,11 +72,9 @@ import org.slf4j.LoggerFactory;
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
  */
 @Component(immediate = true, service = { EventSubscriber.class,
-        ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = {
-                Constants.SERVICE_PID + "=org.openhab.openhabcloud",
-                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:openhabcloud",
-                ConfigurableService.SERVICE_PROPERTY_LABEL + "=openHAB Cloud",
-                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io" })
+        ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID
+                + "=org.openhab.openhabcloud")
+@ConfigurableService(category = "io", label = "openHAB Cloud", description_uri = "io:openhabcloud")
 public class CloudService implements ActionService, CloudClientListener, EventSubscriber {
 
     private static final String CFG_EXPOSE = "expose";
