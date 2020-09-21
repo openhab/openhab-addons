@@ -3,6 +3,14 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="trip-date-time-channel">
+		<item-type>DateTime</item-type>
+		<label>Date and Time</label>
+	</channel-type>
+	<channel-type id="trip-duration-channel">
+		<item-type>Number:Time</item-type>
+		<label>Last Trip Distance</label>
+	</channel-type>
 	<channel-type id="distance-channel">
 		<item-type>Number:Length</item-type>
 		<label>Last Trip Distance</label>
@@ -14,6 +22,10 @@
 	<channel-type id="average-consumption-channel">
 		<item-type>Number:Energy</item-type>
 		<label>Average Power Consumption per 100 km</label>
+	</channel-type>
+	<channel-type id="average-combined-consumption-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Combined Consumption in Liter per 100 km</label>
 	</channel-type>
 	<channel-type id="average-recuperation-channel">
 		<item-type>Number:Energy</item-type>

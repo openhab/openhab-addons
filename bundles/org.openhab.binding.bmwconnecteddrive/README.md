@@ -148,8 +148,8 @@ Available for all Vehicles, Read-only.
 
 | Channel Label             | Channel Group ID | Channel ID          | Type          | Description                                                          |
 |---------------------------|------------------|---------------------|---------------|----------------------------------------------------------------------|
-| Door Status               | status           | doors               | String        | Closed if all closed, else reports the Door which is still open      |
-| Window Status             | status           | windows             | String        | Closed if all closed, else reports the Window which is still open    |
+| Overall Door Status       | status           | doors               | String        | Closed if all closed, else reports the Door which is still open      |
+| Overall Window Status     | status           | windows             | String        | Closed if all closed, else reports the Window which is still open    |
 | Doors Locked              | status           | lock                | String        | Status if Doors are locked or unlocked                               |
 | Next Service Date         | status           | service-date        | DateTime      | Date of Upcoming Service                                             |
 | Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                        |
@@ -159,6 +159,34 @@ Available for all Vehicles, Read-only.
 | Last Status Timestamp     | status           | last-update         | DateTime      | Date and Time of last status update.                                 |
 
 See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
+
+#### Doors Details
+
+Detailed Status of all Doors and Windows
+Available for all Vehicles, Read-only. 
+
+| Channel Label              | Channel Group ID | Channel ID              | Type          | 
+|----------------------------|------------------|-------------------------|---------------|
+| Driver Door                | doors            | driver-front            | String        |
+| Driver Door Rear           | doors            | driver-rear             | String        |
+| Passenger Door             | doors            | passenger-front         | String        |
+| Passenger Door Rear        | doors            | passenger-rear          | String        |
+| Trunk                      | doors            | trunk                   | String        |
+| Hood                       | doors            | hood                    | String        |
+| Driver Door Window         | doors            | window-driver-front     | String        |
+| Driver Door Rear Window    | doors            | window-driver-rear      | String        |
+| Passenger Door Window      | doors            | window-passenger-front  | String        |
+| Passenger Door Rear Window | doors            | window-passenger-rear   | String        |
+| Rear Window                | doors            | window-rear             | String        |
+| Sunroof                    | doors            | sunroof                 | String        |
+
+Following Strings will be delivered
+
+* UNKNOWN - no status data available
+* INVALID - this item isn't applicable for this Vehicle
+* CLOSED - the Door / Window is closed
+* OPEN - the Door / Window is open
+* INTERMEDIATE - Window in intermediate position, not applicable for Doors
 
 #### Range Data
 
@@ -221,6 +249,7 @@ These are Read-only values.
 
 | Channel Label                         | Channel Group ID | Channel ID              | Type          |
 |---------------------------------------|------------------|-------------------------|---------------|
+| Last Trip Date                    | last-trip        | distance                | Number:Length |
 | Average Power Consumption per 100 km  | last-trip        | average-consumption     | Number:Power  |
 | Average Power Recuperation per 100 km | last-trip        | average-recuperation    | Number:Power  |
 | Last Trip Distance                    | last-trip        | distance                | Number:Length |

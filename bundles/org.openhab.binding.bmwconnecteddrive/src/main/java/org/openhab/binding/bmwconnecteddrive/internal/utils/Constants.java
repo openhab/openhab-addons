@@ -29,6 +29,7 @@ public class Constants {
     public static final String OPEN = "OPEN";
     public static final String INVALID = "INVALID";
     public static final String CLOSED = "CLOSED";
+    public static final String INTERMEDIATE = "INTERMEDIATE";
     public static final String UNKNOWN = "UNKOWN";
     public static final String NO_SERVICE_REQUEST = "No Service Requests";
     public static final String UTC_APPENDIX = "-01T12:00:00";

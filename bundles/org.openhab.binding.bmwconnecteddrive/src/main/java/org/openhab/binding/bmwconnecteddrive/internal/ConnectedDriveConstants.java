@@ -103,6 +103,8 @@ public class ConnectedDriveConstants {
 
     // Thing Group definitions
     public static final String CHANNEL_GROUP_STATUS = "status";
+    public static final String CHANNEL_GROUP_SERVICE = "service";
+    public static final String CHANNEL_GROUP_DOORS = "doors";
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LOCATION = "location";
     public static final String CHANNEL_GROUP_LAST_TRIP = "last-trip";
@@ -119,10 +121,29 @@ public class ConnectedDriveConstants {
     public static final String LOCK = "lock";
     public static final String SERVICE_DATE = "service-date";
     public static final String SERVICE_MILEAGE = "service-mileage";
-    public static final String SERVICE_NAME = "service-name";
     public static final String CHECK_CONTROL = "check-control";
     public static final String CHARGE_STATUS = "charge";
     public static final String LAST_UPDATE = "last-update";
+
+    // Door Details
+    public static final String DOOR_DRIVER_FRONT = "driver-front";
+    public static final String DOOR_DRIVER_REAR = "driver-rear";
+    public static final String DOOR_PASSENGER_FRONT = "passenger-front";
+    public static final String DOOR_PASSENGER_REAR = "passenger-rear";
+    public static final String HOOD = "hood";
+    public static final String TRUNK = "trunk";
+    public static final String WINDOW_DOOR_DRIVER_FORNT = "window-driver-front";
+    public static final String WINDOW_DOOR_DRIVER_REAR = "window-driver-rear";
+    public static final String WINDOW_DOOR_PASSENGER_FRONT = "window-passenger-front";
+    public static final String WINDOW_DOOR_PASSENGER_REAR = "window-passenger-rear";
+    public static final String WINDOW_REAR = "window-rear";
+    public static final String SUNROOF = "sunroof";
+
+    // Services
+    public static final String SERVICE_NAME = "service-name";
+    public static final String SERVICE_TOTAL_COUNT = "service-total-count";
+    public static final String SERVICE_INDEX = "service-index";
+    public static final String SERVICE_NEXT = "service-next";
 
     // Charge Profile
     public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
@@ -150,15 +171,18 @@ public class ConnectedDriveConstants {
     public static final String RANGE_RADIUS_FUEL = "radius-fuel";
     public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
 
-    // Lifetime
-    public static final String AVG_CONSUMPTION = "average-consumption";
-    public static final String AVG_RECUPERATION = "average-recuperation";
-    public static final String CUMULATED_DRIVEN_DISTANCE = "cumulated-driven-distance";
-    public static final String SINGLE_LONGEST_DISTANCE = "single-longest-distance";
-
     // Last Trip
+    public static final String TRIP_DATE_TIME = "trip-date-time";
+    public static final String TRIP_DURATION = "trip-duration";
     public static final String DISTANCE = "distance";
     public static final String DISTANCE_SINCE_CHARGING = "distance-since-charging";
+    public static final String AVG_CONSUMPTION = "average-consumption";
+    public static final String AVG_COMBINED_CONSUMPTION = "average-combined-consumption";
+    public static final String AVG_RECUPERATION = "average-recuperation";
+
+    // Lifetime + Average Consumptions
+    public static final String CUMULATED_DRIVEN_DISTANCE = "cumulated-driven-distance";
+    public static final String SINGLE_LONGEST_DISTANCE = "single-longest-distance";
 
     // Lifetime
     public static final String LONGITUDE = "longitude";

@@ -15,6 +15,10 @@
 		<item-type>Number:Length</item-type>
 		<label>Cumulated Electric Driven Distance</label>
 	</channel-type>
+	<channel-type id="average-combined-consumption-channel">
+		<item-type>Number:Volume</item-type>
+		<label>Combined Consumption in Liter per 100 km</label>
+	</channel-type>
 	<channel-type id="single-longest-distance-channel">
 		<item-type>Number:Length</item-type>
 		<label>Longest Distance with one Charge</label>

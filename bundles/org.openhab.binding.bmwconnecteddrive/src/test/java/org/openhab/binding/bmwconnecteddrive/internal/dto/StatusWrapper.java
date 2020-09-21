@@ -105,8 +105,10 @@ public class StatusWrapper {
 
     private void checkResult(ChannelUID channelUID, State state) {
         String cUid = channelUID.getIdWithoutGroup();
+        String gUid = channelUID.getGroupId();
         QuantityType<Length> qt;
         StringType st;
+        StringType wanted;
         DateTimeType dtt;
         DecimalType dt;
         switch (cUid) {
@@ -207,38 +209,6 @@ public class StatusWrapper {
                     assertEquals("Check Control", vStatus.getCheckControl(), st.toString());
                 }
                 break;
-            case SERVICE_DATE:
-                assertTrue(state instanceof DateTimeType);
-                dtt = (DateTimeType) state;
-                if (specialHandlingMap.containsKey(SERVICE_DATE)) {
-                    assertEquals("Next Service", specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString());
-                } else {
-                    String dueDateString = vStatus.getNextService(imperial).getDueDate();
-                    DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
-                    assertEquals("Next Service", expectedDTT.toString(), dtt.toString());
-                }
-                break;
-            case SERVICE_MILEAGE:
-                assertTrue(state instanceof QuantityType);
-                qt = ((QuantityType) state);
-                if (imperial) {
-                    assertEquals("Next Service Miles", ImperialUnits.MILE, qt.getUnit());
-                    assertEquals("Mileage", vStatus.getNextService(imperial).cbsRemainingMileage, qt.intValue());
-                } else {
-                    assertEquals("Next Service KM", KILOMETRE, qt.getUnit());
-                    assertEquals("Mileage", vStatus.getNextService(imperial).cbsRemainingMileage, qt.intValue());
-                }
-                break;
-            case SERVICE_NAME:
-                assertTrue(state instanceof StringType);
-                st = (StringType) state;
-                if (specialHandlingMap.containsKey(SERVICE_NAME)) {
-                    assertEquals("Next Service Name", specialHandlingMap.get(SERVICE_NAME).toString(), st.toString());
-                } else {
-                    assertEquals("Next Service Name", Converter.toTitleCase(vStatus.getNextService(imperial).getType()),
-                            st.toString());
-                }
-                break;
             case CHARGE_STATUS:
                 assertTrue("Is Eelctric", isElectric);
                 assertTrue(state instanceof StringType);
@@ -313,6 +283,134 @@ public class StatusWrapper {
                             Converter.guessRangeRadius(vStatus.remainingRangeElectric + vStatus.remainingRangeFuel),
                             qt.floatValue(), 0.1);
                 }
+                break;
+            case DOOR_DRIVER_FRONT:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.doorDriverFront);
+                assertEquals("Door", wanted.toString(), st.toString());
+                break;
+            case DOOR_DRIVER_REAR:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.doorDriverRear);
+                assertEquals("Door", wanted.toString(), st.toString());
+                break;
+            case DOOR_PASSENGER_FRONT:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.doorPassengerFront);
+                assertEquals("Door", wanted.toString(), st.toString());
+                break;
+            case DOOR_PASSENGER_REAR:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.doorPassengerRear);
+                assertEquals("Door", wanted.toString(), st.toString());
+                break;
+            case TRUNK:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.trunk);
+                assertEquals("Door", wanted.toString(), st.toString());
+                break;
+            case HOOD:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.hood);
+                assertEquals("Door", wanted.toString(), st.toString());
+                break;
+            case WINDOW_DOOR_DRIVER_FORNT:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.windowDriverFront);
+                assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case WINDOW_DOOR_DRIVER_REAR:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.windowDriverRear);
+                assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case WINDOW_DOOR_PASSENGER_FRONT:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.windowPassengerFront);
+                assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case WINDOW_DOOR_PASSENGER_REAR:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.windowPassengerRear);
+                assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case WINDOW_REAR:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.rearWindow);
+                assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case SUNROOF:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.sunroof);
+                assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case SERVICE_TOTAL_COUNT:
+                assertTrue(state instanceof DecimalType);
+                dt = (DecimalType) state;
+                assertEquals("Number of Services", vStatus.cbsData.size(), dt.intValue());
+                break;
+            case SERVICE_INDEX:
+                assertTrue(state instanceof DecimalType);
+                dt = (DecimalType) state;
+                assertEquals("Number of Services", 0, dt.intValue());
+                break;
+            case SERVICE_DATE:
+                assertTrue(state instanceof DateTimeType);
+                dtt = (DateTimeType) state;
+                if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
+                    if (specialHandlingMap.containsKey(SERVICE_DATE)) {
+                        assertEquals("Next Service", specialHandlingMap.get(SERVICE_DATE).toString(), dtt.toString());
+                    } else {
+                        String dueDateString = vStatus.getNextServiceDate();
+                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                        assertEquals("Next Service", expectedDTT.toString(), dtt.toString());
+                    }
+                } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
+                    String dueDateString = vStatus.cbsData.get(0).getDueDate();
+                    DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                    assertEquals("First Service Date", expectedDTT.toString(), dtt.toString());
+                }
+                break;
+            case SERVICE_MILEAGE:
+                assertTrue(state instanceof QuantityType);
+                qt = ((QuantityType) state);
+                if (gUid.contentEquals(CHANNEL_GROUP_STATUS)) {
+                    if (imperial) {
+                        assertEquals("Next Service Miles", ImperialUnits.MILE, qt.getUnit());
+                        assertEquals("Mileage", vStatus.getNextServiceMileage(), qt.intValue());
+                    } else {
+                        assertEquals("Next Service KM", KILOMETRE, qt.getUnit());
+                        assertEquals("Mileage", vStatus.getNextServiceMileage(), qt.intValue());
+                    }
+                } else if (gUid.equals(CHANNEL_GROUP_SERVICE)) {
+                    if (imperial) {
+                        assertEquals("First Service Miles", ImperialUnits.MILE, qt.getUnit());
+                        assertEquals("First Service Mileage", vStatus.cbsData.get(0).cbsRemainingMileage,
+                                qt.intValue());
+                    } else {
+                        assertEquals("First Service KM", KILOMETRE, qt.getUnit());
+                        assertEquals("First Service Mileage", vStatus.cbsData.get(0).cbsRemainingMileage,
+                                qt.intValue());
+                    }
+                }
+                break;
+            case SERVICE_NAME:
+                assertTrue(state instanceof StringType);
+                st = (StringType) state;
+                wanted = StringType.valueOf(vStatus.cbsData.get(0).getType());
+                assertEquals("Window", wanted.toString(), st.toString());
                 break;
             default:
                 // fail in case of unknown update
