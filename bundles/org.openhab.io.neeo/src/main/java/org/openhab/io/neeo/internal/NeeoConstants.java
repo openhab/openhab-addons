@@ -15,7 +15,7 @@ package org.openhab.io.neeo.internal;
 import java.io.File;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 
 /**
  * The constants class for the NEEO Integration
@@ -73,9 +73,9 @@ public class NeeoConstants {
     public static final String PROTOCOL = "http://";
 
     /** The device definitions file name */
-    public static final String FILENAME_DEVICEDEFINITIONS = ConfigConstants.getUserDataFolder() + File.separator
-            + "neeo" + File.separator + "neeodefinitions.json";
-    public static final String FILENAME_DISCOVEREDBRAINS = ConfigConstants.getUserDataFolder() + File.separator + "neeo"
+    public static final String FILENAME_DEVICEDEFINITIONS = OpenHAB.getUserDataFolder() + File.separator + "neeo"
+            + File.separator + "neeodefinitions.json";
+    public static final String FILENAME_DISCOVEREDBRAINS = OpenHAB.getUserDataFolder() + File.separator + "neeo"
             + File.separator + "discoveredbrains.json";
 
     /** The search threshold value */

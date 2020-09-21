@@ -24,7 +24,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Component;
@@ -63,8 +63,8 @@ public class XsltTransformationService implements TransformationService {
         Source xsl = null;
 
         try {
-            String path = ConfigConstants.getConfigFolder() + File.separator
-                    + TransformationService.TRANSFORM_FOLDER_NAME + File.separator + filename;
+            String path = OpenHAB.getConfigFolder() + File.separator + TransformationService.TRANSFORM_FOLDER_NAME
+                    + File.separator + filename;
             xsl = new StreamSource(new File(path));
         } catch (Exception e) {
             String message = "opening file '" + filename + "' throws exception";
