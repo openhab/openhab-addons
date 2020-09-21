@@ -14,10 +14,10 @@ package org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto;
 
 import javax.measure.quantity.Temperature;
 
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
-import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * State for {@link RoomClimateControlService} to get and set the desired temperature of a room.

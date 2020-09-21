@@ -18,17 +18,17 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.types.Command;
 import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.RoomClimateControlService;
 import org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto.RoomClimateControlServiceState;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.TemperatureLevelService;
 import org.openhab.binding.boschshc.internal.services.temperaturelevel.dto.TemperatureLevelServiceState;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.Command;
 
 /**
  * A virtual device which controls up to six Bosch Smart Home radiator thermostats in a room.

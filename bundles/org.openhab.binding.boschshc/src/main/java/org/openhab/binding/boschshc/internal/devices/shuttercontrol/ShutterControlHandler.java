@@ -16,6 +16,10 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.shuttercontrol.dto.ShutterControlState;
+import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
@@ -23,10 +27,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
-import org.openhab.binding.boschshc.internal.devices.shuttercontrol.dto.ShutterControlState;
-import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;

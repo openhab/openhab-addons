@@ -15,6 +15,8 @@ package org.openhab.binding.boschshc.internal.devices.twinguard;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLevelState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -24,8 +26,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.twinguard.dto.AirQualityLevelState;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;

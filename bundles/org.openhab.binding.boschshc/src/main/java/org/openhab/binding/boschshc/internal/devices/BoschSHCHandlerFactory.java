@@ -26,12 +26,6 @@ import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.binding.BaseThingHandlerFactory;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.boschshc.internal.devices.bridge.BoschSHCBridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.climatecontrol.ClimateControlHandler;
 import org.openhab.binding.boschshc.internal.devices.inwallswitch.BoschInWallSwitchHandler;
@@ -40,6 +34,12 @@ import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterContr
 import org.openhab.binding.boschshc.internal.devices.thermostat.ThermostatHandler;
 import org.openhab.binding.boschshc.internal.devices.twinguard.BoschTwinguardHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**

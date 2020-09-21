@@ -14,10 +14,10 @@ package org.openhab.binding.boschshc.internal.services.temperaturelevel.dto;
 
 import javax.measure.quantity.Temperature;
 
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.types.State;
-import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * TemperatureLevel service state.

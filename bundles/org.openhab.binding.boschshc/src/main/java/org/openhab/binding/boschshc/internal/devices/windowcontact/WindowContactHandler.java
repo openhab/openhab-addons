@@ -15,14 +15,14 @@ package org.openhab.binding.boschshc.internal.devices.windowcontact;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.CHANNEL_CONTACT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
+import org.openhab.binding.boschshc.internal.devices.windowcontact.dto.ShutterContactState;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
-import org.openhab.binding.boschshc.internal.devices.windowcontact.dto.ShutterContactState;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
