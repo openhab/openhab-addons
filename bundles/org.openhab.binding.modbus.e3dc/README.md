@@ -330,7 +330,7 @@ After the timeline is available in your database you can continue with Visualiza
 from the Community to set this up.
 I prepared my machine and I'm quite pleased with the results.
 
-<img style="float: right;" src="doc/GrafanaPV.png">
+<img align="right" src="./doc/GrafanaPV.png">
 
 In the above picture there are two graphs
 
@@ -365,7 +365,7 @@ Items {
 
 Having these values in the timeline you're able to cross check how the forecast influences the Photovoltaic Production. 
 
-<img style="float: right;" src="doc/GrafanaCloudiness.png">
+<img align="right" src="./doc/GrafanaCloudiness.png"/>
 
 I personally would like to have
 more steering control of the E3DC to react on such forecast e.g. "stop charging the car if it gets too cloudy"
