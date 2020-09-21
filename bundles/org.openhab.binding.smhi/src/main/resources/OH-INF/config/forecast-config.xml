@@ -19,31 +19,31 @@
 			<description>The hourly forecasts to display</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
-				<option value="0">00: Current hour</option>
-				<option value="1">01: Next hour</option>
-				<option value="2">02: 2 hours from now</option>
-				<option value="3">03: 3 hours from now</option>
-				<option value="4">04: 4 hours from now</option>
-				<option value="5">05: 5 hours from now</option>
-				<option value="6">06: 6 hours from now</option>
-				<option value="7">07: 7 hours from now</option>
-				<option value="8">08: 8 hours from now</option>
-				<option value="9">09: 9 hours from now</option>
-				<option value="10">10: 10 hours from now</option>
-				<option value="11">11: 11 hours from now</option>
-				<option value="12">12: 12 hours from now</option>
-				<option value="13">13: 13 hours from now</option>
-				<option value="14">14: 14 hours from now</option>
-				<option value="15">15: 15 hours from now</option>
-				<option value="16">16: 16 hours from now</option>
-				<option value="17">17: 17 hours from now</option>
-				<option value="18">18: 18 hours from now</option>
-				<option value="19">19: 19 hours from now</option>
-				<option value="20">20: 20 hours from now</option>
-				<option value="21">21: 21 hours from now</option>
-				<option value="22">22: 22 hours from now</option>
-				<option value="23">23: 23 hours from now</option>
-				<option value="24">24: 24 hours from now</option>
+				<option value="0">Current hour</option>
+				<option value="1">Next hour</option>
+				<option value="2">2 hours from now</option>
+				<option value="3">3 hours from now</option>
+				<option value="4">4 hours from now</option>
+				<option value="5">5 hours from now</option>
+				<option value="6">6 hours from now</option>
+				<option value="7">7 hours from now</option>
+				<option value="8">8 hours from now</option>
+				<option value="9">9 hours from now</option>
+				<option value="10">10 hours from now</option>
+				<option value="11">11 hours from now</option>
+				<option value="12">12 hours from now</option>
+				<option value="13">13 hours from now</option>
+				<option value="14">14 hours from now</option>
+				<option value="15">15 hours from now</option>
+				<option value="16">16 hours from now</option>
+				<option value="17">17 hours from now</option>
+				<option value="18">18 hours from now</option>
+				<option value="19">19 hours from now</option>
+				<option value="20">20 hours from now</option>
+				<option value="21">21 hours from now</option>
+				<option value="22">22 hours from now</option>
+				<option value="23">23 hours from now</option>
+				<option value="24">24 hours from now</option>
 			</options>
 		</parameter>
 		<parameter name="dailyForecasts" type="integer" multiple="true">
@@ -51,16 +51,16 @@
 			<description>The daily forecasts to display</description>
 			<limitToOptions>true</limitToOptions>
 			<options>
-				<option value="0">00: Today</option>
-				<option value="1">01: Tomorrow</option>
-				<option value="2">02: 2 days from now</option>
-				<option value="3">03: 3 days from now</option>
-				<option value="4">04: 4 days from now</option>
-				<option value="5">05: 5 days from now</option>
-				<option value="6">06: 6 days from now</option>
-				<option value="7">07: 7 days from now</option>
-				<option value="8">08: 8 days from now</option>
-				<option value="9">09: 9 days from now</option>
+				<option value="0">Today</option>
+				<option value="1">Tomorrow</option>
+				<option value="2">2 days from now</option>
+				<option value="3">3 days from now</option>
+				<option value="4">4 days from now</option>
+				<option value="5">5 days from now</option>
+				<option value="6">6 days from now</option>
+				<option value="7">7 days from now</option>
+				<option value="8">8 days from now</option>
+				<option value="9">9 days from now</option>
 			</options>
 		</parameter>
 	</config-description>
