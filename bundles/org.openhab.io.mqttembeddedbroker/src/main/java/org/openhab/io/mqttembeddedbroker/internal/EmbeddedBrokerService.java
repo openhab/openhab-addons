@@ -35,7 +35,7 @@ import javax.net.ssl.KeyManagerFactory;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -177,7 +177,7 @@ public class EmbeddedBrokerService
         if (!config.persistenceFile.isEmpty()) {
             final String persistenceFilename = config.persistenceFile;
             if (!Paths.get(persistenceFilename).isAbsolute()) {
-                Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
+                Path path = Paths.get(OpenHAB.getUserDataFolder()).toAbsolutePath();
                 Files.createDirectories(path);
                 this.persistenceFilename = path.resolve(persistenceFilename).toString();
             }

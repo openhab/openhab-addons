@@ -23,7 +23,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 
 /**
  * Test class for the {@link ByteArrayFileCache} class.
@@ -34,7 +34,7 @@ public class ByteArrayFileCacheTest {
 
     private static final String SERVICE_PID = "org.openhab.binding.darksky";
 
-    private static final File USERDATA_FOLDER = new File(ConfigConstants.getUserDataFolder());
+    private static final File USERDATA_FOLDER = new File(OpenHAB.getUserDataFolder());
     private static final File CACHE_FOLDER = new File(USERDATA_FOLDER, ByteArrayFileCache.CACHE_FOLDER_NAME);
     private static final File SERVICE_CACHE_FOLDER = new File(CACHE_FOLDER, SERVICE_PID);
 

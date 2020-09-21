@@ -35,7 +35,7 @@ import org.openhab.binding.icalendar.internal.logic.CalendarException;
 import org.openhab.binding.icalendar.internal.logic.CommandTag;
 import org.openhab.binding.icalendar.internal.logic.CommandTagType;
 import org.openhab.binding.icalendar.internal.logic.Event;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.items.events.ItemEventFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -75,7 +75,7 @@ public class ICalendarHandler extends BaseThingHandler implements CalendarUpdate
     public ICalendarHandler(Thing thing, HttpClient httpClient, EventPublisher eventPublisher) {
         super(thing);
         this.httpClient = httpClient;
-        calendarFile = new File(ConfigConstants.getUserDataFolder() + File.separator
+        calendarFile = new File(OpenHAB.getUserDataFolder() + File.separator
                 + getThing().getUID().getAsString().replaceAll("[<>:\"/\\\\|?*]", "_") + ".ical");
         eventPublisherCallback = eventPublisher;
         updateStatesLastCalledTime = Instant.now();

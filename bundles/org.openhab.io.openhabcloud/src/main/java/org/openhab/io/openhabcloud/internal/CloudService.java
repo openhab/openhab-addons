@@ -31,7 +31,6 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.core.OpenHAB;
-import org.openhab.core.config.core.ConfigConstants;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
@@ -291,7 +290,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * Returns either existing secret from the file or newly created secret.
      */
     private String getSecret() {
-        File file = new File(ConfigConstants.getUserDataFolder() + File.separator + SECRET_FILE_NAME);
+        File file = new File(OpenHAB.getUserDataFolder() + File.separator + SECRET_FILE_NAME);
         String newSecretString = "";
 
         if (!file.exists()) {

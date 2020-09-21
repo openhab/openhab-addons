@@ -19,7 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
 
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.service.AbstractWatchService;
 import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Component;
@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component()
 public class TransformationScriptWatcher extends AbstractWatchService {
 
-    public static final String TRANSFORM_FOLDER = ConfigConstants.getConfigFolder() + File.separator
+    public static final String TRANSFORM_FOLDER = OpenHAB.getConfigFolder() + File.separator
             + TransformationService.TRANSFORM_FOLDER_NAME;
 
     private JavaScriptEngineManager manager;

@@ -19,7 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class MaxBackupUtils {
 
     public MaxBackupUtils(String backupId) {
         this.backupId = backupId;
-        dbFolderName = ConfigConstants.getUserDataFolder() + File.separator + BACKUP_PATH;
+        dbFolderName = OpenHAB.getUserDataFolder() + File.separator + BACKUP_PATH;
         File folder = new File(dbFolderName);
         if (!folder.exists()) {
             folder.mkdirs();
