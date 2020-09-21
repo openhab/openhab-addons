@@ -194,7 +194,7 @@ public class VehicleTests {
         // Don>'t test on concrete timestamp - it's idfferent on each machine
         // Check for cbsType which is "Oil" instead
         // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
-        m.put(ConnectedDriveConstants.SERVICE_NAME, StringType.valueOf("Oil"));
+        m.put(ConnectedDriveConstants.NAME, StringType.valueOf("Oil"));
         assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.of(m)));
     }
 
@@ -209,7 +209,7 @@ public class VehicleTests {
         // Don>'t test on concrete timestamp - it's idfferent on each machine
         // Check for cbsType which is "Oil" instead
         // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
-        m.put(ConnectedDriveConstants.SERVICE_NAME, StringType.valueOf("Oil"));
+        m.put(ConnectedDriveConstants.NAME, StringType.valueOf("Oil"));
         assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.of(m)));
     }
 

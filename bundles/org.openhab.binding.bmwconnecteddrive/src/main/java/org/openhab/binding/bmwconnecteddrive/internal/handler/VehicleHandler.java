@@ -44,6 +44,7 @@ import org.eclipse.smarthome.core.types.RefreshType;
 import org.eclipse.smarthome.io.net.http.HttpUtil;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
@@ -96,7 +97,7 @@ public class VehicleHandler extends VehicleChannelHandler {
     StringResponseCallback allTripsCallback = new AllTripsCallback();
     StringResponseCallback chargeProfileCallback = new ChargeProfilesCallback();
     StringResponseCallback rangeMapCallback = new RangeMapCallback();
-    StringResponseCallback destinationCallback = new DestinationsCallback();
+    DestinationsCallback destinationCallback = new DestinationsCallback();
     ByteResponseCallback imageCallback = new ImageCallback();
 
     public VehicleHandler(Thing thing, HttpClient hc, String type, boolean imperial) {
@@ -201,12 +202,33 @@ public class VehicleHandler extends VehicleChannelHandler {
                 }
             }
         }
-        if (channelUID.getIdWithoutGroup().equals(SERVICE_NEXT)) {
-            if (command instanceof OnOffType) {
-                if (command.equals(OnOffType.ON)) {
-                    vehicleStatusCallback.next();
-                    updateState(channelUID, OnOffType.OFF);
-                }
+        if (channelUID.getIdWithoutGroup().equals(NEXT)) {
+            String gUid = channelUID.getGroupId();
+            switch (gUid) {
+                case CHANNEL_GROUP_SERVICE:
+                    if (command instanceof OnOffType) {
+                        if (command.equals(OnOffType.ON)) {
+                            vehicleStatusCallback.next();
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
+                    break;
+                case CHANNEL_GROUP_DESTINATION:
+                    if (command instanceof OnOffType) {
+                        if (command.equals(OnOffType.ON)) {
+                            destinationCallback.next();
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
+                    break;
+                case CHANNEL_GROUP_CHECK_CONTROL:
+                    if (command instanceof OnOffType) {
+                        if (command.equals(OnOffType.ON)) {
+                            vehicleStatusCallback.next();
+                            updateState(channelUID, OnOffType.OFF);
+                        }
+                    }
+                    break;
             }
         }
         if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
@@ -490,6 +512,35 @@ public class VehicleHandler extends VehicleChannelHandler {
 
     @NonNullByDefault({})
     public class DestinationsCallback implements StringResponseCallback {
+        private List<Destination> destinations = new ArrayList<Destination>();
+        private int destinationIndexSelected = -1;
+
+        public void next() {
+            destinationIndexSelected++;
+            updateDestination();
+        }
+
+        /**
+         * needs to be synchronized with onResponse update
+         */
+        private synchronized void updateDestination() {
+            if (destinations != null) {
+                updateState(destinationCount, new DecimalType(destinations.size()));
+                if (!destinations.isEmpty()) {
+                    if (destinationIndexSelected < 0 || destinationIndexSelected >= destinations.size()) {
+                        // select first item
+                        destinationIndexSelected = 0;
+                    }
+                    Destination entry = destinations.get(destinationIndexSelected);
+                    updateState(destinationName, StringType.valueOf(entry.getAddress()));
+                    updateState(destinationLat, new DecimalType(entry.lat));
+                    updateState(destinationLon, new DecimalType(entry.lon));
+                    // last update index - this is a sync point and you're sure that all data is valid noew
+                    updateState(destinationIndex, new DecimalType(destinationIndexSelected));
+                }
+            }
+        }
+
         @Override
         public void onResponse(Optional<String> content) {
             destinationCache = content;
@@ -497,20 +548,9 @@ public class VehicleHandler extends VehicleChannelHandler {
                 DestinationContainer dc = Converter.getGson().fromJson(content.get(), DestinationContainer.class);
 
                 if (dc.destinations != null) {
-                    if (!dc.destinations.isEmpty()) {
-                        updateState(destinationName1, StringType.valueOf(dc.destinations.get(0).getAddress()));
-                        updateState(destinationLat1, new DecimalType(dc.destinations.get(0).lat));
-                        updateState(destinationLon1, new DecimalType(dc.destinations.get(0).lon));
-                    }
-                    if (dc.destinations.size() > 1) {
-                        updateState(destinationName2, StringType.valueOf(dc.destinations.get(1).getAddress()));
-                        updateState(destinationLat2, new DecimalType(dc.destinations.get(1).lat));
-                        updateState(destinationLon2, new DecimalType(dc.destinations.get(1).lon));
-                    }
-                    if (dc.destinations.size() > 2) {
-                        updateState(destinationName3, StringType.valueOf(dc.destinations.get(2).getAddress()));
-                        updateState(destinationLat3, new DecimalType(dc.destinations.get(2).lat));
-                        updateState(destinationLon3, new DecimalType(dc.destinations.get(2).lon));
+                    synchronized (this) {
+                        destinations = dc.destinations;
+                        updateDestination();
                     }
                 }
             }
@@ -657,7 +697,7 @@ public class VehicleHandler extends VehicleChannelHandler {
         private synchronized void updateService() {
             if (services != null) {
                 updateState(serviceCount, new DecimalType(services.size()));
-                if (services.size() > 0) {
+                if (!services.isEmpty()) {
                     if (serviceIndexSelected < 0 || serviceIndexSelected >= services.size()) {
                         // select first item
                         serviceIndexSelected = 0;
