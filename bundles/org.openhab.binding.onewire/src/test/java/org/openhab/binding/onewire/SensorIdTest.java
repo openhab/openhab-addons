@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.onewire;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.onewire.internal.SensorId;
 
 /**

@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.max.internal.command;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.max.internal.device.Device;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
 import org.openhab.binding.max.internal.device.RoomInformation;

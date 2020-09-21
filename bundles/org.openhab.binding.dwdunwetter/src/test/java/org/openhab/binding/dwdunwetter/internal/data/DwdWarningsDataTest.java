@@ -13,7 +13,7 @@
 package org.openhab.binding.dwdunwetter.internal.data;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,8 +23,8 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
@@ -47,7 +47,7 @@ public class DwdWarningsDataTest {
     private TestDataProvider testDataProvider;
     private DwdWarningsData warningsData;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         this.testDataProvider = new TestDataProvider();
         loadXmlFromFile();

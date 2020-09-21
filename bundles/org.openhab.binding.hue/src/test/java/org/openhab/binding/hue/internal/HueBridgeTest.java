@@ -13,7 +13,7 @@
 package org.openhab.binding.hue.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.hue.internal.HttpClient.Result;
 import org.openhab.binding.hue.internal.exceptions.ApiException;

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
 
 import java.io.IOException;
@@ -20,10 +20,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.State;
@@ -34,7 +32,6 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(value = Parameterized.class)
 @NonNullByDefault
 public class EnergySwitchDeviceTest {
 
@@ -42,45 +39,49 @@ public class EnergySwitchDeviceTest {
             .asList(new Object[][] { { "plug_get_realtime_response", }, { "plug_get_realtime_response_v2", } });
 
     private final EnergySwitchDevice device = new EnergySwitchDevice();
-    private final DeviceState deviceState;
 
-    public EnergySwitchDeviceTest(String name) throws IOException {
-        deviceState = new DeviceState(ModelTestUtil.readJson(name));
-    }
-
-    @Parameters(name = "{0}")
     public static List<Object[]> data() {
         return TESTS;
     }
 
-    @Test
-    public void testUpdateChannelEnergyCurrent() {
-        assertEquals("Energy current should have valid state value", new QuantityType<>(1 + " A"),
-                device.updateChannel(CHANNEL_UID_ENERGY_CURRENT, deviceState));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testUpdateChannelEnergyCurrent(String name) throws IOException {
+        DeviceState deviceState = new DeviceState(ModelTestUtil.readJson(name));
+        assertEquals(new QuantityType<>(1 + " A"), device.updateChannel(CHANNEL_UID_ENERGY_CURRENT, deviceState),
+                "Energy current should have valid state value");
     }
 
-    @Test
-    public void testUpdateChannelEnergyTotal() {
-        assertEquals("Energy total should have valid state value", new QuantityType<>(10 + " kWh"),
-                device.updateChannel(CHANNEL_UID_ENERGY_TOTAL, deviceState));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testUpdateChannelEnergyTotal(String name) throws IOException {
+        DeviceState deviceState = new DeviceState(ModelTestUtil.readJson(name));
+        assertEquals(new QuantityType<>(10 + " kWh"), device.updateChannel(CHANNEL_UID_ENERGY_TOTAL, deviceState),
+                "Energy total should have valid state value");
     }
 
-    @Test
-    public void testUpdateChannelEnergyVoltage() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testUpdateChannelEnergyVoltage(String name) throws IOException {
+        DeviceState deviceState = new DeviceState(ModelTestUtil.readJson(name));
         State state = device.updateChannel(CHANNEL_UID_ENERGY_VOLTAGE, deviceState);
-        assertEquals("Energy voltage should have valid state value", 230, ((QuantityType<?>) state).intValue());
-        assertEquals("Channel patten to format voltage correctly", "230 V", state.format("%.0f %unit%"));
+        assertEquals(230, ((QuantityType<?>) state).intValue(), "Energy voltage should have valid state value");
+        assertEquals("230 V", state.format("%.0f %unit%"), "Channel patten to format voltage correctly");
     }
 
-    @Test
-    public void testUpdateChanneEnergyPower() {
-        assertEquals("Energy power should have valid state value", new QuantityType<>(20 + " W"),
-                device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testUpdateChanneEnergyPower(String name) throws IOException {
+        DeviceState deviceState = new DeviceState(ModelTestUtil.readJson(name));
+        assertEquals(new QuantityType<>(20 + " W"), device.updateChannel(CHANNEL_UID_ENERGY_POWER, deviceState),
+                "Energy power should have valid state value");
     }
 
-    @Test
-    public void testUpdateChannelOther() {
-        assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF,
-                device.updateChannel(CHANNEL_UID_OTHER, deviceState));
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testUpdateChannelOther(String name) throws IOException {
+        DeviceState deviceState = new DeviceState(ModelTestUtil.readJson(name));
+        assertSame(UnDefType.UNDEF, device.updateChannel(CHANNEL_UID_OTHER, deviceState),
+                "Unknown channel should return UNDEF");
     }
 }

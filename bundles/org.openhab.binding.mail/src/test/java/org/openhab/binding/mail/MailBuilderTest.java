@@ -13,7 +13,8 @@
 package org.openhab.binding.mail;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -26,7 +27,7 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.apache.commons.mail.MultiPartEmail;
 import org.apache.commons.mail.SimpleEmail;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.mail.internal.MailBuilder;
 
 /**
@@ -40,19 +41,20 @@ public class MailBuilderTest {
     private static final String TEST_STRING = "test";
     private static final String TEST_EMAIL = "foo@bar.zinga";
 
-    @Test(expected = AddressException.class)
-    public void illegalToAddressThrowsException() throws AddressException {
-        MailBuilder builder = new MailBuilder("foo bar.zinga");
+    @Test
+    public void illegalToAddressThrowsException() {
+        assertThrows(AddressException.class, () -> new MailBuilder("foo bar.zinga"));
     }
 
-    @Test(expected = EmailException.class)
-    public void illegalFromAddressThrowsException() throws AddressException, EmailException {
-        Email mail = new MailBuilder("TEST_EMAIL").withSender("foo bar.zinga").build();
+    @Test
+    public void illegalFromAddressThrowsException() {
+        assertThrows(EmailException.class, () -> new MailBuilder("TEST_EMAIL").withSender("foo bar.zinga").build());
     }
 
-    @Test(expected = MalformedURLException.class)
-    public void illegalURLThrowsException() throws AddressException, MalformedURLException {
-        MailBuilder builder = new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga");
+    @Test
+    public void illegalURLThrowsException() {
+        assertThrows(MalformedURLException.class,
+                () -> new MailBuilder("TEST_EMAIL").withURLAttachment("foo bar.zinga"));
     }
 
     @Test

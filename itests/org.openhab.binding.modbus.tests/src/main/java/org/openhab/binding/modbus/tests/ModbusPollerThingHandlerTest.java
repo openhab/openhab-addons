@@ -13,8 +13,9 @@
 package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -22,6 +23,17 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
+import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
+import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
@@ -31,19 +43,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
-import org.openhab.binding.modbus.internal.ModbusBindingConstantsInternal;
-import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.BitArray;
@@ -62,7 +61,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Sami Salonen - Initial contribution
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
 
     private static final String HOST = "thisishost";
@@ -73,8 +71,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     private Bridge endpoint;
     private Bridge poller;
 
-    @Mock
-    private ThingHandlerCallback thingCallback;
+    private @Mock ThingHandlerCallback thingCallback;
 
     public static BridgeBuilder createTcpThingBuilder(String id) {
         return BridgeBuilder
@@ -114,7 +111,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
     /**
      * Before each test, setup TCP endpoint thing, configure mocked item registry
      */
-    @Before
+    @BeforeEach
     public void setUp() {
         mockCommsToModbusManager();
         Configuration tcpConfig = new Configuration();
@@ -127,7 +124,7 @@ public class ModbusPollerThingHandlerTest extends AbstractModbusOSGiTest {
         assertThat(endpoint.getStatus(), is(equalTo(ThingStatus.ONLINE)));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         if (endpoint != null) {
             thingProvider.remove(endpoint.getUID());

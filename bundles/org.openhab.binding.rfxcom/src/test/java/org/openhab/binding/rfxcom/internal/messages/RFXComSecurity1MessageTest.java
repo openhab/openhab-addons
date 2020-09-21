@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.SubType.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComSecurity1Message.Contact;
@@ -38,18 +38,18 @@ public class RFXComSecurity1MessageTest {
             @Nullable Status status, int signalLevel) throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComSecurity1Message msg = (RFXComSecurity1Message) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", subType, msg.subType);
-        assertEquals("Seq Number", sequenceNumber, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Battery level", batteryLevel, msg.batteryLevel);
-        assertEquals("Contact", contact, msg.contact);
-        assertEquals("Motion", motion, msg.motion);
-        assertEquals("Status", status, msg.status);
-        assertEquals("Signal Level", signalLevel, msg.signalLevel);
+        assertEquals(subType, msg.subType, "SubType");
+        assertEquals(sequenceNumber, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
+        assertEquals(batteryLevel, msg.batteryLevel, "Battery level");
+        assertEquals(contact, msg.contact, "Contact");
+        assertEquals(motion, msg.motion, "Motion");
+        assertEquals(status, msg.status, "Status");
+        assertEquals(signalLevel, msg.signalLevel, "Signal Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 
     @Test
@@ -66,8 +66,9 @@ public class RFXComSecurity1MessageTest {
                 0);
     }
 
-    @Test(expected = RFXComUnsupportedValueException.class)
-    public void testSomeInvalidSecurityMessage() throws RFXComException {
-        testSomeMessages("08FF0A1F0000000650", null, 0, null, 0, null, null, null, 0);
+    @Test
+    public void testSomeInvalidSecurityMessage() {
+        assertThrows(RFXComUnsupportedValueException.class,
+                () -> testSomeMessages("08FF0A1F0000000650", null, 0, null, 0, null, null, null, 0));
     }
 }

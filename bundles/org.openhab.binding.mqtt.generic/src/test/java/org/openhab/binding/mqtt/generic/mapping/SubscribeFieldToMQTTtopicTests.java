@@ -14,7 +14,8 @@ package org.openhab.binding.mqtt.generic.mapping;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -32,10 +33,13 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic.FieldChanged;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 
@@ -44,6 +48,8 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class SubscribeFieldToMQTTtopicTests {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ FIELD })
@@ -101,13 +107,12 @@ public class SubscribeFieldToMQTTtopicTests {
     @Mock
     FieldChanged fieldChanged;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
     }
 
-    @Test(expected = TimeoutException.class)
+    @Test
     public void TimeoutIfNoMessageReceive()
             throws InterruptedException, NoSuchFieldException, ExecutionException, TimeoutException {
         final Field field = Attributes.class.getField("Int");
@@ -115,10 +120,11 @@ public class SubscribeFieldToMQTTtopicTests {
 
         SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, fieldChanged,
                 "homie/device123", false);
-        subscriber.subscribeAndReceive(connection, 1000).get(50, TimeUnit.MILLISECONDS);
+        assertThrows(TimeoutException.class,
+                () -> subscriber.subscribeAndReceive(connection, 1000).get(50, TimeUnit.MILLISECONDS));
     }
 
-    @Test(expected = ExecutionException.class)
+    @Test
     public void MandatoryMissing()
             throws InterruptedException, NoSuchFieldException, ExecutionException, TimeoutException {
         final Field field = Attributes.class.getField("Int");
@@ -126,7 +132,7 @@ public class SubscribeFieldToMQTTtopicTests {
 
         SubscribeFieldToMQTTtopic subscriber = new SubscribeFieldToMQTTtopic(scheduler, field, fieldChanged,
                 "homie/device123", true);
-        subscriber.subscribeAndReceive(connection, 50).get();
+        assertThrows(ExecutionException.class, () -> subscriber.subscribeAndReceive(connection, 50).get());
     }
 
     @Test

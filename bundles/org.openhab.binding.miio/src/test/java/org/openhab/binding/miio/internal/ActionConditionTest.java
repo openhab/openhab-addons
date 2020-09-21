@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.miio.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.miio.internal.basic.ActionConditions;
 import org.openhab.binding.miio.internal.basic.MiIoDeviceActionCondition;
 

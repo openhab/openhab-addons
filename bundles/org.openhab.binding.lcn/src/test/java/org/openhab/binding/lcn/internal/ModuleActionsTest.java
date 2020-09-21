@@ -12,19 +12,20 @@
  */
 package org.openhab.binding.lcn.internal;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
 
@@ -33,6 +34,7 @@ import org.openhab.binding.lcn.internal.common.LcnException;
  *
  * @author Fabian Wolter - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class ModuleActionsTest {
     private LcnModuleActions a = new LcnModuleActions();
@@ -40,9 +42,8 @@ public class ModuleActionsTest {
     @Captor
     private @NonNullByDefault({}) ArgumentCaptor<byte[]> byteBufferCaptor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         a = new LcnModuleActions();
         a.setThingHandler(handler);
     }

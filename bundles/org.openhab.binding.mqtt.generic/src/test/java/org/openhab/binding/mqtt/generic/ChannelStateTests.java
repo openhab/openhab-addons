@@ -13,11 +13,11 @@
 package org.openhab.binding.mqtt.generic;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -31,11 +31,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.DateTimeValue;
@@ -55,26 +59,21 @@ import org.openhab.core.thing.ChannelUID;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ChannelStateTests {
-    @Mock
-    private MqttBrokerConnection connection;
 
-    @Mock
-    private ChannelStateUpdateListener channelStateUpdateListener;
-
-    @Mock
-    private ChannelUID channelUID;
-
-    @Spy
-    private TextValue textValue;
+    private @Mock MqttBrokerConnection connection;
+    private @Mock ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock ChannelUID channelUID;
+    private @Spy TextValue textValue;
 
     private ScheduledExecutorService scheduler;
 
     private ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
         CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
         doReturn(voidFutureComplete).when(connection).unsubscribeAll();
@@ -87,7 +86,7 @@ public class ChannelStateTests {
         scheduler = new ScheduledThreadPoolExecutor(1);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         scheduler.shutdownNow();
     }
@@ -308,8 +307,8 @@ public class ChannelStateTests {
         subject.processMessage("state", datetime.getBytes());
 
         String channelState = value.getChannelState().toString();
-        assertTrue("Expected '" + channelState + "' to start with '" + datetime + "'",
-                channelState.startsWith(datetime));
+        assertTrue(channelState.startsWith(datetime),
+                "Expected '" + channelState + "' to start with '" + datetime + "'");
         assertThat(value.getMQTTpublishValue(null), is(datetime));
     }
 

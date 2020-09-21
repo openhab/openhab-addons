@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.ihc.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for IHC / ELKO binding

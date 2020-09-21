@@ -15,8 +15,8 @@ package org.openhab.binding.lcn.internal.subhandler;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.binding.lcn.internal.common.LcnDefs;
 import org.openhab.binding.lcn.internal.common.LcnException;
@@ -33,7 +33,7 @@ public class LcnModuleLedSubHandlerTest extends AbstractTestLcnModuleSubHandler 
     private @NonNullByDefault({}) LcnModuleLedSubHandler l;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 

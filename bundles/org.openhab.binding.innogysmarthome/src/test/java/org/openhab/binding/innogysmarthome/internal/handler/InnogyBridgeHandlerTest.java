@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.innogysmarthome.internal.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.net.ConnectException;
@@ -23,8 +23,8 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.innogysmarthome.internal.InnogyBindingConstants;
 import org.openhab.binding.innogysmarthome.internal.InnogyWebSocket;
 import org.openhab.binding.innogysmarthome.internal.client.InnogyClient;
@@ -47,7 +47,7 @@ public class InnogyBridgeHandlerTest {
     private Bridge bridgeMock;
     private InnogyWebSocket webSocketMock;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         bridgeMock = mock(Bridge.class);
         when(bridgeMock.getUID()).thenReturn(new ThingUID("innogysmarthome", "bridge"));

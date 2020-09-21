@@ -13,16 +13,16 @@
 package org.openhab.binding.network.internal.dhcp;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeTrue;
-import static org.mockito.Matchers.eq;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.network.internal.dhcp.DHCPPacket.BadPacketException;
 
 /**

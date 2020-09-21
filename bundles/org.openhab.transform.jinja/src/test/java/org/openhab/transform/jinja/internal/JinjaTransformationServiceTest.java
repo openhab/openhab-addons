@@ -12,9 +12,9 @@
  */
 package org.openhab.transform.jinja.internal;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.transform.TransformationException;
 
 /**
@@ -24,7 +24,7 @@ public class JinjaTransformationServiceTest {
 
     private JinjaTransformationService processor;
 
-    @Before
+    @BeforeEach
     public void init() {
         processor = new JinjaTransformationService();
     }
@@ -36,7 +36,7 @@ public class JinjaTransformationServiceTest {
         String transformedResponse = processor.transform("{{value_json['AM2301'].Temperature}}", json);
 
         // Asserts
-        Assert.assertEquals("4.7", transformedResponse);
+        assertEquals("4.7", transformedResponse);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class JinjaTransformationServiceTest {
         String transformedResponse = processor.transform("Hello {{ value }}!", value);
 
         // Asserts
-        Assert.assertEquals("Hello world!", transformedResponse);
+        assertEquals("Hello world!", transformedResponse);
     }
 
     @Test
@@ -56,6 +56,6 @@ public class JinjaTransformationServiceTest {
         String transformedResponse = processor.transform("Hello {{ value_json }}!", value);
 
         // Asserts
-        Assert.assertEquals("Hello world!", transformedResponse);
+        assertEquals("Hello world!", transformedResponse);
     }
 }

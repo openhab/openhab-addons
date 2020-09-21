@@ -17,8 +17,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.misc.HomematicClientException;
 import org.openhab.binding.homematic.internal.misc.HomematicConstants;
 import org.openhab.binding.homematic.internal.misc.MiscUtils;
@@ -44,7 +44,7 @@ public class ButtonDatapointTest extends JavaTest {
     private MockEventReceiver mockEventReceiver;
     private final ButtonVirtualDatapointHandler bvdpHandler = new ButtonVirtualDatapointHandler();
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         this.mockEventReceiver = new MockEventReceiver();
     }

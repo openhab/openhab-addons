@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.dsmr.internal.meter;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
@@ -40,7 +40,7 @@ public class DSMRMeterTest {
 
         List<CosemObject> filterMeterValues = meter
                 .filterMeterValues(TelegramReaderUtil.readTelegram("dsmr_50", TelegramState.OK).getCosemObjects());
-        assertEquals("Filter should return all required objects", DSMRMeterType.DEVICE_V5.requiredCosemObjects.length,
-                filterMeterValues.size());
+        assertEquals(DSMRMeterType.DEVICE_V5.requiredCosemObjects.length, filterMeterValues.size(),
+                "Filter should return all required objects");
     }
 }

@@ -13,17 +13,20 @@
 package org.openhab.binding.network.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.Collections;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetectionValue;
 import org.openhab.core.config.discovery.DiscoveryListener;
@@ -34,18 +37,16 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class DiscoveryTest {
     private final String ip = "127.0.0.1";
 
-    @Mock
-    PresenceDetectionValue value;
+    private @Mock PresenceDetectionValue value;
+    private @Mock DiscoveryListener listener;
 
-    @Mock
-    DiscoveryListener listener;
-
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
         when(value.getHostAddress()).thenReturn(ip);
         when(value.getLowestLatency()).thenReturn(10.0);
         when(value.isReachable()).thenReturn(true);
@@ -65,8 +66,8 @@ public class DiscoveryTest {
         d.partialDetectionResult(value);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
-        Assert.assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createPingUID(ip)));
-        Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
+        assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createPingUID(ip)));
+        assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
     }
 
     @Test
@@ -83,8 +84,8 @@ public class DiscoveryTest {
         d.partialDetectionResult(value);
         verify(listener).thingDiscovered(any(), result.capture());
         DiscoveryResult dresult = result.getValue();
-        Assert.assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createServiceUID(ip, 1010)));
-        Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
-        Assert.assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_PORT), is(1010));
+        assertThat(dresult.getThingUID(), is(NetworkDiscoveryService.createServiceUID(ip, 1010)));
+        assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_HOSTNAME), is(ip));
+        assertThat(dresult.getProperties().get(NetworkBindingConstants.PARAMETER_PORT), is(1010));
     }
 }

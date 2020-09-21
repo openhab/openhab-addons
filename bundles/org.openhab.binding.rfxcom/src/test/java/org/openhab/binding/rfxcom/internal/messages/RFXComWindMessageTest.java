@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComWindMessage.SubType.WIND1;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -32,17 +32,17 @@ public class RFXComWindMessageTest {
         String hexMessage = "105601122F000087000000140000000079";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComWindMessage msg = (RFXComWindMessage) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", WIND1, msg.subType);
-        assertEquals("Seq Number", 18, msg.seqNbr);
-        assertEquals("Sensor Id", "12032", msg.getDeviceId());
-        assertEquals("Direction", 135.0, msg.windDirection, 0.001);
-        // assertEquals("Average speed", 0.0, msg.w9j, 0.001);
-        assertEquals("Wind Gust", 2.0, msg.windSpeed, 0.001);
-        assertEquals("Signal Level", 7, msg.signalLevel);
-        assertEquals("Battery Level", 9, msg.batteryLevel);
+        assertEquals(WIND1, msg.subType, "SubType");
+        assertEquals(18, msg.seqNbr, "Seq Number");
+        assertEquals("12032", msg.getDeviceId(), "Sensor Id");
+        assertEquals(135.0, msg.windDirection, 0.001, "Direction");
+        // assertEquals(0.0, msg.w9j, 0.001, "Average speed");
+        assertEquals(2.0, msg.windSpeed, 0.001, "Wind Gust");
+        assertEquals(7, msg.signalLevel, "Signal Level");
+        assertEquals(9, msg.batteryLevel, "Battery Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

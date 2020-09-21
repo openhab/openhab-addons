@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.sensibo.internal.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.sensibo.internal.dto.pods.PodDTO;
 
 import com.google.gson.reflect.TypeToken;

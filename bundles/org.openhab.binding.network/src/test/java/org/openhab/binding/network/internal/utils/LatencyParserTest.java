@@ -14,8 +14,8 @@ package org.openhab.binding.network.internal.utils;
 
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests the parser which extracts latency values from the output of the ping command.
@@ -34,8 +34,8 @@ public class LatencyParserTest {
         Optional<Double> resultLatency = latencyParser.parseLatency(input);
 
         // Assert
-        Assert.assertTrue(resultLatency.isPresent());
-        Assert.assertEquals(1.225, resultLatency.get(), 0);
+        assertTrue(resultLatency.isPresent());
+        assertEquals(1.225, resultLatency.get(), 0);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class LatencyParserTest {
             Optional<Double> resultLatency = latencyParser.parseLatency(inputLine);
 
             // Assert
-            Assert.assertFalse(resultLatency.isPresent());
+            assertFalse(resultLatency.isPresent());
         }
     }
 }

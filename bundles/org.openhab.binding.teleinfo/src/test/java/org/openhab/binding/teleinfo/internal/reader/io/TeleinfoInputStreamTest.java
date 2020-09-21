@@ -15,8 +15,8 @@ package org.openhab.binding.teleinfo.internal.reader.io;
 import java.io.FileInputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.teleinfo.internal.dto.Frame;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccBaseOption;
 import org.openhab.binding.teleinfo.internal.dto.cbemm.evoicc.FrameCbemmEvolutionIccHcOption;
@@ -42,22 +42,22 @@ public class TeleinfoInputStreamTest {
                 new FileInputStream(TestUtils.getTestFile("cbetm-base-option-1.raw")))) {
             Frame frame = in.readNextFrame();
 
-            Assert.assertNotNull(frame);
-            Assert.assertEquals(FrameCbetmLongBaseOption.class, frame.getClass());
+            assertNotNull(frame);
+            assertEquals(FrameCbetmLongBaseOption.class, frame.getClass());
             FrameCbetmLongBaseOption frameCbetmLongBaseOption = (FrameCbetmLongBaseOption) frame;
-            Assert.assertEquals("XXXXXXXXXXXX", frameCbetmLongBaseOption.getAdco());
-            Assert.assertEquals(20, frameCbetmLongBaseOption.getIsousc());
-            Assert.assertEquals(1181243, frameCbetmLongBaseOption.getBase());
-            Assert.assertEquals(Ptec.TH, frameCbetmLongBaseOption.getPtec());
-            Assert.assertEquals(0, frameCbetmLongBaseOption.getIinst1());
-            Assert.assertEquals(2, frameCbetmLongBaseOption.getIinst2());
-            Assert.assertEquals(0, frameCbetmLongBaseOption.getIinst3());
-            Assert.assertEquals(26, frameCbetmLongBaseOption.getImax1().intValue());
-            Assert.assertEquals(18, frameCbetmLongBaseOption.getImax2().intValue());
-            Assert.assertEquals(27, frameCbetmLongBaseOption.getImax3().intValue());
-            Assert.assertEquals(7990, frameCbetmLongBaseOption.getPmax());
-            Assert.assertEquals(540, frameCbetmLongBaseOption.getPapp());
-            Assert.assertEquals("00", frameCbetmLongBaseOption.getPpot());
+            assertEquals("XXXXXXXXXXXX", frameCbetmLongBaseOption.getAdco());
+            assertEquals(20, frameCbetmLongBaseOption.getIsousc());
+            assertEquals(1181243, frameCbetmLongBaseOption.getBase());
+            assertEquals(Ptec.TH, frameCbetmLongBaseOption.getPtec());
+            assertEquals(0, frameCbetmLongBaseOption.getIinst1());
+            assertEquals(2, frameCbetmLongBaseOption.getIinst2());
+            assertEquals(0, frameCbetmLongBaseOption.getIinst3());
+            assertEquals(26, frameCbetmLongBaseOption.getImax1().intValue());
+            assertEquals(18, frameCbetmLongBaseOption.getImax2().intValue());
+            assertEquals(27, frameCbetmLongBaseOption.getImax3().intValue());
+            assertEquals(7990, frameCbetmLongBaseOption.getPmax());
+            assertEquals(540, frameCbetmLongBaseOption.getPapp());
+            assertEquals("00", frameCbetmLongBaseOption.getPpot());
         }
     }
 
@@ -67,19 +67,19 @@ public class TeleinfoInputStreamTest {
                 new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-hc-option-1.raw")))) {
             Frame frame = in.readNextFrame();
 
-            Assert.assertNotNull(frame);
-            Assert.assertEquals(FrameCbemmEvolutionIccHcOption.class, frame.getClass());
+            assertNotNull(frame);
+            assertEquals(FrameCbemmEvolutionIccHcOption.class, frame.getClass());
             FrameCbemmEvolutionIccHcOption frameCbemmEvolutionIccHcOption = (FrameCbemmEvolutionIccHcOption) frame;
-            Assert.assertEquals("XXXXXXXXXXXX", frameCbemmEvolutionIccHcOption.getAdco());
-            Assert.assertEquals(30, frameCbemmEvolutionIccHcOption.getIsousc());
-            Assert.assertEquals(6906827, frameCbemmEvolutionIccHcOption.getHchc());
-            Assert.assertEquals(7617931, frameCbemmEvolutionIccHcOption.getHchp());
-            Assert.assertEquals(Ptec.HP, frameCbemmEvolutionIccHcOption.getPtec());
-            Assert.assertEquals(3, frameCbemmEvolutionIccHcOption.getIinst());
-            Assert.assertEquals(44, frameCbemmEvolutionIccHcOption.getImax().intValue());
-            Assert.assertEquals(680, frameCbemmEvolutionIccHcOption.getPapp());
-            Assert.assertNull(frameCbemmEvolutionIccHcOption.getAdps());
-            Assert.assertEquals(Hhphc.A, frameCbemmEvolutionIccHcOption.getHhphc());
+            assertEquals("XXXXXXXXXXXX", frameCbemmEvolutionIccHcOption.getAdco());
+            assertEquals(30, frameCbemmEvolutionIccHcOption.getIsousc());
+            assertEquals(6906827, frameCbemmEvolutionIccHcOption.getHchc());
+            assertEquals(7617931, frameCbemmEvolutionIccHcOption.getHchp());
+            assertEquals(Ptec.HP, frameCbemmEvolutionIccHcOption.getPtec());
+            assertEquals(3, frameCbemmEvolutionIccHcOption.getIinst());
+            assertEquals(44, frameCbemmEvolutionIccHcOption.getImax().intValue());
+            assertEquals(680, frameCbemmEvolutionIccHcOption.getPapp());
+            assertNull(frameCbemmEvolutionIccHcOption.getAdps());
+            assertEquals(Hhphc.A, frameCbemmEvolutionIccHcOption.getHhphc());
         }
     }
 
@@ -89,24 +89,24 @@ public class TeleinfoInputStreamTest {
                 new FileInputStream(TestUtils.getTestFile("cbetm-ejp-option-1.raw")))) {
             Frame frame = in.readNextFrame();
 
-            Assert.assertNotNull(frame);
-            Assert.assertEquals(FrameCbetmLongEjpOption.class, frame.getClass());
+            assertNotNull(frame);
+            assertEquals(FrameCbetmLongEjpOption.class, frame.getClass());
             FrameCbetmLongEjpOption frameCbetmLongEjpOption = (FrameCbetmLongEjpOption) frame;
-            Assert.assertEquals("XXXXXXXXXX", frameCbetmLongEjpOption.getAdco());
-            Assert.assertEquals(30, frameCbetmLongEjpOption.getIsousc());
-            Assert.assertEquals(1111111, frameCbetmLongEjpOption.getEjphn());
-            Assert.assertEquals(2222222, frameCbetmLongEjpOption.getEjphpm());
-            Assert.assertNull(frameCbetmLongEjpOption.getPejp());
-            Assert.assertEquals(Ptec.HN, frameCbetmLongEjpOption.getPtec());
-            Assert.assertEquals(10, frameCbetmLongEjpOption.getIinst1());
-            Assert.assertEquals(5, frameCbetmLongEjpOption.getIinst2());
-            Assert.assertEquals(8, frameCbetmLongEjpOption.getIinst3());
-            Assert.assertEquals(38, frameCbetmLongEjpOption.getImax1().intValue());
-            Assert.assertEquals(42, frameCbetmLongEjpOption.getImax2().intValue());
-            Assert.assertEquals(44, frameCbetmLongEjpOption.getImax3().intValue());
-            Assert.assertEquals(17480, frameCbetmLongEjpOption.getPmax());
-            Assert.assertEquals(5800, frameCbetmLongEjpOption.getPapp());
-            Assert.assertEquals("00", frameCbetmLongEjpOption.getPpot());
+            assertEquals("XXXXXXXXXX", frameCbetmLongEjpOption.getAdco());
+            assertEquals(30, frameCbetmLongEjpOption.getIsousc());
+            assertEquals(1111111, frameCbetmLongEjpOption.getEjphn());
+            assertEquals(2222222, frameCbetmLongEjpOption.getEjphpm());
+            assertNull(frameCbetmLongEjpOption.getPejp());
+            assertEquals(Ptec.HN, frameCbetmLongEjpOption.getPtec());
+            assertEquals(10, frameCbetmLongEjpOption.getIinst1());
+            assertEquals(5, frameCbetmLongEjpOption.getIinst2());
+            assertEquals(8, frameCbetmLongEjpOption.getIinst3());
+            assertEquals(38, frameCbetmLongEjpOption.getImax1().intValue());
+            assertEquals(42, frameCbetmLongEjpOption.getImax2().intValue());
+            assertEquals(44, frameCbetmLongEjpOption.getImax3().intValue());
+            assertEquals(17480, frameCbetmLongEjpOption.getPmax());
+            assertEquals(5800, frameCbetmLongEjpOption.getPapp());
+            assertEquals("00", frameCbetmLongEjpOption.getPpot());
         }
     }
 
@@ -116,26 +116,26 @@ public class TeleinfoInputStreamTest {
                 new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-tempo-option-1.raw")))) {
             Frame frame = in.readNextFrame();
 
-            Assert.assertNotNull(frame);
-            Assert.assertEquals(FrameCbemmEvolutionIccTempoOption.class, frame.getClass());
+            assertNotNull(frame);
+            assertEquals(FrameCbemmEvolutionIccTempoOption.class, frame.getClass());
             FrameCbemmEvolutionIccTempoOption frameCbemmEvolutionIccTempoOption = (FrameCbemmEvolutionIccTempoOption) frame;
-            Assert.assertEquals("XXXXXXXXXXXX", frameCbemmEvolutionIccTempoOption.getAdco());
-            Assert.assertEquals(45, frameCbemmEvolutionIccTempoOption.getIsousc());
-            Assert.assertEquals(2697099, frameCbemmEvolutionIccTempoOption.getBbrhcjb());
-            Assert.assertEquals(3494559, frameCbemmEvolutionIccTempoOption.getBbrhpjb());
-            Assert.assertEquals(41241, frameCbemmEvolutionIccTempoOption.getBbrhcjw());
-            Assert.assertEquals(194168, frameCbemmEvolutionIccTempoOption.getBbrhpjw());
-            Assert.assertEquals(0, frameCbemmEvolutionIccTempoOption.getBbrhcjr());
-            Assert.assertEquals(89736, frameCbemmEvolutionIccTempoOption.getBbrhpjr());
-            Assert.assertEquals(Ptec.HPJR, frameCbemmEvolutionIccTempoOption.getPtec());
-            Assert.assertNull(frameCbemmEvolutionIccTempoOption.getDemain());
-            Assert.assertEquals(3, frameCbemmEvolutionIccTempoOption.getIinst());
-            Assert.assertEquals(37, frameCbemmEvolutionIccTempoOption.getImax().intValue());
-            Assert.assertEquals(620, frameCbemmEvolutionIccTempoOption.getPapp());
-            Assert.assertNull(frameCbemmEvolutionIccTempoOption.getAdps());
-            Assert.assertEquals(Hhphc.Y, frameCbemmEvolutionIccTempoOption.getHhphc());
-            Assert.assertEquals(ProgrammeCircuit1.B, frameCbemmEvolutionIccTempoOption.getProgrammeCircuit1());
-            Assert.assertEquals(ProgrammeCircuit2.P2, frameCbemmEvolutionIccTempoOption.getProgrammeCircuit2());
+            assertEquals("XXXXXXXXXXXX", frameCbemmEvolutionIccTempoOption.getAdco());
+            assertEquals(45, frameCbemmEvolutionIccTempoOption.getIsousc());
+            assertEquals(2697099, frameCbemmEvolutionIccTempoOption.getBbrhcjb());
+            assertEquals(3494559, frameCbemmEvolutionIccTempoOption.getBbrhpjb());
+            assertEquals(41241, frameCbemmEvolutionIccTempoOption.getBbrhcjw());
+            assertEquals(194168, frameCbemmEvolutionIccTempoOption.getBbrhpjw());
+            assertEquals(0, frameCbemmEvolutionIccTempoOption.getBbrhcjr());
+            assertEquals(89736, frameCbemmEvolutionIccTempoOption.getBbrhpjr());
+            assertEquals(Ptec.HPJR, frameCbemmEvolutionIccTempoOption.getPtec());
+            assertNull(frameCbemmEvolutionIccTempoOption.getDemain());
+            assertEquals(3, frameCbemmEvolutionIccTempoOption.getIinst());
+            assertEquals(37, frameCbemmEvolutionIccTempoOption.getImax().intValue());
+            assertEquals(620, frameCbemmEvolutionIccTempoOption.getPapp());
+            assertNull(frameCbemmEvolutionIccTempoOption.getAdps());
+            assertEquals(Hhphc.Y, frameCbemmEvolutionIccTempoOption.getHhphc());
+            assertEquals(ProgrammeCircuit1.B, frameCbemmEvolutionIccTempoOption.getProgrammeCircuit1());
+            assertEquals(ProgrammeCircuit2.P2, frameCbemmEvolutionIccTempoOption.getProgrammeCircuit2());
         }
     }
 
@@ -144,17 +144,17 @@ public class TeleinfoInputStreamTest {
         try (TeleinfoInputStream in = new TeleinfoInputStream(
                 new FileInputStream(TestUtils.getTestFile("cbemm-evo-icc-base-option-1.raw")))) {
             Frame frame = in.readNextFrame();
-            Assert.assertNotNull(frame);
-            Assert.assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
+            assertNotNull(frame);
+            assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
             FrameCbemmEvolutionIccBaseOption frameCbemmEvolutionIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
-            Assert.assertEquals("031762120162", frameCbemmEvolutionIccBaseOption.getAdco());
-            Assert.assertEquals(30, frameCbemmEvolutionIccBaseOption.getIsousc());
-            Assert.assertEquals(190575, frameCbemmEvolutionIccBaseOption.getBase());
-            Assert.assertEquals(Ptec.TH, frameCbemmEvolutionIccBaseOption.getPtec());
-            Assert.assertEquals(1, frameCbemmEvolutionIccBaseOption.getIinst());
-            Assert.assertEquals(90, frameCbemmEvolutionIccBaseOption.getImax().intValue());
-            Assert.assertEquals(270, frameCbemmEvolutionIccBaseOption.getPapp());
-            Assert.assertNull(frameCbemmEvolutionIccBaseOption.getAdps());
+            assertEquals("031762120162", frameCbemmEvolutionIccBaseOption.getAdco());
+            assertEquals(30, frameCbemmEvolutionIccBaseOption.getIsousc());
+            assertEquals(190575, frameCbemmEvolutionIccBaseOption.getBase());
+            assertEquals(Ptec.TH, frameCbemmEvolutionIccBaseOption.getPtec());
+            assertEquals(1, frameCbemmEvolutionIccBaseOption.getIinst());
+            assertEquals(90, frameCbemmEvolutionIccBaseOption.getImax().intValue());
+            assertEquals(270, frameCbemmEvolutionIccBaseOption.getPapp());
+            assertNull(frameCbemmEvolutionIccBaseOption.getAdps());
         }
     }
 
@@ -164,10 +164,10 @@ public class TeleinfoInputStreamTest {
                 new FileInputStream(TestUtils.getTestFile("invalid-adps-groupline.raw")), true)) {
             Frame frame = in.readNextFrame();
 
-            Assert.assertNotNull(frame);
-            Assert.assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
+            assertNotNull(frame);
+            assertEquals(FrameCbemmEvolutionIccBaseOption.class, frame.getClass());
             FrameCbemmEvolutionIccBaseOption frameCbemmEvolutionIccBaseOption = (FrameCbemmEvolutionIccBaseOption) frame;
-            Assert.assertEquals(37, frameCbemmEvolutionIccBaseOption.getAdps().intValue());
+            assertEquals(37, frameCbemmEvolutionIccBaseOption.getAdps().intValue());
         }
     }
 }

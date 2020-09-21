@@ -21,7 +21,6 @@
 package org.openhab.binding.sleepiq.api.impl.typeadapters;
 
 import java.time.OffsetTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Type adapter for jsr310 {@link OffsetTime} class.
@@ -30,7 +29,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class OffsetTimeTypeAdapter extends TemporalTypeAdapter<OffsetTime> {
 
-  public OffsetTimeTypeAdapter() {
-    super(OffsetTime::parse);
-  }
+    public OffsetTimeTypeAdapter() {
+        super(OffsetTime::parse);
+    }
 }

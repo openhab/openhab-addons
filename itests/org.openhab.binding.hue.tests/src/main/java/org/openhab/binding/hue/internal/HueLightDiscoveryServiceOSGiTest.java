@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.hue.internal;
 
-import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
+import static org.openhab.core.thing.Thing.PROPERTY_SERIAL_NUMBER;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -23,6 +24,11 @@ import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
+import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -36,12 +42,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.ThingStatusInfoBuilder;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.openhab.binding.hue.internal.discovery.HueLightDiscoveryService;
-import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 
 /**
  * Tests for {@link HueLightDiscoveryService}.
@@ -64,7 +64,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
     protected final ThingTypeUID BRIDGE_THING_TYPE_UID = new ThingTypeUID("hue", "bridge");
     protected final ThingUID BRIDGE_THING_UID = new ThingUID(BRIDGE_THING_TYPE_UID, "testBridge");
 
-    @Before
+    @BeforeEach
     public void setUp() {
         registerVolatileStorageService();
 
@@ -89,7 +89,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
         assertThat(discoveryService, is(notNullValue()));
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         thingRegistry.remove(BRIDGE_THING_UID);
         waitForAssert(() -> {
@@ -217,7 +217,7 @@ public class HueLightDiscoveryServiceOSGiTest extends AbstractHueOSGiTestParent 
                 usernameField.setAccessible(true);
                 usernameField.set(hueBridgeValue, hueBridgeHandler.getThing().getConfiguration().get(USER_NAME));
             } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
-                Assert.fail("Reflection usage error");
+                fail("Reflection usage error");
             }
         });
         hueBridgeHandler.initialize();

@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.wemo.internal.discovery.test;
 
-import static org.openhab.core.config.discovery.inbox.InboxPredicates.forThingUID;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openhab.core.config.discovery.inbox.InboxPredicates.forThingUID;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,19 +24,19 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.inbox.Inbox;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.jupnp.model.meta.Device;
 import org.openhab.binding.wemo.internal.WemoBindingConstants;
 import org.openhab.binding.wemo.internal.discovery.WemoDiscoveryService;
 import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.inbox.Inbox;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link WemoDiscoveryService}.
@@ -52,7 +53,7 @@ public class WemoDiscoveryOSGiTest extends GenericWemoOSGiTest {
 
     private @NonNullByDefault({}) Inbox inbox;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         setUpServices();
 
@@ -60,7 +61,7 @@ public class WemoDiscoveryOSGiTest extends GenericWemoOSGiTest {
         assertThat(inbox, is(notNullValue()));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         List<DiscoveryResult> results = inbox.getAll();
         assertThat(results.size(), is(0));

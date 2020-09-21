@@ -45,7 +45,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.openhab.binding.miio.internal.robot.RRMapDraw;
 import org.openhab.binding.miio.internal.robot.RRMapFileParser;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ public class RoboMapViewer extends JFrame {
     protected MapPoint fromLocation = new MapPoint();
     private static final long serialVersionUID = 2623447051590306992L;
 
-    @Ignore
+    @Disabled
     public static void main(String args[]) {
         System.setProperty("swing.defaultlaf", "javax.swing.plaf.metal.MetalLookAndFeel");
         RoboMapViewer vc = new RoboMapViewer(args);

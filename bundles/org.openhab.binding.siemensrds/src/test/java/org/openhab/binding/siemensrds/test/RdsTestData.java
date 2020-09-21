@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.siemensrds.test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.siemensrds.internal.RdsBindingConstants.*;
 
 import java.io.BufferedReader;
@@ -24,7 +24,7 @@ import java.util.Map.Entry;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.siemensrds.internal.RdsAccessToken;
 import org.openhab.binding.siemensrds.internal.RdsCloudException;
 import org.openhab.binding.siemensrds.internal.RdsDataPoints;

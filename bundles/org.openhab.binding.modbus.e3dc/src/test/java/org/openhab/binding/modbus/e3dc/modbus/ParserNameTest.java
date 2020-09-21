@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.modbus.e3dc.modbus;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 

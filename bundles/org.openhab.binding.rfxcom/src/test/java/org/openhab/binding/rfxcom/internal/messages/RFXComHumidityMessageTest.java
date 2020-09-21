@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -32,16 +32,16 @@ public class RFXComHumidityMessageTest {
         String hexMessage = "085101027700360189";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComHumidityMessage msg = (RFXComHumidityMessage) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", RFXComHumidityMessage.SubType.HUM1, msg.subType);
-        assertEquals("Seq Number", 2, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", "30464", msg.getDeviceId());
-        assertEquals("Humidity", 54, msg.humidity);
-        assertEquals("Humidity status", RFXComHumidityMessage.HumidityStatus.COMFORT, msg.humidityStatus);
-        assertEquals("Signal Level", (byte) 8, msg.signalLevel);
-        assertEquals("Battery Level", (byte) 9, msg.batteryLevel);
+        assertEquals(RFXComHumidityMessage.SubType.HUM1, msg.subType, "SubType");
+        assertEquals(2, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals("30464", msg.getDeviceId(), "Sensor Id");
+        assertEquals(54, msg.humidity, "Humidity");
+        assertEquals(RFXComHumidityMessage.HumidityStatus.COMFORT, msg.humidityStatus, "Humidity status");
+        assertEquals((byte) 8, msg.signalLevel, "Signal Level");
+        assertEquals((byte) 9, msg.batteryLevel, "Battery Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

@@ -14,8 +14,8 @@ package org.openhab.binding.loxone.internal.controls;
 
 import java.math.BigDecimal;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.types.UnDefType;
 
@@ -31,7 +31,7 @@ public class LxControlUpDownAnalogTest extends LxControlTest {
     Double step;
     String format;
 
-    @Before
+    @BeforeEach
     public void setup() {
         min = 50.0;
         max = 150.0;

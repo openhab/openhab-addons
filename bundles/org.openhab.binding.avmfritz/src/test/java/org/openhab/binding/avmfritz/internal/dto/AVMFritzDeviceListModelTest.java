@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.avmfritz.internal.AVMFritzBindingConstants.*;
 
 import java.io.StringReader;
@@ -23,8 +23,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class AVMFritzDeviceListModelTest {
 
     private @NonNullByDefault({}) DeviceListModel devices;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         //@formatter:off
         String xml =

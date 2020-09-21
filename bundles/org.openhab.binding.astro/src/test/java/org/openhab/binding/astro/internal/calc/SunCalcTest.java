@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.astro.internal.calc;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.astro.internal.model.Sun;
 import org.openhab.binding.astro.internal.model.SunPhaseName;
 
@@ -51,7 +51,7 @@ public class SunCalcTest {
 
     private SunCalc sunCalc;
 
-    @Before
+    @BeforeEach
     public void init() {
         sunCalc = new SunCalc();
     }
@@ -178,7 +178,7 @@ public class SunCalcTest {
     }
 
     @Test
-    @Ignore
+    @Disabled
     public void testRangesForCoherenceBetweenNightEndAndAstroDawnStart() {
         Sun sun = sunCalc.getSunInfo(FEB_27_2019, AMSTERDAM_LATITUDE, AMSTERDAM_LONGITUDE, AMSTERDAM_ALTITUDE, false);
 

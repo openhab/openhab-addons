@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.innogysmarthome.internal;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.net.URI;
@@ -22,8 +22,8 @@ import java.util.concurrent.Future;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.StatusCode;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.innogysmarthome.internal.listener.EventListener;
 
 /**
@@ -36,7 +36,7 @@ public class InnogyWebSocketTest {
     private WebSocketClient webSocketClientMock;
     private Session sessionMock;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         sessionMock = mock(Session.class);
 

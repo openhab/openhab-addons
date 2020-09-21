@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Feature.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.yamahareceiver.internal.protocol.ReceivedMessageParseException;
 import org.openhab.binding.yamahareceiver.internal.state.DeviceInformationState;
 
@@ -50,8 +50,8 @@ public class DeviceInformationXMLTest extends AbstractXMLProtocolTest {
         subject.update();
 
         // assert
-        assertTrue("ZONE_B detected", state.features.contains(ZONE_B));
-        assertTrue("Zone_2 added", state.zones.contains(Zone_2));
+        assertTrue(state.features.contains(ZONE_B), "ZONE_B detected");
+        assertTrue(state.zones.contains(Zone_2), "Zone_2 added");
     }
 
     @Test
@@ -64,7 +64,7 @@ public class DeviceInformationXMLTest extends AbstractXMLProtocolTest {
         subject.update();
 
         // assert
-        assertTrue("Zones detected", state.zones.containsAll(Arrays.asList(Main_Zone, Zone_2, Zone_3)));
-        assertTrue("Features detected", state.features.containsAll(Arrays.asList(TUNER, BLUETOOTH)));
+        assertTrue(state.zones.containsAll(Arrays.asList(Main_Zone, Zone_2, Zone_3)), "Zones detected");
+        assertTrue(state.features.containsAll(Arrays.asList(TUNER, BLUETOOTH)), "Features detected");
     }
 }

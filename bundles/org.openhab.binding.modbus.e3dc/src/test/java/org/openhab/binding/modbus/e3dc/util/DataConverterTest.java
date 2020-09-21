@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.modbus.e3dc.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.util.BitSet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.DataConverter;
 
 /**
@@ -34,28 +34,28 @@ public class DataConverterTest {
         // Reg 69 value 65098 bytes [-2, 74]
         // Reg 70 value 65535 bytes [-1, -1]
         byte[] b = new byte[] { -2, -74, -1, -1 };
-        assertEquals("Negative Value", -330, DataConverter.getInt32Swap(ByteBuffer.wrap(b)));
+        assertEquals(-330, DataConverter.getInt32Swap(ByteBuffer.wrap(b)), "Negative Value");
     }
 
     @Test
     public void testBitset() {
         byte[] b = new byte[] { 3, 16 };
         BitSet s = BitSet.valueOf(b);
-        assertEquals("Bit0", true, s.get(0));
-        assertEquals("Bit1", true, s.get(1));
-        assertEquals("Bit2", false, s.get(2));
-        assertEquals("Bit3", false, s.get(3));
-        assertEquals("Bit4", false, s.get(4));
-        assertEquals("Bit5", false, s.get(5));
-        assertEquals("Bit6", false, s.get(6));
-        assertEquals("Bit7", false, s.get(7));
-        assertEquals("Bit8", false, s.get(8));
-        assertEquals("Bit9", false, s.get(9));
-        assertEquals("Bit10", false, s.get(10));
-        assertEquals("Bit11", false, s.get(11));
-        assertEquals("Bit12", true, s.get(12));
-        assertEquals("Bit13", false, s.get(13));
-        assertEquals("Bit14", false, s.get(14));
-        assertEquals("Bit15", false, s.get(15));
+        assertEquals(true, s.get(0), "Bit0");
+        assertEquals(true, s.get(1), "Bit1");
+        assertEquals(false, s.get(2), "Bit2");
+        assertEquals(false, s.get(3), "Bit3");
+        assertEquals(false, s.get(4), "Bit4");
+        assertEquals(false, s.get(5), "Bit5");
+        assertEquals(false, s.get(6), "Bit6");
+        assertEquals(false, s.get(7), "Bit7");
+        assertEquals(false, s.get(8), "Bit8");
+        assertEquals(false, s.get(9), "Bit9");
+        assertEquals(false, s.get(10), "Bit10");
+        assertEquals(false, s.get(11), "Bit11");
+        assertEquals(true, s.get(12), "Bit12");
+        assertEquals(false, s.get(13), "Bit13");
+        assertEquals(false, s.get(14), "Bit14");
+        assertEquals(false, s.get(15), "Bit15");
     }
 }

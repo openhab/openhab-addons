@@ -16,8 +16,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.StateOption;
@@ -30,7 +30,7 @@ import org.openhab.core.types.StateOption;
  */
 public class LxControlRadioTest2 extends LxControlRadioTest {
     @Override
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("1255054f-0355-af47-ffff403fb0c34b9e", "11d68cf4-0080-7697-ffff403fb0c34b9e",
                 "0fe650c2-0004-d446-ffff504f9410790f", "Sprinkler 2");

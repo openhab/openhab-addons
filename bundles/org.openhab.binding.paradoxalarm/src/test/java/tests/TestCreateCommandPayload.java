@@ -12,8 +12,8 @@
  */
 package tests;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.CommandPayload;
 import org.openhab.binding.paradoxalarm.internal.communication.messages.PartitionCommand;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
@@ -41,9 +41,9 @@ public class TestCreateCommandPayload {
         int payloadIndexOfByteToCheck = 6 + (partitionNumber - 1) / 2;
         byte byteValue = bytes[payloadIndexOfByteToCheck];
         if ((partitionNumber - 1) % 2 == 0) {
-            Assert.assertTrue(ParadoxUtil.getHighNibble(byteValue) == command.getCommand());
+            assertTrue(ParadoxUtil.getHighNibble(byteValue) == command.getCommand());
         } else {
-            Assert.assertTrue(ParadoxUtil.getLowNibble(byteValue) == command.getCommand());
+            assertTrue(ParadoxUtil.getLowNibble(byteValue) == command.getCommand());
         }
     }
 }

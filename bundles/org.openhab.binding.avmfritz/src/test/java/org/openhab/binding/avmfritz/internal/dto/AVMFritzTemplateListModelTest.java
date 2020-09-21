@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.avmfritz.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.StringReader;
 import java.util.Optional;
@@ -21,8 +21,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateListModel;
 import org.openhab.binding.avmfritz.internal.dto.templates.TemplateModel;
 import org.openhab.binding.avmfritz.internal.util.JAXBUtils;
@@ -41,7 +41,7 @@ public class AVMFritzTemplateListModelTest {
 
     private @NonNullByDefault({}) TemplateListModel templates;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         //@formatter:off
         String xml =

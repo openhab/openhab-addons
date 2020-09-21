@@ -13,8 +13,9 @@
 package org.openhab.binding.enigma2.internal;
 
 import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -22,8 +23,8 @@ import java.time.LocalDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * The {@link Enigma2ClientTest} class is responsible for testing {@link Enigma2Client}.
@@ -41,7 +42,7 @@ public class Enigma2ClientTest {
     @Nullable
     private Enigma2HttpClient enigma2HttpClient;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         enigma2HttpClient = mock(Enigma2HttpClient.class);
         enigma2Client = spy(new Enigma2Client("localhost:8080", "user", "password", 5));

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.hdpowerview;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.hdpowerview.internal.api.ActuatorClass.*;
 import static org.openhab.binding.hdpowerview.internal.api.CoordinateSystem.*;
 
@@ -28,7 +28,7 @@ import javax.ws.rs.client.ClientBuilder;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.api.CoordinateSystem;

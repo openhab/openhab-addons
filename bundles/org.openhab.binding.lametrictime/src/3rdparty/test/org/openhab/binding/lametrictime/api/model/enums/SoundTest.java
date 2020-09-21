@@ -15,32 +15,25 @@
  */
 package org.openhab.binding.lametrictime.api.model.enums;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
-import org.openhab.binding.lametrictime.api.model.enums.Sound;
+import org.junit.jupiter.api.Test;
 
-public class SoundTest
-{
+public class SoundTest {
     @Test
-    public void testConversion()
-    {
-        for (Sound value : Sound.values())
-        {
+    public void testConversion() {
+        for (Sound value : Sound.values()) {
             assertEquals(value, Sound.toEnum(value.toRaw()));
         }
     }
 
     @Test
-    public void testInvalidRawValue()
-    {
+    public void testInvalidRawValue() {
         assertNull(Sound.toEnum("invalid raw value"));
     }
 
     @Test
-    public void testNullRawValue()
-    {
+    public void testNullRawValue() {
         assertNull(Sound.toEnum(null));
     }
 }

@@ -14,8 +14,8 @@ package org.openhab.binding.loxone.internal.controls;
 
 import java.util.Collections;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -28,7 +28,7 @@ import org.openhab.core.library.types.StringType;
  */
 public class LxControlPushbuttonTest extends LxControlSwitchTest {
     @Override
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("0e3684cc-026e-28e0-ffff403fb0c34b9e", "0b734138-038c-035e-ffff403fb0c34b9e",
                 "0b734138-033e-02d8-ffff403fb0c34b9e", "Kitchen All Blinds Up");

@@ -12,7 +12,7 @@
  */
 package org.openhab.transform.map.internal;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -23,17 +23,21 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.osgi.framework.BundleContext;
 
 /**
  * @author Gaël L'hopital - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class MapTransformationServiceTest {
 
     private static final String SOURCE_CLOSED = "CLOSED";
@@ -47,8 +51,7 @@ public class MapTransformationServiceTest {
     private static final String CONFIG_FOLDER = BASE_FOLDER + File.separator + SRC_FOLDER;
     private static final String USED_FILENAME = CONFIG_FOLDER + File.separator + "transform/" + EXISTING_FILENAME_DE;
 
-    @Mock
-    private BundleContext bundleContext;
+    private @Mock BundleContext bundleContext;
 
     private TestableMapTransformationService processor;
 
@@ -74,16 +77,14 @@ public class MapTransformationServiceTest {
         }
     };
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
-        MockitoAnnotations.initMocks(this);
-
         processor = new TestableMapTransformationService();
         processor.activate(bundleContext);
         FileUtils.copyDirectory(new File(SRC_FOLDER), new File(CONFIG_FOLDER));
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         processor.deactivate();
         FileUtils.deleteDirectory(new File(CONFIG_FOLDER));
@@ -93,7 +94,7 @@ public class MapTransformationServiceTest {
     public void testTransformByMap() throws Exception {
         // Test that we find a translation in an existing file
         String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
-        Assert.assertEquals("zu", transformedResponse);
+        assertEquals("zu", transformedResponse);
 
         Properties properties = new Properties();
         try (FileReader reader = new FileReader(USED_FILENAME); FileWriter writer = new FileWriter(USED_FILENAME)) {
@@ -107,7 +108,7 @@ public class MapTransformationServiceTest {
                 @Override
                 public Void call() throws Exception {
                     final String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
-                    Assert.assertEquals("changevalue", transformedResponse);
+                    assertEquals("changevalue", transformedResponse);
                     return null;
                 }
             }, 10000, 100);
@@ -119,7 +120,7 @@ public class MapTransformationServiceTest {
                 @Override
                 public Void call() throws Exception {
                     final String transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_CLOSED);
-                    Assert.assertEquals("zu", transformedResponse);
+                    assertEquals("zu", transformedResponse);
                     return null;
                 }
             }, 10000, 100);
@@ -130,7 +131,7 @@ public class MapTransformationServiceTest {
         // Checks that an unknown input in an existing file give the expected
         // transformed response that shall be empty string (Issue #1107) if not found in the file
         transformedResponse = processor.transform(EXISTING_FILENAME_DE, SOURCE_UNKNOWN);
-        Assert.assertEquals("", transformedResponse);
+        assertEquals("", transformedResponse);
 
         // Test that an inexisting file raises correct exception as expected
         try {
@@ -144,19 +145,19 @@ public class MapTransformationServiceTest {
         transformedResponse = processor.transform(SHOULD_BE_LOCALIZED_FILENAME, SOURCE_CLOSED);
         // as we don't know the real locale at the moment the
         // test is run, we test that the string has actually been transformed
-        Assert.assertNotEquals(SOURCE_CLOSED, transformedResponse);
+        assertNotEquals(SOURCE_CLOSED, transformedResponse);
         transformedResponse = processor.transform(SHOULD_BE_LOCALIZED_FILENAME, SOURCE_CLOSED);
-        Assert.assertNotEquals(SOURCE_CLOSED, transformedResponse);
+        assertNotEquals(SOURCE_CLOSED, transformedResponse);
     }
 
     @Test
     public void testTransformByMapWithDefault() throws Exception {
         // Standard behaviour with no default value
         String transformedResponse = processor.transform(SHOULD_BE_LOCALIZED_FILENAME, "toBeDefaulted");
-        Assert.assertEquals("", transformedResponse);
+        assertEquals("", transformedResponse);
         // Modified behaviour with a file containing default value definition
         transformedResponse = processor.transform(DEFAULTED_FILENAME, "toBeDefaulted");
-        Assert.assertEquals("Default Value", transformedResponse);
+        assertEquals("Default Value", transformedResponse);
     }
 
     protected void waitForAssert(Callable<Void> assertion, int timeout, int sleepTime) throws Exception {

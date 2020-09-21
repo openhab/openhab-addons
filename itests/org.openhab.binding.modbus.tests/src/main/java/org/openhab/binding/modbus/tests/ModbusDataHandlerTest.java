@@ -13,7 +13,8 @@
 package org.openhab.binding.modbus.tests;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -30,6 +31,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.apache.commons.lang.StringUtils;
+import org.hamcrest.Matcher;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
+import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
+import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
+import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
@@ -55,16 +64,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.hamcrest.Matcher;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.modbus.handler.EndpointNotInitializedException;
-import org.openhab.binding.modbus.handler.ModbusPollerThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusDataThingHandler;
-import org.openhab.binding.modbus.internal.handler.ModbusTcpThingHandler;
 import org.openhab.io.transport.modbus.AsyncModbusFailure;
 import org.openhab.io.transport.modbus.AsyncModbusReadResult;
 import org.openhab.io.transport.modbus.AsyncModbusWriteResult;
@@ -89,7 +88,6 @@ import org.osgi.framework.InvalidSyntaxException;
 /**
  * @author Sami Salonen - Initial contribution
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
 
     private final class MultiplyTransformation implements TransformationService {
@@ -115,7 +113,7 @@ public class ModbusDataHandlerTest extends AbstractModbusOSGiTest {
     }
     private List<ModbusWriteRequestBlueprint> writeRequests = new ArrayList<>();
 
-    @After
+    @AfterEach
     public void tearDown() {
         writeRequests.clear();
     }

@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.upb.internal.message;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Marcus Better - Initial contribution

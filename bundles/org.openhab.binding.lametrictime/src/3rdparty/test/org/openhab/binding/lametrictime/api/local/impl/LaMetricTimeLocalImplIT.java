@@ -15,6 +15,8 @@
  */
 package org.openhab.binding.lametrictime.api.local.impl;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,9 +24,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Properties;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.lametrictime.api.local.ApplicationActionException;
 import org.openhab.binding.lametrictime.api.local.ApplicationActivationException;
 import org.openhab.binding.lametrictime.api.local.ApplicationNotFoundException;
@@ -62,14 +64,14 @@ import org.openhab.binding.lametrictime.api.test.TestUtil;
  * integration-test'.
  * </p>
  */
-@Ignore
+@Disabled
 public class LaMetricTimeLocalImplIT {
     private static final String PROP_HOST = "host";
     private static final String PROP_API_KEY = "apiKey";
 
     private static LaMetricTimeLocalImpl local;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws IOException {
         File file = TestUtil.getTestDataPath(LaMetricTimeLocalImplIT.class, "device.properties").toFile();
         if (!file.exists()) {
@@ -126,9 +128,9 @@ public class LaMetricTimeLocalImplIT {
         local.getNotifications();
     }
 
-    @Test(expected = NotificationNotFoundException.class)
-    public void testGetInvalidNotification() throws NotificationNotFoundException {
-        local.getNotification("invalid");
+    @Test
+    public void testGetInvalidNotification() {
+        assertThrows(NotificationNotFoundException.class, () -> local.getNotification("invalid"));
     }
 
     @Test
@@ -202,9 +204,9 @@ public class LaMetricTimeLocalImplIT {
         local.getApplication(CoreApps.weather().getPackageName());
     }
 
-    @Test(expected = ApplicationNotFoundException.class)
-    public void testGetInvalidApplication() throws ApplicationNotFoundException {
-        local.getApplication("invalid");
+    @Test
+    public void testGetInvalidApplication() {
+        assertThrows(ApplicationNotFoundException.class, () -> local.getApplication("invalid"));
     }
 
     @Test

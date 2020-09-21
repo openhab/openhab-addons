@@ -28,16 +28,11 @@ import org.openhab.binding.yamahareceiver.internal.state.ZoneControlStateListene
  */
 public abstract class AbstractZoneControlXMLTest extends AbstractXMLProtocolTest {
 
-    @Mock
-    protected YamahaZoneConfig zoneConfig;
-
-    @Mock
-    protected ZoneControlStateListener zoneControlStateListener;
-
     protected DeviceInformationState deviceInformationState;
 
-    @Mock
-    protected InputConverter inputConverter;
+    protected @Mock InputConverter inputConverter;
+    protected @Mock ZoneControlStateListener zoneControlStateListener;
+    protected @Mock YamahaZoneConfig zoneConfig;
 
     @Override
     protected void onSetUp() throws Exception {

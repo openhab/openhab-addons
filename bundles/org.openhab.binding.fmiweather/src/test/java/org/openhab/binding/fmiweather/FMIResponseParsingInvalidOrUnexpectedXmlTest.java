@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.fmiweather;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.nio.file.Path;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.exception.FMIResponseException;
 import org.xml.sax.SAXParseException;
 
@@ -30,13 +31,15 @@ public class FMIResponseParsingInvalidOrUnexpectedXmlTest extends AbstractFMIRes
 
     private Path observations1 = getTestResource("observations_single_place.xml");
 
-    @Test(expected = SAXParseException.class)
-    public void testInvalidXml() throws IOException, Throwable {
-        parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<<"));
+    @Test
+    public void testInvalidXml() {
+        assertThrows(SAXParseException.class,
+                () -> parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<<")));
     }
 
-    @Test(expected = FMIResponseException.class)
-    public void testUnexpectedXml() throws IOException, Throwable {
-        parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<foo>4</foo>"));
+    @Test
+    public void testUnexpectedXml() {
+        assertThrows(FMIResponseException.class,
+                () -> parseMultiPointCoverageXml(readTestResourceUtf8(observations1).replace("276.0", "<foo>4</foo>")));
     }
 }

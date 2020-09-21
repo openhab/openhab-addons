@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.max.internal.message;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.max.internal.device.DeviceConfiguration;
 import org.openhab.binding.max.internal.device.DeviceType;
 
@@ -35,7 +35,7 @@ public class ConfigurationTest {
     private final CMessage message = new CMessage(RAW_DATA);
     private @Nullable DeviceConfiguration configuration;
 
-    @Before
+    @BeforeEach
     public void before() {
         configuration = DeviceConfiguration.create(message);
     }

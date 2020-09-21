@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.tplinksmarthome.internal.ChannelUIDConstants.*;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.UnDefType;
 
@@ -38,29 +38,29 @@ public class SwitchDeviceTest extends DeviceTestBase<SwitchDevice> {
     public void testHandleCommandSwitch() throws IOException {
         assertInput("plug_set_relay_state_on");
         setSocketReturnAssert("plug_set_relay_state_on");
-        assertTrue("Switch channel should be handled", device.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON));
+        assertTrue(device.handleCommand(CHANNEL_UID_SWITCH, OnOffType.ON), "Switch channel should be handled");
     }
 
     @Test
     public void testHandleCommandLed() throws IOException {
         assertInput("plug_set_led_on");
         setSocketReturnAssert("plug_set_led_on");
-        assertTrue("Led channel should be handled", device.handleCommand(CHANNEL_UID_LED, OnOffType.ON));
+        assertTrue(device.handleCommand(CHANNEL_UID_LED, OnOffType.ON), "Led channel should be handled");
     }
 
     @Test
     public void testUpdateChannelSwitch() {
-        assertSame("Switch should be on", OnOffType.ON, device.updateChannel(CHANNEL_UID_SWITCH, deviceState));
+        assertSame(OnOffType.ON, device.updateChannel(CHANNEL_UID_SWITCH, deviceState), "Switch should be on");
     }
 
     @Test
     public void testUpdateChannelLed() {
-        assertSame("Led should be on", OnOffType.ON, device.updateChannel(CHANNEL_UID_LED, deviceState));
+        assertSame(OnOffType.ON, device.updateChannel(CHANNEL_UID_LED, deviceState), "Led should be on");
     }
 
     @Test
     public void testUpdateChannelOther() {
-        assertSame("Unknown channel should return UNDEF", UnDefType.UNDEF,
-                device.updateChannel(CHANNEL_UID_OTHER, deviceState));
+        assertSame(UnDefType.UNDEF, device.updateChannel(CHANNEL_UID_OTHER, deviceState),
+                "Unknown channel should return UNDEF");
     }
 }

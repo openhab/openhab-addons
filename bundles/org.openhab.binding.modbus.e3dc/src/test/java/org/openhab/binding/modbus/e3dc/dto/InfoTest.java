@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.modbus.e3dc.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.dto.InfoBlock;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
@@ -31,7 +31,7 @@ import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 public class InfoTest {
     private Parser mc;
 
-    @Before
+    @BeforeEach
     public void setup() {
         byte[] infoBlock = new byte[] { -29, -36, 1, 2, 0, -120, 69, 51, 47, 68, 67, 32, 71, 109, 98, 72, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 83, 49, 48, 32, 69, 32, 65, 73, 79, 0, 0, 0, 0, 0, 0,

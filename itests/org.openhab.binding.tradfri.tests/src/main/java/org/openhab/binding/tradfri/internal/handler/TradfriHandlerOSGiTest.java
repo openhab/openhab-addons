@@ -13,26 +13,26 @@
 package org.openhab.binding.tradfri.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ManagedThingProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingProvider;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Tests cases for {@link TradfriGatewayHandler}.
@@ -46,7 +46,7 @@ public class TradfriHandlerOSGiTest extends JavaOSGiTest {
     private Bridge bridge;
     private Thing thing;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         registerService(volatileStorageService);
         managedThingProvider = getService(ThingProvider.class, ManagedThingProvider.class);
@@ -64,7 +64,7 @@ public class TradfriHandlerOSGiTest extends JavaOSGiTest {
                 .withConfiguration(new Configuration(properties)).build();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         managedThingProvider.remove(thing.getUID());
         managedThingProvider.remove(bridge.getUID());

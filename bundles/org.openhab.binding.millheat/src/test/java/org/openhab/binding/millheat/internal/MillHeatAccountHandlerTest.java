@@ -13,6 +13,7 @@
 package org.openhab.binding.millheat.internal;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
@@ -20,13 +21,14 @@ import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.millheat.internal.config.MillheatAccountConfiguration;
 import org.openhab.binding.millheat.internal.handler.MillheatAccountHandler;
 import org.openhab.binding.millheat.internal.model.MillheatModel;
@@ -35,38 +37,45 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.framework.BundleContext;
 
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 
 /**
  * @author Arne Seime - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class MillHeatAccountHandlerTest {
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(WireMockConfiguration.options().dynamicPort());
 
-    @Mock
-    private Bridge millheatAccountMock;
+    private WireMockServer wireMockServer;
 
     private HttpClient httpClient;
-    @Mock
-    private Configuration configuration;
 
-    @Mock
-    private BundleContext bundleContext;
+    private @Mock BundleContext bundleContext;
+    private @Mock Configuration configuration;
+    private @Mock Bridge millheatAccountMock;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().dynamicPort());
+        wireMockServer.start();
+
+        int port = wireMockServer.port();
+        WireMock.configureFor("localhost", port);
+
         httpClient = new HttpClient();
         httpClient.start();
-        MillheatAccountHandler.authEndpoint = "http://localhost:" + wireMockRule.port() + "/zc-account/v1/";
-        MillheatAccountHandler.serviceEndpoint = "http://localhost:" + wireMockRule.port() + "/millService/v1/";
+
+        MillheatAccountHandler.authEndpoint = "http://localhost:" + port + "/zc-account/v1/";
+        MillheatAccountHandler.serviceEndpoint = "http://localhost:" + port + "/millService/v1/";
     }
 
-    @After
+    @AfterEach
     public void shutdown() throws Exception {
         httpClient.stop();
+        wireMockServer.stop();
+        wireMockServer.resetAll();
     }
 
     @Test
@@ -99,7 +108,7 @@ public class MillHeatAccountHandlerTest {
         final MillheatAccountHandler subject = new MillheatAccountHandler(millheatAccountMock, httpClient,
                 bundleContext);
         MillheatModel model = subject.refreshModel();
-        Assert.assertEquals(1, model.getHomes().size());
+        assertEquals(1, model.getHomes().size());
 
         verify(postRequestedFor(urlMatching("/millService/v1/selectHomeList")));
         verify(postRequestedFor(urlMatching("/millService/v1/selectRoombyHome")));

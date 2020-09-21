@@ -12,12 +12,10 @@
  */
 package org.openhab.binding.bsblan.internal.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterQueryResponseDTO;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterSetRequestDTO;

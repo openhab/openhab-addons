@@ -13,6 +13,8 @@
 package org.openhab.binding.bluetooth.discovery.internal;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,16 +27,17 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
@@ -59,8 +62,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Connor Petty - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
-@RunWith(MockitoJUnitRunner.class)
 public class BluetoothDiscoveryServiceTest {
 
     private static final int TIMEOUT = 2000;
@@ -69,13 +73,10 @@ public class BluetoothDiscoveryServiceTest {
 
     private @NonNullByDefault({}) BluetoothDiscoveryService discoveryService;
 
-    @Spy
-    private @NonNullByDefault({}) MockDiscoveryParticipant participant1 = new MockDiscoveryParticipant();
+    private @Spy @NonNullByDefault({}) MockDiscoveryParticipant participant1 = new MockDiscoveryParticipant();
+    private @Mock @NonNullByDefault({}) DiscoveryListener mockDiscoveryListener;
 
-    @Mock
-    private @NonNullByDefault({}) DiscoveryListener mockDiscoveryListener;
-
-    @Before
+    @BeforeEach
     public void setup() {
         discoveryService = new BluetoothDiscoveryService();
         discoveryService.addDiscoveryListener(mockDiscoveryListener);
@@ -185,12 +186,12 @@ public class BluetoothDiscoveryServiceTest {
         DiscoveryResult result1 = results.get(0);
         DiscoveryResult result2 = results.get(1);
 
-        Assert.assertNotEquals(result1.getBridgeUID(), result2.getBridgeUID());
-        Assert.assertThat(result1.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(mockAdapter2.getUID())));
-        Assert.assertThat(result2.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(mockAdapter2.getUID())));
-        Assert.assertEquals(result1.getThingUID().getId(), result2.getThingUID().getId());
-        Assert.assertEquals(result1.getLabel(), result2.getLabel());
-        Assert.assertEquals(result1.getRepresentationProperty(), result2.getRepresentationProperty());
+        assertNotEquals(result1.getBridgeUID(), result2.getBridgeUID());
+        assertThat(result1.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(mockAdapter2.getUID())));
+        assertThat(result2.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(mockAdapter2.getUID())));
+        assertEquals(result1.getThingUID().getId(), result2.getThingUID().getId());
+        assertEquals(result1.getLabel(), result2.getLabel());
+        assertEquals(result1.getRepresentationProperty(), result2.getRepresentationProperty());
     }
 
     @Test
@@ -308,7 +309,7 @@ public class BluetoothDiscoveryServiceTest {
 
         DiscoveryResult result = resultCaptor.getValue();
 
-        Assert.assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
+        assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
 
         Mockito.verify(mockDiscoveryListener, Mockito.timeout(TIMEOUT).times(1)).thingRemoved(
                 ArgumentMatchers.same(discoveryService),
@@ -330,7 +331,7 @@ public class BluetoothDiscoveryServiceTest {
 
         DiscoveryResult result = resultCaptor.getValue();
 
-        Assert.assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
+        assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
 
         discoveryService.deviceRemoved(device);
 
@@ -382,7 +383,7 @@ public class BluetoothDiscoveryServiceTest {
 
         DiscoveryResult result = resultCaptor.getValue();
 
-        Assert.assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
+        assertEquals(BluetoothBindingConstants.THING_TYPE_BEACON, result.getThingTypeUID());
 
         device.setManufacturerId(10);
 
@@ -450,7 +451,7 @@ public class BluetoothDiscoveryServiceTest {
                 ArgumentMatchers.same(discoveryService),
                 ArgumentMatchers.argThat(arg -> arg.getThingTypeUID().equals(participant2.typeUID)));
 
-        Assert.assertEquals(1, callCount.get());
+        assertEquals(1, callCount.get());
     }
 
     @Test
@@ -471,12 +472,12 @@ public class BluetoothDiscoveryServiceTest {
         DiscoveryResult result1 = results.get(0);
         DiscoveryResult result2 = results.get(1);
 
-        Assert.assertNotEquals(result1.getBridgeUID(), result2.getBridgeUID());
-        Assert.assertThat(result1.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(roamingAdapter.getUID())));
-        Assert.assertThat(result2.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(roamingAdapter.getUID())));
-        Assert.assertEquals(result1.getThingUID().getId(), result2.getThingUID().getId());
-        Assert.assertEquals(result1.getLabel(), result2.getLabel());
-        Assert.assertEquals(result1.getRepresentationProperty(), result2.getRepresentationProperty());
+        assertNotEquals(result1.getBridgeUID(), result2.getBridgeUID());
+        assertThat(result1.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(roamingAdapter.getUID())));
+        assertThat(result2.getBridgeUID(), anyOf(is(mockAdapter1.getUID()), is(roamingAdapter.getUID())));
+        assertEquals(result1.getThingUID().getId(), result2.getThingUID().getId());
+        assertEquals(result1.getLabel(), result2.getLabel());
+        assertEquals(result1.getRepresentationProperty(), result2.getRepresentationProperty());
     }
 
     @Test
@@ -499,12 +500,12 @@ public class BluetoothDiscoveryServiceTest {
         ThingUID result1 = results.get(0);
         ThingUID result2 = results.get(1);
 
-        Assert.assertNotEquals(result1.getBridgeIds(), result2.getBridgeIds());
-        Assert.assertThat(result1.getBridgeIds().get(0),
+        assertNotEquals(result1.getBridgeIds(), result2.getBridgeIds());
+        assertThat(result1.getBridgeIds().get(0),
                 anyOf(is(mockAdapter1.getUID().getId()), is(roamingAdapter.getUID().getId())));
-        Assert.assertThat(result2.getBridgeIds().get(0),
+        assertThat(result2.getBridgeIds().get(0),
                 anyOf(is(mockAdapter1.getUID().getId()), is(roamingAdapter.getUID().getId())));
-        Assert.assertEquals(result1.getId(), result2.getId());
+        assertEquals(result1.getId(), result2.getId());
     }
 
     private class RoamingDiscoveryParticipant implements BluetoothDiscoveryParticipant {
@@ -555,7 +556,8 @@ public class BluetoothDiscoveryServiceTest {
 
         @Override
         public @NonNull ThingUID getThingUID(BluetoothDiscoveryDevice device) {
-            String id = device.getName() != null ? device.getName() : RandomStringUtils.randomAlphabetic(6);
+            String deviceName = device.getName();
+            String id = deviceName != null ? deviceName : RandomStringUtils.randomAlphabetic(6);
             return new ThingUID(typeUID, device.getAdapter().getUID(), id);
         }
     }

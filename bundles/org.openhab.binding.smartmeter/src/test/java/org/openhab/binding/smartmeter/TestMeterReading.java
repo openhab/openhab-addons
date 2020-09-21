@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import javax.measure.Quantity;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.binding.smartmeter.connectors.ConnectorBase;

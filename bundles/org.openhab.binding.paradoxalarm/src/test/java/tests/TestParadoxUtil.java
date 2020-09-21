@@ -12,8 +12,8 @@
  */
 package tests;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.paradoxalarm.internal.util.ParadoxUtil;
 
 /**
@@ -31,7 +31,7 @@ public class TestParadoxUtil {
 
         final byte[] EXPECTED_RESULT = { 0x0A, 0x50, 0x08, 0x00, 0x00, 0x01, 0x00, 0x00, 0x59, (byte) 0xEE, (byte) 0xEE,
                 (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE, (byte) 0xEE };
-        Assert.assertArrayEquals(EXPECTED_RESULT, extendedArray); //
+        assertArrayEquals(EXPECTED_RESULT, extendedArray); //
     }
 
     @Test
@@ -42,6 +42,6 @@ public class TestParadoxUtil {
         byte[] mergedArrays = ParadoxUtil.mergeByteArrays(ARR1, ARR2, ARR3);
 
         final byte[] EXPECTED_RESULT = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09 };
-        Assert.assertArrayEquals(EXPECTED_RESULT, mergedArrays);
+        assertArrayEquals(EXPECTED_RESULT, mergedArrays);
     }
 }

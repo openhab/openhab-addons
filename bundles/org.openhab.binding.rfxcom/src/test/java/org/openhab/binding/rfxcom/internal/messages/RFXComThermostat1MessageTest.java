@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
 
@@ -32,17 +32,17 @@ public class RFXComThermostat1MessageTest {
         String hexMessage = "0940001B6B1816150270";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComThermostat1Message msg = (RFXComThermostat1Message) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", RFXComThermostat1Message.SubType.DIGIMAX, msg.subType);
-        assertEquals("Seq Number", 27, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", "27416", msg.getDeviceId());
-        assertEquals("Temperature", 22, msg.temperature);
-        assertEquals("Set point", 21, msg.set);
-        assertEquals("Mode", RFXComThermostat1Message.Mode.HEATING, msg.mode);
-        assertEquals("Status", RFXComThermostat1Message.Status.NO_DEMAND, msg.status);
-        assertEquals("Signal Level", (byte) 7, msg.signalLevel);
+        assertEquals(RFXComThermostat1Message.SubType.DIGIMAX, msg.subType, "SubType");
+        assertEquals(27, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals("27416", msg.getDeviceId(), "Sensor Id");
+        assertEquals(22, msg.temperature, "Temperature");
+        assertEquals(21, msg.set, "Set point");
+        assertEquals(RFXComThermostat1Message.Mode.HEATING, msg.mode, "Mode");
+        assertEquals(RFXComThermostat1Message.Status.NO_DEMAND, msg.status, "Status");
+        assertEquals((byte) 7, msg.signalLevel, "Signal Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

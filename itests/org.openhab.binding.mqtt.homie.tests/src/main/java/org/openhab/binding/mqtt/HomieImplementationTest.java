@@ -13,10 +13,11 @@
 package org.openhab.binding.mqtt;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
@@ -31,17 +32,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.types.UnDefType;
-import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
-import org.openhab.core.io.transport.mqtt.MqttConnectionState;
-import org.openhab.core.io.transport.mqtt.MqttService;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.mqtt.generic.ChannelState;
@@ -58,6 +51,14 @@ import org.openhab.binding.mqtt.homie.internal.homie300.Property;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataTypeEnum;
 import org.openhab.binding.mqtt.homie.internal.homie300.PropertyHelper;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
+import org.openhab.core.io.transport.mqtt.MqttConnectionState;
+import org.openhab.core.io.transport.mqtt.MqttService;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.types.UnDefType;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homie device tree.
@@ -74,13 +75,13 @@ public class HomieImplementationTest extends JavaOSGiTest {
     private MqttBrokerConnection connection;
     private int registeredTopics = 100;
 
+    private AutoCloseable mocksCloseable;
+
     // The handler is not tested here, so just mock the callback
-    @Mock
-    DeviceCallback callback;
+    private @Mock DeviceCallback callback;
 
     // A handler mock is required to verify that channel value changes have been received
-    @Mock
-    HomieThingHandler handler;
+    private @Mock HomieThingHandler handler;
 
     private ScheduledExecutorService scheduler;
 
@@ -93,10 +94,10 @@ public class HomieImplementationTest extends JavaOSGiTest {
 
     private String propertyTestTopic;
 
-    @Before
-    public void setUp() throws InterruptedException, ExecutionException, TimeoutException {
+    @BeforeEach
+    public void beforeEach() throws Exception {
         registerVolatileStorageService();
-        initMocks(this);
+        mocksCloseable = openMocks(this);
         mqttService = getService(MqttService.class);
 
         embeddedConnection = new EmbeddedBrokerTools().waitForConnection(mqttService);
@@ -152,13 +153,14 @@ public class HomieImplementationTest extends JavaOSGiTest {
         scheduler = new ScheduledThreadPoolExecutor(6);
     }
 
-    @After
-    public void tearDown() throws InterruptedException, ExecutionException, TimeoutException {
+    @AfterEach
+    public void afterEach() throws Exception {
         if (connection != null) {
             connection.removeConnectionObserver(failIfChange);
             connection.stop().get(500, TimeUnit.MILLISECONDS);
         }
         scheduler.shutdownNow();
+        mocksCloseable.close();
     }
 
     @Test
@@ -167,8 +169,8 @@ public class HomieImplementationTest extends JavaOSGiTest {
         CountDownLatch c = new CountDownLatch(registeredTopics - 4);
         connection.subscribe(DEVICE_TOPIC + "/testnode/#", (topic, payload) -> c.countDown()).get(5000,
                 TimeUnit.MILLISECONDS);
-        assertTrue("Connection " + connection.getClientId() + " not retrieving all topics ",
-                c.await(5000, TimeUnit.MILLISECONDS));
+        assertTrue(c.await(5000, TimeUnit.MILLISECONDS),
+                "Connection " + connection.getClientId() + " not retrieving all topics ");
     }
 
     @Test
@@ -311,11 +313,8 @@ public class HomieImplementationTest extends JavaOSGiTest {
         property.getChannelState().publishValue(OnOffType.ON).get();
         // No value is expected to be retained on this MQTT topic
         waitForAssert(() -> {
-            try {
-                WaitForTopicValue w = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
-                assertNull(w.waitForTopicValue(50));
-            } catch (InterruptedException | ExecutionException e) {
-            }
+            WaitForTopicValue w = new WaitForTopicValue(embeddedConnection, propertyTestTopic + "/set");
+            assertNull(w.waitForTopicValue(50));
         }, 500, 100);
     }
 }

@@ -13,11 +13,10 @@
 package org.openhab.binding.onewire.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
 import java.util.HashMap;
@@ -25,13 +24,14 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnection;
 import org.openhab.binding.onewire.internal.owserver.OwserverConnectionState;
@@ -49,6 +49,7 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 @NonNullByDefault
 public class OwserverBridgeHandlerTest extends JavaTest {
 
@@ -56,23 +57,16 @@ public class OwserverBridgeHandlerTest extends JavaTest {
     private static final int TEST_PORT = 4711;
     Map<String, Object> bridgeProperties = new HashMap<>();
 
-    @Mock
-    @NonNullByDefault({})
-    private OwserverConnection owserverConnection;
-
-    @Mock
-    @NonNullByDefault({})
-    private ThingHandlerCallback thingHandlerCallback;
+    private @Mock @NonNullByDefault({}) OwserverConnection owserverConnection;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback thingHandlerCallback;
 
     private @Nullable OwserverBridgeHandler bridgeHandler;
     private @Nullable Bridge bridge;
 
-    @Before
+    @BeforeEach
     public void setup() {
         bridgeProperties.put(CONFIG_ADDRESS, TEST_HOST);
         bridgeProperties.put(CONFIG_PORT, TEST_PORT);
-
-        initMocks(this);
 
         bridge = BridgeBuilder.create(THING_TYPE_OWSERVER, "owserver").withLabel("owserver")
                 .withConfiguration(new Configuration(bridgeProperties)).build();
@@ -85,7 +79,7 @@ public class OwserverBridgeHandlerTest extends JavaTest {
         final Bridge bridge = this.bridge;
 
         if (bridge == null) {
-            Assert.fail("bridge is null");
+            fail("bridge is null");
             return;
         }
 
@@ -95,7 +89,7 @@ public class OwserverBridgeHandlerTest extends JavaTest {
         this.bridgeHandler = bridgeHandler;
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         final OwserverBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler != null) {
@@ -107,7 +101,7 @@ public class OwserverBridgeHandlerTest extends JavaTest {
     public void testInitializationStartsConnectionWithOptions() {
         final OwserverBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
-            Assert.fail("bridgeHandler is null");
+            fail("bridgeHandler is null");
             return;
         }
 
@@ -123,7 +117,7 @@ public class OwserverBridgeHandlerTest extends JavaTest {
     public void testInitializationReportsRefreshableOnSuccessfullConnection() {
         final OwserverBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
-            Assert.fail("bridgeHandler is null");
+            fail("bridgeHandler is null");
             return;
         }
 
@@ -148,7 +142,7 @@ public class OwserverBridgeHandlerTest extends JavaTest {
     public void testInitializationReportsNotRefreshableOnFailedConnection() {
         final OwserverBridgeHandler bridgeHandler = this.bridgeHandler;
         if (bridgeHandler == null) {
-            Assert.fail("bridgeHandler is null");
+            fail("bridgeHandler is null");
             return;
         }
 

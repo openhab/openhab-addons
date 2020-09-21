@@ -15,69 +15,45 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.FileReader;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.sleepiq.api.impl.GsonGenerator;
-import org.openhab.binding.sleepiq.api.model.Sleeper;
 import org.openhab.binding.sleepiq.api.test.AbstractTest;
 
 import com.google.gson.Gson;
 
-public class SleeperTest extends AbstractTest
-{
+public class SleeperTest extends AbstractTest {
     private static Gson gson;
 
-    @BeforeClass
-    public static void setUpBeforeClass()
-    {
+    @BeforeAll
+    public static void setUpBeforeClass() {
         gson = GsonGenerator.create(true);
     }
 
     @Test
-    public void testSerializeAllFields() throws Exception
-    {
-        Sleeper sleeper = new Sleeper().withAccountId("-5555555555555555555")
-                                       .withAccountOwner(true)
-                                       .withActive(true)
-                                       .withAvatar("")
-                                       .withBedId("-9999999999999999999")
-                                       .withBirthMonth(6)
-                                       .withBirthYear("1970")
-                                       .withChild(false)
-                                       .withDuration("")
-                                       .withEmail("alice@domain.com")
-                                       .withEmailValidated(true)
-                                       .withFirstName("Alice")
-                                       .withHeight(64)
-                                       .withLastLogin("2017-02-17 20:19:36 CST")
-                                       .withLicenseVersion(6L)
-                                       .withMale(false)
-                                       .withSide(1)
-                                       .withSleeperId("-1111111111111111111")
-                                       .withSleepGoal(450)
-                                       .withTimezone("US/Pacific")
-                                       .withUsername("alice@domain.com")
-                                       .withWeight(110)
-                                       .withZipCode("90210");
+    public void testSerializeAllFields() throws Exception {
+        Sleeper sleeper = new Sleeper().withAccountId("-5555555555555555555").withAccountOwner(true).withActive(true)
+                .withAvatar("").withBedId("-9999999999999999999").withBirthMonth(6).withBirthYear("1970")
+                .withChild(false).withDuration("").withEmail("alice@domain.com").withEmailValidated(true)
+                .withFirstName("Alice").withHeight(64).withLastLogin("2017-02-17 20:19:36 CST").withLicenseVersion(6L)
+                .withMale(false).withSide(1).withSleeperId("-1111111111111111111").withSleepGoal(450)
+                .withTimezone("US/Pacific").withUsername("alice@domain.com").withWeight(110).withZipCode("90210");
         assertEquals(readJson("sleeper.json"), gson.toJson(sleeper));
     }
 
     @Test
-    public void testSerializeLastLoginNull() throws Exception
-    {
+    public void testSerializeLastLoginNull() throws Exception {
         Sleeper sleeper = new Sleeper().withLastLogin("null");
         assertEquals(readJson("sleeper-lastlogin-null.json"), gson.toJson(sleeper));
     }
 
     @Test
-    public void testDeserializeAllFields() throws Exception
-    {
-        try (FileReader reader = new FileReader(getTestDataFile("sleeper.json")))
-        {
+    public void testDeserializeAllFields() throws Exception {
+        try (FileReader reader = new FileReader(getTestDataFile("sleeper.json"))) {
             Sleeper sleeper = gson.fromJson(reader, Sleeper.class);
             assertEquals("-5555555555555555555", sleeper.getAccountId());
             assertEquals(true, sleeper.isAccountOwner());
@@ -106,10 +82,8 @@ public class SleeperTest extends AbstractTest
     }
 
     @Test
-    public void testDeserializeLastLoginNull() throws Exception
-    {
-        try (FileReader reader = new FileReader(getTestDataFile("sleeper-lastlogin-null.json")))
-        {
+    public void testDeserializeLastLoginNull() throws Exception {
+        try (FileReader reader = new FileReader(getTestDataFile("sleeper-lastlogin-null.json"))) {
             Sleeper sleeper = gson.fromJson(reader, Sleeper.class);
             assertEquals("null", sleeper.getLastLogin());
         }

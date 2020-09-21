@@ -13,16 +13,16 @@
 package org.openhab.binding.darksky.internal.utils;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.ConfigConstants;
 
 /**
@@ -45,18 +45,18 @@ public class ByteArrayFileCacheTest {
 
     private ByteArrayFileCache subject;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         subject = new ByteArrayFileCache(SERVICE_PID);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         // delete all files
         subject.clear();
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanUp() {
         // delete all folders
         SERVICE_CACHE_FOLDER.delete();

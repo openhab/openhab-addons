@@ -13,8 +13,8 @@
 package org.openhab.binding.freebox.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -27,6 +27,6 @@ public class FreeboxApiManagerTest {
     public void hmacSha1Test() throws Exception {
         String expected = "25dad1bb5604321f12b755cc9d755d1480cf7989";
         String actual = FreeboxApiManager.hmacSha1("Token1234", "Challenge");
-        Assert.assertEquals(expected, actual);
+        assertEquals(expected, actual);
     }
 }

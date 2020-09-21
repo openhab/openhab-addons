@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.netatmo.internal.discovery;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -21,16 +21,18 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
 
 import io.swagger.client.model.NAMain;
 import io.swagger.client.model.NAStationDataBody;
@@ -39,13 +41,14 @@ import io.swagger.client.model.NAStationModule;
 /**
  * @author Sven Strohschein - Initial contribution
  */
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class NetatmoModuleDiscoveryServiceTest {
 
     private NetatmoModuleDiscoveryServiceAccessible service;
     private NetatmoBridgeHandler bridgeHandlerSpy;
 
-    @Before
+    @BeforeEach
     public void before() {
         Bridge bridgeMock = mock(Bridge.class);
         when(bridgeMock.getUID()).thenReturn(new ThingUID("netatmo", "bridge"));

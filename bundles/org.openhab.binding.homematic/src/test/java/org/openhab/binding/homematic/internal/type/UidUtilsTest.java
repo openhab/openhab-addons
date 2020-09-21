@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.openhab.binding.homematic.test.util.BridgeHelper.createHomematicBridge;
 import static org.openhab.binding.homematic.test.util.DimmerHelper.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.model.HmChannel;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.binding.homematic.internal.model.HmDatapointInfo;

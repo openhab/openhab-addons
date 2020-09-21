@@ -13,22 +13,24 @@
 package org.openhab.binding.tradfri.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 
 import javax.jmdns.ServiceInfo;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultFlag;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.test.java.JavaOSGiTest;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
 
 /**
  * Tests for {@link TradfriDiscoveryParticipant}.
@@ -39,15 +41,15 @@ public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
 
     private MDNSDiscoveryParticipant discoveryParticipant;
 
-    @Mock
-    private ServiceInfo tradfriGateway;
+    private AutoCloseable mocksCloseable;
 
-    @Mock
-    private ServiceInfo otherDevice;
+    private @Mock ServiceInfo tradfriGateway;
+    private @Mock ServiceInfo otherDevice;
 
-    @Before
-    public void setUp() {
-        initMocks(this);
+    @BeforeEach
+    public void beforeEach() {
+        mocksCloseable = openMocks(this);
+
         discoveryParticipant = getService(MDNSDiscoveryParticipant.class, TradfriDiscoveryParticipant.class);
 
         when(tradfriGateway.getType()).thenReturn("_coap._udp.local.");
@@ -61,6 +63,11 @@ public class TradfriDiscoveryParticipantOSGITest extends JavaOSGiTest {
         when(otherDevice.getHostAddresses()).thenReturn(new String[] { "192.168.0.5" });
         when(otherDevice.getPort()).thenReturn(1234);
         when(otherDevice.getPropertyString("version")).thenReturn("1.1");
+    }
+
+    @AfterEach
+    public void afterEach() throws Exception {
+        mocksCloseable.close();
     }
 
     @Test

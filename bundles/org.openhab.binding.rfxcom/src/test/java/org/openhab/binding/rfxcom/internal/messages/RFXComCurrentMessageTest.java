@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComCurrentMessage.SubType;
 import org.openhab.core.util.HexUtils;
@@ -34,18 +34,18 @@ public class RFXComCurrentMessageTest {
 
         final RFXComCurrentMessage msg = (RFXComCurrentMessage) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(message));
-        assertEquals("SubType", SubType.ELEC1, msg.subType);
-        assertEquals("Seq Number", 15, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", "34304", msg.getDeviceId());
-        assertEquals("Count", 4, msg.count);
-        assertEquals("Channel 1", 2.9d, msg.channel1Amps, 0.01);
-        assertEquals("Channel 2", 0d, msg.channel2Amps, 0.01);
-        assertEquals("Channel 3", 0d, msg.channel3Amps, 0.01);
-        assertEquals("Signal Level", 4, msg.signalLevel);
-        assertEquals("Battery Level", 9, msg.batteryLevel);
+        assertEquals(SubType.ELEC1, msg.subType, "SubType");
+        assertEquals(15, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals("34304", msg.getDeviceId(), "Sensor Id");
+        assertEquals(4, msg.count, "Count");
+        assertEquals(2.9d, msg.channel1Amps, 0.01, "Channel 1");
+        assertEquals(0d, msg.channel2Amps, 0.01, "Channel 2");
+        assertEquals(0d, msg.channel3Amps, 0.01, "Channel 3");
+        assertEquals(4, msg.signalLevel, "Signal Level");
+        assertEquals(9, msg.batteryLevel, "Battery Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", message, HexUtils.bytesToHex(decoded));
+        assertEquals(message, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

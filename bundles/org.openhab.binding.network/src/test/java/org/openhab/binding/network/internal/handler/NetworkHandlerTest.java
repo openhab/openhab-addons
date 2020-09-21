@@ -13,17 +13,20 @@
 package org.openhab.binding.network.internal.handler;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.network.internal.NetworkBindingConfiguration;
 import org.openhab.binding.network.internal.NetworkBindingConstants;
 import org.openhab.binding.network.internal.PresenceDetection;
@@ -45,17 +48,16 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class NetworkHandlerTest extends JavaTest {
     private ThingUID thingUID = new ThingUID("network", "ttype", "ping");
-    @Mock
-    private ThingHandlerCallback callback;
 
-    @Mock
-    private Thing thing;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Thing thing;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
         when(thing.getUID()).thenReturn(thingUID);
     }
 
@@ -91,7 +93,7 @@ public class NetworkHandlerTest extends JavaTest {
     public void tcpDeviceInitTests() {
         NetworkBindingConfiguration config = new NetworkBindingConfiguration();
         NetworkHandler handler = spy(new NetworkHandler(thing, true, config));
-        Assert.assertThat(handler.isTCPServiceDevice(), is(true));
+        assertThat(handler.isTCPServiceDevice(), is(true));
         handler.setCallback(callback);
         // Port is missing, should make the device OFFLINE
         when(thing.getConfiguration()).thenAnswer(a -> {
@@ -103,9 +105,8 @@ public class NetworkHandlerTest extends JavaTest {
         // Check that we are offline
         ArgumentCaptor<ThingStatusInfo> statusInfoCaptor = ArgumentCaptor.forClass(ThingStatusInfo.class);
         verify(callback).statusUpdated(eq(thing), statusInfoCaptor.capture());
-        Assert.assertThat(statusInfoCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
-        Assert.assertThat(statusInfoCaptor.getValue().getStatusDetail(),
-                is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
+        assertThat(statusInfoCaptor.getValue().getStatus(), is(equalTo(ThingStatus.OFFLINE)));
+        assertThat(statusInfoCaptor.getValue().getStatusDetail(), is(equalTo(ThingStatusDetail.CONFIGURATION_ERROR)));
     }
 
     @Test

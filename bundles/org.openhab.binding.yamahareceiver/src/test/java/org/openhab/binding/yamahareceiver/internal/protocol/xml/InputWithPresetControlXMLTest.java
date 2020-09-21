@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
@@ -20,7 +20,7 @@ import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingC
 
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -36,11 +36,8 @@ public class InputWithPresetControlXMLTest extends AbstractZoneControlXMLTest {
 
     private InputWithPresetControlXML subject;
 
-    @Mock
-    private PresetInfoStateListener presetInfoStateListener;
-
-    @Captor
-    private ArgumentCaptor<PresetInfoState> presetInfoStateArg;
+    private @Mock PresetInfoStateListener presetInfoStateListener;
+    private @Captor ArgumentCaptor<PresetInfoState> presetInfoStateArg;
 
     private void given(String model, String input, Consumer<ModelContext> setup) throws Exception {
         ctx.prepareForModel(model);

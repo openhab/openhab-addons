@@ -14,7 +14,7 @@ package org.openhab.binding.mqtt;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,10 +26,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -39,6 +38,8 @@ import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents;
 import org.openhab.binding.mqtt.homeassistant.internal.DiscoverComponents.ComponentDiscovered;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.test.java.JavaOSGiTest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -49,24 +50,19 @@ import com.google.gson.GsonBuilder;
  * @author David Graeff - Initial contribution
  */
 public class DiscoverComponentsTest extends JavaOSGiTest {
-    @Mock
-    MqttBrokerConnection connection;
 
-    @Mock
-    ComponentDiscovered discovered;
+    private AutoCloseable mocksCloseable;
 
-    @Mock
-    TransformationServiceProvider transformationServiceProvider;
+    private @Mock MqttBrokerConnection connection;
+    private @Mock ComponentDiscovered discovered;
+    private @Mock TransformationServiceProvider transformationServiceProvider;
+    private @Mock ChannelStateUpdateListener channelStateUpdateListener;
+    private @Mock AvailabilityTracker availabilityTracker;
 
-    @Mock
-    ChannelStateUpdateListener channelStateUpdateListener;
+    @BeforeEach
+    public void beforeEach() {
+        mocksCloseable = openMocks(this);
 
-    @Mock
-    AvailabilityTracker availabilityTracker;
-
-    @Before
-    public void setUp() {
-        initMocks(this);
         CompletableFuture<Void> voidFutureComplete = new CompletableFuture<>();
         voidFutureComplete.complete(null);
         doReturn(voidFutureComplete).when(connection).unsubscribeAll();
@@ -76,6 +72,11 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         doReturn(CompletableFuture.completedFuture(true)).when(connection).publish(any(), any(), anyInt(),
                 anyBoolean());
         doReturn(null).when(transformationServiceProvider).getTransformationService(any());
+    }
+
+    @AfterEach
+    public void afterEach() throws Exception {
+        mocksCloseable.close();
     }
 
     @Test

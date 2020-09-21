@@ -12,13 +12,11 @@
  */
 package org.openhab.binding.bsblan.internal.helper;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bsblan.internal.BsbLanBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bsblan.internal.api.dto.BsbLanApiParameterDTO;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;

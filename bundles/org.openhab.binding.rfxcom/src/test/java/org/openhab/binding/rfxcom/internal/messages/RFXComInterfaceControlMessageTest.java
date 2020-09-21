@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComInterfaceMessage.TransceiverType._433_92MHZ_TRANSCEIVER;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.config.RFXComBridgeConfiguration;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.util.HexUtils;
@@ -31,7 +31,7 @@ import org.openhab.core.util.HexUtils;
 public class RFXComInterfaceControlMessageTest {
     private RFXComBridgeConfiguration configuration = new RFXComBridgeConfiguration();
 
-    @Before
+    @BeforeEach
     public void resetConfig() {
         configuration.transmitPower = -18;
         configuration.enableUndecoded = false;

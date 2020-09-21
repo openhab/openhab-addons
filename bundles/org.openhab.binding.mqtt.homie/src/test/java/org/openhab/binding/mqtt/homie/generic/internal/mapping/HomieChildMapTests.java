@@ -13,18 +13,20 @@
 package org.openhab.binding.mqtt.homie.generic.internal.mapping;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants;
 import org.openhab.binding.mqtt.homie.internal.homie300.DeviceCallback;
@@ -36,6 +38,8 @@ import org.openhab.binding.mqtt.homie.internal.homie300.NodeAttributes;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class HomieChildMapTests {
     private @Mock DeviceCallback callback;
 
@@ -57,11 +61,6 @@ public class HomieChildMapTests {
 
     private void removedNode(Node node) {
         callback.nodeRemoved(node);
-    }
-
-    @Before
-    public void setUp() {
-        initMocks(this);
     }
 
     public static class AddedAction implements Function<Node, CompletableFuture<Void>> {

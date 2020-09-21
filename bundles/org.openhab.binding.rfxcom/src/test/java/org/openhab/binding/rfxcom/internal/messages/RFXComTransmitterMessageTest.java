@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Response.ACK;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.SubType.RESPONSE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.Response;
 import org.openhab.binding.rfxcom.internal.messages.RFXComTransmitterMessage.SubType;
@@ -33,13 +33,13 @@ public class RFXComTransmitterMessageTest {
     private void testMessage(String hexMsg, Response response, SubType subType, int seqNbr) throws RFXComException {
         final RFXComTransmitterMessage msg = (RFXComTransmitterMessage) RFXComMessageFactory
                 .createMessage(HexUtils.hexToBytes(hexMsg));
-        assertEquals("SubType", subType, msg.subType);
-        assertEquals("Response", response, msg.response);
-        assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
+        assertEquals(subType, msg.subType, "SubType");
+        assertEquals(response, msg.response, "Response");
+        assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 
     @Test

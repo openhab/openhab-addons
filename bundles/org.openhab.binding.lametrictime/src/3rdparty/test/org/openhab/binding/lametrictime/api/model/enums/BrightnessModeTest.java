@@ -15,32 +15,25 @@
  */
 package org.openhab.binding.lametrictime.api.model.enums;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
-import org.openhab.binding.lametrictime.api.model.enums.BrightnessMode;
+import org.junit.jupiter.api.Test;
 
-public class BrightnessModeTest
-{
+public class BrightnessModeTest {
     @Test
-    public void testConversion()
-    {
-        for (BrightnessMode value : BrightnessMode.values())
-        {
+    public void testConversion() {
+        for (BrightnessMode value : BrightnessMode.values()) {
             assertEquals(value, BrightnessMode.toEnum(value.toRaw()));
         }
     }
 
     @Test
-    public void testInvalidRawValue()
-    {
+    public void testInvalidRawValue() {
         assertNull(BrightnessMode.toEnum("invalid raw value"));
     }
 
     @Test
-    public void testNullRawValue()
-    {
+    public void testNullRawValue() {
         assertNull(BrightnessMode.toEnum(null));
     }
 }
