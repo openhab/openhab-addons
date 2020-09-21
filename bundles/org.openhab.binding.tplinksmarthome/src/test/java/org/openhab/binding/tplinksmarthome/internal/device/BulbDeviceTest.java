@@ -20,7 +20,7 @@ import static org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeThingT
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.library.types.DecimalType;
@@ -35,7 +35,6 @@ import org.openhab.core.types.UnDefType;
  * @author Hilbrand Bouwkamp - Initial contribution
  */
 @NonNullByDefault
-@Disabled("Needs to be updated for OH3")
 public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
 
     private static final String DEVICE_OFF = "bulb_get_sysinfo_response_off";
@@ -45,6 +44,7 @@ public class BulbDeviceTest extends DeviceTestBase<BulbDevice> {
                 "bulb_get_sysinfo_response_on");
     }
 
+    @BeforeEach
     @Override
     public void setUp() throws IOException {
         super.setUp();
