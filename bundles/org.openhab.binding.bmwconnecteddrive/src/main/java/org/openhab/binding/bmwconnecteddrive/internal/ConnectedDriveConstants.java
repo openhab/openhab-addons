@@ -104,6 +104,7 @@ public class ConnectedDriveConstants {
     // Thing Group definitions
     public static final String CHANNEL_GROUP_STATUS = "status";
     public static final String CHANNEL_GROUP_SERVICE = "service";
+    public static final String CHANNEL_GROUP_CHECK_CONTROL = "check";
     public static final String CHANNEL_GROUP_DOORS = "doors";
     public static final String CHANNEL_GROUP_RANGE = "range";
     public static final String CHANNEL_GROUP_LOCATION = "location";
@@ -114,6 +115,19 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_VEHICLE_IMAGE = "image";
     public static final String CHANNEL_GROUP_DESTINATION = "destination";
     public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
+
+    // List Interface Constants
+    public static final String COUNT = "count";
+    public static final String INDEX = "index";
+    public static final String NEXT = "next";
+
+    // Generic Constants for several groups
+    public static final String NAME = "name";
+    public static final String DATE = "date";
+    public static final String MILEAGE = "mileage";
+    public static final String LONGITUDE = "longitude";
+    public static final String LATITUDE = "latitude";
+    public static final String HEADING = "heading";
 
     // Status
     public static final String DOORS = "doors";
@@ -139,12 +153,6 @@ public class ConnectedDriveConstants {
     public static final String WINDOW_REAR = "window-rear";
     public static final String SUNROOF = "sunroof";
 
-    // Services
-    public static final String SERVICE_NAME = "service-name";
-    public static final String SERVICE_TOTAL_COUNT = "service-count";
-    public static final String SERVICE_INDEX = "service-index";
-    public static final String SERVICE_NEXT = "service-next";
-
     // Charge Profile
     public static final String CHARGE_PROFILE_CLIMATE = "profile-climate";
     public static final String CHARGE_PROFILE_MODE = "profile-mode";
@@ -161,7 +169,6 @@ public class ConnectedDriveConstants {
     public static final String CHARGE_TIMER3_DAYS = "timer3-enabled";
 
     // Range
-    public static final String MILEAGE = "mileage";
     public static final String RANGE_HYBRID = "hybrid";
     public static final String RANGE_ELECTRIC = "electric";
     public static final String SOC = "soc";
@@ -184,11 +191,6 @@ public class ConnectedDriveConstants {
     public static final String CUMULATED_DRIVEN_DISTANCE = "cumulated-driven-distance";
     public static final String SINGLE_LONGEST_DISTANCE = "single-longest-distance";
 
-    // Lifetime
-    public static final String LONGITUDE = "longitude";
-    public static final String LATITUDE = "latitude";
-    public static final String HEADING = "heading";
-
     // Image
     public static final String IMAGE_FORMAT = "png";
     public static final String IMAGE_VIEWPORT = "view";
@@ -202,16 +204,6 @@ public class ConnectedDriveConstants {
     public static final String REMOTE_SERVICE_HORN = "horn";
     public static final String REMOTE_SERVICE_AIR_CONDITIONING = "climate";
     public static final String REMOTE_STATE = "state";
-
-    public static final String DESTINATION_NAME_1 = "name-1";
-    public static final String DESTINATION_LAT_1 = "lat-1";
-    public static final String DESTINATION_LON_1 = "lon-1";
-    public static final String DESTINATION_NAME_2 = "name-2";
-    public static final String DESTINATION_LAT_2 = "lat-2";
-    public static final String DESTINATION_LON_2 = "lon-2";
-    public static final String DESTINATION_NAME_3 = "name-3";
-    public static final String DESTINATION_LAT_3 = "lat-3";
-    public static final String DESTINATION_LON_3 = "lon-3";
 
     // Troubleshoot
     public static final String DISCOVERY_FINGERPRINT = "discovery-fingerprint";

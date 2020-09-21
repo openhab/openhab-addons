@@ -115,12 +115,26 @@ public class StatusWrapper {
             case MILEAGE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                if (imperial) {
-                    assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
-                } else {
-                    assertEquals("KM", KILOMETRE, qt.getUnit());
+                switch (gUid) {
+                    case CHANNEL_GROUP_RANGE:
+                        if (imperial) {
+                            assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
+                        } else {
+                            assertEquals("KM", KILOMETRE, qt.getUnit());
+                        }
+                        assertEquals("Mileage", qt.intValue(), vStatus.mileage);
+                        break;
+                    case CHANNEL_GROUP_SERVICE:
+                        if (imperial) {
+                            assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
+                        } else {
+                            assertEquals("KM", KILOMETRE, qt.getUnit());
+                        }
+                        assertEquals("Mileage", qt.intValue(), vStatus.cbsData.get(0).cbsRemainingMileage);
+                        break;
+                    default:
+                        assertFalse("Channel " + channelUID + " " + state + " not found", true);
                 }
-                assertEquals("Mileage", qt.intValue(), vStatus.mileage);
                 break;
             case RANGE_ELECTRIC:
                 assertTrue("Is Eelctric", isElectric);
@@ -356,12 +370,12 @@ public class StatusWrapper {
                 wanted = StringType.valueOf(vStatus.sunroof);
                 assertEquals("Window", wanted.toString(), st.toString());
                 break;
-            case SERVICE_TOTAL_COUNT:
+            case COUNT:
                 assertTrue(state instanceof DecimalType);
                 dt = (DecimalType) state;
                 assertEquals("Number of Services", vStatus.cbsData.size(), dt.intValue());
                 break;
-            case SERVICE_INDEX:
+            case INDEX:
                 assertTrue(state instanceof DecimalType);
                 dt = (DecimalType) state;
                 assertEquals("Number of Services", 0, dt.intValue());
@@ -406,11 +420,24 @@ public class StatusWrapper {
                     }
                 }
                 break;
-            case SERVICE_NAME:
+            case NAME:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
                 wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
                 assertEquals("Window", wanted.toString(), st.toString());
+                break;
+            case DATE:
+                assertTrue(state instanceof DateTimeType);
+                dtt = (DateTimeType) state;
+                switch (gUid) {
+                    case CHANNEL_GROUP_SERVICE:
+                        String dueDateString = vStatus.cbsData.get(0).getDueDate();
+                        DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
+                        assertEquals("Service", expectedDTT.toString(), dtt.toString());
+                        break;
+                    default:
+                        assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                }
                 break;
             default:
                 // fail in case of unknown update

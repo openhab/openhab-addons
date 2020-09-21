@@ -103,15 +103,12 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID remoteStateChannel;
 
     // Remote Services
-    protected ChannelUID destinationName1;
-    protected ChannelUID destinationLat1;
-    protected ChannelUID destinationLon1;
-    protected ChannelUID destinationName2;
-    protected ChannelUID destinationLat2;
-    protected ChannelUID destinationLon2;
-    protected ChannelUID destinationName3;
-    protected ChannelUID destinationLat3;
-    protected ChannelUID destinationLon3;
+    protected ChannelUID destinationName;
+    protected ChannelUID destinationLat;
+    protected ChannelUID destinationLon;
+    protected ChannelUID destinationCount;
+    protected ChannelUID destinationIndex;
+    protected ChannelUID destinationNext;
 
     // Charging
     protected ChannelUID chargingStatus;
@@ -159,12 +156,12 @@ public class VehicleChannelHandler extends BaseThingHandler {
         chargingStatus = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, CHARGE_STATUS);
         lastUpdate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, LAST_UPDATE);
 
-        serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_DATE);
-        serviceMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_MILEAGE);
-        serviceName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_NAME);
-        serviceCount = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_TOTAL_COUNT);
-        serviceIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_INDEX);
-        serviceNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SERVICE_NEXT);
+        serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, DATE);
+        serviceMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, MILEAGE);
+        serviceName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, NAME);
+        serviceCount = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, COUNT);
+        serviceIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, INDEX);
+        serviceNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, COUNT);
 
         doorDriverFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT);
         doorDriverRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR);
@@ -237,15 +234,12 @@ public class VehicleChannelHandler extends BaseThingHandler {
         remoteClimateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_SERVICE_AIR_CONDITIONING);
         remoteStateChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_REMOTE, REMOTE_STATE);
 
-        destinationName1 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_1);
-        destinationLat1 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_1);
-        destinationLon1 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_1);
-        destinationName2 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_2);
-        destinationLat2 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_2);
-        destinationLon2 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_2);
-        destinationName3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_NAME_3);
-        destinationLat3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LAT_3);
-        destinationLon3 = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, DESTINATION_LON_3);
+        destinationName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NAME);
+        destinationLat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, LATITUDE);
+        destinationLon = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, LONGITUDE);
+        destinationCount = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, COUNT);
+        destinationIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, INDEX);
+        destinationNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NEXT);
 
         imageChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_FORMAT);
         imageViewportChannel = new ChannelUID(thing.getUID(), CHANNEL_GROUP_VEHICLE_IMAGE, IMAGE_VIEWPORT);
