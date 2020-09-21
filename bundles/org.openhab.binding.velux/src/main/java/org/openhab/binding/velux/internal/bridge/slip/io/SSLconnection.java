@@ -254,4 +254,39 @@ class SSLconnection {
         logger.debug("setTimeout() set timeout to {} milliseconds.", timeoutMSecs);
         ioTimeoutMSecs = timeoutMSecs;
     }
+
+    /**
+     * Method to flush the receive buffer.
+     *
+     * @throws java.io.IOException in case of a communication I/O failure.
+     */
+    synchronized void flushBuffer() throws IOException {
+        logger.trace("flushBuffer() called.");
+        @Nullable
+        DataInputStreamWithTimeout inStream = dIn;
+        if ((inStream == null) || !ready) {
+            throw new IOException();
+        }
+        try {
+            int byteCount = inStream.available();
+            if (byteCount > 0) {
+                byte[] byteArray = new byte[byteCount];
+                inStream.readFully(byteArray);
+                if (logger.isTraceEnabled()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (byte currByte : byteArray) {
+                        stringBuilder.append(String.format("%02X ", currByte));
+                    }
+                    logger.trace("flushBuffer(): discarded {} unexpected bytes in the input buffer: {}", byteCount,
+                            stringBuilder.toString());
+                } else {
+                    logger.warn("flushBuffer(): discarded {} unexpected bytes in the input buffer", byteCount);
+                }
+            }
+        } catch (IOException e) {
+            logger.warn("flushBuffer(): raised exception {}", e.getStackTrace().toString());
+            throw e;
+        }
+        return;
+    }
 }
