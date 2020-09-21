@@ -42,8 +42,8 @@ import org.bouncycastle.operator.OperatorCreationException;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.eclipse.smarthome.config.core.ConfigConstants;
-import org.eclipse.smarthome.core.id.InstanceUUID;
+import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.id.InstanceUUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

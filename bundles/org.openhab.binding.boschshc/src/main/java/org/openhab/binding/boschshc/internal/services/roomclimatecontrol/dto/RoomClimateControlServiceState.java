@@ -14,9 +14,9 @@ package org.openhab.binding.boschshc.internal.services.roomclimatecontrol.dto;
 
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.types.State;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.types.State;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**

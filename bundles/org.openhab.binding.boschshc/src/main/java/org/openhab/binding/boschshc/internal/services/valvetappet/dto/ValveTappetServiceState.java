@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.services.valvetappet.dto;
 
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.types.State;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.types.State;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**

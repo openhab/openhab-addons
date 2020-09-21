@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link BoschSHCBindingConstants} class defines common constants, which
