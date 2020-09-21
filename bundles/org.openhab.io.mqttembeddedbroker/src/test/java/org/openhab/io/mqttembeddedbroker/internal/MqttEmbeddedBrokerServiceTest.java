@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.openhab.core.config.core.ConfigConstants;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
@@ -157,7 +157,7 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
     @Test
     public void testPersistence() throws InterruptedException, IOException, ExecutionException {
         config.put("persistenceFile", "persist.mqtt");
-        Path path = Paths.get(ConfigConstants.getUserDataFolder()).toAbsolutePath();
+        Path path = Paths.get(OpenHAB.getUserDataFolder()).toAbsolutePath();
         File jksFile = path.resolve("persist.mqtt").toFile();
 
         if (jksFile.exists()) {
