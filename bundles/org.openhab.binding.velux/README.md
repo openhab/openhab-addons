@@ -49,7 +49,7 @@ In addition there are some optional Configuration Parameters.
 |-------------------------|------------------|:--------:|--------------------------------------------------------------|
 | ipAddress               |                  |   Yes    | Hostname or address for accessing the Velux Bridge.          |
 | password                | velux123         |   Yes    | Password for authentication against the Velux Bridge.(\*\*)  |
-| timeoutMsecs            | 1000             |    No    | Initial Connection timeout in milliseconds.                  |
+| timeoutMsecs            | 500              |    No    | Communication timeout in milliseconds.                       |
 | protocol                | slip             |    No    | Underlying communication protocol (http/https/slip).         |
 | tcpPort                 | 51200            |    No    | TCP port (80 or 51200) for accessing the Velux Bridge.       |
 | retries                 | 5                |    No    | Number of retries during I/O.                                |
@@ -61,7 +61,7 @@ In addition there are some optional Configuration Parameters.
 (\*\*) Note: This password is the API password that is printed on the back of the unit.
 Normally it differs from the password of the web frontend.
 
-Advice: if you see a significant number of messages per day as follows, you should increase the parameters retries or/and timeoutMsecs...
+Advice: if you see a significant number of messages per day as follows, you should increase the parameters `retries` or/and `timeoutMsecs`...
 
 ```
  communicate(): socket I/O failed continuously (x times).

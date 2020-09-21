@@ -122,7 +122,7 @@ public class KLF200Response {
      * @return <b>check4matchingAnyID</b> of type boolean which signals the equality.
      */
     private static boolean check4matchingAnyID(Logger logger, String idName, int requestID, int responseID) {
-        logger.trace("check4matchingAnyID() called for request{} {} and response{} {}.", idName, requestID, idName,
+        logger.trace("check4matchingAnyID() called for request {} {} and response {} {}.", idName, requestID, idName,
                 responseID);
         if (requestID != responseID) {
             logger.warn("Gateway query for {} {} received unexpected response of {} {}.", idName, requestID, idName,
