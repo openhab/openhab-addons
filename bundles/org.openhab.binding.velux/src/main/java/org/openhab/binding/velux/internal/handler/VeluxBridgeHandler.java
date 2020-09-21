@@ -54,10 +54,12 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -187,9 +189,16 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * @param channelUID for type {@link ChannelUID}.
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
-    @SuppressWarnings("deprecation")
     ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
-        return channelUID.getThingUID().getThingTypeUID();
+        Channel chan = getThing().getChannel(channelUID);
+        if (chan != null) {
+            ChannelTypeUID type = chan.getChannelTypeUID();
+            if (type != null) {
+                return new ThingTypeUID(type.getBindingId(), type.getId());
+            }
+        }
+        logger.warn("thingTypeUIDOf({}) failed.", channelUID);
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, "???");
     }
 
     // Objects and Methods for interface VeluxBridgeInstance
