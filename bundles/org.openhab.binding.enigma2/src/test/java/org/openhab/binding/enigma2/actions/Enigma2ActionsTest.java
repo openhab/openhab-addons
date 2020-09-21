@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.enigma2.actions;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.enigma2.handler.Enigma2Handler;
 import org.openhab.binding.enigma2.internal.Enigma2BindingConstants;
 
@@ -37,7 +38,7 @@ public class Enigma2ActionsTest {
     private Enigma2Handler enigma2Handler;
     public static final String SOME_TEXT = "some Text";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         enigma2Handler = mock(Enigma2Handler.class);
         enigma2Actions = new Enigma2Actions();
@@ -109,9 +110,9 @@ public class Enigma2ActionsTest {
         verify(enigma2Handler).sendRcCommand("KEY_1");
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendRcCommandStaticWithException() {
-        Enigma2Actions.sendRcCommand(null, "KEY_1");
+        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendRcCommand(null, "KEY_1"));
     }
 
     @Test
@@ -126,9 +127,9 @@ public class Enigma2ActionsTest {
         verify(enigma2Handler).sendInfo(10, SOME_TEXT);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendInfoStaticWithException() {
-        Enigma2Actions.sendInfo(null, SOME_TEXT);
+        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendInfo(null, SOME_TEXT));
     }
 
     @Test
@@ -143,9 +144,9 @@ public class Enigma2ActionsTest {
         verify(enigma2Handler).sendError(10, SOME_TEXT);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendErrorStaticWithException() {
-        Enigma2Actions.sendError(null, SOME_TEXT);
+        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendError(null, SOME_TEXT));
     }
 
     @Test
@@ -160,9 +161,9 @@ public class Enigma2ActionsTest {
         verify(enigma2Handler).sendWarning(10, SOME_TEXT);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendWarningStaticWithException() {
-        Enigma2Actions.sendWarning(null, SOME_TEXT);
+        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendWarning(null, SOME_TEXT));
     }
 
     @Test
@@ -177,8 +178,8 @@ public class Enigma2ActionsTest {
         verify(enigma2Handler).sendQuestion(10, SOME_TEXT);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSendQuestionStaticWithException() {
-        Enigma2Actions.sendQuestion(null, SOME_TEXT);
+        assertThrows(IllegalArgumentException.class, () -> Enigma2Actions.sendQuestion(null, SOME_TEXT));
     }
 }

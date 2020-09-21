@@ -12,17 +12,17 @@
  */
 package org.openhab.binding.nibeheatpump.internal.models;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Pauli Anttila - Initial contribution
  */
 public class VariableInformationTest {
 
-    @Before
+    @BeforeEach
     public void Before() {
     }
 

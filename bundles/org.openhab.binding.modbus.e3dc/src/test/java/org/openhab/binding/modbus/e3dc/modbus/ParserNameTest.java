@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.modbus.e3dc.modbus;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Data.DataType;
 import org.openhab.binding.modbus.e3dc.internal.modbus.Parser;
 
@@ -30,11 +30,11 @@ public class ParserNameTest {
     @Test
     public void testDebugNames() {
         Parser mcInfo = new Parser(DataType.INFO);
-        assertEquals("Debug Name Info", "org.openhab.binding.modbus.e3dc.internal.modbus.Parser:INFO",
-                mcInfo.toString());
+        assertEquals("org.openhab.binding.modbus.e3dc.internal.modbus.Parser:INFO", mcInfo.toString(),
+                "Debug Name Info");
 
         Parser mcPower = new Parser(DataType.DATA);
-        assertEquals("Debug Name Power", "org.openhab.binding.modbus.e3dc.internal.modbus.Parser:DATA",
-                mcPower.toString());
+        assertEquals("org.openhab.binding.modbus.e3dc.internal.modbus.Parser:DATA", mcPower.toString(),
+                "Debug Name Power");
     }
 }

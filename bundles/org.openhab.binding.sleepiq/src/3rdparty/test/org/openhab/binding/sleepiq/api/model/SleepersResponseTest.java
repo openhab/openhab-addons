@@ -15,45 +15,37 @@
  */
 package org.openhab.binding.sleepiq.api.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.sleepiq.api.impl.GsonGenerator;
-import org.openhab.binding.sleepiq.api.model.Sleeper;
-import org.openhab.binding.sleepiq.api.model.SleepersResponse;
 import org.openhab.binding.sleepiq.api.test.AbstractTest;
 
 import com.google.gson.Gson;
 
-public class SleepersResponseTest extends AbstractTest
-{
+public class SleepersResponseTest extends AbstractTest {
     private static Gson gson;
 
-    @BeforeClass
-    public static void setUpBeforeClass()
-    {
+    @BeforeAll
+    public static void setUpBeforeClass() {
         gson = GsonGenerator.create(true);
     }
 
     @Test
-    public void testSerializeAllFields() throws Exception
-    {
-        SleepersResponse sleepersResponse = new SleepersResponse().withSleepers(Arrays.asList(new Sleeper().withFirstName("Alice"),
-                                                                                              new Sleeper().withFirstName("Bob")));
+    public void testSerializeAllFields() throws Exception {
+        SleepersResponse sleepersResponse = new SleepersResponse()
+                .withSleepers(Arrays.asList(new Sleeper().withFirstName("Alice"), new Sleeper().withFirstName("Bob")));
         assertEquals(readJson("sleepers-response.json"), gson.toJson(sleepersResponse));
     }
 
     @Test
-    public void testDeserializeAllFields() throws Exception
-    {
-        try (FileReader reader = new FileReader(getTestDataFile("sleepers-response.json")))
-        {
+    public void testDeserializeAllFields() throws Exception {
+        try (FileReader reader = new FileReader(getTestDataFile("sleepers-response.json"))) {
             SleepersResponse sleepersResponse = gson.fromJson(reader, SleepersResponse.class);
 
             List<Sleeper> sleepers = sleepersResponse.getSleepers();

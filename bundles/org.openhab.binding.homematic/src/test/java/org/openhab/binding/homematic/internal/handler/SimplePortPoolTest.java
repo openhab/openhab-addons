@@ -19,8 +19,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link org.openhab.binding.homematic.internal.handler.SimplePortPool}.
@@ -31,7 +31,7 @@ public class SimplePortPoolTest {
 
     private SimplePortPool simplePortPool;
 
-    @Before
+    @BeforeEach
     public void setup() {
         this.simplePortPool = new SimplePortPool();
     }

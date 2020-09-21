@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.max.internal.message;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.max.internal.exceptions.IncompleteMessageException;
 import org.openhab.binding.max.internal.exceptions.IncorrectMultilineIndexException;
 import org.openhab.binding.max.internal.exceptions.MessageIsWaitingException;
@@ -31,12 +32,12 @@ public class MessageProcessorTest {
     private final MessageProcessor processor = new MessageProcessor();
 
     private void commonMessageTest(String line, Message expectedMessage) throws Exception {
-        Assert.assertTrue(this.processor.addReceivedLine(line));
-        Assert.assertTrue(this.processor.isMessageAvailable());
+        assertTrue(this.processor.addReceivedLine(line));
+        assertTrue(this.processor.isMessageAvailable());
         Message message = this.processor.pull();
-        Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), expectedMessage.getClass().getName());
-        Assert.assertEquals(expectedMessage.getPayload(), message.getPayload());
+        assertNotNull(message);
+        assertEquals(message.getClass().getName(), expectedMessage.getClass().getName());
+        assertEquals(expectedMessage.getPayload(), message.getPayload());
     }
 
     @Test
@@ -101,12 +102,12 @@ public class MessageProcessorTest {
         String expectedString = line1 + line2_part2;
         MMessage expectedMessage = new MMessage(expectedString);
 
-        Assert.assertFalse(this.processor.addReceivedLine(line1));
-        Assert.assertTrue(this.processor.addReceivedLine(line2));
+        assertFalse(this.processor.addReceivedLine(line1));
+        assertTrue(this.processor.addReceivedLine(line2));
         Message message = this.processor.pull();
-        Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), MMessage.class.getName());
-        Assert.assertEquals(expectedMessage.getPayload(), message.getPayload());
+        assertNotNull(message);
+        assertEquals(message.getClass().getName(), MMessage.class.getName());
+        assertEquals(expectedMessage.getPayload(), message.getPayload());
     }
 
     @Test
@@ -116,16 +117,16 @@ public class MessageProcessorTest {
 
         try {
             this.processor.addReceivedLine(line2);
-            Assert.fail("Expected exception was not thrown.");
+            fail("Expected exception was not thrown.");
         } catch (IncorrectMultilineIndexException e) {
             // OK, correct Exception was thrown
         }
 
         try {
             this.processor.reset();
-            Assert.assertFalse(this.processor.addReceivedLine(line1));
+            assertFalse(this.processor.addReceivedLine(line1));
             this.processor.addReceivedLine(line2);
-            Assert.fail("Expected exception was not thrown.");
+            fail("Expected exception was not thrown.");
         } catch (IncorrectMultilineIndexException e) {
             // OK, correct Exception was thrown
         }
@@ -137,20 +138,20 @@ public class MessageProcessorTest {
         String line2 = "M:00,01,VgIBAQpXb2huemltbWVyAAAAAQMQV6lMRVEwOTgyMTU2DldhbmR0aGVybW9zdGF0AQE=";
 
         try {
-            Assert.assertTrue(this.processor.addReceivedLine(line1));
+            assertTrue(this.processor.addReceivedLine(line1));
             this.processor.addReceivedLine(line2);
-            Assert.fail("Expected exception was not thrown.");
+            fail("Expected exception was not thrown.");
         } catch (MessageIsWaitingException e) {
             // OK, correct Exception was thrown
         }
 
         Message message = this.processor.pull();
-        Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), HMessage.class.getName());
+        assertNotNull(message);
+        assertEquals(message.getClass().getName(), HMessage.class.getName());
         this.processor.addReceivedLine(line2);
         message = this.processor.pull();
-        Assert.assertNotNull(message);
-        Assert.assertEquals(message.getClass().getName(), MMessage.class.getName());
+        assertNotNull(message);
+        assertEquals(message.getClass().getName(), MMessage.class.getName());
     }
 
     @Test
@@ -159,9 +160,9 @@ public class MessageProcessorTest {
         String line2 = "H:KHA0007199,081dd4,0113,00000000,0d524351,10,30,0f0407,1130,03,0000";
 
         try {
-            Assert.assertFalse(this.processor.addReceivedLine(line1));
+            assertFalse(this.processor.addReceivedLine(line1));
             this.processor.addReceivedLine(line2);
-            Assert.fail("Expected exception was not thrown.");
+            fail("Expected exception was not thrown.");
         } catch (IncompleteMessageException e) {
             // OK, correct Exception was thrown
         }
@@ -172,8 +173,8 @@ public class MessageProcessorTest {
         String rawData = "X:0ff1bc,EQ/xvAQJEAJMRVEwNzk0MDA3";
 
         try {
-            Assert.assertFalse(this.processor.addReceivedLine(rawData));
-            Assert.fail("Expected exception was not thrown.");
+            assertFalse(this.processor.addReceivedLine(rawData));
+            fail("Expected exception was not thrown.");
         } catch (UnsupportedMessageTypeException e) {
             // OK, correct Exception was thrown
         }
@@ -187,7 +188,7 @@ public class MessageProcessorTest {
 
         try {
             this.processor.pull();
-            Assert.fail("Expected exception was not thrown.");
+            fail("Expected exception was not thrown.");
         } catch (NoMessageAvailableException e) {
             // OK, correct Exception was thrown
         }
@@ -199,7 +200,7 @@ public class MessageProcessorTest {
 
         try {
             this.processor.addReceivedLine(line1);
-            Assert.fail("Expected exception was not thrown.");
+            fail("Expected exception was not thrown.");
         } catch (UnprocessableMessageException e) {
             // OK, correct Exception was thrown
         }

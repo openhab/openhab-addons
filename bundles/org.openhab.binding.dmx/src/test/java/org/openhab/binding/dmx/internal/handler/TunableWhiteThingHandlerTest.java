@@ -12,17 +12,18 @@
  */
 package org.openhab.binding.dmx.internal.handler;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.dmx.internal.DmxBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.dmx.test.AbstractDmxThingTestParent;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
@@ -54,7 +55,7 @@ public class TunableWhiteThingHandlerTest extends AbstractDmxThingTestParent {
     private final ChannelUID CHANNEL_UID_BRIGHTNESS_WW = new ChannelUID(THING_UID_DIMMER, CHANNEL_BRIGHTNESS_WW);
     private final ChannelUID CHANNEL_UID_COLOR_TEMP = new ChannelUID(THING_UID_DIMMER, CHANNEL_COLOR_TEMPERATURE);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setup();
 

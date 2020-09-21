@@ -12,14 +12,13 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Zone.Main_Zone;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.yamahareceiver.internal.state.ZoneControlState;
 

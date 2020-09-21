@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
-import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedValueException;
 import org.openhab.core.util.HexUtils;
 
@@ -26,9 +27,9 @@ import org.openhab.core.util.HexUtils;
 @NonNullByDefault
 public class RFXComInvalidMessageTypeTest {
 
-    @Test(expected = RFXComUnsupportedValueException.class)
-    public void testMessage() throws RFXComException {
+    @Test
+    public void testMessage() {
         byte[] message = HexUtils.hexToBytes("07CC01271356ECC0");
-        RFXComMessageFactory.createMessage(message);
+        assertThrows(RFXComUnsupportedValueException.class, () -> RFXComMessageFactory.createMessage(message));
     }
 }

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.PercentType;
 
@@ -25,7 +25,7 @@ import org.openhab.core.library.types.PercentType;
  */
 public class LxControlValueSelectorIncrTest extends LxControlValueSelectorTest {
     @Override
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("132a7b7e-0022-3aac-ffff403fb0c34b9e", "0b734138-037d-034e-ffff403fb0c34b9e",
                 "0fe650c2-0004-d446-ffff504f9410790f", "Selection Switch Increase Only");

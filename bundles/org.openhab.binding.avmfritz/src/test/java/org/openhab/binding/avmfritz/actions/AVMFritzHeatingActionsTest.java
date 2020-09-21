@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.avmfritz.actions;
 
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.avmfritz.internal.handler.AVMFritzHeatingActionsHandler;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -26,6 +28,7 @@ import org.openhab.core.thing.binding.ThingHandler;
  *
  * @author Christoph Weitkamp - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 public class AVMFritzHeatingActionsTest {
 
     private final ThingActions thingActionsStub = new ThingActions() {
@@ -43,32 +46,32 @@ public class AVMFritzHeatingActionsTest {
 
     private AVMFritzHeatingActions heatingActions;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
-
         heatingActions = new AVMFritzHeatingActions();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetBoostModeThingActionsIsNull() {
-        AVMFritzHeatingActions.setBoostMode(null, Long.valueOf(5L));
+        assertThrows(IllegalArgumentException.class, () -> AVMFritzHeatingActions.setBoostMode(null, Long.valueOf(5L)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetBoostModeThingActionsIsNotPushoverThingActions() {
-        AVMFritzHeatingActions.setBoostMode(thingActionsStub, Long.valueOf(5L));
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setBoostMode(thingActionsStub, Long.valueOf(5L)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetBoostModeThingHandlerIsNull() {
-        AVMFritzHeatingActions.setBoostMode(heatingActions, Long.valueOf(5L));
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setBoostMode(heatingActions, Long.valueOf(5L)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetBoostModeDurationNull() {
         heatingActions.setThingHandler(heatingActionsHandler);
-        AVMFritzHeatingActions.setBoostMode(heatingActions, null);
+        assertThrows(IllegalArgumentException.class, () -> AVMFritzHeatingActions.setBoostMode(heatingActions, null));
     }
 
     @Test
@@ -77,25 +80,29 @@ public class AVMFritzHeatingActionsTest {
         AVMFritzHeatingActions.setBoostMode(heatingActions, Long.valueOf(5L));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetWindowOpenModeThingActionsIsNull() {
-        AVMFritzHeatingActions.setWindowOpenMode(null, Long.valueOf(5L));
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setWindowOpenMode(null, Long.valueOf(5L)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetWindowOpenModeThingActionsIsNotPushoverThingActions() {
-        AVMFritzHeatingActions.setWindowOpenMode(thingActionsStub, Long.valueOf(5L));
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setWindowOpenMode(thingActionsStub, Long.valueOf(5L)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetWindowOpenModeThingHandlerIsNull() {
-        AVMFritzHeatingActions.setWindowOpenMode(heatingActions, Long.valueOf(5L));
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setWindowOpenMode(heatingActions, Long.valueOf(5L)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSetWindowOpenModeDurationNull() {
         heatingActions.setThingHandler(heatingActionsHandler);
-        AVMFritzHeatingActions.setWindowOpenMode(heatingActions, null);
+        assertThrows(IllegalArgumentException.class,
+                () -> AVMFritzHeatingActions.setWindowOpenMode(heatingActions, null));
     }
 
     @Test

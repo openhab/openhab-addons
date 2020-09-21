@@ -14,7 +14,8 @@ package org.openhab.binding.mqtt.generic.mapping;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -29,12 +30,15 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass.AttributeChanged;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 
@@ -53,6 +57,8 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class MqttTopicClassMapperTests {
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ FIELD })
@@ -113,9 +119,8 @@ public class MqttTopicClassMapperTests {
     // A completed future is returned for a subscribe call to the attributes
     final CompletableFuture<Boolean> future = CompletableFuture.completedFuture(true);
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(CompletableFuture.completedFuture(true)).when(connection).subscribe(any(), any());
         doReturn(CompletableFuture.completedFuture(true)).when(connection).unsubscribe(any(), any());
         injectedFields = (int) Stream.of(countInjectedFields.getClass().getDeclaredFields())
@@ -189,7 +194,7 @@ public class MqttTopicClassMapperTests {
 
             // Check each value if the assignment worked
             if (!f.field.getType().isArray()) {
-                assertNotNull(f.field.getName() + " is null", f.field.get(attributes));
+                assertNotNull(f.field.get(attributes), f.field.getName() + " is null");
                 // Consider if a mapToField was used that would manipulate the received value
                 MQTTvalueTransform mapToField = f.field.getAnnotation(MQTTvalueTransform.class);
                 String prefix = mapToField != null ? mapToField.prefix() : "";

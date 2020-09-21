@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.deconz;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,11 +23,14 @@ import java.time.ZonedDateTime;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.deconz.internal.Util;
 import org.openhab.binding.deconz.internal.discovery.ThingDiscoveryService;
 import org.openhab.binding.deconz.internal.dto.BridgeFullState;
@@ -49,23 +52,18 @@ import com.google.gson.GsonBuilder;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public class DeconzTest {
     private @NonNullByDefault({}) Gson gson;
 
-    @Mock
-    private @NonNullByDefault({}) DiscoveryListener discoveryListener;
+    private @Mock @NonNullByDefault({}) DiscoveryListener discoveryListener;
+    private @Mock @NonNullByDefault({}) DeconzBridgeHandler bridgeHandler;
+    private @Mock @NonNullByDefault({}) Bridge bridge;
 
-    @Mock
-    private @NonNullByDefault({}) DeconzBridgeHandler bridgeHandler;
-
-    @Mock
-    private @NonNullByDefault({}) Bridge bridge;
-
-    @Before
+    @BeforeEach
     public void initialize() {
-        initMocks(this);
-
         Mockito.doAnswer(answer -> bridge).when(bridgeHandler).getThing();
         Mockito.doAnswer(answer -> new ThingUID("deconz", "mybridge")).when(bridge).getUID();
 
@@ -78,9 +76,9 @@ public class DeconzTest {
     @Test
     public void discoveryTest() throws IOException {
         BridgeFullState bridgeFullState = getObjectFromJson("discovery.json", BridgeFullState.class, gson);
-        Assert.assertNotNull(bridgeFullState);
-        Assert.assertEquals(6, bridgeFullState.lights.size());
-        Assert.assertEquals(9, bridgeFullState.sensors.size());
+        assertNotNull(bridgeFullState);
+        assertEquals(6, bridgeFullState.lights.size());
+        assertEquals(9, bridgeFullState.sensors.size());
 
         ThingDiscoveryService discoveryService = new ThingDiscoveryService();
         discoveryService.setThingHandler(bridgeHandler);
@@ -98,10 +96,10 @@ public class DeconzTest {
     @Test
     public void dateTimeConversionTest() {
         DateTimeType dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09Z");
-        Assert.assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:00Z")), dateTime);
+        assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:00Z")), dateTime);
 
         dateTime = Util.convertTimestampToDateTime("2020-08-22T11:09:47");
-        Assert.assertEquals(
-                new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:47Z")).toZone(ZoneId.systemDefault()), dateTime);
+        assertEquals(new DateTimeType(ZonedDateTime.parse("2020-08-22T11:09:47Z")).toZone(ZoneId.systemDefault()),
+                dateTime);
     }
 }

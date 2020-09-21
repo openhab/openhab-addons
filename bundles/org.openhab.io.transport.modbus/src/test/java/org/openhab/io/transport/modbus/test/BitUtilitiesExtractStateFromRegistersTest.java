@@ -13,7 +13,8 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.ByteBuffer;
 import java.util.Collection;
@@ -24,12 +25,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.transport.modbus.ModbusBitUtilities;
 import org.openhab.io.transport.modbus.ModbusConstants.ValueType;
@@ -39,24 +36,7 @@ import org.openhab.io.transport.modbus.ModbusRegisterArray;
 /**
  * @author Sami Salonen - Initial contribution
  */
-@RunWith(Parameterized.class)
 public class BitUtilitiesExtractStateFromRegistersTest {
-
-    final ModbusRegisterArray registers;
-    final ValueType type;
-    final int index;
-    final Object expectedResult;
-
-    @Rule
-    public final ExpectedException shouldThrow = ExpectedException.none();
-
-    public BitUtilitiesExtractStateFromRegistersTest(Object expectedResult, ValueType type,
-            ModbusRegisterArray registers, int index) {
-        this.registers = registers;
-        this.index = index;
-        this.type = type;
-        this.expectedResult = expectedResult; // Exception or DecimalType
-    }
 
     private static ModbusRegisterArray shortArrayToRegisterArray(int... arr) {
         ModbusRegister[] tmp = new ModbusRegister[0];
@@ -67,7 +47,6 @@ public class BitUtilitiesExtractStateFromRegistersTest {
         }).collect(Collectors.toList()).toArray(tmp));
     }
 
-    @Parameters
     public static Collection<Object[]> data() {
         return Collections.unmodifiableList(Stream.of(
                 //
@@ -383,14 +362,18 @@ public class BitUtilitiesExtractStateFromRegistersTest {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Test
-    public void testCommandToRegisters() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testCommandToRegisters(Object expectedResult, ValueType type, ModbusRegisterArray registers,
+            int index) {
         if (expectedResult instanceof Class && Exception.class.isAssignableFrom((Class) expectedResult)) {
-            shouldThrow.expect((Class) expectedResult);
+            assertThrows((Class) expectedResult,
+                    () -> ModbusBitUtilities.extractStateFromRegisters(registers, index, type));
+            return;
         }
 
-        Optional<@NonNull DecimalType> actualState = ModbusBitUtilities.extractStateFromRegisters(this.registers,
-                this.index, this.type);
+        Optional<@NonNull DecimalType> actualState = ModbusBitUtilities.extractStateFromRegisters(registers, index,
+                type);
         // Wrap given expectedResult to Optional, if necessary
         Optional<@NonNull DecimalType> expectedStateWrapped = expectedResult instanceof DecimalType
                 ? Optional.of((DecimalType) expectedResult)

@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.tplinksmarthome.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -25,14 +24,13 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
 import org.openhab.core.config.discovery.DiscoveryListener;
@@ -43,36 +41,22 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(value = Parameterized.class)
+@ExtendWith(MockitoExtension.class)
 public class TPLinkSmartHomeDiscoveryServiceTest {
 
     private static final List<Object[]> TESTS = Arrays.asList(
             new Object[][] { { "bulb_get_sysinfo_response_on", 11 }, { "rangeextender_get_sysinfo_response", 11 } });
 
-    @Mock
-    private DatagramSocket discoverSocket;
-
-    @Mock
-    private DiscoveryListener discoveryListener;
+    private @Mock DatagramSocket discoverSocket;
+    private @Mock DiscoveryListener discoveryListener;
 
     private TPLinkSmartHomeDiscoveryService discoveryService;
 
-    private final String filename;
-    private final int propertiesSize;
-
-    public TPLinkSmartHomeDiscoveryServiceTest(String filename, int propertiesSize) {
-        this.filename = filename;
-        this.propertiesSize = propertiesSize;
-    }
-
-    @Parameters(name = "{0}")
     public static List<Object[]> data() {
         return TESTS;
     }
 
-    @Before
-    public void setUp() throws IOException {
-        initMocks(this);
+    public void setUp(String filename) throws IOException {
         discoveryService = new TPLinkSmartHomeDiscoveryService() {
             @Override
             protected DatagramSocket sendDiscoveryPacket() throws IOException {
@@ -98,16 +82,20 @@ public class TPLinkSmartHomeDiscoveryServiceTest {
 
     /**
      * Test if startScan method finds a device with expected properties.
+     *
+     * @throws IOException
      */
-    @Test
-    public void testScan() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testScan(String filename, int propertiesSize) throws IOException {
+        setUp(filename);
         discoveryService.startScan();
         ArgumentCaptor<DiscoveryResult> discoveryResultCaptor = ArgumentCaptor.forClass(DiscoveryResult.class);
         verify(discoveryListener).thingDiscovered(any(), discoveryResultCaptor.capture());
         DiscoveryResult discoveryResult = discoveryResultCaptor.getValue();
-        assertEquals("Check if correct binding id found", TPLinkSmartHomeBindingConstants.BINDING_ID,
-                discoveryResult.getBindingId());
-        assertEquals("Check if expected number of properties found", propertiesSize,
-                discoveryResult.getProperties().size());
+        assertEquals(TPLinkSmartHomeBindingConstants.BINDING_ID, discoveryResult.getBindingId(),
+                "Check if correct binding id found");
+        assertEquals(propertiesSize, discoveryResult.getProperties().size(),
+                "Check if expected number of properties found");
     }
 }

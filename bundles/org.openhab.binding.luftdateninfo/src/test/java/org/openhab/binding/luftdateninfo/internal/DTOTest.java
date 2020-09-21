@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorData;
 import org.openhab.binding.luftdateninfo.internal.dto.SensorDataValue;
 import org.openhab.binding.luftdateninfo.internal.handler.HTTPHandler;
@@ -39,7 +39,7 @@ public class DTOTest {
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(result, SensorData[].class);
         // System.out.println(valueArray.length);
-        assertEquals("Array size", 2, valueArray.length);
+        assertEquals(2, valueArray.length, "Array size");
 
         SensorData d = valueArray[0];
         // Assure latest data is taken
@@ -52,9 +52,9 @@ public class DTOTest {
         assertNotNull(d);
         sensorDataVaueList.forEach(v -> {
             if (v.getValueType().equals(HTTPHandler.TEMPERATURE)) {
-                assertEquals("Temperature", "22.70", v.getValue());
+                assertEquals("22.70", v.getValue(), "Temperature");
             } else if (v.getValueType().equals(HTTPHandler.HUMIDITY)) {
-                assertEquals("Humidity", "61.00", v.getValue());
+                assertEquals("61.00", v.getValue(), "Humidity");
             }
         });
     }
@@ -65,7 +65,7 @@ public class DTOTest {
         Gson gson = new Gson();
         SensorData[] valueArray = gson.fromJson(result, SensorData[].class);
         // System.out.println(valueArray.length);
-        assertEquals("Array size", 2, valueArray.length);
+        assertEquals(2, valueArray.length, "Array size");
 
         SensorData d = valueArray[0];
         // Assure latest data is taken

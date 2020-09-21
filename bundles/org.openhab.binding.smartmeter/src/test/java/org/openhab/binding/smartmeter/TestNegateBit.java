@@ -12,8 +12,9 @@
  */
 package org.openhab.binding.smartmeter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartmeter.internal.MeterValue;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateBitModel;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateBitParser;
@@ -30,9 +31,9 @@ public class TestNegateBit {
     public void testNegateBitParsing() {
         String negateProperty = "1-0_1-8-0:5:1";
         NegateBitModel parseNegateProperty = NegateBitParser.parseNegateProperty(negateProperty);
-        Assert.assertEquals("1-0_1-8-0", parseNegateProperty.getNegateChannelId());
-        Assert.assertEquals(5, parseNegateProperty.getNegatePosition());
-        Assert.assertEquals(true, parseNegateProperty.isNegateBit());
+        assertEquals("1-0_1-8-0", parseNegateProperty.getNegateChannelId());
+        assertEquals(5, parseNegateProperty.getNegatePosition());
+        assertEquals(true, parseNegateProperty.isNegateBit());
     }
 
     @Test
@@ -43,7 +44,7 @@ public class TestNegateBit {
             return new MeterValue<>(obis, "65954", null);
         });
 
-        Assert.assertTrue(negateState);
+        assertTrue(negateState);
     }
 
     @Test
@@ -54,6 +55,6 @@ public class TestNegateBit {
             return new MeterValue<>(obis, "0", null, "65922");
         });
 
-        Assert.assertFalse(negateState);
+        assertFalse(negateState);
     }
 }

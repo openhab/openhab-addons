@@ -21,8 +21,8 @@ import static org.openhab.binding.homematic.test.util.DimmerHelper.createDimmerH
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.model.HmDevice;
@@ -46,7 +46,7 @@ public class HomematicDeviceDiscoveryServiceTest extends JavaTest {
     private HomematicDeviceDiscoveryService homematicDeviceDiscoveryService;
     private HomematicBridgeHandler homematicBridgeHandler;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         this.homematicBridgeHandler = mockHomematicBridgeHandler();
         this.homematicDeviceDiscoveryService = new HomematicDeviceDiscoveryService();

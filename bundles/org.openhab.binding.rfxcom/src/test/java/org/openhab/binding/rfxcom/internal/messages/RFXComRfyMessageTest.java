@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.RFY;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.Commands;
 import org.openhab.binding.rfxcom.internal.messages.RFXComRfyMessage.SubType;

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for (@link LxControlSlider} - this is actually the same control as up down analog
@@ -23,7 +23,7 @@ import org.junit.Test;
  */
 public class LxControlSliderTest extends LxControlUpDownAnalogTest {
     @Override
-    @Before
+    @BeforeEach
     public void setup() {
         min = 120.0;
         max = 450.0;

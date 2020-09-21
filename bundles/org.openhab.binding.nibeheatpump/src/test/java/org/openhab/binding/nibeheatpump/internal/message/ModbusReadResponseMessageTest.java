@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.nibeheatpump.internal.message;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.nibeheatpump.internal.NibeHeatPumpException;
 import org.openhab.core.util.HexUtils;
 
@@ -45,17 +45,17 @@ public class ModbusReadResponseMessageTest {
         assertEquals(value, m.getValue());
     }
 
-    @Test(expected = NibeHeatPumpException.class)
-    public void badCrcTest() throws NibeHeatPumpException {
+    @Test
+    public void badCrcTest() {
         final String strMessage = "5C00206A060102030405064C";
         final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
-        MessageFactory.getMessage(byteMessage);
+        assertThrows(NibeHeatPumpException.class, () -> MessageFactory.getMessage(byteMessage));
     }
 
-    @Test(expected = NibeHeatPumpException.class)
-    public void notReadResponseMessageTest() throws NibeHeatPumpException {
+    @Test
+    public void notReadResponseMessageTest() {
         final String strMessage = "5C00206B060102030405064A";
         final byte[] byteMessage = HexUtils.hexToBytes(strMessage);
-        new ModbusReadResponseMessage(byteMessage);
+        assertThrows(NibeHeatPumpException.class, () -> new ModbusReadResponseMessage(byteMessage));
     }
 }

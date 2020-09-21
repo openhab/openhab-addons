@@ -13,7 +13,8 @@
 package org.openhab.io.hueemulation.internal.upnp;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
@@ -31,11 +32,11 @@ import org.glassfish.grizzly.osgi.httpservice.OSGiMainHandler;
 import org.glassfish.grizzly.osgi.httpservice.util.Logger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.openhab.io.hueemulation.internal.rest.CommonSetup;
@@ -57,7 +58,7 @@ public class UpnpTests {
 
     LightsAndGroups lightsAndGroups = new LightsAndGroups();
 
-    @BeforeClass
+    @BeforeAll
     public static void setupHttpParts() throws IOException {
         commonSetup = new CommonSetup(true);
         commonSetup.start(new ResourceConfig());
@@ -72,7 +73,7 @@ public class UpnpTests {
         httpServiceImpl = new HttpServiceImpl(mock(Bundle.class), logger);
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         Executor executor = mock(Executor.class);
         Mockito.doAnswer(a -> {
@@ -87,12 +88,12 @@ public class UpnpTests {
         subject.overwriteReadyToFalse = false;
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         subject.deactivate();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDownHttp() {
         mainHttpHandler.unregisterAll();
         commonSetup.dispose();

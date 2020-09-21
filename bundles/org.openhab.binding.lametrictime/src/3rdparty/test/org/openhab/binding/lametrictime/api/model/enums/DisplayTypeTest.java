@@ -15,32 +15,25 @@
  */
 package org.openhab.binding.lametrictime.api.model.enums;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Test;
-import org.openhab.binding.lametrictime.api.model.enums.DisplayType;
+import org.junit.jupiter.api.Test;
 
-public class DisplayTypeTest
-{
+public class DisplayTypeTest {
     @Test
-    public void testConversion()
-    {
-        for (DisplayType value : DisplayType.values())
-        {
+    public void testConversion() {
+        for (DisplayType value : DisplayType.values()) {
             assertEquals(value, DisplayType.toEnum(value.toRaw()));
         }
     }
 
     @Test
-    public void testInvalidRawValue()
-    {
+    public void testInvalidRawValue() {
         assertNull(DisplayType.toEnum("invalid raw value"));
     }
 
     @Test
-    public void testNullRawValue()
-    {
+    public void testNullRawValue() {
         assertNull(DisplayType.toEnum(null));
     }
 }

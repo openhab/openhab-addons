@@ -15,8 +15,11 @@ package org.openhab.binding.lcn.internal.subhandler;
 import static org.mockito.Mockito.when;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.lcn.internal.LcnModuleHandler;
 import org.openhab.binding.lcn.internal.connection.ModInfo;
 
@@ -25,19 +28,15 @@ import org.openhab.binding.lcn.internal.connection.ModInfo;
  *
  * @author Fabian Wolter - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public class AbstractTestLcnModuleSubHandler {
-    @Mock
-    protected @NonNullByDefault({}) LcnModuleHandler handler;
-    @Mock
-    protected @NonNullByDefault({}) ModInfo info;
 
-    public AbstractTestLcnModuleSubHandler() {
-        setUp();
-    }
+    protected @Mock @NonNullByDefault({}) LcnModuleHandler handler;
+    protected @Mock @NonNullByDefault({}) ModInfo info;
 
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(handler.isMyAddress("000", "005")).thenReturn(true);
     }
 }

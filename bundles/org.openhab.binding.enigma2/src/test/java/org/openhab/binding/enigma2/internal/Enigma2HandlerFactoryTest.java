@@ -13,15 +13,14 @@
 package org.openhab.binding.enigma2.internal;
 
 import static org.eclipse.jdt.annotation.Checks.requireNonNull;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.enigma2.internal.Enigma2BindingConstants.THING_TYPE_DEVICE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;

@@ -13,8 +13,11 @@
 package org.openhab.binding.wemo.internal.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+import org.openhab.binding.wemo.internal.WemoBindingConstants;
+import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
+import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -28,9 +31,6 @@ import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
-import org.openhab.binding.wemo.internal.WemoBindingConstants;
-import org.openhab.binding.wemo.internal.handler.AbstractWemoHandler;
-import org.openhab.binding.wemo.internal.http.WemoHttpCall;
 
 /**
  * Generic test class for all WemoLight related tests that contains methods and constants used across the different test

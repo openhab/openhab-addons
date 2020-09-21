@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.util.HexUtils;
@@ -33,17 +33,17 @@ public class RFXComDateTimeMessageTest {
         String hexMessage = "0D580117B90003041D030D150A69";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComDateTimeMessage msg = (RFXComDateTimeMessage) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", RFXComDateTimeMessage.SubType.RTGR328N, msg.subType);
-        assertEquals("Seq Number", 23, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", "47360", msg.getDeviceId());
-        assertEquals("Date time", "2003-04-29T13:21:10", msg.dateTime);
-        assertEquals("Signal Level", 2, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL));
+        assertEquals(RFXComDateTimeMessage.SubType.RTGR328N, msg.subType, "SubType");
+        assertEquals(23, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals("47360", msg.getDeviceId(), "Sensor Id");
+        assertEquals("2003-04-29T13:21:10", msg.dateTime, "Date time");
+        assertEquals(2, RFXComTestHelper.getActualIntValue(msg, CHANNEL_SIGNAL_LEVEL), "Signal Level");
 
-        assertEquals("Converted value", DateTimeType.valueOf("2003-04-29T13:21:10"),
-                msg.convertToState(CHANNEL_DATE_TIME, new MockDeviceState()));
+        assertEquals(DateTimeType.valueOf("2003-04-29T13:21:10"),
+                msg.convertToState(CHANNEL_DATE_TIME, new MockDeviceState()), "Converted value");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

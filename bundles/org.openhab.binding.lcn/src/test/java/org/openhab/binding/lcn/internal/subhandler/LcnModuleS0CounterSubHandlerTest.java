@@ -15,8 +15,8 @@ package org.openhab.binding.lcn.internal.subhandler;
 import static org.mockito.Mockito.verify;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.lcn.internal.common.LcnChannelGroup;
 import org.openhab.core.library.types.DecimalType;
 
@@ -30,7 +30,7 @@ public class LcnModuleS0CounterSubHandlerTest extends AbstractTestLcnModuleSubHa
     private @NonNullByDefault({}) LcnModuleS0CounterSubHandler l;
 
     @Override
-    @Before
+    @BeforeEach
     public void setUp() {
         super.setUp();
 

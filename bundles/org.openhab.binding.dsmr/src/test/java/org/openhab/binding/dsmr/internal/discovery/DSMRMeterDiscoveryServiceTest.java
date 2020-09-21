@@ -12,24 +12,23 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.*;
 
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TooManyListenersException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram;
 import org.openhab.binding.dsmr.internal.device.p1telegram.P1Telegram.TelegramState;
@@ -37,7 +36,6 @@ import org.openhab.binding.dsmr.internal.handler.DSMRBridgeHandler;
 import org.openhab.binding.dsmr.internal.handler.DSMRMeterHandler;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterDescriptor;
 import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
-import org.openhab.core.io.transport.serial.PortInUseException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 
@@ -46,22 +44,15 @@ import org.openhab.core.thing.ThingUID;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 public class DSMRMeterDiscoveryServiceTest {
 
     private static final String EXPECTED_CONFIGURED_TELEGRAM = "dsmr_50";
     private static final String UNREGISTERED_METER_TELEGRAM = "unregistered_meter";
 
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private DSMRBridgeHandler bridge;
-    @Mock
-    private Thing thing;
-    @Mock
-    private DSMRMeterHandler meterHandler;
-
-    @Before
-    public void setUp() throws PortInUseException, TooManyListenersException {
-        initMocks(this);
-    }
+    private @Mock(answer = Answers.RETURNS_DEEP_STUBS) DSMRBridgeHandler bridge;
+    private @Mock Thing thing;
+    private @Mock DSMRMeterHandler meterHandler;
 
     /**
      * Test if discovery reports when the user has incorrectly configured the binding with the wrong meter types.
@@ -100,12 +91,12 @@ public class DSMRMeterDiscoveryServiceTest {
         when(bridge.getThing().getThings()).thenReturn(things);
 
         service.telegramReceived(expected);
-        assertNotNull("Should have invalid configured meters", invalidConfiguredRef.get());
-        assertTrue("Should have found specific invalid meter",
-                invalidConfiguredRef.get().contains(DSMRMeterType.ELECTRICITY_V4_2));
-        assertNotNull("Should have undetected meters", unconfiguredRef.get());
-        assertTrue("Should have found specific undetected meter",
-                unconfiguredRef.get().contains(DSMRMeterType.ELECTRICITY_V5_0));
+        assertNotNull(invalidConfiguredRef.get(), "Should have invalid configured meters");
+        assertTrue(invalidConfiguredRef.get().contains(DSMRMeterType.ELECTRICITY_V4_2),
+                "Should have found specific invalid meter");
+        assertNotNull(unconfiguredRef.get(), "Should have undetected meters");
+        assertTrue(unconfiguredRef.get().contains(DSMRMeterType.ELECTRICITY_V5_0),
+                "Should have found specific undetected meter");
     }
 
     /**
@@ -128,6 +119,6 @@ public class DSMRMeterDiscoveryServiceTest {
         when(bridge.getThing().getThings()).thenReturn(Collections.emptyList());
 
         service.telegramReceived(telegram);
-        assertTrue("Should have found an unregistered meter", unregisteredMeter.get());
+        assertTrue(unregisteredMeter.get(), "Should have found an unregistered meter");
     }
 }

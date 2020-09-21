@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.luftdateninfo.internal;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.luftdateninfo.internal.utils.NumberUtils;
 
 /**
@@ -30,32 +30,32 @@ public class NumberTest {
     public void testRoundingUp() {
         double d1 = 1.95;
         double d1r2 = NumberUtils.round(d1, 2);
-        assertEquals("Double 1.95, 2 places ", "1.95", Double.toString(d1r2));
+        assertEquals("1.95", Double.toString(d1r2), "Double 1.95, 2 places");
         // System.out.println("D1R2 " + d1r2);
         double d1r1 = NumberUtils.round(d1, 1);
         // System.out.println("D1R1 " + d1r1);
-        assertEquals("Double 1.95, 1 place ", "2.0", Double.toString(d1r1));
+        assertEquals("2.0", Double.toString(d1r1), "Double 1.95, 1 place");
     }
 
     @Test
     public void testRoundingDown() {
         double d1 = 1.94;
         double d1r2 = NumberUtils.round(d1, 2);
-        assertEquals("Double 1.94, 2 places ", "1.94", Double.toString(d1r2));
+        assertEquals("1.94", Double.toString(d1r2), "Double 1.94, 2 places");
         // System.out.println("D1R2 " + d1r2);
         double d1r1 = NumberUtils.round(d1, 1);
         // System.out.println("D1R1 " + d1r1);
-        assertEquals("Double 1.94, 1 place ", "1.9", Double.toString(d1r1));
+        assertEquals("1.9", Double.toString(d1r1), "Double 1.94, 1 place");
     }
 
     @Test
     public void testStringNumbers() {
         String d1 = "1.94";
         double d1r2 = NumberUtils.round(d1, 2);
-        assertEquals("Double 1.94, 2 places ", "1.94", Double.toString(d1r2));
+        assertEquals("1.94", Double.toString(d1r2), "Double 1.94, 2 places");
         // System.out.println("D1R2 " + d1r2);
         double d1r1 = NumberUtils.round(d1, 1);
         // System.out.println("D1R1 " + d1r1);
-        assertEquals("Double 1.94, 1 place ", "1.9", Double.toString(d1r1));
+        assertEquals("1.9", Double.toString(d1r1), "Double 1.94, 1 place");
     }
 }

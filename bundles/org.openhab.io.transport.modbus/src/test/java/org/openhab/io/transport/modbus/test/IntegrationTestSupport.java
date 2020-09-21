@@ -13,7 +13,8 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -27,11 +28,13 @@ import java.util.HashMap;
 import java.util.function.LongSupplier;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.core.test.java.JavaTest;
 import org.openhab.io.transport.modbus.endpoint.ModbusSlaveEndpoint;
 import org.openhab.io.transport.modbus.endpoint.ModbusTCPSlaveEndpoint;
@@ -62,6 +65,8 @@ import net.wimpi.modbus.util.SerialParameters;
 /**
  * @author Sami Salonen - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class IntegrationTestSupport extends JavaTest {
 
     public enum ServerType {
@@ -113,14 +118,9 @@ public class IntegrationTestSupport extends JavaTest {
 
     private static AtomicCounter udpServerIndex = new AtomicCounter(0);
 
-    @Spy
-    protected TCPSlaveConnectionFactory tcpConnectionFactory = new TCPSlaveConnectionFactoryImpl();
-
-    @Spy
-    protected UDPSlaveTerminalFactory udpTerminalFactory = new UDPSlaveTerminalFactoryImpl();
-
-    @Spy
-    protected SerialConnectionFactory serialConnectionFactory = new SerialConnectionFactoryImpl();
+    protected @Spy TCPSlaveConnectionFactory tcpConnectionFactory = new TCPSlaveConnectionFactoryImpl();
+    protected @Spy UDPSlaveTerminalFactory udpTerminalFactory = new UDPSlaveTerminalFactoryImpl();
+    protected @Spy SerialConnectionFactory serialConnectionFactory = new SerialConnectionFactoryImpl();
 
     protected ResultCaptor<ModbusRequest> modbustRequestCaptor;
 
@@ -146,7 +146,7 @@ public class IntegrationTestSupport extends JavaTest {
         return InetAddress.getByName("127.0.0.1");
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         modbustRequestCaptor = new ResultCaptor<>(new LongSupplier() {
 
@@ -155,12 +155,11 @@ public class IntegrationTestSupport extends JavaTest {
                 return artificialServerWait;
             }
         });
-        MockitoAnnotations.initMocks(this);
         modbusManager = new NonOSGIModbusManager();
         startServer();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         stopServer();
         modbusManager.close();
@@ -238,8 +237,8 @@ public class IntegrationTestSupport extends JavaTest {
 
         udpListener.start();
         waitForUDPServerStartup();
-        Assert.assertNotSame(-1, udpModbusPort);
-        Assert.assertNotSame(0, udpModbusPort);
+        assertNotSame(-1, udpModbusPort);
+        assertNotSame(0, udpModbusPort);
     }
 
     private void waitForUDPServerStartup() throws InterruptedException {
@@ -256,8 +255,8 @@ public class IntegrationTestSupport extends JavaTest {
         tcpListener.start();
         // Query server port. It seems to take time (probably due to thread starting)
         waitForTCPServerStartup();
-        Assert.assertNotSame(-1, tcpModbusPort);
-        Assert.assertNotSame(0, tcpModbusPort);
+        assertNotSame(-1, tcpModbusPort);
+        assertNotSame(0, tcpModbusPort);
     }
 
     private void waitForTCPServerStartup() throws InterruptedException {

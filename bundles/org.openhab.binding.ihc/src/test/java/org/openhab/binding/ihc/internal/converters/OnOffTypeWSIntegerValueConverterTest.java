@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.ihc.internal.converters;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.ihc.internal.ws.exeptions.ConversionException;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSIntegerValue;
 import org.openhab.binding.ihc.internal.ws.resourcevalues.WSResourceValue;
@@ -69,15 +69,15 @@ public class OnOffTypeWSIntegerValueConverterTest {
         assertEquals(OnOffType.ON, type);
     }
 
-    @Test(expected = ConversionException.class)
-    public void testOnLevelledError() throws ConversionException {
+    @Test
+    public void testOnLevelledError() {
         WSIntegerValue val = new WSIntegerValue(12345, 0, -100, 100);
 
         Map<Command, Object> commandLevels = new HashMap<>();
         commandLevels.put(OnOffType.ON, "70");
 
-        val = convertFromOHType(val, OnOffType.ON,
-                new ConverterAdditionalInfo(null, false, Collections.unmodifiableMap(commandLevels)));
+        assertThrows(ConversionException.class, () -> convertFromOHType(val, OnOffType.ON,
+                new ConverterAdditionalInfo(null, false, Collections.unmodifiableMap(commandLevels))));
     }
 
     @Test

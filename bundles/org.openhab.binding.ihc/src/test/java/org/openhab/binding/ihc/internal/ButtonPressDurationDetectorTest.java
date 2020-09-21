@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.ihc.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test for IHC / ELKO binding

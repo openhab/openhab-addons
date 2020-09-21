@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.wemo.internal.discovery.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.jupnp.model.ValidationException;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -43,7 +43,7 @@ import org.openhab.binding.wemo.internal.test.GenericWemoOSGiTest;
  */
 public class WemoLinkDiscoveryServiceOSGiTest extends GenericWemoLightOSGiTestParent {
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         setUpServices();
     }

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.loxone.internal.controls;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.StringType;
 
 /**
@@ -23,7 +23,7 @@ import org.openhab.core.library.types.StringType;
  *
  */
 public class LxControlTextStateTest extends LxControlTest {
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("106bed36-016d-6dd8-ffffffe6109fb656", "0b734138-038c-0386-ffff403fb0c34b9e",
                 "0fe665f4-0161-4773-ffff403fb0c34b9e", "Gate");

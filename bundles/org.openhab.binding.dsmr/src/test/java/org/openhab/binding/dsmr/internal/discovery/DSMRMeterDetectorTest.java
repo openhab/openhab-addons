@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dsmr.internal.discovery;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.dsmr.internal.meter.DSMRMeterType.*;
 
 import java.util.Arrays;
@@ -24,11 +24,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.dsmr.internal.TelegramReaderUtil;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObject;
 import org.openhab.binding.dsmr.internal.device.cosem.CosemObjectType;
@@ -42,11 +39,9 @@ import org.openhab.binding.dsmr.internal.meter.DSMRMeterType;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
-@RunWith(value = Parameterized.class)
 public class DSMRMeterDetectorTest {
 
     // @formatter:off
-    @Parameters(name = "{0}")
     public static final List<Object[]> data() {
         return Arrays.asList(new Object[][] {
             { "ace4000", EnumSet.of( ELECTRICITY_ACE4000, GAS_ACE4000)},
@@ -64,30 +59,26 @@ public class DSMRMeterDetectorTest {
     }
     // @formatter:on
 
-    @Parameter(0)
-    public String telegramName;
-
-    @Parameter(1)
-    public Set<DSMRMeterType> expectedMeters;
-
-    @Test
-    public void testDetectMeters() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testDetectMeters(final String telegramName, final Set<DSMRMeterType> expectedMeters) {
         P1Telegram telegram = TelegramReaderUtil.readTelegram(telegramName, TelegramState.OK);
         DSMRMeterDetector detector = new DSMRMeterDetector();
         Entry<Collection<DSMRMeterDescriptor>, Map<CosemObjectType, CosemObject>> entry = detector
                 .detectMeters(telegram);
         Collection<DSMRMeterDescriptor> detectMeters = entry.getKey();
 
-        assertEquals("Should detect correct number of meters: " + Arrays.toString(detectMeters.toArray()),
-                expectedMeters.size(), detectMeters.size());
-        assertEquals("Should not have any undetected cosem objects: ", Collections.emptyMap(), entry.getValue());
-        assertEquals("Should not have any unknown cosem objects", Collections.emptyList(),
-                telegram.getUnknownCosemObjects());
+        assertEquals(expectedMeters.size(), detectMeters.size(),
+                "Should detect correct number of meters: " + Arrays.toString(detectMeters.toArray()));
+        assertEquals(Collections.emptyMap(), entry.getValue(), "Should not have any undetected cosem objects: ");
+        assertEquals(Collections.emptyList(), telegram.getUnknownCosemObjects(),
+                "Should not have any unknown cosem objects");
         for (DSMRMeterType meter : expectedMeters) {
             assertEquals(
+
+                    1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count(),
                     String.format("Meter '%s' not found: %s", meter,
-                            Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))),
-                    1, detectMeters.stream().filter(e -> e.getMeterType() == meter).count());
+                            Arrays.toString(detectMeters.toArray(new DSMRMeterDescriptor[0]))));
         }
     }
 }

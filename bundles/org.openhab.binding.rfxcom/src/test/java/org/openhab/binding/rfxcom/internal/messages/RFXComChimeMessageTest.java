@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.messages.RFXComChimeMessage.SubType;
 import org.openhab.core.util.HexUtils;
@@ -34,13 +34,13 @@ public class RFXComChimeMessageTest {
         String hexMessage = "0716020900A1F350";
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComChimeMessage msg = (RFXComChimeMessage) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", SubType.SELECTPLUS, msg.subType);
-        assertEquals("Seq Number", 9, msg.seqNbr);
-        assertEquals("Sensor Id", "41459", msg.getDeviceId());
-        assertEquals("Signal Level", 5, msg.signalLevel);
+        assertEquals(SubType.SELECTPLUS, msg.subType, "SubType");
+        assertEquals(9, msg.seqNbr, "Seq Number");
+        assertEquals("41459", msg.getDeviceId(), "Sensor Id");
+        assertEquals(5, msg.signalLevel, "Signal Level");
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 }

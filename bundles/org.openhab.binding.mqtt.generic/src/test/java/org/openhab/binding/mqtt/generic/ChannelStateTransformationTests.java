@@ -13,19 +13,22 @@
 package org.openhab.binding.mqtt.generic;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.*;
 
 import java.util.concurrent.CompletableFuture;
 
 import javax.naming.ConfigurationException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.internal.handler.GenericMQTTThingHandler;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.core.config.core.Configuration;
@@ -44,32 +47,21 @@ import org.openhab.core.transform.TransformationService;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class ChannelStateTransformationTests {
 
-    @Mock
-    private TransformationService jsonPathService;
-
-    @Mock
-    private TransformationServiceProvider transformationServiceProvider;
-
-    @Mock
-    private ThingHandlerCallback callback;
-
-    @Mock
-    private Thing thing;
-
-    @Mock
-    private AbstractBrokerHandler bridgeHandler;
-
-    @Mock
-    private MqttBrokerConnection connection;
+    private @Mock TransformationService jsonPathService;
+    private @Mock TransformationServiceProvider transformationServiceProvider;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Thing thing;
+    private @Mock AbstractBrokerHandler bridgeHandler;
+    private @Mock MqttBrokerConnection connection;
 
     private GenericMQTTThingHandler thingHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() throws ConfigurationException, MqttException {
-        initMocks(this);
-
         ThingStatusInfo thingStatus = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
         // Mock the thing: We need the thingUID and the bridgeUID

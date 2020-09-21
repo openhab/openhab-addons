@@ -13,7 +13,8 @@
 package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 
@@ -21,6 +22,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.items.ColorItem;
@@ -35,10 +40,6 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.types.State;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.rest.mocks.DummyItemRegistry;
 
@@ -61,7 +62,7 @@ public class SensorTests {
         itemRegistry.add(item);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         commonSetup = new CommonSetup(false);
         itemRegistry = new DummyItemRegistry();
@@ -84,7 +85,7 @@ public class SensorTests {
         commonSetup.start(new ResourceConfig().registerInstances(subject));
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         commonSetup.dispose();
     }

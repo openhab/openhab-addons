@@ -13,7 +13,8 @@
 package org.openhab.binding.fmiweather;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.nio.file.Path;
@@ -21,8 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.fmiweather.internal.client.Data;
 import org.openhab.binding.fmiweather.internal.client.FMIResponse;
 import org.openhab.binding.fmiweather.internal.client.Location;
@@ -46,7 +47,7 @@ public class FMIResponseParsingSinglePlaceTest extends AbstractFMIResponseParsin
     private Location emasalo = new Location("Porvoo Emäsalo", "101023", new BigDecimal("60.20382"),
             new BigDecimal("25.62546"));
 
-    @Before
+    @BeforeEach
     public void setUp() {
         try {
             observationsResponse1 = parseMultiPointCoverageXml(readTestResourceUtf8(observations1));

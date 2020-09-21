@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.astro.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.astro.internal.AstroBindingConstants.*;
 import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 import static org.openhab.binding.astro.test.cases.AstroParametrizedTestCases.*;
@@ -24,19 +24,17 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingUID;
-import org.openhab.core.types.State;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.astro.internal.calc.MoonCalc;
 import org.openhab.binding.astro.internal.calc.SunCalc;
 import org.openhab.binding.astro.internal.config.AstroChannelConfig;
 import org.openhab.binding.astro.internal.model.Planet;
 import org.openhab.binding.astro.internal.util.PropertyUtils;
 import org.openhab.binding.astro.test.cases.AstroParametrizedTestCases;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingUID;
+import org.openhab.core.types.State;
 
 /**
  * Tests for the Astro Channels state
@@ -47,30 +45,19 @@ import org.openhab.binding.astro.test.cases.AstroParametrizedTestCases;
  * @author Erdoan Hadzhiyusein - Adapted the class to work with the new DateTimeType
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */
-@RunWith(Parameterized.class)
 public class AstroStateTest {
-
-    private String thingID;
-    private String channelId;
-    private State expectedState;
 
     // These test result timestamps are adapted for the +03:00 time zone
     private static final ZoneId ZONE_ID = ZoneId.of("+03:00");
 
-    public AstroStateTest(String thingID, String channelId, State expectedState) {
-        this.thingID = thingID;
-        this.channelId = channelId;
-        this.expectedState = expectedState;
-    }
-
-    @Parameters
     public static List<Object[]> data() {
         AstroParametrizedTestCases cases = new AstroParametrizedTestCases();
         return cases.getCases();
     }
 
-    @Test
-    public void testParametrized() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testParametrized(String thingID, String channelId, State expectedState) {
         try {
             assertStateUpdate(thingID, channelId, expectedState);
         } catch (Exception e) {

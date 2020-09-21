@@ -13,18 +13,22 @@
 package org.openhab.binding.tradfri.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.binding.tradfri.internal.config.TradfriDeviceConfig.CONFIG_ID;
 
 import java.util.Collection;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
@@ -43,12 +47,13 @@ import com.google.gson.JsonParser;
  * @author Kai Kreuzer - Initial contribution
  * @author Christoph Weitkamp - Added support for remote controller and motion sensor devices (read-only battery level)
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class TradfriDiscoveryServiceTest {
 
     private static final ThingUID GATEWAY_THING_UID = new ThingUID("tradfri:gateway:1");
 
-    @Mock
-    private TradfriGatewayHandler handler;
+    private @Mock TradfriGatewayHandler handler;
 
     private final DiscoveryListener listener = new DiscoveryListener() {
         @Override
@@ -71,10 +76,8 @@ public class TradfriDiscoveryServiceTest {
 
     private TradfriDiscoveryService discovery;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
-
         when(handler.getThing()).thenReturn(BridgeBuilder.create(GATEWAY_TYPE_UID, "1").build());
 
         discovery = new TradfriDiscoveryService();
@@ -82,7 +85,7 @@ public class TradfriDiscoveryServiceTest {
         discovery.addDiscoveryListener(listener);
     }
 
-    @After
+    @AfterEach
     public void cleanUp() {
         discoveryResult = null;
     }

@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.foobot.internal.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
 import org.openhab.binding.foobot.internal.FoobotApiException;
@@ -52,7 +52,7 @@ public class FoobotDeviceHandlerTest {
     public void testSensorDataToState() throws IOException, FoobotApiException {
         final FoobotJsonData sensorData = connector.getSensorData("1234");
 
-        assertNotNull("No sensor data read", sensorData);
+        assertNotNull(sensorData, "No sensor data read");
         assertEquals(handler.sensorDataToState("temperature", sensorData), new QuantityType(12.345, SIUnits.CELSIUS));
         assertEquals(handler.sensorDataToState("gpi", sensorData), new DecimalType(5.6789012));
     }

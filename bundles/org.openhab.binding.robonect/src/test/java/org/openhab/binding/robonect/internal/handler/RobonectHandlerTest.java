@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.robonect.internal.handler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -21,12 +21,15 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import org.eclipse.jetty.client.HttpClient;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.robonect.internal.RobonectBindingConstants;
 import org.openhab.binding.robonect.internal.RobonectClient;
 import org.openhab.binding.robonect.internal.model.ErrorEntry;
@@ -57,28 +60,20 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Marco Meyer - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class RobonectHandlerTest {
 
     private RobonectHandler subject;
 
-    @Mock
-    private Thing robonectThingMock;
+    private @Mock Thing robonectThingMock;
+    private @Mock RobonectClient robonectClientMock;
+    private @Mock ThingHandlerCallback callbackMock;
+    private @Mock HttpClient httpClientMock;
+    private @Mock TimeZoneProvider timezoneProvider;
 
-    @Mock
-    private RobonectClient robonectClientMock;
-
-    @Mock
-    private ThingHandlerCallback callbackMock;
-
-    @Mock
-    private HttpClient httpClientMock;
-
-    @Mock
-    private TimeZoneProvider timezoneProvider;
-
-    @Before
+    @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         subject = new RobonectHandler(robonectThingMock, httpClientMock, timezoneProvider);
         subject.setCallback(callbackMock);
         subject.setRobonectClient(robonectClientMock);

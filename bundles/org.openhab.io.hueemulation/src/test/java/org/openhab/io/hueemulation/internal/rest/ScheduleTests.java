@@ -13,7 +13,8 @@
 package org.openhab.io.hueemulation.internal.rest;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -28,19 +29,19 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.items.ColorItem;
-import org.openhab.core.library.items.SwitchItem;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.automation.Rule;
 import org.openhab.core.automation.RuleManager;
 import org.openhab.core.automation.RuleRegistry;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.util.RuleBuilder;
 import org.openhab.core.automation.util.TriggerBuilder;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.items.ColorItem;
+import org.openhab.core.library.items.SwitchItem;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.DeviceType;
 import org.openhab.io.hueemulation.internal.RuleUtils;
@@ -66,7 +67,7 @@ public class ScheduleTests {
 
     Schedules subject = new Schedules();
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         commonSetup = new CommonSetup(false);
         this.cs = commonSetup.cs;
@@ -97,7 +98,7 @@ public class ScheduleTests {
         RuleUtils.random = random;
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         RuleUtils.random = new Random();
         commonSetup.dispose();

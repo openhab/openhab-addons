@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.FAN;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComFanMessage.SubType.CASAFAN;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
@@ -55,9 +55,9 @@ public class RFXComFanMessageTest {
             @Nullable State expectedCommand, State expectedLightCommand, @Nullable State expectedFanSpeed,
             RFXComBaseMessage.PacketType packetType) throws RFXComException {
         final RFXComFanMessage msg = (RFXComFanMessage) RFXComMessageFactory.createMessage(HexUtils.hexToBytes(hexMsg));
-        assertEquals("Seq Number", seqNbr, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", deviceId, msg.getDeviceId());
-        assertEquals("Signal Level", signalLevel, msg.signalLevel);
+        assertEquals(seqNbr, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals(deviceId, msg.getDeviceId(), "Sensor Id");
+        assertEquals(signalLevel, msg.signalLevel, "Signal Level");
 
         assertEquals(expectedCommand, msg.convertToState(CHANNEL_COMMAND, DEVICE_STATE));
         assertEquals(expectedLightCommand, msg.convertToState(CHANNEL_FAN_LIGHT, DEVICE_STATE));
@@ -67,7 +67,7 @@ public class RFXComFanMessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMsg, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMsg, HexUtils.bytesToHex(decoded), "Message converted back");
     }
 
     @Test

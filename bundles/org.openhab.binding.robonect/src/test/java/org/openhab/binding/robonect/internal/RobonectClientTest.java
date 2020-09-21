@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.robonect.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
@@ -26,10 +24,11 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.robonect.internal.model.ErrorList;
 import org.openhab.binding.robonect.internal.model.MowerInfo;
 import org.openhab.binding.robonect.internal.model.Name;
@@ -38,25 +37,20 @@ import org.openhab.binding.robonect.internal.model.VersionInfo;
 /**
  * The goal of this class is to test the functionality of the RobonectClient,
  * by mocking the module responses.
- * 
+ *
  * @author Marco Meyer - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
 public class RobonectClientTest {
 
     private RobonectClient subject;
 
-    @Mock
-    private HttpClient httpClientMock;
+    private @Mock HttpClient httpClientMock;
+    private @Mock ContentResponse responseMock;
+    private @Mock Request requestMock;
 
-    @Mock
-    private ContentResponse responseMock;
-
-    @Mock
-    private Request requestMock;
-
-    @Before
+    @BeforeEach
     public void init() {
-        MockitoAnnotations.initMocks(this);
         RobonectEndpoint dummyEndPoint = new RobonectEndpoint("123.456.789.123", null, null);
         subject = new RobonectClient(httpClientMock, dummyEndPoint);
     }
@@ -179,33 +173,33 @@ public class RobonectClientTest {
         verify(httpClientMock, times(1)).newRequest("http://123.456.789.123/json?cmd=status");
     }
 
-    @Test(expected = RobonectCommunicationException.class)
+    @Test
     public void shouldReceiveErrorAnswerOnInterruptedException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new InterruptedException("Mock Interrupted Exception"));
-        MowerInfo answer = subject.getMowerInfo();
+        assertThrows(RobonectCommunicationException.class, () -> subject.getMowerInfo());
     }
 
-    @Test(expected = RobonectCommunicationException.class)
+    @Test
     public void shouldReceiveErrorAnswerOnExecutionException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new ExecutionException(new Exception("Mock Exception")));
-        MowerInfo answer = subject.getMowerInfo();
+        assertThrows(RobonectCommunicationException.class, () -> subject.getMowerInfo());
     }
 
-    @Test(expected = RobonectCommunicationException.class)
+    @Test
     public void shouldReceiveErrorAnswerOnTimeoutException()
             throws InterruptedException, ExecutionException, TimeoutException {
         when(httpClientMock.newRequest("http://123.456.789.123/json?cmd=status")).thenReturn(requestMock);
         when(requestMock.method(HttpMethod.GET)).thenReturn(requestMock);
         when(requestMock.timeout(30000L, TimeUnit.MILLISECONDS)).thenReturn(requestMock);
         when(requestMock.send()).thenThrow(new TimeoutException("Mock Timeout Exception"));
-        MowerInfo answer = subject.getMowerInfo();
+        assertThrows(RobonectCommunicationException.class, () -> subject.getMowerInfo());
     }
 }

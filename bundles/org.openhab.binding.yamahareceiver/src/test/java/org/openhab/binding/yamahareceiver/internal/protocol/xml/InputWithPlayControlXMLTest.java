@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.yamahareceiver.internal.protocol.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.yamahareceiver.internal.TestModels.*;
 import static org.openhab.binding.yamahareceiver.internal.YamahaReceiverBindingConstants.Inputs.*;
 
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -31,21 +30,16 @@ import org.openhab.binding.yamahareceiver.internal.state.PlayInfoStateListener;
 
 /**
  * Unit test for {@link InputWithPlayControlXML}.
- * 
+ *
  * @author Tomasz Maruszak - Initial contribution
  */
 public class InputWithPlayControlXMLTest extends AbstractZoneControlXMLTest {
 
     private InputWithPlayControlXML subject;
 
-    @Mock
-    private PlayInfoStateListener playInfoStateListener;
-
-    @Captor
-    private ArgumentCaptor<PlayInfoState> playInfoStateArg;
-
-    @Mock
-    private YamahaBridgeConfig bridgeConfig;
+    private @Mock PlayInfoStateListener playInfoStateListener;
+    private @Captor ArgumentCaptor<PlayInfoState> playInfoStateArg;
+    private @Mock YamahaBridgeConfig bridgeConfig;
 
     private String albumUrl;
 

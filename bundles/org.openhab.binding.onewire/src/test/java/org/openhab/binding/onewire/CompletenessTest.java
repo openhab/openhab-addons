@@ -12,18 +12,27 @@
  */
 package org.openhab.binding.onewire;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.onewire.internal.OwBindingConstants;
 import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
-import org.openhab.binding.onewire.internal.handler.*;
+import org.openhab.binding.onewire.internal.handler.AdvancedMultisensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.BAE091xSensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.BasicMultisensorThingHandler;
+import org.openhab.binding.onewire.internal.handler.BasicThingHandler;
+import org.openhab.binding.onewire.internal.handler.EDSSensorThingHandler;
 
 /**
  * Tests cases for binding completeness
@@ -48,7 +57,7 @@ public class CompletenessTest {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!OwBindingConstants.THING_TYPE_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
-                Assert.fail("missing thing type map for sensor type " + sensorType.name());
+                fail("missing thing type map for sensor type " + sensorType.name());
             }
         }
     }
@@ -58,7 +67,7 @@ public class CompletenessTest {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!OwBindingConstants.SENSOR_TYPE_CHANNEL_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
-                Assert.fail("missing channel configuration map for sensor type " + sensorType.name());
+                fail("missing channel configuration map for sensor type " + sensorType.name());
             }
         }
     }
@@ -67,7 +76,7 @@ public class CompletenessTest {
     public void allSensorsSupportedByThingHandlers() {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!THINGHANDLER_SENSOR_TYPES.contains(sensorType) && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
-                Assert.fail("missing thing handler for sensor type " + sensorType.name());
+                fail("missing thing handler for sensor type " + sensorType.name());
             }
         }
     }
@@ -77,7 +86,7 @@ public class CompletenessTest {
         for (OwSensorType sensorType : EnumSet.allOf(OwSensorType.class)) {
             if (!OwBindingConstants.THING_LABEL_MAP.containsKey(sensorType)
                     && !IGNORED_SENSOR_TYPES.contains(sensorType)) {
-                Assert.fail("missing label for sensor type " + sensorType.name());
+                fail("missing label for sensor type " + sensorType.name());
             }
         }
     }
@@ -90,14 +99,14 @@ public class CompletenessTest {
                     try {
                         return (String) f.get(null);
                     } catch (IllegalAccessException e) {
-                        Assert.fail("unexpected");
+                        fail("unexpected");
                         return null;
                     }
                 }).collect(Collectors.toList());
 
         for (String channel : channels) {
             if (!OwBindingConstants.ACCEPTED_ITEM_TYPES_MAP.containsKey(channel)) {
-                Assert.fail("missing accepted item type for channel " + channel);
+                fail("missing accepted item type for channel " + channel);
             }
         }
     }

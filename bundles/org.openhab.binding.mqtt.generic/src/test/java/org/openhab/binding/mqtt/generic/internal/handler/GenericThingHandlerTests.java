@@ -13,17 +13,21 @@
 package org.openhab.binding.mqtt.generic.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.*;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
@@ -51,26 +55,21 @@ import org.openhab.core.types.RefreshType;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class GenericThingHandlerTests {
-    @Mock
-    private ThingHandlerCallback callback;
 
-    @Mock
-    private Thing thing;
-
-    @Mock
-    private AbstractBrokerHandler bridgeHandler;
-
-    @Mock
-    private MqttBrokerConnection connection;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock Thing thing;
+    private @Mock AbstractBrokerHandler bridgeHandler;
+    private @Mock MqttBrokerConnection connection;
 
     private GenericMQTTThingHandler thingHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ThingStatusInfo thingStatus = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
 
-        MockitoAnnotations.initMocks(this);
         // Mock the thing: We need the thingUID and the bridgeUID
         when(thing.getUID()).thenReturn(testGenericThing);
         when(thing.getChannels()).thenReturn(thingChannelList);
@@ -100,11 +99,12 @@ public class GenericThingHandlerTests {
         doReturn(thingStatus).when(thingHandler).getBridgeStatus();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void initializeWithUnknownThingUID() {
         ChannelConfig config = textConfiguration().as(ChannelConfig.class);
-        thingHandler.createChannelState(config, new ChannelUID(testGenericThing, "test"),
-                ValueFactory.createValueState(config, unknownChannel.getId()));
+        assertThrows(IllegalArgumentException.class,
+                () -> thingHandler.createChannelState(config, new ChannelUID(testGenericThing, "test"),
+                        ValueFactory.createValueState(config, unknownChannel.getId())));
     }
 
     @Test

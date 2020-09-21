@@ -12,23 +12,27 @@
  */
 package org.openhab.binding.yeelight.internal;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 import static org.openhab.binding.yeelight.internal.YeelightBindingConstants.PARAMETER_DEVICE_ID;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
-import org.openhab.binding.yeelight.internal.handler.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingWithAmbientHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightCeilingWithNightHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightColorHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightStripeHandler;
+import org.openhab.binding.yeelight.internal.handler.YeelightWhiteHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,7 +44,8 @@ import org.openhab.core.thing.binding.ThingHandler;
  * @author Viktor Koop - Initial contribution
  * @author Nikita Pogudalov - Added YeelightCeilingWithNightHandler for Ceiling 1
  */
-@RunWith(value = Parameterized.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class YeelightHandlerFactoryTest {
 
     private static final List<Object[]> TESTS = Arrays.asList(
@@ -52,41 +57,31 @@ public class YeelightHandlerFactoryTest {
 
     private final YeelightHandlerFactory factory = new YeelightHandlerFactory();
 
-    @Mock
-    private Thing thing;
+    private @Mock Thing thing;
 
-    private final String name;
-    private final Class<?> clazz;
-
-    public YeelightHandlerFactoryTest(String name, Class<?> clazz) {
-        this.name = name;
-        this.clazz = clazz;
-    }
-
-    @Parameters(name = "{0} - {1}")
     public static List<Object[]> data() {
         return TESTS;
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        initMocks(this);
         Configuration configuration = new Configuration();
         configuration.put(PARAMETER_DEVICE_ID, "");
 
         when(thing.getConfiguration()).thenReturn(configuration);
     }
 
-    @Test
-    public void testCorrectClass() {
+    @ParameterizedTest
+    @MethodSource("data")
+    public void testCorrectClass(String name, Class<?> clazz) {
         when(thing.getThingTypeUID()).thenReturn(new ThingTypeUID(YeelightBindingConstants.BINDING_ID, name));
         ThingHandler handler = factory.createHandler(thing);
 
         if (null == clazz) {
-            assertNull(name + " should not return any handler but null", handler);
+            assertNull(handler, name + " should not return any handler but null");
         } else {
-            assertNotNull(name + " should no return null handler", handler);
-            assertEquals(" should be correct matcher", clazz, handler.getClass());
+            assertNotNull(handler, name + " should no return null handler");
+            assertEquals(clazz, handler.getClass(), " should be correct matcher");
 
             assertEquals(thing, handler.getThing());
         }

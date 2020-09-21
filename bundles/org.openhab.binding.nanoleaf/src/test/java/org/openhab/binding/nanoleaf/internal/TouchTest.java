@@ -13,12 +13,12 @@
 package org.openhab.binding.nanoleaf.internal;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.nanoleaf.internal.model.TouchEvent;
 import org.openhab.binding.nanoleaf.internal.model.TouchEvents;
 

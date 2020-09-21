@@ -13,7 +13,8 @@
 package org.openhab.binding.mqtt.homie.internal.handler;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mqtt.homie.internal.handler.ThingChannelConstants.TEST_HOMIE_THING;
@@ -30,11 +31,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
@@ -75,26 +79,18 @@ import org.openhab.core.types.TypeParser;
  *
  * @author David Graeff - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 public class HomieThingHandlerTests {
-    @Mock
-    private ThingHandlerCallback callback;
 
     private Thing thing;
 
-    @Mock
-    private AbstractBrokerHandler bridgeHandler;
-
-    @Mock
-    private MqttBrokerConnection connection;
-
-    @Mock
-    private ScheduledExecutorService scheduler;
-
-    @Mock
-    private ScheduledFuture<?> scheduledFuture;
-
-    @Mock
-    private ThingTypeRegistry thingTypeRegistry;
+    private @Mock AbstractBrokerHandler bridgeHandler;
+    private @Mock ThingHandlerCallback callback;
+    private @Mock MqttBrokerConnection connection;
+    private @Mock ScheduledExecutorService scheduler;
+    private @Mock ScheduledFuture<?> scheduledFuture;
+    private @Mock ThingTypeRegistry thingTypeRegistry;
 
     private HomieThingHandler thingHandler;
 
@@ -104,13 +100,11 @@ public class HomieThingHandlerTests {
     private final String deviceTopic = "homie/" + deviceID;
 
     // A completed future is returned for a subscribe call to the attributes
-    CompletableFuture<@Nullable Void> future = CompletableFuture.completedFuture(null);
+    private CompletableFuture<@Nullable Void> future = CompletableFuture.completedFuture(null);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final ThingStatusInfo thingStatus = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-
-        MockitoAnnotations.initMocks(this);
 
         final Configuration config = new Configuration();
         config.put("basetopic", "homie");

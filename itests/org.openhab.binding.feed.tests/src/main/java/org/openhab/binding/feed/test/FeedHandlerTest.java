@@ -13,9 +13,9 @@
 package org.openhab.binding.feed.test;
 
 import static java.lang.Thread.sleep;
-import static org.openhab.core.thing.ThingStatus.*;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.openhab.core.thing.ThingStatus.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -27,12 +27,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.http.HttpStatus;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.feed.internal.FeedBindingConstants;
+import org.openhab.binding.feed.internal.handler.FeedHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.items.StateChangeListener;
 import org.openhab.core.library.items.StringItem;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.test.java.JavaOSGiTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ManagedThingProvider;
@@ -47,14 +54,6 @@ import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.link.ManagedItemChannelLinkProvider;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.core.test.java.JavaOSGiTest;
-import org.openhab.core.test.storage.VolatileStorageService;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.openhab.binding.feed.internal.FeedBindingConstants;
-import org.openhab.binding.feed.internal.handler.FeedHandler;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 
@@ -143,7 +142,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         volatileStorageService = new VolatileStorageService();
         registerService(volatileStorageService);
@@ -157,7 +156,7 @@ public class FeedHandlerTest extends JavaOSGiTest {
         registerFeedTestServlet();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         currentItemState = null;
         if (feedThing != null) {
@@ -315,7 +314,6 @@ public class FeedHandlerTest extends JavaOSGiTest {
     }
 
     @Test
-    @Category(SlowTests.class)
     public void assertThatItemsStateIsNotUpdatedOnAutoRefreshIfContentIsNotChanged()
             throws IOException, InterruptedException {
         boolean commandReceived = false;
@@ -324,7 +322,6 @@ public class FeedHandlerTest extends JavaOSGiTest {
     }
 
     @Test
-    @Category(SlowTests.class)
     public void assertThatItemsStateIsUpdatedOnAutoRefreshIfContentChanged() throws IOException, InterruptedException {
         boolean commandReceived = false;
         boolean contentChanged = true;

@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.networkupstools.internal;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class to check the validity of the {@link NutName} enum.
@@ -38,12 +38,12 @@ public class NutNameTest {
         for (final NutName nn : NutName.values()) {
             final Matcher matcher = CHANNEL_PATTERN.matcher(nn.getName());
 
-            assertTrue("NutName name '" + nn + "' could not be matched with expected pattern.", matcher.find());
+            assertTrue(matcher.find(), "NutName name '" + nn + "' could not be matched with expected pattern.");
             final String expectedChannelId = matcher.group(1)
                     + StringUtils.capitalize(Optional.ofNullable(matcher.group(2)).orElse(""))
                     + StringUtils.capitalize(Optional.ofNullable(matcher.group(3)).orElse(""))
                     + StringUtils.capitalize(Optional.ofNullable(matcher.group(4)).orElse(""));
-            assertEquals("Channel name not correct", expectedChannelId, nn.getChannelId());
+            assertEquals(expectedChannelId, nn.getChannelId(), "Channel name not correct");
         }
     }
 }

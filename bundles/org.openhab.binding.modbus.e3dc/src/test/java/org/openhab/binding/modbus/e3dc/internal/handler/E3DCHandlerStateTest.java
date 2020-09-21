@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;

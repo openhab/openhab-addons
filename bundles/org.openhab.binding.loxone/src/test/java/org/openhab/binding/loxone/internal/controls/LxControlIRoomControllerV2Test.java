@@ -15,8 +15,8 @@ package org.openhab.binding.loxone.internal.controls;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 
@@ -41,7 +41,7 @@ public class LxControlIRoomControllerV2Test extends LxControlTest {
     private static final String FROST_PROTECT_TEMPERATURE_CHANNEL = "/ Frost Protect Temperature";
     private static final String HEAT_PROTECT_TEMPERATURE_CHANNEL = "/ Heat Protect Temperature";
 
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("14328f8a-21c9-7c0d-ffff403fb0c34b9e", "0b734138-037d-034e-ffff403fb0c34b9e",
                 "0fe650c2-0004-d446-ffff504f9410790f", "Intelligent Room Controller");

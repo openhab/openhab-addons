@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.tplinksmarthome.internal.device;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,8 +24,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.openhab.binding.tplinksmarthome.internal.Connection;
 import org.openhab.binding.tplinksmarthome.internal.CryptUtil;
 import org.openhab.binding.tplinksmarthome.internal.TPLinkSmartHomeConfiguration;
@@ -37,6 +40,8 @@ import org.openhab.binding.tplinksmarthome.internal.model.ModelTestUtil;
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.WARN)
 @NonNullByDefault
 public class DeviceTestBase<T extends SmartHomeDevice> {
 
@@ -47,10 +52,8 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
 
     private final String deviceStateFilename;
 
-    @Mock
-    private @NonNullByDefault({}) Socket socket;
-    @Mock
-    private @NonNullByDefault({}) OutputStream outputStream;
+    private @Mock @NonNullByDefault({}) Socket socket;
+    private @Mock @NonNullByDefault({}) OutputStream outputStream;
 
     /**
      * Constructor.
@@ -75,9 +78,8 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
         device.initialize(connection, configuration);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
-        initMocks(this);
         when(socket.getOutputStream()).thenReturn(outputStream);
         deviceState = new DeviceState(ModelTestUtil.readJson(deviceStateFilename));
     }
@@ -121,7 +123,7 @@ public class DeviceTestBase<T extends SmartHomeDevice> {
             byte[] input = (byte[]) arg.getArguments()[0];
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(input)) {
                 String expectedString = expectedProcessor.apply(CryptUtil.decryptWithLength(inputStream));
-                assertEquals(filenames[index.get()], json, expectedString);
+                assertEquals(json, expectedString, filenames[index.get()]);
             }
             index.incrementAndGet();
             return null;

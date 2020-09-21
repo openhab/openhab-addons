@@ -13,8 +13,9 @@
 package org.openhab.io.transport.modbus.test;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.ArrayMatching.arrayContaining;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.openhab.io.transport.modbus.ModbusConstants.*;
 
 import java.util.Collection;
@@ -24,7 +25,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.hamcrest.Matcher;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.io.transport.modbus.ModbusWriteFunctionCode;
 import org.openhab.io.transport.modbus.ModbusWriteRequestBlueprint;
 import org.openhab.io.transport.modbus.json.WriteRequestJsonUtilities;
@@ -49,13 +50,13 @@ public class WriteRequestJsonUtilitiesTest {
         assertThat(WriteRequestJsonUtilities.fromJson(3, "[]").size(), is(equalTo(0)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFC6NoRegister() {
-        WriteRequestJsonUtilities.fromJson(55, "[{"//
+        assertThrows(IllegalArgumentException.class, () -> WriteRequestJsonUtilities.fromJson(55, "[{"//
                 + "\"functionCode\": 6,"//
                 + "\"address\": 5412,"//
                 + "\"value\": []"//
-                + "}]");
+                + "}]"));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -83,22 +84,22 @@ public class WriteRequestJsonUtilitiesTest {
                         (Matcher) new RegisterMatcher(55, 5412, 99, ModbusWriteFunctionCode.WRITE_SINGLE_REGISTER, 3)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFC6MultipleRegisters() {
-        WriteRequestJsonUtilities.fromJson(55, "[{"//
+        assertThrows(IllegalArgumentException.class, () -> WriteRequestJsonUtilities.fromJson(55, "[{"//
                 + "\"functionCode\": 6,"//
                 + "\"address\": 5412,"//
                 + "\"value\": [3, 4]"//
-                + "}]");
+                + "}]"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFC16NoRegister() {
-        WriteRequestJsonUtilities.fromJson(55, "[{"//
+        assertThrows(IllegalArgumentException.class, () -> WriteRequestJsonUtilities.fromJson(55, "[{"//
                 + "\"functionCode\": 16,"//
                 + "\"address\": 5412,"//
                 + "\"value\": []"//
-                + "}]");
+                + "}]"));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -135,13 +136,13 @@ public class WriteRequestJsonUtilitiesTest {
         assertThat(writes.size(), is(equalTo(1)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFC16MultipleRegistersTooManyRegisters() {
-        WriteRequestJsonUtilities.fromJson(55, "[{"//
+        assertThrows(IllegalArgumentException.class, () -> WriteRequestJsonUtilities.fromJson(55, "[{"//
                 + "\"functionCode\": 16,"//
                 + "\"address\": 5412,"//
                 + "\"value\": [" + String.join(",", OVER_MAX_REGISTERS) + "]"//
-                + "}]");
+                + "}]"));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -156,13 +157,13 @@ public class WriteRequestJsonUtilitiesTest {
                         ModbusWriteFunctionCode.WRITE_COIL, true)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFC5MultipleCoils() {
-        WriteRequestJsonUtilities.fromJson(55, "[{"//
+        assertThrows(IllegalArgumentException.class, () -> WriteRequestJsonUtilities.fromJson(55, "[{"//
                 + "\"functionCode\": 5,"//
                 + "\"address\": 5412,"//
                 + "\"value\": [3, 4]"//
-                + "}]");
+                + "}]"));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -199,25 +200,25 @@ public class WriteRequestJsonUtilitiesTest {
         assertThat(writes.size(), is(equalTo(1)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testFC15MultipleCoilsTooManyCoils() {
-        WriteRequestJsonUtilities.fromJson(55, "[{"//
+        assertThrows(IllegalArgumentException.class, () -> WriteRequestJsonUtilities.fromJson(55, "[{"//
                 + "\"functionCode\": 15,"//
                 + "\"address\": 5412,"//
                 + "\"value\": [" + String.join(",", OVER_MAX_COILS) + "]"//
-                + "}]");
+                + "}]"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testEmptyObject() {
         // we are expecting list, not object -> error
-        WriteRequestJsonUtilities.fromJson(3, "{}");
+        assertThrows(IllegalStateException.class, () -> WriteRequestJsonUtilities.fromJson(3, "{}"));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void testNumber() {
         // we are expecting list, not primitive (number) -> error
-        WriteRequestJsonUtilities.fromJson(3, "3");
+        assertThrows(IllegalStateException.class, () -> WriteRequestJsonUtilities.fromJson(3, "3"));
     }
 
     @Test

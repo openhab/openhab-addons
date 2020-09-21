@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.lcn.internal.pchkdiscovery;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test class for {@link LcnPchkDiscoveryService}.
@@ -30,7 +30,7 @@ public class LcnPchkDiscoveryServiceTest {
     private ServicesResponse r = s.xmlToServiceResponse(RESPONSE);
     private static final String RESPONSE = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?><ServicesResponse xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"servicesresponse.xsd\"><Version major=\"1\" minor=\"0\" /><Server requestId=\"1548\" machineId=\"b8:27:eb:fe:a4:bb\" machineName=\"raspberrypi\" osShort=\"Unix/Linux\" osLong=\"Unix/Linux\">LCN-PCHK 3.2.2 running on Unix/Linux</Server><Services /><ExtServices><ExtService name=\"LcnPchkBus\" major=\"1\" minor=\"0\" prot=\"TCP\" localPort=\"4114\">PCHK 3.2.2 bus</ExtService></ExtServices></ServicesResponse>";
 
-    @Before
+    @BeforeEach
     public void setUp() {
         s = new LcnPchkDiscoveryService();
         r = s.xmlToServiceResponse(RESPONSE);

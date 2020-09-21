@@ -15,13 +15,13 @@
  */
 package org.openhab.binding.lametrictime.api.local.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.FileReader;
 import java.util.HashMap;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.lametrictime.api.common.impl.GsonGenerator;
 import org.openhab.binding.lametrictime.api.test.AbstractTest;
 
@@ -32,7 +32,7 @@ public class WidgetTest extends AbstractTest
 {
     private static Gson gson;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpBeforeClass()
     {
         gson = GsonGenerator.create(true);

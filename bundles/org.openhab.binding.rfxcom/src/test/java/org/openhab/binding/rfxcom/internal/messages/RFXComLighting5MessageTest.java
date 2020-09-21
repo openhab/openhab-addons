@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.LIGHTING5;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.Commands.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComLighting5Message.SubType.IT;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.core.library.types.OnOffType;
@@ -43,11 +43,11 @@ public class RFXComLighting5MessageTest {
         itMessageObject.convertFromState(CHANNEL_COMMAND, OnOffType.ON);
         byte[] message = itMessageObject.decodeMessage();
         String hexMessage = HexUtils.bytesToHex(message);
-        assertEquals("Message is not as expected", "0A140F0000080D01010000", hexMessage);
+        assertEquals("0A140F0000080D01010000", hexMessage, "Message is not as expected");
         RFXComLighting5Message msg = (RFXComLighting5Message) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", IT, msg.subType);
-        assertEquals("Sensor Id", "2061.1", msg.getDeviceId());
-        assertEquals("Command", ON, msg.command);
+        assertEquals(IT, msg.subType, "SubType");
+        assertEquals("2061.1", msg.getDeviceId(), "Sensor Id");
+        assertEquals(ON, msg.command, "Command");
     }
 
     @Test

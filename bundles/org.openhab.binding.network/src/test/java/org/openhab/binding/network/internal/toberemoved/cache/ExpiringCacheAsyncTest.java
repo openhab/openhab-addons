@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.network.internal.toberemoved.cache;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync.ExpiringCacheUpdate;
 
@@ -27,18 +27,17 @@ import org.openhab.binding.network.internal.toberemoved.cache.ExpiringCacheAsync
  * @author David Graeff - Initial contribution
  */
 public class ExpiringCacheAsyncTest {
-    @SuppressWarnings("unused")
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorWrongCacheTime() {
+        assertThrows(IllegalArgumentException.class, () ->
         // Fail if cache time is <= 0
         new ExpiringCacheAsync<>(0, () -> {
-        });
+        }));
     }
 
-    @SuppressWarnings("unused")
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testConstructorNoRefrehCommand() {
-        new ExpiringCacheAsync<>(2000, null);
+        assertThrows(IllegalArgumentException.class, () -> new ExpiringCacheAsync<>(2000, null));
     }
 
     @Test

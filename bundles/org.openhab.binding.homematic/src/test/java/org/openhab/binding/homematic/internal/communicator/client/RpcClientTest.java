@@ -20,8 +20,8 @@ import static org.openhab.binding.homematic.test.util.RpcClientMockImpl.*;
 
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.communicator.message.RpcRequest;
 import org.openhab.binding.homematic.internal.communicator.message.XmlRpcRequest;
 import org.openhab.binding.homematic.internal.model.HmChannel;
@@ -36,7 +36,7 @@ public class RpcClientTest extends JavaTest {
 
     private RpcClientMockImpl rpcClient;
 
-    @Before
+    @BeforeEach
     public void setup() throws IOException {
         this.rpcClient = new RpcClientMockImpl();
     }

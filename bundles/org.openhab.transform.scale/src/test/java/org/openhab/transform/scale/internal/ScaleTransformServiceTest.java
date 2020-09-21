@@ -12,15 +12,14 @@
  */
 package org.openhab.transform.scale.internal;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Locale;
 
 import javax.measure.quantity.Dimensionless;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.transform.TransformationException;
 
@@ -30,7 +29,7 @@ import org.openhab.core.transform.TransformationException;
 public class ScaleTransformServiceTest {
     private ScaleTransformationService processor;
 
-    @Before
+    @BeforeEach
     public void init() {
         processor = new ScaleTransformationService() {
             @Override
@@ -46,12 +45,12 @@ public class ScaleTransformServiceTest {
         String existingscale = "scale/humidex_de.scale";
         String source = "10";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("nicht wesentlich", transformedResponse);
+        assertEquals("nicht wesentlich", transformedResponse);
 
         existingscale = "scale/limits.scale";
         source = "10";
         transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("middle", transformedResponse);
+        assertEquals("middle", transformedResponse);
     }
 
     @Test
@@ -61,18 +60,18 @@ public class ScaleTransformServiceTest {
         // Testing upper bound opened range
         String source = "500";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("extreme", transformedResponse);
+        assertEquals("extreme", transformedResponse);
 
         // Testing lower bound opened range
         source = "-10";
         transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("low", transformedResponse);
+        assertEquals("low", transformedResponse);
 
         // Testing unfinite up and down range
         existingscale = "scale/catchall.scale";
         source = "-10";
         transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("catchall", transformedResponse);
+        assertEquals("catchall", transformedResponse);
     }
 
     @Test
@@ -82,7 +81,7 @@ public class ScaleTransformServiceTest {
         String existingscale = "scale/humidex_fr.scale";
         String source = "-";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("", transformedResponse);
+        assertEquals("", transformedResponse);
     }
 
     @Test
@@ -106,7 +105,7 @@ public class ScaleTransformServiceTest {
         String existingscale = "scale/evaluationorder.scale";
         String source = "azerty";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("", transformedResponse);
+        assertEquals("", transformedResponse);
     }
 
     @Test
@@ -117,7 +116,7 @@ public class ScaleTransformServiceTest {
         String source = "12";
 
         String transformedResponse = processor.transform(evaluationOrder, source);
-        Assert.assertEquals("first", transformedResponse);
+        assertEquals("first", transformedResponse);
     }
 
     @Test
@@ -127,7 +126,7 @@ public class ScaleTransformServiceTest {
         String expected = "Correcte (992 ppm) !";
 
         String transformedResponse = processor.transform(aqScaleFile, airQuality.toString());
-        Assert.assertEquals(expected, transformedResponse);
+        assertEquals(expected, transformedResponse);
     }
 
     @Test
@@ -136,7 +135,7 @@ public class ScaleTransformServiceTest {
         String existingscale = "scale/catchnonnumeric.scale";
         String source = "azerty";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("Non Numeric", transformedResponse);
+        assertEquals("Non Numeric", transformedResponse);
     }
 
     @Test
@@ -144,7 +143,7 @@ public class ScaleTransformServiceTest {
         String existingscale = "scale/netatmo_aq.scale";
         String source = "992";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("Correcte (992) !", transformedResponse);
+        assertEquals("Correcte (992) !", transformedResponse);
     }
 
     @Test
@@ -152,6 +151,6 @@ public class ScaleTransformServiceTest {
         String existingscale = "scale/humidex.scale";
         String source = "200";
         String transformedResponse = processor.transform(existingscale, source);
-        Assert.assertEquals("", transformedResponse);
+        assertEquals("", transformedResponse);
     }
 }

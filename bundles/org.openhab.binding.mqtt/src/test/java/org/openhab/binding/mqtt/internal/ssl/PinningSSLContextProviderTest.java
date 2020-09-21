@@ -13,7 +13,7 @@
 package org.openhab.binding.mqtt.internal.ssl;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -26,7 +26,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.core.util.HexUtils;
 
 /**

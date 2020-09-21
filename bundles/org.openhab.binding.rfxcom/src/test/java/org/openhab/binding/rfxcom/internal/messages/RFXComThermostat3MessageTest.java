@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.rfxcom.internal.messages;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.rfxcom.internal.RFXComBindingConstants.*;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComBaseMessage.PacketType.THERMOSTAT3;
 import static org.openhab.binding.rfxcom.internal.messages.RFXComThermostat3Message.SubType.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComException;
 import org.openhab.binding.rfxcom.internal.exceptions.RFXComUnsupportedChannelException;
 import org.openhab.core.library.types.OnOffType;
@@ -69,11 +69,11 @@ public class RFXComThermostat3MessageTest {
             throws RFXComException {
         byte[] message = HexUtils.hexToBytes(hexMessage);
         RFXComThermostat3Message msg = (RFXComThermostat3Message) RFXComMessageFactory.createMessage(message);
-        assertEquals("SubType", subtype, msg.subType);
-        assertEquals("Seq Number", sequenceNumber, (short) (msg.seqNbr & 0xFF));
-        assertEquals("Sensor Id", sensorId, msg.getDeviceId());
-        assertEquals(CHANNEL_COMMAND, command, msg.command);
-        assertEquals("Signal Level", signalLevel, msg.signalLevel);
+        assertEquals(subtype, msg.subType, "SubType");
+        assertEquals(sequenceNumber, (short) (msg.seqNbr & 0xFF), "Seq Number");
+        assertEquals(sensorId, msg.getDeviceId(), "Sensor Id");
+        assertEquals(command, msg.command, CHANNEL_COMMAND);
+        assertEquals(signalLevel, msg.signalLevel, "Signal Level");
 
         assertEquals(commandChannel, msg.convertToState(CHANNEL_COMMAND, deviceState));
         assertEquals(secondCommandChannel, msg.convertToState(CHANNEL_COMMAND_SECOND, deviceState));
@@ -82,7 +82,7 @@ public class RFXComThermostat3MessageTest {
 
         byte[] decoded = msg.decodeMessage();
 
-        assertEquals("Message converted back", hexMessage, HexUtils.bytesToHex(decoded));
+        assertEquals(hexMessage, HexUtils.bytesToHex(decoded), "Message converted back");
     }
     // TODO please add tests for real messages
 

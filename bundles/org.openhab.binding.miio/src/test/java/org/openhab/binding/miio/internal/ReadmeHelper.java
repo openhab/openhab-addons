@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.openhab.binding.miio.internal.basic.MiIoBasicChannel;
 import org.openhab.binding.miio.internal.basic.MiIoBasicDevice;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class ReadmeHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReadmeHelper.class);
     private static final String BASEFILE = "./README.base.md";
 
-    @Ignore
+    @Disabled
     public static void main(String[] args) {
         ReadmeHelper rm = new ReadmeHelper();
         LOGGER.info("## Creating device list");

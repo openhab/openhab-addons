@@ -13,7 +13,8 @@
 package org.openhab.binding.loxone.internal.controls;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -24,8 +25,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.loxone.internal.types.LxUuid;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -40,7 +41,7 @@ import org.openhab.core.types.UnDefType;
  *
  */
 public class LxControlLightControllerV2Test extends LxControlTest {
-    @Before
+    @BeforeEach
     public void setup() {
         setupControl("1076668f-0101-7076-ffff403fb0c34b9e", "0b734138-03ac-03f0-ffff403fb0c34b9e",
                 "0b734138-033e-02d4-ffff403fb0c34b9e", "Lighting controller");
