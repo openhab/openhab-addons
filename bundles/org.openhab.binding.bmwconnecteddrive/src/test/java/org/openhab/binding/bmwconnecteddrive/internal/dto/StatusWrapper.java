@@ -115,25 +115,24 @@ public class StatusWrapper {
             case MILEAGE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
+                if (imperial) {
+                    assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
+                } else {
+                    assertEquals("KM", KILOMETRE, qt.getUnit());
+                }
                 switch (gUid) {
                     case CHANNEL_GROUP_RANGE:
-                        if (imperial) {
-                            assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
-                        } else {
-                            assertEquals("KM", KILOMETRE, qt.getUnit());
-                        }
                         assertEquals("Mileage", qt.intValue(), vStatus.mileage);
                         break;
                     case CHANNEL_GROUP_SERVICE:
-                        if (imperial) {
-                            assertEquals("Miles", ImperialUnits.MILE, qt.getUnit());
-                        } else {
-                            assertEquals("KM", KILOMETRE, qt.getUnit());
-                        }
                         assertEquals("Mileage", qt.intValue(), vStatus.cbsData.get(0).cbsRemainingMileage);
+                        break;
+                    case CHANNEL_GROUP_CHECK_CONTROL:
+                        assertEquals("Mileage", qt.intValue(), vStatus.checkControlMessages.get(0).ccmMileage);
                         break;
                     default:
                         assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                        break;
                 }
                 break;
             case RANGE_ELECTRIC:
@@ -370,15 +369,36 @@ public class StatusWrapper {
                 wanted = StringType.valueOf(vStatus.sunroof);
                 assertEquals("Window", wanted.toString(), st.toString());
                 break;
-            case COUNT:
+            case SIZE:
                 assertTrue(state instanceof DecimalType);
                 dt = (DecimalType) state;
-                assertEquals("Number of Services", vStatus.cbsData.size(), dt.intValue());
+                switch (gUid) {
+                    case CHANNEL_GROUP_CHECK_CONTROL:
+                        assertEquals("Number CheckControl Messages", vStatus.checkControlMessages.size(),
+                                dt.intValue());
+                        break;
+                    case CHANNEL_GROUP_SERVICE:
+                        assertEquals("Number of Services", vStatus.cbsData.size(), dt.intValue());
+                        break;
+                    default:
+                        assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                        break;
+                }
                 break;
             case INDEX:
                 assertTrue(state instanceof DecimalType);
                 dt = (DecimalType) state;
-                assertEquals("Number of Services", 0, dt.intValue());
+                switch (gUid) {
+                    case CHANNEL_GROUP_SERVICE:
+                        assertEquals("Index of Services", 0, dt.intValue());
+                        break;
+                    case CHANNEL_GROUP_CHECK_CONTROL:
+                        assertEquals("Index of CheckControls", 0, dt.intValue());
+                        break;
+                    default:
+                        assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                        break;
+                }
                 break;
             case SERVICE_DATE:
                 assertTrue(state instanceof DateTimeType);
@@ -423,8 +443,19 @@ public class StatusWrapper {
             case NAME:
                 assertTrue(state instanceof StringType);
                 st = (StringType) state;
-                wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
-                assertEquals("Window", wanted.toString(), st.toString());
+                switch (gUid) {
+                    case CHANNEL_GROUP_SERVICE:
+                        wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
+                        assertEquals("Window", wanted.toString(), st.toString());
+                        break;
+                    case CHANNEL_GROUP_CHECK_CONTROL:
+                        wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
+                        assertEquals("Window", wanted.toString(), st.toString());
+                        break;
+                    default:
+                        assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                        break;
+                }
                 break;
             case DATE:
                 assertTrue(state instanceof DateTimeType);
@@ -437,6 +468,7 @@ public class StatusWrapper {
                         break;
                     default:
                         assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                        break;
                 }
                 break;
             default:

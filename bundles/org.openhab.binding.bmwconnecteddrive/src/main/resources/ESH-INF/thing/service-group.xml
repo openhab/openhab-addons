@@ -10,7 +10,7 @@
 			<channel id="name" typeId="service-name-channel"/>
 			<channel id="date" typeId="service-date-channel"/>
 			<channel id="mileage" typeId="service-mileage-channel"/>
-			<channel id="count" typeId="service-count-channel"/>
+			<channel id="size" typeId="service-size-channel"/>
 			<channel id="index" typeId="service-index-channel"/>
 			<channel id="next" typeId="service-next-channel"/>
 		</channels>

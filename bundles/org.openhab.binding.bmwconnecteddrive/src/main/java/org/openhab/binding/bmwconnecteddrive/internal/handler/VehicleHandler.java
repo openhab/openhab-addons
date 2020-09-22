@@ -56,6 +56,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsCon
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
@@ -208,7 +209,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 case CHANNEL_GROUP_SERVICE:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            vehicleStatusCallback.next();
+                            vehicleStatusCallback.nextService();
                             updateState(channelUID, OnOffType.OFF);
                         }
                     }
@@ -224,7 +225,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                 case CHANNEL_GROUP_CHECK_CONTROL:
                     if (command instanceof OnOffType) {
                         if (command.equals(OnOffType.ON)) {
-                            vehicleStatusCallback.next();
+                            vehicleStatusCallback.nextCheckControl();
                             updateState(channelUID, OnOffType.OFF);
                         }
                     }
@@ -525,7 +526,7 @@ public class VehicleHandler extends VehicleChannelHandler {
          */
         private synchronized void updateDestination() {
             if (destinations != null) {
-                updateState(destinationCount, new DecimalType(destinations.size()));
+                updateState(destinationSize, new DecimalType(destinations.size()));
                 if (!destinations.isEmpty()) {
                     if (destinationIndexSelected < 0 || destinationIndexSelected >= destinations.size()) {
                         // select first item
@@ -671,6 +672,8 @@ public class VehicleHandler extends VehicleChannelHandler {
         private ThingStatus thingStatus = ThingStatus.UNKNOWN;
         private List<CBSMessage> services = new ArrayList<CBSMessage>();
         private int serviceIndexSelected = -1;
+        private List<CCMMessage> checkControls = new ArrayList<CCMMessage>();
+        private int checkControlIndex = -1;
 
         /**
          * Vehicle Status is supported by all Vehicles so callback result is used to report Thing Status.
@@ -686,9 +689,38 @@ public class VehicleHandler extends VehicleChannelHandler {
             }
         }
 
-        public void next() {
+        public void nextCheckControl() {
+            checkControlIndex++;
+            updateService();
+        }
+
+        public void nextService() {
             serviceIndexSelected++;
             updateService();
+        }
+
+        private synchronized void updateCheckControls() {
+            if (checkControls != null) {
+                updateState(checkControlSize, new DecimalType(checkControls.size()));
+                if (!checkControls.isEmpty()) {
+                    if (checkControlIndex < 0 || checkControlIndex >= checkControls.size()) {
+                        // select first item
+                        checkControlIndex = 0;
+                    }
+                    CCMMessage entry = checkControls.get(checkControlIndex);
+                    updateState(checkControlName, StringType.valueOf(entry.ccmDescriptionShort));
+                    if (imperial) {
+                        updateState(checkControlMileage,
+                                QuantityType.valueOf(Converter.round(entry.ccmMileage), ImperialUnits.MILE));
+                    } else {
+                        updateState(checkControlMileage, QuantityType.valueOf(Converter.round(entry.ccmMileage),
+                                MetricPrefix.KILO(SIUnits.METRE)));
+                    }
+                    // last update index - this is a sync point and you're sure that all data is valid noew
+                    updateState(VehicleHandler.this.checkControlIndex, new DecimalType(checkControlIndex));
+                }
+
+            }
         }
 
         /**
@@ -696,7 +728,7 @@ public class VehicleHandler extends VehicleChannelHandler {
          */
         private synchronized void updateService() {
             if (services != null) {
-                updateState(serviceCount, new DecimalType(services.size()));
+                updateState(serviceSize, new DecimalType(services.size()));
                 if (!services.isEmpty()) {
                     if (serviceIndexSelected < 0 || serviceIndexSelected >= services.size()) {
                         // select first item
@@ -744,7 +776,6 @@ public class VehicleHandler extends VehicleChannelHandler {
 
                 Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
                 updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
-                updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
 
                 updateState(windowDriverFront, StringType.valueOf(windowState.windowDriverFront));
                 updateState(windowDriverRear, StringType.valueOf(windowState.windowDriverRear));
@@ -771,6 +802,11 @@ public class VehicleHandler extends VehicleChannelHandler {
                 synchronized (this) {
                     services = vStatus.cbsData;
                     updateService();
+                }
+                updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
+                synchronized (this) {
+                    checkControls = vStatus.checkControlMessages;
+                    updateCheckControls();
                 }
 
                 // Range values

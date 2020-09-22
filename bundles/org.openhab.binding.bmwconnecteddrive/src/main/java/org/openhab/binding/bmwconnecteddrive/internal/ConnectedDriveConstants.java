@@ -117,7 +117,7 @@ public class ConnectedDriveConstants {
     public static final String CHANNEL_GROUP_TROUBLESHOOT = "troubleshoot";
 
     // List Interface Constants
-    public static final String COUNT = "count";
+    public static final String SIZE = "size";
     public static final String INDEX = "index";
     public static final String NEXT = "next";
 

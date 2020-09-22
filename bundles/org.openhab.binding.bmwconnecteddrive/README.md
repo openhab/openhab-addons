@@ -330,6 +330,21 @@ Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 
 ## Further Descriptions
 
+### List Interface
+
+Currently there are 3 occurrences of dynamic data delivered as Lists
+
+* Upcoming Services
+* Check Control Messages
+* Last Destinations
+
+In order to provide all data the lists are organized the following way based on the Service Group example
+
+* **size** is the total length of the list. Read-only.
+* **index** is the current selected index starting with 0 => list with size 10, valid index is between 0 - 9. If the index is set to _out of bounds_ it's set to first element. Read-write.
+* **next** declares a switch for scrolling forward through the list in an endless way. Reaching end of list will start again from 0. Read-write.
+* **name**, **mileage** and **date** declares the list item. It will change when setting new index or perform next. Read-only.
+
 ### Range vs Range Radius
 
 <img align="right" src="./doc/range-radius.png" width="400" height="350"/>
