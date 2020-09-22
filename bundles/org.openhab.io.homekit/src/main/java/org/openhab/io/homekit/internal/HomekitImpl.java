@@ -51,10 +51,8 @@ import io.github.hapjava.server.impl.HomekitServer;
  * @author Andy Lintner - Initial contribution
  */
 @Component(immediate = true, service = { Homekit.class }, configurationPid = "org.openhab.homekit", property = {
-        Constants.SERVICE_PID + "=org.openhab.homekit",
-        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:homekit",
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
-        ConfigurableService.SERVICE_PROPERTY_LABEL + "=HomeKit Integration", "port:Integer=9123" })
+        Constants.SERVICE_PID + "=org.openhab.homekit", "port:Integer=9123" })
+@ConfigurableService(category = "io", label = "HomeKit Integration", description_uri = "io:homekit")
 @NonNullByDefault
 public class HomekitImpl implements Homekit {
     private final Logger logger = LoggerFactory.getLogger(HomekitImpl.class);

@@ -79,11 +79,9 @@ import io.netty.handler.ssl.SslContextBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = true, service = EmbeddedBrokerService.class, configurationPid = "org.openhab.core.mqttembeddedbroker", property = {
-        org.osgi.framework.Constants.SERVICE_PID + "=org.openhab.core.mqttembeddedbroker",
-        ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=mqtt:mqttembeddedbroker",
-        ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=MQTT",
-        ConfigurableService.SERVICE_PROPERTY_LABEL + "=MQTT Embedded Broker" })
+@Component(immediate = true, service = EmbeddedBrokerService.class, configurationPid = "org.openhab.core.mqttembeddedbroker", //
+        property = org.osgi.framework.Constants.SERVICE_PID + "=org.openhab.core.mqttembeddedbroker")
+@ConfigurableService(category = "MQTT", label = "MQTT Embedded Broker", description_uri = "mqtt:mqttembeddedbroker")
 @NonNullByDefault
 public class EmbeddedBrokerService
         implements MqttConnectionObserver, MqttServiceObserver, MqttEmbeddedBrokerStartedListener {
