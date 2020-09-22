@@ -19,11 +19,11 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
-import org.eclipse.smarthome.core.thing.binding.ThingHandler;
-import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.BaseThingHandlerFactory;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.binding.publictransportswitzerland.internal.stationboard.PublicTransportSwitzerlandStationboardHandler;
 import org.osgi.service.component.annotations.Component;
 

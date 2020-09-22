@@ -13,7 +13,7 @@
 package org.openhab.binding.publictransportswitzerland.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link PublicTransportSwitzerlandBindingConstants} class defines common constants, which are

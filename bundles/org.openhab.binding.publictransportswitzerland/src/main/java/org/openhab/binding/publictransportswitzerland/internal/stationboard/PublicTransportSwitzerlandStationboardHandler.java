@@ -29,16 +29,16 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.cache.ExpiringCache;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.thing.*;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.thing.binding.builder.ChannelBuilder;
-import org.eclipse.smarthome.core.thing.binding.builder.ThingBuilder;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
-import org.eclipse.smarthome.core.types.UnDefType;
-import org.eclipse.smarthome.io.net.http.HttpUtil;
+import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.*;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
