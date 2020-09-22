@@ -43,9 +43,15 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID serviceDate;
     protected ChannelUID serviceMileage;
     protected ChannelUID serviceName;
-    protected ChannelUID serviceCount;
+    protected ChannelUID serviceSize;
     protected ChannelUID serviceIndex;
     protected ChannelUID serviceNext;
+
+    protected ChannelUID checkControlMileage;
+    protected ChannelUID checkControlName;
+    protected ChannelUID checkControlSize;
+    protected ChannelUID checkControlIndex;
+    protected ChannelUID checkControlNext;
 
     protected ChannelUID doorDriverFront;
     protected ChannelUID doorDriverRear;
@@ -106,7 +112,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected ChannelUID destinationName;
     protected ChannelUID destinationLat;
     protected ChannelUID destinationLon;
-    protected ChannelUID destinationCount;
+    protected ChannelUID destinationSize;
     protected ChannelUID destinationIndex;
     protected ChannelUID destinationNext;
 
@@ -159,9 +165,15 @@ public class VehicleChannelHandler extends BaseThingHandler {
         serviceDate = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, DATE);
         serviceMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, MILEAGE);
         serviceName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, NAME);
-        serviceCount = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, COUNT);
+        serviceSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, SIZE);
         serviceIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, INDEX);
-        serviceNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, COUNT);
+        serviceNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_SERVICE, NEXT);
+
+        checkControlMileage = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, MILEAGE);
+        checkControlName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, NAME);
+        checkControlSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, SIZE);
+        checkControlIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, INDEX);
+        checkControlNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_CHECK_CONTROL, NEXT);
 
         doorDriverFront = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_FRONT);
         doorDriverRear = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DOORS, DOOR_DRIVER_REAR);
@@ -237,7 +249,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
         destinationName = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NAME);
         destinationLat = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, LATITUDE);
         destinationLon = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, LONGITUDE);
-        destinationCount = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, COUNT);
+        destinationSize = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, SIZE);
         destinationIndex = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, INDEX);
         destinationNext = new ChannelUID(thing.getUID(), CHANNEL_GROUP_DESTINATION, NEXT);
 

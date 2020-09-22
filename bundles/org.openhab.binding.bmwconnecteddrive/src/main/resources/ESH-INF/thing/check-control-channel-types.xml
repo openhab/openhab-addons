@@ -7,14 +7,6 @@
 		<item-type>String</item-type>
 		<label>Destination Name</label>
 	</channel-type>
-	<channel-type id="destination-latitude-channel">
-		<item-type>Number</item-type>
-		<label>Destination Latitude</label>
-	</channel-type>
-	<channel-type id="destination-longitude-channel">
-		<item-type>Number</item-type>
-		<label>Destination Longitude </label>
-	</channel-type>
 	<channel-type id="destination-size-channel">
 		<item-type>String</item-type>
 		<label>Number of Available Destinations</label>

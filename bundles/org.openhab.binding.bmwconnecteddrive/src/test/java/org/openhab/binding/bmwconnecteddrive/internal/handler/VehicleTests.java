@@ -49,9 +49,12 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int HYBRID_CALL_TIMES = 32;
-    private static final int CONV_CALL_TIMES = 26;
-    private static final int EV_CALL_TIMES = 27;
+    private static final int HYBRID_CALL_TIMES = 31;
+    private static final int CONV_CALL_TIMES = 25;
+    private static final int EV_CALL_TIMES = 26;
+
+    private static final int LIST_UPDATES = 7;
+    private static final int CHECK_CONTROL_ACTIVE_CALLS = 3;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
@@ -131,11 +134,10 @@ public class VehicleTests {
      */
     @Test
     public void testMyi3Rex() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     /**
@@ -160,11 +162,10 @@ public class VehicleTests {
      */
     @Test
     public void testMyi3RexMiles() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     /**
@@ -185,22 +186,20 @@ public class VehicleTests {
      */
     @Test
     public void testF15() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F15/status.json");
         // Check earliest Service by hard
         Map<String, State> m = new HashMap<String, State>();
-        // Don>'t test on concrete timestamp - it's idfferent on each machine
+        // Don>'t test on concrete timestamp - it's is different on each machine
         // Check for cbsType which is "Oil" instead
         // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
         m.put(ConnectedDriveConstants.NAME, StringType.valueOf("Oil"));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.of(m)));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
     }
 
     @Test
     public void testF15Miles() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F15/status.json");
@@ -210,7 +209,7 @@ public class VehicleTests {
         // Check for cbsType which is "Oil" instead
         // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
         m.put(ConnectedDriveConstants.NAME, StringType.valueOf("Oil"));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.of(m)));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
     }
 
     /**
@@ -234,7 +233,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES - 1, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
     @Test
@@ -242,7 +241,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES - 1, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
     @Test
@@ -250,7 +249,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES - 1, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
     @Test
@@ -258,7 +257,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES - 1, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
     @Test
@@ -266,7 +265,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES - 1, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
     @Test
@@ -274,92 +273,83 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES - 1, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
     @Test
     public void testF48() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
         // Check earliest Service by hard
         Map<String, State> m = new HashMap<String, State>();
         m.put(ConnectedDriveConstants.CHECK_CONTROL, StringType.valueOf("Tyre Pressure Notification"));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.of(m)));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS, Optional.of(m)));
     }
 
     @Test
     public void testF48Miles() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS, Optional.empty()));
     }
 
     @Test
     public void testG31NBTEvo() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     @Test
     public void testG31NBTEvoMiles() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     @Test
     public void testI01NoRex() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testVehicle(content, EV_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, EV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     @Test
     public void testI01NoRexMiles() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testVehicle(content, EV_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, EV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     @Test
     public void testI01Rex() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     @Test
     public void testI01RexMiles() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + numServices, Optional.empty()));
+        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 
     @Test
     public void test318iF31() {
-        int numServices = 5;
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status-318i.json");
         Map<String, State> m = new HashMap<String, State>();
         m.put(ConnectedDriveConstants.WINDOWS, StringType.valueOf(Constants.INTERMEDIATE));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + numServices, Optional.of(m)));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
     }
 }

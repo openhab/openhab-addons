@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-group-type id="destination-values">
-		<label>Destination List</label>
-		<description>Shows Your Destinations in a List</description>
+	<channel-group-type id="check-control-values">
+		<label>Check Control Messages</label>
+		<description>Show the current active CheckControl Messages</description>
 		<channels>
 			<channel id="name" typeId="destination-name-channel"/>
 			<channel id="latitude" typeId="destination-latitude-channel"/>
