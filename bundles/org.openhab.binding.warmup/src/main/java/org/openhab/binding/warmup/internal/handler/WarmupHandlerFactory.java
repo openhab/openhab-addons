@@ -14,24 +14,16 @@ package org.openhab.binding.warmup.internal.handler;
 
 import static org.openhab.binding.warmup.internal.WarmupBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.warmup.internal.discovery.WarmupDiscoveryService;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -47,7 +39,6 @@ import org.osgi.service.component.annotations.Reference;
 public class WarmupHandlerFactory extends BaseThingHandlerFactory {
 
     private final HttpClient httpClient;
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
     @Activate
     public WarmupHandlerFactory(@Reference final HttpClientFactory factory) {
@@ -64,29 +55,10 @@ public class WarmupHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            MyWarmupAccountHandler bridge = new MyWarmupAccountHandler((Bridge) thing, httpClient);
-            registerDiscoveryService(bridge);
-            return bridge;
+            return new MyWarmupAccountHandler((Bridge) thing, httpClient);
         } else if (THING_TYPE_ROOM.equals(thingTypeUID)) {
             return new RoomHandler(thing);
         }
         return null;
-    }
-
-    private synchronized void registerDiscoveryService(MyWarmupAccountHandler bridge) {
-        WarmupDiscoveryService discoveryService = new WarmupDiscoveryService(bridge);
-        this.discoveryServiceRegs.put(bridge.getThing().getUID(),
-                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
-        bridge.setDiscoveryService(discoveryService);
-    }
-
-    @Override
-    protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof MyWarmupAccountHandler) {
-            if (this.discoveryServiceRegs.containsKey(thingHandler.getThing().getUID())) {
-                ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.remove(thingHandler.getThing().getUID());
-                serviceReg.unregister();
-            }
-        }
     }
 }

@@ -21,12 +21,16 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.warmup.internal.handler.MyWarmupAccountHandler;
+import org.openhab.binding.warmup.internal.handler.WarmupRefreshListener;
 import org.openhab.binding.warmup.internal.model.query.LocationDTO;
 import org.openhab.binding.warmup.internal.model.query.QueryResponseDTO;
 import org.openhab.binding.warmup.internal.model.query.RoomDTO;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.binding.ThingHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 
 /**
  * The {@link WarmupDiscoveryService} is used to discover devices that are connected to a My Warmup account.
@@ -34,22 +38,33 @@ import org.openhab.core.thing.ThingUID;
  * @author James Melville - Initial contribution
  */
 @NonNullByDefault
-public class WarmupDiscoveryService extends AbstractDiscoveryService {
+public class WarmupDiscoveryService extends AbstractDiscoveryService
+        implements DiscoveryService, ThingHandlerService, WarmupRefreshListener {
 
-    private MyWarmupAccountHandler bridgeHandler;
-    private ThingUID bridgeUID;
-    private HashSet<ThingUID> previousThings;
+    private @Nullable MyWarmupAccountHandler bridgeHandler;
+    private @Nullable ThingUID bridgeUID;
 
-    public WarmupDiscoveryService(MyWarmupAccountHandler handler) {
+    public WarmupDiscoveryService() {
         super(DISCOVERABLE_THING_TYPES_UIDS, 5, false);
-        this.bridgeHandler = handler;
-        this.bridgeUID = handler.getThing().getUID();
-        this.previousThings = new HashSet<ThingUID>();
+    }
+
+    @Override
+    public void activate() {
+        super.activate(null);
+    }
+
+    @Override
+    public void deactivate() {
+        super.deactivate();
     }
 
     @Override
     public void startScan() {
-        bridgeHandler.scanDevices();
+        final MyWarmupAccountHandler handler = bridgeHandler;
+        if (handler != null) {
+            removeOlderResults(getTimestampOfLastScan());
+            handler.setDiscoveryService(this);
+        }
     }
 
     /**
@@ -57,6 +72,7 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService {
      *
      * @param domain Data model representing all devices
      */
+    @Override
     public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
             HashSet<ThingUID> discoveredThings = new HashSet<ThingUID>();
@@ -65,19 +81,14 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService {
                     discoverRoom(location, room, discoveredThings);
                 }
             }
-
-            previousThings.removeAll(discoveredThings);
-            for (ThingUID missingThing : previousThings) {
-                thingRemoved(missingThing);
-            }
-            previousThings = discoveredThings;
         }
     }
 
     private void discoverRoom(LocationDTO location, RoomDTO room, HashSet<ThingUID> discoveredThings) {
         if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()) {
             final String deviceSN = room.getThermostat4ies().get(0).getDeviceSN();
-            if (deviceSN != null) {
+            ThingUID localBridgeUID = this.bridgeUID;
+            if (localBridgeUID != null && deviceSN != null) {
                 final Map<String, Object> roomProperties = new HashMap<>();
                 roomProperties.put("serialNumber", deviceSN);
                 roomProperties.put("Serial Number", deviceSN);
@@ -87,13 +98,29 @@ public class WarmupDiscoveryService extends AbstractDiscoveryService {
                 roomProperties.put("Location Id", location.getId());
                 roomProperties.put("Location", location.getName());
 
-                ThingUID roomThingUID = new ThingUID(THING_TYPE_ROOM, bridgeUID, deviceSN);
-                thingDiscovered(DiscoveryResultBuilder.create(roomThingUID).withBridge(bridgeUID)
+                ThingUID roomThingUID = new ThingUID(THING_TYPE_ROOM, localBridgeUID, deviceSN);
+                thingDiscovered(DiscoveryResultBuilder.create(roomThingUID).withBridge(localBridgeUID)
                         .withProperties(roomProperties).withLabel(location.getName() + " - " + room.getName())
                         .withRepresentationProperty("serialNumber").build());
 
                 discoveredThings.add(roomThingUID);
             }
         }
+    }
+
+    @Override
+    public void setThingHandler(@Nullable final ThingHandler handler) {
+        if (handler instanceof MyWarmupAccountHandler) {
+            bridgeHandler = (MyWarmupAccountHandler) handler;
+            bridgeUID = handler.getThing().getUID();
+        } else {
+            bridgeHandler = null;
+            bridgeUID = null;
+        }
+    }
+
+    @Override
+    public @Nullable ThingHandler getThingHandler() {
+        return bridgeHandler;
     }
 }

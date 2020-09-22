@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.warmup.internal.handler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +30,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 
 /**
@@ -59,6 +62,11 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Refresh interval misconfigured (minimum 10s)");
         }
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Collections.singleton(WarmupDiscoveryService.class);
     }
 
     @Override
@@ -100,17 +108,13 @@ public class MyWarmupAccountHandler extends BaseBridgeHandler {
         notifyListeners(queryResponse);
     }
 
-    public synchronized void scanDevices() {
-        if (discoveryService != null && queryResponse != null) {
-            discoveryService.refresh(queryResponse);
-        }
-    }
-
-    /**
-     * Initiate discovery
-     */
     public void setDiscoveryService(final WarmupDiscoveryService discoveryService) {
         this.discoveryService = discoveryService;
+        refreshFromServer();
+    }
+
+    public void unsetDiscoveryService() {
+        discoveryService = null;
     }
 
     /**
