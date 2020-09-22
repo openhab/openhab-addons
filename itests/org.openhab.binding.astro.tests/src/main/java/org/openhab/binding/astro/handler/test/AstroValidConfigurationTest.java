@@ -18,6 +18,9 @@ import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 
 import java.time.ZoneId;
 
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.astro.internal.handler.AstroThingHandler;
+import org.openhab.binding.astro.internal.handler.SunHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.scheduler.CronScheduler;
@@ -28,9 +31,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.astro.internal.handler.AstroThingHandler;
-import org.openhab.binding.astro.internal.handler.SunHandler;
 
 /**
  * Tests for the {@link AstroThingHandler}
