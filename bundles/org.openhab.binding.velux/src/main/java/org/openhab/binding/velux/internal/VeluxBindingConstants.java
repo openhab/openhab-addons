@@ -147,4 +147,5 @@ public class VeluxBindingConstants {
     public static final String LOGGING_CONTACT = "Please report to maintainer: ";
 
     public static final String UNKNOWN_THING_TYPE_ID = "???";
+    public static final String UNKNOWN_IP_ADDRESS = "xxx.xxx.xxx.xxx";
 }
