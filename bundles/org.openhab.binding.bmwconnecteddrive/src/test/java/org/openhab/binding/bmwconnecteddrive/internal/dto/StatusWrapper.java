@@ -219,7 +219,7 @@ public class StatusWrapper {
                 if (specialHandlingMap.containsKey(CHECK_CONTROL)) {
                     assertEquals("Check Control", specialHandlingMap.get(CHECK_CONTROL).toString(), st.toString());
                 } else {
-                    assertEquals("Check Control", vStatus.getCheckControl(), st.toString());
+                    assertEquals("Check Control", Converter.toTitleCase(vStatus.checkControlActive()), st.toString());
                 }
                 break;
             case CHARGE_STATUS:

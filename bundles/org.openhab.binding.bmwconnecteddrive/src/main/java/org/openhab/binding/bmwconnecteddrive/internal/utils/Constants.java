@@ -26,6 +26,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Constants {
     // For Vehicle Status
     public static final String OK = "Ok";
+    public static final String ACTIVE = "ACTIVE";
+    public static final String NOT_ACTIVE = "NOT ACTIVE";
     public static final String OPEN = "OPEN";
     public static final String INVALID = "INVALID";
     public static final String CLOSED = "CLOSED";

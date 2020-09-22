@@ -803,7 +803,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     services = vStatus.cbsData;
                     updateService();
                 }
-                updateState(checkControl, StringType.valueOf(vStatus.getCheckControl()));
+                updateState(checkControl, StringType.valueOf(Converter.toTitleCase(vStatus.checkControlActive())));
                 synchronized (this) {
                     checkControls = vStatus.checkControlMessages;
                     updateCheckControls();
