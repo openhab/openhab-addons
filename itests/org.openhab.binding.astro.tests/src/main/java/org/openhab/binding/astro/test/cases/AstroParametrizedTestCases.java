@@ -17,10 +17,10 @@ import static org.openhab.binding.astro.test.cases.AstroBindingTestsData.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.openhab.binding.astro.test.AstroStateTest;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SmartHomeUnits;
-import org.openhab.binding.astro.test.AstroStateTest;
 
 /**
  * Test cases used in the {@link AstroStateTest}
