@@ -27,9 +27,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.Metadata;
 import org.openhab.core.items.MetadataKey;
@@ -72,10 +72,8 @@ import com.google.gson.GsonBuilder;
  * @author David Graeff - Initial contribution
  */
 @Component(immediate = false, service = { ConfigStore.class }, configurationPid = {
-        HueEmulationService.CONFIG_PID }, property = { "com.eclipsesource.jaxrs.publish=false",
-                ConfigurableService.SERVICE_PROPERTY_DESCRIPTION_URI + "=io:hueemulation",
-                ConfigurableService.SERVICE_PROPERTY_CATEGORY + "=io",
-                ConfigurableService.SERVICE_PROPERTY_LABEL + "=Hue Emulation" })
+        HueEmulationService.CONFIG_PID }, property = "com.eclipsesource.jaxrs.publish=false")
+@ConfigurableService(category = "io", label = "Hue Emulation", description_uri = "io:hueemulation")
 @NonNullByDefault
 public class ConfigStore {
 
