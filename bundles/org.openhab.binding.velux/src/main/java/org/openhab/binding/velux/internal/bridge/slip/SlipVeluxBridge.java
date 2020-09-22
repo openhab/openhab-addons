@@ -387,8 +387,8 @@ public class SlipVeluxBridge extends VeluxBridge {
             } while (!communication.isCommunicationFinished());
             success = communication.isCommunicationSuccessful();
         } while (false); // communication
-        logger.debug("bridgeDirectCommunicate({}) on {}: returns {}.", host, commandString,
-                success ? "success" : "failure");
+        logger.debug("bridgeDirectCommunicate({}) on {}: returns {}.", commandString, success ? "success" : "failure",
+                host);
         return success;
     }
 }
