@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:modbus-sbc:ald1">
+		<parameter name="address" type="integer" required="true" min="1" max="247">
+			<label>Modbus Address</label>
+			<description>Modbus slave address of the energy meter.</description>
+			<default>1</default>
+		</parameter>
+
+		<parameter name="pollInterval" type="integer" required="true" min="100" unit="ms">
+			<label>Poll Interval</label>
+			<description>Time between polling the data.</description>
+			<default>5000</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
