@@ -25,7 +25,6 @@ import java.util.concurrent.Callable;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,7 +38,6 @@ import org.osgi.framework.BundleContext;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.WARN)
-@Disabled("Needs to be updated for OH3")
 public class MapTransformationServiceTest {
 
     private static final String SOURCE_CLOSED = "CLOSED";
