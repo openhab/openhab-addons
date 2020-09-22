@@ -88,21 +88,21 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
         discoverMonitors();
     }
 
-    private String getBridgeUID() {
+    private @Nullable ThingUID getBridgeUID() {
         ZmBridgeHandler localBridgeHandler = bridgeHandler;
-        return localBridgeHandler != null ? localBridgeHandler.getThing().getUID().toString() : "unknown";
+        return localBridgeHandler != null ? localBridgeHandler.getThing().getUID() : null;
     }
 
     private synchronized void discoverMonitors() {
         ZmBridgeHandler localBridgeHandler = bridgeHandler;
-        if (localBridgeHandler != null) {
+        ThingUID bridgeUID = getBridgeUID();
+        if (localBridgeHandler != null && bridgeUID != null) {
+            Integer alarmDuration = localBridgeHandler.getDefaultAlarmDuration();
+            Integer imageRefreshInterval = localBridgeHandler.getDefaultImageRefreshInterval();
             for (Monitor monitor : localBridgeHandler.getSavedMonitors()) {
                 String id = monitor.getId();
                 String name = monitor.getName();
-                Integer alarmDuration = localBridgeHandler.getDefaultAlarmDuration();
-                Integer imageRefreshInterval = localBridgeHandler.getDefaultImageRefreshInterval();
-                ThingUID bridgeUID = localBridgeHandler.getThing().getUID();
-                ThingUID thingUID = new ThingUID(UID_MONITOR, monitor.getId());
+                ThingUID thingUID = new ThingUID(UID_MONITOR, bridgeUID, monitor.getId());
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(CONFIG_MONITOR_ID, id);
                 properties.put(CONFIG_ALARM_DURATION, alarmDuration);

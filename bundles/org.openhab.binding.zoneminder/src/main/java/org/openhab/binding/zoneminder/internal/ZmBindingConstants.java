@@ -29,7 +29,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ZmBindingConstants {
 
-    private static final String BINDING_ID = "zm";
+    private static final String BINDING_ID = "zoneminder";
 
     // Bridge thing
     public static final String THING_TYPE_SERVER = "server";
