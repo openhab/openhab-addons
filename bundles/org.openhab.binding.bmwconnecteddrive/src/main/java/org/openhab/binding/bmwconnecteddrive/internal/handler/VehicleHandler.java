@@ -335,9 +335,12 @@ public class VehicleHandler extends VehicleChannelHandler {
                     logger.debug("Bridge null");
                 }
 
-                // Switch all Remote Service Channels Off
+                // Switch all Remote Service Channels and other Switches Off
                 switchRemoteServicesOff();
                 updateState(vehicleFingerPrint, OnOffType.OFF);
+                updateState(serviceNext, OnOffType.OFF);
+                updateState(checkControlNext, OnOffType.OFF);
+                updateState(destinationNext, OnOffType.OFF);
 
                 // get Image after init with config values
                 synchronized (imageProperties) {

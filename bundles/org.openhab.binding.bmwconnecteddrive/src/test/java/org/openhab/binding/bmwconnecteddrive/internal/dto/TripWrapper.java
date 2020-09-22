@@ -107,13 +107,13 @@ public class TripWrapper {
         DateTimeType dtt;
         DecimalType dt;
         switch (cUid) {
-            case TRIP_DATE_TIME:
+            case DATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = ((DateTimeType) state);
                 DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTime(lastTrip.date));
                 assertEquals("Trip Date", expected.toString(), dtt.toString());
                 break;
-            case TRIP_DURATION:
+            case DURATION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
                 assertEquals("Minute", SmartHomeUnits.MINUTE, qt.getUnit());
