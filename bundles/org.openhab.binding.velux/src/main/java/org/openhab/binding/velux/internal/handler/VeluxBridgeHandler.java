@@ -198,7 +198,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
             }
         }
         logger.warn("thingTypeUIDOf({}) failed.", channelUID);
-        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, "???");
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, VeluxBindingConstants.UNKNOWN_THING_TYPE_ID);
     }
 
     // Objects and Methods for interface VeluxBridgeInstance

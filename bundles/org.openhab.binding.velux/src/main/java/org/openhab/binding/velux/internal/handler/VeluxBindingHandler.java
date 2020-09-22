@@ -93,7 +93,7 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
             }
         }
         logger.warn("thingTypeUIDOf({}) failed.", channelUID);
-        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, "???");
+        return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, VeluxBindingConstants.UNKNOWN_THING_TYPE_ID);
     }
 
     /**
