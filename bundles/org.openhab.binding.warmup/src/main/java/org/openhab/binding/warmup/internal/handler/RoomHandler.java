@@ -50,6 +50,7 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
     public void initialize() {
         super.initialize();
         config = getConfigAs(RoomConfigurationDTO.class);
+        super.refreshFromServer();
     }
 
     @Override
