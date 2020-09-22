@@ -547,8 +547,8 @@ Import-Package: \\
                   <exclude>**/pom.xml</exclude>
                   <exclude>**/feature.xml</exclude>
                   <exclude>src/main/history/**/*.xml</exclude>
-                  <exclude>features/openhab-addons/src/main/resources/header.xml</exclude>
-                  <exclude>features/openhab-addons/src/main/resources/footer.xml</exclude>
+                  <exclude>src/main/resources/header.xml</exclude>
+                  <exclude>src/main/resources/footer.xml</exclude>
                   <exclude>src/main/resources/input/rss*.xml</exclude>
                   <exclude>src/test/resources/**/*.xml</exclude>
                 </excludes>
