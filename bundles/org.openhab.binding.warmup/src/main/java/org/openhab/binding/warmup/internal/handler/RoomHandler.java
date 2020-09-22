@@ -69,18 +69,18 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
      *
      * @param domain Data model representing all devices
      */
-    @SuppressWarnings("null")
     @Override
     public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null && config != null) {
+            final String serialNumber = config.getSerialNumber();
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
                     if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()
-                            && room.getThermostat4ies().get(0).getDeviceSN().equals(config.serialNumber)) {
+                            && room.getThermostat4ies().get(0).getDeviceSN().equals(serialNumber)) {
                         updateStatus(ThingStatus.ONLINE);
 
                         updateProperty("Id", room.getId());
-                        updateProperty("Serial Number", config.serialNumber);
+                        updateProperty("Serial Number", serialNumber);
                         updateProperty("Name", room.getName());
                         updateProperty("Location Id", location.getId());
                         updateProperty("Location", location.getName());
@@ -100,7 +100,6 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No data from bridge");
     }
 
-    @SuppressWarnings("null")
     private void setOverride(final QuantityType<?> command) {
         String roomId = getThing().getProperties().get("Id");
         String locationId = getThing().getProperties().get("Location Id");
@@ -111,9 +110,13 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
             final int value = temp.multiply(new BigDecimal(10)).intValue();
 
             try {
-                if (bridgeHandler != null && config != null && config.overrideDurationMin > 0) {
-                    bridgeHandler.getApi().setOverride(locationId, roomId, value, config.overrideDurationMin);
-                    refreshFromServer();
+                final MyWarmupAccountHandler localBridgeHandler = bridgeHandler;
+                if (localBridgeHandler != null && config != null) {
+                    final int overrideDuration = config.getOverrideDurationMin();
+                    if (overrideDuration > 0) {
+                        localBridgeHandler.getApi().setOverride(locationId, roomId, value, overrideDuration);
+                        refreshFromServer();
+                    }
                 }
             } catch (MyWarmupApiException e) {
                 logger.warn("Set Override failed: {}", e.getMessage());

@@ -19,6 +19,14 @@ package org.openhab.binding.warmup.internal.handler;
  */
 public class RoomConfigurationDTO {
 
-    public String serialNumber;
-    public int overrideDurationMin;
+    private String serialNumber;
+    private int overrideDurationMin;
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public int getOverrideDurationMin() {
+        return overrideDurationMin;
+    }
 }
