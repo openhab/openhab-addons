@@ -23,10 +23,6 @@
 		<item-type>String</item-type>
 		<label>Mileage till Next Service</label>
 	</channel-type>
-	<channel-type id="service-name-channel">
-		<item-type>String</item-type>
-		<label>Next Service Description</label>
-	</channel-type>
 	<channel-type id="check-control-channel">
 		<item-type>String</item-type>
 		<label>Check Control</label>

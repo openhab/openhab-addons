@@ -186,7 +186,6 @@ public class VehicleStatus {
         } else {
             return ACTIVE;
         }
-
     }
 
     public String getCheckControl() {

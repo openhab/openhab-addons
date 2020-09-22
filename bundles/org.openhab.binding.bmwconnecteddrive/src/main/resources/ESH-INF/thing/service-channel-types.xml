@@ -13,15 +13,15 @@
 	</channel-type>
 	<channel-type id="service-date-channel">
 		<item-type>DateTime</item-type>
-		<label>Selected Service Date and Time </label>
+		<label>Service Date </label>
 	</channel-type>
 	<channel-type id="service-mileage-channel">
 		<item-type>Number:Length</item-type>
-		<label>Mileage till Selected Service</label>
+		<label>Mileage till Service</label>
 	</channel-type>
 	<channel-type id="service-name-channel">
 		<item-type>String</item-type>
-		<label>Name of Selected Service</label>
+		<label>Service Name</label>
 	</channel-type>
 	<channel-type id="service-next-channel">
 		<item-type>Switch</item-type>

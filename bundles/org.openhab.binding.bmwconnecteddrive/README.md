@@ -146,19 +146,45 @@ Please check [TroubleShooting Section](#TroubleShooting) for further advice.
 Reflects Status of the Vehicle.
 Available for all Vehicles, Read-only.
 
-| Channel Label             | Channel Group ID | Channel ID          | Type          | Description                                                          |
-|---------------------------|------------------|---------------------|---------------|----------------------------------------------------------------------|
-| Overall Door Status       | status           | doors               | String        | Closed if all closed, else reports the Door which is still open      |
-| Overall Window Status     | status           | windows             | String        | Closed if all closed, else reports the Window which is still open    |
-| Doors Locked              | status           | lock                | String        | Status if Doors are locked or unlocked                               |
-| Next Service Date         | status           | service-date        | DateTime      | Date of Upcoming Service                                             |
-| Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                        |
-| Next Service Description  | status           | service-name        | String        | Description of Upcoming Service                                      |
-| Check Control             | status           | check-control       | String        | Description of actual Check Control message, Ok if none is activated |
-| Charging Status           | status           | charge              | String        | Only available for PHEV, BEV_REX and BEV                             |
-| Last Status Timestamp     | status           | last-update         | DateTime      | Date and Time of last status update.                                 |
+| Channel Label             | Channel Group ID | Channel ID          | Type          | Description                                                                       |
+|---------------------------|------------------|---------------------|---------------|-----------------------------------------------------------------------------------|
+| Overall Door Status       | status           | doors               | String        | **Closed** if all closed otherwise **Open**. **Unknown** if no data is delivered  |
+| Overall Window Status     | status           | windows             | String        | **Closed** if all closed otherwise **Open** or **Intermediate**. **Unknown** if no data is delivered   |
+| Doors Locked              | status           | lock                | String        | Status if Doors are locked or unlocked                                            |
+| Next Service Date         | status           | service-date        | DateTime      | Date of Upcoming Service                                                          |
+| Mileage till Next Service | status           | service-mileage     | Number:Length | Mileage till Upcoming Service                                                     |
+| Check Control             | status           | check-control       | String        | Indicator if CheckControl is **Active** or **Not Active**. **Unknown** if no data is delivered         |
+| Charging Status           | status           | charge              | String        | Only available for PHEV, BEV_REX and BEV                                          |
+| Last Status Timestamp     | status           | last-update         | DateTime      | Date and Time of last status update.                                              |
 
 See [further details for DateTime](#last-status-update-timestamp) in case of wrong timestamp values
+
+#### Services
+
+Group for all upcoming Services with Description, Service Date and / or Service Mileage
+It's designed as [List Interface](#list-interface) so all upcoming Services can be checked.
+
+| Channel Label                  | Channel Group ID | Channel ID          | Type           | 
+|--------------------------------|------------------|---------------------|----------------|
+| Service Name                   | service          | name                | String         |
+| Service Date                   | service          | date                | Number         |
+| Mileage till Service           | service          | mileage             | Number:Length  |
+| Number of Scheduled Services   | service          | size                | String         |
+| Current Selected Service Index | service          | index               | Number         |
+| Select next Service            | service          | next                | Switch         |
+
+#### Check Control
+
+Group for all current active CheckControl Messages.
+It's designed as [List Interface](#list-interface) to show all active Messages.
+
+| Channel Label                   | Channel Group ID | Channel ID          | Type           | 
+|---------------------------------|------------------|---------------------|----------------|
+| CheckControl Description        | check            | name                | String         |
+| CheckControl Mileage Occurrence | check            | mileage             | Number:Length  |
+| Active CheckControl Messages    | check            | size                | String         |
+| Selected CheckControl Message   | check            | index               | Number         |
+| Next CheckControl Message       | check            | next                | Switch         |
 
 #### Doors Details
 
@@ -247,13 +273,15 @@ These are Read-only values.
 Check [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
 These are Read-only values.
 
-| Channel Label                         | Channel Group ID | Channel ID              | Type          |
-|---------------------------------------|------------------|-------------------------|---------------|
-| Last Trip Date                    | last-trip        | distance                | Number:Length |
-| Average Power Consumption per 100 km  | last-trip        | average-consumption     | Number:Power  |
-| Average Power Recuperation per 100 km | last-trip        | average-recuperation    | Number:Power  |
-| Last Trip Distance                    | last-trip        | distance                | Number:Length |
-| Distance since Last Charge            | last-trip        | distance-since-charging | Number:Length |
+| Channel Label                           | Channel Group ID | Channel ID                   | Type          |
+|-----------------------------------------|------------------|------------------------------|---------------|
+| Last Trip Date                          | last-trip        | date                         | DateTime      |
+| Last Trip Duration                      | last-trip        | duration                     | Number:Time   |
+| Average Power Consumption per 100 km    | last-trip        | average-consumption          | Number:Power  |
+| Average Combined Consumption per 100 km | last-trip        | average-combined-consumption | Number:Volume |
+| Average Power Recuperation per 100 km   | last-trip        | average-recuperation         | Number:Power  |
+| Last Trip Distance                      | last-trip        | distance                     | Number:Length |
+| Distance since Last Charge              | last-trip        | distance-since-charging      | Number:Length |
 
 
 #### Lifetime Statistics
@@ -261,12 +289,13 @@ These are Read-only values.
 Check [Vehicle Properties](#Properties) if *Statistics* is present in *Services Supported*
 These are Read-only values.
 
-| Channel Label                         | Channel Group ID | Channel ID               | Type          | 
-|---------------------------------------|------------------|--------------------------|---------------|
-| Average Power Consumption per 100 km  | lifetime        | average-consumption       | Number:Power  |
-| Average Power Recuperation per 100 km | lifetime        | average-recuperation      | Number:Power  |
-| Cumulated Electric Driven Distance    | lifetime        | cumulated-driven-distance | Number:Length |
-| Longest Distance with one Charge      | lifetime        | single-longest-distance   | Number:Length |
+| Channel Label                           | Channel Group ID | Channel ID                   | Type          | 
+|-----------------------------------------|------------------|------------------------------|---------------|
+| Average Power Consumption per 100 km    | lifetime         | average-consumption          | Number:Power  |
+| Average Power Recuperation per 100 km   | lifetime         | average-recuperation         | Number:Power  |
+| Cumulated Electric Driven Distance      | lifetime         | cumulated-driven-distance    | Number:Length |
+| Average Combined Consumption per 100 km | lifetime         | average-combined-consumption | Number:Volume |
+| Longest Distance with one Charge        | lifetime         | single-longest-distance      | Number:Length |
 
 
 #### Remote Services
@@ -290,19 +319,16 @@ State *Executed* is the final State when Execution is finished.
 #### Destinations
 
 Check [Vehicle Properties](#Properties) if *LastDestinations* is present in *Services Supported*
-These are Read-only values.
+It's designed as [List Interface](#list-interface) in order to have access to all stored Destinations.
 
-| Channel Label                        | Channel Group ID | Channel ID          | Type    | 
-|--------------------------------------|------------------|---------------------|---------|
-| Last Destination Name                | destination      | name-1              | String  |
-| Last Destination Latitude            | destination      | lat-1               | Number  |
-| Last Destination Longitude           | destination      | lon-1               | Number  |
-| Second Last Destination Name         | destination      | name-2              | String  |
-| Second Last Destination Latitude     | destination      | lat-2               | Number  |
-| Second Last Destination Longitude    | destination      | lon-2               | Number  |
-| Third Last Destination Name          | destination      | name-3              | String  |
-| Third Last Destination Latitude      | destination      | lat-3               | Number  |
-| Third Last Destination Longitude     | destination      | lon-3               | Number  |
+| Channel Label                    | Channel Group ID | Channel ID          | Type    | 
+|----------------------------------|------------------|---------------------|---------|
+| Destination Name                 | destination      | name                | String  |
+| Destination Latitude             | destination      | latitude            | Number  |
+| Destination Longitude            | destination      | longitude           | Number  |
+| Number of Available Destinations | destination      | size                | String  |
+| Index of Selected Destination    | destination      | index               | Number  |
+| Skip to Next Destination         | destination      | next                | Switch  |
 
 
 #### Image
@@ -445,78 +471,104 @@ Bridge bmwconnecteddrive:account:user   "BMW ConnectedDrive Account" [userName="
 ### Items
 
 ```
-Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>     (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#mileage" }                                                                           
-Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>   (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#hybrid"}
-Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>   (i3,long)   {channel="bmwconnecteddrive:BEV_REX:user:i3:range#electric"}   
-Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>   (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#fuel"}
-Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>  (i3,long)   {channel="bmwconnecteddrive:BEV_REX:user:i3:range#soc"}
-Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#remaining-fuel"}
-Number:Length           i3RadiusElectric          "Electric Radius [%d %unit%]"                 <zoom>     (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#radius-electric" }
-Number:Length           i3RadiusHybrid            "Hybrid Radius [%d %unit%]"                   <zoom>     (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#radius-hybrid" }
+Number:Length           i3Mileage                 "Odometer [%d %unit%]"                        <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#mileage" }                                                                           
+Number:Length           i3Range                   "Range [%d %unit%]"                           <motion>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#hybrid"}
+Number:Length           i3RangeElectric           "Electric Range [%d %unit%]"                  <motion>        (i3,long)   {channel="bmwconnecteddrive:BEV_REX:user:i3:range#electric"}   
+Number:Length           i3RangeFuel               "Fuel Range [%d %unit%]"                      <motion>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#fuel"}
+Number:Dimensionless    i3BatterySoc              "Battery Charge [%.1f %%]"                    <battery>       (i3,long)   {channel="bmwconnecteddrive:BEV_REX:user:i3:range#soc"}
+Number:Volume           i3Fuel                    "Fuel [%.1f %unit%]"                          <oil>           (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#remaining-fuel"}
+Number:Length           i3RadiusElectric          "Electric Radius [%d %unit%]"                 <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#radius-electric" }
+Number:Length           i3RadiusHybrid            "Hybrid Radius [%d %unit%]"                   <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:range#radius-hybrid" }
 
-String                  i3DoorStatus              "Door Status [%s]"                            <lock>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#doors" }
-String                  i3WindowStatus            "Window Status [%s]"                          <lock>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#windows" }
-String                  i3LockStatus              "Lock Status [%s]"                            <lock>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#lock" }
-DateTime                i3ServiceDate             "Service Date [%1$tb %1$tY]"                  <calendar>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-date" }
-String                  i3ServiceMileage          "Service Mileage [%d %unit%]"                 <line>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-mileage" }
-String                  i3ServiceName             "Service Name [%s]"                           <text>       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-name" }
-String                  i3CheckControl            "Check Control [%s]"                          <error>      (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#check-control" }
-String                  i3ChargingStatus          "Charging [%s]"                               <energy>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#charge" } 
-DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:status#last-update"}
+String                  i3DoorStatus              "Door Status [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#doors" }
+String                  i3WindowStatus            "Window Status [%s]"                          <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#windows" }
+String                  i3LockStatus              "Lock Status [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#lock" }
+DateTime                i3NextServiceDate         "Next Service Date [%1$tb %1$tY]"             <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-date" }
+String                  i3NextServiceMileage      "Next Service Mileage [%d %unit%]"            <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#service-mileage" }
+String                  i3CheckControl            "Check Control [%s]"                          <error>         (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#check-control" }
+String                  i3ChargingStatus          "Charging [%s]"                               <energy>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#charge" } 
+DateTime                i3LastUpdate              "Update [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]"    <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:status#last-update"}
 
-Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>       (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance" }                                                                           
-Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>       (i3,long)    {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance-since-charging" }                                                                           
-Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>     (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-consumption" }                                                                           
-Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>     (i3)         {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-recuperation" }                                                                           
+DateTime                i3TripDateTime            "Trip Date [%1$tA, %1$td.%1$tm. %1$tH:%1$tM]" <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#date"}
+Number:Time             i3TripDuration            "Trip Duration [%d %unit%]"                   <time>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#duration"}
+Number:Length           i3TripDistance            "Distance [%d %unit%]"                        <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance" }                                                                           
+Number:Length           i3TripDistanceSinceCharge "Distance since last Charge [%d %unit%]"      <line>          (i3,long)   {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#distance-since-charging" }                                                                           
+Number:Energy           i3AvgTripConsumption      "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-consumption" }                                                                           
+Number:Volume           i3AvgTripCombined         "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-combined-consumption" }                                                                           
+Number:Energy           i3AvgTripRecuperation     "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:last-trip#average-recuperation" }                                                                           
 
-Number:Length           i3CumulatedElectric       "Electric Distance Driven [%d %unit%]"        <line>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#cumulated-driven-distance" }                                                                           
-Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#single-longest-distance" }                                                                           
-Number:Energy           i3AvgConsumption          "Average Consumption [%.1f %unit%]"           <energy>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#average-consumption" }                                                                           
-Number:Energy           i3AvgRecuperation         "Average Recuperation [%.1f %unit%]"          <energy>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#average-recuperation" }  
+Number:Length           i3CumulatedElectric       "Electric Distance Driven [%d %unit%]"        <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#cumulated-driven-distance" }                                                                           
+Number:Length           i3LongestEVTrip           "Longest Electric Trip [%d %unit%]"           <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#single-longest-distance" }                                                                           
+Number:Energy           i3AvgConsumption          "Average Consumption [%.1f %unit%]"           <energy>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#average-consumption" }                                                                           
+Number:Volume           i3AvgCombined             "Average Combined Consumption [%.1f %unit%]"  <oil>           (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#average-combined-consumption" }                                                                           
+Number:Energy           i3AvgRecuperation         "Average Recuperation [%.1f %unit%]"          <energy>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:lifetime#average-recuperation" }  
 
-Number                  i3Latitude                "Latitude  [%.4f]"                            <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:location#latitude" }                                                                           
-Number                  i3Longitude               "Longitude  [%.4f]"                           <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:location#longitude" }                                                                           
-Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:location#heading" }  
+Number                  i3Latitude                "Latitude  [%.4f]"                            <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:location#latitude" }                                                                           
+Number                  i3Longitude               "Longitude  [%.4f]"                           <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:location#longitude" }                                                                           
+Number:Angle            i3Heading                 "Heading [%.1f %unit%]"                       <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:location#heading" }  
 
-Switch                  i3RemoteFlash             "Flash"                                       <switch>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#light" } 
-Switch                  i3RemoteFinder            "Finder"                                      <switch>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#finder" } 
-Switch                  i3RemoteLock              "Lock"                                        <switch>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#lock" } 
-Switch                  i3RemoteUnlock            "Unlock"                                      <switch>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#unlock" } 
-Switch                  i3RemoteHorn              "Horn Blow"                                   <switch>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#horn" } 
-Switch                  i3RemoteClimate           "Climate"                                     <switch>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#climate" } 
-String                  i3RemoteState             "Remote Execution State [%s]"                 <status>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#state" } 
+Switch                  i3RemoteFlash             "Flash"                                       <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#light" } 
+Switch                  i3RemoteFinder            "Finder"                                      <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#finder" } 
+Switch                  i3RemoteLock              "Lock"                                        <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#lock" } 
+Switch                  i3RemoteUnlock            "Unlock"                                      <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#unlock" } 
+Switch                  i3RemoteHorn              "Horn Blow"                                   <switch         (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#horn" } 
+Switch                  i3RemoteClimate           "Climate"                                     <climate>       (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#climate" } 
+String                  i3RemoteState             "Remote Execution State [%s]"                 <status>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:remote#state" } 
 
-String                  i3Dest1Name               "Destination 1 [%s]"                          <house>    (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#name-1" } 
-Number                  i3Dest1Lat                "Longitude [%.4f]"                            <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lat-1" }                                                                           
-Number                  i3Dest1Lon                "Latitude [%.4f]"                             <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lon-1" }                                                                           
-String                  i3Dest2Name               "Destination 2 [%s]"                          <house>    (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#name-2" } 
-Number                  i3Dest2Lat                "Longitude [%.4f]"                            <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lat-2" }                                                                           
-Number                  i3Dest2Lon                "Latitude [%.4f]"                             <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lon-2" }                                                                           
-String                  i3Dest3Name               "Destination 3 [%s]"                          <house>    (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#name-3" } 
-Number                  i3Dest3Lat                "Longitude [%.4f]"                            <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lat-3" }                                                                           
-Number                  i3Dest3Lon                "Latitude [%.4f]"                             <zoom>     (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#lon-3" }                                                                           
+String                  i3DriverDoor              "Driver Door [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#driver-front" }
+String                  i3DriverDoorRear          "Driver Door Rear [%s]"                       <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#driver-rear" }
+String                  i3PassengerDoor           "Passenger Door [%s]"                         <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#passenger-front" }
+String                  i3PassengerDoorRear       "Passenger Door Rear [%s]"                    <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#passenger-rear" }
+String                  i3Hood                    "Hood [%s]"                                   <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#hood" }
+String                  i3Trunk                   "Trunk [%s]"                                  <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#trunk" }
+String                  i3DriverWindow            "Driver Window [%s]"                          <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#window-driver-front" }
+String                  i3DriverWindowRear        "Driver Window Rear [%s]"                     <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#window-driver-rear" }
+String                  i3PassengerWindow         "Passenger Window [%s]"                       <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#window-passenger-front" }
+String                  i3PassengerWindowRear     "Passenger Window Rear [%s]"                  <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#window-passenger-rear" }
+String                  i3RearWindow              "Rear Window [%s]"                            <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#window-rear" }
+String                  i3Sunroof                 "Sunroof [%s]"                                <lock>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:doors#sunroof" }
+
+String                  i3ServiceName              "Service Name [%s]"                          <text>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:service#name" }
+Number:Length           i3ServiceMileage           "Service Mileage [%d %unit%]"                <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:service#mileage" }
+DateTime                i3ServiceDate              "Service Date [%1$tb %1$tY]"                 <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:service#date" }
+Number                  i3ServiceCount             "Service Count [%d]"                         <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:service#size" }
+Number                  i3ServiceIndex             "Service Index [%d]"                         <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:service#index" }
+Switch                  i3NextService              "Scroll"                                     <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:service#next" }
+
+String                  i3CCName                   "CheckControl Name [%s]"                     <text>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:check#name" }
+Number:Length           i3CCMileage                "CheckControl Mileage [%d %unit%]"           <line>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:check#mileage" }
+Number                  i3CCCount                  "CheckControl Count [%d]"                    <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:check#size" }
+Number                  i3CCIndex                  "CheckControl Index [%d]"                    <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:check#index" }
+Switch                  i3CCNext                   "Scroll"                                     <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:check#next" }
+
+String                  i3DestName                "Destination [%s]"                            <house>         (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#name" } 
+Number                  i3DestLat                 "Longitude [%.4f]"                            <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#latitude" }                                                                           
+Number                  i3DestLon                 "Latitude [%.4f]"                             <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#longitude" }                                                                           
+Number                  i3DestCount               "Destination Count [%d]"                      <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#size" } 
+Number                  i3DestIndex               "Destination Index [%d]"                      <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#index" }                                                                           
+Switch                  i3DestNext                "Next Destination"                            <settings>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:destination#next" }                                                                           
  
-Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-climate" }  
-String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-mode" } 
-String                  i3ChargeWindowStart       "Charge Window Start [%s]"                    <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#window-start" } 
-String                  i3ChargeWindowEnd         "Charge Window End [%s]"                      <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#window-end" } 
-String                  i3Timer1Departure         "Timer 1 Departure [%s]"                      <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-departure" } 
-String                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-days" } 
-Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-enabled" }  
-String                  i3Timer2Departure         "Timer 2 Departure [%s]"                      <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer2-departure" } 
-String                  i3Timer2Days              "Timer 2 Days [%s]"                           <calendar>      (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer2-days" } 
-Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer2-enabled" }  
-String                  i3Timer3Departure         "Timer 3 Departure [%s]"                      <time>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-departure" } 
-String                  i3Timer3Days              "Timer 3 Days [%s]"                           <calendar>      (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-days" } 
-Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-enabled" }  
+Switch                  i3ChargeProfileClimate    "Charge Profile Climatization"                <temperature>   (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-climate" }  
+String                  i3ChargeProfileMode       "Charge Profile Mode [%s]"                    <energy>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#profile-mode" } 
+String                  i3ChargeWindowStart       "Charge Window Start [%s]"                    <time>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#window-start" } 
+String                  i3ChargeWindowEnd         "Charge Window End [%s]"                      <time>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#window-end" } 
+String                  i3Timer1Departure         "Timer 1 Departure [%s]"                      <time>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-departure" } 
+String                  i3Timer1Days              "Timer 1 Days [%s]"                           <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-days" } 
+Switch                  i3Timer1Enabled           "Timer 1 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer1-enabled" }  
+String                  i3Timer2Departure         "Timer 2 Departure [%s]"                      <time>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer2-departure" } 
+String                  i3Timer2Days              "Timer 2 Days [%s]"                           <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer2-days" } 
+Switch                  i3Timer2Enabled           "Timer 2 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer2-enabled" }  
+String                  i3Timer3Departure         "Timer 3 Departure [%s]"                      <time>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-departure" } 
+String                  i3Timer3Days              "Timer 3 Days [%s]"                           <calendar>      (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-days" } 
+Switch                  i3Timer3Enabled           "Timer 3 Enabled"                             <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:charge#timer3-enabled" }  
 
-Image                   i3Image                   "Image"                                                       (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#png" }  
-String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#view" }  
-Number                  i3ImageSize               "Image Size [%d]"                             <zoom>          (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:image#size" }  
+Image                   i3Image                   "Image"                                                       (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:image#png" }  
+String                  i3ImageViewport           "Image Viewport [%s]"                         <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:image#view" }  
+Number                  i3ImageSize               "Image Size [%d]"                             <zoom>          (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:image#size" }  
 
-Switch                  i3Troubleshoot            "Vehicle Fingerprint"                         <switch>        (i3)   {channel="bmwconnecteddrive:BEV_REX:user:i3:troubleshoot#vehicle-fingerprint" }  
-Switch                  i3DiscoveryTroubleshoot   "Discovery Fingerprint"                       <switch>        (i3)   {channel="bmwconnecteddrive:account:user:discovery-fingerprint" }  
- ```
+Switch                  i3Troubleshoot            "Vehicle Fingerprint"                         <switch>        (i3)        {channel="bmwconnecteddrive:BEV_REX:user:i3:troubleshoot#vehicle-fingerprint" }  
+Switch                  i3DiscoveryTroubleshoot   "Discovery Fingerprint"                       <switch>        (i3)        {channel="bmwconnecteddrive:account:user:discovery-fingerprint" }  
+```
 
 ### Sitemap
 
@@ -539,34 +591,67 @@ sitemap BMW label="BMW" {
     Text    item=i3DoorStatus           
     Text    item=i3WindowStatus         
     Text    item=i3LockStatus           
-    Text    item=i3ServiceDate              
-    Text    item=i3ServiceMileage       
-    Text    item=i3ServiceName          
+    Text    item=i3NextServiceDate              
+    Text    item=i3NextServiceMileage       
     Text    item=i3CheckControl         
     Text    item=i3ChargingStatus           
     Text    item=i3LastUpdate               
   }
   Frame label="Remote Services" {
     Switch  item=i3RemoteFlash              
-    Switch  item=i3RemoteFinder             
+    Switch  item=i3RemoteFinder            
     Switch  item=i3RemoteLock               
     Switch  item=i3RemoteUnlock             
     Switch  item=i3RemoteHorn               
     Switch  item=i3RemoteClimate            
     Text    item=i3RemoteState              
-}
+  }
   Frame label="Last Trip" {
+    Text    item=i3TripDateTime            
+    Text    item=i3TripDuration            
     Text    item=i3TripDistance            
     Text    item=i3TripDistanceSinceCharge 
     Text    item=i3AvgTripConsumption      
     Text    item=i3AvgTripRecuperation     
+    Text    item=i3AvgTripCombined     
   }
   Frame label="Lifetime" {
     Text    item=i3CumulatedElectric  
     Text    item=i3LongestEVTrip      
     Text    item=i3AvgConsumption     
     Text    item=i3AvgRecuperation          
+    Text    item=i3AvgCombined          
   }
+  Frame label="Services" {
+    Text    item=i3ServiceName          
+    Text    item=i3ServiceMileage          
+    Text    item=i3ServiceDate          
+    Text    item=i3ServiceCount          
+    Text    item=i3ServiceIndex          
+    Switch  item=i3NextService            
+  }
+  Frame label="CheckControl" {
+    Text    item=i3CCName          
+    Text    item=i3CCMileage          
+    Text    item=i3CCCount          
+    Text    item=i3CCIndex          
+    Switch  item=i3CCNext            
+  }
+  Frame label="Door Details" {
+    Text    item=i3DriverDoor
+    Text    item=i3DriverDoorRear  
+    Text    item=i3PassengerDoor 
+    Text    item=i3PassengerDoorRear 
+    Text    item=i3Hood 
+    Text    item=i3Trunk
+    Text    item=i3DriverWindow
+    Text    item=i3DriverWindowRear 
+    Text    item=i3PassengerWindow 
+    Text    item=i3PassengerWindowRear 
+    Text    item=i3RearWindow 
+    Text    item=i3Sunroof 
+  }
+
   Frame label="Location" {
     Text    item=i3Latitude           
     Text    item=i3Longitude          
@@ -588,16 +673,13 @@ sitemap BMW label="BMW" {
     Switch  item=i3Timer3Enabled            
   } 
   Frame label="Last Destinations" {    
-    Text  item=i3Dest1Name                 
-    Text  item=i3Dest1Lat                                                                                   
-    Text  item=i3Dest1Lon                                                                                    
-    Text  item=i3Dest2Name                 
-    Text  item=i3Dest2Lat                                                                                        
-    Text  item=i3Dest2Lon                                                                                        
-    Text  item=i3Dest3Name                 
-    Text  item=i3Dest3Lat                                                                                        
-    Text  item=i3Dest3Lon                                                                                         
-  } 
+    Text  item=i3DestName                 
+    Text  item=i3DestLat                                                                                   
+    Text  item=i3DestLon                                                                                    
+    Text  item=i3DestCount                 
+    Text  item=i3DestIndex                                                                                        
+    Switch  item=i3DestNext                                                                                        
+  }  
   Frame label="Troubleshooting & Image Properties" {
     Text    item=i3ImageViewport
     Text    item=i3ImageSize 
@@ -605,8 +687,6 @@ sitemap BMW label="BMW" {
     Switch  item=i3Troubleshoot             
   } 
 }
-
-
 ```
 
 ## Going further
@@ -625,10 +705,11 @@ Just insert the Mail Address used for openHAB Cloud Connector.
 rule "CheckControl"
     when
         System started or
-        Item i3CheckControl changed 
+        Item i3CCCount changed 
     then
-        if(i3CheckControl.state.toString != "Ok" && i3CheckControl.state.toString != "NULL") {
-            sendNotification("YOUR_OPENHAB_CLOUD_EMAIL","BMW i3 Check Control: "+i3CheckControl.state)
+        val count = i3CCCount.state as Number
+        if(count.intValue > 0) {
+            sendNotification("bernd.w@ymann.de","i3 Check Control: "+i3CCName.state)
         }                                                    
 end
 ```
@@ -638,6 +719,7 @@ The below rule checks every Monday at 9:00 o'clock if the next Service is requir
 Time enough to schedule a date at your favorite Garage. 
 
 ```
+// Cron for Service observation
 rule "Service"
     when
         System started or
@@ -647,9 +729,9 @@ rule "Service"
         val Number daysToService = (dt.getMillis - now.millis) / 1000 / 60 / 60 / 24
         if(daysToService < 30) {
             logInfo("Service Date","Time to schedule Service")
-                sendNotification("YOUR_OPENHAB_CLOUD_EMAIL", i3ServiceName.state.toString + " Service required in " + daysToService + " days")
+                sendNotification("YOUR_OPENHAB_EMAIL", "Service required in " + daysToService + " days")
         } else {
-            logInfo("Service Date","{} days to {} Service",daysToService,i3ServiceName.state.toString)
+            logInfo("Service Date","{} days to {} Service left ",daysToService,i3ServiceName.state.toString)
         }
 end
 ```
@@ -665,7 +747,7 @@ See the HABPanel example with the OpenStreetMap Widget on the right side with
 * Marker of current Vehicle location as Center of the Map
 * Green Circle showing Electric Range Radius
 * Blue Circle showing Hybrid Range Radius
-* 3 additional Markers for the last Destinations
+* One additional Markers for the current selected Destinations
 
 Some small modifications are needed to get the Location values. 
 The items file declares some String with Latitude, Longitude values as String used in the Markers of the Widget. 
@@ -682,9 +764,7 @@ Number          i3RadiusElectricMeter  "Electric Range Radius"
 String          i3LatLongHybrid        "Location String"
 Number          i3RadiusHybridMeter    "Hybrid Range Radius"
 //Destination Items
-String          i3Dest1LatLon          "Last Destination"
-String          i3Dest2LatLon          "Second Last Destination"
-String          i3Dest3LatLon          "Third Last Destination"
+String          mapDestination         "Destination"
 ```
 
 #### Rules
@@ -695,8 +775,8 @@ rule "LocationRangeChange"
     when
         System started or
         Item i3Latitude changed or
-        Item i3Longitude changed or
-        Item i3RangeRadiusElectric changed or
+            Item i3Longitude changed or
+            Item i3RangeRadiusElectric changed or
         Item i3RangeRadiusHybrid changed
     then
         // Electric Range Radius & Vehicle Coordinates
@@ -713,30 +793,15 @@ rule "LocationRangeChange"
         i3RadiusHybridMeter.sendCommand(radiusHybridNumber.intValue * 1000)    
 end
 
-// Coordinates of the last 3 Destinations
+// Changes Coordinates to the current selected Destination List Item
 rule "Destinations"
     when
-        System started or
-        Item i3Dest1Lat changed or
-        Item i3Dest1Lon changed or
-        Item i3Dest2Lat changed or
-        Item i3Dest2Lon changed or
-        Item i3Dest3Lat changed or
-        Item i3Dest3Lon changed        
-    then                                                    
-        val lat1N = i3Dest1Lat.state as Number
-        val lon1N = i3Dest1Lon.state as Number
-        i3Dest1LatLon.sendCommand(lat1N.floatValue +","+lon1N.floatValue)
- 
-        val lat2N = i3Dest2Lat.state as Number
-        val lon2N = i3Dest2Lon.state as Number
-        i3Dest2LatLon.sendCommand(lat2N.floatValue +","+lon2N.floatValue)
-
-        val lat3N = i3Dest3Lat.state as Number
-        val lon3N = i3Dest3Lon.state as Number
-        i3Dest3LatLon.sendCommand(lat3N.floatValue +","+lon3N.floatValue)
+        Item i3DestIndex changed   
+    then   
+        val lat = i3DestLat.state as Number
+        val lon = i3DestLon.state as Number
+        mapDestination.sendCommand(lat.floatValue +","+lon.floatValue) 
 end
-
 ```
 
 ### Status Image

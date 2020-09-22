@@ -179,8 +179,7 @@ public class ConnectedDriveConstants {
     public static final String RANGE_RADIUS_HYBRID = "radius-hybrid";
 
     // Last Trip
-    public static final String TRIP_DATE_TIME = "trip-date-time";
-    public static final String TRIP_DURATION = "trip-duration";
+    public static final String DURATION = "duration";
     public static final String DISTANCE = "distance";
     public static final String DISTANCE_SINCE_CHARGING = "distance-since-charging";
     public static final String AVG_CONSUMPTION = "average-consumption";

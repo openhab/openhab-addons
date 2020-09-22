@@ -3,20 +3,24 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="destination-name-channel">
+	<channel-type id="checkcontrol-name-channel">
 		<item-type>String</item-type>
-		<label>Destination Name</label>
+		<label>CheckControl Description</label>
 	</channel-type>
-	<channel-type id="destination-size-channel">
-		<item-type>String</item-type>
-		<label>Number of Available Destinations</label>
+	<channel-type id="checkcontrol-mileage-channel">
+		<item-type>Number:Length</item-type>
+		<label>CheckControl Mileage Occurrence</label>
 	</channel-type>
-	<channel-type id="destination-index-channel">
+	<channel-type id="checkcontrol-size-channel">
 		<item-type>Number</item-type>
-		<label>Index of Selected Destination</label>
+		<label>Active CheckControl Messages</label>
 	</channel-type>
-	<channel-type id="destination-next-channel">
+	<channel-type id="checkcontrol-index-channel">
+		<item-type>Number</item-type>
+		<label>Selected CheckControl Message</label>
+	</channel-type>
+	<channel-type id="checkcontrol-next-channel">
 		<item-type>Switch</item-type>
-		<label>Skip to Next Destination</label>
+		<label>Next CheckControl Message</label>
 	</channel-type>
 </thing:thing-descriptions>

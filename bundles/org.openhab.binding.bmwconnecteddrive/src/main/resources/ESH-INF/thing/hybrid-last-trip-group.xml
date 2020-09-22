@@ -7,8 +7,8 @@
 		<label>Last Trip Statistics</label>
 		<description>Hybrid Consumption Values and Distances for the Last Trip</description>
 		<channels>
-			<channel id="trip-date-time" typeId="trip-date-time-channel"/>
-			<channel id="trip-duration" typeId="trip-duration-channel"/>
+			<channel id="date" typeId="trip-date-time-channel"/>
+			<channel id="duration" typeId="trip-duration-channel"/>
 			<channel id="distance" typeId="distance-channel"/>
 			<channel id="distance-since-charging" typeId="distance-since-charging-channel"/>
 			<channel id="average-consumption" typeId="average-consumption-channel"/>
