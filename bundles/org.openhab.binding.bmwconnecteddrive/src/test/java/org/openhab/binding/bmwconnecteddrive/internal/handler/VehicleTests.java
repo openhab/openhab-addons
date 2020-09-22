@@ -276,15 +276,50 @@ public class VehicleTests {
         assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
     }
 
+    /**
+     * testF48
+     * Channel testbinding::test:status#lock Secured
+     * Channel testbinding::test:status#doors CLOSED
+     * Channel testbinding::test:doors#driver-front CLOSED
+     * Channel testbinding::test:doors#driver-rear CLOSED
+     * Channel testbinding::test:doors#passenger-front CLOSED
+     * Channel testbinding::test:doors#passenger-rear CLOSED
+     * Channel testbinding::test:doors#trunk CLOSED
+     * Channel testbinding::test:doors#hood CLOSED
+     * Channel testbinding::test:status#windows CLOSED
+     * Channel testbinding::test:doors#window-driver-front CLOSED
+     * Channel testbinding::test:doors#window-driver-rear CLOSED
+     * Channel testbinding::test:doors#window-passenger-front CLOSED
+     * Channel testbinding::test:doors#window-passenger-rear CLOSED
+     * Channel testbinding::test:doors#window-rear INVALID
+     * Channel testbinding::test:doors#sunroof UNKOWN
+     * Channel testbinding::test:status#service-date 2019-07-01T14:00:00.000+0200
+     * Channel testbinding::test:status#service-mileage -1.0 km
+     * Channel testbinding::test:service#size 3
+     * Channel testbinding::test:service#date 2019-07-01T14:00:00.000+0200
+     * Channel testbinding::test:service#mileage 9000.0 km
+     * Channel testbinding::test:service#name Oil
+     * Channel testbinding::test:service#index 0
+     * Channel testbinding::test:status#check-control Active
+     * Channel testbinding::test:check#size 1
+     * Channel testbinding::test:check#name Tyre pressure notification
+     * Channel testbinding::test:check#mileage 41544.0 km
+     * Channel testbinding::test:check#index 0
+     * Channel testbinding::test:range#mileage 21529.0 km
+     * Channel testbinding::test:range#fuel 590.0 km
+     * Channel testbinding::test:range#radius-fuel 472.0 km
+     * Channel testbinding::test:range#remaining-fuel 39.0 l
+     * Channel testbinding::test:status#last-update 2018-03-10T19:35:30.000+0100
+     * Channel testbinding::test:location#latitude 50.50505065917969
+     * Channel testbinding::test:location#longitude 10.1010103225708
+     * Channel testbinding::test:location#heading 141.0 °
+     **/
     @Test
     public void testF48() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        // Check earliest Service by hard
-        Map<String, State> m = new HashMap<String, State>();
-        m.put(ConnectedDriveConstants.CHECK_CONTROL, StringType.valueOf("Tyre Pressure Notification"));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS, Optional.of(m)));
+        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS, Optional.empty()));
     }
 
     @Test

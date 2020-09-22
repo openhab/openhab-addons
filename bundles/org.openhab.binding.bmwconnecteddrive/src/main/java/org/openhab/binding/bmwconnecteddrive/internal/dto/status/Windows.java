@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+
 /**
  * The {@link Windows} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class Windows {
-    public String windowDriverFront;// ": "CLOSED",
-    public String windowDriverRear;// ": "CLOSED",
-    public String windowPassengerFront;// ": "CLOSED",
-    public String windowPassengerRear;// ": "CLOSED",
-    public String sunroof;// ": "CLOSED",
-    public String rearWindow;// ": "INVALID",
+    public String windowDriverFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowDriverRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowPassengerFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowPassengerRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String sunroof = Constants.UNKNOWN;// ": "CLOSED",
+    public String rearWindow = Constants.UNKNOWN;// ": "INVALID",
 }

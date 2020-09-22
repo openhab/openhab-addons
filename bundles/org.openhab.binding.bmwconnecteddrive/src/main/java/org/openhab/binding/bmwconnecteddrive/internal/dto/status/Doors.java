@@ -12,16 +12,18 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto.status;
 
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+
 /**
  * The {@link Doors} Data Transfer Object
  *
  * @author Bernd Weymann - Initial contribution
  */
 public class Doors {
-    public String doorDriverFront;// ": "CLOSED",
-    public String doorDriverRear;// ": "CLOSED",
-    public String doorPassengerFront;// ": "CLOSED",
-    public String doorPassengerRear;// ": "CLOSED",
-    public String trunk;// ": "CLOSED",
-    public String hood;// ": "CLOSED",
+    public String doorDriverFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorDriverRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorPassengerFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorPassengerRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String trunk = Constants.UNKNOWN;// ": "CLOSED",
+    public String hood = Constants.UNKNOWN;// ": "CLOSED",
 }

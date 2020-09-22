@@ -46,18 +46,18 @@ public class VehicleStatus {
     public String vin;// : "ANONYMOUS",
     public String updateReason;// ": "VEHICLE_SHUTDOWN_SECURED",
     public String updateTime;// ": "2020-08-24 T15:55:32+0000",
-    public String doorDriverFront;// ": "CLOSED",
-    public String doorDriverRear;// ": "CLOSED",
-    public String doorPassengerFront;// ": "CLOSED",
-    public String doorPassengerRear;// ": "CLOSED",
-    public String windowDriverFront;// ": "CLOSED",
-    public String windowDriverRear;// ": "CLOSED",
-    public String windowPassengerFront;// ": "CLOSED",
-    public String windowPassengerRear;// ": "CLOSED",
-    public String sunroof;// ": "CLOSED",
-    public String trunk;// ": "CLOSED",
-    public String rearWindow;// ": "INVALID",
-    public String hood;// ": "CLOSED",
+    public String doorDriverFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorDriverRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorPassengerFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String doorPassengerRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowDriverFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowDriverRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowPassengerFront = Constants.UNKNOWN;// ": "CLOSED",
+    public String windowPassengerRear = Constants.UNKNOWN;// ": "CLOSED",
+    public String sunroof = Constants.UNKNOWN;// ": "CLOSED",
+    public String trunk = Constants.UNKNOWN;// ": "CLOSED",
+    public String rearWindow = Constants.UNKNOWN;// ": "INVALID",
+    public String hood = Constants.UNKNOWN;// ": "CLOSED",
     public String doorLockState;// ": "SECURED",
     public String parkingLight;// ": "OFF",
     public String positionLight;// ": "ON",
@@ -175,6 +175,18 @@ public class VehicleStatus {
                 return -1;
             }
         }
+    }
+
+    public String checkControlActive() {
+        if (checkControlMessages == null) {
+            return UNKNOWN;
+        }
+        if (checkControlMessages.isEmpty()) {
+            return NOT_ACTIVE;
+        } else {
+            return ACTIVE;
+        }
+
     }
 
     public String getCheckControl() {
