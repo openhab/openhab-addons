@@ -222,7 +222,7 @@ public class SlipVeluxBridge extends VeluxBridge {
             if (communicationStartInMSecs + COMMUNICATION_TIMEOUT_MSECS < System.currentTimeMillis()) {
                 logger.warn(
                         "{} bridgeDirectCommunicate({}) on {}: communication handshake failed (unexpected sequence of requests/responses).",
-                        host, VeluxBindingConstants.BINDING_VALUES_SEPARATOR, communication.name());
+                        VeluxBindingConstants.BINDING_VALUES_SEPARATOR, communication.name(), host);
                 break;
             }
 
@@ -387,8 +387,8 @@ public class SlipVeluxBridge extends VeluxBridge {
             } while (!communication.isCommunicationFinished());
             success = communication.isCommunicationSuccessful();
         } while (false); // communication
-        logger.debug("bridgeDirectCommunicate({}) on {}: returns {}.", commandString, success ? "success" : "failure",
-                host);
+        logger.debug("bridgeDirectCommunicate({}) on {}: returns {}.", commandString, host,
+                success ? "success" : "failure");
         return success;
     }
 }
