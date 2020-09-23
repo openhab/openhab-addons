@@ -193,7 +193,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             if (command instanceof RefreshType) {
                 refreshData();
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("handleCommand fails", e);
         }
     }
@@ -479,7 +479,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         ZonedDateTime timeStamp = ZonedDateTime.now();
         try {
             notifications = currentConnection.notifications();
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.debug("refreshNotifications failed", e);
             return;
         }
@@ -632,7 +632,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             if (currentConnection.getIsLoggedIn()) {
                 devices = currentConnection.getDeviceList();
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
         if (devices != null) {
@@ -676,7 +676,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
         if (currentConnection != null) {
             try {
                 currentConnection.setEnabledFlashBriefings(feeds);
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException | URISyntaxException | InterruptedException e) {
                 logger.warn("Set flashbriefing profile failed", e);
             }
         }
@@ -736,7 +736,8 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
                 forSerializer[i] = copy;
             }
             this.currentFlashBriefingJson = gson.toJson(forSerializer);
-        } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException e) {
+        } catch (HttpException | JsonSyntaxException | IOException | URISyntaxException | ConnectionException
+                | InterruptedException e) {
             logger.warn("get flash briefing profiles fails", e);
         }
     }
@@ -857,7 +858,7 @@ public class AccountHandler extends BaseBridgeHandler implements IWebSocketComma
             if (currentConnection.getIsLoggedIn()) {
                 smartHomeDevices = currentConnection.getSmarthomeDeviceList();
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
         if (smartHomeDevices != null) {

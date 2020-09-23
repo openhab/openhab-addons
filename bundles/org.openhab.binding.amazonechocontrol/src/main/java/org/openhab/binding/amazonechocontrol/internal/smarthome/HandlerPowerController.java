@@ -86,7 +86,8 @@ public class HandlerPowerController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilities, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilities, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(POWER_STATE.channelId)) {
             if (containsCapabilityProperty(capabilities, POWER_STATE.propertyName)) {
                 if (command.equals(OnOffType.ON)) {

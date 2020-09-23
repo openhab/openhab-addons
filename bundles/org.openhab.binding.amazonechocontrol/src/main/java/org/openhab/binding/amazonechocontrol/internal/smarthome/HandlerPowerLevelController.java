@@ -92,7 +92,8 @@ public class HandlerPowerLevelController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(POWER_LEVEL.channelId)) {
             if (containsCapabilityProperty(capabilties, POWER_LEVEL.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {

@@ -384,7 +384,7 @@ public class Connection {
                 }
             } catch (IOException e) {
                 return false;
-            } catch (URISyntaxException e) {
+            } catch (URISyntaxException | InterruptedException e) {
             }
         }
         return false;
@@ -479,13 +479,13 @@ public class Connection {
                     }
                 }
             }
-        } catch (URISyntaxException | IOException | ConnectionException e) {
+        } catch (URISyntaxException | IOException | InterruptedException | ConnectionException e) {
             logger.debug("Getting account customer Id failed", e);
         }
         return loginTime;
     }
 
-    private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException {
+    private @Nullable Authentication tryGetBootstrap() throws IOException, URISyntaxException, InterruptedException {
         HttpsURLConnection connection = makeRequest("GET", alexaServer + "/api/bootstrap", null, false, false, null, 0);
         String contentType = connection.getContentType();
         if (connection.getResponseCode() == 200 && contentType != null
@@ -546,12 +546,12 @@ public class Connection {
         return result;
     }
 
-    public String makeRequestAndReturnString(String url) throws IOException, URISyntaxException {
+    public String makeRequestAndReturnString(String url) throws IOException, URISyntaxException, InterruptedException {
         return makeRequestAndReturnString("GET", url, null, false, null);
     }
 
     public String makeRequestAndReturnString(String verb, String url, @Nullable String postData, boolean json,
-            @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException {
+            @Nullable Map<String, String> customHeaders) throws IOException, URISyntaxException, InterruptedException {
         HttpsURLConnection connection = makeRequest(verb, url, postData, json, true, customHeaders, 3);
         String result = convertStream(connection);
         logger.debug("Result of {} {}:{}", verb, url, result);
@@ -560,7 +560,7 @@ public class Connection {
 
     public HttpsURLConnection makeRequest(String verb, String url, @Nullable String postData, boolean json,
             boolean autoredirect, @Nullable Map<String, String> customHeaders, int badRequestRepeats)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         String currentUrl = url;
         int redirectCounter = 0;
         int retryCounter = 0;
@@ -691,12 +691,14 @@ public class Connection {
                         throw new HttpException(code,
                                 verb + " url '" + url + "' failed: " + connection.getResponseMessage());
                     }
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        logger.warn("Unable to wait for next call to {}", url, e);
-                    }
+                    Thread.sleep(2000);
                 }
+            } catch (InterruptedException e) {
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                logger.warn("Unable to wait for next call to {}", url, e);
+                throw e;
             } catch (IOException e) {
                 if (connection != null) {
                     connection.disconnect();
@@ -713,7 +715,7 @@ public class Connection {
     }
 
     public String registerConnectionAsApp(String oAutRedirectUrl)
-            throws ConnectionException, IOException, URISyntaxException {
+            throws ConnectionException, IOException, URISyntaxException, InterruptedException {
         URI oAutRedirectUri = new URI(oAutRedirectUrl);
 
         Map<String, String> queryParameters = new LinkedHashMap<>();
@@ -806,7 +808,7 @@ public class Connection {
         return deviceName;
     }
 
-    private void exchangeToken() throws IOException, URISyntaxException {
+    private void exchangeToken() throws IOException, URISyntaxException, InterruptedException {
         this.renewTime = 0;
         String cookiesJson = "{\"cookies\":{\"." + getAmazonSite() + "\":[]}}";
         String cookiesBase64 = Base64.getEncoder().encodeToString(cookiesJson.getBytes());
@@ -854,7 +856,7 @@ public class Connection {
         this.renewTime = (long) (System.currentTimeMillis() + Connection.EXPIRES_IN * 1000d / 0.8d); // start renew at
     }
 
-    public boolean checkRenewSession() throws URISyntaxException, IOException {
+    public boolean checkRenewSession() throws URISyntaxException, IOException, InterruptedException {
         if (System.currentTimeMillis() >= this.renewTime) {
             String renewTokenPostData = "app_name=Amazon%20Alexa&app_version=2.2.223830.0&di.sdk.version=6.10.0&source_token="
                     + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8.name())
@@ -873,7 +875,7 @@ public class Connection {
         return loginTime != null;
     }
 
-    public String getLoginPage() throws IOException, URISyntaxException {
+    public String getLoginPage() throws IOException, URISyntaxException, InterruptedException {
         // clear session data
         logout();
 
@@ -902,7 +904,7 @@ public class Connection {
         return loginFormHtml;
     }
 
-    public boolean verifyLogin() throws IOException, URISyntaxException {
+    public boolean verifyLogin() throws IOException, URISyntaxException, InterruptedException {
         if (this.refreshToken == null) {
             return false;
         }
@@ -983,13 +985,14 @@ public class Connection {
                     return result;
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("getting wakewords failed", e);
         }
         return new WakeWord[0];
     }
 
-    public List<SmartHomeBaseDevice> getSmarthomeDeviceList() throws IOException, URISyntaxException {
+    public List<SmartHomeBaseDevice> getSmarthomeDeviceList()
+            throws IOException, URISyntaxException, InterruptedException {
         try {
             String json = makeRequestAndReturnString(alexaServer + "/api/phoenix");
             logger.debug("getSmartHomeDevices result: {}", json);
@@ -1032,7 +1035,7 @@ public class Connection {
         }
     }
 
-    public List<Device> getDeviceList() throws IOException, URISyntaxException {
+    public List<Device> getDeviceList() throws IOException, URISyntaxException, InterruptedException {
         String json = getDeviceListJson();
         JsonDevices devices = parseJson(json, JsonDevices.class);
         if (devices != null) {
@@ -1044,13 +1047,13 @@ public class Connection {
         return Collections.emptyList();
     }
 
-    public String getDeviceListJson() throws IOException, URISyntaxException {
+    public String getDeviceListJson() throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/devices-v2/device?cached=false");
         return json;
     }
 
     public Map<String, JsonArray> getSmartHomeDeviceStatesJson(Set<String> applianceIds)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         JsonObject requestObject = new JsonObject();
         JsonArray stateRequests = new JsonArray();
         for (String applianceId : applianceIds) {
@@ -1079,14 +1082,16 @@ public class Connection {
         return result;
     }
 
-    public @Nullable JsonPlayerState getPlayer(Device device) throws IOException, URISyntaxException {
+    public @Nullable JsonPlayerState getPlayer(Device device)
+            throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/np/player?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType + "&screenWidth=1440");
         JsonPlayerState playerState = parseJson(json, JsonPlayerState.class);
         return playerState;
     }
 
-    public @Nullable JsonMediaState getMediaState(Device device) throws IOException, URISyntaxException {
+    public @Nullable JsonMediaState getMediaState(Device device)
+            throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/media/state?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType);
         JsonMediaState mediaState = parseJson(json, JsonMediaState.class);
@@ -1105,7 +1110,7 @@ public class Connection {
                     return activiesArray;
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("getting activities failed", e);
         }
         return new Activity[0];
@@ -1115,7 +1120,7 @@ public class Connection {
         String json;
         try {
             json = makeRequestAndReturnString(alexaServer + "/api/bluetooth?cached=true");
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.debug("failed to get bluetooth state: {}", e.getMessage());
             return new JsonBluetoothStates();
         }
@@ -1123,7 +1128,8 @@ public class Connection {
         return bluetoothStates;
     }
 
-    public @Nullable JsonPlaylists getPlaylists(Device device) throws IOException, URISyntaxException {
+    public @Nullable JsonPlaylists getPlaylists(Device device)
+            throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/cloudplayer/playlists?deviceSerialNumber="
                 + device.serialNumber + "&deviceType=" + device.deviceType + "&mediaOwnerCustomerId="
                 + (this.accountCustomerId == null || this.accountCustomerId.isEmpty() ? device.deviceOwnerCustomerId
@@ -1132,18 +1138,18 @@ public class Connection {
         return playlists;
     }
 
-    public void command(Device device, String command) throws IOException, URISyntaxException {
+    public void command(Device device, String command) throws IOException, URISyntaxException, InterruptedException {
         String url = alexaServer + "/api/np/command?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                 + device.deviceType;
         makeRequest("POST", url, command, true, true, null, 0);
     }
 
-    public void smartHomeCommand(String entityId, String action) throws IOException {
+    public void smartHomeCommand(String entityId, String action) throws IOException, InterruptedException {
         smartHomeCommand(entityId, action, null, null);
     }
 
     public void smartHomeCommand(String entityId, String action, @Nullable String property, @Nullable Object value)
-            throws IOException {
+            throws IOException, InterruptedException {
         String url = alexaServer + "/api/phoenix/state";
 
         JsonObject json = new JsonObject();
@@ -1195,7 +1201,8 @@ public class Connection {
         }
     }
 
-    public void notificationVolume(Device device, int volume) throws IOException, URISyntaxException {
+    public void notificationVolume(Device device, int volume)
+            throws IOException, URISyntaxException, InterruptedException {
         String url = alexaServer + "/api/device-notification-state/" + device.deviceType + "/" + device.softwareVersion
                 + "/" + device.serialNumber;
         String command = "{\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
@@ -1203,7 +1210,8 @@ public class Connection {
         makeRequest("PUT", url, command, true, true, null, 0);
     }
 
-    public void ascendingAlarm(Device device, boolean ascendingAlarm) throws IOException, URISyntaxException {
+    public void ascendingAlarm(Device device, boolean ascendingAlarm)
+            throws IOException, URISyntaxException, InterruptedException {
         String url = alexaServer + "/api/ascending-alarm/" + device.serialNumber;
         String command = "{\"ascendingAlarmEnabled\":" + (ascendingAlarm ? "true" : "false")
                 + ",\"deviceSerialNumber\":\"" + device.serialNumber + "\",\"deviceType\":\"" + device.deviceType
@@ -1222,7 +1230,7 @@ public class Connection {
                     return deviceNotificationStates;
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("Error getting device notification states", e);
         }
         return new DeviceNotificationState[0];
@@ -1239,13 +1247,14 @@ public class Connection {
                     return ascendingAlarmModelList;
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("Error getting device notification states", e);
         }
         return new AscendingAlarmModel[0];
     }
 
-    public void bluetooth(Device device, @Nullable String address) throws IOException, URISyntaxException {
+    public void bluetooth(Device device, @Nullable String address)
+            throws IOException, URISyntaxException, InterruptedException {
         if (address == null || address.isEmpty()) {
             // disconnect
             makeRequest("POST",
@@ -1258,7 +1267,8 @@ public class Connection {
         }
     }
 
-    public void playRadio(Device device, @Nullable String stationId) throws IOException, URISyntaxException {
+    public void playRadio(Device device, @Nullable String stationId)
+            throws IOException, URISyntaxException, InterruptedException {
         if (stationId == null || stationId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
@@ -1273,7 +1283,8 @@ public class Connection {
         }
     }
 
-    public void playAmazonMusicTrack(Device device, @Nullable String trackId) throws IOException, URISyntaxException {
+    public void playAmazonMusicTrack(Device device, @Nullable String trackId)
+            throws IOException, URISyntaxException, InterruptedException {
         if (trackId == null || trackId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
@@ -1290,7 +1301,7 @@ public class Connection {
     }
 
     public void playAmazonMusicPlayList(Device device, @Nullable String playListId)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         if (playListId == null || playListId.isEmpty()) {
             command(device, "{\"type\":\"PauseCommand\"}");
         } else {
@@ -1326,7 +1337,7 @@ public class Connection {
             return;
         }
         if (announcementTimer != null) {
-            announcementTimer.cancel(true);
+            announcementTimer.cancel(false);
             announcementTimer = null;
         }
         Announcement announcement = announcements.computeIfAbsent(Objects.hash(speak, bodyText, title),
@@ -1338,11 +1349,6 @@ public class Connection {
     }
 
     private synchronized void sendAnnouncement() {
-        // NECESSARY TO CANCEL AND NULL TIMER?
-        if (announcementTimer != null) {
-            announcementTimer.cancel(true);
-            announcementTimer = null;
-        }
         Iterator<Announcement> iterator = announcements.values().iterator();
         while (iterator.hasNext()) {
             Announcement announcement = iterator.next();
@@ -1405,7 +1411,7 @@ public class Connection {
             return;
         }
         if (textToSpeechTimer != null) {
-            textToSpeechTimer.cancel(true);
+            textToSpeechTimer.cancel(false);
             textToSpeechTimer = null;
         }
         TextToSpeech textToSpeech = textToSpeeches.computeIfAbsent(Objects.hash(text), k -> new TextToSpeech(text));
@@ -1416,11 +1422,6 @@ public class Connection {
     }
 
     private synchronized void sendTextToSpeech() {
-        // NECESSARY TO CANCEL AND NULL TIMER?
-        if (textToSpeechTimer != null) {
-            textToSpeechTimer.cancel(true);
-            textToSpeechTimer = null;
-        }
         Iterator<TextToSpeech> iterator = textToSpeeches.values().iterator();
         while (iterator.hasNext()) {
             TextToSpeech textToSpeech = iterator.next();
@@ -1447,7 +1448,7 @@ public class Connection {
 
     public synchronized void volume(Device device, int vol) {
         if (volumeTimer != null) {
-            volumeTimer.cancel(true);
+            volumeTimer.cancel(false);
             volumeTimer = null;
         }
         Volume volume = volumes.computeIfAbsent(vol, k -> new Volume(vol));
@@ -1457,11 +1458,6 @@ public class Connection {
     }
 
     private synchronized void sendVolume() {
-        // NECESSARY TO CANCEL AND NULL TIMER?
-        if (volumeTimer != null) {
-            volumeTimer.cancel(true);
-            volumeTimer = null;
-        }
         Iterator<Volume> iterator = volumes.values().iterator();
         while (iterator.hasNext()) {
             Volume volume = iterator.next();
@@ -1552,12 +1548,12 @@ public class Connection {
         executeSequenceNode(new Device[] { device }, nodeToExecute);
     }
 
-    private void executeSequenceNode(Device[] devices, JsonObject nodeToExecute) {
-        if (devices.length == 1 && groups.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())
-                || devices.length > 1
-                        && singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())) {
+    private synchronized void executeSequenceNode(Device[] devices, JsonObject nodeToExecute) {
+        if ((devices.length == 1 && groups.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get()))
+                || (devices.length > 1
+                        && singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get()))) {
             if (singleGroupTimer != null) {
-                singleGroupTimer.cancel(true);
+                singleGroupTimer.cancel(false);
                 singleGroupTimer = null;
             }
             singleGroupTimer = scheduler.schedule(() -> executeSequenceNode(devices, nodeToExecute), 500,
@@ -1579,9 +1575,9 @@ public class Connection {
         }
 
         if (devices.length == 1 && singles.get(devices[0]).queueRunning.compareAndSet(false, true)) {
-            queuedExecuteSequenceNode(devices[0], true);
+            new Thread(() -> queuedExecuteSequenceNode(devices[0], true)).start();
         } else if (devices.length > 1 && groups.get(devices[0]).queueRunning.compareAndSet(false, true)) {
-            queuedExecuteSequenceNode(devices[0], false);
+            new Thread(() -> queuedExecuteSequenceNode(devices[0], false)).start();
         }
     }
 
@@ -1619,21 +1615,14 @@ public class Connection {
                 }
 
                 makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException | URISyntaxException | InterruptedException e) {
                 logger.warn("execute sequence node fails with unexpected error", e);
             } finally {
                 queueObject.senderUnblockFuture = scheduler.schedule(() -> queuedExecuteSequenceNode(device, single),
                         delay, TimeUnit.MILLISECONDS);
             }
         } else {
-            queueObject.dispose();
-            // NECESSARY TO CANCEL AND NULL TIMER?
-            if (!isSequenceNodeQueueRunning()) {
-                if (singleGroupTimer != null) {
-                    singleGroupTimer.cancel(true);
-                    singleGroupTimer = null;
-                }
-            }
+            queueObject.queueRunning.set(false);
         }
     }
 
@@ -1764,7 +1753,8 @@ public class Connection {
         return executionNodeObject;
     }
 
-    public void startRoutine(Device device, String utterance) throws IOException, URISyntaxException {
+    public void startRoutine(Device device, String utterance)
+            throws IOException, URISyntaxException, InterruptedException {
         JsonAutomation found = null;
         String deviceLocale = "";
         JsonAutomation[] routines = getRoutines();
@@ -1836,13 +1826,14 @@ public class Connection {
         }
     }
 
-    public @Nullable JsonAutomation @Nullable [] getRoutines() throws IOException, URISyntaxException {
+    public @Nullable JsonAutomation @Nullable [] getRoutines()
+            throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/behaviors/automations?limit=2000");
         JsonAutomation[] result = parseJson(json, JsonAutomation[].class);
         return result;
     }
 
-    public JsonFeed[] getEnabledFlashBriefings() throws IOException, URISyntaxException {
+    public JsonFeed[] getEnabledFlashBriefings() throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(alexaServer + "/api/content-skills/enabled-feeds");
         JsonEnabledFeeds result = parseJson(json, JsonEnabledFeeds.class);
         if (result == null) {
@@ -1855,14 +1846,16 @@ public class Connection {
         return new JsonFeed[0];
     }
 
-    public void setEnabledFlashBriefings(JsonFeed[] enabledFlashBriefing) throws IOException, URISyntaxException {
+    public void setEnabledFlashBriefings(JsonFeed[] enabledFlashBriefing)
+            throws IOException, URISyntaxException, InterruptedException {
         JsonEnabledFeeds enabled = new JsonEnabledFeeds();
         enabled.enabledFeeds = enabledFlashBriefing;
         String json = gsonWithNullSerialization.toJson(enabled);
         makeRequest("POST", alexaServer + "/api/content-skills/enabled-feeds", json, true, true, null, 0);
     }
 
-    public JsonNotificationSound[] getNotificationSounds(Device device) throws IOException, URISyntaxException {
+    public JsonNotificationSound[] getNotificationSounds(Device device)
+            throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(
                 alexaServer + "/api/notification/sounds?deviceSerialNumber=" + device.serialNumber + "&deviceType="
                         + device.deviceType + "&softwareVersion=" + device.softwareVersion);
@@ -1877,7 +1870,7 @@ public class Connection {
         return new JsonNotificationSound[0];
     }
 
-    public JsonNotificationResponse[] notifications() throws IOException, URISyntaxException {
+    public JsonNotificationResponse[] notifications() throws IOException, URISyntaxException, InterruptedException {
         String response = makeRequestAndReturnString(alexaServer + "/api/notifications");
         JsonNotificationsResponse result = parseJson(response, JsonNotificationsResponse.class);
         if (result == null) {
@@ -1891,7 +1884,7 @@ public class Connection {
     }
 
     public @Nullable JsonNotificationResponse notification(Device device, String type, @Nullable String label,
-            @Nullable JsonNotificationSound sound) throws IOException, URISyntaxException {
+            @Nullable JsonNotificationSound sound) throws IOException, URISyntaxException, InterruptedException {
         Date date = new Date(new Date().getTime());
         long createdDate = date.getTime();
         Date alarm = new Date(createdDate + 5000); // add 5 seconds, because amazon does not except calls for times in
@@ -1918,12 +1911,13 @@ public class Connection {
         return result;
     }
 
-    public void stopNotification(JsonNotificationResponse notification) throws IOException, URISyntaxException {
+    public void stopNotification(JsonNotificationResponse notification)
+            throws IOException, URISyntaxException, InterruptedException {
         makeRequestAndReturnString("DELETE", alexaServer + "/api/notifications/" + notification.id, null, true, null);
     }
 
     public @Nullable JsonNotificationResponse getNotificationState(JsonNotificationResponse notification)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         String response = makeRequestAndReturnString("GET", alexaServer + "/api/notifications/" + notification.id, null,
                 true, null);
         JsonNotificationResponse result = parseJson(response, JsonNotificationResponse.class);
@@ -1937,7 +1931,7 @@ public class Connection {
             headers.put("Routines-Version", "1.1.218665");
             response = makeRequestAndReturnString("GET",
                     alexaServer + "/api/behaviors/entities?skillId=amzn1.ask.1p.music", null, true, headers);
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.warn("getMusicProviders fails: {}", e.getMessage());
             return new ArrayList<>();
         }
@@ -1949,7 +1943,7 @@ public class Connection {
     }
 
     public void playMusicVoiceCommand(Device device, String providerId, String voiceCommand)
-            throws IOException, URISyntaxException {
+            throws IOException, URISyntaxException, InterruptedException {
         JsonPlaySearchPhraseOperationPayload payload = new JsonPlaySearchPhraseOperationPayload();
         payload.customerId = (this.accountCustomerId == null || this.accountCustomerId.isEmpty()
                 ? device.deviceOwnerCustomerId
@@ -2001,13 +1995,15 @@ public class Connection {
         makeRequest("POST", alexaServer + "/api/behaviors/preview", postData, true, true, null, 3);
     }
 
-    public @Nullable JsonEqualizer getEqualizer(Device device) throws IOException, URISyntaxException {
+    public @Nullable JsonEqualizer getEqualizer(Device device)
+            throws IOException, URISyntaxException, InterruptedException {
         String json = makeRequestAndReturnString(
                 alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType);
         return parseJson(json, JsonEqualizer.class);
     }
 
-    public void setEqualizer(Device device, JsonEqualizer settings) throws IOException, URISyntaxException {
+    public void setEqualizer(Device device, JsonEqualizer settings)
+            throws IOException, URISyntaxException, InterruptedException {
         String postData = gson.toJson(settings);
         makeRequest("POST", alexaServer + "/api/equalizer/" + device.serialNumber + "/" + device.deviceType, postData,
                 true, true, null, 0);

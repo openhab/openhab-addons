@@ -312,7 +312,7 @@ public class AccountServlet extends HttpServlet {
 
             String html = connection.getLoginPage();
             returnHtml(connection, resp, html, "amazon.com");
-        } catch (URISyntaxException e) {
+        } catch (URISyntaxException | InterruptedException e) {
             logger.warn("get failed with uri syntax error", e);
         }
     }
@@ -419,7 +419,8 @@ public class AccountServlet extends HttpServlet {
         createPageEndAndSent(resp, html);
     }
 
-    private void handleDevices(HttpServletResponse resp, Connection connection) throws IOException, URISyntaxException {
+    private void handleDevices(HttpServletResponse resp, Connection connection)
+            throws IOException, URISyntaxException, InterruptedException {
         returnHtml(connection, resp,
                 "<html>" + StringEscapeUtils.escapeHtml(connection.getDeviceListJson()) + "</html>");
     }
@@ -522,7 +523,8 @@ public class AccountServlet extends HttpServlet {
         String errorMessage = "No notifications sounds found";
         try {
             notificationSounds = connection.getNotificationSounds(device);
-        } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException e) {
+        } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException
+                | InterruptedException e) {
             errorMessage = e.getLocalizedMessage();
         }
         if (notificationSounds != null) {
@@ -552,7 +554,8 @@ public class AccountServlet extends HttpServlet {
         String errorMessage = "No playlists found";
         try {
             playLists = connection.getPlaylists(device);
-        } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException e) {
+        } catch (IOException | HttpException | URISyntaxException | JsonSyntaxException | ConnectionException
+                | InterruptedException e) {
             errorMessage = e.getLocalizedMessage();
         }
 
@@ -667,7 +670,7 @@ public class AccountServlet extends HttpServlet {
                     return;
                 }
             }
-        } catch (URISyntaxException | ConnectionException e) {
+        } catch (URISyntaxException | ConnectionException | InterruptedException e) {
             returnError(resp, e.getLocalizedMessage());
             return;
         }

@@ -91,7 +91,8 @@ public class HandlerPercentageController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(PERCENTAGE.channelId)) {
             if (containsCapabilityProperty(capabilties, PERCENTAGE.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {

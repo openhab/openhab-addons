@@ -125,7 +125,8 @@ public class HandlerColorController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(COLOR.channelId)) {
             if (containsCapabilityProperty(capabilties, COLOR.propertyName)) {
                 if (command instanceof HSBType) {

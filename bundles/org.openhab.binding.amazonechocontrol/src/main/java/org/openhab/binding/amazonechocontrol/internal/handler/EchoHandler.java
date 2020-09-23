@@ -669,7 +669,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             } else {
                 this.updateStateJob = scheduler.schedule(doRefresh, waitForUpdate, TimeUnit.MILLISECONDS);
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.info("handleCommand fails", e);
         }
     }
@@ -699,7 +699,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 try {
                     connection.setEqualizer(device, newEqualizerSetting);
                     return true;
-                } catch (HttpException | IOException | ConnectionException e) {
+                } catch (HttpException | IOException | ConnectionException | InterruptedException e) {
                     logger.debug("Update equalizer failed", e);
                     this.lastKnownEqualizer = null;
                 }
@@ -746,7 +746,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             if (currentConnection != null) {
                 try {
                     currentConnection.stopNotification(currentNotification);
-                } catch (IOException | URISyntaxException e) {
+                } catch (IOException | URISyntaxException | InterruptedException e) {
                     logger.warn("Stop notification failed", e);
                 }
             }
@@ -766,7 +766,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                     }
                 }
             }
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.warn("update notification state fails", e);
         }
         if (stopCurrentNotification) {
@@ -880,7 +880,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 if (e.getCode() != 400) {
                     logger.info("getPlayer fails", e);
                 }
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException | URISyntaxException | InterruptedException e) {
                 logger.info("getPlayer fails", e);
             }
             // check playing
@@ -929,7 +929,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 } else {
                     logger.info("getMediaState fails", e);
                 }
-            } catch (IOException | URISyntaxException e) {
+            } catch (IOException | URISyntaxException | InterruptedException e) {
                 logger.info("getMediaState fails", e);
             }
 
@@ -1153,7 +1153,7 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
                 treble = equalizer.treble;
             }
             this.lastKnownEqualizer = equalizer;
-        } catch (IOException | URISyntaxException | HttpException | ConnectionException e) {
+        } catch (IOException | URISyntaxException | HttpException | ConnectionException | InterruptedException e) {
             logger.debug("Get equalizer failes", e);
             return;
         }
