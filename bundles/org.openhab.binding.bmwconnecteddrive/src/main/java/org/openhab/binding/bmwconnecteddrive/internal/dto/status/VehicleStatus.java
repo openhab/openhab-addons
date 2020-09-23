@@ -20,8 +20,6 @@ import java.util.List;
 
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,8 +29,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Bernd Weymann - Initial contribution
  */
 public class VehicleStatus {
-    private static final Logger logger = LoggerFactory.getLogger(VehicleStatus.class);
-
     public int mileage;// ": 17273,
     public float remainingFuel;// ": 4,
     public float remainingRangeElectric;// ": 148,
@@ -239,8 +235,6 @@ public class VehicleStatus {
                             if (overallState.equalsIgnoreCase(UNKNOWN)) {
                                 overallState = CLOSED;
                             }
-                        } else {
-                            logger.debug("Unknown Status {} for Field {}", state, field);
                         }
                     }
                 }
