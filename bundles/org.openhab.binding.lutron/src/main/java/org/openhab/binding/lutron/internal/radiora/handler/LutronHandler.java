@@ -48,4 +48,9 @@ public abstract class LutronHandler extends BaseThingHandler {
     }
 
     public abstract void handleFeedback(RadioRAFeedback feedback);
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
+    }
 }
