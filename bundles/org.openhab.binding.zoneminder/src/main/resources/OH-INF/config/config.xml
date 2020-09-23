@@ -24,8 +24,7 @@
 			<description>Enable/disable automatic discovery</description>
 			<default>true</default>
 		</parameter>
-		<parameter name="discoveryInterval" type="integer" min="60" required="true" unit="s"
-			groupName="config-info">
+		<parameter name="discoveryInterval" type="integer" min="60" required="true" unit="s" groupName="config-info">
 			<label>Monitor Discovery Interval</label>
 			<description>Specifies time in seconds in which the binding will attempt to discover monitors</description>
 			<default>300</default>
