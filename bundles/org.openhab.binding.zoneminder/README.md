@@ -49,11 +49,11 @@ The following configuration parameters are available on the Server thing:
 | Port Number                    | portNumber                  | Optional  | Port number if not on ZoneMinder default port 80. |
 | Use Default Url Path           | useDefaultUrlPath           | Required  | If ON, use ZoneMinder default of /zm; if OFF, use value from urlPath parameter. |
 | Url Path                       | urlPath                     | Optional  | Use this parameter when not using the ZoneMinder default path of /zm. |
-| Refresh Interval               | refreshInterval             | Required  | Frequency at which monitor status will be updated. |
+| Refresh Interval               | refreshInterval             | Required  | Frequency in seconds at which monitor status will be updated. |
 | Default Alarm Duration         | defaultAlarmDuration        | Required  | Can be used to set the default alarm duration on discovered monitors. |
-| Default Image Refresh Interval | defaultImageRefreshInterval | Optional  | Can be used to set the image refresh interval on discovered monitors. Leave empty to not set an image refresh interval. |
+| Default Image Refresh Interval | defaultImageRefreshInterval | Optional  | Can be used to set the image refresh interval in seconds on discovered monitors. Leave empty to not set an image refresh interval. |
 | Monitor Discovery Enabled      | discoveryEnabled            | Required  | Enable/disable the automatic discovery of monitors. Default is enabled. |
-| Monitor Discovery Interval     | discoveryInterval           | Required  | Frequency at which the binding will try to discover monitors. |
+| Monitor Discovery Interval     | discoveryInterval           | Required  | Frequency in seconds at which the binding will try to discover monitors. Default is 300 seconds. |
 | User ID                        | user                        | Optional  | User ID of ZoneMinder user when using authentication. |
 | Password                       | pass                        | Optional  | Password of ZoneMinder user when using authentication. |
 
@@ -64,7 +64,7 @@ The following configuration parameters are available on the Monitor thing:
 | Parameter | Parameter ID | Required/Optional | Description |
 |-----------|--------------|-------------------|-------------|
 | Monitor ID             | monitorId            | Required          | Id of monitor defined in ZoneMinder. |
-| Image Refresh Interval | imageRefreshInterval | Optional          | Interval in which snapshot image channel will be updated. |
+| Image Refresh Interval | imageRefreshInterval | Optional          | Interval in seconds in which snapshot image channel will be updated. |
 | Alarm Duration         | alarmDuration        | Required          | How long the alarm will run once triggered by the triggerAlarm channel. |
 
 ## Channels
