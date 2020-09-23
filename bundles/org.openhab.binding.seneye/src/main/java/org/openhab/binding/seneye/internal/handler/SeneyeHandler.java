@@ -125,7 +125,7 @@ public final class SeneyeHandler extends BaseThingHandler implements ReadingsUpd
             return; // critical error
         }
 
-        super.initialize();
+        updateStatus(ThingStatus.ONLINE);
 
         // contact Seneye API
         scheduler.submit(() -> {
