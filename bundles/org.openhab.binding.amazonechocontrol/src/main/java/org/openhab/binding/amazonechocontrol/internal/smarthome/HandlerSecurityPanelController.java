@@ -147,7 +147,8 @@ public class HandlerSecurityPanelController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(ARM_STATE.channelId)) {
             if (containsCapabilityProperty(capabilties, ARM_STATE.propertyName)) {
                 if (command instanceof StringType) {

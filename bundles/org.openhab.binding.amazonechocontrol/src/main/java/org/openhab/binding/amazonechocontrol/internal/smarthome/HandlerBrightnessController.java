@@ -91,7 +91,8 @@ public class HandlerBrightnessController extends HandlerBase {
 
     @Override
     public boolean handleCommand(Connection connection, SmartHomeDevice shd, String entityId,
-            SmartHomeCapability[] capabilties, String channelId, Command command) throws IOException {
+            SmartHomeCapability[] capabilties, String channelId, Command command)
+            throws IOException, InterruptedException {
         if (channelId.equals(BRIGHTNESS.channelId)) {
             if (containsCapabilityProperty(capabilties, BRIGHTNESS.propertyName)) {
                 if (command.equals(IncreaseDecreaseType.INCREASE)) {
