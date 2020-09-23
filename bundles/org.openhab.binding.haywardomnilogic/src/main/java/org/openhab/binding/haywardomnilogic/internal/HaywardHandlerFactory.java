@@ -31,7 +31,7 @@ import org.eclipse.smarthome.core.thing.binding.BaseThingHandlerFactory;
 import org.eclipse.smarthome.core.thing.binding.ThingHandler;
 import org.eclipse.smarthome.core.thing.binding.ThingHandlerFactory;
 import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.openhab.binding.haywardomnilogic.internal.discovery.HaywardDiscoveryHandler;
+import org.openhab.binding.haywardomnilogic.internal.discovery.HaywardDiscoveryService;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBackyardHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBowHandler;
 import org.openhab.binding.haywardomnilogic.internal.handler.HaywardBridgeHandler;
@@ -68,7 +68,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
                     HaywardBindingConstants.THING_TYPE_SENSOR, HaywardBindingConstants.THING_TYPE_VIRTUALHEATER));
 
     private Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Activate
     public HaywardHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
@@ -89,7 +89,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
 
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_BRIDGE)) {
             HaywardBridgeHandler bridge = new HaywardBridgeHandler((Bridge) thing, httpClient);
-            HaywardDiscoveryHandler discovery = new HaywardDiscoveryHandler(bridge);
+            HaywardDiscoveryService discovery = new HaywardDiscoveryService(bridge);
             discoveryServiceRegs.put(bridge.getThing().getUID(), bundleContext
                     .registerService(DiscoveryService.class.getName(), discovery, new Hashtable<String, Object>()));
             discovery.activate(null);
@@ -122,7 +122,6 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(HaywardBindingConstants.THING_TYPE_VIRTUALHEATER)) {
             return new HaywardVirtualHeaterHandler(thing);
         }
-        logger.error("Can't Create Handler: {}", thingTypeUID);
         return null;
     }
 
@@ -134,7 +133,7 @@ public class HaywardHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof HaywardBridgeHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             // remove discovery service, if bridge handler is removed
-            HaywardDiscoveryHandler service = (HaywardDiscoveryHandler) bundleContext
+            HaywardDiscoveryService service = (HaywardDiscoveryService) bundleContext
                     .getService(serviceReg.getReference());
             if (service != null) {
                 service.deactivate();

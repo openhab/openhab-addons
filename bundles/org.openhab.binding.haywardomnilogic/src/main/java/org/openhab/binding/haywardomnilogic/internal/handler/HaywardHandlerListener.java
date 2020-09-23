@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link HaywardHandlerListener} is notified when a thing is discovered.
  *
- * @author Matt Myers - Initial Contributionn
+ * @author Matt Myers - Initial Contribution
  *
  */
 @NonNullByDefault

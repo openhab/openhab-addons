@@ -64,7 +64,8 @@ import org.xml.sax.InputSource;
 @NonNullByDefault
 public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardListener {
     private final Logger logger = LoggerFactory.getLogger(HaywardBridgeHandler.class);
-    private List<HaywardHandlerListener> listeners = new ArrayList<HaywardHandlerListener>();
+
+    private List<HaywardHandlerListener> listeners = new ArrayList<>();
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> initializeFuture;
     private @Nullable ScheduledFuture<?> pollTelemetryFuture;
@@ -141,12 +142,9 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.BRIDGE_UNINITIALIZED,
-                "Opening connection to Hayward's Server");
+        updateStatus(ThingStatus.UNKNOWN);
 
-        initializeFuture = scheduler.schedule(() -> {
-            scheduledInitialize();
-        }, 1, TimeUnit.SECONDS);
+        initializeFuture = scheduler.schedule(this::scheduledInitialize, 1, TimeUnit.SECONDS);
         return;
     }
 
@@ -1056,9 +1054,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
             Map<String, String> properties = thing.getProperties();
             if (properties.get(HaywardBindingConstants.PROPERTY_SYSTEM_ID).equals(Integer.toString(num))) {
                 if (properties.get(HaywardBindingConstants.PROPERTY_TYPE).equals(type.toString())) {
-                    {
-                        return thing;
-                    }
+                    return thing;
                 }
             }
         }
@@ -1091,7 +1087,6 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
     }
 
     private synchronized String httpXmlResponse(String urlParameters) throws Exception {
-        int status;
         String statusMessage;
         String urlParameterslength = Integer.toString(urlParameters.length());
 
@@ -1100,7 +1095,7 @@ public class HaywardBridgeHandler extends BaseBridgeHandler implements HaywardLi
                     .content(new StringContentProvider(urlParameters), "text/xml; charset=utf-8")
                     .header(HttpHeader.CONTENT_LENGTH, urlParameterslength).send();
 
-            status = httpResponse.getStatus();
+            int status = httpResponse.getStatus();
             String xmlResponse = httpResponse.getContentAsString();
 
             if (!(evaluateXPath("/Response/Parameters//Parameter[@name='StatusMessage']/text()", xmlResponse)

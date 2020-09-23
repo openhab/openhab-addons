@@ -32,12 +32,12 @@ import org.slf4j.LoggerFactory;
  * @author Matt Myers - Initial Contribution
  */
 
-public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements HaywardHandlerListener {
-    private final Logger logger = LoggerFactory.getLogger(HaywardDiscoveryHandler.class);
+public class HaywardDiscoveryService extends AbstractDiscoveryService implements HaywardHandlerListener {
+    private final Logger logger = LoggerFactory.getLogger(HaywardDiscoveryService.class);
 
     private HaywardBridgeHandler bridge;
 
-    public HaywardDiscoveryHandler(HaywardBridgeHandler bridge) throws IllegalArgumentException {
+    public HaywardDiscoveryService(HaywardBridgeHandler bridge) throws IllegalArgumentException {
         super(60);
         this.bridge = bridge;
     }
@@ -125,8 +125,8 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
     }
 
     @Override
-    public void onFilterDiscovered(int systemID, String label, String bowID, String bowName, String property1,
-            String property2, String property3, String property4) {
+    public void onFilterDiscovered(int systemID, String label, String bowID, String bowName, String minPumpSpeed,
+            String maxPumpSpeed, String minPumpRpm, String maxPumpRpm) {
         logger.debug("Hayward Filter {} Discovered: {}", systemID, label);
         ThingUID thingUID = new ThingUID(HaywardBindingConstants.THING_TYPE_FILTER, bridge.getThing().getUID(),
                 Integer.toString(systemID));
@@ -135,10 +135,10 @@ public class HaywardDiscoveryHandler extends AbstractDiscoveryService implements
         properties.put(HaywardBindingConstants.PROPERTY_TYPE, HaywardTypeToRequest.FILTER.toString());
         properties.put(HaywardBindingConstants.PROPERTY_BOWID, bowID);
         properties.put(HaywardBindingConstants.PROPERTY_BOWNAME, bowName);
-        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, property1);
-        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, property2);
-        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, property3);
-        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPRPM, property4);
+        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPSPEED, minPumpSpeed);
+        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPSPEED, maxPumpSpeed);
+        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MINPUMPRPM, minPumpRpm);
+        properties.put(HaywardBindingConstants.PROPERTY_FILTER_MAXPUMPRPM, maxPumpRpm);
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridge.getThing().getUID())
                 .withRepresentationProperty(HaywardBindingConstants.PROPERTY_SYSTEM_ID).withLabel("Hayward " + label)
                 .withProperties(properties).build();

@@ -15,7 +15,7 @@ package org.openhab.binding.haywardomnilogic.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link HaywardOmniLogixConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link HaywardConfig} class contains fields mapping thing configuration parameters.
  *
  * @author Matt Myers - Initial Contribution
  */
