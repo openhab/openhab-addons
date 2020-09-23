@@ -39,11 +39,6 @@ import org.osgi.service.component.annotations.Component;
 public class SmartMeterConfigProvider implements ConfigOptionProvider {
 
     @Override
-    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
-        return getParameterOptions(uri, param, null, locale);
-    }
-
-    @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
         if (!SmartMeterBindingConstants.THING_TYPE_SMLREADER.getAsString().equals(uri.getSchemeSpecificPart())) {
