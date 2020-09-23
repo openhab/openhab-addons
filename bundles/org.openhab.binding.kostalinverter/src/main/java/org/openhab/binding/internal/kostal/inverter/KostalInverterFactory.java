@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.internal.kostal.inverter.firstgeneration.WebscrapeHandler;
+import org.openhab.binding.internal.kostal.inverter.secondgeneration.SecondGenerationHandler;
 import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationHandler;
 import org.openhab.binding.internal.kostal.inverter.thirdgeneration.ThirdGenerationInverterTypes;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -36,6 +37,7 @@ import org.osgi.service.component.annotations.Reference;
 /**
  * @author Christian Schneider - Initial contribution (as WebscrapeHandlerFactory.java)
  * @author René Stakemeier - extension for the third generation of KOSTAL inverters
+ * @author Örjan Backsell - extension for the second generation of KOSTAL inverters
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.kostalinverter")
 @NonNullByDefault
@@ -72,6 +74,9 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
 
     public static final ThingTypeUID FIRST_GENERATION_INVERTER = new ThingTypeUID("kostalinverter", "kostalinverter");
 
+    public static final ThingTypeUID SECOND_GENERATION_INVERTER = new ThingTypeUID("kostalinverter",
+            "kostalinverterpiko1020");
+
     private final HttpClient httpClient;
 
     @Activate
@@ -81,7 +86,7 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return thingTypeUID.equals(FIRST_GENERATION_INVERTER)
+        return thingTypeUID.equals(FIRST_GENERATION_INVERTER) || thingTypeUID.equals(SECOND_GENERATION_INVERTER)
                 || SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.keySet().contains(thingTypeUID);
     }
 
@@ -91,6 +96,12 @@ public class KostalInverterFactory extends BaseThingHandlerFactory {
         if (FIRST_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
             return new WebscrapeHandler(thing);
         }
+
+        // second generation
+        if (SECOND_GENERATION_INVERTER.equals(thing.getThingTypeUID())) {
+            return new SecondGenerationHandler(thing, httpClient);
+        }
+
         // third generation
         if (SUPPORTED_THIRD_GENERATION_THING_TYPES_UIDS.containsKey(thing.getThingTypeUID())) {
             return new ThirdGenerationHandler(thing, httpClient,
