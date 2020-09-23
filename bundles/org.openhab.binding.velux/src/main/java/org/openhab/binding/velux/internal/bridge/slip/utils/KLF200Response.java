@@ -64,9 +64,9 @@ public class KLF200Response {
      */
     public static void errorLogging(Logger logger, short responseCommand) {
         logger.trace("setResponse(): cannot handle response {} ({}).", Command.get(responseCommand).toString(),
-                responseCommand);
+                new CommandNumber(responseCommand).toString());
         logger.warn("Gateway response {} ({}) cannot be handled at this point of interaction.",
-                Command.get(responseCommand).toString(), responseCommand);
+                Command.get(responseCommand).toString(), new CommandNumber(responseCommand).toString());
     }
 
     /**
