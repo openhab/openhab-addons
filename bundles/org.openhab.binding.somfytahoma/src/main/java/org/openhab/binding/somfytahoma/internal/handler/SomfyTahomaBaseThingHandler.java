@@ -96,7 +96,8 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     protected @Nullable SomfyTahomaBridgeHandler getBridgeHandler() {
-        return this.getBridge() != null ? (SomfyTahomaBridgeHandler) this.getBridge().getHandler() : null;
+        Bridge localBridge = this.getBridge();
+        return localBridge != null ? (SomfyTahomaBridgeHandler) localBridge.getHandler() : null;
     }
 
     private String getURL() {

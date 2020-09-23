@@ -343,11 +343,11 @@ public class SomfyTahomaItemDiscoveryService extends AbstractDiscoveryService
     }
 
     private boolean isSilentRollerShutter(SomfyTahomaDevice device) {
-        return hasCommmand(device, COMMAND_SET_CLOSURESPEED);
+        return "PositionableRollerShutterWithLowSpeedManagement".equals(device.getWidget());
     }
 
     private boolean isUnoRollerShutter(SomfyTahomaDevice device) {
-        return hasState(device, TARGET_CLOSURE_STATE);
+        return "PositionableRollerShutterUno".equals(device.getWidget());
     }
 
     private boolean isOnOffHeatingSystem(SomfyTahomaDevice device) {
