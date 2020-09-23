@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-type id="checkcontrol-name-channel">
 		<item-type>String</item-type>
-		<label>CheckControl Description</label>
+		<label>Active CheckControl Description</label>
 	</channel-type>
 	<channel-type id="checkcontrol-mileage-channel">
 		<item-type>Number:Length</item-type>
@@ -13,11 +13,11 @@
 	</channel-type>
 	<channel-type id="checkcontrol-size-channel">
 		<item-type>Number</item-type>
-		<label>Active CheckControl Messages</label>
+		<label>Number of Active CheckControl Messages</label>
 	</channel-type>
 	<channel-type id="checkcontrol-index-channel">
 		<item-type>Number</item-type>
-		<label>Selected CheckControl Message</label>
+		<label>Index of Selected CheckControl Message</label>
 	</channel-type>
 	<channel-type id="checkcontrol-next-channel">
 		<item-type>Switch</item-type>

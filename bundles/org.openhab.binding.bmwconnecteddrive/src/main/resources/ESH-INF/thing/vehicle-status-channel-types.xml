@@ -17,9 +17,17 @@
 	</channel-type>
 	<channel-type id="service-date-channel">
 		<item-type>DateTime</item-type>
+		<label>Service Date</label>
+	</channel-type>
+	<channel-type id="next-service-date-channel">
+		<item-type>DateTime</item-type>
 		<label>Next Service Date</label>
 	</channel-type>
 	<channel-type id="service-mileage-channel">
+		<item-type>String</item-type>
+		<label>Mileage till Service</label>
+	</channel-type>
+	<channel-type id="next-service-mileage-channel">
 		<item-type>String</item-type>
 		<label>Mileage till Next Service</label>
 	</channel-type>
