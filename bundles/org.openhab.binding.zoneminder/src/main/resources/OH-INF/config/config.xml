@@ -78,7 +78,7 @@
 			<label>Monitor Id</label>
 			<description>Id of the monitor</description>
 		</parameter>
-		<parameter name="imageRefreshInterval" type="integer" unit="s" required="false">
+		<parameter name="imageRefreshInterval" type="integer" unit="s" required="false" min="1">
 			<label>Image Refresh Interval</label>
 			<description>Interval in seconds with which monitor image is refreshed</description>
 		</parameter>

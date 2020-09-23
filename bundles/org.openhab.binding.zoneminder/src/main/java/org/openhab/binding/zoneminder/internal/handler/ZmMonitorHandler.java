@@ -17,8 +17,8 @@ import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -70,7 +70,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> imageRefreshJob;
     private @Nullable ScheduledFuture<?> alarmOffJob;
 
-    private final Map<String, State> monitorStatusCache = Collections.synchronizedMap(new HashMap<>());
+    private final Map<String, State> monitorStatusCache = new ConcurrentHashMap<>();
 
     public ZmMonitorHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -233,7 +233,7 @@ public class ZmMonitorHandler extends BaseThingHandler {
 
     private void refreshImage() {
         if (isLinked(CHANNEL_IMAGE)) {
-            scheduler.execute(this::getImage);
+            getImage();
         } else {
             logger.trace("Monitor {}: Can't update image because '{}' channel is not linked", CHANNEL_IMAGE, monitorId);
         }

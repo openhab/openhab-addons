@@ -16,6 +16,7 @@ import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -442,7 +443,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable String executePost(String url, String content, String contentType) {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes())) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8))) {
             long startTime = System.currentTimeMillis();
             String response = HttpUtil.executeUrl("POST", url, inputStream, contentType, API_TIMEOUT_MSEC);
             logger.trace("Bridge: Http POST content '{}' to '{}' returned: {} in {} ms", content, url, response,

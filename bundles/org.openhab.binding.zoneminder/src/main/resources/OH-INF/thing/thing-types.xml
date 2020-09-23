@@ -199,13 +199,13 @@
 		<item-type>Number</item-type>
 		<label>Event Frames</label>
 		<description>Number of frames in the event</description>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="eventAlarmFrames">
 		<item-type>Number</item-type>
 		<label>Event Alarm Frames</label>
 		<description>Number of alarm frames in the event</description>
-		<state readOnly="true" pattern="%.0f"></state>
+		<state readOnly="true" pattern="%d"></state>
 	</channel-type>
 	<channel-type id="eventLength">
 		<item-type>Number:Time</item-type>

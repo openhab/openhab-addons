@@ -36,16 +36,15 @@ public class ZmAuth {
 
     private final Logger logger = LoggerFactory.getLogger(ZmAuth.class);
 
-    private ZmBridgeHandler bridgeHandler;
-    private String authContent;
+    private final ZmBridgeHandler bridgeHandler;
+    private final String authContent;
+    private final boolean usingAuthorization;
+    private boolean isAuthorized;
 
     private @Nullable String refreshToken;
     private long refreshTokenExpiresAt;
     private @Nullable String accessToken;
     private long accessTokenExpiresAt;
-
-    private boolean usingAuthorization;
-    private boolean isAuthorized;
 
     public ZmAuth(ZmBridgeHandler handler) {
         this(handler, null, null);
@@ -62,14 +61,16 @@ public class ZmAuth {
             logger.debug("ZmAuth: Authorization is enabled");
             usingAuthorization = true;
             isAuthorized = false;
+            String encodedUser = null;
+            String encodedPass = null;
             try {
-                authContent = String.format("user=%s&pass=%s&stateful=1",
-                        URLEncoder.encode(user, StandardCharsets.UTF_8.name()),
-                        URLEncoder.encode(pass, StandardCharsets.UTF_8.name()));
+                encodedUser = URLEncoder.encode(user, StandardCharsets.UTF_8.name());
+                encodedPass = URLEncoder.encode(pass, StandardCharsets.UTF_8.name());
             } catch (UnsupportedEncodingException e) {
                 logger.warn("ZmAuth: Unable to encode user name and password");
-                authContent = "";
             }
+            authContent = encodedUser == null ? ""
+                    : String.format("user=%s&pass=%s&stateful=1", encodedUser, encodedPass);
         }
     }
 
@@ -131,7 +132,7 @@ public class ZmAuth {
         if (response != null) {
             Gson gson = bridgeHandler.getGson();
             AuthResponseDTO auth = gson.fromJson(response, AuthResponseDTO.class);
-            if (auth != null && auth.exception == null && auth.exception == null && auth.accessToken != null) {
+            if (auth != null && auth.exception == null && auth.accessToken != null) {
                 updateAccessToken(auth);
                 isAuthorized = true;
                 return;
