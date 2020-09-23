@@ -450,7 +450,8 @@ public class StateUtils {
                     }
                 }
             } else if (lastCommand instanceof PercentType) {
-                if (hueState instanceof HueStateBulb && itemState.as(PercentType.class).equals(lastCommand)) {
+                if (hueState instanceof HueStateBulb && itemState != null
+                        && lastCommand.equals(itemState.as(PercentType.class))) {
                     if (lastHueChange.bri != null) {
                         ((HueStateBulb) hueState).bri = lastHueChange.bri;
                     }
