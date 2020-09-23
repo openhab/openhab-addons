@@ -46,11 +46,6 @@ import org.pcap4j.core.PcapAddress;
 public class AmazonDashButtonConfigOptionProvider implements ConfigOptionProvider {
 
     @Override
-    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
-        return getParameterOptions(uri, param, null, locale);
-    }
-
-    @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
         if ("thing-type".equals(uri.getScheme())) {

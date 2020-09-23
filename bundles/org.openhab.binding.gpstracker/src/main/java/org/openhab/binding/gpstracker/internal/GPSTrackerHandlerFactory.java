@@ -207,11 +207,6 @@ public class GPSTrackerHandlerFactory extends BaseThingHandlerFactory implements
     }
 
     @Override
-    public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable Locale locale) {
-        return getParameterOptions(uri, param, null, locale);
-    }
-
-    @Override
     public @Nullable Collection<ParameterOption> getParameterOptions(URI uri, String param, @Nullable String context,
             @Nullable Locale locale) {
         if (URI_STR.equals(uri.toString()) && ConfigHelper.CONFIG_REGION_NAME.equals(param)) {
