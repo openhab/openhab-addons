@@ -57,6 +57,11 @@ public class NeatoAccountHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
 
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.ONLINE);
+    }
+
     private List<Robot> sendGetRobots(String accessToken) {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/vnd.neato.nucleo.v1");
