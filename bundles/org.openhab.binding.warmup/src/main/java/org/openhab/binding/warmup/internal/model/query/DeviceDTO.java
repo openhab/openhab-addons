@@ -18,8 +18,13 @@ package org.openhab.binding.warmup.internal.model.query;
 public class DeviceDTO {
 
     private String deviceSN;
+    private int lastPoll;
 
     public String getDeviceSN() {
         return deviceSN;
+    }
+
+    public int getLastPoll() {
+        return lastPoll;
     }
 }

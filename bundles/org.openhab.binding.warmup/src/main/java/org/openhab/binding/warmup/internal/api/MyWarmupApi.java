@@ -117,7 +117,7 @@ public class MyWarmupApi {
     public synchronized @Nullable QueryResponseDTO getStatus() throws MyWarmupApiException {
         return callWarmupGraphQL("query QUERY { user { locations{ id name "
                 + " rooms { id roomName runMode overrideDur targetTemp currentTemp "
-                + " thermostat4ies{ deviceSN }}}}}");
+                + " thermostat4ies{ deviceSN lastPoll }}}}}");
     }
 
     /**

@@ -71,33 +71,41 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
      */
     @Override
     public void refresh(@Nullable QueryResponseDTO domain) {
-        if (domain != null && config != null) {
+        if (domain == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No data from bridge");
+        } else if (config != null) {
             final String serialNumber = config.getSerialNumber();
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
                     if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()
                             && room.getThermostat4ies().get(0).getDeviceSN().equals(serialNumber)) {
-                        updateStatus(ThingStatus.ONLINE);
+                        if (room.getThermostat4ies().get(0).getLastPoll() > 10) {
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Thermostat has not polled for 10 minutes");
+                        } else {
+                            updateStatus(ThingStatus.ONLINE);
 
-                        updateProperty("Id", room.getId());
-                        updateProperty("Serial Number", serialNumber);
-                        updateProperty("Name", room.getName());
-                        updateProperty("Location Id", location.getId());
-                        updateProperty("Location", location.getName());
+                            updateProperty("Id", room.getId());
+                            updateProperty("Serial Number", serialNumber);
+                            updateProperty("Name", room.getName());
+                            updateProperty("Location Id", location.getId());
+                            updateProperty("Location", location.getName());
 
-                        updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
-                        updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
-                        updateState(CHANNEL_OVERRIDE_DURATION, parseDuration(room.getOverrideDuration()));
-                        updateState(CHANNEL_RUN_MODE, parseString(room.getRunMode()));
-                        updateState(CHANNEL_FROST_PROTECTION_MODE,
-                                OnOffType.from(room.getRunMode().equals(FROST_PROTECTION_MODE)));
+                            updateState(CHANNEL_CURRENT_TEMPERATURE, parseTemperature(room.getCurrentTemperature()));
+                            updateState(CHANNEL_TARGET_TEMPERATURE, parseTemperature(room.getTargetTemperature()));
+                            updateState(CHANNEL_OVERRIDE_DURATION, parseDuration(room.getOverrideDuration()));
+                            updateState(CHANNEL_RUN_MODE, parseString(room.getRunMode()));
+                            updateState(CHANNEL_FROST_PROTECTION_MODE,
+                                    OnOffType.from(room.getRunMode().equals(FROST_PROTECTION_MODE)));
+                        }
                         return;
                     }
                 }
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Room not found");
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Room not configured");
         }
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "No data from bridge");
     }
 
     private void setOverride(final QuantityType<?> command) {
