@@ -25,6 +25,6 @@
 	</channel-type>
 	<channel-type id="destination-next-channel">
 		<item-type>Switch</item-type>
-		<label>Skip to Next Destination</label>
+		<label>Next Destination</label>
 	</channel-type>
 </thing:thing-descriptions>
