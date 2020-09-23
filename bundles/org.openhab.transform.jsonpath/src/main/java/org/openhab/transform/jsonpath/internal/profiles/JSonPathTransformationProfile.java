@@ -84,7 +84,6 @@ public class JSonPathTransformationProfile implements StateProfile {
 
     @Override
     public void onStateUpdateFromItem(State state) {
-        callback.handleUpdate(state);
     }
 
     @Override
