@@ -33,7 +33,7 @@ public class TouchWandUnitDataWallController extends TouchWandUnitData {
         if (currStatus != null) {
             return currStatus.getCsc().getKeyAttr();
         } else {
-            return null;
+            return 0;
         }
     }
 

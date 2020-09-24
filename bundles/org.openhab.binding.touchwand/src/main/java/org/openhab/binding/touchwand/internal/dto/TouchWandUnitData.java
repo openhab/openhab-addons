@@ -13,6 +13,8 @@
 
 package org.openhab.binding.touchwand.internal.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -21,65 +23,66 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Roie Geron - Initial contribution
  */
+@NonNullByDefault
 public abstract class TouchWandUnitData {
 
     @SerializedName("id")
     @Expose
-    private Integer id;
+    private Integer id = 0;
     @SerializedName("name")
     @Expose
-    private String name;
+    private String name = "";
     @SerializedName("type")
     @Expose
-    private String type;
+    private String type = "";
     @SerializedName("nodeId")
     @Expose
-    private int nodeId;
+    private Integer nodeId = 0;
     @SerializedName("epId")
     @Expose
-    private int epId;
+    private Integer epId = 0;
     @SerializedName("icon")
     @Expose
-    private Object icon;
+    private String icon = "";
     @SerializedName("connectivity")
     @Expose
-    private String connectivity;
+    private String connectivity = "";
     @SerializedName("status")
     @Expose
-    private String status;
+    private String status = "";
     @SerializedName("isFavorite")
     @Expose
-    private Object isFavorite;
+    private Integer isFavorite = 0;
     @SerializedName("errorCode")
     @Expose
-    private Object errorCode;
+    private Integer errorCode = 0;
     @SerializedName("hasPowerMeter")
     @Expose
-    private Object hasPowerMeter;
+    private boolean hasPowerMeter;
     @SerializedName("hasBattery")
     @Expose
-    private Object hasBattery;
+    private boolean hasBattery;
     @SerializedName("config")
     @Expose
-    private Object config;
+    private String config = "";
     @SerializedName("association")
     @Expose
-    private Object association;
+    private String association = "";
     @SerializedName("customOp")
     @Expose
-    private Object customOp;
+    private String customOp = "";
     @SerializedName("isHidden")
     @Expose
-    private Object isHidden;
+    private boolean isHidden = false;
     @SerializedName("createdAt")
     @Expose
-    private String createdAt;
+    private String createdAt = "";
     @SerializedName("updatedAt")
     @Expose
-    private String updatedAt;
+    private String updatedAt = "";
     @SerializedName("roomId")
     @Expose
-    private Object roomId;
+    private Integer roomId = 0;
 
     public Integer getId() {
         return id;
@@ -121,11 +124,11 @@ public abstract class TouchWandUnitData {
         this.epId = epId;
     }
 
-    public Object getIcon() {
+    public String getIcon() {
         return icon;
     }
 
-    public void setIcon(Object icon) {
+    public void setIcon(String icon) {
         this.icon = icon;
     }
 
@@ -145,67 +148,67 @@ public abstract class TouchWandUnitData {
         this.status = status;
     }
 
-    public Object getIsFavorite() {
+    public Integer getIsFavorite() {
         return isFavorite;
     }
 
-    public void setIsFavorite(Object isFavorite) {
+    public void setIsFavorite(Integer isFavorite) {
         this.isFavorite = isFavorite;
     }
 
-    public Object getErrorCode() {
+    public Integer getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(Object errorCode) {
+    public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
     }
 
-    public Object getHasPowerMeter() {
+    public boolean getHasPowerMeter() {
         return hasPowerMeter;
     }
 
-    public void setHasPowerMeter(Object hasPowerMeter) {
+    public void setHasPowerMeter(boolean hasPowerMeter) {
         this.hasPowerMeter = hasPowerMeter;
     }
 
-    public Object getHasBattery() {
+    public boolean getHasBattery() {
         return hasBattery;
     }
 
-    public void setHasBattery(Object hasBattery) {
+    public void setHasBattery(boolean hasBattery) {
         this.hasBattery = hasBattery;
     }
 
-    public Object getConfig() {
+    public String getConfig() {
         return config;
     }
 
-    public void setConfig(Object config) {
+    public void setConfig(String config) {
         this.config = config;
     }
 
-    public Object getAssociation() {
+    public String getAssociation() {
         return association;
     }
 
-    public void setAssociation(Object association) {
+    public void setAssociation(String association) {
         this.association = association;
     }
 
-    public Object getCustomOp() {
+    public String getCustomOp() {
         return customOp;
     }
 
-    public void setCustomOp(Object customOp) {
+    public void setCustomOp(String customOp) {
         this.customOp = customOp;
     }
 
-    public Object getIsHidden() {
+    public boolean getIsHidden() {
         return isHidden;
     }
 
-    public void setIsHidden(Object isHidden) {
+    public void setIsHidden(boolean isHidden) {
         this.isHidden = isHidden;
     }
 
@@ -225,13 +228,13 @@ public abstract class TouchWandUnitData {
         this.updatedAt = updatedAt;
     }
 
-    public Object getRoomId() {
+    public Integer getRoomId() {
         return roomId;
     }
 
-    public void setRoomId(Object roomId) {
+    public void setRoomId(Integer roomId) {
         this.roomId = roomId;
     }
 
-    public abstract Object getCurrStatus();
+    public abstract Integer getCurrStatus();
 }
