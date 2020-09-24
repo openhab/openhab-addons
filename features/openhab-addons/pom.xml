@@ -49,6 +49,11 @@
                     <exclude name="**/org.openhab.binding.bluetooth*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.modbus*/**/feature.xml"/>
                     <exclude name="**/org.openhab.binding.mqtt*/**/feature.xml"/>
+
+                    <!-- temporarily exclude add-ons, which are still excluded from the build -->
+                    <exclude name="**/org.openhab.binding.netatmo/**/feature.xml"/>
+                    <exclude name="**/org.openhab.binding.velux/**/feature.xml"/>
+                    <exclude name="**/org.openhab.io.hueemulation/**/feature.xml"/>
                   </fileset>
                   <filterchain>
                     <linecontainsRegExp>
