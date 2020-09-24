@@ -20,10 +20,9 @@
 			<label>Network Address</label>
 			<description>Network address of this TouchWand Wanderfull Hub </description>
 		</parameter>
-		<parameter name="port" type="integer" min="80" max="65535">
+		<parameter name="port" type="integer" min="80" max="65535" required="true">
 			<label>Port</label>
-			<description>Port of the TouchWand Wanderfull Hub communication channel</description>
-			<required>true</required>
+			<description>Port of the TouchWand Wanderfull Hub communication channel</description>			
 			<default>80</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -34,8 +33,7 @@
 			<label>Refresh</label>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="addSecondaryUnits" type="boolean">
-			<required>false</required>
+		<parameter name="addSecondaryUnits" type="boolean">			
 			<default>false</default>
 			<description>If the controller is primary, add secondary controllers units as well</description>
 			<label>Add Secondary Controllers</label>

@@ -21,7 +21,7 @@ This binding supports switches, shutters dimmers and wall controllers configured
 
 After adding TouchWand Hub the auto discovery will add all switches dimmers and shutters to the inbox.
 
-## Binding Configuration
+## Bridge Configuration
 
 **Touchwand Wanderfull™** Hub Controller need to be added manually by IP address. The controller requires **username** and **password**  
 
