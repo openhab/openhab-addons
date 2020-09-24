@@ -75,17 +75,18 @@ public class TouchWandRestClient {
 
     private static final int REQUEST_TIMEOUT_SEC = 10;
 
-    private Map<String, String> commandmap = new HashMap<String, String>();
+    private static final Map<String, String> COMMAND_MAP = new HashMap<String, String>();
+    static {
+        COMMAND_MAP.put(CMD_LOGIN, "/auth/login?");
+        COMMAND_MAP.put(CMD_LIST_UNITS, "/units/listUnits");
+        COMMAND_MAP.put(CMD_LIST_SCENARIOS, "/scenarios/listScenarios");
+        COMMAND_MAP.put(CMD_UNIT_ACTION, "/units/action");
+        COMMAND_MAP.put(CMD_GET_UNIT_BY_ID, "/units/getUnitByID?");
+    }
 
     private HttpClient httpClient;
 
     public TouchWandRestClient(HttpClient httpClient) {
-        commandmap.put(CMD_LOGIN, "/auth/login?");
-        commandmap.put(CMD_LIST_UNITS, "/units/listUnits");
-        commandmap.put(CMD_LIST_SCENARIOS, "/scenarios/listScenarios");
-        commandmap.put(CMD_UNIT_ACTION, "/units/action");
-        commandmap.put(CMD_GET_UNIT_BY_ID, "/units/getUnitByID?");
-
         this.httpClient = httpClient;
     }
 
@@ -162,7 +163,7 @@ public class TouchWandRestClient {
     }
 
     private String buildUrl(String command) {
-        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + commandmap.get(command);
+        String url = "http://" + touchWandIpAddr + ":" + touchWandPort + COMMAND_MAP.get(command);
         return url;
     }
 
