@@ -32,7 +32,7 @@ public class TouchWandUnitFromJson {
     }
 
     public static TouchWandUnitData parseResponse(JsonObject jsonUnit) {
-        Gson gson = new Gson();
+        final Gson gson = new Gson();
         TouchWandUnitData touchWandUnit;
         String type = jsonUnit.get("type").getAsString();
         if (!Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(type)) {
