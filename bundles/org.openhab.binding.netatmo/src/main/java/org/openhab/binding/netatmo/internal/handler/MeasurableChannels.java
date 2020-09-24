@@ -20,9 +20,9 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.State;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
 
 import io.swagger.client.CollectionFormats.CSVParams;
 import io.swagger.client.model.NAMeasureResponse;
