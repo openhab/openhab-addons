@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Roie Geron - Initial contribution
  */
-@Component(service = DiscoveryService.class, immediate = false, configurationPid = "discovery.touchwand")
+@Component(service = DiscoveryService.class, configurationPid = "discovery.touchwand")
 @NonNullByDefault
 public class TouchWandControllerDiscoveryService extends AbstractDiscoveryService {
 
