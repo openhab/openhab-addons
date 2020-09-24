@@ -192,7 +192,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         scheduleWithFixedDelayException.getClass().getName() + ":"
                                 + scheduleWithFixedDelayException.getMessage());
-                logger.debug("Error refreshing source = {}", getThing().getUID(),
+                logger.debug("Error refreshing source = {}: {}", getThing().getUID(),
                         scheduleWithFixedDelayException.getMessage());
             }
         }, 0, SecondGenerationConfiguration.REFRESHINTERVAL, TimeUnit.SECONDS);
@@ -303,7 +303,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
             SecondGenerationConfigurationHandler.executeConfigurationChanges(httpClient, url, username, password,
                     dxsEntriesConf, valueConfiguration);
         } catch (Exception handleCommandException) {
-            logger.debug("Handle command for {} on channel {}: {}: {}: {}", thing.getUID(), httpClient, url,
+            logger.debug("Handle command for {} on channel {}: {}: {}: {}: {}", thing.getUID(), httpClient, url,
                     dxsEntriesConf, valueConfiguration, handleCommandException.getMessage());
         }
     }
@@ -329,7 +329,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
                     bufferedReader.close();
                     in.close();
                 } catch (IOException getInputStreamReaderException) {
-                    logger.debug("Could not open connection urlConn", urlConn,
+                    logger.debug("Could not open connection urlConn {}: {}", urlConn,
                             getInputStreamReaderException.getMessage());
                 }
             }
@@ -346,7 +346,7 @@ public class SecondGenerationHandler extends BaseThingHandler {
             try {
                 return new QuantityType<>(new BigDecimal(value), unit);
             } catch (NumberFormatException getStateException) {
-                logger.debug("Error parsing value '{}'", value, getStateException.getMessage());
+                logger.debug("Error parsing value '{}: {}'", value, getStateException.getMessage());
                 return UnDefType.UNDEF;
             }
         }
