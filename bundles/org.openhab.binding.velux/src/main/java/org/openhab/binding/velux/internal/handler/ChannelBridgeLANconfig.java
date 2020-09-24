@@ -14,13 +14,13 @@ package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeLANConfig;
 import org.openhab.binding.velux.internal.handler.utils.StateUtils;
 import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

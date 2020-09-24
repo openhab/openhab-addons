@@ -21,11 +21,11 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 
 import io.swagger.client.model.NAPlug;
 import io.swagger.client.model.NAYearMonth;

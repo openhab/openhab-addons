@@ -21,10 +21,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.util.ModuleBuilder;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.io.hueemulation.internal.dto.HueDataStore;
 import org.openhab.io.hueemulation.internal.dto.HueGroupEntry;
 import org.openhab.io.hueemulation.internal.dto.HueLightEntry;

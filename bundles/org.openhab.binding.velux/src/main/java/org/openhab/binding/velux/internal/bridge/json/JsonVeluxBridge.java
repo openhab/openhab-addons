@@ -20,11 +20,11 @@ import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.binding.velux.internal.bridge.VeluxBridge;
 import org.openhab.binding.velux.internal.bridge.VeluxBridgeInstance;
 import org.openhab.binding.velux.internal.bridge.common.BridgeAPI;
 import org.openhab.binding.velux.internal.bridge.common.BridgeCommunicationProtocol;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

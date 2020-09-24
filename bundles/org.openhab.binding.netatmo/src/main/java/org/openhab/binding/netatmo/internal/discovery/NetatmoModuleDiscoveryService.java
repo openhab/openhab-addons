@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoDataListener;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -27,8 +29,6 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NetatmoDataListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 

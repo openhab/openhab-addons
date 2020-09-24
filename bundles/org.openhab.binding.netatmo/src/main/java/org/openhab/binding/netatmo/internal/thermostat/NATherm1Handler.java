@@ -27,6 +27,8 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.NATherm1StateDescriptionProvider;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -41,8 +43,6 @@ import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.NATherm1StateDescriptionProvider;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

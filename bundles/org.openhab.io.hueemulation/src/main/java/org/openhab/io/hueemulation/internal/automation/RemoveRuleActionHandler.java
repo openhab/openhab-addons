@@ -16,11 +16,11 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.RuleRegistry;
 import org.openhab.core.automation.handler.ActionHandler;
 import org.openhab.core.automation.handler.BaseModuleHandler;
+import org.openhab.core.config.core.Configuration;
 
 /**
  * This action module type allows to remove a rule from the rule registry.

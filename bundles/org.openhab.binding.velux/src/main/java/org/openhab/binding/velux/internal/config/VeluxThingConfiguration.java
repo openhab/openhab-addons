@@ -13,9 +13,9 @@
 package org.openhab.binding.velux.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.Configuration;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
+import org.openhab.core.config.core.Configuration;
 
 /**
  * The {@link VeluxThingConfiguration} is a wrapper for

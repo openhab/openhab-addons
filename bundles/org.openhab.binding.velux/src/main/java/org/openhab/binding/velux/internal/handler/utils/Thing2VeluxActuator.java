@@ -13,12 +13,12 @@
 package org.openhab.binding.velux.internal.handler.utils;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.handler.VeluxBridgeHandler;
 import org.openhab.binding.velux.internal.things.VeluxProduct;
 import org.openhab.binding.velux.internal.things.VeluxProduct.ProductBridgeIndex;
 import org.openhab.binding.velux.internal.things.VeluxProductSerialNo;
+import org.openhab.core.thing.ChannelUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

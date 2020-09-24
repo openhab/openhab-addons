@@ -13,8 +13,8 @@
 package org.openhab.binding.velux.internal.things;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.types.PercentType;
 import org.openhab.binding.velux.internal.VeluxBindingConstants;
+import org.openhab.core.library.types.PercentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
