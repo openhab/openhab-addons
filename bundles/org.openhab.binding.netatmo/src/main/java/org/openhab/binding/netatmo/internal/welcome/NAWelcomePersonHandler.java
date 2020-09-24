@@ -20,6 +20,8 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -27,8 +29,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.netatmo.internal.handler.NetatmoBridgeHandler;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 
 import io.swagger.client.api.WelcomeApi;
 import io.swagger.client.model.NAWelcomeEvent;

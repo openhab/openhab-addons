@@ -22,12 +22,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.i18n.TimeZoneProvider;
-import org.openhab.core.thing.Thing;
-import org.openhab.core.types.State;
 import org.openhab.binding.netatmo.internal.WeatherUtils;
 import org.openhab.binding.netatmo.internal.handler.NetatmoDeviceHandler;
 import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.types.State;
 
 import io.swagger.client.model.NADashboardData;
 import io.swagger.client.model.NAMain;

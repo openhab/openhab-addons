@@ -13,6 +13,13 @@
 package org.openhab.binding.velux.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.velux.internal.VeluxBindingProperties;
+import org.openhab.binding.velux.internal.VeluxItemType;
+import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
+import org.openhab.binding.velux.internal.handler.utils.StateUtils;
+import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
+import org.openhab.binding.velux.internal.utils.Localization;
+import org.openhab.binding.velux.internal.utils.ManifestInformation;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -22,13 +29,6 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
-import org.openhab.binding.velux.internal.VeluxBindingProperties;
-import org.openhab.binding.velux.internal.VeluxItemType;
-import org.openhab.binding.velux.internal.handler.utils.ExtendedBaseThingHandler;
-import org.openhab.binding.velux.internal.handler.utils.StateUtils;
-import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
-import org.openhab.binding.velux.internal.utils.Localization;
-import org.openhab.binding.velux.internal.utils.ManifestInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,13 +17,13 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.types.State;
 import org.openhab.binding.velux.internal.VeluxBindingProperties;
 import org.openhab.binding.velux.internal.VeluxItemType;
 import org.openhab.binding.velux.internal.handler.utils.StateUtils;
 import org.openhab.binding.velux.internal.handler.utils.ThingConfiguration;
 import org.openhab.binding.velux.internal.things.VeluxScene;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

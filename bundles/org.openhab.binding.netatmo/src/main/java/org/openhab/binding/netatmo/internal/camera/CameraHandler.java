@@ -20,18 +20,18 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
+import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.io.net.http.HttpUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.openhab.binding.netatmo.internal.ChannelTypeUtils;
-import org.openhab.binding.netatmo.internal.handler.NetatmoModuleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

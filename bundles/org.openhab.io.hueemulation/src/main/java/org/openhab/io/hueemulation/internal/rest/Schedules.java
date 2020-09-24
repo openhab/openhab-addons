@@ -33,8 +33,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.config.core.Configuration;
-import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.Rule;
 import org.openhab.core.automation.RuleManager;
@@ -43,6 +41,8 @@ import org.openhab.core.automation.Trigger;
 import org.openhab.core.automation.Visibility;
 import org.openhab.core.automation.util.ModuleBuilder;
 import org.openhab.core.automation.util.RuleBuilder;
+import org.openhab.core.common.registry.RegistryChangeListener;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.io.hueemulation.internal.ConfigStore;
 import org.openhab.io.hueemulation.internal.NetworkUtils;
 import org.openhab.io.hueemulation.internal.RuleUtils;

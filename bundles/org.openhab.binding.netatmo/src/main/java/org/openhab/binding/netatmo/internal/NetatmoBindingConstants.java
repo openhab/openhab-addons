@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.binding.netatmo.internal.webhook.NAWebhookCameraEvent.EventTypeEnum;
+import org.openhab.core.thing.ThingTypeUID;
 
 /**
  * The {@link NetatmoBinding} class defines common constants, which are used
