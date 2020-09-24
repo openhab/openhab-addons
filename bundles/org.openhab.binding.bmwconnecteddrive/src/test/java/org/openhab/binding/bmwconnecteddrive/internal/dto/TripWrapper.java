@@ -110,7 +110,7 @@ public class TripWrapper {
             case DATE:
                 assertTrue(state instanceof DateTimeType);
                 dtt = ((DateTimeType) state);
-                DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTime(lastTrip.date));
+                DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(lastTrip.date));
                 assertEquals(expected.toString(), dtt.toString(), "Trip Date");
                 break;
             case DURATION:

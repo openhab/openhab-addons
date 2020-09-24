@@ -68,7 +68,7 @@ public class VehicleDiscovery extends AbstractDiscoveryService {
             String vehicleType = vehicle.driveTrain;
             SUPPORTED_THING_SET.forEach(entry -> {
                 if (entry.getId().equals(vehicleType)) {
-                    ThingUID uid = new ThingUID(entry, vehicle.vin);
+                    ThingUID uid = new ThingUID(entry, vehicle.vin, bridgeUID.getId());
                     Map<String, String> properties = new HashMap<>();
                     // Dealer
                     if (vehicle.dealer != null) {

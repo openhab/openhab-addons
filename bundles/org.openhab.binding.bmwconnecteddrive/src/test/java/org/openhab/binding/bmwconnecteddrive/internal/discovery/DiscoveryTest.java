@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
@@ -43,12 +44,13 @@ public class DiscoveryTest {
     private static final Gson GSON = new Gson();
     private static final int DISCOVERY_VEHICLES = 9;
 
+    @Test
     public void testDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
         ConnectedDriveBridgeHandler bh = mock(ConnectedDriveBridgeHandler.class);
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
-        when(b.getUID()).thenReturn(new ThingUID("testbinding", "test"));
+        when(b.getUID()).thenReturn(new ThingUID("bmwconnecteddrive", "account", "abc"));
         VehicleDiscovery discovery = new VehicleDiscovery(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
@@ -61,15 +63,16 @@ public class DiscoveryTest {
         List<DiscoveryResult> results = discoveries.getAllValues();
         assertEquals(1, results.size(), "Found Vehicles");
         DiscoveryResult result = results.get(0);
-        assertEquals("bmwconnecteddrive:BEV_REX:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
+        assertEquals("bmwconnecteddrive:BEV_REX:abc:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
     }
 
+    @Test
     public void testBimmerDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/responses/vehicles.json");
         ConnectedDriveBridgeHandler bh = mock(ConnectedDriveBridgeHandler.class);
         Bridge b = mock(Bridge.class);
         when(bh.getThing()).thenReturn(b);
-        when(b.getUID()).thenReturn(new ThingUID("testbinding", "test"));
+        when(b.getUID()).thenReturn(new ThingUID("bmwconnecteddrive", "account", "abc"));
         VehicleDiscovery discovery = new VehicleDiscovery(bh);
         DiscoveryListener listener = mock(DiscoveryListener.class);
         discovery.addDiscoveryListener(listener);
