@@ -12,7 +12,7 @@ Scrapes the web interface of the inverter for the metrics of the supported chann
 
 ### First generation devices (PIKO)
 
-Tested with Kostal Inverter PIKO but might work with other inverters from kostal too.
+Tested with Kostal Inverter PIKO but might work with other inverters from Kostal too.
 
 ### Second generation devices (PIKO 10-20, PIKO NEW GENERATION)
 
