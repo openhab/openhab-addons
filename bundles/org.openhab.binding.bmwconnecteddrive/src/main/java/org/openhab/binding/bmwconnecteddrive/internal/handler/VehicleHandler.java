@@ -205,31 +205,33 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
         if (channelUID.getIdWithoutGroup().equals(NEXT)) {
             String gUid = channelUID.getGroupId();
-            switch (gUid) {
-                case CHANNEL_GROUP_SERVICE:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            vehicleStatusCallback.nextService();
-                            updateState(channelUID, OnOffType.OFF);
+            if (gUid != null) {
+                switch (gUid) {
+                    case CHANNEL_GROUP_SERVICE:
+                        if (command instanceof OnOffType) {
+                            if (command.equals(OnOffType.ON)) {
+                                vehicleStatusCallback.nextService();
+                                updateState(channelUID, OnOffType.OFF);
+                            }
                         }
-                    }
-                    break;
-                case CHANNEL_GROUP_DESTINATION:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            destinationCallback.next();
-                            updateState(channelUID, OnOffType.OFF);
+                        break;
+                    case CHANNEL_GROUP_DESTINATION:
+                        if (command instanceof OnOffType) {
+                            if (command.equals(OnOffType.ON)) {
+                                destinationCallback.next();
+                                updateState(channelUID, OnOffType.OFF);
+                            }
                         }
-                    }
-                    break;
-                case CHANNEL_GROUP_CHECK_CONTROL:
-                    if (command instanceof OnOffType) {
-                        if (command.equals(OnOffType.ON)) {
-                            vehicleStatusCallback.nextCheckControl();
-                            updateState(channelUID, OnOffType.OFF);
+                        break;
+                    case CHANNEL_GROUP_CHECK_CONTROL:
+                        if (command instanceof OnOffType) {
+                            if (command.equals(OnOffType.ON)) {
+                                vehicleStatusCallback.nextCheckControl();
+                                updateState(channelUID, OnOffType.OFF);
+                            }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
         }
         if (channelUID.getIdWithoutGroup().equals(VEHICLE_FINGERPRINT)) {
@@ -644,7 +646,8 @@ public class VehicleHandler extends VehicleChannelHandler {
                 if (trip == null) {
                     return;
                 }
-                updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTime(trip.date)));
+                // Whyever the Last Trip DateTime is delivered without offest - so LocalTime
+                updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(trip.date)));
                 updateState(tripDuration, QuantityType.valueOf(trip.duration, SmartHomeUnits.MINUTE));
                 updateState(tripDistance,
                         QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));

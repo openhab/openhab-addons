@@ -48,11 +48,23 @@ public class Converter {
         return Math.round(value * scale) / scale;
     }
 
+    public static String getLocalDateTimeWithoutOffest(@Nullable String input) {
+        if (input == null) {
+            return Constants.NULL_DATE;
+        }
+        LocalDateTime ldt;
+        if (input.contains(Constants.PLUS)) {
+            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);
+        } else {
+            ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_PATTERN);
+        }
+        return ldt.format(Converter.DATE_INPUT_PATTERN);
+    }
+
     public static String getLocalDateTime(@Nullable String input) {
         if (input == null) {
             return Constants.NULL_DATE;
         }
-
         LocalDateTime ldt;
         if (input.contains(Constants.PLUS)) {
             ldt = LocalDateTime.parse(input, Converter.DATE_INPUT_ZONE_PATTERN);

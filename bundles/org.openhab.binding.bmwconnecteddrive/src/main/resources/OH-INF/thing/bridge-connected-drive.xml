@@ -30,7 +30,7 @@
 					<option value="CHINA">China</option>
 					<option value="ROW">Rest of the World</option>
 				</options>
-				<default>Rest of the World</default>
+				<default>ROW</default>
 			</parameter>
 		</config-description>
 	</bridge-type>

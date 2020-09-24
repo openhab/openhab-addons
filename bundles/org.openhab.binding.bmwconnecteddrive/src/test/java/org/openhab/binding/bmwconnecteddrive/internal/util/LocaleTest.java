@@ -54,14 +54,21 @@ public class LocaleTest {
         String dateTimeType = DateTimeType.valueOf(localeTime).toString();
         assertEquals("2020-08-24T15:55:32", inputTime, "Input DateTime");
         assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
-        assertEquals("2020-08-24T17:55:32", dateTimeType, "DateTimeType Value");
+        assertEquals("2020-08-24T17:55:32.000+0200", dateTimeType, "DateTimeType Value");
 
         inputTime = vStatus.updateTime;
         localeTime = Converter.getLocalDateTime(inputTime);
         dateTimeType = DateTimeType.valueOf(localeTime).toString();
         assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
         assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
-        assertEquals("2020-08-24T17:55:32", dateTimeType, "DateTimeType Value");
+        assertEquals("2020-08-24T17:55:32.000+0200", dateTimeType, "DateTimeType Value");
+
+        inputTime = vStatus.updateTime;
+        localeTime = Converter.getLocalDateTimeWithoutOffest(inputTime);
+        dateTimeType = DateTimeType.valueOf(localeTime).toString();
+        assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
+        assertEquals("2020-08-24T15:55:32", localeTime, "Output DateTime");
+        assertEquals("2020-08-24T15:55:32.000+0200", dateTimeType, "DateTimeType Value");
     }
 
     @Test
