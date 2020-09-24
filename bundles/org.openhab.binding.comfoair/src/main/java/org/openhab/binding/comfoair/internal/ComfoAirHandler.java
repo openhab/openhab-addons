@@ -78,7 +78,8 @@ public class ComfoAirHandler extends BaseThingHandler {
             if (changeCommand != null) {
                 Set<String> keysToUpdate = getThing().getChannels().stream().map(Channel::getUID).filter(this::isLinked)
                         .map(ChannelUID::getId).collect(Collectors.toSet());
-                sendCommand(changeCommand, channelId);
+                State state = sendCommand(changeCommand, channelId);
+                updateState(channelUID, state);
 
                 Collection<ComfoAirCommand> affectedReadCommands = ComfoAirCommandType
                         .getAffectedReadCommands(channelId, keysToUpdate);
@@ -429,7 +430,8 @@ public class ComfoAirHandler extends BaseThingHandler {
 
                     for (ComfoAirCommandType commandType : commandTypes) {
                         String commandKey = commandType.getKey();
-                        sendCommand(readCommand, commandKey);
+                        State state = sendCommand(readCommand, commandKey);
+                        updateState(commandKey, state);
                     }
                 }
             }
