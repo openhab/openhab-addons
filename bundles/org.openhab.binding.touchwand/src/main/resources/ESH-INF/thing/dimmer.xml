@@ -15,10 +15,4 @@
 			</channel>
 		</channels>
 	</thing-type>
-	<channel-type id="brightness">
-		<item-type>Dimmer</item-type>
-		<label>Dimmer</label>
-		<description>The dimmer channel allows to switch the light on and off and set brightness.
-		</description>
-	</channel-type>
 </thing:thing-descriptions>
