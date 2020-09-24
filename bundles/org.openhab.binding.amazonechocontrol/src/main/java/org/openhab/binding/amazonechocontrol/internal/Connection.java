@@ -39,6 +39,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -152,9 +153,9 @@ public class Connection {
     private @Nullable String accountCustomerId;
     private @Nullable String customerName;
 
-    private Map<Integer, Announcement> announcements = new LinkedHashMap<>();
-    private Map<Integer, TextToSpeech> textToSpeeches = new LinkedHashMap<>();
-    private Map<Integer, Volume> volumes = new LinkedHashMap<>();
+    private Map<Integer, Announcement> announcements = Collections.synchronizedMap(new LinkedHashMap<>());
+    private Map<Integer, TextToSpeech> textToSpeeches = Collections.synchronizedMap(new LinkedHashMap<>());
+    private Map<Integer, Volume> volumes = Collections.synchronizedMap(new LinkedHashMap<>());
     private @Nullable ScheduledFuture<?> announcementTimer;
     private @Nullable ScheduledFuture<?> textToSpeechTimer;
     private @Nullable ScheduledFuture<?> volumeTimer;
@@ -162,9 +163,9 @@ public class Connection {
     private final Gson gson;
     private final Gson gsonWithNullSerialization;
 
-    private Map<Device, QueueObject> singles = Collections.synchronizedMap(new LinkedHashMap<>());
-    private Map<Device, QueueObject> groups = Collections.synchronizedMap(new LinkedHashMap<>());
-    public @Nullable ScheduledFuture<?> singleGroupTimer;
+    private Map<String, LinkedBlockingQueue<QueueObject>> devices = Collections.synchronizedMap(new LinkedHashMap<>());
+    private @Nullable ScheduledFuture<?> devicesTimer;
+    public AtomicBoolean devicesRunning = new AtomicBoolean();
 
     public Connection(@Nullable Connection oldConnection, Gson gson) {
         this.gson = gson;
@@ -204,6 +205,8 @@ public class Connection {
         // setAmazonSite(amazonSite);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonWithNullSerialization = gsonBuilder.create();
+
+        devicesTimer = scheduler.scheduleWithFixedDelay(this::handleExecuteSequenceNode, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -307,8 +310,8 @@ public class Connection {
     }
 
     public boolean isSequenceNodeQueueRunning() {
-        return singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get())
-                || groups.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get());
+        return devices.values().stream().anyMatch(
+                (queueObjects) -> (queueObjects.stream().anyMatch(queueObject -> queueObject.future != null)));
     }
 
     public String serializeLoginData() {
@@ -955,11 +958,16 @@ public class Connection {
             volumes.clear();
             volumeTimer.cancel(true);
         }
-        singles.values().forEach(queueObject -> queueObject.dispose());
-        groups.values().forEach(queueObject -> queueObject.dispose());
-        if (singleGroupTimer != null) {
-            singleGroupTimer.cancel(true);
+        if (devicesTimer != null) {
+            devicesTimer.cancel(true);
         }
+        devices.values().forEach((queueObjects) -> {
+            queueObjects.forEach((queueObject) -> {
+                if (queueObject.future != null) {
+                    queueObject.future.cancel(true);
+                }
+            });
+        });
     }
 
     // parser
@@ -1493,7 +1501,6 @@ public class Connection {
                 }
             }
             if (ttsVolumeNodesToExecute.size() > 0) {
-                // executeSequenceNodes(devices, ttsVolumeNodesToExecute, true);
                 JsonObject parallelNodesToExecute = new JsonObject();
                 parallelNodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
                 parallelNodesToExecute.add("nodesToExecute", ttsVolumeNodesToExecute);
@@ -1511,16 +1518,11 @@ public class Connection {
                 commandNodesToExecute.add(createExecutionNode(devices[0], command, parameters));
             }
             if (commandNodesToExecute.size() > 0) {
-                // executeSequenceNodes(devices, nodesToExecute, true);
                 JsonObject parallelNodesToExecute = new JsonObject();
                 parallelNodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
                 parallelNodesToExecute.add("nodesToExecute", commandNodesToExecute);
                 serialNodesToExecute.add(parallelNodesToExecute);
             }
-        }
-
-        if (serialNodesToExecute.size() > 0) {
-            executeSequenceNodes(devices, serialNodesToExecute, false);
         }
 
         if (standardVolumes != null) {
@@ -1534,8 +1536,15 @@ public class Connection {
                 }
             }
             if (standardVolumeNodesToExecute.size() > 0) {
-                executeSequenceNodes(devices, standardVolumeNodesToExecute, true);
+                JsonObject parallelNodesToExecute = new JsonObject();
+                parallelNodesToExecute.addProperty("@type", "com.amazon.alexa.behaviors.model.ParallelNode");
+                parallelNodesToExecute.add("nodesToExecute", standardVolumeNodesToExecute);
+                serialNodesToExecute.add(parallelNodesToExecute);
             }
+        }
+
+        if (serialNodesToExecute.size() > 0) {
+            executeSequenceNodes(devices, serialNodesToExecute, false);
         }
     }
 
@@ -1548,81 +1557,95 @@ public class Connection {
         executeSequenceNode(new Device[] { device }, nodeToExecute);
     }
 
-    private synchronized void executeSequenceNode(Device[] devices, JsonObject nodeToExecute) {
-        if ((devices.length == 1 && groups.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get()))
-                || (devices.length > 1
-                        && singles.values().stream().anyMatch(queueObject -> queueObject.queueRunning.get()))) {
-            if (singleGroupTimer != null) {
-                singleGroupTimer.cancel(false);
-                singleGroupTimer = null;
+    private void executeSequenceNode(Device[] devices, JsonObject nodeToExecute) {
+        QueueObject queueObject = new QueueObject();
+        queueObject.devices = devices;
+        queueObject.nodeToExecute = nodeToExecute;
+        String serial = "";
+        for (Device device : devices) {
+            if (!this.devices.containsKey(device.serialNumber)) {
+                this.devices.put(device.serialNumber, new LinkedBlockingQueue<>());
             }
-            singleGroupTimer = scheduler.schedule(() -> executeSequenceNode(devices, nodeToExecute), 500,
-                    TimeUnit.MILLISECONDS);
-
-            return;
+            this.devices.get(device.serialNumber).offer(queueObject);
+            serial = serial + device.serialNumber + " ";
         }
+        logger.info("!!! added {} device {}", queueObject.hashCode(), serial);
+    }
 
-        if (devices.length == 1) {
-            if (!singles.containsKey(devices[0])) {
-                singles.put(devices[0], new QueueObject());
+    private void handleExecuteSequenceNode() {
+        if (devicesRunning.compareAndSet(false, true)) {
+            try {
+                for (String serialNumber : devices.keySet()) {
+                    LinkedBlockingQueue<QueueObject> queueObjects = devices.get(serialNumber);
+                    QueueObject queueObject = queueObjects.peek();
+                    if (queueObject != null && (queueObject.future == null || queueObject.future.isDone())) {
+                        boolean execute = true;
+                        String serial = "";
+                        for (Device tmpDevice : queueObject.devices) {
+                            LinkedBlockingQueue<QueueObject> tmpQueueObjects = devices.get(tmpDevice.serialNumber);
+                            QueueObject tmpQueueObject = tmpQueueObjects.peek();
+                            if (!tmpQueueObject.equals(queueObject) || tmpQueueObject.future != null) {
+                                execute = false;
+                                break;
+                            }
+                            serial = serial + tmpDevice.serialNumber + " ";
+                        }
+                        if (execute) {
+                            queueObject.future = scheduler.submit(() -> queuedExecuteSequenceNode(queueObject));
+                            logger.info("!!! thread {} device {}", queueObject.hashCode(), serial);
+                        }
+                    }
+                }
+            } finally {
+                devicesRunning.set(false);
             }
-            singles.get(devices[0]).queue.add(nodeToExecute);
-        } else {
-            if (!groups.containsKey(devices[0])) {
-                groups.put(devices[0], new QueueObject());
-            }
-            groups.get(devices[0]).queue.add(nodeToExecute);
-        }
-
-        if (devices.length == 1 && singles.get(devices[0]).queueRunning.compareAndSet(false, true)) {
-            new Thread(() -> queuedExecuteSequenceNode(devices[0], true)).start();
-        } else if (devices.length > 1 && groups.get(devices[0]).queueRunning.compareAndSet(false, true)) {
-            new Thread(() -> queuedExecuteSequenceNode(devices[0], false)).start();
         }
     }
 
-    private void queuedExecuteSequenceNode(Device device, boolean single) {
-        QueueObject queueObject = single ? singles.get(device) : groups.get(device);
-        JsonObject nodeToExecute = queueObject.queue.poll();
-        if (nodeToExecute != null) {
-            ExecutionNodeObject executionNodeObject = getExecutionNodeObject(nodeToExecute);
-            List<String> types = executionNodeObject.types;
-            long delay = 0;
-            if (types.contains("Alexa.DeviceControls.Volume")) {
-                delay += 2000;
-            }
-            if (types.contains("Announcement")) {
-                delay += 3000;
-            } else {
-                delay += 2000;
-            }
-            try {
-                JsonObject sequenceJson = new JsonObject();
-                sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
-                sequenceJson.add("startNode", nodeToExecute);
-
-                JsonStartRoutineRequest request = new JsonStartRoutineRequest();
-                request.sequenceJson = gson.toJson(sequenceJson);
-                String json = gson.toJson(request);
-
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Routines-Version", "1.1.218665");
-
-                String text = executionNodeObject.text;
-                if (text != null && !text.isEmpty()) {
-                    text = text.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
-                    delay += text.length() * 150;
-                }
-
-                makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
-            } catch (IOException | URISyntaxException | InterruptedException e) {
-                logger.warn("execute sequence node fails with unexpected error", e);
-            } finally {
-                queueObject.senderUnblockFuture = scheduler.schedule(() -> queuedExecuteSequenceNode(device, single),
-                        delay, TimeUnit.MILLISECONDS);
-            }
+    private void queuedExecuteSequenceNode(QueueObject queueObject) {
+        JsonObject nodeToExecute = queueObject.nodeToExecute;
+        ExecutionNodeObject executionNodeObject = getExecutionNodeObject(nodeToExecute);
+        List<String> types = executionNodeObject.types;
+        long delay = 0;
+        if (types.contains("Alexa.DeviceControls.Volume")) {
+            delay += 2000;
+        }
+        if (types.contains("Announcement")) {
+            delay += 3000;
         } else {
-            queueObject.queueRunning.set(false);
+            delay += 2000;
+        }
+        try {
+            JsonObject sequenceJson = new JsonObject();
+            sequenceJson.addProperty("@type", "com.amazon.alexa.behaviors.model.Sequence");
+            sequenceJson.add("startNode", nodeToExecute);
+
+            JsonStartRoutineRequest request = new JsonStartRoutineRequest();
+            request.sequenceJson = gson.toJson(sequenceJson);
+            String json = gson.toJson(request);
+
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Routines-Version", "1.1.218665");
+
+            String text = executionNodeObject.text;
+            if (text != null && !text.isEmpty()) {
+                text = text.replaceAll("<.+?>", " ").replaceAll("\\s+", " ").trim();
+                delay += text.length() * 150;
+            }
+
+            makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
+        } catch (IOException | URISyntaxException | InterruptedException e) {
+            logger.warn("execute sequence node fails with unexpected error", e);
+        } finally {
+            scheduler.schedule(() -> {
+                String serial = "";
+                for (Device device : queueObject.devices) {
+                    devices.get(device.serialNumber).remove(queueObject);
+                    serial = serial + device.serialNumber + " ";
+                }
+                logger.info("!!! removed {} device {}", queueObject.hashCode(), serial);
+            }, delay, TimeUnit.MILLISECONDS);
+
         }
     }
 
@@ -2050,17 +2073,9 @@ public class Connection {
 
     @NonNullByDefault
     private static class QueueObject {
-        public LinkedBlockingQueue<JsonObject> queue = new LinkedBlockingQueue<>();
-        public AtomicBoolean queueRunning = new AtomicBoolean();
-        public @Nullable ScheduledFuture<?> senderUnblockFuture;
-
-        public void dispose() {
-            queue.clear();
-            queueRunning.set(false);
-            if (senderUnblockFuture != null) {
-                senderUnblockFuture.cancel(true);
-            }
-        }
+        public Future<?> future;
+        public Device[] devices;
+        public JsonObject nodeToExecute;
     }
 
     @NonNullByDefault
