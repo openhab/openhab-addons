@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.util;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
@@ -38,10 +38,10 @@ public class LocaleTest {
 
     @Test
     public void languageTest() {
-        assertTrue("United Kingdom", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.UK.getCountry()));
-        assertTrue("United States", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.US.getCountry()));
-        assertFalse("France", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.FRANCE.getCountry()));
-        assertFalse("Germany", ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.GERMAN.getCountry()));
+        assertTrue(ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.UK.getCountry()), "United Kingdom");
+        assertTrue(ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.US.getCountry()), "United States");
+        assertFalse(ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.FRANCE.getCountry()), "France");
+        assertFalse(ConnectedDriveConstants.IMPERIAL_COUNTRIES.contains(Locale.GERMAN.getCountry()), "Germany");
     }
 
     public void testTimeUTCToLocaleTime() {
@@ -52,16 +52,16 @@ public class LocaleTest {
         String inputTime = vStatus.internalDataTimeUTC;
         String localeTime = Converter.getLocalDateTime(inputTime);
         String dateTimeType = DateTimeType.valueOf(localeTime).toString();
-        assertEquals("Input DateTime", "2020-08-24T15:55:32", inputTime);
-        assertEquals("Output DateTime", "2020-08-24T17:55:32", localeTime);
-        assertEquals("DateTimeType Value", "2020-08-24T17:55:32", dateTimeType);
+        assertEquals("2020-08-24T15:55:32", inputTime, "Input DateTime");
+        assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
+        assertEquals("2020-08-24T17:55:32", dateTimeType, "DateTimeType Value");
 
         inputTime = vStatus.updateTime;
         localeTime = Converter.getLocalDateTime(inputTime);
         dateTimeType = DateTimeType.valueOf(localeTime).toString();
-        assertEquals("Input DateTime", "2020-08-24T15:55:32+0000", inputTime);
-        assertEquals("Output DateTime", "2020-08-24T17:55:32", localeTime);
-        assertEquals("DateTimeType Value", "2020-08-24T17:55:32", dateTimeType);
+        assertEquals("2020-08-24T15:55:32+0000", inputTime, "Input DateTime");
+        assertEquals("2020-08-24T17:55:32", localeTime, "Output DateTime");
+        assertEquals("2020-08-24T17:55:32", dateTimeType, "DateTimeType Value");
     }
 
     @Test
@@ -70,6 +70,6 @@ public class LocaleTest {
         double lon = 8.4956;
         double distance = 0.005;
         double dist = Converter.measureDistance(lat, lon, lat + distance, lon + distance);
-        assertTrue("Distance below 1 km", dist < 1);
+        assertTrue(dist < 1, "Distance below 1 km");
     }
 }

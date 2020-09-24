@@ -12,14 +12,14 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.io.net.http.HttpClientFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConfiguration;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +41,6 @@ public class AuthTest {
         ConnectedDriveProxy dcp = new ConnectedDriveProxy(hcf, mock(ConnectedDriveConfiguration.class));
         dcp.tokenFromUrl(headerValue);
         Token t = dcp.getToken();
-        assertEquals("Token", "Bearer SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh", t.getBearerToken());
+        assertEquals("Bearer SfXKgkEXeeFJkVqdD4XMmfUU224MRuyh", t.getBearerToken(), "Token");
     }
 }

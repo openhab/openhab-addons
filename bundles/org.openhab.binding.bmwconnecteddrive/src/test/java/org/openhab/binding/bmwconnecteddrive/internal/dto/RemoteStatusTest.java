@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.remote.ExecutionStatusContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
@@ -37,6 +37,6 @@ public class RemoteStatusTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/remote-services/pending.json");
         ExecutionStatusContainer esc = GSON.fromJson(resource1, ExecutionStatusContainer.class);
         ExecutionStatus execStatus = esc.executionStatus;
-        assertEquals("Status", ExecutionState.PENDING.toString(), execStatus.status);
+        assertEquals(ExecutionState.PENDING.toString(), execStatus.status, "Status");
     }
 }

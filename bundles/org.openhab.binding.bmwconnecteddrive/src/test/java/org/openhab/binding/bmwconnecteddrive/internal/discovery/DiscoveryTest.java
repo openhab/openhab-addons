@@ -12,22 +12,21 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.discovery;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.config.discovery.DiscoveryListener;
-import org.eclipse.smarthome.config.discovery.DiscoveryResult;
-import org.eclipse.smarthome.config.discovery.DiscoveryService;
-import org.eclipse.smarthome.core.thing.Bridge;
-import org.eclipse.smarthome.core.thing.ThingUID;
-import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.ConnectedDriveBridgeHandler;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
+import org.openhab.core.config.discovery.DiscoveryListener;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,6 @@ public class DiscoveryTest {
     private static final Gson GSON = new Gson();
     private static final int DISCOVERY_VEHICLES = 9;
 
-    @Test
     public void testDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
         ConnectedDriveBridgeHandler bh = mock(ConnectedDriveBridgeHandler.class);
@@ -61,12 +59,11 @@ public class DiscoveryTest {
         discovery.onResponse(container);
         verify(listener, times(1)).thingDiscovered(services.capture(), discoveries.capture());
         List<DiscoveryResult> results = discoveries.getAllValues();
-        assertEquals("Found Vehicles", 1, results.size());
+        assertEquals(1, results.size(), "Found Vehicles");
         DiscoveryResult result = results.get(0);
-        assertEquals("Thing UID", "bmwconnecteddrive:BEV_REX:MY_REAL_VIN", result.getThingUID().getAsString());
+        assertEquals("bmwconnecteddrive:BEV_REX:MY_REAL_VIN", result.getThingUID().getAsString(), "Thing UID");
     }
 
-    @Test
     public void testBimmerDiscovery() {
         String content = FileReader.readFileInString("src/test/resources/responses/vehicles.json");
         ConnectedDriveBridgeHandler bh = mock(ConnectedDriveBridgeHandler.class);

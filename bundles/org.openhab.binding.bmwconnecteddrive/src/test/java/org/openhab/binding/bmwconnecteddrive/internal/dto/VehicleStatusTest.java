@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
@@ -40,12 +40,12 @@ public class VehicleStatusTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
         VehicleStatusContainer status = GSON.fromJson(resource1, VehicleStatusContainer.class);
         VehicleStatus vStatus = status.vehicleStatus;
-        assertEquals("Mileage", 17273.0, vStatus.mileage, 0.1);
+        assertEquals(17273.0, vStatus.mileage, 0.1, "Mileage");
         Position p = vStatus.position;
-        assertEquals("Heading", 219, p.heading);
+        assertEquals(219, p.heading, "Heading");
 
-        assertEquals("DCS Activation", "NA", vStatus.dcsCchActivation);
-        assertEquals("DCS Ongoing", false, vStatus.dcsCchOngoing);
+        assertEquals("NA", vStatus.dcsCchActivation, "DCS Activation");
+        assertEquals(false, vStatus.dcsCchOngoing, "DCS Ongoing");
     }
 
     @Test
@@ -55,8 +55,8 @@ public class VehicleStatusTest {
         VehicleStatus vStatus = status.vehicleStatus;
         List<CBSMessage> services = vStatus.cbsData;
         CBSMessage message = services.get(0);
-        assertEquals("Service Mileage ", 15345, message.cbsRemainingMileage);
+        assertEquals(15345, message.cbsRemainingMileage, "Service Mileage");
         message = services.get(1);
-        assertEquals("Service Mileage ", -1, message.cbsRemainingMileage);
+        assertEquals(-1, message.cbsRemainingMileage, "Service Mileage ");
     }
 }

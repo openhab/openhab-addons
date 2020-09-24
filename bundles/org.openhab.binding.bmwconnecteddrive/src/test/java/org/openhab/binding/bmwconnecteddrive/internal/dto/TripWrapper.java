@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.util.HashMap;
@@ -24,19 +24,19 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.MetricPrefix;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
 
@@ -81,7 +81,7 @@ public class TripWrapper {
     public boolean checkResults(@Nullable List<ChannelUID> channels, @Nullable List<State> states) {
         assertNotNull(channels);
         assertNotNull(states);
-        assertTrue("Same list sizes ", channels.size() == states.size());
+        assertTrue(channels.size() == states.size(), "Same list sizes");
         for (int i = 0; i < channels.size(); i++) {
             checkResult(channels.get(i), states.get(i));
         }
@@ -111,42 +111,42 @@ public class TripWrapper {
                 assertTrue(state instanceof DateTimeType);
                 dtt = ((DateTimeType) state);
                 DateTimeType expected = DateTimeType.valueOf(Converter.getLocalDateTime(lastTrip.date));
-                assertEquals("Trip Date", expected.toString(), dtt.toString());
+                assertEquals(expected.toString(), dtt.toString(), "Trip Date");
                 break;
             case DURATION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("Minute", SmartHomeUnits.MINUTE, qt.getUnit());
-                assertEquals("Duration", lastTrip.duration, qt.floatValue(), 0.1);
+                assertEquals(SmartHomeUnits.MINUTE, qt.getUnit(), "Minute");
+                assertEquals(lastTrip.duration, qt.floatValue(), 0.1, "Duration");
                 break;
             case DISTANCE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("KM", KILOMETRE, qt.getUnit());
-                assertEquals("Distance", lastTrip.totalDistance, qt.floatValue(), 0.1);
+                assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                assertEquals(lastTrip.totalDistance, qt.floatValue(), 0.1, "Distance");
                 break;
             case AVG_CONSUMPTION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("kw", SmartHomeUnits.KILOWATT_HOUR, qt.getUnit());
-                assertEquals("Avg Consumption", lastTrip.avgElectricConsumption, qt.floatValue(), 0.1);
+                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(lastTrip.avgElectricConsumption, qt.floatValue(), 0.1, "Avg Consumption");
                 break;
             case AVG_COMBINED_CONSUMPTION:
-                assertTrue("Is Hybrid", isHybrid);
+                assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("Liter", SmartHomeUnits.LITRE, qt.getUnit());
-                assertEquals("Percent", Converter.round(lastTrip.avgCombinedConsumption), qt.floatValue(), 0.01);
+                assertEquals(SmartHomeUnits.LITRE, qt.getUnit(), "Liter");
+                assertEquals(Converter.round(lastTrip.avgCombinedConsumption), qt.floatValue(), 0.01, "Percent");
                 break;
             case AVG_RECUPERATION:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("kw", SmartHomeUnits.KILOWATT_HOUR, qt.getUnit());
-                assertEquals("Avg Recuperation", lastTrip.avgRecuperation, qt.floatValue(), 0.1);
+                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(lastTrip.avgRecuperation, qt.floatValue(), 0.1, "Avg Recuperation");
                 break;
             default:
                 // fail in case of unknown update
-                assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                assertFalse(true, "Channel " + channelUID + " " + state + " not found");
                 break;
         }
     }

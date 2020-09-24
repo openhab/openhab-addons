@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.slf4j.Logger;
@@ -40,10 +40,10 @@ public class DestinationTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/destinations.json");
         DestinationContainer container = GSON.fromJson(resource1, DestinationContainer.class);
         List<Destination> destinations = container.destinations;
-        assertEquals("Number of Vehicles", 9, destinations.size());
+        assertEquals(9, destinations.size(), "Number of Vehicles");
         destinations.forEach(entry -> {
             logger.info(entry.getAddress());
-            assertFalse("No Null contained", entry.getAddress().contains(Constants.NULL));
+            assertFalse(entry.getAddress().contains(Constants.NULL), "No Null contained");
         });
     }
 }
