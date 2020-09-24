@@ -42,6 +42,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.core.OpenHAB;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
+import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.MqttVersion;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection.Protocol;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
 import org.openhab.core.io.transport.mqtt.MqttConnectionState;
@@ -115,8 +116,8 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         verify(service).addBrokerConnection(anyString(), eq(c));
 
         // Connect with a second connection but wrong credentials
-        MqttBrokerConnection wrongCredentials = new MqttBrokerConnection(Protocol.TCP, c.getHost(), c.getPort(), false,
-                "wrongCred");
+        MqttBrokerConnection wrongCredentials = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V3, c.getHost(),
+                c.getPort(), false, "wrongCred");
         wrongCredentials.setCredentials("someUser", "somePassword");
 
         if (wrongCredentials.start().get()) {
@@ -126,8 +127,8 @@ public class MqttEmbeddedBrokerServiceTest extends JavaTest {
         wrongCredentials.stop().get();
 
         // Connect with a second connection but correct credentials
-        MqttBrokerConnection correctCredentials = new MqttBrokerConnection(Protocol.TCP, c.getHost(), c.getPort(),
-                false, "correctCred");
+        MqttBrokerConnection correctCredentials = new MqttBrokerConnection(Protocol.TCP, MqttVersion.V3, c.getHost(),
+                c.getPort(), false, "correctCred");
         correctCredentials.setCredentials(c.getUser(), c.getPassword());
 
         if (!correctCredentials.start().get()) {
