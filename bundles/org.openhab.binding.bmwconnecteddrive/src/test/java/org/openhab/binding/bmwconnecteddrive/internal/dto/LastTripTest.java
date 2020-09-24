@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
@@ -37,6 +37,6 @@ public class LastTripTest {
         LastTripContainer lt = GSON.fromJson(content, LastTripContainer.class);
         LastTrip trip = lt.lastTrip;
         assertNotNull(trip);
-        assertEquals("Distance Driven", 2.0, trip.totalDistance, 0.01);
+        assertEquals(2.0, trip.totalDistance, 0.01, "Distance Driven");
     }
 }

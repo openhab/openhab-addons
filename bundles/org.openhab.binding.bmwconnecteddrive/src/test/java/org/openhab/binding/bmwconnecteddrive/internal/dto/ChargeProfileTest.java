@@ -12,14 +12,12 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
@@ -30,7 +28,6 @@ import com.google.gson.Gson;
  */
 @NonNullByDefault
 public class ChargeProfileTest {
-    private final Logger logger = LoggerFactory.getLogger(ChargeProfileTest.class);
     private static final Gson GSON = new Gson();
 
     @Test
@@ -41,6 +38,6 @@ public class ChargeProfileTest {
         assertNotNull(cp.weeklyPlanner.timer1);
         assertFalse(cp.weeklyPlanner.timer1.timerEnabled);
         assertNotNull(cp.weeklyPlanner.timer1.weekdays);
-        assertEquals("Days", 5, cp.weeklyPlanner.timer1.weekdays.size());
+        assertEquals(5, cp.weeklyPlanner.timer1.weekdays.size(), "Days");
     }
 }

@@ -12,16 +12,16 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.smarthome.core.thing.ThingTypeUID;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.Vehicle;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.discovery.VehiclesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
+import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.Gson;
 
@@ -39,18 +39,18 @@ public class ConnectedDriveTest {
         String resource1 = FileReader.readFileInString("src/test/resources/webapi/connected-drive-account-info.json");
         VehiclesContainer container = GSON.fromJson(resource1, VehiclesContainer.class);
         List<Vehicle> vehicles = container.vehicles;
-        assertEquals("Number of Vehicles", 1, vehicles.size());
+        assertEquals(1, vehicles.size(), "Number of Vehicles");
         Vehicle v = vehicles.get(0);
-        assertEquals("VIN", "MY_REAL_VIN", v.vin);
-        assertEquals("Model", "i3 94 (+ REX)", v.model);
-        assertEquals("DriveTrain", "BEV_REX", v.driveTrain);
-        assertEquals("Brand", "BMW_I", v.brand);
-        assertEquals("Year of Construction", 2017, v.yearOfConstruction);
+        assertEquals("MY_REAL_VIN", v.vin, "VIN");
+        assertEquals("i3 94 (+ REX)", v.model, "Model");
+        assertEquals("BEV_REX", v.driveTrain, "DriveTrain");
+        assertEquals("BMW_I", v.brand, "Brand");
+        assertEquals(2017, v.yearOfConstruction, "Year of Construction");
     }
 
     @Test
     public void testChannelUID() {
         ThingTypeUID thingTypePHEV = new ThingTypeUID("bmwconnecteddrive", "plugin-hybrid-vehicle");
-        assertEquals("Vehicle Type", "plugin-hybrid-vehicle", thingTypePHEV.getId());
+        assertEquals("plugin-hybrid-vehicle", thingTypePHEV.getId(), "Vehicle Type");
     }
 }

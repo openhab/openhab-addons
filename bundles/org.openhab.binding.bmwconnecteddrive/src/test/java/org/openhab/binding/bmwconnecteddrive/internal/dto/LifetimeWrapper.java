@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.bmwconnecteddrive.internal.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
 import java.util.HashMap;
@@ -24,18 +24,18 @@ import javax.measure.quantity.Length;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.library.types.DateTimeType;
-import org.eclipse.smarthome.core.library.types.DecimalType;
-import org.eclipse.smarthome.core.library.types.QuantityType;
-import org.eclipse.smarthome.core.library.types.StringType;
-import org.eclipse.smarthome.core.library.unit.MetricPrefix;
-import org.eclipse.smarthome.core.library.unit.SIUnits;
-import org.eclipse.smarthome.core.library.unit.SmartHomeUnits;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.types.State;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.types.State;
 
 import com.google.gson.Gson;
 
@@ -80,7 +80,7 @@ public class LifetimeWrapper {
     public boolean checkResults(@Nullable List<ChannelUID> channels, @Nullable List<State> states) {
         assertNotNull(channels);
         assertNotNull(states);
-        assertTrue("Same list sizes ", channels.size() == states.size());
+        assertTrue(channels.size() == states.size(), "Same list sizes ");
         for (int i = 0; i < channels.size(); i++) {
             checkResult(channels.get(i), states.get(i));
         }
@@ -109,47 +109,47 @@ public class LifetimeWrapper {
             case DISTANCE_SINCE_CHARGING:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("KM", KILOMETRE, qt.getUnit());
-                assertEquals("Distance since charging", allTrips.chargecycleRange.userCurrentChargeCycle,
-                        qt.floatValue(), 0.1);
+                assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                assertEquals(allTrips.chargecycleRange.userCurrentChargeCycle, qt.floatValue(), 0.1,
+                        "Distance since charging");
                 break;
             case SINGLE_LONGEST_DISTANCE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("KM", KILOMETRE, qt.getUnit());
-                assertEquals("Longest Distance", allTrips.chargecycleRange.userHigh, qt.floatValue(), 0.1);
+                assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                assertEquals(allTrips.chargecycleRange.userHigh, qt.floatValue(), 0.1, "Longest Distance");
                 break;
             case CUMULATED_DRIVEN_DISTANCE:
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("KM", KILOMETRE, qt.getUnit());
-                assertEquals("Cumulated Distance", allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1);
+                assertEquals(KILOMETRE, qt.getUnit(), "KM");
+                assertEquals(allTrips.totalElectricDistance.userTotal, qt.floatValue(), 0.1, "Cumulated Distance");
                 break;
             case AVG_CONSUMPTION:
-                assertTrue("Is Electric", isElectric);
+                assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("kw", SmartHomeUnits.KILOWATT_HOUR, qt.getUnit());
-                assertEquals("Avg Consumption", allTrips.avgElectricConsumption.userAverage, qt.floatValue(), 0.1);
+                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(allTrips.avgElectricConsumption.userAverage, qt.floatValue(), 0.1, "Avg Consumption");
                 break;
             case AVG_RECUPERATION:
-                assertTrue("Is Electric", isElectric);
+                assertTrue(isElectric, "Is Electric");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("kw", SmartHomeUnits.KILOWATT_HOUR, qt.getUnit());
-                assertEquals("Avg Recuperation", allTrips.avgRecuperation.userAverage, qt.floatValue(), 0.1);
+                assertEquals(SmartHomeUnits.KILOWATT_HOUR, qt.getUnit(), "kw");
+                assertEquals(allTrips.avgRecuperation.userAverage, qt.floatValue(), 0.1, "Avg Recuperation");
                 break;
             case AVG_COMBINED_CONSUMPTION:
-                assertTrue("Is Hybrid", isHybrid);
+                assertTrue(isHybrid, "Is Hybrid");
                 assertTrue(state instanceof QuantityType);
                 qt = ((QuantityType) state);
-                assertEquals("Liter", SmartHomeUnits.LITRE, qt.getUnit());
-                assertEquals("Avg Combined Consumption", allTrips.avgCombinedConsumption.userAverage, qt.floatValue(),
-                        0.01);
+                assertEquals(SmartHomeUnits.LITRE, qt.getUnit(), "Liter");
+                assertEquals(allTrips.avgCombinedConsumption.userAverage, qt.floatValue(), 0.01,
+                        "Avg Combined Consumption");
                 break;
             default:
                 // fail in case of unknown update
-                assertFalse("Channel " + channelUID + " " + state + " not found", true);
+                assertFalse(true, "Channel " + channelUID + " " + state + " not found");
                 break;
         }
     }
