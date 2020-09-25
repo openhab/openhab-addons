@@ -32,7 +32,6 @@ import java.time.zone.ZoneRules;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.io.IOUtils;
 import org.openhab.binding.airvisualnode.internal.config.AirVisualNodeConfig;
 import org.openhab.binding.airvisualnode.internal.json.NodeData;
 import org.openhab.core.library.types.DateTimeType;
@@ -178,7 +177,7 @@ public class AirVisualNodeHandler extends BaseThingHandler {
         String url = "smb://" + nodeAddress + "/" + nodeShareName + "/" + NODE_JSON_FILE;
         NtlmPasswordAuthentication auth = new NtlmPasswordAuthentication(null, nodeUsername, nodePassword);
         try (SmbFileInputStream in = new SmbFileInputStream(new SmbFile(url, auth))) {
-            return IOUtils.toString(in, StandardCharsets.UTF_8.name());
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
