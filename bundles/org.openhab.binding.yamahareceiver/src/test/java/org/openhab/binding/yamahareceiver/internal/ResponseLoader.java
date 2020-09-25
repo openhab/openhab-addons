@@ -14,8 +14,7 @@ package org.openhab.binding.yamahareceiver.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.io.IOUtils;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Helper for loading XML files from classpath.
@@ -29,7 +28,7 @@ public class ResponseLoader {
             if (in == null) {
                 return null;
             }
-            return IOUtils.toString(in);
+            return new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 
