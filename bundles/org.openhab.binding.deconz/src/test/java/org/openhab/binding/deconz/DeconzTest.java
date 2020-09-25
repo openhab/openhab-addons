@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -89,7 +88,7 @@ public class DeconzTest {
     }
 
     public static <T> T getObjectFromJson(String filename, Class<T> clazz, Gson gson) throws IOException {
-        String json = IOUtils.toString(DeconzTest.class.getResourceAsStream(filename), StandardCharsets.UTF_8.name());
+        String json = new String(DeconzTest.class.getResourceAsStream(filename).readAllBytes(), StandardCharsets.UTF_8);
         return gson.fromJson(json, clazz);
     }
 

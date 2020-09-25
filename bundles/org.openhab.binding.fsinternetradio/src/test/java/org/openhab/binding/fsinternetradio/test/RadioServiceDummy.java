@@ -14,6 +14,7 @@ package org.openhab.binding.fsinternetradio.test;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -24,7 +25,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.fsinternetradio.internal.radio.FrontierSiliconRadioConstants;
 
@@ -238,11 +238,11 @@ public class RadioServiceDummy extends HttpServlet {
     }
 
     private String makeValidXMLResponse() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream("/validXml.xml"));
+        return new String(getClass().getResourceAsStream("/validXml.xml").readAllBytes(), StandardCharsets.UTF_8);
     }
 
     private String makeInvalidXMLResponse() throws IOException {
-        return IOUtils.toString(getClass().getResourceAsStream("/invalidXml.xml"));
+        return new String(getClass().getResourceAsStream("/invalidXml.xml").readAllBytes(), StandardCharsets.UTF_8);
     }
 
     public void setInvalidResponse(boolean value) {

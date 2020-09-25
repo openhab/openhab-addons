@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openhab.binding.foobot.internal.FoobotApiConnector;
@@ -40,7 +40,7 @@ public class FoobotDeviceHandlerTest {
         @Override
         protected String request(String url, String apiKey) throws FoobotApiException {
             try (InputStream stream = getClass().getResourceAsStream("../sensors.json")) {
-                return IOUtils.toString(stream);
+                return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new AssertionError(e.getMessage());
             }
