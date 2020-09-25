@@ -21,13 +21,13 @@ import org.openhab.binding.velux.internal.handler.utils.StateUtils;
 import org.openhab.binding.velux.internal.handler.utils.ThingProperty;
 import org.openhab.binding.velux.internal.utils.Localization;
 import org.openhab.binding.velux.internal.utils.ManifestInformation;
+import org.openhab.core.common.AbstractUID;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -85,12 +85,9 @@ public class VeluxBindingHandler extends ExtendedBaseThingHandler {
      * @return thingTypeUID of type {@link ThingTypeUID}.
      */
     private ThingTypeUID thingTypeUIDOf(ChannelUID channelUID) {
-        Channel chan = getThing().getChannel(channelUID);
-        if (chan != null) {
-            ChannelTypeUID type = chan.getChannelTypeUID();
-            if (type != null) {
-                return new ThingTypeUID(type.getBindingId(), type.getId());
-            }
+        String[] segments = channelUID.getAsString().split(AbstractUID.SEPARATOR);
+        if (segments.length > 1) {
+            return new ThingTypeUID(segments[0], segments[1]);
         }
         logger.warn("thingTypeUIDOf({}) failed.", channelUID);
         return new ThingTypeUID(VeluxBindingConstants.BINDING_ID, VeluxBindingConstants.UNKNOWN_THING_TYPE_ID);
