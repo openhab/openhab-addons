@@ -1569,7 +1569,7 @@ public class Connection {
             this.devices.get(device.serialNumber).offer(queueObject);
             serial = serial + device.serialNumber + " ";
         }
-        logger.info("!!! added {} device {}", queueObject.hashCode(), serial);
+        logger.debug("added {} device {}", queueObject.hashCode(), serial);
     }
 
     private void handleExecuteSequenceNode() {
@@ -1582,17 +1582,20 @@ public class Connection {
                         boolean execute = true;
                         String serial = "";
                         for (Device tmpDevice : queueObject.devices) {
-                            LinkedBlockingQueue<QueueObject> tmpQueueObjects = devices.get(tmpDevice.serialNumber);
-                            QueueObject tmpQueueObject = tmpQueueObjects.peek();
-                            if (!tmpQueueObject.equals(queueObject) || tmpQueueObject.future != null) {
-                                execute = false;
-                                break;
+                            if (!tmpDevice.serialNumber.equals(serialNumber)) {
+                                LinkedBlockingQueue<QueueObject> tmpQueueObjects = devices.get(tmpDevice.serialNumber);
+                                QueueObject tmpQueueObject = tmpQueueObjects.peek();
+                                if (!tmpQueueObject.equals(queueObject)
+                                        || (tmpQueueObject.future != null && !queueObject.future.isDone())) {
+                                    execute = false;
+                                    break;
+                                }
+                                serial = serial + tmpDevice.serialNumber + " ";
                             }
-                            serial = serial + tmpDevice.serialNumber + " ";
                         }
                         if (execute) {
                             queueObject.future = scheduler.submit(() -> queuedExecuteSequenceNode(queueObject));
-                            logger.info("!!! thread {} device {}", queueObject.hashCode(), serial);
+                            logger.debug("thread {} device {}", queueObject.hashCode(), serial);
                         }
                     }
                 }
@@ -1634,17 +1637,17 @@ public class Connection {
             }
 
             makeRequest("POST", alexaServer + "/api/behaviors/preview", json, true, true, null, 3);
+
+            Thread.sleep(delay);
         } catch (IOException | URISyntaxException | InterruptedException e) {
             logger.warn("execute sequence node fails with unexpected error", e);
         } finally {
-            scheduler.schedule(() -> {
-                String serial = "";
-                for (Device device : queueObject.devices) {
-                    devices.get(device.serialNumber).remove(queueObject);
-                    serial = serial + device.serialNumber + " ";
-                }
-                logger.info("!!! removed {} device {}", queueObject.hashCode(), serial);
-            }, delay, TimeUnit.MILLISECONDS);
+            String serial = "";
+            for (Device device : queueObject.devices) {
+                devices.get(device.serialNumber).remove(queueObject);
+                serial = serial + device.serialNumber + " ";
+            }
+            logger.debug("removed {} device {}", queueObject.hashCode(), serial);
 
         }
     }
