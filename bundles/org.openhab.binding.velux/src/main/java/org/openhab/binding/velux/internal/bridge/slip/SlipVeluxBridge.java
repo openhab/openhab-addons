@@ -193,7 +193,8 @@ public class SlipVeluxBridge extends VeluxBridge {
      */
     private synchronized boolean bridgeDirectCommunicate(SlipBridgeCommunicationProtocol communication,
             boolean useAuthentication) {
-        logger.trace("bridgeDirectCommunicate({},{}authenticated) called.", communication.name(),
+        String host = this.bridgeInstance.veluxBridgeConfiguration().ipAddress;
+        logger.trace("bridgeDirectCommunicate({},{}authenticated) on {} called.", host, communication.name(),
                 useAuthentication ? "" : "un");
 
         assert this.bridgeInstance.veluxBridgeConfiguration().protocol.contentEquals("slip");
@@ -202,7 +203,6 @@ public class SlipVeluxBridge extends VeluxBridge {
 
         boolean isSequentialEnforced = this.bridgeInstance.veluxBridgeConfiguration().isSequentialEnforced;
         boolean isProtocolTraceEnabled = this.bridgeInstance.veluxBridgeConfiguration().isProtocolTraceEnabled;
-        String host = this.bridgeInstance.veluxBridgeConfiguration().ipAddress;
 
         // From parameters
         short command = communication.getRequestCommand().toShort();
