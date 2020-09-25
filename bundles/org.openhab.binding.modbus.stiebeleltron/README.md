@@ -1,4 +1,4 @@
-# Stiebel Eltron ISG Binding
+# Stiebel Eltron ISG
 
 This extension adds support for the Stiebel Eltron modbus protocol.
 
