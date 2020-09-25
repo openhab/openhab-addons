@@ -165,13 +165,21 @@ class SSLconnection {
         if (!ready || (dOut == null)) {
             throw new IOException();
         }
-        dOut.write(packet, 0, packet.length);
-        if (logger.isTraceEnabled()) {
-            StringBuilder sb = new StringBuilder();
-            for (byte b : packet) {
-                sb.append(String.format("%02X ", b));
+        try {
+            // add packet bytes to output queue
+            dOut.write(packet, 0, packet.length);
+            // force queued bytes to be sent over the socket i.e. immediately throw actual socket exceptions (if any)
+            dOut.flush();
+            if (logger.isTraceEnabled()) {
+                StringBuilder sb = new StringBuilder();
+                for (byte b : packet) {
+                    sb.append(String.format("%02X ", b));
+                }
+                logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
             }
-            logger.trace("send() finished after having send {} bytes: {}", packet.length, sb.toString());
+        } catch (IOException e) {
+            logger.debug("send(): raised IOException {}", e.getStackTrace().toString());
+            throw e;
         }
     }
 
@@ -263,15 +271,15 @@ class SSLconnection {
     synchronized void flushBuffer() throws IOException {
         logger.trace("flushBuffer() called.");
         @Nullable
-        DataInputStreamWithTimeout inStream = dIn;
-        if ((inStream == null) || !ready) {
+        DataInputStreamWithTimeout dInX = dIn;
+        if ((dInX == null) || !ready) {
             throw new IOException();
         }
         try {
-            int byteCount = inStream.available();
+            int byteCount = dInX.available();
             if (byteCount > 0) {
                 byte[] byteArray = new byte[byteCount];
-                inStream.readFully(byteArray);
+                dInX.readFully(byteArray);
                 if (logger.isTraceEnabled()) {
                     StringBuilder stringBuilder = new StringBuilder();
                     for (byte currByte : byteArray) {
