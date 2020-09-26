@@ -67,7 +67,7 @@ public class InfluxDB2BridgeConfiguration {
     @Override
     public String toString() {
         return new StringJoiner(", ", InfluxDB2BridgeConfiguration.class.getSimpleName() + "[", "]")
-                .add("url='" + url + "'").add("user='" + user + "'").add("token='" + token + "'")
+                .add("url='" + url + "'").add("user='" + user + "'").add("token='" + "*".repeat(token.length()) + "'")
                 .add("organization='" + organization + "'").add("bucket='" + bucket + "'").toString();
     }
 }

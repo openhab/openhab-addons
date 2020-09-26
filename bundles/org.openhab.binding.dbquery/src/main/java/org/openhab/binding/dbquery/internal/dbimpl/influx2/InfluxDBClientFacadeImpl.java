@@ -35,11 +35,16 @@ public class InfluxDBClientFacadeImpl implements InfluxDBClientFacade {
 
         final InfluxDBClient createdClient = InfluxDBClientFactory.create(clientOptions);
         this.client = createdClient;
-        logger.debug("Succesfully connected to InfluxDB. Instance ready={}", createdClient.ready());
         var currentQueryAPI = createdClient.getQueryApi();
         this.queryAPI = currentQueryAPI;
 
-        return checkConnectionStatus();
+        boolean connected = checkConnectionStatus();
+        if (connected)
+            logger.debug("Successfully connected to InfluxDB. Instance ready={}", createdClient.ready());
+        else
+            logger.info("Not able to connect to InfluxDB with config {}", config);
+
+        return connected;
     }
 
     private boolean checkConnectionStatus() {

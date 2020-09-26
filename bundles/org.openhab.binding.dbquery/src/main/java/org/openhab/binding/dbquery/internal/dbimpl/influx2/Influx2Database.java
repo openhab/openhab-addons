@@ -86,4 +86,9 @@ public class Influx2Database implements Database {
             return CompletableFuture.failedFuture(e);
         }
     }
+
+    @Override
+    public String toString() {
+        return "Influx2Database{config=" + config + '}';
+    }
 }

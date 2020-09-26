@@ -40,6 +40,7 @@ public class QueryExecution {
         else
             query = database.queryFactory().createQuery(queryString, queryConfiguration);
 
+        logger.trace("Execute query {}", query);
         database.executeQuery(query).thenAccept(this::notifyQueryResult).exceptionally(error -> {
             logger.warn("Error executing query", error);
             notifyQueryResult(QueryResult.ofIncorrectResult("Error executing query"));

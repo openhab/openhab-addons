@@ -2,7 +2,11 @@ package org.openhab.binding.dbquery.internal;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dbquery.action.DBQueryActions;
 import org.openhab.binding.dbquery.internal.domain.Database;
 import org.openhab.core.thing.Bridge;
@@ -16,8 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
+    private static final long RETRY_CONNECTION_ATTEMPT_TIME_SECONDS = 60;
     private final Logger logger = LoggerFactory.getLogger(DatabaseBridgeHandler.class);
     private Database database = Database.EMPTY;
+    private @Nullable ScheduledFuture<?> retryConnectionAttemptFuture;
 
     public DatabaseBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -31,6 +37,11 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
 
         database = createDatabase();
 
+        connectDatabase();
+    }
+
+    private void connectDatabase() {
+        logger.debug("connectDatabase {}", database);
         var completable = database.connect();
         updateStatus(ThingStatus.UNKNOWN);
         completable.thenAccept(result -> {
@@ -40,19 +51,40 @@ public abstract class DatabaseBridgeHandler extends BaseBridgeHandler {
             } else {
                 logger.trace("Connect to database {} failed", getThing().getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+                if (retryConnectionAttemptFuture == null) {
+                    scheduleRetryConnectionAttempt();
+                }
             }
         });
+    }
+
+    protected void scheduleRetryConnectionAttempt() {
+        logger.trace("Scheduled retry connection attempt every {}", RETRY_CONNECTION_ATTEMPT_TIME_SECONDS);
+        retryConnectionAttemptFuture = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+                this::connectDatabase, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS, RETRY_CONNECTION_ATTEMPT_TIME_SECONDS,
+                TimeUnit.SECONDS);
     }
 
     protected abstract void initConfig();
 
     @Override
     public void dispose() {
+        cancelRetryConnectionAttemptIfPresent();
+        disconnectDatabase();
+    }
+
+    protected void cancelRetryConnectionAttemptIfPresent() {
+        ScheduledFuture<?> currentFuture = retryConnectionAttemptFuture;
+        if (currentFuture != null)
+            currentFuture.cancel(true);
+    }
+
+    private void disconnectDatabase() {
         var completable = database.disconnect();
         updateStatus(ThingStatus.UNKNOWN);
         completable.thenAccept(result -> {
             if (result) {
-                logger.trace("Succesfully disconnected to database {}", getBridge().getUID());
+                logger.trace("Successfully disconnected to database {}", getBridge().getUID());
                 updateStatus(ThingStatus.OFFLINE);
             } else {
                 logger.trace("Disconnect to database {} failed", getBridge().getUID());

@@ -80,7 +80,6 @@ public class QueryHandler extends BaseThingHandler {
         queryResultExtractor = new QueryResultExtractor(config);
 
         initQueryResultChannelUpdater();
-        scheduleQueryExecutionIntervalIfNeeded();
         updateStateWithParentBridgeStatus();
     }
 
@@ -91,11 +90,10 @@ public class QueryHandler extends BaseThingHandler {
 
     private void scheduleQueryExecutionIntervalIfNeeded() {
         int interval = config.getInterval();
-        if (interval != 0) {
-            scheduledQueryExecutionInterval = Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-                logger.trace("Scheduling query execution every {} seconds for {}", interval, getQueryIdentifier());
-                executeQuery();
-            }, 0, interval, TimeUnit.SECONDS);
+        if (interval != 0 && scheduledQueryExecutionInterval == null) {
+            logger.trace("Scheduling query execution every {} seconds for {}", interval, getQueryIdentifier());
+            scheduledQueryExecutionInterval = Executors.newSingleThreadScheduledExecutor()
+                    .scheduleAtFixedRate(this::executeQuery, 0, interval, TimeUnit.SECONDS);
         }
     }
 
@@ -199,6 +197,13 @@ public class QueryHandler extends BaseThingHandler {
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+        if (status == ThingStatus.ONLINE)
+            scheduleQueryExecutionIntervalIfNeeded();
     }
 
     @Override
