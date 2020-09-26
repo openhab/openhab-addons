@@ -109,9 +109,6 @@ public class Connection {
                 }
                 if (request.length > 0) {
                     try {
-                        if (connectivity.isReady()) {
-                            connectivity.flushBuffer();
-                        }
                         if (logger.isTraceEnabled()) {
                             logger.trace("io() on {}: sending packet with {} bytes: {}", host, request.length,
                                     new Packet(request));
