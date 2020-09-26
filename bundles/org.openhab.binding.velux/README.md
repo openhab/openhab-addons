@@ -5,6 +5,8 @@ This binding integrates the <B>Velux</B> devices with help of a gateway, the <B>
 The Velux Binding interacts via the Velux Bridge with any [io-homecontrol](http://www.io-homecontrol.com/)-based
 devices like window openers, shutters and others.
 
+![Velux](doc/veluxlogo.jpg)
+
 Based on the VELUX API this binding integrates <B>Velux</B> and other io-homecontrol devices directly into the openHAB, avoiding the necessity of any cloud-based mediation infrastructures. The complete home-automation will work even without any Internet connectivity.
 
 For details about the features, see the following websites:
