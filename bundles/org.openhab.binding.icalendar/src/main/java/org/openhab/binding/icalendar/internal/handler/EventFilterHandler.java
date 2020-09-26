@@ -26,6 +26,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.icalendar.internal.config.EventFilterConfiguration;
+import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
+import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
+import org.openhab.binding.icalendar.internal.logic.Event;
+import org.openhab.binding.icalendar.internal.logic.EventTextFilter;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
@@ -43,11 +48,6 @@ import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.icalendar.internal.config.EventFilterConfiguration;
-import org.openhab.binding.icalendar.internal.handler.PullJob.CalendarUpdateListener;
-import org.openhab.binding.icalendar.internal.logic.AbstractPresentableCalendar;
-import org.openhab.binding.icalendar.internal.logic.Event;
-import org.openhab.binding.icalendar.internal.logic.EventTextFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
