@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="dbquery"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<bridge-type id="influxdb2">
+		<label>InfluxDB2 Bridge</label>
+		<description>The InfluxDB 2.0 represents a connection to a InfluxDB 2.0 server</description>
+
+		<config-description>
+			<parameter name="url" type="text" required="true">
+				<context>url</context>
+				<label>Url</label>
+				<description>Database url</description>
+				<default>http://localhost:9999</default>
+			</parameter>
+			<parameter name="user" type="text" required="true">
+				<label>Username</label>
+				<description>Name of the database user</description>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<label>Token</label>
+				<context>password</context>
+				<description>Token to authenticate to the database</description>
+			</parameter>
+			<parameter name="organization" type="text" required="true">
+				<label>Organization</label>
+				<description>Name of the database organization </description>
+			</parameter>
+			<parameter name="bucket" type="text" required="true">
+				<label>Bucket</label>
+				<description>Name of the database bucket </description>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
