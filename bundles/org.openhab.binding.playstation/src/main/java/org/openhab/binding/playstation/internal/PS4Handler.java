@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.playstation.internal.discovery.PlayStationDiscovery;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.OnOffType;
@@ -46,7 +47,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.binding.playstation.internal.discovery.PlayStationDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

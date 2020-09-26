@@ -21,9 +21,9 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.core.config.core.ConfigConstants;
-import org.openhab.core.library.types.RawType;
+import org.openhab.core.OpenHAB;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.RawType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class PS4ArtworkHandler {
 
     static {
         // create cache folder
-        File userData = new File(ConfigConstants.getUserDataFolder());
+        File userData = new File(OpenHAB.getUserDataFolder());
         File homeFolder = new File(userData, CACHE_FOLDER_NAME);
 
         if (!homeFolder.exists()) {
