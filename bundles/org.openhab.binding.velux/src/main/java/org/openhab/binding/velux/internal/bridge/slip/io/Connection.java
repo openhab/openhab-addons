@@ -230,17 +230,10 @@ public class Connection {
      */
     public synchronized void resetConnection() {
         logger.trace("resetConnection() on {}: called.", host);
-        if (connectivity.isReady()) {
-            logger.trace("resetConnection() on {}: shutting down connection.", host);
-            try {
-                if (connectivity.isReady()) {
-                    connectivity.close();
-                }
-            } catch (IOException e) {
-                logger.info("resetConnection() on {}: raised an error during connection close: {}.", host,
-                        e.getMessage());
-            }
-            logger.trace("resetConnection() on {}: clearing authentication token.", host);
+        try {
+            connectivity.close();
+        } catch (IOException e) {
+            logger.info("resetConnection() on {}: raised an error during connection close: {}.", host, e.getMessage());
         }
         logger.trace("resetConnection() on {}: done.", host);
     }
