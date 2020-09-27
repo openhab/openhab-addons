@@ -126,10 +126,9 @@ public class BoschHttpClient extends HttpClient {
             items.put("primaryRole", "ROLE_RESTRICTED_CLIENT");
             items.put("certificate", "-----BEGIN CERTIFICATE-----\r" + publicCert + "\r-----END CERTIFICATE-----");
 
-            String url = this.createSmartHomeUrl("clients");
-            Request request = this.createRequest(url, HttpMethod.POST, new StringContentProvider(gson.toJson(items)))
-                    .header("Systempassword",
-                            Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)));
+            String url = this.createPairingUrl();
+            Request request = this.createRequest(url, HttpMethod.POST, items).header("Systempassword",
+                    Base64.getEncoder().encodeToString(systempassword.getBytes(StandardCharsets.UTF_8)));
 
             contentResponse = request.send();
 
@@ -148,9 +147,14 @@ public class BoschHttpClient extends HttpClient {
         } catch (ExecutionException e) {
             // javax.net.ssl.SSLHandshakeException: General SSLEngine problem
             // => usually the pairing failed, because hardware button was not pressed.
+            logger.trace("Pairing failed - Details: {}", e.getMessage());
             logger.warn("Pairing failed. Was the Bosch SHC button pressed?");
             return false;
         }
+    }
+
+    public String createPairingUrl() {
+        return String.format("https://%s:8443/smarthome/clients", this.ipAddress);
     }
 
     public String createUrl(String endpoint) {
@@ -170,11 +174,13 @@ public class BoschHttpClient extends HttpClient {
     }
 
     public Request createRequest(String url, HttpMethod method, @Nullable Object content) {
-        logger.trace("create request for {}", url);
         Request request = this.newRequest(url).method(method).header("Content-Type", "application/json");
         if (content != null) {
             String body = gson.toJson(content);
+            logger.trace("create request for {} and content {}", url, body);
             request = request.content(new StringContentProvider(body));
+        } else {
+            logger.trace("create request for {}", url);
         }
 
         // Set default timeout
