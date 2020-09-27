@@ -32,7 +32,6 @@ import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
@@ -80,7 +79,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class VehicleHandler extends VehicleChannelHandler {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
-    private boolean compatibilityMode = false; // switch to old API in case of 404 Errors
 
     private Optional<ConnectedDriveProxy> proxy = Optional.empty();
     private Optional<RemoteServiceHandler> remote = Optional.empty();
