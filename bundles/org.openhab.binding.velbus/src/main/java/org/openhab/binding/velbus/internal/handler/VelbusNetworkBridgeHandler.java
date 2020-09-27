@@ -63,18 +63,19 @@ public class VelbusNetworkBridgeHandler extends VelbusBridgeHandler {
             updateStatus(ThingStatus.ONLINE);
             logger.debug("Bridge online on network address {}:{}", networkBridgeConfig.address,
                     networkBridgeConfig.port);
+
+            // Start Velbus packet listener. This listener will act on all packets coming from
+            // IP-interface.
+            Thread thread = new Thread(this::readPackets, "OH-binding-" + this.thing.getUID());
+            thread.setDaemon(true);
+            thread.start();
+
             return true;
         } catch (IOException ex) {
             onConnectionLost();
             logger.debug("Failed to connect to network address {}:{}", networkBridgeConfig.address,
                     networkBridgeConfig.port);
         }
-
-        // Start Velbus packet listener. This listener will act on all packets coming from
-        // IP-interface.
-        Thread thread = new Thread(this::readPackets, "OH-binding-" + this.thing.getUID());
-        thread.setDaemon(true);
-        thread.start();
 
         return false;
     }
