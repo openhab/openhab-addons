@@ -14,9 +14,29 @@ package org.openhab.binding.bmwconnecteddrive.internal.handler;
 
 import static org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Position;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
+import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
+import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -30,6 +50,18 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class VehicleChannelHandler extends BaseThingHandler {
+    protected boolean imperial = false;
+    protected boolean hasFuel = false;
+    protected boolean isElectric = false;
+    protected boolean isHybrid = false;
+
+    // List Interfaces
+    private List<CBSMessage> serviceList = new ArrayList<CBSMessage>();
+    private int serviceListIndex = -1;
+    private List<CCMMessage> checkControlList = new ArrayList<CCMMessage>();
+    private int checkControlListIndex = -1;
+    private List<Destination> destinationList = new ArrayList<Destination>();
+    private int destinationListIndex = -1;
 
     // Vahicle Status Channels
     protected ChannelUID doors;
@@ -149,8 +181,15 @@ public class VehicleChannelHandler extends BaseThingHandler {
     protected Optional<String> destinationCache = Optional.empty();
     protected Optional<byte[]> imageCache = Optional.empty();
 
-    public VehicleChannelHandler(Thing thing) {
+    public VehicleChannelHandler(Thing thing, String type, boolean imperial) {
         super(thing);
+
+        this.imperial = imperial;
+        hasFuel = type.equals(VehicleType.CONVENTIONAL.toString()) || type.equals(VehicleType.PLUGIN_HYBRID.toString())
+                || type.equals(VehicleType.ELECTRIC_REX.toString());
+        isElectric = type.equals(VehicleType.PLUGIN_HYBRID.toString())
+                || type.equals(VehicleType.ELECTRIC_REX.toString()) || type.equals(VehicleType.ELECTRIC.toString());
+        isHybrid = hasFuel && isElectric;
 
         // Vehicle Status channels
         doors = new ChannelUID(thing.getUID(), CHANNEL_GROUP_STATUS, DOORS);
@@ -266,5 +305,223 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
+    }
+
+    /**
+     * Update List Interfaces
+     */
+
+    public synchronized void nextCheckControl() {
+        checkControlListIndex++;
+        updateService();
+    }
+
+    public synchronized void setCheckControlList(List<CCMMessage> l) {
+        checkControlList = l;
+        updateCheckControls();
+    }
+
+    private void updateCheckControls() {
+        updateState(checkControlSize, new DecimalType(checkControlList.size()));
+        if (!checkControlList.isEmpty()) {
+            if (checkControlListIndex < 0 || checkControlListIndex >= checkControlList.size()) {
+                // select first item
+                checkControlListIndex = 0;
+            }
+            CCMMessage entry = checkControlList.get(checkControlListIndex);
+            updateState(checkControlName, StringType.valueOf(entry.ccmDescriptionShort));
+            if (imperial) {
+                updateState(checkControlMileage,
+                        QuantityType.valueOf(Converter.round(entry.ccmMileage), ImperialUnits.MILE));
+            } else {
+                updateState(checkControlMileage,
+                        QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            // last update index - this is a sync point and you're sure that all data is valid noew
+            updateState(checkControlIndex, new DecimalType(checkControlListIndex));
+        }
+    }
+
+    public synchronized void nextService() {
+        serviceListIndex++;
+        updateService();
+    }
+
+    public synchronized void setServiceList(List<CBSMessage> l) {
+        serviceList = l;
+        updateService();
+    }
+
+    private void updateService() {
+        updateState(serviceSize, new DecimalType(serviceList.size()));
+        if (!serviceList.isEmpty()) {
+            if (serviceListIndex < 0 || serviceListIndex >= serviceList.size()) {
+                // select first item
+                serviceListIndex = 0;
+            }
+            CBSMessage entry = serviceList.get(serviceListIndex);
+            updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(entry.getDueDate())));
+            if (imperial) {
+                updateState(serviceMileage,
+                        QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage), ImperialUnits.MILE));
+            } else {
+                updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
+                        MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
+            // last update index - this is a sync point and you're sure that all data is valid noew
+            updateState(serviceIndex, new DecimalType(serviceListIndex));
+        }
+    }
+
+    public synchronized void setDestinationList(List<Destination> l) {
+        destinationList = l;
+        updateDestination();
+    }
+
+    public synchronized void nextDestination() {
+        destinationListIndex++;
+        updateDestination();
+    }
+
+    /**
+     * needs to be synchronized with onResponse update
+     */
+    private void updateDestination() {
+        updateState(destinationSize, new DecimalType(destinationList.size()));
+        if (!destinationList.isEmpty()) {
+            if (destinationListIndex < 0 || destinationListIndex >= destinationList.size()) {
+                // select first item
+                destinationListIndex = 0;
+            }
+            Destination entry = destinationList.get(destinationListIndex);
+            updateState(destinationName, StringType.valueOf(entry.getAddress()));
+            updateState(destinationLat, new DecimalType(entry.lat));
+            updateState(destinationLon, new DecimalType(entry.lon));
+            // last update index - this is a sync point and you're sure that all data is valid noew
+            updateState(destinationIndex, new DecimalType(destinationListIndex));
+        }
+    }
+
+    /**
+     * Channel Groups
+     */
+
+    protected void updateDoors(Doors doorState) {
+        updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
+
+        updateState(doorDriverFront, StringType.valueOf(doorState.doorDriverFront));
+        updateState(doorDriverRear, StringType.valueOf(doorState.doorDriverRear));
+        updateState(doorPassengerFront, StringType.valueOf(doorState.doorPassengerFront));
+        updateState(doorPassengerRear, StringType.valueOf(doorState.doorPassengerRear));
+        updateState(doorTrunk, StringType.valueOf(doorState.trunk));
+        updateState(doorHood, StringType.valueOf(doorState.hood));
+    }
+
+    protected void updateWindows(Windows windowState) {
+        updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
+
+        updateState(windowDriverFront, StringType.valueOf(windowState.windowDriverFront));
+        updateState(windowDriverRear, StringType.valueOf(windowState.windowDriverRear));
+        updateState(windowPassengerFront, StringType.valueOf(windowState.windowPassengerFront));
+        updateState(windowPassengerRear, StringType.valueOf(windowState.windowPassengerRear));
+        updateState(windowRear, StringType.valueOf(windowState.rearWindow));
+        updateState(windowSunroof, StringType.valueOf(windowState.sunroof));
+    }
+
+    protected void updatePosition(Position pos) {
+        updateState(latitude, new DecimalType(pos.lat));
+        updateState(longitude, new DecimalType(pos.lon));
+        updateState(heading, QuantityType.valueOf(pos.heading, SmartHomeUnits.DEGREE_ANGLE));
+    }
+
+    protected void updateVehicleStatus(VehicleStatus vStatus) {
+        // Vehicle Status
+        updateState(lock, StringType.valueOf(Converter.toTitleCase(vStatus.doorLockState)));
+
+        // Service Updates
+        String nextServiceDate = vStatus.getNextServiceDate();
+        if (!nextServiceDate.equals(Constants.NULL_DATE)) {
+            updateState(serviceNextDate, DateTimeType.valueOf(Converter.getLocalDateTime(nextServiceDate)));
+        }
+        double nextServiceMileage = vStatus.getNextServiceMileage();
+        if (imperial) {
+            updateState(serviceNextMileage,
+                    QuantityType.valueOf(Converter.round(nextServiceMileage), ImperialUnits.MILE));
+        } else {
+            updateState(serviceNextMileage,
+                    QuantityType.valueOf(Converter.round(nextServiceMileage), MetricPrefix.KILO(SIUnits.METRE)));
+        }
+
+        // Range values
+        // based on unit of length decide if range shall be reported in km or miles
+        if (!imperial) {
+            updateState(mileage, QuantityType.valueOf(vStatus.mileage, MetricPrefix.KILO(SIUnits.METRE)));
+            float totalRange = 0;
+            if (isElectric) {
+                totalRange += vStatus.remainingRangeElectric;
+                updateState(remainingRangeElectric,
+                        QuantityType.valueOf(vStatus.remainingRangeElectric, MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(rangeRadiusElectric, QuantityType.valueOf(
+                        Converter.guessRangeRadius(vStatus.remainingRangeElectric), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            if (hasFuel) {
+                totalRange += vStatus.remainingRangeFuel;
+                updateState(remainingRangeFuel,
+                        QuantityType.valueOf(vStatus.remainingRangeFuel, MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(rangeRadiusFuel, QuantityType.valueOf(
+                        Converter.guessRangeRadius(vStatus.remainingRangeFuel), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            if (isHybrid) {
+                updateState(remainingRangeHybrid,
+                        QuantityType.valueOf(Converter.round(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
+                updateState(rangeRadiusHybrid,
+                        QuantityType.valueOf(Converter.guessRangeRadius(totalRange), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+        } else {
+            updateState(mileage, QuantityType.valueOf(vStatus.mileage, ImperialUnits.MILE));
+            float totalRange = 0;
+            if (isElectric) {
+                totalRange += vStatus.remainingRangeElectricMls;
+                updateState(remainingRangeElectric,
+                        QuantityType.valueOf(vStatus.remainingRangeElectricMls, ImperialUnits.MILE));
+                updateState(rangeRadiusElectric, QuantityType
+                        .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeElectricMls), ImperialUnits.MILE));
+            }
+            if (hasFuel) {
+                totalRange += vStatus.remainingRangeFuelMls;
+                updateState(remainingRangeFuel,
+                        QuantityType.valueOf(vStatus.remainingRangeFuelMls, ImperialUnits.MILE));
+                updateState(rangeRadiusFuel, QuantityType
+                        .valueOf(Converter.guessRangeRadius(vStatus.remainingRangeFuelMls), ImperialUnits.MILE));
+            }
+            if (isHybrid) {
+                updateState(remainingRangeHybrid,
+                        QuantityType.valueOf(Converter.round(totalRange), ImperialUnits.MILE));
+                updateState(rangeRadiusHybrid,
+                        QuantityType.valueOf(Converter.guessRangeRadius(totalRange), ImperialUnits.MILE));
+            }
+        }
+        if (isElectric) {
+            updateState(remainingSoc, QuantityType.valueOf(vStatus.chargingLevelHv, SmartHomeUnits.PERCENT));
+        }
+        if (hasFuel) {
+            updateState(remainingFuel, QuantityType.valueOf(vStatus.remainingFuel, SmartHomeUnits.LITRE));
+        }
+        // last update Time
+        updateState(lastUpdate, DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime())));
+
+        // Charge Values
+        if (isElectric) {
+            if (vStatus.chargingStatus != null) {
+                if (Constants.INVALID.equals(vStatus.chargingStatus)) {
+                    updateState(chargingStatus,
+                            StringType.valueOf(Converter.toTitleCase(vStatus.lastChargingEndReason)));
+                } else {
+                    // State INVALID is somehow misleading. Instead show the Last Charging End Reason
+                    updateState(chargingStatus, StringType.valueOf(Converter.toTitleCase(vStatus.chargingStatus)));
+                }
+            }
+        }
     }
 }
