@@ -41,17 +41,17 @@ They differ in the supported Channel Groups & Channels.
 Conventional Fuel Vehicles have no _Charging Profile_, Electric Vehicles don't provide a _Fuel Range_. 
 For Hybrid Vehicles in addition to _Fuel and Electric Range_ the _Hybrid Range_ is shown.
  
-| Name                                | Thing Type ID | Supported Channel Groups                                     |
-|-------------------------------------|---------------|--------------------------------------------------------------|
-| BMW Electric Vehicle                | BEV           | status, range, location, charge, image, troubleshoot |
-| BMW Electric Vehicle with REX       | BEV_REX       | status, range, location, charge, image, troubleshoot |
-| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, location, charge, image, troubleshoot |
-| BMW Conventional Vehicle            | CONV          | status, range, location, image, troubleshoot         |
+| Name                                | Thing Type ID | Supported Channel Groups                                             |
+|-------------------------------------|---------------|----------------------------------------------------------------------|
+| BMW Electric Vehicle                | BEV           | status, range, location, service, check, charge, image, troubleshoot |
+| BMW Electric Vehicle with REX       | BEV_REX       | status, range, location, service, check, charge, image, troubleshoot |
+| BMW Plug-In-Hybrid Electric Vehicle | PHEV          | status, range, location, service, check, charge, image, troubleshoot |
+| BMW Conventional Vehicle            | CONV          | status, range, location, service, check, image, troubleshoot         |
 
  
 #### Properties
 
-<img align="right" src="./doc/properties.png" width="600" height="400"/>
+<img align="right" src="./doc/properties.png" width="500" height="600"/>
 
 For each Vehicle Properties are available. 
 Basically 3 Types of Information are registered as Properties

@@ -30,15 +30,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public class VehicleStatus {
     public int mileage;// ": 17273,
-    public double remainingFuel;// ": 4,
-    public double remainingRangeElectric;// ": 148,
-    public double remainingRangeElectricMls;// ": 91,
-    public double remainingRangeFuel;// ": 70,"
-    public double remainingRangeFuelMls;// ":43,"
-    public double maxRangeElectric;// ":216,"
-    public double maxRangeElectricMls;// ":134,"
-    public double maxFuel;// ":8.5,
-    public double chargingLevelHv;// ":71,
+    public float remainingFuel;// ": 4,
+    public float remainingRangeElectric;// ": 148,
+    public float remainingRangeElectricMls;// ": 91,
+    public float remainingRangeFuel;// ": 70,"
+    public float remainingRangeFuelMls;// ":43,"
+    public float maxRangeElectric;// ":216,"
+    public float maxRangeElectricMls;// ":134,"
+    public float maxFuel;// ":8.5,
+    public float chargingLevelHv;// ":71,
     public String vin;// : "ANONYMOUS",
     public String updateReason;// ": "VEHICLE_SHUTDOWN_SECURED",
     public String updateTime;// ": "2020-08-24 T15:55:32+0000",

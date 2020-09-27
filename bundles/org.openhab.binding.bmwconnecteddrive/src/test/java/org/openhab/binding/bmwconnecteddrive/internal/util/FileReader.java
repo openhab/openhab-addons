@@ -31,7 +31,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 public class FileReader {
 
     public static String readFileInString(String filename) {
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "CP1252"));) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));) {
             StringBuffer buf = new StringBuffer();
             String sCurrentLine;
 

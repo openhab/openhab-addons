@@ -28,10 +28,8 @@ import org.mockito.ArgumentCaptor;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.StatusWrapper;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.util.FileReader;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
-import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -388,129 +386,5 @@ public class VehicleTests {
         Map<String, State> m = new HashMap<String, State>();
         m.put(ConnectedDriveConstants.WINDOWS, StringType.valueOf(Constants.INTERMEDIATE));
         assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
-    }
-
-    /**
-     * testI01RexCompat
-     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @1797ms
-     * Channel testbinding::test:status#lock Secured
-     * Channel testbinding::test:status#doors CLOSED
-     * Channel testbinding::test:doors#driver-front CLOSED
-     * Channel testbinding::test:doors#driver-rear CLOSED
-     * Channel testbinding::test:doors#passenger-front CLOSED
-     * Channel testbinding::test:doors#passenger-rear CLOSED
-     * Channel testbinding::test:doors#trunk CLOSED
-     * Channel testbinding::test:doors#hood CLOSED
-     * Channel testbinding::test:status#windows CLOSED
-     * Channel testbinding::test:doors#window-driver-front CLOSED
-     * Channel testbinding::test:doors#window-driver-rear CLOSED
-     * Channel testbinding::test:doors#window-passenger-front CLOSED
-     * Channel testbinding::test:doors#window-passenger-rear CLOSED
-     * Channel testbinding::test:doors#window-rear UNKOWN
-     * Channel testbinding::test:doors#sunroof CLOSED
-     * Channel testbinding::test:status#service-date 2021-11-01T13:00:00.000+0100
-     * Channel testbinding::test:status#service-mileage -1.0 km
-     * Channel testbinding::test:service#size 4
-     * Channel testbinding::test:service#date 2021-11-01T13:00:00.000+0100
-     * Channel testbinding::test:service#mileage 0.0 km
-     * Channel testbinding::test:service#name Bremsflüssigkeit
-     * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:status#check-control Active
-     * Channel testbinding::test:check#size 1
-     * Channel testbinding::test:check#name Laden nicht möglich
-     * Channel testbinding::test:check#mileage 18312.0 km
-     * Channel testbinding::test:check#index 0
-     * Channel testbinding::test:range#mileage 18313.0 km
-     * Channel testbinding::test:range#electric 100.0 km
-     * Channel testbinding::test:range#radius-electric 80.0 km
-     * Channel testbinding::test:range#fuel 65.0 km
-     * Channel testbinding::test:range#radius-fuel 52.0 km
-     * Channel testbinding::test:range#hybrid 165.0 km
-     * Channel testbinding::test:range#radius-hybrid 132.0 km
-     * Channel testbinding::test:range#soc 51.0 %
-     * Channel testbinding::test:range#remaining-fuel 4.0 l
-     * Channel testbinding::test:status#last-update 2020-09-27T15:18:00.000+0200
-     * Channel testbinding::test:status#charge Error
-     * Channel testbinding::test:location#latitude 50.5560188293457
-     * Channel testbinding::test:location#longitude 8.495611190795898
-     * Channel testbinding::test:location#heading 39.0 °
-     */
-    @Test
-    public void testI01RexCompat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC_REX.toString(), false);
-        String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), HYBRID_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS,
-                Optional.empty()));
-    }
-
-    @Test
-    public void testI01RexMilesCompat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.ELECTRIC_REX.toString(), true);
-        String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), HYBRID_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS,
-                Optional.empty()));
-    }
-
-    /**
-     * testF11Compat
-     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @1687ms
-     * Channel testbinding::test:status#lock Unkown
-     * Channel testbinding::test:status#doors UNKOWN
-     * Channel testbinding::test:doors#driver-front UNKOWN
-     * Channel testbinding::test:doors#driver-rear UNKOWN
-     * Channel testbinding::test:doors#passenger-front UNKOWN
-     * Channel testbinding::test:doors#passenger-rear UNKOWN
-     * Channel testbinding::test:doors#trunk UNKOWN
-     * Channel testbinding::test:doors#hood UNKOWN
-     * Channel testbinding::test:status#windows UNKOWN
-     * Channel testbinding::test:doors#window-driver-front UNKOWN
-     * Channel testbinding::test:doors#window-driver-rear UNKOWN
-     * Channel testbinding::test:doors#window-passenger-front UNKOWN
-     * Channel testbinding::test:doors#window-passenger-rear UNKOWN
-     * Channel testbinding::test:doors#window-rear UNKOWN
-     * Channel testbinding::test:doors#sunroof UNKOWN
-     * Channel testbinding::test:status#service-date 2021-08-01T14:00:00.000+0200
-     * Channel testbinding::test:status#service-mileage 2000.0 km
-     * Channel testbinding::test:service#size 3
-     * Channel testbinding::test:service#date 2021-08-01T14:00:00.000+0200
-     * Channel testbinding::test:service#mileage 2000.0 km
-     * Channel testbinding::test:service#name Motorolie
-     * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:status#check-control Not Active
-     * Channel testbinding::test:check#size 0
-     * Channel testbinding::test:range#mileage 113930.0 km
-     * Channel testbinding::test:range#electric 0.0 km
-     * Channel testbinding::test:range#radius-electric 0.0 km
-     * Channel testbinding::test:range#fuel 0.0 km
-     * Channel testbinding::test:range#radius-fuel 0.0 km
-     * Channel testbinding::test:range#hybrid 0.0 km
-     * Channel testbinding::test:range#radius-hybrid 0.0 km
-     * Channel testbinding::test:range#soc 0.0 %
-     * Channel testbinding::test:range#remaining-fuel 34.0 l
-     * Channel testbinding::test:status#last-update 1900-01-01T01:00:00.000+0100
-     * Channel testbinding::test:location#latitude 0.0
-     * Channel testbinding::test:location#longitude 0.0
-     * Channel testbinding::test:location#heading 0.0 °
-     */
-    @Test
-    public void testF11Compat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), false);
-        String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
-    }
-
-    @Test
-    public void testF11MilesCompat() {
-        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
-        setup(VehicleType.CONVENTIONAL.toString(), true);
-        String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
-        VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
     }
 }
