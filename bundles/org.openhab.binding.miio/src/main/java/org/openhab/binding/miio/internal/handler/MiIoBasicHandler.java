@@ -426,6 +426,7 @@ public class MiIoBasicHandler extends MiIoAbstractHandler {
         if (res.size() != para.size()) {
             logger.debug("Unexpected size different. Request size {},  response size {}. (Req: {}, Resp:{})",
                     para.size(), res.size(), para, res);
+            return;
         }
         for (int i = 0; i < para.size(); i++) {
             // This is a miot parameter
