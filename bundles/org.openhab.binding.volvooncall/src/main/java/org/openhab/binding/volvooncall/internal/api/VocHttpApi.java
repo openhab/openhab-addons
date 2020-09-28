@@ -30,7 +30,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException.ErrorType;
-import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
+import org.openhab.binding.volvooncall.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.PostResponse;
 import org.openhab.binding.volvooncall.internal.dto.VocAnswer;
 import org.slf4j.Logger;
@@ -46,18 +46,18 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class VocHttpApi {
-
-    private static final int REQUEST_TIMEOUT_S = 10;
     // The URL to use to connect to VocAPI.
-    // TODO : for North America and China syntax changes to vocapi-cn.xxx
+    // For North America and China syntax changes to vocapi-cn.xxx
     private static final String SERVICE_URL = "https://vocapi.wirelesscar.net/customerapi/rest/v3.0/";
+    private static final int REQUEST_TIMEOUT_S = 10;
+
     private final HttpClient client = HttpClient.newBuilder().version(Version.HTTP_2).followRedirects(Redirect.ALWAYS)
             .build();
     private final Logger logger = LoggerFactory.getLogger(VocHttpApi.class);
     private final Properties httpHeader = new Properties();
     private final Gson gson;
 
-    public VocHttpApi(VolvoOnCallBridgeConfiguration configuration, Gson gson) {
+    public VocHttpApi(ApiBridgeConfiguration configuration, Gson gson) {
         this.gson = gson;
         httpHeader.put("cache-control", "no-cache");
         httpHeader.put("content-type", "application/json");

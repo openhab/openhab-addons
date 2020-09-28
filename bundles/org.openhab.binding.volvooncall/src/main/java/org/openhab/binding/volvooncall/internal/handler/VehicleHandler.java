@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
-import org.openhab.binding.volvooncall.internal.VolvoOnCallException.ErrorType;
 import org.openhab.binding.volvooncall.internal.action.VolvoOnCallActions;
+import org.openhab.binding.volvooncall.internal.api.ActionResultControler;
 import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
 import org.openhab.binding.volvooncall.internal.config.VehicleConfiguration;
 import org.openhab.binding.volvooncall.internal.dto.Attributes;
@@ -191,14 +191,20 @@ public class VehicleHandler extends BaseThingHandler {
             getThing().getChannels().stream().map(Channel::getUID)
                     .filter(channelUID -> isLinked(channelUID) && !LAST_TRIP_GROUP.equals(channelUID.getGroupId()))
                     .forEach(channelUID -> {
-                        State state = getValue(channelUID.getGroupId(), channelUID.getIdWithoutGroup(),
-                                newVehicleStatus, vehiclePosition);
-
-                        updateState(channelUID, state);
+                        String groupID = channelUID.getGroupId();
+                        if (groupID != null) {
+                            State state = getValue(groupID, channelUID.getIdWithoutGroup(), newVehicleStatus,
+                                    vehiclePosition);
+                            updateState(channelUID, state);
+                        }
                     });
             updateTrips(service);
             if (newVehicleStatus.odometer != vehicleStatus.odometer) {
                 triggerChannel(GROUP_OTHER + "#" + CAR_EVENT, EVENT_CAR_MOVED);
+            }
+            if (!vehicleStatus.getEngineRunning().equals(newVehicleStatus.getEngineRunning())
+                    && newVehicleStatus.getEngineRunning().get() == OnOffType.ON) {
+                triggerChannel(GROUP_OTHER + "#" + CAR_EVENT, EVENT_CAR_STARTED);
             }
             vehicleStatus = newVehicleStatus;
         } catch (VolvoOnCallException e) {
@@ -262,16 +268,10 @@ public class VehicleHandler extends BaseThingHandler {
             OnOffType onOffCommand = (OnOffType) command;
             if (ENGINE_START.equals(channelID) && onOffCommand == OnOffType.ON) {
                 actionStart(5);
-            } else if (REMOTE_HEATER.equals(channelID)) {
-                actionHeater(onOffCommand == OnOffType.ON);
-            } else if (PRECLIMATIZATION.equals(channelID)) {
-                actionPreclimatization(onOffCommand == OnOffType.ON);
+            } else if (REMOTE_HEATER.equals(channelID) || PRECLIMATIZATION.equals(channelID)) {
+                actionHeater(channelID, onOffCommand == OnOffType.ON);
             } else if (CAR_LOCKED.equals(channelID)) {
-                if (onOffCommand == OnOffType.ON) {
-                    actionClose();
-                } else {
-                    actionOpen();
-                }
+                actionOpenClose((onOffCommand == OnOffType.ON) ? LOCK : UNLOCK, onOffCommand);
             }
         }
     }
@@ -299,7 +299,6 @@ public class VehicleHandler extends BaseThingHandler {
             case TRIP_END_POSITION:
                 return tripDetails.getEndPosition();
         }
-
         return UnDefType.NULL;
     }
 
@@ -338,13 +337,13 @@ public class VehicleHandler extends BaseThingHandler {
     private State getTyresValue(String channelId, TyrePressure tyrePressure) {
         switch (channelId) {
             case REAR_RIGHT_TYRE:
-                return new StringType(tyrePressure.rearRightTyrePressure);
+                return tyrePressure.rearRightTyrePressure;
             case REAR_LEFT_TYRE:
-                return new StringType(tyrePressure.rearLeftTyrePressure);
+                return tyrePressure.rearLeftTyrePressure;
             case FRONT_RIGHT_TYRE:
-                return new StringType(tyrePressure.frontRightTyrePressure);
+                return tyrePressure.frontRightTyrePressure;
             case FRONT_LEFT_TYRE:
-                return new StringType(tyrePressure.frontLeftTyrePressure);
+                return tyrePressure.frontLeftTyrePressure;
         }
         return UnDefType.NULL;
     }
@@ -368,8 +367,7 @@ public class VehicleHandler extends BaseThingHandler {
                         ? new QuantityType<>(hvBattery.distanceToHVBatteryEmpty, KILO(METRE))
                         : UnDefType.UNDEF;
             case CHARGE_STATUS:
-                return hvBattery.hvBatteryChargeStatusDerived != null
-                        ? new StringType(hvBattery.hvBatteryChargeStatusDerived)
+                return hvBattery.hvBatteryChargeStatusDerived != null ? hvBattery.hvBatteryChargeStatusDerived
                         : UnDefType.UNDEF;
             case TIME_TO_BATTERY_FULLY_CHARGED:
                 return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED
@@ -379,43 +377,12 @@ public class VehicleHandler extends BaseThingHandler {
                 return hvBattery.timeToHVBatteryFullyCharged != UNDEFINED && hvBattery.timeToHVBatteryFullyCharged > 0
                         ? new DateTimeType(ZonedDateTime.now().plusMinutes(hvBattery.timeToHVBatteryFullyCharged))
                         : UnDefType.UNDEF;
-
         }
         return UnDefType.NULL;
     }
 
-    private State getValue(@Nullable String groupId, String channelId, Status status, VehiclePositionWrapper position) {
+    private State getValue(String groupId, String channelId, Status status, VehiclePositionWrapper position) {
         switch (channelId) {
-            case ODOMETER:
-                return status.odometer != UNDEFINED ? new QuantityType<>((double) status.odometer / 1000, KILO(METRE))
-                        : UnDefType.UNDEF;
-            case TRIPMETER1:
-                return status.tripMeter1 != UNDEFINED
-                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(METRE))
-                        : UnDefType.UNDEF;
-            case TRIPMETER2:
-                return status.tripMeter2 != UNDEFINED
-                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(METRE))
-                        : UnDefType.UNDEF;
-            case DISTANCE_TO_EMPTY:
-                return status.distanceToEmpty != UNDEFINED ? new QuantityType<>(status.distanceToEmpty, KILO(METRE))
-                        : UnDefType.UNDEF;
-            case FUEL_AMOUNT:
-                return status.fuelAmount != UNDEFINED ? new QuantityType<>(status.fuelAmount, LITRE) : UnDefType.UNDEF;
-            case FUEL_LEVEL:
-                return status.fuelAmountLevel != UNDEFINED ? new QuantityType<>(status.fuelAmountLevel, PERCENT)
-                        : UnDefType.UNDEF;
-            case FUEL_CONSUMPTION:
-                return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
-                        : UnDefType.UNDEF;
-            case ACTUAL_LOCATION:
-                return position.getPosition();
-            case CALCULATED_LOCATION:
-                return position.isCalculated();
-            case HEADING:
-                return position.isHeading();
-            case LOCATION_TIMESTAMP:
-                return position.getTimestamp();
             case CAR_LOCKED:
                 // Warning : carLocked is in the Doors group but is part of general status informations.
                 // Did not change it to avoid breaking change for users
@@ -431,30 +398,80 @@ public class VehicleHandler extends BaseThingHandler {
                         : UnDefType.UNDEF;
             case SERVICE_WARNING:
                 return new StringType(status.serviceWarningStatus);
-            case FUEL_ALERT:
-                return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
             case BULB_FAILURE:
                 return status.aFailedBulb() ? OnOffType.ON : OnOffType.OFF;
             case REMOTE_HEATER:
             case PRECLIMATIZATION:
                 return status.getHeater().map(heater -> getHeaterValue(channelId, heater)).orElse(UnDefType.NULL);
         }
-        if (groupId != null) {
-            switch (groupId) {
-                case GROUP_DOORS:
-                    return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
-                case GROUP_WINDOWS:
-                    return status.getWindows().map(windows -> getWindowsValue(channelId, windows))
-                            .orElse(UnDefType.NULL);
-                case GROUP_TYRES:
-                    return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres))
-                            .orElse(UnDefType.NULL);
-                case GROUP_BATTERY:
-                    return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
-                            .orElse(UnDefType.NULL);
-            }
+        switch (groupId) {
+            case GROUP_TANK:
+                return getTankValue(channelId, status);
+            case GROUP_ODOMETER:
+                return getOdometerValue(channelId, status);
+            case GROUP_POSITION:
+                return getPositionValue(channelId, position);
+            case GROUP_DOORS:
+                return status.getDoors().map(doors -> getDoorsValue(channelId, doors)).orElse(UnDefType.NULL);
+            case GROUP_WINDOWS:
+                return status.getWindows().map(windows -> getWindowsValue(channelId, windows)).orElse(UnDefType.NULL);
+            case GROUP_TYRES:
+                return status.getTyrePressure().map(tyres -> getTyresValue(channelId, tyres)).orElse(UnDefType.NULL);
+            case GROUP_BATTERY:
+                return status.getHvBattery().map(batteries -> getBatteryValue(channelId, batteries))
+                        .orElse(UnDefType.NULL);
         }
         return UnDefType.NULL;
+    }
+
+    private State getTankValue(String channelId, Status status) {
+        switch (channelId) {
+            case DISTANCE_TO_EMPTY:
+                return status.distanceToEmpty != UNDEFINED ? new QuantityType<>(status.distanceToEmpty, KILO(METRE))
+                        : UnDefType.UNDEF;
+            case FUEL_AMOUNT:
+                return status.fuelAmount != UNDEFINED ? new QuantityType<>(status.fuelAmount, LITRE) : UnDefType.UNDEF;
+            case FUEL_LEVEL:
+                return status.fuelAmountLevel != UNDEFINED ? new QuantityType<>(status.fuelAmountLevel, PERCENT)
+                        : UnDefType.UNDEF;
+            case FUEL_CONSUMPTION:
+                return status.averageFuelConsumption != UNDEFINED ? new DecimalType(status.averageFuelConsumption / 10)
+                        : UnDefType.UNDEF;
+            case FUEL_ALERT:
+                return status.distanceToEmpty < 100 ? OnOffType.ON : OnOffType.OFF;
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private State getOdometerValue(String channelId, Status status) {
+        switch (channelId) {
+            case ODOMETER:
+                return status.odometer != UNDEFINED ? new QuantityType<>((double) status.odometer / 1000, KILO(METRE))
+                        : UnDefType.UNDEF;
+            case TRIPMETER1:
+                return status.tripMeter1 != UNDEFINED
+                        ? new QuantityType<>((double) status.tripMeter1 / 1000, KILO(METRE))
+                        : UnDefType.UNDEF;
+            case TRIPMETER2:
+                return status.tripMeter2 != UNDEFINED
+                        ? new QuantityType<>((double) status.tripMeter2 / 1000, KILO(METRE))
+                        : UnDefType.UNDEF;
+        }
+        return UnDefType.UNDEF;
+    }
+
+    private State getPositionValue(String channelId, VehiclePositionWrapper position) {
+        switch (channelId) {
+            case ACTUAL_LOCATION:
+                return position.getPosition();
+            case CALCULATED_LOCATION:
+                return position.isCalculated();
+            case HEADING:
+                return position.isHeading();
+            case LOCATION_TIMESTAMP:
+                return position.getTimestamp();
+        }
+        return UnDefType.UNDEF;
     }
 
     public void actionHonkBlink(Boolean honk, Boolean blink) {
@@ -479,19 +496,19 @@ public class VehicleHandler extends BaseThingHandler {
             try {
                 PostResponse postResponse = service.postURL(url.toString(), param);
                 if (postResponse != null) {
-                    pendingActions.add(scheduler.schedule(new ActionResultControler(service, postResponse), 1000,
-                            TimeUnit.MILLISECONDS));
+                    pendingActions
+                            .add(scheduler.schedule(new ActionResultControler(service, postResponse, scheduler, this),
+                                    1000, TimeUnit.MILLISECONDS));
                 }
             } catch (VolvoOnCallException e) {
                 logger.warn("Exception occurred during execution: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
-
         });
         pendingActions.removeIf(ScheduledFuture::isDone);
     }
 
-    private void actionOpenClose(String action, OnOffType controlState) {
+    public void actionOpenClose(String action, OnOffType controlState) {
         if (activeOptions.containsKey(action)) {
             if (!vehicleStatus.getCarLocked().isPresent() || vehicleStatus.getCarLocked().get() != controlState) {
                 post(String.format("vehicles/%s/%s", configuration.vin, action), "{}");
@@ -503,44 +520,22 @@ public class VehicleHandler extends BaseThingHandler {
         }
     }
 
-    private void actionHeater(String action, Boolean start) {
+    public void actionHeater(String action, Boolean start) {
         if (activeOptions.containsKey(action)) {
-            if (action.contains(REMOTE_HEATER)) {
-                String command = start ? "start" : "stop";
-                String address = "vehicles/" + configuration.vin + "/heater/" + command;
-                post(address, start ? "{}" : null);
-            } else if (action.contains(PRECLIMATIZATION)) {
-                String command = start ? "start" : "stop";
-                String address = "vehicles/" + configuration.vin + "/preclimatization/" + command;
-                post(address, start ? "{}" : null);
-            }
+            String address = String.format("vehicles/%s/%s/%s", configuration.vin,
+                    action.contains(REMOTE_HEATER) ? "heater" : "preclimatization", start ? "start" : "stop");
+            post(address, start ? "{}" : null);
         } else {
             logger.warn("The car {} does not support {}", configuration.vin, action);
         }
     }
 
-    public void actionHeater(Boolean start) {
-        actionHeater(REMOTE_HEATER, start);
-    }
-
-    public void actionPreclimatization(Boolean start) {
-        actionHeater(PRECLIMATIZATION, start);
-    }
-
-    public void actionOpen() {
-        actionOpenClose(UNLOCK, OnOffType.OFF);
-    }
-
-    public void actionClose() {
-        actionOpenClose(LOCK, OnOffType.ON);
-    }
-
     public void actionStart(Integer runtime) {
         if (activeOptions.containsKey(ENGINE_START)) {
-            String url = "vehicles/" + vehicle.vehicleId + "/engine/start";
+            String address = String.format("vehicles/%s/engine/start", vehicle.vehicleId);
             String json = "{\"runtime\":" + runtime.toString() + "}";
 
-            post(url, json);
+            post(address, json);
         } else {
             logger.warn("The car {} does not support remote engine starting", vehicle.vehicleId);
         }
@@ -549,38 +544,5 @@ public class VehicleHandler extends BaseThingHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Collections.singletonList(VolvoOnCallActions.class);
-    }
-
-    public class ActionResultControler implements Runnable {
-        private PostResponse postResponse;
-        private final VocHttpApi service;
-
-        ActionResultControler(VocHttpApi service, PostResponse postResponse) {
-            this.postResponse = postResponse;
-            this.service = service;
-        }
-
-        @Override
-        public void run() {
-            switch (postResponse.status) {
-                case SUCCESSFULL:
-                case FAILED:
-                    logger.info("Action {} for vehicle {} resulted : {}.", postResponse.serviceType.toString(),
-                            postResponse.vehicleId, postResponse.status.toString());
-                    queryApiAndUpdateChannels(service);
-                    break;
-                default:
-                    try {
-                        postResponse = service.getURL(postResponse.serviceURL, PostResponse.class);
-                        scheduler.schedule(new ActionResultControler(service, postResponse), 1000,
-                                TimeUnit.MILLISECONDS);
-                    } catch (VolvoOnCallException e) {
-                        if (e.getType() == ErrorType.SERVICE_UNAVAILABLE) {
-                            scheduler.schedule(new ActionResultControler(service, postResponse), 1000,
-                                    TimeUnit.MILLISECONDS);
-                        }
-                    }
-            }
-        }
     }
 }

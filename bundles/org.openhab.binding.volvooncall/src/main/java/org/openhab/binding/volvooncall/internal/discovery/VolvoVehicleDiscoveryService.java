@@ -16,7 +16,6 @@ import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstan
 
 import java.util.Map;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
@@ -63,7 +62,7 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
     }
 
     @Override
-    public void activate(@Nullable Map<@NonNull String, @Nullable Object> configProperties) {
+    public void activate(@Nullable Map<String, @Nullable Object> configProperties) {
         super.activate(configProperties);
     }
 
@@ -102,7 +101,6 @@ public class VolvoVehicleDiscoveryService extends AbstractDiscoveryService imple
                 } catch (VolvoOnCallException e) {
                     logger.warn("Error while discovering vehicle: {}", e.getMessage());
                 }
-
             });
         }
         stopScan();

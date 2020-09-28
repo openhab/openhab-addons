@@ -102,11 +102,13 @@ Following channels are currently available:
 
 ## Events
 
-| Channel Type ID    | Options           | Description                                  
-|--------------------|-------------------|-------------------------------------------------------------|
-| other#carEvent     |                   |                                                             |
-|                    | CAR_STOPPED       | Triggered when the car has finished a trip                  |
-|                    | CAR_MOVED         | Triggered if the car mileage has changed between two polls  |
+| Channel Type ID    | Options     | Description                                                    |
+|--------------------|-------------|----------------------------------------------------------------|
+| other#carEvent     |             |                                                                |
+|                    | CAR_STOPPED | Triggered when the car has finished a trip                     |
+|                    | CAR_MOVED   | Triggered if the car mileage has changed between two polls     |
+|                    | CAR_STARTED | Triggered when the engine of the car went on between two polls |
+
 ## Full Example
 
 demo.things:

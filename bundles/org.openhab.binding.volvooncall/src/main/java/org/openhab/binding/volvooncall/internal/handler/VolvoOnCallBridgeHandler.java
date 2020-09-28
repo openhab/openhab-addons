@@ -19,7 +19,7 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.volvooncall.internal.VolvoOnCallException;
 import org.openhab.binding.volvooncall.internal.api.VocHttpApi;
-import org.openhab.binding.volvooncall.internal.config.VolvoOnCallBridgeConfiguration;
+import org.openhab.binding.volvooncall.internal.config.ApiBridgeConfiguration;
 import org.openhab.binding.volvooncall.internal.discovery.VolvoVehicleDiscoveryService;
 import org.openhab.binding.volvooncall.internal.dto.CustomerAccounts;
 import org.openhab.core.thing.Bridge;
@@ -56,7 +56,7 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Initializing VolvoOnCall API bridge handler.");
-        VolvoOnCallBridgeConfiguration configuration = getConfigAs(VolvoOnCallBridgeConfiguration.class);
+        ApiBridgeConfiguration configuration = getConfigAs(ApiBridgeConfiguration.class);
         api = Optional.of(new VocHttpApi(configuration, gson));
         api.ifPresent(service -> {
             try {

@@ -40,6 +40,9 @@ public class VolvoOnCallBindingConstants {
     public static final String GROUP_TYRES = "tyrePressure";
     public static final String GROUP_BATTERY = "battery";
     public static final String GROUP_OTHER = "other";
+    public static final String GROUP_POSITION = "position";
+    public static final String GROUP_ODOMETER = "odometer";
+    public static final String GROUP_TANK = "tank";
 
     // List of Channel id's
     public static final String TAILGATE = "tailgate";
@@ -85,6 +88,7 @@ public class VolvoOnCallBindingConstants {
     public static final String CAR_EVENT = "carEvent";
     public static final String EVENT_CAR_STOPPED = "CAR_STOPPED";
     public static final String EVENT_CAR_MOVED = "CAR_MOVED";
+    public static final String EVENT_CAR_STARTED = "CAR_STARTED";
     // Last Trip Channel Id's
     public static final String LAST_TRIP_GROUP = "lasttrip";
     public static final String TRIP_CONSUMPTION = "tripConsumption";

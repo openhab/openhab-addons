@@ -23,6 +23,7 @@ import org.openhab.binding.volvooncall.internal.handler.VehicleStateDescriptionP
 import org.openhab.binding.volvooncall.internal.handler.VolvoOnCallBridgeHandler;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -67,6 +68,8 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
                 .registerTypeAdapter(OnOffType.class,
                         (JsonDeserializer<OnOffType>) (json, type,
                                 jsonDeserializationContext) -> json.getAsBoolean() ? OnOffType.ON : OnOffType.OFF)
+                .registerTypeAdapter(StringType.class, (JsonDeserializer<StringType>) (json, type,
+                        jsonDeserializationContext) -> StringType.valueOf(json.getAsString()))
                 .create();
     }
 

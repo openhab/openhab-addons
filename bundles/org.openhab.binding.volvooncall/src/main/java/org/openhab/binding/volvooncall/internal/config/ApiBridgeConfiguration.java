@@ -18,13 +18,13 @@ import java.util.Base64;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link VolvoOnCallBridgeConfiguration} is responsible for holding
+ * The {@link ApiBridgeConfiguration} is responsible for holding
  * configuration informations needed to access VOC API
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VolvoOnCallBridgeConfiguration {
+public class ApiBridgeConfiguration {
     public String username = "";
     public String password = "";
 

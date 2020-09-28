@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.volvooncall.internal.action;
 
+import static org.openhab.binding.volvooncall.internal.VolvoOnCallBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.volvooncall.internal.handler.VehicleHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
@@ -58,7 +61,7 @@ public class VolvoOnCallActions implements ThingActions {
         logger.debug("closeCarCommand called");
         VehicleHandler handler = this.handler;
         if (handler != null) {
-            handler.actionClose();
+            handler.actionOpenClose(LOCK, OnOffType.ON);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -69,7 +72,7 @@ public class VolvoOnCallActions implements ThingActions {
         logger.debug("openCarCommand called");
         VehicleHandler handler = this.handler;
         if (handler != null) {
-            handler.actionOpen();
+            handler.actionOpenClose(UNLOCK, OnOffType.OFF);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -91,7 +94,7 @@ public class VolvoOnCallActions implements ThingActions {
         logger.debug("heaterStartCommand called");
         VehicleHandler handler = this.handler;
         if (handler != null) {
-            handler.actionHeater(true);
+            handler.actionHeater(REMOTE_HEATER, true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -102,7 +105,7 @@ public class VolvoOnCallActions implements ThingActions {
         logger.debug("preclimatizationStartCommand called");
         VehicleHandler handler = this.handler;
         if (handler != null) {
-            handler.actionPreclimatization(true);
+            handler.actionHeater(PRECLIMATIZATION, true);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -113,7 +116,7 @@ public class VolvoOnCallActions implements ThingActions {
         logger.debug("heaterStopCommand called");
         VehicleHandler handler = this.handler;
         if (handler != null) {
-            handler.actionHeater(false);
+            handler.actionHeater(REMOTE_HEATER, false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
@@ -124,7 +127,7 @@ public class VolvoOnCallActions implements ThingActions {
         logger.debug("preclimatizationStopCommand called");
         VehicleHandler handler = this.handler;
         if (handler != null) {
-            handler.actionPreclimatization(false);
+            handler.actionHeater(PRECLIMATIZATION, false);
         } else {
             logger.warn("VolvoOnCall Action service ThingHandler is null!");
         }
