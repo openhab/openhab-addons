@@ -73,8 +73,8 @@ public class LocaleTest {
 
     @Test
     public void testDistance() {
-        double lat = 50.5560;
-        double lon = 8.4956;
+        double lat = 45.678;
+        double lon = 8.765;
         double distance = 0.005;
         double dist = Converter.measureDistance(lat, lon, lat + distance, lon + distance);
         assertTrue(dist < 1, "Distance below 1 km");

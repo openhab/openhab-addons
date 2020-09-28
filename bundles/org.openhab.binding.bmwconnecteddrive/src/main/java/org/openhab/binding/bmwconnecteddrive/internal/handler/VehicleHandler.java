@@ -25,33 +25,23 @@ import org.openhab.binding.bmwconnecteddrive.internal.VehicleConfiguration;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.DestinationContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.NetworkError;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.compat.VehicleAttributesContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTripsContainer;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTripContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatus;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.VehicleStatusContainer;
-import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Windows;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.ExecutionState;
 import org.openhab.binding.bmwconnecteddrive.internal.handler.RemoteServiceHandler.RemoteService;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.ImageProperties;
 import org.openhab.core.io.net.http.HttpUtil;
-import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.SmartHomeUnits;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -202,7 +192,7 @@ public class VehicleHandler extends VehicleChannelHandler {
                     case CHANNEL_GROUP_DESTINATION:
                         if (command instanceof OnOffType) {
                             if (command.equals(OnOffType.ON)) {
-                                destinationCallback.next();
+                                nextDestination();
                                 updateState(channelUID, OnOffType.OFF);
                             }
                         }
@@ -452,28 +442,7 @@ public class VehicleHandler extends VehicleChannelHandler {
             chargeProfileCache = content;
             if (content.isPresent()) {
                 ChargeProfile cp = Converter.getGson().fromJson(content.get(), ChargeProfile.class);
-                WeeklyPlanner planner = cp.weeklyPlanner;
-                updateState(chargeProfileClimate, OnOffType.from(planner.climatizationEnabled));
-                updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(planner.chargingMode)));
-
-                ChargingWindow cw = planner.preferredChargingWindow;
-                updateState(chargeWindowStart, StringType.valueOf(cw.startTime));
-                updateState(chargeWindowEnd, StringType.valueOf(cw.endTime));
-
-                Timer t1 = planner.timer1;
-                updateState(timer1Departure, StringType.valueOf(t1.departureTime));
-                updateState(timer1Enabled, OnOffType.from(t1.timerEnabled));
-                updateState(timer1Days, StringType.valueOf(t1.getDays()));
-
-                Timer t2 = planner.timer2;
-                updateState(timer2Departure, StringType.valueOf(t2.departureTime));
-                updateState(timer2Enabled, OnOffType.from(t2.timerEnabled));
-                updateState(timer2Days, StringType.valueOf(t2.getDays()));
-
-                Timer t3 = planner.timer3;
-                updateState(timer3Departure, StringType.valueOf(t3.departureTime));
-                updateState(timer3Enabled, OnOffType.from(t3.timerEnabled));
-                updateState(timer3Days, StringType.valueOf(t3.getDays()));
+                updateChargeProfile(cp);
             }
         }
 
@@ -562,23 +531,11 @@ public class VehicleHandler extends VehicleChannelHandler {
         public void onResponse(Optional<String> content) {
             if (content.isPresent()) {
                 allTripsCache = content;
-                AllTripsContainer at = Converter.getGson().fromJson(content.get(), AllTripsContainer.class);
-                AllTrips c = at.allTrips;
-                if (c == null) {
-                    return;
+                AllTripsContainer atc = Converter.getGson().fromJson(content.get(), AllTripsContainer.class);
+                AllTrips at = atc.allTrips;
+                if (at != null) {
+                    updateAllTrips(at);
                 }
-                updateState(lifeTimeCumulatedDrivenDistance, QuantityType
-                        .valueOf(Converter.round(c.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(lifeTimeSingleLongestDistance, QuantityType
-                        .valueOf(Converter.round(c.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(lifeTimeAverageConsumption, QuantityType
-                        .valueOf(Converter.round(c.avgElectricConsumption.userAverage), SmartHomeUnits.KILOWATT_HOUR));
-                updateState(lifetimeAvgCombinedConsumption,
-                        QuantityType.valueOf(c.avgCombinedConsumption.userAverage, SmartHomeUnits.LITRE));
-                updateState(lifeTimeAverageRecuperation, QuantityType
-                        .valueOf(Converter.round(c.avgRecuperation.userAverage), SmartHomeUnits.KILOWATT_HOUR));
-                updateState(tripDistanceSinceCharging, QuantityType.valueOf(
-                        Converter.round(c.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
             }
         }
 
@@ -600,20 +557,9 @@ public class VehicleHandler extends VehicleChannelHandler {
                 lastTripCache = content;
                 LastTripContainer lt = Converter.getGson().fromJson(content.get(), LastTripContainer.class);
                 LastTrip trip = lt.lastTrip;
-                if (trip == null) {
-                    return;
+                if (trip != null) {
+                    updateLastTrip(trip);
                 }
-                // Whyever the Last Trip DateTime is delivered without offest - so LocalTime
-                updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(trip.date)));
-                updateState(tripDuration, QuantityType.valueOf(trip.duration, SmartHomeUnits.MINUTE));
-                updateState(tripDistance,
-                        QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
-                updateState(tripAvgConsumption, QuantityType.valueOf(Converter.round(trip.avgElectricConsumption),
-                        SmartHomeUnits.KILOWATT_HOUR));
-                updateState(tripAvgCombinedConsumption,
-                        QuantityType.valueOf(trip.avgCombinedConsumption, SmartHomeUnits.LITRE));
-                updateState(tripAvgRecuperation,
-                        QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
             }
         }
 
@@ -660,10 +606,6 @@ public class VehicleHandler extends VehicleChannelHandler {
                     return;
                 }
                 updateVehicleStatus(vStatus);
-                Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
-                updateDoors(doorState);
-                Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
-                updateWindows(windowState);
                 setCheckControlList(vStatus.checkControlMessages);
                 setServiceList(vStatus.cbsData);
                 updatePosition(vStatus.position);
@@ -678,6 +620,17 @@ public class VehicleHandler extends VehicleChannelHandler {
         }
     }
 
+    /**
+     * Fallback API if origin isn't supported.
+     * This comes from the Community Discussion where a Vehicle from 2015 answered with "404"
+     * https://community.openhab.org/t/bmw-connecteddrive-binding/105124
+     *
+     * Selection of API was discussed here
+     * https://community.openhab.org/t/bmw-connecteddrive-bmw-i3/103876
+     *
+     * I figured out that only one API was working for this Vehicle. So this backward compatible Callback is introduced.
+     * The delivered data is converted into the origin dto object so no changes in previous functional code needed
+     */
     @NonNullByDefault({})
     public class OldVehicleStatusCallback implements StringResponseCallback {
         @Override

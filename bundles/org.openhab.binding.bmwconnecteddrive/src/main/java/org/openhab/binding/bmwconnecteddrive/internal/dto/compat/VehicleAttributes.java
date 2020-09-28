@@ -74,8 +74,8 @@ public class VehicleAttributes {
     public String Segment_LastTrip_time_segment_end;// "22.08.2020 14:52:00 UTC",
 
     // Location
-    public float gps_lat;// "50.556164",
-    public float gps_lng;// "8.495482",
+    public float gps_lat;// "43.21",
+    public float gps_lng;// "8.765",
     public int heading;// "41",
 
     public String unitOfLength;// "km",
