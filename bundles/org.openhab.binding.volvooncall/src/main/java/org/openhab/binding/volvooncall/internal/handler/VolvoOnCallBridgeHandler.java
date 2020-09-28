@@ -91,5 +91,4 @@ public class VolvoOnCallBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         // Do nothing
     }
-
 }

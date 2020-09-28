@@ -583,5 +583,4 @@ public class VehicleHandler extends BaseThingHandler {
             }
         }
     }
-
 }

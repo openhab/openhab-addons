@@ -388,17 +388,17 @@
 		<description>set to 'ON' when the tank level is low</description>
 		<state readOnly="true"/>
 	</channel-type>
-	
-	
-    <channel-type id="carEvent">
-        <kind>trigger</kind>
-        <label>Car Event</label>
-        <event>
-            <options>
-                <option value="CAR_STOPPED">Car stopped</option>
-                <option value="CAR_MOVED">Car has moved</option>
-            </options>
-        </event>
-    </channel-type>
+
+
+	<channel-type id="carEvent">
+		<kind>trigger</kind>
+		<label>Car Event</label>
+		<event>
+			<options>
+				<option value="CAR_STOPPED">Car stopped</option>
+				<option value="CAR_MOVED">Car has moved</option>
+			</options>
+		</event>
+	</channel-type>
 
 </thing:thing-descriptions>
