@@ -58,11 +58,7 @@ end
 .things
 
 ```
-<<<<<<< Updated upstream
 yioremote:yioRemoteDock:livingroom [ 	host="xxx.xxx.xxx.xxx",	accesstoken="0"  ]
-=======
-yioremote:yioRemoteDock:livingroom [ 	host="x.x.x.x",	accesstoken="0"  ]
->>>>>>> Stashed changes
 ```
 
 .items
