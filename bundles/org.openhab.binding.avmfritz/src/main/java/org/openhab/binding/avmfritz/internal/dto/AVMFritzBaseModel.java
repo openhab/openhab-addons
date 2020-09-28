@@ -24,8 +24,9 @@ import javax.xml.bind.annotation.XmlElement;
  *
  * <ol>
  * <li>Bit 0: HAN-FUN Gerät</li>
- * <li>Bit 3: Button</li>
+ * <li>Bit 3: HAN-FUN Button - undocumented</li>
  * <li>Bit 4: Alarm-Sensor</li>
+ * <li>Bit 5: AVM-Button</li>
  * <li>Bit 6: Comet DECT, Heizkörperregler</li>
  * <li>Bit 7: Energie Messgerät</li>
  * <li>Bit 8: Temperatursensor</li>
@@ -43,7 +44,7 @@ public abstract class AVMFritzBaseModel implements BatteryModel {
     protected static final int HAN_FUN_DEVICE_BIT = 1; // Bit 0
     protected static final int HAN_FUN_BUTTON_BIT = 1 << 3; // Bit 3 - undocumented
     protected static final int HAN_FUN_ALARM_SENSOR_BIT = 1 << 4; // Bit 4
-    protected static final int BUTTON_BIT = 1 << 5; // Bit 5 - undocumented
+    protected static final int BUTTON_BIT = 1 << 5; // Bit 5
     protected static final int HEATING_THERMOSTAT_BIT = 1 << 6; // Bit 6
     protected static final int POWERMETER_BIT = 1 << 7; // Bit 7
     protected static final int TEMPSENSOR_BIT = 1 << 8; // Bit 8

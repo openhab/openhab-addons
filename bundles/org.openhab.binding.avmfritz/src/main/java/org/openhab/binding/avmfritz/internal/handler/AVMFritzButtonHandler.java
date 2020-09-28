@@ -18,13 +18,16 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.avmfritz.internal.dto.AVMFritzBaseModel;
 import org.openhab.binding.avmfritz.internal.dto.ButtonModel;
 import org.openhab.binding.avmfritz.internal.dto.DeviceModel;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.CommonTriggerEvents;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
@@ -39,6 +42,11 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AVMFritzButtonHandler extends DeviceHandler {
+
+    private static final String TOP_RIGHT_SUFFIX = "-1";
+    private static final String BOTTOM_RIGHT_SUFFIX = "-3";
+    private static final String BOTTOM_LEFT_SUFFIX = "-5";
+    private static final String TOP_LEFT_SUFFIX = "-7";
 
     private final Logger logger = LoggerFactory.getLogger(AVMFritzButtonHandler.class);
     /**
@@ -67,7 +75,11 @@ public class AVMFritzButtonHandler extends DeviceHandler {
                     updateHANFUNButton(deviceModel.getButtons());
                 }
                 if (deviceModel.isButton()) {
-                    updateShortLongPressButton(deviceModel.getButtons());
+                    if (DECT400_THING_TYPE.equals(thing.getThingTypeUID())) {
+                        updateShortLongPressButton(deviceModel.getButtons());
+                    } else if (DECT440_THING_TYPE.equals(thing.getThingTypeUID())) {
+                        updateButtons(deviceModel.getButtons());
+                    }
                     updateBattery(deviceModel);
                 }
             }
@@ -88,6 +100,29 @@ public class AVMFritzButtonHandler extends DeviceHandler {
         }
     }
 
+    private void updateButtons(List<ButtonModel> buttons) {
+        Optional<ButtonModel> topLeft = buttons.stream().filter(b -> b.getIdentifier().endsWith(TOP_LEFT_SUFFIX))
+                .findFirst();
+        if (topLeft.isPresent()) {
+            updateButton(topLeft.get(), CommonTriggerEvents.PRESSED, CHANNEL_GROUP_TOP_LEFT);
+        }
+        Optional<ButtonModel> bottomLeft = buttons.stream().filter(b -> b.getIdentifier().endsWith(BOTTOM_LEFT_SUFFIX))
+                .findFirst();
+        if (bottomLeft.isPresent()) {
+            updateButton(bottomLeft.get(), CommonTriggerEvents.PRESSED, CHANNEL_GROUP_BOTTOM_LEFT);
+        }
+        Optional<ButtonModel> topRight = buttons.stream().filter(b -> b.getIdentifier().endsWith(TOP_RIGHT_SUFFIX))
+                .findFirst();
+        if (topRight.isPresent()) {
+            updateButton(topRight.get(), CommonTriggerEvents.PRESSED, CHANNEL_GROUP_TOP_RIGHT);
+        }
+        Optional<ButtonModel> bottomRight = buttons.stream()
+                .filter(b -> b.getIdentifier().endsWith(BOTTOM_RIGHT_SUFFIX)).findFirst();
+        if (bottomRight.isPresent()) {
+            updateButton(bottomRight.get(), CommonTriggerEvents.PRESSED, CHANNEL_GROUP_BOTTOM_RIGHT);
+        }
+    }
+
     private void updateHANFUNButton(List<ButtonModel> buttons) {
         if (!buttons.isEmpty()) {
             updateButton(buttons.get(0), CommonTriggerEvents.PRESSED);
@@ -95,9 +130,16 @@ public class AVMFritzButtonHandler extends DeviceHandler {
     }
 
     private void updateButton(ButtonModel buttonModel, String event) {
+        updateButton(buttonModel, event, null);
+    }
+
+    private void updateButton(ButtonModel buttonModel, String event, @Nullable String channelGroupId) {
         int lastPressedTimestamp = buttonModel.getLastpressedtimestamp();
         if (lastPressedTimestamp == 0) {
-            updateThingChannelState(CHANNEL_LAST_CHANGE, UnDefType.UNDEF);
+            updateThingChannelState(
+                    channelGroupId == null ? CHANNEL_LAST_CHANGE
+                            : channelGroupId + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_LAST_CHANGE,
+                    UnDefType.UNDEF);
         } else {
             ZonedDateTime timestamp = ZonedDateTime.ofInstant(Instant.ofEpochSecond(lastPressedTimestamp),
                     ZoneId.systemDefault());
@@ -106,9 +148,13 @@ public class AVMFritzButtonHandler extends DeviceHandler {
             // restart)
             if (then.isAfter(lastTimestamp)) {
                 lastTimestamp = then;
-                triggerThingChannel(CHANNEL_PRESS, event);
+                triggerThingChannel(channelGroupId == null ? CHANNEL_PRESS
+                        : channelGroupId + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_PRESS, event);
             }
-            updateThingChannelState(CHANNEL_LAST_CHANGE, new DateTimeType(timestamp));
+            updateThingChannelState(
+                    channelGroupId == null ? CHANNEL_LAST_CHANGE
+                            : channelGroupId + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_LAST_CHANGE,
+                    new DateTimeType(timestamp));
         }
     }
 
