@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.lutron.internal.discovery.LeapDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.discovery.LutronDeviceDiscoveryService;
 import org.openhab.binding.lutron.internal.grxprg.GrafikEyeHandler;
 import org.openhab.binding.lutron.internal.grxprg.PrgBridgeHandler;
@@ -31,12 +32,15 @@ import org.openhab.binding.lutron.internal.grxprg.PrgConstants;
 import org.openhab.binding.lutron.internal.handler.BlindHandler;
 import org.openhab.binding.lutron.internal.handler.CcoHandler;
 import org.openhab.binding.lutron.internal.handler.DimmerHandler;
+import org.openhab.binding.lutron.internal.handler.FanHandler;
 import org.openhab.binding.lutron.internal.handler.GrafikEyeKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.GreenModeHandler;
 import org.openhab.binding.lutron.internal.handler.IPBridgeHandler;
 import org.openhab.binding.lutron.internal.handler.IntlKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.KeypadHandler;
+import org.openhab.binding.lutron.internal.handler.LeapBridgeHandler;
 import org.openhab.binding.lutron.internal.handler.MaintainedCcoHandler;
+import org.openhab.binding.lutron.internal.handler.OGroupHandler;
 import org.openhab.binding.lutron.internal.handler.OccupancySensorHandler;
 import org.openhab.binding.lutron.internal.handler.PalladiomKeypadHandler;
 import org.openhab.binding.lutron.internal.handler.PicoKeypadHandler;
@@ -87,11 +91,13 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Used by LutronDeviceDiscoveryService to discover these types
     public static final Set<ThingTypeUID> DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR,
-                    THING_TYPE_KEYPAD, THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO,
-                    THING_TYPE_VIRTUALKEYPAD, THING_TYPE_VCRX, THING_TYPE_CCO, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK,
-                    THING_TYPE_GREENMODE, THING_TYPE_QSIO, THING_TYPE_GRAFIKEYEKEYPAD, THING_TYPE_BLIND,
-                    THING_TYPE_PALLADIOMKEYPAD, THING_TYPE_WCI).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream
+                    .of(THING_TYPE_DIMMER, THING_TYPE_SWITCH, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_KEYPAD,
+                            THING_TYPE_TTKEYPAD, THING_TYPE_INTLKEYPAD, THING_TYPE_PICO, THING_TYPE_VIRTUALKEYPAD,
+                            THING_TYPE_VCRX, THING_TYPE_CCO, THING_TYPE_SHADE, THING_TYPE_TIMECLOCK,
+                            THING_TYPE_GREENMODE, THING_TYPE_QSIO, THING_TYPE_GRAFIKEYEKEYPAD, THING_TYPE_BLIND,
+                            THING_TYPE_PALLADIOMKEYPAD, THING_TYPE_WCI, THING_TYPE_OGROUP, THING_TYPE_FAN)
+                    .collect(Collectors.toSet()));
 
     // Used by the HwDiscoveryService
     public static final Set<ThingTypeUID> HW_DISCOVERABLE_DEVICE_TYPES_UIDS = Collections
@@ -99,11 +105,13 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     // Other types that can be initiated but not discovered
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_IPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE,
-                    PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
-                    RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
-                    RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE, THING_TYPE_CCO_PULSED,
-                    THING_TYPE_CCO_MAINTAINED, THING_TYPE_SYSVAR).collect(Collectors.toSet()));
+            .unmodifiableSet(Stream
+                    .of(THING_TYPE_IPBRIDGE, THING_TYPE_LEAPBRIDGE, PrgConstants.THING_TYPE_PRGBRIDGE,
+                            PrgConstants.THING_TYPE_GRAFIKEYE, RadioRAConstants.THING_TYPE_RS232,
+                            RadioRAConstants.THING_TYPE_DIMMER, RadioRAConstants.THING_TYPE_SWITCH,
+                            RadioRAConstants.THING_TYPE_PHANTOM, HwConstants.THING_TYPE_HWSERIALBRIDGE,
+                            THING_TYPE_CCO_PULSED, THING_TYPE_CCO_MAINTAINED, THING_TYPE_SYSVAR)
+                    .collect(Collectors.toSet()));
 
     private final Logger logger = LoggerFactory.getLogger(LutronHandlerFactory.class);
 
@@ -134,6 +142,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
         if (thingTypeUID.equals(THING_TYPE_IPBRIDGE)) {
             IPBridgeHandler bridgeHandler = new IPBridgeHandler((Bridge) thing);
             registerDiscoveryService(bridgeHandler);
+            return bridgeHandler;
+        } else if (thingTypeUID.equals(THING_TYPE_LEAPBRIDGE)) {
+            LeapBridgeHandler bridgeHandler = new LeapBridgeHandler((Bridge) thing);
+            registerLeapDiscoveryService(bridgeHandler);
             return bridgeHandler;
         } else if (thingTypeUID.equals(THING_TYPE_DIMMER)) {
             return new DimmerHandler(thing);
@@ -177,6 +189,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
             return new BlindHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_SYSVAR)) {
             return new SysvarHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_OGROUP)) {
+            return new OGroupHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_FAN)) {
+            return new FanHandler(thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_PRGBRIDGE)) {
             return new PrgBridgeHandler((Bridge) thing);
         } else if (thingTypeUID.equals(PrgConstants.THING_TYPE_GRAFIKEYE)) {
@@ -200,10 +216,10 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof IPBridgeHandler) {
+        if (thingHandler instanceof IPBridgeHandler || thingHandler instanceof LeapBridgeHandler) {
             ServiceRegistration<?> serviceReg = discoveryServiceRegMap.remove(thingHandler.getThing().getUID());
             if (serviceReg != null) {
-                logger.debug("Unregistering discovery service.");
+                logger.debug("Unregistering device discovery service.");
                 serviceReg.unregister();
             }
         }
@@ -212,11 +228,24 @@ public class LutronHandlerFactory extends BaseThingHandlerFactory {
     /**
      * Register a discovery service for an IP bridge handler.
      *
-     * @param bridgeHandler bridge handler for which to register the discovery service
+     * @param bridgeHandler IP bridge handler for which to register the discovery service
      */
     private synchronized void registerDiscoveryService(IPBridgeHandler bridgeHandler) {
-        logger.debug("Registering discovery service.");
+        logger.debug("Registering XML device discovery service.");
         LutronDeviceDiscoveryService discoveryService = new LutronDeviceDiscoveryService(bridgeHandler, httpClient);
+        bridgeHandler.setDiscoveryService(discoveryService);
+        discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
+                bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));
+    }
+
+    /**
+     * Register a discovery service for a LEAP bridge handler.
+     *
+     * @param bridgeHandler LEAP bridge handler for which to register the discovery service
+     */
+    private synchronized void registerLeapDiscoveryService(LeapBridgeHandler bridgeHandler) {
+        logger.debug("Registering LEAP device discovery service.");
+        LeapDeviceDiscoveryService discoveryService = new LeapDeviceDiscoveryService(bridgeHandler);
         bridgeHandler.setDiscoveryService(discoveryService);
         discoveryServiceRegMap.put(bridgeHandler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, null));

@@ -38,8 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link LutronMdnsBridgeDiscoveryService} discovers Lutron Caseta Smart Bridge Pro and eventually RA2 Select Main
- * Repeater and other Lutron devices on the network using mDNS.
+ * The {@link LutronMdnsBridgeDiscoveryService} discovers Lutron Caseta Smart Bridge, Caseta Smart Bridge Pro, RA2
+ * Select Main Repeater, and other Lutron devices on the network using mDNS.
  *
  * @author Bob Adair - Initial contribution
  */
@@ -51,11 +51,15 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
     private static final String LUTRON_MDNS_SERVICE_TYPE = "_lutron._tcp.local.";
 
     private static final String PRODFAM_CASETA = "Caseta";
+    private static final String PRODTYP_CASETA_SB = "Smart Bridge";
+    private static final String DEVCLASS_CASETA_SB = "08040100";
     private static final String PRODTYP_CASETA_SBP2 = "Smart Bridge Pro 2";
     private static final String DEVCLASS_CASETA_SBP2 = "08050100";
+
     private static final String PRODFAM_RA2_SELECT = "RA2 Select";
     private static final String PRODTYP_RA2_SELECT = "Main Repeater";
     private static final String DEVCLASS_RA2_SELECT = "080E0401";
+
     private static final String DEVCLASS_CONNECT_BRIDGE = "08090301";
     private static final String DEFAULT_LABEL = "Unknown Lutron bridge";
 
@@ -108,7 +112,11 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
         String bridgeHostName = ipAddresses[0].getHostName();
         logger.debug("Lutron mDNS bridge hostname: {}", bridgeHostName);
 
-        if (DEVCLASS_CASETA_SBP2.equals(devclass)) {
+        if (DEVCLASS_CASETA_SB.equals(devclass)) {
+            properties.put(PROPERTY_PRODFAM, PRODFAM_CASETA);
+            properties.put(PROPERTY_PRODTYP, PRODTYP_CASETA_SB);
+            label = PRODFAM_CASETA + " " + PRODTYP_CASETA_SB;
+        } else if (DEVCLASS_CASETA_SBP2.equals(devclass)) {
             properties.put(PROPERTY_PRODFAM, PRODFAM_CASETA);
             properties.put(PROPERTY_PRODTYP, PRODTYP_CASETA_SBP2);
             label = PRODFAM_CASETA + " " + PRODTYP_CASETA_SBP2;
@@ -122,7 +130,7 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
         } else {
             logger.info("Lutron device with unknown DEVCLASS discovered via mDNS: {}. Configure device manually.",
                     devclass);
-            return null; // For now, exit if service has unknown DEVCLASS
+            return null; // Exit if service has unknown DEVCLASS
         }
 
         if (!bridgeHostName.equals(ipAddresses[0].getHostAddress())) {
@@ -161,10 +169,15 @@ public class LutronMdnsBridgeDiscoveryService implements MDNSDiscoveryParticipan
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String serial = getSerial(service);
+        String devclass = service.getPropertyString("DEVCLASS");
         if (serial == null) {
             return null;
         } else {
-            return new ThingUID(THING_TYPE_IPBRIDGE, serial);
+            if (DEVCLASS_CASETA_SB.equals(devclass)) {
+                return new ThingUID(THING_TYPE_LEAPBRIDGE, serial);
+            } else {
+                return new ThingUID(THING_TYPE_IPBRIDGE, serial);
+            }
         }
     }
 

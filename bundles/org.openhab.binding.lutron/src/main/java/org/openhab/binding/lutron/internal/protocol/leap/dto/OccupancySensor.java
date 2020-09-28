@@ -10,24 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.lutron.internal.protocol;
+package org.openhab.binding.lutron.internal.protocol.leap.dto;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Type of command in the Lutron integration protocol.
- *
- * @author Allan Tong - Initial contribution
- * @author Bob Adair - Added additional commands
- *
+ * @author Bob Adair - Initial contribution
  */
-public enum LutronCommandType {
-    AREA,
-    DEVICE,
-    GROUP,
-    MODE,
-    MONITORING,
-    OUTPUT,
-    SHADEGRP,
-    SYSTEM,
-    SYSVAR,
-    TIMECLOCK,
+public class OccupancySensor {
+    @SerializedName("OccupancySensor")
+    public Href occupancySensor;
 }

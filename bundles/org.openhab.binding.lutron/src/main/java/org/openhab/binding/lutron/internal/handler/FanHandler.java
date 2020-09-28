@@ -12,87 +12,75 @@
  */
 package org.openhab.binding.lutron.internal.handler;
 
-import static org.openhab.binding.lutron.internal.LutronBindingConstants.CHANNEL_LIGHTLEVEL;
+import static org.openhab.binding.lutron.internal.LutronBindingConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.atomic.AtomicReference;
 
-import org.openhab.binding.lutron.action.DimmerActions;
-import org.openhab.binding.lutron.internal.config.DimmerConfig;
-import org.openhab.binding.lutron.internal.protocol.LutronDuration;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.lutron.internal.config.FanConfig;
+import org.openhab.binding.lutron.internal.protocol.FanSpeedType;
 import org.openhab.binding.lutron.internal.protocol.OutputCommand;
 import org.openhab.binding.lutron.internal.protocol.lip.LutronCommandType;
+import org.openhab.binding.lutron.internal.protocol.lip.LutronOperation;
 import org.openhab.binding.lutron.internal.protocol.lip.TargetType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Handler responsible for communicating with a light dimmer.
+ * Handler responsible for communicating with ceiling fan speed controllers.
  *
- * @author Allan Tong - Initial contribution
- * @author Bob Adair - Added initDeviceState method, and onLevel and onToLast parameters
+ * @author Bob Adair - Initial contribution
  */
-public class DimmerHandler extends LutronHandler {
-    private final Logger logger = LoggerFactory.getLogger(DimmerHandler.class);
-    private DimmerConfig config;
-    private LutronDuration fadeInTime;
-    private LutronDuration fadeOutTime;
-    private final AtomicReference<BigDecimal> lastLightLevel = new AtomicReference<>();
+@NonNullByDefault
+public class FanHandler extends LutronHandler {
+    private final Logger logger = LoggerFactory.getLogger(FanHandler.class);
 
-    public DimmerHandler(Thing thing) {
+    private FanConfig config = new FanConfig();
+
+    public FanHandler(Thing thing) {
         super(thing);
     }
 
     @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DimmerActions.class);
-    }
-
-    @Override
     public int getIntegrationId() {
-        if (config == null) {
+        if (config.integrationId <= 0) {
             throw new IllegalStateException("handler not initialized");
+        } else {
+            return config.integrationId;
         }
-
-        return config.integrationId;
     }
 
     @Override
     public void initialize() {
-        config = getThing().getConfiguration().as(DimmerConfig.class);
+        config = getConfigAs(FanConfig.class);
         if (config.integrationId <= 0) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No integrationId configured");
             return;
         }
-        fadeInTime = new LutronDuration(config.fadeInTime);
-        fadeOutTime = new LutronDuration(config.fadeOutTime);
-        logger.debug("Initializing Dimmer handler for integration ID {}", getIntegrationId());
+        logger.debug("Initializing Fan handler for integration ID {}", getIntegrationId());
 
         initDeviceState();
     }
 
     @Override
     protected void initDeviceState() {
-        logger.debug("Initializing device state for Dimmer {}", getIntegrationId());
+        logger.debug("Initializing device state for Fan {}", getIntegrationId());
         Bridge bridge = getBridge();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No bridge configured");
         } else if (bridge.getStatus() == ThingStatus.ONLINE) {
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Awaiting initial response");
-            queryOutput(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL);
+            queryOutput(TargetType.FAN, OutputCommand.ACTION_ZONELEVEL);
             // handleUpdate() will set thing status to online when response arrives
-            lastLightLevel.set(config.onLevel);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
         }
@@ -100,33 +88,37 @@ public class DimmerHandler extends LutronHandler {
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
+        if (channelUID.getId().equals(CHANNEL_FANSPEED) || channelUID.getId().equals(CHANNEL_FANLEVEL)) {
             // Refresh state when new item is linked.
-            queryOutput(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL);
+            queryOutput(TargetType.FAN, OutputCommand.ACTION_ZONELEVEL);
         }
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (channelUID.getId().equals(CHANNEL_LIGHTLEVEL)) {
+        if (channelUID.getId().equals(CHANNEL_FANLEVEL)) {
             if (command instanceof Number) {
                 int level = ((Number) command).intValue();
-                output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, level, new LutronDuration("0.25"), null);
+                FanSpeedType speed = FanSpeedType.toFanSpeedType(level);
+                // output(TargetType.FAN, LutronCommand.ACTION_ZONELEVEL, level, null, null);
+                sendCommand(new OutputCommand(TargetType.FAN, LutronOperation.EXECUTE, getIntegrationId(),
+                        OutputCommand.ACTION_ZONELEVEL, speed, null, null));
             } else if (command.equals(OnOffType.ON)) {
-                if (config.onToLast) {
-                    output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, lastLightLevel.get(), fadeInTime, null);
-                } else {
-                    output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, config.onLevel, fadeInTime, null);
-                }
+                // output(TargetType.FAN, LutronCommand.ACTION_ZONELEVEL, 100, null, null);
+                sendCommand(new OutputCommand(TargetType.FAN, LutronOperation.EXECUTE, getIntegrationId(),
+                        OutputCommand.ACTION_ZONELEVEL, FanSpeedType.HIGH, null, null));
             } else if (command.equals(OnOffType.OFF)) {
-                output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, 0, fadeOutTime, null);
+                // output(TargetType.FAN, LutronCommand.ACTION_ZONELEVEL, 0, null, null);
+                sendCommand(new OutputCommand(TargetType.FAN, LutronOperation.EXECUTE, getIntegrationId(),
+                        OutputCommand.ACTION_ZONELEVEL, FanSpeedType.OFF, null, null));
+            }
+        } else if (channelUID.getId().equals(CHANNEL_FANSPEED)) {
+            if (command instanceof StringType) {
+                FanSpeedType speed = FanSpeedType.toFanSpeedType(command.toString());
+                sendCommand(new OutputCommand(TargetType.FAN, LutronOperation.EXECUTE, getIntegrationId(),
+                        OutputCommand.ACTION_ZONELEVEL, speed, null, null));
             }
         }
-    }
-
-    public void setLightLevel(BigDecimal level, LutronDuration fade, LutronDuration delay) {
-        int intLevel = level.intValue();
-        output(TargetType.DIMMER, OutputCommand.ACTION_ZONELEVEL, intLevel, fade, delay);
     }
 
     @Override
@@ -137,10 +129,9 @@ public class DimmerHandler extends LutronHandler {
             if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                 updateStatus(ThingStatus.ONLINE);
             }
-            if (level.compareTo(BigDecimal.ZERO) == 1) { // if (level > 0)
-                lastLightLevel.set(level);
-            }
-            updateState(CHANNEL_LIGHTLEVEL, new PercentType(level));
+            updateState(CHANNEL_FANLEVEL, new PercentType(level));
+            FanSpeedType fanSpeed = FanSpeedType.toFanSpeedType(level.intValue());
+            updateState(CHANNEL_FANSPEED, new StringType(fanSpeed.toString()));
         }
     }
 }
