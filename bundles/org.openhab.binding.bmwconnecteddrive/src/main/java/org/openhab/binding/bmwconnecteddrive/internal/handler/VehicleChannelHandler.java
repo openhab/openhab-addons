@@ -21,6 +21,12 @@ import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bmwconnecteddrive.internal.ConnectedDriveConstants.VehicleType;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.Destination;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargeProfile;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.ChargingWindow;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.Timer;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.charge.WeeklyPlanner;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.AllTrips;
+import org.openhab.binding.bmwconnecteddrive.internal.dto.statistics.LastTrip;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CBSMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.CCMMessage;
 import org.openhab.binding.bmwconnecteddrive.internal.dto.status.Doors;
@@ -31,6 +37,7 @@ import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Converter;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
@@ -407,9 +414,61 @@ public class VehicleChannelHandler extends BaseThingHandler {
      * Channel Groups
      */
 
-    protected void updateDoors(Doors doorState) {
-        updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
+    protected void updateAllTrips(AllTrips allTrips) {
+        updateState(lifeTimeCumulatedDrivenDistance, QuantityType
+                .valueOf(Converter.round(allTrips.totalElectricDistance.userTotal), MetricPrefix.KILO(SIUnits.METRE)));
+        updateState(lifeTimeSingleLongestDistance, QuantityType
+                .valueOf(Converter.round(allTrips.chargecycleRange.userHigh), MetricPrefix.KILO(SIUnits.METRE)));
+        updateState(lifeTimeAverageConsumption, QuantityType
+                .valueOf(Converter.round(allTrips.avgElectricConsumption.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+        updateState(lifetimeAvgCombinedConsumption,
+                QuantityType.valueOf(allTrips.avgCombinedConsumption.userAverage, SmartHomeUnits.LITRE));
+        updateState(lifeTimeAverageRecuperation, QuantityType
+                .valueOf(Converter.round(allTrips.avgRecuperation.userAverage), SmartHomeUnits.KILOWATT_HOUR));
+        updateState(tripDistanceSinceCharging, QuantityType.valueOf(
+                Converter.round(allTrips.chargecycleRange.userCurrentChargeCycle), MetricPrefix.KILO(SIUnits.METRE)));
+    }
 
+    protected void updateLastTrip(LastTrip trip) {
+        // Whyever the Last Trip DateTime is delivered without offest - so LocalTime
+        updateState(tripDateTime, DateTimeType.valueOf(Converter.getLocalDateTimeWithoutOffest(trip.date)));
+        updateState(tripDuration, QuantityType.valueOf(trip.duration, SmartHomeUnits.MINUTE));
+        updateState(tripDistance,
+                QuantityType.valueOf(Converter.round(trip.totalDistance), MetricPrefix.KILO(SIUnits.METRE)));
+        updateState(tripAvgConsumption,
+                QuantityType.valueOf(Converter.round(trip.avgElectricConsumption), SmartHomeUnits.KILOWATT_HOUR));
+        updateState(tripAvgCombinedConsumption,
+                QuantityType.valueOf(trip.avgCombinedConsumption, SmartHomeUnits.LITRE));
+        updateState(tripAvgRecuperation,
+                QuantityType.valueOf(Converter.round(trip.avgRecuperation), SmartHomeUnits.KILOWATT_HOUR));
+    }
+
+    protected void updateChargeProfile(ChargeProfile cp) {
+        WeeklyPlanner planner = cp.weeklyPlanner;
+        updateState(chargeProfileClimate, OnOffType.from(planner.climatizationEnabled));
+        updateState(chargeProfileChargeMode, StringType.valueOf(Converter.toTitleCase(planner.chargingMode)));
+
+        ChargingWindow cw = planner.preferredChargingWindow;
+        updateState(chargeWindowStart, StringType.valueOf(cw.startTime));
+        updateState(chargeWindowEnd, StringType.valueOf(cw.endTime));
+
+        Timer t1 = planner.timer1;
+        updateState(timer1Departure, StringType.valueOf(t1.departureTime));
+        updateState(timer1Enabled, OnOffType.from(t1.timerEnabled));
+        updateState(timer1Days, StringType.valueOf(t1.getDays()));
+
+        Timer t2 = planner.timer2;
+        updateState(timer2Departure, StringType.valueOf(t2.departureTime));
+        updateState(timer2Enabled, OnOffType.from(t2.timerEnabled));
+        updateState(timer2Days, StringType.valueOf(t2.getDays()));
+
+        Timer t3 = planner.timer3;
+        updateState(timer3Departure, StringType.valueOf(t3.departureTime));
+        updateState(timer3Enabled, OnOffType.from(t3.timerEnabled));
+        updateState(timer3Days, StringType.valueOf(t3.getDays()));
+    }
+
+    protected void updateDoors(Doors doorState) {
         updateState(doorDriverFront, StringType.valueOf(doorState.doorDriverFront));
         updateState(doorDriverRear, StringType.valueOf(doorState.doorDriverRear));
         updateState(doorPassengerFront, StringType.valueOf(doorState.doorPassengerFront));
@@ -419,8 +478,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     protected void updateWindows(Windows windowState) {
-        updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
-
         updateState(windowDriverFront, StringType.valueOf(windowState.windowDriverFront));
         updateState(windowDriverRear, StringType.valueOf(windowState.windowDriverRear));
         updateState(windowPassengerFront, StringType.valueOf(windowState.windowPassengerFront));
@@ -452,6 +509,17 @@ public class VehicleChannelHandler extends BaseThingHandler {
             updateState(serviceNextMileage,
                     QuantityType.valueOf(Converter.round(nextServiceMileage), MetricPrefix.KILO(SIUnits.METRE)));
         }
+        // CheckControl Active?
+        updateState(checkControl, StringType.valueOf(Converter.toTitleCase(vStatus.checkControlActive())));
+        // last update Time
+        updateState(lastUpdate, DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime())));
+
+        Doors doorState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Doors.class);
+        Windows windowState = Converter.getGson().fromJson(Converter.getGson().toJson(vStatus), Windows.class);
+        updateState(doors, StringType.valueOf(VehicleStatus.checkClosed(doorState)));
+        updateState(windows, StringType.valueOf(VehicleStatus.checkClosed(windowState)));
+        updateDoors(doorState);
+        updateWindows(windowState);
 
         // Range values
         // based on unit of length decide if range shall be reported in km or miles
@@ -508,8 +576,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
         if (hasFuel) {
             updateState(remainingFuel, QuantityType.valueOf(vStatus.remainingFuel, SmartHomeUnits.LITRE));
         }
-        // last update Time
-        updateState(lastUpdate, DateTimeType.valueOf(Converter.getLocalDateTime(vStatus.getUpdateTime())));
 
         // Charge Values
         if (isElectric) {

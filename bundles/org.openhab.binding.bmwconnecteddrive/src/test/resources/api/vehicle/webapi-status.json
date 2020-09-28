@@ -33,8 +33,8 @@
 		"lastChargingEndReason": "END_REQUESTED_BY_DRIVER",
 		"lastChargingEndResult": "SUCCESS",
 		"position": {
-			"lat": 50.55603,
-			"lon": 8.4956,
+			"lat": 56.789,
+			"lon": 8.765,
 			"heading": 41,
 			"status": "OK"
 		},

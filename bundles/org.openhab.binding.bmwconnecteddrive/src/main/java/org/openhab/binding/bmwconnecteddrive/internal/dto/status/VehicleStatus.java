@@ -16,6 +16,7 @@ import static org.openhab.binding.bmwconnecteddrive.internal.utils.Constants.*;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.openhab.binding.bmwconnecteddrive.internal.utils.Constants;
@@ -71,8 +72,8 @@ public class VehicleStatus {
     public String dcsCchActivation;// ": "NA",
     @SerializedName("DCS_CCH_Ongoing")
     public boolean dcsCchOngoing;// ":false
-    public List<CCMMessage> checkControlMessages;// ":[],
-    public List<CBSMessage> cbsData;
+    public List<CCMMessage> checkControlMessages = new ArrayList<CCMMessage>();// ":[],
+    public List<CBSMessage> cbsData = new ArrayList<CBSMessage>();
 
     /**
      * Get Next Service for Date and / or Mileage

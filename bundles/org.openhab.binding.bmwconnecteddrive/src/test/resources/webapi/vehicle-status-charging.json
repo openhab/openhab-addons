@@ -34,8 +34,8 @@
 		"lastChargingEndReason": "UNKNOWN",
 		"lastChargingEndResult": "UNKNOWN",
 		"position": {
-			"lat": 50.55603,
-			"lon": 8.495625,
+			"lat": 56.789,
+			"lon": 8.765,
 			"heading": 41,
 			"status": "OK"
 		},

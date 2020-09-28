@@ -51,12 +51,17 @@ import org.slf4j.LoggerFactory;
 public class VehicleTests {
     private final Logger logger = LoggerFactory.getLogger(VehicleHandler.class);
 
-    private static final int HYBRID_CALL_TIMES = 31;
-    private static final int CONV_CALL_TIMES = 25;
-    private static final int EV_CALL_TIMES = 26;
-
-    private static final int LIST_UPDATES = 7;
-    private static final int CHECK_CONTROL_ACTIVE_CALLS = 3;
+    private static final int STATUS_ELECTRIC = 8;
+    private static final int STATUS_CONV = 7;
+    private static final int RANGE_HYBRID = 9;
+    private static final int RANGE_CONV = 4;
+    private static final int RANGE_ELECTRIC = 4;
+    private static final int DOORS = 12;
+    private static final int CHECK_EMPTY = 1;
+    private static final int CHECK_AVAILABLE = 4;
+    private static final int SERVICE_AVAILABLE = 5;
+    private static final int SERVICE_EMPTY = 0;
+    private static final int POSITION = 3;
 
     @Nullable
     ArgumentCaptor<ChannelUID> channelCaptor;
@@ -114,78 +119,76 @@ public class VehicleTests {
     }
 
     /**
-     * Sequence for BEV_REX
+     * Test various Vehicles from users which delivered their fingerprint.
+     * The tests are checking the chain from "JSON to Channel update".
+     * Checks are done in an automated way cross checking the data from JSON and data delivered via Channel.
+     * Also important the updates are counted in order to check if code changes are affecting Channel Updates.
+     *
+     * With the given output the updated Channels are visible.
+     * Example:
+     *
+     * testi3Rex
+     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @3733ms
      * Channel testbinding::test:status#lock Secured
-     * Channel testbinding::test:status#doors Closed
-     * Channel testbinding::test:status#windows Closed
-     * Channel testbinding::test:status#check-control Ok
-     * Channel testbinding::test:status#service Nov 2021 - Brake Fluid
-     * Channel testbinding::test:status#charging-status Invalid
+     * Channel testbinding::test:status#service-date 2021-11-01T13:00:00.000+0100
+     * Channel testbinding::test:status#service-mileage -1.0 km
+     * Channel testbinding::test:status#check-control Not Active
+     * Channel testbinding::test:status#last-update 2020-08-24T17:55:32.000+0200
+     * Channel testbinding::test:status#doors CLOSED
+     * Channel testbinding::test:status#windows CLOSED
+     * Channel testbinding::test:doors#driver-front CLOSED
+     * Channel testbinding::test:doors#driver-rear CLOSED
+     * Channel testbinding::test:doors#passenger-front CLOSED
+     * Channel testbinding::test:doors#passenger-rear CLOSED
+     * Channel testbinding::test:doors#trunk CLOSED
+     * Channel testbinding::test:doors#hood CLOSED
+     * Channel testbinding::test:doors#window-driver-front CLOSED
+     * Channel testbinding::test:doors#window-driver-rear CLOSED
+     * Channel testbinding::test:doors#window-passenger-front CLOSED
+     * Channel testbinding::test:doors#window-passenger-rear CLOSED
+     * Channel testbinding::test:doors#window-rear INVALID
+     * Channel testbinding::test:doors#sunroof CLOSED
      * Channel testbinding::test:range#mileage 17273.0 km
-     * Channel testbinding::test:range#remaining-range-electric 148.0 km
-     * Channel testbinding::test:range#remaining-range-fuel 70.0 km
-     * Channel testbinding::test:range#remaining-range-hybrid 218.0 km
-     * Channel testbinding::test:location#range-radius 218000.0
-     * Channel testbinding::test:range#remaining-soc 71.0 %
+     * Channel testbinding::test:range#electric 148.0 km
+     * Channel testbinding::test:range#radius-electric 118.4 km
+     * Channel testbinding::test:range#fuel 70.0 km
+     * Channel testbinding::test:range#radius-fuel 56.0 km
+     * Channel testbinding::test:range#hybrid 218.0 km
+     * Channel testbinding::test:range#radius-hybrid 174.4 km
+     * Channel testbinding::test:range#soc 71.0 %
      * Channel testbinding::test:range#remaining-fuel 4.0 l
-     * Channel testbinding::test:range#last-update 24.08.2020 17:55
-     * Channel testbinding::test:location#latitude 50.55604934692383
-     * Channel testbinding::test:location#longitude 8.4956693649292
-     * Channel testbinding::test:location#latlong 50.55605,8.495669
+     * Channel testbinding::test:status#charge Charging Goal Reached
+     * Channel testbinding::test:check#size 0
+     * Channel testbinding::test:service#size 4
+     * Channel testbinding::test:service#date 2021-11-01T13:00:00.000+0100
+     * Channel testbinding::test:service#mileage 15345.0 km
+     * Channel testbinding::test:service#name Brake Fluid
+     * Channel testbinding::test:service#index 0
+     * Channel testbinding::test:location#latitude 56.78900146484375
+     * Channel testbinding::test:location#longitude 8.765000343322754
      * Channel testbinding::test:location#heading 219.0 °
+     *
      */
+
     @Test
-    public void testMyi3Rex() {
+    public void testi3Rex() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + CHECK_EMPTY + SERVICE_AVAILABLE + POSITION, Optional.empty()));
     }
 
-    /**
-     * Channel testbinding::test:status#lock Secured
-     * Channel testbinding::test:status#doors Closed
-     * Channel testbinding::test:status#windows Closed
-     * Channel testbinding::test:status#check-control Ok
-     * Channel testbinding::test:status#service Nov 2021 - Brake Fluid
-     * Channel testbinding::test:status#charging-status Invalid
-     * Channel testbinding::test:range#mileage 17273.0 mi
-     * Channel testbinding::test:range#remaining-range-electric 91.0 mi
-     * Channel testbinding::test:range#remaining-range-fuel 43.0 mi
-     * Channel testbinding::test:range#remaining-range-hybrid 134.0 mi
-     * Channel testbinding::test:location#range-radius 707520.0
-     * Channel testbinding::test:range#remaining-soc 71.0 %
-     * Channel testbinding::test:range#remaining-fuel 4.0 l
-     * Channel testbinding::test:range#last-update 24.08.2020 17:55
-     * Channel testbinding::test:location#latitude 50.55604934692383
-     * Channel testbinding::test:location#longitude 8.4956693649292
-     * Channel testbinding::test:location#latlong 50.55605,8.495669
-     * Channel testbinding::test:location#heading 219.0 °
-     */
     @Test
-    public void testMyi3RexMiles() {
+    public void testi3RexMiles() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/webapi/vehicle-status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        // assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + RANGE_HYBRID + DOORS + CHECK_EMPTY + SERVICE_AVAILABLE + POSITION, Optional.empty()));
     }
 
-    /**
-     * Channel testbinding::test:status#lock Unlocked
-     * Channel testbinding::test:status#doors Closed
-     * Channel testbinding::test:status#windows Closed
-     * Channel testbinding::test:status#check-control Ok
-     * Channel testbinding::test:status#service Jun 2018 or in 12000 km - Oil
-     * Channel testbinding::test:range#mileage 1629.0 km
-     * Channel testbinding::test:range#remaining-range-fuel 249.0 km
-     * Channel testbinding::test:location#range-radius 249000.0
-     * Channel testbinding::test:range#remaining-fuel 30.0 l
-     * Channel testbinding::test:range#last-update 09.03.2018 04:21
-     * Channel testbinding::test:location#latitude 123.12300109863281
-     * Channel testbinding::test:location#longitude -123.12300109863281
-     * Channel testbinding::test:location#latlong 123.123,-123.123
-     * Channel testbinding::test:location#heading 11.0 °
-     */
     @Test
     public void testF15() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -197,7 +200,8 @@ public class VehicleTests {
         // Check for cbsType which is "Oil" instead
         // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
         m.put(ConnectedDriveConstants.NAME, StringType.valueOf("Oil"));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
+                Optional.of(m)));
     }
 
     @Test
@@ -211,31 +215,16 @@ public class VehicleTests {
         // Check for cbsType which is "Oil" instead
         // m.put(ConnectedDriveConstants.SERVICE_DATE, DateTimeType.valueOf("2018-06-01T14:00:00.000+0200"));
         m.put(ConnectedDriveConstants.NAME, StringType.valueOf("Oil"));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
+                Optional.of(m)));
     }
 
-    /**
-     * Channel testbinding::test:status#lock Unkown
-     * Channel testbinding::test:status#doors Unkown
-     * Channel testbinding::test:status#windows Unkown
-     * Channel testbinding::test:status#check-control Unkown
-     * Channel testbinding::test:status#service Unkown
-     * Channel testbinding::test:range#mileage 0.0 km
-     * Channel testbinding::test:range#remaining-range-fuel 0.0 km
-     * Channel testbinding::test:location#range-radius 0.0
-     * Channel testbinding::test:range#remaining-fuel 0.0 l
-     * Channel testbinding::test:range#last-update Unkown
-     * Channel testbinding::test:location#latitude 12.345600128173828
-     * Channel testbinding::test:location#longitude 34.56779861450195
-     * Channel testbinding::test:location#latlong 12.3456,34.5678
-     * Channel testbinding::test:location#heading 0.0 ° @Test
-     */
     @Test
     public void testF31() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
     }
 
     @Test
@@ -243,7 +232,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
     }
 
     @Test
@@ -251,7 +240,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
     }
 
     @Test
@@ -259,7 +248,7 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
     }
 
     @Test
@@ -267,7 +256,9 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
+        // assertTrue(testVehicle(content, 27, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_EMPTY + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
     @Test
@@ -275,53 +266,17 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F45/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_EMPTY + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
-    /**
-     * testF48
-     * Channel testbinding::test:status#lock Secured
-     * Channel testbinding::test:status#doors CLOSED
-     * Channel testbinding::test:doors#driver-front CLOSED
-     * Channel testbinding::test:doors#driver-rear CLOSED
-     * Channel testbinding::test:doors#passenger-front CLOSED
-     * Channel testbinding::test:doors#passenger-rear CLOSED
-     * Channel testbinding::test:doors#trunk CLOSED
-     * Channel testbinding::test:doors#hood CLOSED
-     * Channel testbinding::test:status#windows CLOSED
-     * Channel testbinding::test:doors#window-driver-front CLOSED
-     * Channel testbinding::test:doors#window-driver-rear CLOSED
-     * Channel testbinding::test:doors#window-passenger-front CLOSED
-     * Channel testbinding::test:doors#window-passenger-rear CLOSED
-     * Channel testbinding::test:doors#window-rear INVALID
-     * Channel testbinding::test:doors#sunroof UNKOWN
-     * Channel testbinding::test:status#service-date 2019-07-01T14:00:00.000+0200
-     * Channel testbinding::test:status#service-mileage -1.0 km
-     * Channel testbinding::test:service#size 3
-     * Channel testbinding::test:service#date 2019-07-01T14:00:00.000+0200
-     * Channel testbinding::test:service#mileage 9000.0 km
-     * Channel testbinding::test:service#name Oil
-     * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:status#check-control Active
-     * Channel testbinding::test:check#size 1
-     * Channel testbinding::test:check#name Tyre pressure notification
-     * Channel testbinding::test:check#mileage 41544.0 km
-     * Channel testbinding::test:check#index 0
-     * Channel testbinding::test:range#mileage 21529.0 km
-     * Channel testbinding::test:range#fuel 590.0 km
-     * Channel testbinding::test:range#radius-fuel 472.0 km
-     * Channel testbinding::test:range#remaining-fuel 39.0 l
-     * Channel testbinding::test:status#last-update 2018-03-10T19:35:30.000+0100
-     * Channel testbinding::test:location#latitude 50.50505065917969
-     * Channel testbinding::test:location#longitude 10.1010103225708
-     * Channel testbinding::test:location#heading 141.0 °
-     **/
     @Test
     public void testF48() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION, Optional.empty()));
     }
 
     @Test
@@ -329,7 +284,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F48/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION, Optional.empty()));
     }
 
     @Test
@@ -337,7 +293,9 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        // assertTrue(testVehicle(content, 27, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
     @Test
@@ -345,7 +303,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/G31_NBTevo/status.json");
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
     @Test
@@ -353,7 +312,9 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testVehicle(content, EV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
     @Test
@@ -361,7 +322,9 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_NOREX/status.json");
-        assertTrue(testVehicle(content, EV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + DOORS + RANGE_ELECTRIC + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
     @Test
@@ -369,7 +332,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 
     @Test
@@ -377,7 +341,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/I01_REX/status.json");
-        assertTrue(testVehicle(content, HYBRID_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(content,
+                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 
     @Test
@@ -387,61 +352,29 @@ public class VehicleTests {
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status-318i.json");
         Map<String, State> m = new HashMap<String, State>();
         m.put(ConnectedDriveConstants.WINDOWS, StringType.valueOf(Constants.INTERMEDIATE));
-        assertTrue(testVehicle(content, CONV_CALL_TIMES + LIST_UPDATES, Optional.of(m)));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
+                Optional.empty()));
     }
 
-    /**
-     * testI01RexCompat
-     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @1797ms
-     * Channel testbinding::test:status#lock Secured
-     * Channel testbinding::test:status#doors CLOSED
-     * Channel testbinding::test:doors#driver-front CLOSED
-     * Channel testbinding::test:doors#driver-rear CLOSED
-     * Channel testbinding::test:doors#passenger-front CLOSED
-     * Channel testbinding::test:doors#passenger-rear CLOSED
-     * Channel testbinding::test:doors#trunk CLOSED
-     * Channel testbinding::test:doors#hood CLOSED
-     * Channel testbinding::test:status#windows CLOSED
-     * Channel testbinding::test:doors#window-driver-front CLOSED
-     * Channel testbinding::test:doors#window-driver-rear CLOSED
-     * Channel testbinding::test:doors#window-passenger-front CLOSED
-     * Channel testbinding::test:doors#window-passenger-rear CLOSED
-     * Channel testbinding::test:doors#window-rear UNKOWN
-     * Channel testbinding::test:doors#sunroof CLOSED
-     * Channel testbinding::test:status#service-date 2021-11-01T13:00:00.000+0100
-     * Channel testbinding::test:status#service-mileage -1.0 km
-     * Channel testbinding::test:service#size 4
-     * Channel testbinding::test:service#date 2021-11-01T13:00:00.000+0100
-     * Channel testbinding::test:service#mileage 0.0 km
-     * Channel testbinding::test:service#name Bremsflüssigkeit
-     * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:status#check-control Active
-     * Channel testbinding::test:check#size 1
-     * Channel testbinding::test:check#name Laden nicht möglich
-     * Channel testbinding::test:check#mileage 18312.0 km
-     * Channel testbinding::test:check#index 0
-     * Channel testbinding::test:range#mileage 18313.0 km
-     * Channel testbinding::test:range#electric 100.0 km
-     * Channel testbinding::test:range#radius-electric 80.0 km
-     * Channel testbinding::test:range#fuel 65.0 km
-     * Channel testbinding::test:range#radius-fuel 52.0 km
-     * Channel testbinding::test:range#hybrid 165.0 km
-     * Channel testbinding::test:range#radius-hybrid 132.0 km
-     * Channel testbinding::test:range#soc 51.0 %
-     * Channel testbinding::test:range#remaining-fuel 4.0 l
-     * Channel testbinding::test:status#last-update 2020-09-27T15:18:00.000+0200
-     * Channel testbinding::test:status#charge Error
-     * Channel testbinding::test:location#latitude 50.5560188293457
-     * Channel testbinding::test:location#longitude 8.495611190795898
-     * Channel testbinding::test:location#heading 39.0 °
-     */
+    @Test
+    public void test318iF31Miles() {
+        logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
+        setup(VehicleType.CONVENTIONAL.toString(), true);
+        String content = FileReader.readFileInString("src/test/resources/responses/F31/status-318i.json");
+        Map<String, State> m = new HashMap<String, State>();
+        m.put(ConnectedDriveConstants.WINDOWS, StringType.valueOf(Constants.INTERMEDIATE));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION,
+                Optional.empty()));
+    }
+
     @Test
     public void testI01RexCompat() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.ELECTRIC_REX.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), HYBRID_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS,
+        assertTrue(testVehicle(vac.transform(),
+                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION,
                 Optional.empty()));
     }
 
@@ -451,58 +384,19 @@ public class VehicleTests {
         setup(VehicleType.ELECTRIC_REX.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/api/vehicle/vehicle-ccm.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), HYBRID_CALL_TIMES + LIST_UPDATES + CHECK_CONTROL_ACTIVE_CALLS,
+        assertTrue(testVehicle(vac.transform(),
+                STATUS_ELECTRIC + DOORS + RANGE_HYBRID + SERVICE_AVAILABLE + CHECK_AVAILABLE + POSITION,
                 Optional.empty()));
     }
 
-    /**
-     * testF11Compat
-     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @1687ms
-     * Channel testbinding::test:status#lock Unkown
-     * Channel testbinding::test:status#doors UNKOWN
-     * Channel testbinding::test:doors#driver-front UNKOWN
-     * Channel testbinding::test:doors#driver-rear UNKOWN
-     * Channel testbinding::test:doors#passenger-front UNKOWN
-     * Channel testbinding::test:doors#passenger-rear UNKOWN
-     * Channel testbinding::test:doors#trunk UNKOWN
-     * Channel testbinding::test:doors#hood UNKOWN
-     * Channel testbinding::test:status#windows UNKOWN
-     * Channel testbinding::test:doors#window-driver-front UNKOWN
-     * Channel testbinding::test:doors#window-driver-rear UNKOWN
-     * Channel testbinding::test:doors#window-passenger-front UNKOWN
-     * Channel testbinding::test:doors#window-passenger-rear UNKOWN
-     * Channel testbinding::test:doors#window-rear UNKOWN
-     * Channel testbinding::test:doors#sunroof UNKOWN
-     * Channel testbinding::test:status#service-date 2021-08-01T14:00:00.000+0200
-     * Channel testbinding::test:status#service-mileage 2000.0 km
-     * Channel testbinding::test:service#size 3
-     * Channel testbinding::test:service#date 2021-08-01T14:00:00.000+0200
-     * Channel testbinding::test:service#mileage 2000.0 km
-     * Channel testbinding::test:service#name Motorolie
-     * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:status#check-control Not Active
-     * Channel testbinding::test:check#size 0
-     * Channel testbinding::test:range#mileage 113930.0 km
-     * Channel testbinding::test:range#electric 0.0 km
-     * Channel testbinding::test:range#radius-electric 0.0 km
-     * Channel testbinding::test:range#fuel 0.0 km
-     * Channel testbinding::test:range#radius-fuel 0.0 km
-     * Channel testbinding::test:range#hybrid 0.0 km
-     * Channel testbinding::test:range#radius-hybrid 0.0 km
-     * Channel testbinding::test:range#soc 0.0 %
-     * Channel testbinding::test:range#remaining-fuel 34.0 l
-     * Channel testbinding::test:status#last-update 1900-01-01T01:00:00.000+0100
-     * Channel testbinding::test:location#latitude 0.0
-     * Channel testbinding::test:location#longitude 0.0
-     * Channel testbinding::test:location#heading 0.0 °
-     */
     @Test
     public void testF11Compat() {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(vac.transform(),
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 
     @Test
@@ -511,6 +405,7 @@ public class VehicleTests {
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F11/vehicle-status.json");
         VehicleAttributesContainer vac = Converter.getGson().fromJson(content, VehicleAttributesContainer.class);
-        assertTrue(testVehicle(vac.transform(), CONV_CALL_TIMES + LIST_UPDATES, Optional.empty()));
+        assertTrue(testVehicle(vac.transform(),
+                STATUS_CONV + DOORS + RANGE_CONV + SERVICE_AVAILABLE + CHECK_EMPTY + POSITION, Optional.empty()));
     }
 }
