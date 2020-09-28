@@ -12,10 +12,8 @@
  */
 package org.openhab.binding.velux.internal.factory;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,7 +30,6 @@ import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
@@ -56,7 +53,8 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     // Class internal
 
-    private final Map<ThingUID, ServiceRegistration<?>> discoveryServiceRegistrations = new HashMap<>();
+    private @Nullable ServiceRegistration<?> discoveryServiceRegistration = null;
+    private @Nullable VeluxDiscoveryService discoveryService = null;
 
     private Set<VeluxBindingHandler> veluxBindingHandlers = new HashSet<>();
     private Set<VeluxBridgeHandler> veluxBridgeHandlers = new HashSet<>();
@@ -69,20 +67,25 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
     // Private
 
     private void registerDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
-        VeluxDiscoveryService discoveryService = new VeluxDiscoveryService(bridgeHandler, localization);
-        ServiceRegistration<?> discoveryServiceReg = bundleContext.registerService(DiscoveryService.class.getName(),
-                discoveryService, new Hashtable<>());
-        discoveryServiceRegistrations.put(bridgeHandler.getThing().getUID(), discoveryServiceReg);
+        logger.trace("registerDeviceDiscoveryService({}) called.", bridgeHandler);
+        boolean createNew = (discoveryService == null);
+        if (createNew) {
+            discoveryService = new VeluxDiscoveryService(localization);
+        }
+        discoveryService.addBridge(bridgeHandler);
+        if (createNew) {
+            discoveryServiceRegistration = bundleContext.registerService(DiscoveryService.class.getName(),
+                    discoveryService, new Hashtable<>());
+        }
     }
 
-    // Even if the compiler tells, that the value of <remove> cannot be null, it is possible!
-    // Therefore a @SuppressWarnings("null") is needed to suppress the warning
-    @SuppressWarnings("null")
-    private synchronized void unregisterDeviceDiscoveryService(ThingUID thingUID) {
-        logger.trace("unregisterDeviceDiscoveryService({}) called.", thingUID);
-        ServiceRegistration<?> remove = discoveryServiceRegistrations.remove(thingUID);
-        if (remove != null) {
-            remove.unregister();
+    private synchronized void unregisterDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
+        logger.trace("unregisterDeviceDiscoveryService({}) called.", bridgeHandler);
+        if (discoveryService != null) {
+            discoveryService.removeBridge(bridgeHandler);
+            if (discoveryService.isEmpty()) {
+                discoveryServiceRegistration.unregister();
+            }
         }
     }
 
@@ -191,7 +194,7 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
         if (thingHandler instanceof VeluxBridgeHandler) {
             logger.trace("removeHandler() removing bridge '{}'.", thingHandler.toString());
             veluxBridgeHandlers.remove(thingHandler);
-            unregisterDeviceDiscoveryService(thingHandler.getThing().getUID());
+            unregisterDeviceDiscoveryService((VeluxBridgeHandler) thingHandler);
         } else
         // Handle removal of Things behind the Bridge
         if (thingHandler instanceof VeluxHandler) {

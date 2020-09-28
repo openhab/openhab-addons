@@ -83,19 +83,19 @@ import org.slf4j.LoggerFactory;
 class JsonBridgeAPI implements BridgeAPI {
     private final Logger logger = LoggerFactory.getLogger(JsonBridgeAPI.class);
 
-    private static final GetDeviceStatus GETDEVICESTATUS = new JCgetDeviceStatus();
-    private static final GetFirmware GETFIRMWARE = new JCgetFirmware();
-    private static final GetLANConfig GETLANCONFIG = new JCgetLANConfig();
-    private static final GetProducts GETPRODUCTS = new JCgetProducts();
-    private static final GetScenes GETSCENES = new JCgetScenes();
-    private static final GetWLANConfig GETWLANCONFIG = new JCgetWLANConfig();
-    private static final Login LOGIN = new JClogin();
-    private static final Logout LOGOUT = new JClogout();
-    private static final RunProductDiscovery RUNPRODUCTDISCOVERY = new JCrunProductDiscovery();
-    private static final RunProductIdentification RUNPRODUCTIDENTIFICATION = new JCrunProductIdentification();
-    private static final RunProductSearch RUNPRODUCTSEARCH = new JCrunProductSearch();
-    private static final RunScene RUNSCENE = new JCrunScene();
-    private static final SetSceneVelocity SETSCENEVELOCITY = new JCsetSceneVelocity();
+    private final GetDeviceStatus jsonGetDeviceStatus = new JCgetDeviceStatus();
+    private final GetFirmware jsonGetFirmware = new JCgetFirmware();
+    private final GetLANConfig jsonGetLanConfig = new JCgetLANConfig();
+    private final GetProducts jsonGetProducts = new JCgetProducts();
+    private final GetScenes jsonGetScenes = new JCgetScenes();
+    private final GetWLANConfig jsonGetWLanConfig = new JCgetWLANConfig();
+    private final Login jsonLogin = new JClogin();
+    private final Logout jsonLogout = new JClogout();
+    private final RunProductDiscovery jsonRunProductDiscovery = new JCrunProductDiscovery();
+    private final RunProductIdentification jsonRunProductIdentification = new JCrunProductIdentification();
+    private final RunProductSearch jsonRunProductSearch = new JCrunProductSearch();
+    private final RunScene jsonRunScene = new JCrunScene();
+    private final SetSceneVelocity jsonSetSceneVelocity = new JCsetSceneVelocity();
 
     /**
      * Constructor.
@@ -113,12 +113,12 @@ class JsonBridgeAPI implements BridgeAPI {
 
     @Override
     public GetDeviceStatus getDeviceStatus() {
-        return GETDEVICESTATUS;
+        return jsonGetDeviceStatus;
     }
 
     @Override
     public GetFirmware getFirmware() {
-        return GETFIRMWARE;
+        return jsonGetFirmware;
     }
 
     @Override
@@ -128,7 +128,7 @@ class JsonBridgeAPI implements BridgeAPI {
 
     @Override
     public GetLANConfig getLANConfig() {
-        return GETLANCONFIG;
+        return jsonGetLanConfig;
     }
 
     @Override
@@ -148,27 +148,27 @@ class JsonBridgeAPI implements BridgeAPI {
 
     @Override
     public GetProducts getProducts() {
-        return GETPRODUCTS;
+        return jsonGetProducts;
     }
 
     @Override
     public GetScenes getScenes() {
-        return GETSCENES;
+        return jsonGetScenes;
     }
 
     @Override
     public GetWLANConfig getWLANConfig() {
-        return GETWLANCONFIG;
+        return jsonGetWLanConfig;
     }
 
     @Override
     public Login login() {
-        return LOGIN;
+        return jsonLogin;
     }
 
     @Override
     public Logout logout() {
-        return LOGOUT;
+        return jsonLogout;
     }
 
     @Override
@@ -178,22 +178,22 @@ class JsonBridgeAPI implements BridgeAPI {
 
     @Override
     public RunProductDiscovery runProductDiscovery() {
-        return RUNPRODUCTDISCOVERY;
+        return jsonRunProductDiscovery;
     }
 
     @Override
     public RunProductIdentification runProductIdentification() {
-        return RUNPRODUCTIDENTIFICATION;
+        return jsonRunProductIdentification;
     }
 
     @Override
     public RunProductSearch runProductSearch() {
-        return RUNPRODUCTSEARCH;
+        return jsonRunProductSearch;
     }
 
     @Override
     public RunScene runScene() {
-        return RUNSCENE;
+        return jsonRunScene;
     }
 
     @Override
@@ -203,6 +203,6 @@ class JsonBridgeAPI implements BridgeAPI {
 
     @Override
     public SetSceneVelocity setSceneVelocity() {
-        return SETSCENEVELOCITY;
+        return jsonSetSceneVelocity;
     }
 }
