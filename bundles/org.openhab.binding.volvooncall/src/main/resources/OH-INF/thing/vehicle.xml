@@ -51,6 +51,7 @@
 			<channel id="washerFluidLevel" typeId="washerFluidLevel"/>
 			<channel id="serviceWarningStatus" typeId="serviceWarningStatus"/>
 			<channel id="bulbFailure" typeId="bulbFailure"/>
+			<channel id="carEvent" typeId="carEvent"/>
 		</channels>
 	</channel-group-type>
 
@@ -245,7 +246,7 @@
 		<item-type>Number:Speed</item-type>
 		<label>Average speed</label>
 		<description>Average speed of the vehicle</description>
-		<state pattern="%d %unit%" readOnly="true"></state>
+		<state pattern="%.2f %unit%" readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="fuelQuantity">
@@ -387,5 +388,17 @@
 		<description>set to 'ON' when the tank level is low</description>
 		<state readOnly="true"/>
 	</channel-type>
+	
+	
+    <channel-type id="carEvent">
+        <kind>trigger</kind>
+        <label>Car Event</label>
+        <event>
+            <options>
+                <option value="CAR_STOPPED">Car stopped</option>
+                <option value="CAR_MOVED">Car has moved</option>
+            </options>
+        </event>
+    </channel-type>
 
 </thing:thing-descriptions>

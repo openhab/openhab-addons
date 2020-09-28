@@ -22,6 +22,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class VehicleConfiguration {
+    public static String VIN = "vin";
+
     public String vin = "";
-    public Integer refresh = 5;
+    public int refresh = 5;
 }

@@ -100,6 +100,13 @@ Following channels are currently available:
 | lasttrip#endPosition                          | Location             | Last trip end location                           |                                                 |
 
 
+## Events
+
+| Channel Type ID    | Options           | Description                                  
+|--------------------|-------------------|-------------------------------------------------------------|
+| other#carEvent     |                   |                                                             |
+|                    | CAR_STOPPED       | Triggered when the car has finished a trip                  |
+|                    | CAR_MOVED         | Triggered if the car mileage has changed between two polls  |
 ## Full Example
 
 demo.things:
