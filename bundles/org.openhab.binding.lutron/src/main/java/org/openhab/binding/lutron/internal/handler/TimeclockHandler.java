@@ -102,7 +102,7 @@ public class TimeclockHandler extends LutronHandler {
 
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
             if (command instanceof DecimalType) {
-                Integer mode = new Integer(((DecimalType) command).intValue());
+                Integer mode = Integer.valueOf(((DecimalType) command).intValue());
                 timeclock(ACTION_CLOCKMODE, mode);
             } else if (command instanceof RefreshType) {
                 queryTimeclock(ACTION_CLOCKMODE);
@@ -111,7 +111,7 @@ public class TimeclockHandler extends LutronHandler {
             }
         } else if (channelUID.getId().equals(CHANNEL_EXECEVENT)) {
             if (command instanceof DecimalType) {
-                Integer index = new Integer(((DecimalType) command).intValue());
+                Integer index = Integer.valueOf(((DecimalType) command).intValue());
                 timeclock(ACTION_EXECEVENT, index);
             } else {
                 logger.debug("Invalid command type for execevent channnel");
@@ -130,14 +130,14 @@ public class TimeclockHandler extends LutronHandler {
             }
         } else if (channelUID.getId().equals(CHANNEL_ENABLEEVENT)) {
             if (command instanceof DecimalType) {
-                Integer index = new Integer(((DecimalType) command).intValue());
+                Integer index = Integer.valueOf(((DecimalType) command).intValue());
                 timeclock(ACTION_SETEVENT, index, EVENT_ENABLE);
             } else {
                 logger.debug("Invalid command type for enableevent channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_DISABLEEVENT)) {
             if (command instanceof DecimalType) {
-                Integer index = new Integer(((DecimalType) command).intValue());
+                Integer index = Integer.valueOf(((DecimalType) command).intValue());
                 timeclock(ACTION_SETEVENT, index, EVENT_DISABLE);
             } else {
                 logger.debug("Invalid command type for disableevent channnel");
@@ -173,7 +173,7 @@ public class TimeclockHandler extends LutronHandler {
 
         try {
             if (parameters.length >= 2 && ACTION_CLOCKMODE.toString().equals(parameters[0])) {
-                Integer mode = new Integer(parameters[1]);
+                Integer mode = Integer.valueOf(parameters[1]);
                 if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                     updateStatus(ThingStatus.ONLINE);
                 }
@@ -194,12 +194,12 @@ public class TimeclockHandler extends LutronHandler {
                 }
 
             } else if (parameters.length >= 2 && ACTION_EXECEVENT.toString().equals(parameters[0])) {
-                Integer index = new Integer(parameters[1]);
+                Integer index = Integer.valueOf(parameters[1]);
                 updateState(CHANNEL_EXECEVENT, new DecimalType(index));
 
             } else if (parameters.length >= 3 && ACTION_SETEVENT.toString().equals(parameters[0])) {
-                Integer index = new Integer(parameters[1]);
-                Integer state = new Integer(parameters[2]);
+                Integer index = Integer.valueOf(parameters[1]);
+                Integer state = Integer.valueOf(parameters[2]);
                 if (state.equals(EVENT_ENABLE)) {
                     updateState(CHANNEL_ENABLEEVENT, new DecimalType(index));
                 } else if (state.equals(EVENT_DISABLE)) {
