@@ -68,9 +68,11 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     private void registerDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
         logger.trace("registerDeviceDiscoveryService({}) called.", bridgeHandler);
-        boolean createNew = (discoveryService == null);
-        if (createNew) {
+        boolean createNew = false;
+        VeluxDiscoveryService discoveryService = this.discoveryService;
+        if (discoveryService == null) {
             discoveryService = new VeluxDiscoveryService(localization);
+            createNew = true;
         }
         discoveryService.addBridge(bridgeHandler);
         if (createNew) {
@@ -81,10 +83,14 @@ public class VeluxHandlerFactory extends BaseThingHandlerFactory {
 
     private synchronized void unregisterDeviceDiscoveryService(VeluxBridgeHandler bridgeHandler) {
         logger.trace("unregisterDeviceDiscoveryService({}) called.", bridgeHandler);
+        VeluxDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.removeBridge(bridgeHandler);
             if (discoveryService.isEmpty()) {
-                discoveryServiceRegistration.unregister();
+                ServiceRegistration<?> discoveryServiceRegistration = this.discoveryServiceRegistration;
+                if (discoveryServiceRegistration != null) {
+                    discoveryServiceRegistration.unregister();
+                }
             }
         }
     }

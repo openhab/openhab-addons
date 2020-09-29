@@ -197,7 +197,7 @@ The bridge Thing provides the following properties.
 | products          | List of all recognized products                                 |
 | scenes            | List of all defined scenes                                      |
 | subnetMask        | IP subnetmask of the Bridge                                     |
-| vendor            | Vendow name                                                     |
+| vendor            | Vendor name                                                     |
 | WLANSSID          | Name of the wireless network (not suported any more)            |
 | WLANPassword      | WLAN Authentication Password (not suported any more)            |
 

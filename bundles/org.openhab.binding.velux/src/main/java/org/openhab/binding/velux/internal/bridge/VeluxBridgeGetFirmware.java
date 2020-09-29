@@ -46,7 +46,6 @@ public class VeluxBridgeGetFirmware {
      * <li>firmwareVersion (human readable String).
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public boolean isRetrieved = false;
         public StringType firmwareVersion = new StringType(VeluxBindingConstants.UNKNOWN);
