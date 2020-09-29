@@ -102,7 +102,7 @@ public class VeluxKLFAPI {
 
         @Override
         public String toString() {
-            return "0x" + Integer.toHexString(new Short(commandNumber).intValue());
+            return "0x" + Integer.toHexString(Short.valueOf(commandNumber).intValue());
         }
     }
 
