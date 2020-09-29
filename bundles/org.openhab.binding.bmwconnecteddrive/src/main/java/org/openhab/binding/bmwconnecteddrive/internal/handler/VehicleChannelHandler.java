@@ -344,8 +344,19 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(checkControlMileage,
                         QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
             }
-            // last update index - this is a sync point and you're sure that all data is valid noew
+            // last update index - this is a sync point and you're sure that all data is valid now
             updateState(checkControlIndex, new DecimalType(checkControlListIndex));
+        } else {
+            // list is empty - set all fields to INVALID. If this isn't done the old values remain
+            updateState(checkControlName, StringType.valueOf(Constants.INVALID));
+            if (imperial) {
+                updateState(checkControlMileage, QuantityType.valueOf(Converter.round(-1), ImperialUnits.MILE));
+            } else {
+                updateState(checkControlMileage,
+                        QuantityType.valueOf(Converter.round(-1), MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(checkControlIndex, new DecimalType(-1));
         }
     }
 
@@ -367,6 +378,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 serviceListIndex = 0;
             }
             CBSMessage entry = serviceList.get(serviceListIndex);
+            updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
             updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(entry.getDueDate())));
             if (imperial) {
                 updateState(serviceMileage,
@@ -375,9 +387,19 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
                         MetricPrefix.KILO(SIUnits.METRE)));
             }
-            updateState(serviceName, StringType.valueOf(Converter.toTitleCase(entry.getType())));
-            // last update index - this is a sync point and you're sure that all data is valid noew
+            // last update index - this is a sync point and you're sure that all data is valid now
             updateState(serviceIndex, new DecimalType(serviceListIndex));
+        } else {
+            // list is empty - set all fields to INVALID. If this isn't done the old values remain
+            updateState(serviceName, StringType.valueOf(Constants.INVALID));
+            updateState(serviceDate, DateTimeType.valueOf(Converter.getLocalDateTime(Constants.NULL_DATE)));
+            if (imperial) {
+                updateState(serviceMileage, QuantityType.valueOf(-1, ImperialUnits.MILE));
+            } else {
+                updateState(serviceMileage, QuantityType.valueOf(-1, MetricPrefix.KILO(SIUnits.METRE)));
+            }
+            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(serviceIndex, new DecimalType(-1));
         }
     }
 
@@ -405,8 +427,15 @@ public class VehicleChannelHandler extends BaseThingHandler {
             updateState(destinationName, StringType.valueOf(entry.getAddress()));
             updateState(destinationLat, new DecimalType(entry.lat));
             updateState(destinationLon, new DecimalType(entry.lon));
-            // last update index - this is a sync point and you're sure that all data is valid noew
+            // last update index - this is a sync point and you're sure that all data is valid now
             updateState(destinationIndex, new DecimalType(destinationListIndex));
+        } else {
+            // list is empty - set all fields to INVALID. If this isn't done the old values remain
+            updateState(destinationName, StringType.valueOf(Constants.INVALID));
+            updateState(destinationLat, new DecimalType(-1));
+            updateState(destinationLon, new DecimalType(-1));
+            // last update index - this is a sync point and you're sure that all data is valid noew
+            updateState(destinationIndex, new DecimalType(-1));
         }
     }
 
@@ -498,9 +527,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
 
         // Service Updates
         String nextServiceDate = vStatus.getNextServiceDate();
-        if (!nextServiceDate.equals(Constants.NULL_DATE)) {
-            updateState(serviceNextDate, DateTimeType.valueOf(Converter.getLocalDateTime(nextServiceDate)));
-        }
+        updateState(serviceNextDate, DateTimeType.valueOf(Converter.getLocalDateTime(nextServiceDate)));
         double nextServiceMileage = vStatus.getNextServiceMileage();
         if (imperial) {
             updateState(serviceNextMileage,

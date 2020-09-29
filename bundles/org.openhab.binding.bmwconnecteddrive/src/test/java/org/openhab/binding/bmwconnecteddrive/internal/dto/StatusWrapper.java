@@ -125,10 +125,19 @@ public class StatusWrapper {
                         assertEquals(qt.intValue(), vStatus.mileage, "Mileage");
                         break;
                     case CHANNEL_GROUP_SERVICE:
-                        assertEquals(qt.intValue(), vStatus.cbsData.get(0).cbsRemainingMileage, "Mileage");
+                        if (vStatus.cbsData.isEmpty()) {
+                            assertEquals(qt.intValue(), -1, "Service Mileage");
+                        } else {
+                            assertEquals(qt.intValue(), vStatus.cbsData.get(0).cbsRemainingMileage, "Service Mileage");
+                        }
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
-                        assertEquals(qt.intValue(), vStatus.checkControlMessages.get(0).ccmMileage, "Mileage");
+                        if (vStatus.checkControlMessages.isEmpty()) {
+                            assertEquals(qt.intValue(), -1, "CheckControl Mileage");
+                        } else {
+                            assertEquals(qt.intValue(), vStatus.checkControlMessages.get(0).ccmMileage,
+                                    "CheckControl Mileage");
+                        }
                         break;
                     default:
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");
@@ -393,10 +402,18 @@ public class StatusWrapper {
                 dt = (DecimalType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        assertEquals(0, dt.intValue(), "Index of Services");
+                        if (vStatus.cbsData.isEmpty()) {
+                            assertEquals(-1, dt.intValue(), "Index of Services");
+                        } else {
+                            assertEquals(0, dt.intValue(), "Index of Services");
+                        }
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
-                        assertEquals(0, dt.intValue(), "Index of CheckControls");
+                        if (vStatus.checkControlMessages.isEmpty()) {
+                            assertEquals(-1, dt.intValue(), "Index of CheckControls");
+                        } else {
+                            assertEquals(0, dt.intValue(), "Index of CheckControls");
+                        }
                         break;
                     default:
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");
@@ -448,12 +465,18 @@ public class StatusWrapper {
                 st = (StringType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
-                        assertEquals(wanted.toString(), st.toString(), "Service");
+                        wanted = StringType.valueOf(Constants.INVALID);
+                        if (!vStatus.cbsData.isEmpty()) {
+                            wanted = StringType.valueOf(Converter.toTitleCase(vStatus.cbsData.get(0).getType()));
+                        }
+                        assertEquals(wanted.toString(), st.toString(), "Service Name");
                         break;
                     case CHANNEL_GROUP_CHECK_CONTROL:
-                        wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
-                        assertEquals(wanted.toString(), st.toString(), "CheckControl");
+                        wanted = StringType.valueOf(Constants.INVALID);
+                        if (!vStatus.checkControlMessages.isEmpty()) {
+                            wanted = StringType.valueOf(vStatus.checkControlMessages.get(0).ccmDescriptionShort);
+                        }
+                        assertEquals(wanted.toString(), st.toString(), "CheckControl Name");
                         break;
                     default:
                         assertFalse(true, "Channel " + channelUID + " " + state + " not found");
@@ -465,7 +488,10 @@ public class StatusWrapper {
                 dtt = (DateTimeType) state;
                 switch (gUid) {
                     case CHANNEL_GROUP_SERVICE:
-                        String dueDateString = vStatus.cbsData.get(0).getDueDate();
+                        String dueDateString = Constants.NULL_DATE;
+                        if (!vStatus.cbsData.isEmpty()) {
+                            dueDateString = vStatus.cbsData.get(0).getDueDate();
+                        }
                         DateTimeType expectedDTT = DateTimeType.valueOf(Converter.getLocalDateTime(dueDateString));
                         assertEquals(expectedDTT.toString(), dtt.toString(), "ServiceSate");
                         break;
