@@ -84,7 +84,7 @@ public class HomieImplementationTest extends JavaOSGiTest {
     // A handler mock is required to verify that channel value changes have been received
     private @Mock @NonNullByDefault({}) HomieThingHandler handler;
 
-    private ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(6);
+    private @NonNullByDefault({}) ScheduledExecutorService scheduler;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
