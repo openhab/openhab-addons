@@ -83,7 +83,7 @@ public class LightsAndGroupsTests {
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown() throws Exception {
         commonSetup.dispose();
     }
 
