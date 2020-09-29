@@ -64,7 +64,6 @@ public class VeluxBridgeActuators {
      * <li>existingProducts ({@link VeluxExistingProducts}).
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public VeluxExistingProducts existingProducts = new VeluxExistingProducts();
     }

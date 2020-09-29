@@ -53,7 +53,6 @@ public class Localization {
     /**
      * Class, which is needed to maintain a @NonNullByDefault for class {@link Localization}.
      */
-    @NonNullByDefault
     private class UnknownLocale implements LocaleProvider {
         @Override
         public Locale getLocale() {
