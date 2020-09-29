@@ -102,7 +102,7 @@ public class TimeclockHandler extends LutronHandler {
 
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
             if (command instanceof DecimalType) {
-                Integer mode = Integer.valueOf(((DecimalType) command).intValue());
+                Integer mode = ((DecimalType) command).intValue();
                 timeclock(ACTION_CLOCKMODE, mode);
             } else if (command instanceof RefreshType) {
                 queryTimeclock(ACTION_CLOCKMODE);
@@ -111,7 +111,7 @@ public class TimeclockHandler extends LutronHandler {
             }
         } else if (channelUID.getId().equals(CHANNEL_EXECEVENT)) {
             if (command instanceof DecimalType) {
-                Integer index = Integer.valueOf(((DecimalType) command).intValue());
+                Integer index = ((DecimalType) command).intValue();
                 timeclock(ACTION_EXECEVENT, index);
             } else {
                 logger.debug("Invalid command type for execevent channnel");
@@ -130,14 +130,14 @@ public class TimeclockHandler extends LutronHandler {
             }
         } else if (channelUID.getId().equals(CHANNEL_ENABLEEVENT)) {
             if (command instanceof DecimalType) {
-                Integer index = Integer.valueOf(((DecimalType) command).intValue());
+                Integer index = ((DecimalType) command).intValue();
                 timeclock(ACTION_SETEVENT, index, EVENT_ENABLE);
             } else {
                 logger.debug("Invalid command type for enableevent channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_DISABLEEVENT)) {
             if (command instanceof DecimalType) {
-                Integer index = Integer.valueOf(((DecimalType) command).intValue());
+                Integer index = ((DecimalType) command).intValue();
                 timeclock(ACTION_SETEVENT, index, EVENT_DISABLE);
             } else {
                 logger.debug("Invalid command type for disableevent channnel");
