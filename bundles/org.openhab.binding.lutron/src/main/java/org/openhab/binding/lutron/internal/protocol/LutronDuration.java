@@ -13,6 +13,7 @@
 package org.openhab.binding.lutron.internal.protocol;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +76,7 @@ public class LutronDuration {
      * Constructor accepting duration in seconds as a Double
      */
     public LutronDuration(Double seconds) {
-        this(new BigDecimal(seconds).setScale(2, BigDecimal.ROUND_HALF_UP));
+        this(new BigDecimal(seconds).setScale(2, RoundingMode.HALF_UP));
     }
 
     /**
