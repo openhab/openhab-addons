@@ -352,10 +352,11 @@ public class VehicleHandler extends VehicleChannelHandler {
     private void startSchedule(int interval) {
         if (refreshJob.isPresent()) {
             if (refreshJob.get().isCancelled()) {
-                Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+                refreshJob = Optional
+                        .of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
             } // else - scheduler is already running!
         } else {
-            Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
+            refreshJob = Optional.of(scheduler.scheduleWithFixedDelay(this::getData, 0, interval, TimeUnit.MINUTES));
         }
     }
 

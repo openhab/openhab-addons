@@ -329,7 +329,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     private void updateCheckControls() {
-        updateState(checkControlSize, new DecimalType(checkControlList.size()));
         if (!checkControlList.isEmpty()) {
             if (checkControlListIndex < 0 || checkControlListIndex >= checkControlList.size()) {
                 // select first item
@@ -344,7 +343,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(checkControlMileage,
                         QuantityType.valueOf(Converter.round(entry.ccmMileage), MetricPrefix.KILO(SIUnits.METRE)));
             }
-            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(checkControlSize, new DecimalType(checkControlList.size()));
             updateState(checkControlIndex, new DecimalType(checkControlListIndex));
         } else {
             // list is empty - set all fields to INVALID. If this isn't done the old values remain
@@ -355,7 +354,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(checkControlMileage,
                         QuantityType.valueOf(Converter.round(-1), MetricPrefix.KILO(SIUnits.METRE)));
             }
-            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(checkControlSize, new DecimalType(checkControlList.size()));
             updateState(checkControlIndex, new DecimalType(-1));
         }
     }
@@ -371,7 +370,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
     }
 
     private void updateService() {
-        updateState(serviceSize, new DecimalType(serviceList.size()));
         if (!serviceList.isEmpty()) {
             if (serviceListIndex < 0 || serviceListIndex >= serviceList.size()) {
                 // select first item
@@ -387,7 +385,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
                 updateState(serviceMileage, QuantityType.valueOf(Converter.round(entry.cbsRemainingMileage),
                         MetricPrefix.KILO(SIUnits.METRE)));
             }
-            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(serviceSize, new DecimalType(serviceList.size()));
             updateState(serviceIndex, new DecimalType(serviceListIndex));
         } else {
             // list is empty - set all fields to INVALID. If this isn't done the old values remain
@@ -398,7 +396,7 @@ public class VehicleChannelHandler extends BaseThingHandler {
             } else {
                 updateState(serviceMileage, QuantityType.valueOf(-1, MetricPrefix.KILO(SIUnits.METRE)));
             }
-            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(serviceSize, new DecimalType(serviceList.size()));
             updateState(serviceIndex, new DecimalType(-1));
         }
     }
@@ -417,7 +415,6 @@ public class VehicleChannelHandler extends BaseThingHandler {
      * needs to be synchronized with onResponse update
      */
     private void updateDestination() {
-        updateState(destinationSize, new DecimalType(destinationList.size()));
         if (!destinationList.isEmpty()) {
             if (destinationListIndex < 0 || destinationListIndex >= destinationList.size()) {
                 // select first item
@@ -427,14 +424,14 @@ public class VehicleChannelHandler extends BaseThingHandler {
             updateState(destinationName, StringType.valueOf(entry.getAddress()));
             updateState(destinationLat, new DecimalType(entry.lat));
             updateState(destinationLon, new DecimalType(entry.lon));
-            // last update index - this is a sync point and you're sure that all data is valid now
+            updateState(destinationSize, new DecimalType(destinationList.size()));
             updateState(destinationIndex, new DecimalType(destinationListIndex));
         } else {
             // list is empty - set all fields to INVALID. If this isn't done the old values remain
             updateState(destinationName, StringType.valueOf(Constants.INVALID));
             updateState(destinationLat, new DecimalType(-1));
             updateState(destinationLon, new DecimalType(-1));
-            // last update index - this is a sync point and you're sure that all data is valid noew
+            updateState(destinationSize, new DecimalType(destinationList.size()));
             updateState(destinationIndex, new DecimalType(-1));
         }
     }
