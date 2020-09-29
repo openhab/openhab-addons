@@ -156,7 +156,6 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * <LI>{@link #wlanConfig} - Information about the gateway configuration.</LI>
      * </UL>
      */
-    @NonNullByDefault
     public class BridgeParameters {
         /** Information retrieved by {@link VeluxBridgeActuators#getProducts} */
         public VeluxBridgeActuators actuators = new VeluxBridgeActuators();

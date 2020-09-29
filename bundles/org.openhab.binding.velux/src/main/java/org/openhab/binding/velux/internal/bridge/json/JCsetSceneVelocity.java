@@ -45,7 +45,6 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
     /*
      * Message Objects
      */
-    @NonNullByDefault
     private static class ParamsRunScene {
         @SuppressWarnings("unused")
         private int id;
@@ -68,7 +67,6 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
      * {"action":"setSilentMode","params":{"id":9,"silent":false}}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
         @SuppressWarnings("unused")
         private String action;
@@ -97,7 +95,6 @@ class JCsetSceneVelocity extends SetSceneVelocity implements JsonBridgeCommunica
      * }
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         @SuppressWarnings("unused")
         private String token = VeluxBindingConstants.UNKNOWN;

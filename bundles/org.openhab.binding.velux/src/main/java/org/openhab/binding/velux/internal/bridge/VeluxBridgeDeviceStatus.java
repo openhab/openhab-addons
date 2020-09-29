@@ -48,7 +48,6 @@ public class VeluxBridgeDeviceStatus {
      * <li>{@link #gwStateDescription} containing the verbose gateway state.
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public boolean isRetrieved = false;
         public StringType gwState = new StringType(VeluxBindingConstants.UNKNOWN);
