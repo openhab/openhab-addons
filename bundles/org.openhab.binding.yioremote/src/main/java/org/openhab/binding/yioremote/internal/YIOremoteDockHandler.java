@@ -379,8 +379,8 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                 logger.debug("Reconnecting YIORemoteHandler");
                 try {
                     disposeWebsocketPollingJob();
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
-                            "Reconnecting to YIO DOCK");
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "Connection lost no ping from YIO DOCK");
                     yioremoteDockwebSocketClient.closeWebsocketSession();
                     webSocketClient.stop();
                     yioRemoteDockActualStatus = YioRemoteDockHandleStatus.RECONNECTION_PROCESS;
