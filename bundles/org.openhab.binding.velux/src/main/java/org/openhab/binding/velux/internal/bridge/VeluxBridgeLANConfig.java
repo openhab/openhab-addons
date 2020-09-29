@@ -50,7 +50,6 @@ public class VeluxBridgeLANConfig {
      * <li>enabledDHCP.
      * </ul>
      */
-    @NonNullByDefault
     public class Channel {
         public boolean isRetrieved = false;
         public StringType openHABipAddress = new StringType(VeluxBindingConstants.UNKNOWN);

@@ -66,7 +66,6 @@ public class VeluxKLFAPI {
      * <LI>Method {@link toString} to return a String.</LI>
      * </UL>
      */
-    @NonNullByDefault
     public static class CommandName {
         private String name;
 
@@ -90,7 +89,6 @@ public class VeluxKLFAPI {
      * <LI>Method {@link toString} to return a well-formatted String.</LI>
      * </UL>
      */
-    @NonNullByDefault
     public static class CommandNumber {
         private short commandNumber;
 
@@ -104,7 +102,7 @@ public class VeluxKLFAPI {
 
         @Override
         public String toString() {
-            return "0x" + Integer.toHexString(new Short(commandNumber).intValue());
+            return "0x" + Integer.toHexString(Short.valueOf(commandNumber).intValue());
         }
     }
 

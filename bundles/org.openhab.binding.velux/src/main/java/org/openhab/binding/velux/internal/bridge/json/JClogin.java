@@ -45,7 +45,6 @@ class JClogin extends Login implements JsonBridgeCommunicationProtocol {
     /*
      * Message Objects
      */
-    @NonNullByDefault
     private static class ParamsLogin {
         @SuppressWarnings("unused")
         private String password = VeluxBindingConstants.UNKNOWN;
@@ -61,7 +60,6 @@ class JClogin extends Login implements JsonBridgeCommunicationProtocol {
      * {"action":"login","params":{"password":"PASSWORD"}}
      * </pre>
      */
-    @NonNullByDefault
     private static class Request {
 
         @SuppressWarnings("unused")
@@ -83,7 +81,6 @@ class JClogin extends Login implements JsonBridgeCommunicationProtocol {
      * '{"token": "PHPnfLda71xfGlxoYEOTGQ==", "result": true, "deviceStatus": "IDLE", "data": {}, "errors": [] }'
      * </pre>
      */
-    @NonNullByDefault
     private static class Response {
         private String token = VeluxBindingConstants.UNKNOWN;
         private boolean result;
