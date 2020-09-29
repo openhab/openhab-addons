@@ -57,10 +57,10 @@ public class VehicleTests {
     private static final int RANGE_CONV = 4;
     private static final int RANGE_ELECTRIC = 4;
     private static final int DOORS = 12;
-    private static final int CHECK_EMPTY = 1;
+    private static final int CHECK_EMPTY = 4;
     private static final int CHECK_AVAILABLE = 4;
     private static final int SERVICE_AVAILABLE = 5;
-    private static final int SERVICE_EMPTY = 0;
+    private static final int SERVICE_EMPTY = 5;
     private static final int POSITION = 3;
 
     @Nullable
@@ -128,7 +128,7 @@ public class VehicleTests {
      * Example:
      *
      * testi3Rex
-     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @3733ms
+     * [main] INFO org.eclipse.jetty.util.log - Logging initialized @1731ms
      * Channel testbinding::test:status#lock Secured
      * Channel testbinding::test:status#service-date 2021-11-01T13:00:00.000+0100
      * Channel testbinding::test:status#service-mileage -1.0 km
@@ -159,13 +159,16 @@ public class VehicleTests {
      * Channel testbinding::test:range#remaining-fuel 4.0 l
      * Channel testbinding::test:status#charge Charging Goal Reached
      * Channel testbinding::test:check#size 0
+     * Channel testbinding::test:check#name INVALID
+     * Channel testbinding::test:check#mileage -1.0 km
+     * Channel testbinding::test:check#index -1
      * Channel testbinding::test:service#size 4
+     * Channel testbinding::test:service#name Brake Fluid
      * Channel testbinding::test:service#date 2021-11-01T13:00:00.000+0100
      * Channel testbinding::test:service#mileage 15345.0 km
-     * Channel testbinding::test:service#name Brake Fluid
      * Channel testbinding::test:service#index 0
-     * Channel testbinding::test:location#latitude 56.78900146484375
-     * Channel testbinding::test:location#longitude 8.765000343322754
+     * Channel testbinding::test:location#latitude 50.55604934692383
+     * Channel testbinding::test:location#longitude 8.4956693649292
      * Channel testbinding::test:location#heading 219.0 °
      *
      */
@@ -224,7 +227,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
+                Optional.empty()));
     }
 
     @Test
@@ -232,7 +236,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F31/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_AVAILABLE + CHECK_EMPTY,
+                Optional.empty()));
     }
 
     @Test
@@ -240,7 +245,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), false);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_EMPTY + CHECK_EMPTY,
+                Optional.empty()));
     }
 
     @Test
@@ -248,7 +254,8 @@ public class VehicleTests {
         logger.info("{}", Thread.currentThread().getStackTrace()[1].getMethodName());
         setup(VehicleType.CONVENTIONAL.toString(), true);
         String content = FileReader.readFileInString("src/test/resources/responses/F35/status.json");
-        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + CHECK_EMPTY, Optional.empty()));
+        assertTrue(testVehicle(content, STATUS_CONV + DOORS + RANGE_CONV + POSITION + SERVICE_EMPTY + CHECK_EMPTY,
+                Optional.empty()));
     }
 
     @Test
