@@ -16,7 +16,6 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 import java.lang.reflect.Field;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.velux.internal.config.VeluxBridgeConfiguration;
@@ -56,8 +55,9 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
         logger.trace("VeluxBinding(constructor) called.");
         if (logger.isTraceEnabled()) {
             for (Field field : VeluxBridgeConfiguration.class.getFields()) {
-                if (!StringUtils.capitalize(field.getName()).contentEquals(field.getName())) {
-                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", field.getName());
+                String fName = field.getName();
+                if ((fName.length() > 0) && Character.isUpperCase(fName.charAt(0))) {
+                    logger.trace("VeluxBinding(): FYI: a potential configuration string is '{}'.", fName);
                 }
             }
         }
