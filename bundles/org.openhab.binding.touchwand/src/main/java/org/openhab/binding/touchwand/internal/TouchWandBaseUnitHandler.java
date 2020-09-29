@@ -89,7 +89,7 @@ public abstract class TouchWandBaseUnitHandler extends BaseThingHandler implemen
 
         bridgeHandler = (TouchWandBridgeHandler) bridge.getHandler();
 
-        unitId = getThing().getUID().getId(); // TouchWand unit id
+        unitId = getThing().getProperties().get("id"); // TouchWand unit id
 
         TouchWandBridgeHandler myTmpBridgeHandler = bridgeHandler;
         if (myTmpBridgeHandler != null) {
