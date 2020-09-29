@@ -15,6 +15,7 @@ package org.openhab.binding.lutron.action;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -90,7 +91,7 @@ public class DimmerActions implements ThingActions, IDimmerActions {
             lightLevel = 0.0;
         }
         try {
-            dimmerHandler.setLightLevel(new BigDecimal(lightLevel).setScale(2, BigDecimal.ROUND_HALF_UP),
+            dimmerHandler.setLightLevel(new BigDecimal(lightLevel).setScale(2, RoundingMode.HALF_UP),
                     new LutronDuration(fadeTime), new LutronDuration(delayTime));
         } catch (IllegalArgumentException e) {
             logger.debug("Ignoring setLevel command due to illegal argument exception: {}", e.getMessage());

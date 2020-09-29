@@ -113,10 +113,11 @@ public class GreenModeHandler extends LutronHandler {
     }
 
     private void stopPolling() {
+        ScheduledFuture<?> pollJob = this.pollJob;
         if (pollJob != null) {
+            this.pollJob = null;
             logger.debug("Canceling green mode polling job for integration ID {}", integrationId);
             pollJob.cancel(true);
-            pollJob = null;
         }
     }
 
@@ -140,7 +141,7 @@ public class GreenModeHandler extends LutronHandler {
             } else if (command == OnOffType.OFF) {
                 greenMode(ACTION_STEP, 1);
             } else if (command instanceof Number) {
-                Integer step = new Integer(((Number) command).intValue());
+                Integer step = ((Number) command).intValue();
                 if (step.intValue() >= GREENSTEP_MIN) {
                     greenMode(ACTION_STEP, step);
                 }
@@ -159,7 +160,7 @@ public class GreenModeHandler extends LutronHandler {
         try {
             if (type == LutronCommandType.MODE && parameters.length > 1
                     && ACTION_STEP.toString().equals(parameters[0])) {
-                Long step = new Long(parameters[1]);
+                Long step = Long.valueOf(parameters[1]);
                 if (getThing().getStatus() == ThingStatus.UNKNOWN) {
                     updateStatus(ThingStatus.ONLINE);
                     startPolling();
