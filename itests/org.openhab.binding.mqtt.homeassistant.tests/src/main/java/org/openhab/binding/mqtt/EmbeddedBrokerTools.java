@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -50,7 +49,7 @@ public class EmbeddedBrokerTools {
             MqttServiceObserver observer = new MqttServiceObserver() {
 
                 @Override
-                public void brokerAdded(@NonNull String brokerID, @NonNull MqttBrokerConnection broker) {
+                public void brokerAdded(String brokerID, MqttBrokerConnection broker) {
                     if (brokerID.equals(Constants.CLIENTID)) {
                         embeddedConnection = broker;
                         semaphore.release();
@@ -58,7 +57,7 @@ public class EmbeddedBrokerTools {
                 }
 
                 @Override
-                public void brokerRemoved(@NonNull String brokerID, @NonNull MqttBrokerConnection broker) {
+                public void brokerRemoved(String brokerID, MqttBrokerConnection broker) {
                 }
             };
             mqttService.addBrokersListener(observer);
