@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,14 +41,15 @@ import org.openhab.core.test.java.JavaOSGiTest;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class MoquetteTest extends JavaOSGiTest {
     private static final String TEST_TOPIC = "testtopic";
 
-    private AutoCloseable mocksCloseable;
+    private @NonNullByDefault({}) AutoCloseable mocksCloseable;
 
-    private MqttService mqttService;
-    private MqttBrokerConnection embeddedConnection;
-    private MqttBrokerConnection clientConnection;
+    private @NonNullByDefault({}) MqttService mqttService;
+    private @NonNullByDefault({}) MqttBrokerConnection embeddedConnection;
+    private @NonNullByDefault({}) MqttBrokerConnection clientConnection;
 
     /**
      * Create an observer that fails the test as soon as the broker client connection changes its connection state
@@ -84,11 +86,15 @@ public class MoquetteTest extends JavaOSGiTest {
         mocksCloseable.close();
     }
 
+    private CompletableFuture<Boolean> publish(String topic, String message) {
+        return embeddedConnection.publish(topic, message.getBytes(StandardCharsets.UTF_8), 0, true);
+    }
+
     @Test
     public void singleTopic() throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC, "testPayload".getBytes(StandardCharsets.UTF_8), 1, true));
+        futures.add(publish(TEST_TOPIC, "testPayload"));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
@@ -105,10 +111,8 @@ public class MoquetteTest extends JavaOSGiTest {
             throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8), 1,
-                true));
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8), 1,
-                true));
+        futures.add(publish(TEST_TOPIC + "/1", "testPayload1"));
+        futures.add(publish(TEST_TOPIC + "/2", "testPayload2"));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
@@ -126,10 +130,8 @@ public class MoquetteTest extends JavaOSGiTest {
             throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8), 1,
-                true));
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8), 1,
-                true));
+        futures.add(publish(TEST_TOPIC + "/1", "testPayload1"));
+        futures.add(publish(TEST_TOPIC + "/2", "testPayload2"));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
@@ -146,10 +148,8 @@ public class MoquetteTest extends JavaOSGiTest {
             throws InterruptedException, ExecutionException, TimeoutException {
         List<CompletableFuture<Boolean>> futures = new ArrayList<>();
 
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/1", "testPayload1".getBytes(StandardCharsets.UTF_8), 1,
-                true));
-        futures.add(embeddedConnection.publish(TEST_TOPIC + "/2", "testPayload2".getBytes(StandardCharsets.UTF_8), 1,
-                true));
+        futures.add(publish(TEST_TOPIC + "/1", "testPayload1"));
+        futures.add(publish(TEST_TOPIC + "/2", "testPayload2"));
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).get(1000, TimeUnit.MILLISECONDS);
 
