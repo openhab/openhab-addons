@@ -24,7 +24,9 @@ public interface WebsocketInterface {
 
     public void onConnect(boolean connected);
 
+    public void onClose();
+
     public void onMessage(String decodedmessage);
 
-    public void onError();
+    public void onError(Throwable cause);
 }
