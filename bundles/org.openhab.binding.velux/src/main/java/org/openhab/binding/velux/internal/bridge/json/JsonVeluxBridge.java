@@ -185,6 +185,9 @@ public class JsonVeluxBridge extends VeluxBridge {
             } else {
                 response = ioUnauthenticated(sapURL, getRequest, classOfResponse);
             }
+            if (response == null) {
+                throw new IOException("Failed to create 'response' object");
+            }
             communication.setResponse(response);
             logger.trace("bridgeCommunicate(): communication result is {}, returning details.",
                     communication.isCommunicationSuccessful());
