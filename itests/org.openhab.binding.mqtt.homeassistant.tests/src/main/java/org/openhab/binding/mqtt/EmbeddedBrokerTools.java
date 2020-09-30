@@ -14,6 +14,9 @@ package org.openhab.binding.mqtt;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -25,23 +28,40 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.io.transport.mqtt.MqttService;
 import org.openhab.core.io.transport.mqtt.MqttServiceObserver;
 import org.openhab.io.mqttembeddedbroker.Constants;
+import org.osgi.service.cm.Configuration;
+import org.osgi.service.cm.ConfigurationAdmin;
 
 /**
  * A full implementation test, that starts the embedded MQTT broker and publishes a homeassistant MQTT discovery device
  * tree.
  *
  * @author David Graeff - Initial contribution
+ * @author Wouter Born - Support running MQTT itests in parallel by reconfiguring embedded broker port
  */
 @NonNullByDefault
 public class EmbeddedBrokerTools {
-    public @Nullable MqttBrokerConnection embeddedConnection = null;
+
+    private static final int BROKER_PORT = Integer.getInteger("mqttembeddedbroker.port", 1883);
+
+    private final ConfigurationAdmin configurationAdmin;
+    private final MqttService mqttService;
+
+    public @Nullable MqttBrokerConnection embeddedConnection;
+
+    public EmbeddedBrokerTools(ConfigurationAdmin configurationAdmin, MqttService mqttService) {
+        this.configurationAdmin = configurationAdmin;
+        this.mqttService = mqttService;
+    }
 
     /**
      * Request the embedded broker connection from the {@link MqttService} and wait for a connection to be established.
      *
      * @throws InterruptedException
+     * @throws IOException
      */
-    public MqttBrokerConnection waitForConnection(MqttService mqttService) throws InterruptedException {
+    public MqttBrokerConnection waitForConnection() throws InterruptedException, IOException {
+        reconfigurePort();
+
         embeddedConnection = mqttService.getBrokerConnection(Constants.CLIENTID);
         if (embeddedConnection == null) {
             Semaphore semaphore = new Semaphore(1);
@@ -61,7 +81,7 @@ public class EmbeddedBrokerTools {
                 }
             };
             mqttService.addBrokersListener(observer);
-            assertTrue(semaphore.tryAcquire(1000, TimeUnit.MILLISECONDS), "Wait for embedded connection client failed");
+            assertTrue(semaphore.tryAcquire(5, TimeUnit.SECONDS), "Wait for embedded connection client failed");
         }
         MqttBrokerConnection embeddedConnection = this.embeddedConnection;
         if (embeddedConnection == null) {
@@ -79,8 +99,25 @@ public class EmbeddedBrokerTools {
         if (embeddedConnection.connectionState() == MqttConnectionState.CONNECTED) {
             semaphore.release();
         }
-        assertTrue(semaphore.tryAcquire(500, TimeUnit.MILLISECONDS), "Connection " + embeddedConnection.getClientId()
+        assertTrue(semaphore.tryAcquire(5, TimeUnit.SECONDS), "Connection " + embeddedConnection.getClientId()
                 + " failed. State: " + embeddedConnection.connectionState());
         return embeddedConnection;
+    }
+
+    public void reconfigurePort() throws IOException {
+        Configuration configuration = configurationAdmin.getConfiguration(Constants.PID, null);
+
+        Dictionary<String, Object> properties = configuration.getProperties();
+        if (properties == null) {
+            properties = new Hashtable<>();
+        }
+
+        Integer currentPort = (Integer) properties.get(Constants.PORT);
+        if (currentPort == null || currentPort.intValue() != BROKER_PORT) {
+            properties.put(Constants.PORT, BROKER_PORT);
+            configuration.update(properties);
+            // Remove the connection to make sure the test waits for the new connection to become available
+            mqttService.removeBrokerConnection(Constants.CLIENTID);
+        }
     }
 }
