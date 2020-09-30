@@ -79,8 +79,8 @@ import io.netty.handler.ssl.SslContextBuilder;
  *
  * @author David Graeff - Initial contribution
  */
-@Component(immediate = true, service = EmbeddedBrokerService.class, configurationPid = "org.openhab.core.mqttembeddedbroker", //
-        property = org.osgi.framework.Constants.SERVICE_PID + "=org.openhab.core.mqttembeddedbroker")
+@Component(immediate = true, service = EmbeddedBrokerService.class, configurationPid = Constants.PID, //
+        property = org.osgi.framework.Constants.SERVICE_PID + "=" + Constants.PID)
 @ConfigurableService(category = "MQTT", label = "MQTT Embedded Broker", description_uri = "mqtt:mqttembeddedbroker")
 @NonNullByDefault
 public class EmbeddedBrokerService
@@ -309,7 +309,12 @@ public class EmbeddedBrokerService
                 // retry starting broker, if it fails again, don't catch exception
                 server.startServer(new MemoryConfig(properties), null, sslContextCreator, authentificator, authorizer);
             }
+        } catch (Exception e) {
+            logger.warn("Failed to start embedded MQTT server: {}", e.getMessage());
+            server.stopServer();
+            return;
         }
+
         this.server = server;
         server.addInterceptHandler(metrics);
         ScheduledExecutorService s = new ScheduledThreadPoolExecutor(1);

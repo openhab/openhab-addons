@@ -26,4 +26,14 @@ public class Constants {
      * </pre>
      */
     public static final String CLIENTID = "embedded-mqtt-broker";
+
+    /**
+     * The broker persistent identifier used for identifying configurations.
+     */
+    public static final String PID = "org.openhab.core.mqttembeddedbroker";
+
+    /**
+     * The configuration key used for configuring the embedded broker port.
+     */
+    public static final String PORT = "port";
 }
