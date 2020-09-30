@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.touchwand.internal;
 
-import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
+import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.THING_TYPE_BRIDGE;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.smarthome.config.core.Configuration;
 import org.eclipse.smarthome.config.discovery.DiscoveryService;
 import org.eclipse.smarthome.core.thing.Bridge;
 import org.eclipse.smarthome.core.thing.ChannelUID;
@@ -33,6 +32,7 @@ import org.eclipse.smarthome.core.thing.ThingTypeUID;
 import org.eclipse.smarthome.core.thing.ThingUID;
 import org.eclipse.smarthome.core.thing.binding.BaseBridgeHandler;
 import org.eclipse.smarthome.core.types.Command;
+import org.openhab.binding.touchwand.internal.config.TouchwandBridgeConfiguration;
 import org.openhab.binding.touchwand.internal.discovery.TouchWandUnitDiscoveryService;
 import org.openhab.binding.touchwand.internal.dto.TouchWandUnitData;
 import org.osgi.framework.BundleContext;
@@ -71,22 +71,23 @@ public class TouchWandBridgeHandler extends BaseBridgeHandler implements TouchWa
     @Override
     public void initialize() {
         String host;
-        String port;
-        Configuration config;
+        Integer port;
+        TouchwandBridgeConfiguration config;
 
         updateStatus(ThingStatus.UNKNOWN);
-        config = getThing().getConfiguration();
 
-        host = config.get(HOST).toString();
-        port = config.get(PORT).toString();
-        statusRefreshRateSec = Integer.parseInt((config.get(STATUS_REFRESH_TIME).toString()));
-        addSecondaryUnits = Boolean.valueOf(config.get(ADD_SECONDARY_UNITS).toString());
+        config = getConfigAs(TouchwandBridgeConfiguration.class);
+
+        host = config.ipAddress;
+        port = config.port;
+        statusRefreshRateSec = config.statusrefresh;
+        addSecondaryUnits = config.addSecondaryUnits;
 
         scheduler.execute(() -> {
             boolean thingReachable = false;
-            String password = config.get(PASS).toString();
-            String username = config.get(USER).toString();
-            thingReachable = touchWandClient.connect(username, password, host, port);
+            String password = config.password;
+            String username = config.username;
+            thingReachable = touchWandClient.connect(username, password, host, port.toString());
             if (thingReachable) {
                 updateStatus(ThingStatus.ONLINE);
                 registerItemDiscoveryService(this);
